@@ -225,11 +225,11 @@
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 112
+                "value": 102
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 101
+                "value": 75
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
@@ -237,7 +237,7 @@
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 151
+                "value": 155
               },
               "ArmorPart_LShin": {
                 "type": "byte",
@@ -261,11 +261,11 @@
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 112
+                "value": 102
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 101
+                "value": 75
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
@@ -273,7 +273,7 @@
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 151
+                "value": 155
               },
               "ArmorPart_Robe": {
                 "type": "byte",
@@ -383,11 +383,11 @@
               },
               "xArmorPart_LBice": {
                 "type": "word",
-                "value": 112
+                "value": 102
               },
               "xArmorPart_LFArm": {
                 "type": "word",
-                "value": 101
+                "value": 75
               },
               "xArmorPart_LFoot": {
                 "type": "word",
@@ -395,7 +395,7 @@
               },
               "xArmorPart_LHand": {
                 "type": "word",
-                "value": 151
+                "value": 155
               },
               "xArmorPart_LShin": {
                 "type": "word",
@@ -419,11 +419,11 @@
               },
               "xArmorPart_RBice": {
                 "type": "word",
-                "value": 112
+                "value": 102
               },
               "xArmorPart_RFArm": {
                 "type": "word",
-                "value": 101
+                "value": 75
               },
               "xArmorPart_RFoot": {
                 "type": "word",
@@ -431,7 +431,7 @@
               },
               "xArmorPart_RHand": {
                 "type": "word",
-                "value": 151
+                "value": 155
               },
               "xArmorPart_Robe": {
                 "type": "word",
@@ -2383,11 +2383,11 @@
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 112
+                "value": 102
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 101
+                "value": 75
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
@@ -2395,7 +2395,7 @@
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 151
+                "value": 155
               },
               "ArmorPart_LShin": {
                 "type": "byte",
@@ -2419,11 +2419,11 @@
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 112
+                "value": 102
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 101
+                "value": 75
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
@@ -2431,7 +2431,7 @@
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 151
+                "value": 155
               },
               "ArmorPart_Robe": {
                 "type": "byte",
@@ -2541,11 +2541,11 @@
               },
               "xArmorPart_LBice": {
                 "type": "word",
-                "value": 112
+                "value": 102
               },
               "xArmorPart_LFArm": {
                 "type": "word",
-                "value": 101
+                "value": 75
               },
               "xArmorPart_LFoot": {
                 "type": "word",
@@ -2553,7 +2553,7 @@
               },
               "xArmorPart_LHand": {
                 "type": "word",
-                "value": 151
+                "value": 155
               },
               "xArmorPart_LShin": {
                 "type": "word",
@@ -2577,11 +2577,11 @@
               },
               "xArmorPart_RBice": {
                 "type": "word",
-                "value": 112
+                "value": 102
               },
               "xArmorPart_RFArm": {
                 "type": "word",
-                "value": 101
+                "value": 75
               },
               "xArmorPart_RFoot": {
                 "type": "word",
@@ -2589,7 +2589,7 @@
               },
               "xArmorPart_RHand": {
                 "type": "word",
-                "value": 151
+                "value": 155
               },
               "xArmorPart_Robe": {
                 "type": "word",
@@ -3389,11 +3389,11 @@
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 112
+                "value": 102
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 101
+                "value": 75
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
@@ -3401,7 +3401,7 @@
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 151
+                "value": 155
               },
               "ArmorPart_LShin": {
                 "type": "byte",
@@ -3425,11 +3425,11 @@
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 112
+                "value": 102
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 101
+                "value": 75
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
@@ -3437,7 +3437,7 @@
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 151
+                "value": 155
               },
               "ArmorPart_Robe": {
                 "type": "byte",
@@ -3547,11 +3547,11 @@
               },
               "xArmorPart_LBice": {
                 "type": "word",
-                "value": 112
+                "value": 102
               },
               "xArmorPart_LFArm": {
                 "type": "word",
-                "value": 101
+                "value": 75
               },
               "xArmorPart_LFoot": {
                 "type": "word",
@@ -3559,7 +3559,7 @@
               },
               "xArmorPart_LHand": {
                 "type": "word",
-                "value": 151
+                "value": 155
               },
               "xArmorPart_LShin": {
                 "type": "word",
@@ -3583,11 +3583,11 @@
               },
               "xArmorPart_RBice": {
                 "type": "word",
-                "value": 112
+                "value": 102
               },
               "xArmorPart_RFArm": {
                 "type": "word",
-                "value": 101
+                "value": 75
               },
               "xArmorPart_RFoot": {
                 "type": "word",
@@ -3595,7 +3595,7 @@
               },
               "xArmorPart_RHand": {
                 "type": "word",
-                "value": 151
+                "value": 155
               },
               "xArmorPart_Robe": {
                 "type": "word",
@@ -3642,7 +3642,7 @@
               "__struct_id": 16,
               "AddCost": {
                 "type": "dword",
-                "value": 2442
+                "value": 0
               },
               "BaseItem": {
                 "type": "int",
@@ -3654,11 +3654,11 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 2443
+                "value": 1
               },
               "Cursed": {
                 "type": "byte",
-                "value": 0
+                "value": 1
               },
               "DescIdentified": {
                 "type": "cexolocstring",
@@ -3666,19 +3666,17 @@
               },
               "Description": {
                 "type": "cexolocstring",
-                "value": {
-                  "0": ""
-                }
+                "value": {}
               },
               "Identified": {
                 "type": "byte",
                 "value": 1
               },
               "LocalizedName": {
-                "id": 173,
+                "id": 174,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Hunter Rifle V"
+                  "0": "Sharpshooter Blaster Rifle"
                 }
               },
               "ModelPart1": {
@@ -3687,7 +3685,7 @@
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 31
+                "value": 203
               },
               "ModelPart3": {
                 "type": "byte",
@@ -3695,7 +3693,7 @@
               },
               "Plot": {
                 "type": "byte",
-                "value": 0
+                "value": 1
               },
               "PropertiesList": {
                 "type": "list",
@@ -3712,7 +3710,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 2
+                      "value": 1
                     },
                     "Param1": {
                       "type": "byte",
@@ -3739,11 +3737,11 @@
                     },
                     "CostTable": {
                       "type": "byte",
-                      "value": 34
+                      "value": 0
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 42
+                      "value": 0
                     },
                     "Param1": {
                       "type": "byte",
@@ -3755,11 +3753,42 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 93
+                      "value": 127
                     },
                     "Subtype": {
                       "type": "word",
-                      "value": 1
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 33
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 100
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
                     }
                   },
                   {
@@ -3792,37 +3821,6 @@
                       "type": "word",
                       "value": 1
                     }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 33
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 5
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 100
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 91
-                    }
                   }
                 ]
               },
@@ -3836,11 +3834,11 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "h_rifle_5"
+                "value": "rifle_s"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "h_rifle_5"
+                "value": "rifle_s"
               },
               "xModelPart1": {
                 "type": "word",
@@ -3848,7 +3846,7 @@
               },
               "xModelPart2": {
                 "type": "word",
-                "value": 31
+                "value": 203
               },
               "xModelPart3": {
                 "type": "word",
@@ -4628,15 +4626,15 @@
               },
               "ArmorPart_Belt": {
                 "type": "byte",
-                "value": 100
+                "value": 106
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 112
+                "value": 133
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 101
+                "value": 75
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
@@ -4644,7 +4642,7 @@
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 151
+                "value": 155
               },
               "ArmorPart_LShin": {
                 "type": "byte",
@@ -4652,15 +4650,15 @@
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
-                "value": 0
+                "value": 101
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 240
+                "value": 239
               },
               "ArmorPart_Neck": {
                 "type": "byte",
-                "value": 104
+                "value": 105
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
@@ -4668,11 +4666,11 @@
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 112
+                "value": 133
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 101
+                "value": 75
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
@@ -4680,7 +4678,7 @@
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 151
+                "value": 155
               },
               "ArmorPart_Robe": {
                 "type": "byte",
@@ -4692,15 +4690,15 @@
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
-                "value": 0
+                "value": 100
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 240
+                "value": 239
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 104
+                "value": 188
               },
               "BaseItem": {
                 "type": "int",
@@ -4712,11 +4710,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 111
+                "value": 60
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 107
+                "value": 173
               },
               "Cost": {
                 "type": "dword",
@@ -4736,29 +4734,29 @@
               },
               "Identified": {
                 "type": "byte",
-                "value": 1
+                "value": 0
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 60
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 173
+                "value": 60
               },
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Czerka_Militia_Outfit"
+                  "0": "Czerka_Captains_Outfit"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 94
+                "value": 115
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 94
+                "value": 115
               },
               "Plot": {
                 "type": "byte",
@@ -4766,7 +4764,101 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": []
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 6
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 2
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 12
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 41
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 24
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 108
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
               },
               "StackSize": {
                 "type": "word",
@@ -4778,23 +4870,23 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "Czerka_MilitianOutfit"
+                "value": "Czerka_CapOutfit"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "czerka_militia"
+                "value": "czerka_cap"
               },
               "xArmorPart_Belt": {
                 "type": "word",
-                "value": 100
+                "value": 106
               },
               "xArmorPart_LBice": {
                 "type": "word",
-                "value": 112
+                "value": 133
               },
               "xArmorPart_LFArm": {
                 "type": "word",
-                "value": 101
+                "value": 75
               },
               "xArmorPart_LFoot": {
                 "type": "word",
@@ -4802,7 +4894,7 @@
               },
               "xArmorPart_LHand": {
                 "type": "word",
-                "value": 151
+                "value": 155
               },
               "xArmorPart_LShin": {
                 "type": "word",
@@ -4810,15 +4902,15 @@
               },
               "xArmorPart_LShou": {
                 "type": "word",
-                "value": 0
+                "value": 101
               },
               "xArmorPart_LThig": {
                 "type": "word",
-                "value": 240
+                "value": 239
               },
               "xArmorPart_Neck": {
                 "type": "word",
-                "value": 104
+                "value": 105
               },
               "xArmorPart_Pelvi": {
                 "type": "word",
@@ -4826,11 +4918,11 @@
               },
               "xArmorPart_RBice": {
                 "type": "word",
-                "value": 112
+                "value": 133
               },
               "xArmorPart_RFArm": {
                 "type": "word",
-                "value": 101
+                "value": 75
               },
               "xArmorPart_RFoot": {
                 "type": "word",
@@ -4838,7 +4930,7 @@
               },
               "xArmorPart_RHand": {
                 "type": "word",
-                "value": 151
+                "value": 155
               },
               "xArmorPart_Robe": {
                 "type": "word",
@@ -4850,19 +4942,19 @@
               },
               "xArmorPart_RShou": {
                 "type": "word",
-                "value": 0
+                "value": 100
               },
               "xArmorPart_RThig": {
                 "type": "word",
-                "value": 240
+                "value": 239
               },
               "xArmorPart_Torso": {
                 "type": "word",
-                "value": 104
+                "value": 188
               },
               "XOrientation": {
                 "type": "float",
-                "value": 0.0
+                "value": 4.307918466395222e-010
               },
               "XPosition": {
                 "type": "float",
@@ -5161,7 +5253,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.515591310436091e-029
+                "value": 9.094427033468063e-043
               },
               "XPosition": {
                 "type": "float",
@@ -5340,920 +5432,6 @@
         "IsPC": {
           "type": "byte",
           "value": 0
-        },
-        "ItemList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "AddCost": {
-                "type": "dword",
-                "value": 0
-              },
-              "ArmorPart_Belt": {
-                "type": "byte",
-                "value": 106
-              },
-              "ArmorPart_LBicep": {
-                "type": "byte",
-                "value": 133
-              },
-              "ArmorPart_LFArm": {
-                "type": "byte",
-                "value": 75
-              },
-              "ArmorPart_LFoot": {
-                "type": "byte",
-                "value": 247
-              },
-              "ArmorPart_LHand": {
-                "type": "byte",
-                "value": 155
-              },
-              "ArmorPart_LShin": {
-                "type": "byte",
-                "value": 241
-              },
-              "ArmorPart_LShoul": {
-                "type": "byte",
-                "value": 101
-              },
-              "ArmorPart_LThigh": {
-                "type": "byte",
-                "value": 239
-              },
-              "ArmorPart_Neck": {
-                "type": "byte",
-                "value": 105
-              },
-              "ArmorPart_Pelvis": {
-                "type": "byte",
-                "value": 237
-              },
-              "ArmorPart_RBicep": {
-                "type": "byte",
-                "value": 133
-              },
-              "ArmorPart_RFArm": {
-                "type": "byte",
-                "value": 75
-              },
-              "ArmorPart_RFoot": {
-                "type": "byte",
-                "value": 247
-              },
-              "ArmorPart_RHand": {
-                "type": "byte",
-                "value": 155
-              },
-              "ArmorPart_Robe": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_RShin": {
-                "type": "byte",
-                "value": 241
-              },
-              "ArmorPart_RShoul": {
-                "type": "byte",
-                "value": 100
-              },
-              "ArmorPart_RThigh": {
-                "type": "byte",
-                "value": 239
-              },
-              "ArmorPart_Torso": {
-                "type": "byte",
-                "value": 188
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 16
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cloth1Color": {
-                "type": "byte",
-                "value": 60
-              },
-              "Cloth2Color": {
-                "type": "byte",
-                "value": 173
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 1
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 0
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {}
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {}
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 0
-              },
-              "Leather1Color": {
-                "type": "byte",
-                "value": 60
-              },
-              "Leather2Color": {
-                "type": "byte",
-                "value": 60
-              },
-              "LocalizedName": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Czerka_Captains_Outfit"
-                }
-              },
-              "Metal1Color": {
-                "type": "byte",
-                "value": 115
-              },
-              "Metal2Color": {
-                "type": "byte",
-                "value": 115
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 6
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 1
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 2
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 12
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 41
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 24
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 108
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  }
-                ]
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 0
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "Czerka_CapOutfit"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "czerka_cap"
-              },
-              "xArmorPart_Belt": {
-                "type": "word",
-                "value": 106
-              },
-              "xArmorPart_LBice": {
-                "type": "word",
-                "value": 133
-              },
-              "xArmorPart_LFArm": {
-                "type": "word",
-                "value": 75
-              },
-              "xArmorPart_LFoot": {
-                "type": "word",
-                "value": 247
-              },
-              "xArmorPart_LHand": {
-                "type": "word",
-                "value": 155
-              },
-              "xArmorPart_LShin": {
-                "type": "word",
-                "value": 241
-              },
-              "xArmorPart_LShou": {
-                "type": "word",
-                "value": 101
-              },
-              "xArmorPart_LThig": {
-                "type": "word",
-                "value": 239
-              },
-              "xArmorPart_Neck": {
-                "type": "word",
-                "value": 105
-              },
-              "xArmorPart_Pelvi": {
-                "type": "word",
-                "value": 237
-              },
-              "xArmorPart_RBice": {
-                "type": "word",
-                "value": 133
-              },
-              "xArmorPart_RFArm": {
-                "type": "word",
-                "value": 75
-              },
-              "xArmorPart_RFoot": {
-                "type": "word",
-                "value": 247
-              },
-              "xArmorPart_RHand": {
-                "type": "word",
-                "value": 155
-              },
-              "xArmorPart_Robe": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_RShin": {
-                "type": "word",
-                "value": 241
-              },
-              "xArmorPart_RShou": {
-                "type": "word",
-                "value": 100
-              },
-              "xArmorPart_RThig": {
-                "type": "word",
-                "value": 239
-              },
-              "xArmorPart_Torso": {
-                "type": "word",
-                "value": 188
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 9.094427033468063e-043
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
-              }
-            },
-            {
-              "__struct_id": 1,
-              "AddCost": {
-                "type": "dword",
-                "value": 0
-              },
-              "ArmorPart_Belt": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_LBicep": {
-                "type": "byte",
-                "value": 109
-              },
-              "ArmorPart_LFArm": {
-                "type": "byte",
-                "value": 107
-              },
-              "ArmorPart_LFoot": {
-                "type": "byte",
-                "value": 243
-              },
-              "ArmorPart_LHand": {
-                "type": "byte",
-                "value": 3
-              },
-              "ArmorPart_LShin": {
-                "type": "byte",
-                "value": 239
-              },
-              "ArmorPart_LShoul": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_LThigh": {
-                "type": "byte",
-                "value": 239
-              },
-              "ArmorPart_Neck": {
-                "type": "byte",
-                "value": 1
-              },
-              "ArmorPart_Pelvis": {
-                "type": "byte",
-                "value": 237
-              },
-              "ArmorPart_RBicep": {
-                "type": "byte",
-                "value": 109
-              },
-              "ArmorPart_RFArm": {
-                "type": "byte",
-                "value": 107
-              },
-              "ArmorPart_RFoot": {
-                "type": "byte",
-                "value": 243
-              },
-              "ArmorPart_RHand": {
-                "type": "byte",
-                "value": 3
-              },
-              "ArmorPart_Robe": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_RShin": {
-                "type": "byte",
-                "value": 239
-              },
-              "ArmorPart_RShoul": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_RThigh": {
-                "type": "byte",
-                "value": 239
-              },
-              "ArmorPart_Torso": {
-                "type": "byte",
-                "value": 189
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 16
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cloth1Color": {
-                "type": "byte",
-                "value": 107
-              },
-              "Cloth2Color": {
-                "type": "byte",
-                "value": 107
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 1
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 0
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "This appears to be the uniform of a Czerka Corporation employee."
-                }
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": ""
-                }
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 1
-              },
-              "Leather1Color": {
-                "type": "byte",
-                "value": 108
-              },
-              "Leather2Color": {
-                "type": "byte",
-                "value": 131
-              },
-              "LocalizedName": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Czerka Uniform"
-                }
-              },
-              "Metal1Color": {
-                "type": "byte",
-                "value": 92
-              },
-              "Metal2Color": {
-                "type": "byte",
-                "value": 92
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": []
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 0
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "CzerkaUniform"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "czerkauniform"
-              },
-              "xArmorPart_Belt": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_LBice": {
-                "type": "word",
-                "value": 109
-              },
-              "xArmorPart_LFArm": {
-                "type": "word",
-                "value": 107
-              },
-              "xArmorPart_LFoot": {
-                "type": "word",
-                "value": 243
-              },
-              "xArmorPart_LHand": {
-                "type": "word",
-                "value": 3
-              },
-              "xArmorPart_LShin": {
-                "type": "word",
-                "value": 239
-              },
-              "xArmorPart_LShou": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_LThig": {
-                "type": "word",
-                "value": 239
-              },
-              "xArmorPart_Neck": {
-                "type": "word",
-                "value": 1
-              },
-              "xArmorPart_Pelvi": {
-                "type": "word",
-                "value": 237
-              },
-              "xArmorPart_RBice": {
-                "type": "word",
-                "value": 109
-              },
-              "xArmorPart_RFArm": {
-                "type": "word",
-                "value": 107
-              },
-              "xArmorPart_RFoot": {
-                "type": "word",
-                "value": 243
-              },
-              "xArmorPart_RHand": {
-                "type": "word",
-                "value": 3
-              },
-              "xArmorPart_Robe": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_RShin": {
-                "type": "word",
-                "value": 239
-              },
-              "xArmorPart_RShou": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_RThig": {
-                "type": "word",
-                "value": 239
-              },
-              "xArmorPart_Torso": {
-                "type": "word",
-                "value": 189
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 4.307918466395222e-010
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
-              }
-            },
-            {
-              "__struct_id": 2,
-              "AddCost": {
-                "type": "dword",
-                "value": 0
-              },
-              "ArmorPart_Belt": {
-                "type": "byte",
-                "value": 9
-              },
-              "ArmorPart_LBicep": {
-                "type": "byte",
-                "value": 109
-              },
-              "ArmorPart_LFArm": {
-                "type": "byte",
-                "value": 107
-              },
-              "ArmorPart_LFoot": {
-                "type": "byte",
-                "value": 247
-              },
-              "ArmorPart_LHand": {
-                "type": "byte",
-                "value": 3
-              },
-              "ArmorPart_LShin": {
-                "type": "byte",
-                "value": 153
-              },
-              "ArmorPart_LShoul": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_LThigh": {
-                "type": "byte",
-                "value": 105
-              },
-              "ArmorPart_Neck": {
-                "type": "byte",
-                "value": 1
-              },
-              "ArmorPart_Pelvis": {
-                "type": "byte",
-                "value": 237
-              },
-              "ArmorPart_RBicep": {
-                "type": "byte",
-                "value": 109
-              },
-              "ArmorPart_RFArm": {
-                "type": "byte",
-                "value": 107
-              },
-              "ArmorPart_RFoot": {
-                "type": "byte",
-                "value": 247
-              },
-              "ArmorPart_RHand": {
-                "type": "byte",
-                "value": 3
-              },
-              "ArmorPart_Robe": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_RShin": {
-                "type": "byte",
-                "value": 153
-              },
-              "ArmorPart_RShoul": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_RThigh": {
-                "type": "byte",
-                "value": 105
-              },
-              "ArmorPart_Torso": {
-                "type": "byte",
-                "value": 189
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 16
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cloth1Color": {
-                "type": "byte",
-                "value": 107
-              },
-              "Cloth2Color": {
-                "type": "byte",
-                "value": 107
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 1
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 0
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "This appears to be the uniform of a Czerka Corporation employee."
-                }
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": ""
-                }
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 1
-              },
-              "Leather1Color": {
-                "type": "byte",
-                "value": 111
-              },
-              "Leather2Color": {
-                "type": "byte",
-                "value": 127
-              },
-              "LocalizedName": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Czerka Uniform"
-                }
-              },
-              "Metal1Color": {
-                "type": "byte",
-                "value": 92
-              },
-              "Metal2Color": {
-                "type": "byte",
-                "value": 92
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": []
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 4
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 0
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "CzerkaUniform"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "czerkauniform002"
-              },
-              "xArmorPart_Belt": {
-                "type": "word",
-                "value": 9
-              },
-              "xArmorPart_LBice": {
-                "type": "word",
-                "value": 109
-              },
-              "xArmorPart_LFArm": {
-                "type": "word",
-                "value": 107
-              },
-              "xArmorPart_LFoot": {
-                "type": "word",
-                "value": 247
-              },
-              "xArmorPart_LHand": {
-                "type": "word",
-                "value": 3
-              },
-              "xArmorPart_LShin": {
-                "type": "word",
-                "value": 153
-              },
-              "xArmorPart_LShou": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_LThig": {
-                "type": "word",
-                "value": 105
-              },
-              "xArmorPart_Neck": {
-                "type": "word",
-                "value": 1
-              },
-              "xArmorPart_Pelvi": {
-                "type": "word",
-                "value": 237
-              },
-              "xArmorPart_RBice": {
-                "type": "word",
-                "value": 109
-              },
-              "xArmorPart_RFArm": {
-                "type": "word",
-                "value": 107
-              },
-              "xArmorPart_RFoot": {
-                "type": "word",
-                "value": 247
-              },
-              "xArmorPart_RHand": {
-                "type": "word",
-                "value": 3
-              },
-              "xArmorPart_Robe": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_RShin": {
-                "type": "word",
-                "value": 153
-              },
-              "xArmorPart_RShou": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_RThig": {
-                "type": "word",
-                "value": 105
-              },
-              "xArmorPart_Torso": {
-                "type": "word",
-                "value": 189
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
-              }
-            }
-          ]
         },
         "LastName": {
           "type": "cexolocstring",

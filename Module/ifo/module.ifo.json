@@ -2519,6 +2519,13 @@
           "type": "resref",
           "value": "veles_cantina"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "korr_base"
+        }
       }
     ]
   },

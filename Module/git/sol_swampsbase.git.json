@@ -137,7 +137,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 1
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -229,18 +229,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "rifle_npc"
-              },
-              "xModelPart1": {
-                "type": "word",
-                "value": 11
-              },
-              "xModelPart2": {
-                "type": "word",
-                "value": 253
-              },
-              "xModelPart3": {
-                "type": "word",
-                "value": 11
               },
               "XOrientation": {
                 "type": "float",
@@ -863,7 +851,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 1
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -955,18 +943,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "rifle_npc"
-              },
-              "xModelPart1": {
-                "type": "word",
-                "value": 11
-              },
-              "xModelPart2": {
-                "type": "word",
-                "value": 253
-              },
-              "xModelPart3": {
-                "type": "word",
-                "value": 11
               },
               "XOrientation": {
                 "type": "float",
@@ -1589,7 +1565,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 1
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -1681,18 +1657,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "rifle_npc"
-              },
-              "xModelPart1": {
-                "type": "word",
-                "value": 11
-              },
-              "xModelPart2": {
-                "type": "word",
-                "value": 253
-              },
-              "xModelPart3": {
-                "type": "word",
-                "value": 11
               },
               "XOrientation": {
                 "type": "float",
@@ -2315,7 +2279,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 1
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -2407,18 +2371,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "rifle_npc"
-              },
-              "xModelPart1": {
-                "type": "word",
-                "value": 11
-              },
-              "xModelPart2": {
-                "type": "word",
-                "value": 253
-              },
-              "xModelPart3": {
-                "type": "word",
-                "value": 11
               },
               "XOrientation": {
                 "type": "float",
@@ -3041,7 +2993,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 1
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -3133,18 +3085,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "rifle_npc"
-              },
-              "xModelPart1": {
-                "type": "word",
-                "value": 11
-              },
-              "xModelPart2": {
-                "type": "word",
-                "value": 253
-              },
-              "xModelPart3": {
-                "type": "word",
-                "value": 11
               },
               "XOrientation": {
                 "type": "float",
@@ -3767,7 +3707,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 1
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -3859,18 +3799,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "rifle_npc"
-              },
-              "xModelPart1": {
-                "type": "word",
-                "value": 11
-              },
-              "xModelPart2": {
-                "type": "word",
-                "value": 253
-              },
-              "xModelPart3": {
-                "type": "word",
-                "value": 11
               },
               "XOrientation": {
                 "type": "float",
@@ -4493,7 +4421,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 1
+                "value": 2
               },
               "Cursed": {
                 "type": "byte",
@@ -4585,18 +4513,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "rifle_npc"
-              },
-              "xModelPart1": {
-                "type": "word",
-                "value": 11
-              },
-              "xModelPart2": {
-                "type": "word",
-                "value": 253
-              },
-              "xModelPart3": {
-                "type": "word",
-                "value": 11
               },
               "XOrientation": {
                 "type": "float",
@@ -5231,7 +5147,7 @@
               },
               "ArmorPart_LShin": {
                 "type": "byte",
-                "value": 11
+                "value": 14
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
@@ -5271,11 +5187,11 @@
               },
               "ArmorPart_RShin": {
                 "type": "byte",
-                "value": 11
+                "value": 14
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
-                "value": 18
+                "value": 0
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
@@ -5401,82 +5317,6 @@
                 "type": "resref",
                 "value": "zhettarobe"
               },
-              "xArmorPart_Belt": {
-                "type": "word",
-                "value": 9
-              },
-              "xArmorPart_LBice": {
-                "type": "word",
-                "value": 155
-              },
-              "xArmorPart_LFArm": {
-                "type": "word",
-                "value": 156
-              },
-              "xArmorPart_LFoot": {
-                "type": "word",
-                "value": 102
-              },
-              "xArmorPart_LHand": {
-                "type": "word",
-                "value": 198
-              },
-              "xArmorPart_LShin": {
-                "type": "word",
-                "value": 11
-              },
-              "xArmorPart_LShou": {
-                "type": "word",
-                "value": 18
-              },
-              "xArmorPart_LThig": {
-                "type": "word",
-                "value": 105
-              },
-              "xArmorPart_Neck": {
-                "type": "word",
-                "value": 254
-              },
-              "xArmorPart_Pelvi": {
-                "type": "word",
-                "value": 103
-              },
-              "xArmorPart_RBice": {
-                "type": "word",
-                "value": 155
-              },
-              "xArmorPart_RFArm": {
-                "type": "word",
-                "value": 156
-              },
-              "xArmorPart_RFoot": {
-                "type": "word",
-                "value": 102
-              },
-              "xArmorPart_RHand": {
-                "type": "word",
-                "value": 198
-              },
-              "xArmorPart_Robe": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_RShin": {
-                "type": "word",
-                "value": 11
-              },
-              "xArmorPart_RShou": {
-                "type": "word",
-                "value": 18
-              },
-              "xArmorPart_RThig": {
-                "type": "word",
-                "value": 105
-              },
-              "xArmorPart_Torso": {
-                "type": "word",
-                "value": 168
-              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -5591,10 +5431,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "basicscarf001"
-              },
-              "xModelPart1": {
-                "type": "word",
-                "value": 40
               },
               "XOrientation": {
                 "type": "float",
@@ -5783,7 +5619,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 25098
+                "value": 75100
               },
               "Cursed": {
                 "type": "byte",
@@ -6039,18 +5875,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "artssaberstaff"
-              },
-              "xModelPart1": {
-                "type": "word",
-                "value": 13
-              },
-              "xModelPart2": {
-                "type": "word",
-                "value": 11
-              },
-              "xModelPart3": {
-                "type": "word",
-                "value": 23
               },
               "XOrientation": {
                 "type": "float",
@@ -6452,10 +6276,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "artshood"
-              },
-              "xModelPart1": {
-                "type": "word",
-                "value": 167
               },
               "XOrientation": {
                 "type": "float",
@@ -8007,7 +7827,7 @@
               },
               "ArmorPart_LShin": {
                 "type": "byte",
-                "value": 11
+                "value": 14
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
@@ -8047,11 +7867,11 @@
               },
               "ArmorPart_RShin": {
                 "type": "byte",
-                "value": 11
+                "value": 14
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
-                "value": 18
+                "value": 0
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
@@ -8177,82 +7997,6 @@
                 "type": "resref",
                 "value": "zhettarobe"
               },
-              "xArmorPart_Belt": {
-                "type": "word",
-                "value": 9
-              },
-              "xArmorPart_LBice": {
-                "type": "word",
-                "value": 155
-              },
-              "xArmorPart_LFArm": {
-                "type": "word",
-                "value": 156
-              },
-              "xArmorPart_LFoot": {
-                "type": "word",
-                "value": 102
-              },
-              "xArmorPart_LHand": {
-                "type": "word",
-                "value": 198
-              },
-              "xArmorPart_LShin": {
-                "type": "word",
-                "value": 11
-              },
-              "xArmorPart_LShou": {
-                "type": "word",
-                "value": 18
-              },
-              "xArmorPart_LThig": {
-                "type": "word",
-                "value": 105
-              },
-              "xArmorPart_Neck": {
-                "type": "word",
-                "value": 254
-              },
-              "xArmorPart_Pelvi": {
-                "type": "word",
-                "value": 103
-              },
-              "xArmorPart_RBice": {
-                "type": "word",
-                "value": 155
-              },
-              "xArmorPart_RFArm": {
-                "type": "word",
-                "value": 156
-              },
-              "xArmorPart_RFoot": {
-                "type": "word",
-                "value": 102
-              },
-              "xArmorPart_RHand": {
-                "type": "word",
-                "value": 198
-              },
-              "xArmorPart_Robe": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_RShin": {
-                "type": "word",
-                "value": 11
-              },
-              "xArmorPart_RShou": {
-                "type": "word",
-                "value": 18
-              },
-              "xArmorPart_RThig": {
-                "type": "word",
-                "value": 105
-              },
-              "xArmorPart_Torso": {
-                "type": "word",
-                "value": 168
-              },
               "XOrientation": {
                 "type": "float",
                 "value": 8.632666959608356e-039
@@ -8367,10 +8111,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "basicscarf001"
-              },
-              "xModelPart1": {
-                "type": "word",
-                "value": 40
               },
               "XOrientation": {
                 "type": "float",
@@ -8559,7 +8299,7 @@
               },
               "Cost": {
                 "type": "dword",
-                "value": 25098
+                "value": 75100
               },
               "Cursed": {
                 "type": "byte",
@@ -8815,18 +8555,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "artssaberstaff"
-              },
-              "xModelPart1": {
-                "type": "word",
-                "value": 13
-              },
-              "xModelPart2": {
-                "type": "word",
-                "value": 11
-              },
-              "xModelPart3": {
-                "type": "word",
-                "value": 23
               },
               "XOrientation": {
                 "type": "float",
@@ -9228,10 +8956,6 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "artshood"
-              },
-              "xModelPart1": {
-                "type": "word",
-                "value": 167
               },
               "XOrientation": {
                 "type": "float",
@@ -14873,207 +14597,24 @@
           "type": "byte",
           "value": 0
         },
-        "VisTransformList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 6,
-              "AnimationSpeed": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.0
-                  }
-                }
-              },
-              "RotateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "ScaleX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.7332540154457092
-                  }
-                }
-              },
-              "ScaleY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.7332540154457092
-                  }
-                }
-              },
-              "ScaleZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.7332540154457092
-                  }
-                }
-              },
-              "Scope": {
-                "type": "int",
-                "value": 0
-              },
-              "TranslateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              }
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "ScaleX": {
+              "type": "float",
+              "value": 0.7332540154457092
+            },
+            "ScaleY": {
+              "type": "float",
+              "value": 0.7332540154457092
+            },
+            "ScaleZ": {
+              "type": "float",
+              "value": 0.7332540154457092
             }
-          ]
+          }
         },
         "Will": {
           "type": "byte",
@@ -15300,207 +14841,24 @@
           "type": "byte",
           "value": 0
         },
-        "VisTransformList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 6,
-              "AnimationSpeed": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.0
-                  }
-                }
-              },
-              "RotateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "ScaleX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.6584571003913879
-                  }
-                }
-              },
-              "ScaleY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.6584571003913879
-                  }
-                }
-              },
-              "ScaleZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.6584571003913879
-                  }
-                }
-              },
-              "Scope": {
-                "type": "int",
-                "value": 0
-              },
-              "TranslateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              }
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "ScaleX": {
+              "type": "float",
+              "value": 0.6584571003913879
+            },
+            "ScaleY": {
+              "type": "float",
+              "value": 0.6584571003913879
+            },
+            "ScaleZ": {
+              "type": "float",
+              "value": 0.6584571003913879
             }
-          ]
+          }
         },
         "Will": {
           "type": "byte",
@@ -15727,207 +15085,24 @@
           "type": "byte",
           "value": 0
         },
-        "VisTransformList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 6,
-              "AnimationSpeed": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.0
-                  }
-                }
-              },
-              "RotateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "ScaleX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.7332540154457092
-                  }
-                }
-              },
-              "ScaleY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.7332540154457092
-                  }
-                }
-              },
-              "ScaleZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.7332540154457092
-                  }
-                }
-              },
-              "Scope": {
-                "type": "int",
-                "value": 0
-              },
-              "TranslateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              }
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "ScaleX": {
+              "type": "float",
+              "value": 0.7332540154457092
+            },
+            "ScaleY": {
+              "type": "float",
+              "value": 0.7332540154457092
+            },
+            "ScaleZ": {
+              "type": "float",
+              "value": 0.7332540154457092
             }
-          ]
+          }
         },
         "Will": {
           "type": "byte",
@@ -16154,207 +15329,24 @@
           "type": "byte",
           "value": 0
         },
-        "VisTransformList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 6,
-              "AnimationSpeed": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.0
-                  }
-                }
-              },
-              "RotateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "ScaleX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.6634203195571899
-                  }
-                }
-              },
-              "ScaleY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.6634203195571899
-                  }
-                }
-              },
-              "ScaleZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.6634203195571899
-                  }
-                }
-              },
-              "Scope": {
-                "type": "int",
-                "value": 0
-              },
-              "TranslateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              }
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "ScaleX": {
+              "type": "float",
+              "value": 0.6634203195571899
+            },
+            "ScaleY": {
+              "type": "float",
+              "value": 0.6634203195571899
+            },
+            "ScaleZ": {
+              "type": "float",
+              "value": 0.6634203195571899
             }
-          ]
+          }
         },
         "Will": {
           "type": "byte",
@@ -43161,207 +42153,24 @@
           "type": "byte",
           "value": 0
         },
-        "VisTransformList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 6,
-              "AnimationSpeed": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.0
-                  }
-                }
-              },
-              "RotateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "ScaleX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.549999952316284
-                  }
-                }
-              },
-              "ScaleY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.549999952316284
-                  }
-                }
-              },
-              "ScaleZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.549999952316284
-                  }
-                }
-              },
-              "Scope": {
-                "type": "int",
-                "value": 0
-              },
-              "TranslateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              }
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "ScaleX": {
+              "type": "float",
+              "value": 1.549999952316284
+            },
+            "ScaleY": {
+              "type": "float",
+              "value": 1.549999952316284
+            },
+            "ScaleZ": {
+              "type": "float",
+              "value": 1.549999952316284
             }
-          ]
+          }
         },
         "Will": {
           "type": "byte",
@@ -43588,207 +42397,24 @@
           "type": "byte",
           "value": 0
         },
-        "VisTransformList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 6,
-              "AnimationSpeed": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.0
-                  }
-                }
-              },
-              "RotateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "ScaleX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.549999952316284
-                  }
-                }
-              },
-              "ScaleY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.549999952316284
-                  }
-                }
-              },
-              "ScaleZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.549999952316284
-                  }
-                }
-              },
-              "Scope": {
-                "type": "int",
-                "value": 0
-              },
-              "TranslateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              }
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "ScaleX": {
+              "type": "float",
+              "value": 1.549999952316284
+            },
+            "ScaleY": {
+              "type": "float",
+              "value": 1.549999952316284
+            },
+            "ScaleZ": {
+              "type": "float",
+              "value": 1.549999952316284
             }
-          ]
+          }
         },
         "Will": {
           "type": "byte",
@@ -45817,207 +44443,24 @@
           "type": "byte",
           "value": 0
         },
-        "VisTransformList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 6,
-              "AnimationSpeed": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.0
-                  }
-                }
-              },
-              "RotateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "ScaleX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.5699999928474426
-                  }
-                }
-              },
-              "ScaleY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.5699999928474426
-                  }
-                }
-              },
-              "ScaleZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.5699999928474426
-                  }
-                }
-              },
-              "Scope": {
-                "type": "int",
-                "value": 0
-              },
-              "TranslateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              }
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "ScaleX": {
+              "type": "float",
+              "value": 0.5699999928474426
+            },
+            "ScaleY": {
+              "type": "float",
+              "value": 0.5699999928474426
+            },
+            "ScaleZ": {
+              "type": "float",
+              "value": 0.5699999928474426
             }
-          ]
+          }
         },
         "Will": {
           "type": "byte",
@@ -46246,207 +44689,24 @@
           "type": "byte",
           "value": 0
         },
-        "VisTransformList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 6,
-              "AnimationSpeed": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.0
-                  }
-                }
-              },
-              "RotateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "ScaleX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.5699999928474426
-                  }
-                }
-              },
-              "ScaleY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.5699999928474426
-                  }
-                }
-              },
-              "ScaleZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.5699999928474426
-                  }
-                }
-              },
-              "Scope": {
-                "type": "int",
-                "value": 0
-              },
-              "TranslateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              }
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "ScaleX": {
+              "type": "float",
+              "value": 0.5699999928474426
+            },
+            "ScaleY": {
+              "type": "float",
+              "value": 0.5699999928474426
+            },
+            "ScaleZ": {
+              "type": "float",
+              "value": 0.5699999928474426
             }
-          ]
+          }
         },
         "Will": {
           "type": "byte",
@@ -62009,207 +60269,24 @@
           "type": "byte",
           "value": 0
         },
-        "VisTransformList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 6,
-              "AnimationSpeed": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.0
-                  }
-                }
-              },
-              "RotateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "ScaleX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.6568108797073364
-                  }
-                }
-              },
-              "ScaleY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.6568108797073364
-                  }
-                }
-              },
-              "ScaleZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.6568108797073364
-                  }
-                }
-              },
-              "Scope": {
-                "type": "int",
-                "value": 0
-              },
-              "TranslateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              }
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "ScaleX": {
+              "type": "float",
+              "value": 0.6568108797073364
+            },
+            "ScaleY": {
+              "type": "float",
+              "value": 0.6568108797073364
+            },
+            "ScaleZ": {
+              "type": "float",
+              "value": 0.6568108797073364
             }
-          ]
+          }
         },
         "Will": {
           "type": "byte",
@@ -83027,207 +81104,24 @@
           "type": "byte",
           "value": 0
         },
-        "VisTransformList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 6,
-              "AnimationSpeed": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 1.0
-                  }
-                }
-              },
-              "RotateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "RotateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "ScaleX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.2890799641609192
-                  }
-                }
-              },
-              "ScaleY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.2890799641609192
-                  }
-                }
-              },
-              "ScaleZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.2890799641609192
-                  }
-                }
-              },
-              "Scope": {
-                "type": "int",
-                "value": 0
-              },
-              "TranslateX": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateY": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              },
-              "TranslateZ": {
-                "__struct_id": 0,
-                "type": "struct",
-                "value": {
-                  "__struct_id": 0,
-                  "LerpType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "TimerType": {
-                    "type": "int",
-                    "value": 0
-                  },
-                  "ValueTo": {
-                    "type": "float",
-                    "value": 0.0
-                  }
-                }
-              }
+        "VisualTransform": {
+          "__struct_id": 6,
+          "type": "struct",
+          "value": {
+            "__struct_id": 6,
+            "ScaleX": {
+              "type": "float",
+              "value": 0.2890799641609192
+            },
+            "ScaleY": {
+              "type": "float",
+              "value": 0.2890799641609192
+            },
+            "ScaleZ": {
+              "type": "float",
+              "value": 0.2890799641609192
             }
-          ]
+          }
         },
         "Will": {
           "type": "byte",

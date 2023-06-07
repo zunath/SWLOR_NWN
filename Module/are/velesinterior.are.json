@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "velesinterior"
+    "value": "viscar_strport_ka"
   },
   "Tile_List": {
     "type": "list",
@@ -4289,7 +4289,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 13
+    "value": 11
   },
   "Width": {
     "type": "int",

@@ -60,25 +60,6 @@
               },
               "Index": {
                 "type": "dword",
-                "value": 3
-              },
-              "IsChild": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Active": {
-                "type": "resref",
-                "value": ""
-              },
-              "ConditionParams": {
-                "type": "list",
-                "value": []
-              },
-              "Index": {
-                "type": "dword",
                 "value": 1
               },
               "IsChild": {
@@ -87,7 +68,7 @@
               }
             },
             {
-              "__struct_id": 2,
+              "__struct_id": 1,
               "Active": {
                 "type": "resref",
                 "value": ""
@@ -122,7 +103,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "\"'Ey there! Just call me Salvatore - Sal for short. \n\nI brought along some items to sell for this trip. You best take a look before we land - there might be something you need!\""
+            "0": "\"Ugh. This droid just won't work right. The engineer I bought it from must have given me a faulty model.\""
           }
         }
       },
@@ -191,7 +172,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "\"Looking for some weapons, are you? Talk to Captain Sl'uuk, and once you are off the shuttle onto CZ-220, you should be able to find a basic weapons dealer near the receptionist there at the space station. Uh, word of advice. Don't fight with a survivor's knife. It's not a good weapon.\""
+            "0": "\"Yes, they can. There are droid terminals that you can find in engineering shops, especially, and if you are good enough, you can make droids with them. It takes a lot of training and materials to make them, though, especially good ones, but having a droid companion helping you out is usually worth the effort. Except this one. I got this one to help me with hunting down a bounty, and it's been junk.\""
           }
         }
       }
@@ -249,7 +230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "\"Not right now, Sal.\""
+            "0": "Leave."
           }
         }
       },
@@ -314,7 +295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "\"Where can I buy some weapons?\""
+            "0": "\"You bought it from an engineer? Can engineer make droids?\""
           }
         }
       },
@@ -360,63 +341,6 @@
           "type": "cexolocstring",
           "value": {
             "0": "Leave."
-          }
-        }
-      },
-      {
-        "__struct_id": 3,
-        "ActionParams": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Key": {
-                "type": "cexostring",
-                "value": "action-open-store"
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "StartingItems"
-              }
-            }
-          ]
-        },
-        "Animation": {
-          "type": "dword",
-          "value": 0
-        },
-        "AnimLoop": {
-          "type": "byte",
-          "value": 1
-        },
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Delay": {
-          "type": "dword",
-          "value": 4294967295
-        },
-        "EntriesList": {
-          "type": "list",
-          "value": []
-        },
-        "Quest": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Script": {
-          "type": "resref",
-          "value": "action"
-        },
-        "Sound": {
-          "type": "resref",
-          "value": ""
-        },
-        "Text": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "\"Let me take a look at your wares.\""
           }
         }
       }

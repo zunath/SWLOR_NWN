@@ -257,7 +257,7 @@
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
-                "value": 24
+                "value": 10
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
@@ -448,7 +448,7 @@
               },
               "xArmorPart_Pelvi": {
                 "type": "word",
-                "value": 24
+                "value": 10
               },
               "xArmorPart_RBice": {
                 "type": "word",

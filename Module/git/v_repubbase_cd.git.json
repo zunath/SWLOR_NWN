@@ -1793,6 +1793,10 @@
                 "type": "resref",
                 "value": "fac_pubhelm"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 153
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 2.858648867222627e-043
@@ -1980,6 +1984,82 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "republictrooper"
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 249
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 246
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 242
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 246
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 222
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 235
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 234
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 249
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 246
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 242
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 246
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 222
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 235
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 249
               },
               "XOrientation": {
                 "type": "float",
@@ -2267,6 +2347,18 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "f_trooperblaster"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 11
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 174
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 11
               },
               "XOrientation": {
                 "type": "float",
@@ -2777,6 +2869,82 @@
           "type": "byte",
           "value": 10
         },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 1
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 1
+        },
         "XOrientation": {
           "type": "float",
           "value": 0.4713968336582184
@@ -3055,6 +3223,10 @@
                 "type": "resref",
                 "value": "republicheavy001"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 45
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 2.858648867222627e-043
@@ -3088,19 +3260,19 @@
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 75
+                "value": 101
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 75
+                "value": 101
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
-                "value": 200
+                "value": 75
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 198
+                "value": 155
               },
               "ArmorPart_LShin": {
                 "type": "byte",
@@ -3108,7 +3280,7 @@
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
-                "value": 186
+                "value": 141
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
@@ -3124,19 +3296,19 @@
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 75
+                "value": 101
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 75
+                "value": 101
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
-                "value": 200
+                "value": 75
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 198
+                "value": 155
               },
               "ArmorPart_Robe": {
                 "type": "byte",
@@ -3148,7 +3320,7 @@
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
-                "value": 0
+                "value": 141
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
@@ -3551,6 +3723,82 @@
                 "type": "resref",
                 "value": "republicheavygun"
               },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 101
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 101
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 75
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 155
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 75
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 141
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 75
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 2
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 75
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 101
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 101
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 75
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 155
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 75
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 141
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 75
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 193
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 1.868611043676083e-009
@@ -3805,6 +4053,18 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "republicheavybla"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 11
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 43
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 11
               },
               "XOrientation": {
                 "type": "float",
@@ -4497,6 +4757,82 @@
           "type": "byte",
           "value": 40
         },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 8
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 2
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 1
+        },
         "XOrientation": {
           "type": "float",
           "value": -0.6715590357780457
@@ -4777,6 +5113,10 @@
                 "type": "resref",
                 "value": "fac_pubhelm"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 153
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 2.159258549738752e-009
@@ -4964,6 +5304,82 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "republictrooper"
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 249
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 246
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 242
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 246
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 222
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 235
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 234
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 249
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 246
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 242
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 246
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 222
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 235
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 249
               },
               "XOrientation": {
                 "type": "float",
@@ -5396,6 +5812,18 @@
                 "type": "resref",
                 "value": "f_trooperblaster"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 11
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 174
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 11
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -5774,6 +6202,82 @@
           "type": "byte",
           "value": 10
         },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 1
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 1
+        },
         "XOrientation": {
           "type": "float",
           "value": 0.8819212913513184
@@ -5982,7 +6486,7 @@
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
-                "value": 243
+                "value": 10
               },
               "ArmorPart_LHand": {
                 "type": "byte",
@@ -5990,7 +6494,7 @@
               },
               "ArmorPart_LShin": {
                 "type": "byte",
-                "value": 249
+                "value": 63
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
@@ -6018,7 +6522,7 @@
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
-                "value": 243
+                "value": 10
               },
               "ArmorPart_RHand": {
                 "type": "byte",
@@ -6030,7 +6534,7 @@
               },
               "ArmorPart_RShin": {
                 "type": "byte",
-                "value": 249
+                "value": 63
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
@@ -6124,11 +6628,87 @@
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "rep_kashuniform"
+                "value": "republicofficeru"
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 107
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 4
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 4
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 10
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 63
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 4
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 3
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 4
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 4
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 10
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 235
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 63
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 4
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 3
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.858648867222627e-043
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -6639,9 +7219,21 @@
                 "type": "resref",
                 "value": "rep_kashgun"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 11
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 161
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 11
+              },
               "XOrientation": {
                 "type": "float",
-                "value": 0.0
+                "value": 2.858648867222627e-043
               },
               "XPosition": {
                 "type": "float",
@@ -6759,6 +7351,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "rep_kashhat"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 108
               },
               "XOrientation": {
                 "type": "float",
@@ -7138,6 +7734,82 @@
           "type": "byte",
           "value": 50
         },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 24
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 1
+        },
         "XOrientation": {
           "type": "float",
           "value": 0.9329927563667297
@@ -7338,19 +8010,19 @@
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 75
+                "value": 101
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 75
+                "value": 101
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
-                "value": 200
+                "value": 75
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 198
+                "value": 155
               },
               "ArmorPart_LShin": {
                 "type": "byte",
@@ -7358,7 +8030,7 @@
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
-                "value": 186
+                "value": 141
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
@@ -7374,19 +8046,19 @@
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 75
+                "value": 101
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 75
+                "value": 101
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
-                "value": 200
+                "value": 75
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 198
+                "value": 155
               },
               "ArmorPart_Robe": {
                 "type": "byte",
@@ -7398,7 +8070,7 @@
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
-                "value": 0
+                "value": 141
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
@@ -7800,6 +8472,82 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "republicheavygun"
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 101
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 101
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 75
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 155
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 75
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 141
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 75
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 2
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 75
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 101
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 101
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 75
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 155
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 75
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 141
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 75
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 193
               },
               "XOrientation": {
                 "type": "float",
@@ -8513,6 +9261,82 @@
           "type": "byte",
           "value": 10
         },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 124
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 234
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 249
+        },
         "XOrientation": {
           "type": "float",
           "value": 0.5555703639984131
@@ -8866,6 +9690,82 @@
                 "type": "resref",
                 "value": "republictrooper"
               },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 249
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 246
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 242
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 246
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 222
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 235
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 234
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 249
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 246
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 242
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 246
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 222
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 235
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 249
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 4.273960316190692e-043
@@ -9152,6 +10052,18 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "f_trooperblaster"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 11
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 174
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 11
               },
               "XOrientation": {
                 "type": "float",
@@ -9661,6 +10573,82 @@
         "Wis": {
           "type": "byte",
           "value": 40
+        },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 162
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 1
         },
         "XOrientation": {
           "type": "float",
@@ -109373,15 +110361,15 @@
         },
         "X": {
           "type": "float",
-          "value": 10.05555725097656
+          "value": 10.05947303771973
         },
         "Y": {
           "type": "float",
-          "value": 62.02121734619141
+          "value": 62.01151275634766
         },
         "Z": {
           "type": "float",
-          "value": 0.001007556798867881
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -116386,24 +117374,207 @@
           "type": "byte",
           "value": 0
         },
-        "VisualTransform": {
-          "__struct_id": 6,
-          "type": "struct",
-          "value": {
-            "__struct_id": 6,
-            "ScaleX": {
-              "type": "float",
-              "value": 1.336745023727417
-            },
-            "ScaleY": {
-              "type": "float",
-              "value": 1.336745023727417
-            },
-            "ScaleZ": {
-              "type": "float",
-              "value": 1.336745023727417
+        "VisTransformList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 6,
+              "AnimationSpeed": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.0
+                  }
+                }
+              },
+              "RotateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "ScaleX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.336745023727417
+                  }
+                }
+              },
+              "ScaleY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.336745023727417
+                  }
+                }
+              },
+              "ScaleZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.336745023727417
+                  }
+                }
+              },
+              "Scope": {
+                "type": "int",
+                "value": 0
+              },
+              "TranslateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              }
             }
-          }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -119362,24 +120533,207 @@
           "type": "byte",
           "value": 0
         },
-        "VisualTransform": {
-          "__struct_id": 6,
-          "type": "struct",
-          "value": {
-            "__struct_id": 6,
-            "ScaleX": {
-              "type": "float",
-              "value": 1.340095400810242
-            },
-            "ScaleY": {
-              "type": "float",
-              "value": 1.340095400810242
-            },
-            "ScaleZ": {
-              "type": "float",
-              "value": 1.340095400810242
+        "VisTransformList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 6,
+              "AnimationSpeed": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.0
+                  }
+                }
+              },
+              "RotateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "ScaleX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "ScaleY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "ScaleZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "Scope": {
+                "type": "int",
+                "value": 0
+              },
+              "TranslateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              }
             }
-          }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -122338,24 +123692,207 @@
           "type": "byte",
           "value": 0
         },
-        "VisualTransform": {
-          "__struct_id": 6,
-          "type": "struct",
-          "value": {
-            "__struct_id": 6,
-            "ScaleX": {
-              "type": "float",
-              "value": 1.340095400810242
-            },
-            "ScaleY": {
-              "type": "float",
-              "value": 1.340095400810242
-            },
-            "ScaleZ": {
-              "type": "float",
-              "value": 1.340095400810242
+        "VisTransformList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 6,
+              "AnimationSpeed": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.0
+                  }
+                }
+              },
+              "RotateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "ScaleX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "ScaleY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "ScaleZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "Scope": {
+                "type": "int",
+                "value": 0
+              },
+              "TranslateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              }
             }
-          }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -125314,24 +126851,207 @@
           "type": "byte",
           "value": 0
         },
-        "VisualTransform": {
-          "__struct_id": 6,
-          "type": "struct",
-          "value": {
-            "__struct_id": 6,
-            "ScaleX": {
-              "type": "float",
-              "value": 1.340095400810242
-            },
-            "ScaleY": {
-              "type": "float",
-              "value": 1.340095400810242
-            },
-            "ScaleZ": {
-              "type": "float",
-              "value": 1.340095400810242
+        "VisTransformList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 6,
+              "AnimationSpeed": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.0
+                  }
+                }
+              },
+              "RotateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "ScaleX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "ScaleY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "ScaleZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "Scope": {
+                "type": "int",
+                "value": 0
+              },
+              "TranslateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              }
             }
-          }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -128290,24 +130010,207 @@
           "type": "byte",
           "value": 0
         },
-        "VisualTransform": {
-          "__struct_id": 6,
-          "type": "struct",
-          "value": {
-            "__struct_id": 6,
-            "ScaleX": {
-              "type": "float",
-              "value": 1.340095400810242
-            },
-            "ScaleY": {
-              "type": "float",
-              "value": 1.340095400810242
-            },
-            "ScaleZ": {
-              "type": "float",
-              "value": 1.340095400810242
+        "VisTransformList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 6,
+              "AnimationSpeed": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.0
+                  }
+                }
+              },
+              "RotateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "ScaleX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "ScaleY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "ScaleZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "Scope": {
+                "type": "int",
+                "value": 0
+              },
+              "TranslateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              }
             }
-          }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -131266,24 +133169,207 @@
           "type": "byte",
           "value": 0
         },
-        "VisualTransform": {
-          "__struct_id": 6,
-          "type": "struct",
-          "value": {
-            "__struct_id": 6,
-            "ScaleX": {
-              "type": "float",
-              "value": 1.340095400810242
-            },
-            "ScaleY": {
-              "type": "float",
-              "value": 1.340095400810242
-            },
-            "ScaleZ": {
-              "type": "float",
-              "value": 1.340095400810242
+        "VisTransformList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 6,
+              "AnimationSpeed": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.0
+                  }
+                }
+              },
+              "RotateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "ScaleX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "ScaleY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "ScaleZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "Scope": {
+                "type": "int",
+                "value": 0
+              },
+              "TranslateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              }
             }
-          }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -134242,24 +136328,207 @@
           "type": "byte",
           "value": 0
         },
-        "VisualTransform": {
-          "__struct_id": 6,
-          "type": "struct",
-          "value": {
-            "__struct_id": 6,
-            "ScaleX": {
-              "type": "float",
-              "value": 1.340095400810242
-            },
-            "ScaleY": {
-              "type": "float",
-              "value": 1.340095400810242
-            },
-            "ScaleZ": {
-              "type": "float",
-              "value": 1.340095400810242
+        "VisTransformList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 6,
+              "AnimationSpeed": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.0
+                  }
+                }
+              },
+              "RotateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "ScaleX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "ScaleY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "ScaleZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.340095400810242
+                  }
+                }
+              },
+              "Scope": {
+                "type": "int",
+                "value": 0
+              },
+              "TranslateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              }
             }
-          }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -152389,19 +154658,19 @@
                     },
                     "ArmorPart_LBicep": {
                       "type": "byte",
-                      "value": 75
+                      "value": 101
                     },
                     "ArmorPart_LFArm": {
                       "type": "byte",
-                      "value": 75
+                      "value": 101
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 200
+                      "value": 75
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
-                      "value": 198
+                      "value": 155
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
@@ -152409,7 +154678,7 @@
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
-                      "value": 186
+                      "value": 141
                     },
                     "ArmorPart_LThigh": {
                       "type": "byte",
@@ -152425,19 +154694,19 @@
                     },
                     "ArmorPart_RBicep": {
                       "type": "byte",
-                      "value": 75
+                      "value": 101
                     },
                     "ArmorPart_RFArm": {
                       "type": "byte",
-                      "value": 75
+                      "value": 101
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 200
+                      "value": 75
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
-                      "value": 198
+                      "value": 155
                     },
                     "ArmorPart_Robe": {
                       "type": "byte",
@@ -152449,7 +154718,7 @@
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
-                      "value": 0
+                      "value": 141
                     },
                     "ArmorPart_RThigh": {
                       "type": "byte",
@@ -152860,6 +155129,82 @@
                       "type": "resref",
                       "value": "republicheavygun"
                     },
+                    "xArmorPart_Belt": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_LBice": {
+                      "type": "word",
+                      "value": 101
+                    },
+                    "xArmorPart_LFArm": {
+                      "type": "word",
+                      "value": 101
+                    },
+                    "xArmorPart_LFoot": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_LHand": {
+                      "type": "word",
+                      "value": 155
+                    },
+                    "xArmorPart_LShin": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_LShou": {
+                      "type": "word",
+                      "value": 141
+                    },
+                    "xArmorPart_LThig": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_Neck": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "xArmorPart_Pelvi": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_RBice": {
+                      "type": "word",
+                      "value": 101
+                    },
+                    "xArmorPart_RFArm": {
+                      "type": "word",
+                      "value": 101
+                    },
+                    "xArmorPart_RFoot": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_RHand": {
+                      "type": "word",
+                      "value": 155
+                    },
+                    "xArmorPart_Robe": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_RShin": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_RShou": {
+                      "type": "word",
+                      "value": 141
+                    },
+                    "xArmorPart_RThig": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_Torso": {
+                      "type": "word",
+                      "value": 193
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -152901,7 +155246,7 @@
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 243
+                      "value": 10
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
@@ -152909,7 +155254,7 @@
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 249
+                      "value": 63
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
@@ -152937,7 +155282,7 @@
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 243
+                      "value": 10
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
@@ -152949,7 +155294,7 @@
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 249
+                      "value": 63
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
@@ -153052,6 +155397,82 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "republicofficeru"
+                    },
+                    "xArmorPart_Belt": {
+                      "type": "word",
+                      "value": 107
+                    },
+                    "xArmorPart_LBice": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "xArmorPart_LFArm": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "xArmorPart_LFoot": {
+                      "type": "word",
+                      "value": 10
+                    },
+                    "xArmorPart_LHand": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "xArmorPart_LShin": {
+                      "type": "word",
+                      "value": 63
+                    },
+                    "xArmorPart_LShou": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_LThig": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "xArmorPart_Neck": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "xArmorPart_Pelvi": {
+                      "type": "word",
+                      "value": 3
+                    },
+                    "xArmorPart_RBice": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "xArmorPart_RFArm": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "xArmorPart_RFoot": {
+                      "type": "word",
+                      "value": 10
+                    },
+                    "xArmorPart_RHand": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "xArmorPart_Robe": {
+                      "type": "word",
+                      "value": 235
+                    },
+                    "xArmorPart_RShin": {
+                      "type": "word",
+                      "value": 63
+                    },
+                    "xArmorPart_RShou": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_RThig": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "xArmorPart_Torso": {
+                      "type": "word",
+                      "value": 3
                     },
                     "XOrientation": {
                       "type": "float",
@@ -153173,6 +155594,10 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "republicofficerh"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 108
                     },
                     "XOrientation": {
                       "type": "float",
@@ -153373,6 +155798,82 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "republictrooper"
+                    },
+                    "xArmorPart_Belt": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_LBice": {
+                      "type": "word",
+                      "value": 249
+                    },
+                    "xArmorPart_LFArm": {
+                      "type": "word",
+                      "value": 246
+                    },
+                    "xArmorPart_LFoot": {
+                      "type": "word",
+                      "value": 242
+                    },
+                    "xArmorPart_LHand": {
+                      "type": "word",
+                      "value": 246
+                    },
+                    "xArmorPart_LShin": {
+                      "type": "word",
+                      "value": 222
+                    },
+                    "xArmorPart_LShou": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_LThig": {
+                      "type": "word",
+                      "value": 235
+                    },
+                    "xArmorPart_Neck": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "xArmorPart_Pelvi": {
+                      "type": "word",
+                      "value": 234
+                    },
+                    "xArmorPart_RBice": {
+                      "type": "word",
+                      "value": 249
+                    },
+                    "xArmorPart_RFArm": {
+                      "type": "word",
+                      "value": 246
+                    },
+                    "xArmorPart_RFoot": {
+                      "type": "word",
+                      "value": 242
+                    },
+                    "xArmorPart_RHand": {
+                      "type": "word",
+                      "value": 246
+                    },
+                    "xArmorPart_Robe": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_RShin": {
+                      "type": "word",
+                      "value": 222
+                    },
+                    "xArmorPart_RShou": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_RThig": {
+                      "type": "word",
+                      "value": 235
+                    },
+                    "xArmorPart_Torso": {
+                      "type": "word",
+                      "value": 249
                     },
                     "XOrientation": {
                       "type": "float",
@@ -153603,6 +156104,82 @@
                       "type": "resref",
                       "value": "republicsniperou"
                     },
+                    "xArmorPart_Belt": {
+                      "type": "word",
+                      "value": 106
+                    },
+                    "xArmorPart_LBice": {
+                      "type": "word",
+                      "value": 249
+                    },
+                    "xArmorPart_LFArm": {
+                      "type": "word",
+                      "value": 246
+                    },
+                    "xArmorPart_LFoot": {
+                      "type": "word",
+                      "value": 242
+                    },
+                    "xArmorPart_LHand": {
+                      "type": "word",
+                      "value": 246
+                    },
+                    "xArmorPart_LShin": {
+                      "type": "word",
+                      "value": 23
+                    },
+                    "xArmorPart_LShou": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_LThig": {
+                      "type": "word",
+                      "value": 102
+                    },
+                    "xArmorPart_Neck": {
+                      "type": "word",
+                      "value": 7
+                    },
+                    "xArmorPart_Pelvi": {
+                      "type": "word",
+                      "value": 106
+                    },
+                    "xArmorPart_RBice": {
+                      "type": "word",
+                      "value": 249
+                    },
+                    "xArmorPart_RFArm": {
+                      "type": "word",
+                      "value": 246
+                    },
+                    "xArmorPart_RFoot": {
+                      "type": "word",
+                      "value": 242
+                    },
+                    "xArmorPart_RHand": {
+                      "type": "word",
+                      "value": 246
+                    },
+                    "xArmorPart_Robe": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_RShin": {
+                      "type": "word",
+                      "value": 23
+                    },
+                    "xArmorPart_RShou": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_RThig": {
+                      "type": "word",
+                      "value": 102
+                    },
+                    "xArmorPart_Torso": {
+                      "type": "word",
+                      "value": 100
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -153731,6 +156308,10 @@
                       "type": "resref",
                       "value": "trooperhelmet"
                     },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 107
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -153855,6 +156436,10 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "republictrooperh"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 107
                     },
                     "XOrientation": {
                       "type": "float",
@@ -153981,6 +156566,10 @@
                       "type": "resref",
                       "value": "republicheavy001"
                     },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 45
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -154105,6 +156694,10 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "republicsnipervi"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 46
                     },
                     "XOrientation": {
                       "type": "float",
@@ -154304,6 +156897,82 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "republicdeskwork"
+                    },
+                    "xArmorPart_Belt": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_LBice": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "xArmorPart_LFArm": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "xArmorPart_LFoot": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "xArmorPart_LHand": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "xArmorPart_LShin": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "xArmorPart_LShou": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_LThig": {
+                      "type": "word",
+                      "value": 16
+                    },
+                    "xArmorPart_Neck": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "xArmorPart_Pelvi": {
+                      "type": "word",
+                      "value": 3
+                    },
+                    "xArmorPart_RBice": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "xArmorPart_RFArm": {
+                      "type": "word",
+                      "value": 22
+                    },
+                    "xArmorPart_RFoot": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "xArmorPart_RHand": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "xArmorPart_Robe": {
+                      "type": "word",
+                      "value": 10
+                    },
+                    "xArmorPart_RShin": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "xArmorPart_RShou": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_RThig": {
+                      "type": "word",
+                      "value": 16
+                    },
+                    "xArmorPart_Torso": {
+                      "type": "word",
+                      "value": 104
                     },
                     "XOrientation": {
                       "type": "float",
@@ -154661,6 +157330,82 @@
                       "type": "resref",
                       "value": "republic_outfit"
                     },
+                    "xArmorPart_Belt": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_LBice": {
+                      "type": "word",
+                      "value": 105
+                    },
+                    "xArmorPart_LFArm": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_LFoot": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_LHand": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_LShin": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_LShou": {
+                      "type": "word",
+                      "value": 9
+                    },
+                    "xArmorPart_LThig": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_Neck": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "xArmorPart_Pelvi": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_RBice": {
+                      "type": "word",
+                      "value": 105
+                    },
+                    "xArmorPart_RFArm": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_RFoot": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_RHand": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_Robe": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_RShin": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_RShou": {
+                      "type": "word",
+                      "value": 9
+                    },
+                    "xArmorPart_RThig": {
+                      "type": "word",
+                      "value": 75
+                    },
+                    "xArmorPart_Torso": {
+                      "type": "word",
+                      "value": 75
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -154893,6 +157638,82 @@
                       "type": "resref",
                       "value": "republic_outf001"
                     },
+                    "xArmorPart_Belt": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_LBice": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_LFArm": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_LFoot": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_LHand": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_LShin": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "xArmorPart_LShou": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_LThig": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_Neck": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "xArmorPart_Pelvi": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_RBice": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_RFArm": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_RFoot": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_RHand": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_Robe": {
+                      "type": "word",
+                      "value": 201
+                    },
+                    "xArmorPart_RShin": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "xArmorPart_RShou": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_RThig": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "xArmorPart_Torso": {
+                      "type": "word",
+                      "value": 0
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -155046,6 +157867,10 @@
                       "type": "resref",
                       "value": "explosives"
                     },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 6
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 4.203895392974451e-045
@@ -155181,6 +158006,10 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "explosives50"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 6
                     },
                     "XOrientation": {
                       "type": "float",

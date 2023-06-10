@@ -31,7 +31,7 @@
       },
       "MusicDay": {
         "type": "int",
-        "value": 396
+        "value": 353
       },
       "MusicDelay": {
         "type": "int",
@@ -39,7 +39,7 @@
       },
       "MusicNight": {
         "type": "int",
-        "value": 396
+        "value": 353
       }
     }
   },
@@ -178,7 +178,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "tat_civ1"
+          "value": "start_civilian"
         },
         "CRAdjust": {
           "type": "int",
@@ -198,7 +198,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "This civilian is Force Sensitive, and had boarded a shuttle to Viscara in a pilgrimage towards the Jedi Temple rumored to be there - all in the hope of someday becoming a Jedi."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -566,7 +568,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Civilian"
+            "0": "Force Sensitive Civilian"
           }
         },
         "fortbonus": {
@@ -1205,7 +1207,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "start_bountyhunt"
         },
         "CRAdjust": {
           "type": "int",
@@ -1225,7 +1227,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "This Rodian Bounty Hunter seems to be struggling with the droid."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -1483,7 +1487,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 3.363116314379561e-043
+                "value": 1.695571141833029e-043
               },
               "XPosition": {
                 "type": "float",
@@ -1689,7 +1693,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.695571141833029e-043
+                "value": 3.363116314379561e-043
               },
               "XPosition": {
                 "type": "float",
@@ -1806,7 +1810,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Male Rodian Bounty Hunter"
+            "0": "Bounty Hunter"
           }
         },
         "fortbonus": {
@@ -2274,19 +2278,19 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.0
+          "value": -0.91420978307724
         },
         "XPosition": {
           "type": "float",
-          "value": 33.1004524230957
+          "value": 32.44065856933594
         },
         "YOrientation": {
           "type": "float",
-          "value": 4.404571325722362e-017
+          "value": -0.4052412509918213
         },
         "YPosition": {
           "type": "float",
-          "value": 26.48651313781738
+          "value": 26.92718505859375
         },
         "ZPosition": {
           "type": "float",
@@ -2425,7 +2429,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "start_mercenary"
         },
         "CRAdjust": {
           "type": "int",
@@ -2445,7 +2449,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A Trandoshan mercenary, armed with an intimidating blaster rifle."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -2723,7 +2729,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 3.363116314379561e-043
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -2929,7 +2935,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.401298464324817e-045
+                "value": 3.222986467947079e-043
               },
               "XPosition": {
                 "type": "float",
@@ -3039,7 +3045,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Female Trandoshan Mercenary"
+            "0": "Trandoshan Mercenary"
           }
         },
         "fortbonus": {
@@ -3327,7 +3333,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 3.222986467947079e-043
+                "value": 1.401298464324817e-045
               },
               "XPosition": {
                 "type": "float",
@@ -3628,7 +3634,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 0.0
+                "value": 3.363116314379561e-043
               },
               "XPosition": {
                 "type": "float",
@@ -4574,7 +4580,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 40.70183563232422
+          "value": 40.72104263305664
         },
         "YOrientation": {
           "type": "float",
@@ -4582,7 +4588,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 20.97240829467773
+          "value": 21.43952751159668
         },
         "ZPosition": {
           "type": "float",
@@ -4732,7 +4738,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "start_wookiee"
         },
         "CRAdjust": {
           "type": "int",
@@ -4752,7 +4758,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A wookiee!"
+          }
         },
         "Dex": {
           "type": "byte",
@@ -4862,7 +4870,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Male Wookiee"
+            "0": "Wookiee"
           }
         },
         "fortbonus": {
@@ -5683,7 +5691,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "start_musician"
         },
         "CRAdjust": {
           "type": "int",
@@ -5703,7 +5711,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A Rodian musician playing some piece."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -6071,7 +6081,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 3.377129299022809e-043
+                "value": 3.615350037958028e-043
               },
               "XPosition": {
                 "type": "float",
@@ -6181,7 +6191,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Female Rodian Musician"
+            "0": "Rodian Musician"
           }
         },
         "fortbonus": {
@@ -6321,7 +6331,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 3.615350037958028e-043
+                "value": 3.377129299022809e-043
               },
               "XPosition": {
                 "type": "float",
@@ -6926,7 +6936,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "start_pilot"
         },
         "CRAdjust": {
           "type": "int",
@@ -6947,7 +6957,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": ""
+            "0": "The pilot appears to be dealing with some final checks as the shuttle lands at CZ-220."
           }
         },
         "Dex": {
@@ -7093,7 +7103,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 3.377129299022809e-043
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -7419,7 +7429,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 0.0
+                "value": 3.377129299022809e-043
               },
               "XPosition": {
                 "type": "float",
@@ -8053,7 +8063,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 308.0
+          "value": 476.0
         },
         "ClassList": {
           "type": "list",
@@ -21176,11 +21186,11 @@
         },
         "X": {
           "type": "float",
-          "value": 31.91921234130859
+          "value": 31.53879356384277
         },
         "Y": {
           "type": "float",
-          "value": 26.51024055480957
+          "value": 26.46466636657715
         },
         "Z": {
           "type": "float",

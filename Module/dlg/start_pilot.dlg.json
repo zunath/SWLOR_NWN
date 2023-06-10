@@ -60,25 +60,6 @@
               },
               "Index": {
                 "type": "dword",
-                "value": 3
-              },
-              "IsChild": {
-                "type": "byte",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 1,
-              "Active": {
-                "type": "resref",
-                "value": ""
-              },
-              "ConditionParams": {
-                "type": "list",
-                "value": []
-              },
-              "Index": {
-                "type": "dword",
                 "value": 1
               },
               "IsChild": {
@@ -87,7 +68,7 @@
               }
             },
             {
-              "__struct_id": 2,
+              "__struct_id": 1,
               "Active": {
                 "type": "resref",
                 "value": ""
@@ -122,7 +103,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "\"'Ey there! Just call me Salvatore - Sal for short. \n\nI brought along some items to sell for this trip. You best take a look before we land - there might be something you need!\""
+            "0": "\"We are docked at CZ-220, a Czerkan space station. Talk to Captain Sl'uuk if you want to disembark.\""
           }
         }
       },
@@ -191,7 +172,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "\"Looking for some weapons, are you? Talk to Captain Sl'uuk, and once you are off the shuttle onto CZ-220, you should be able to find a basic weapons dealer near the receptionist there at the space station. Uh, word of advice. Don't fight with a survivor's knife. It's not a good weapon.\""
+            "0": "\"It takes some training. You can pilot your own shuttle, too. All you need to do is buy a shuttle deed, register it with a dockhand, and you can have your own personal starship. You can even use fabrication to make furnishing to decorate it, or buy such furnishing from other fabricators.\""
           }
         }
       }
@@ -199,7 +180,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 106
+    "value": 80
   },
   "PreventZoomIn": {
     "type": "byte",
@@ -249,7 +230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "\"Not right now, Sal.\""
+            "0": "Leave."
           }
         }
       },
@@ -314,7 +295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "\"Where can I buy some weapons?\""
+            "0": "\"How's piloting a shuttle like? Is it hard?\""
           }
         }
       },
@@ -360,63 +341,6 @@
           "type": "cexolocstring",
           "value": {
             "0": "Leave."
-          }
-        }
-      },
-      {
-        "__struct_id": 3,
-        "ActionParams": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Key": {
-                "type": "cexostring",
-                "value": "action-open-store"
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "StartingItems"
-              }
-            }
-          ]
-        },
-        "Animation": {
-          "type": "dword",
-          "value": 0
-        },
-        "AnimLoop": {
-          "type": "byte",
-          "value": 1
-        },
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Delay": {
-          "type": "dword",
-          "value": 4294967295
-        },
-        "EntriesList": {
-          "type": "list",
-          "value": []
-        },
-        "Quest": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Script": {
-          "type": "resref",
-          "value": "action"
-        },
-        "Sound": {
-          "type": "resref",
-          "value": ""
-        },
-        "Text": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "\"Let me take a look at your wares.\""
           }
         }
       }

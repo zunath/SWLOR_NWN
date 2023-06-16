@@ -669,6 +669,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When a player respawns, reapply the aura AOE effect
+        /// </summary>
+        [NWNEventHandler("mod_respawn")]
+        public static void ReapplyAuraOnRespawn()
+        {
+            var player = GetLastRespawnButtonPresser();
+            ReapplyPlayerAuraAOE(player);
+        }
+
+        /// <summary>
         /// When a player enters space mode, remove all of their Aura effects.
         /// </summary>
         [NWNEventHandler("space_enter")]

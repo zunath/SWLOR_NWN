@@ -247,7 +247,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 recipes = recipes
-                    .AsParallel()
                     .Where(x =>
                         Cache.GetItemNameByResref(x.Value.Resref)
                             .ToLower()
@@ -404,7 +403,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 RecipeName = string.Empty;
                 RecipeLevel = string.Empty;
                 RecipeEnhancementSlots = string.Empty;
-                SearchText = string.Empty;
                 RecipeDetails = new GuiBindingList<string>();
                 RecipeDetailColors = new GuiBindingList<GuiColor>();
                 _currentRecipeIndex = -1;

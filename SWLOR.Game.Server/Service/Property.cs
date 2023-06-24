@@ -1074,10 +1074,18 @@ namespace SWLOR.Game.Server.Service
                 else
                 {
                     var parent = DB.Get<WorldProperty>(property.ParentPropertyId);
-                    var areaResref = parent.ParentPropertyId;
-                    var area = Area.GetAreaByResref(areaResref);
 
-                    SpawnIntoWorld(property, area);
+                    if (parent == null)
+                    {
+                        Log.Write(LogGroup.Error, $"Error loading property '{property.Id}'. Its parent object '{property.ParentPropertyId}' does not exist in database.");
+                    }
+                    else
+                    {
+                        var areaResref = parent.ParentPropertyId;
+                        var area = Area.GetAreaByResref(areaResref);
+
+                        SpawnIntoWorld(property, area);
+                    }
                 }
             }
 

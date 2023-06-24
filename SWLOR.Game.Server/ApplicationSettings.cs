@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server
         public string LogDirectory { get; }
         public string RedisIPAddress { get; }
         public ServerEnvironmentType ServerEnvironment { get; }
+        public int DatabaseBootDelaySeconds { get; }
 
         private static ApplicationSettings _settings;
         public static ApplicationSettings Get()
@@ -22,6 +23,12 @@ namespace SWLOR.Game.Server
         {
             LogDirectory = Environment.GetEnvironmentVariable("SWLOR_APP_LOG_DIRECTORY");
             RedisIPAddress = Environment.GetEnvironmentVariable("NWNX_REDIS_HOST");
+
+            if (!int.TryParse(Environment.GetEnvironmentVariable("SWLOR_DB_BOOT_DELAY_SECONDS"), out var databaseBootDelaySeconds))
+            {
+                databaseBootDelaySeconds = 10;
+            }
+            DatabaseBootDelaySeconds = databaseBootDelaySeconds;
 
             var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT");
             if (!string.IsNullOrWhiteSpace(environment) && 

@@ -387,7 +387,7 @@ namespace SWLOR.Game.Server.Service
             // Targeted the same object - remove it.
             if (currentTarget == target)
             {
-                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Cancel, position);
+                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Cancel, 1f, position, Vector3.Zero, Vector3.Zero);
                 ClearCurrentTarget(player);
             }
             // Targeted something new. Remove existing target and pick the new one.
@@ -395,7 +395,7 @@ namespace SWLOR.Game.Server.Service
             {
                 ClearCurrentTarget(player);
                 SetCurrentTarget(player, target);
-                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Select, position);
+                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Select, 1f, position, Vector3.Zero, Vector3.Zero);
             }
         }
 

@@ -38,6 +38,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Dantooine Gym"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "dantooinegym"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Dathomir General Store"
               },
               "RESREF": {

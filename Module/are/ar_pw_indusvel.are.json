@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] City, Industrial Slum"
+      "0": "Viscara - Veles - Industrial Slum"
     }
   },
   "NoRest": {
@@ -11341,7 +11341,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 8
+    "value": 13
   },
   "Width": {
     "type": "int",

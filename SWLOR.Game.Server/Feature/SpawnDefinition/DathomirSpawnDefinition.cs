@@ -122,6 +122,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void GrottosBoss()
         {
             _builder.Create("DATHOMIR_GROTTOS_BOSS")
+
+                .AddSpawn(ObjectType.Creature, "vdathdarkadept")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(60 + Random.D100(1))
+
+                .AddSpawn(ObjectType.Creature, "vdatthrancor")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(60 + Random.D100(1))
+
                 .AddSpawn(ObjectType.Creature, "vdathchirodac")
                 .RandomlyWalks()
                 .WithFrequency(1)

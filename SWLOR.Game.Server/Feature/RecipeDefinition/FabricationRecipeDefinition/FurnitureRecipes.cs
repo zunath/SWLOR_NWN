@@ -564,7 +564,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_scordspar", 2)
                 .Component("lth_flawed", 1);
 
-            // Metal Wall, Single, Pipes
+            // Wooden Wall, Planks (Small)
             _builder.Create(RecipeType.MetalWallSinglePipes, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Wall)
                 .Resref("structure_0244")
@@ -572,7 +572,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Quantity(1)
                 .RequirementPerk(PerkType.FurnitureBlueprints, 2)
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
-                .Component("ref_scordspar", 2)
+                .Component("fine_wood", 2)
                 .Component("fiberp_flawed", 1);
 
             // Window

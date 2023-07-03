@@ -144,9 +144,16 @@ namespace SWLOR.Game.Server.Service
                 entity.RespawnLocationY,
                 entity.RespawnLocationZ);
 
-            var location = Location(area, position, entity.RespawnLocationOrientation);
-
-            AssignCommand(player, () => ActionJumpToLocation(location));
+            if (!GetIsObjectValid(area))
+            {
+                var defaultLocation = GetLocation(GetWaypointByTag("DTH_DEFAULT_RESPAWN_POINT"));
+                AssignCommand(player, () => ActionJumpToLocation(defaultLocation));
+            }
+            else
+            {
+                var location = Location(area, position, entity.RespawnLocationOrientation);
+                AssignCommand(player, () => ActionJumpToLocation(location));
+            }
         }
 
         /// <summary>

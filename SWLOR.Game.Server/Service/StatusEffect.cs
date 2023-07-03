@@ -280,7 +280,11 @@ namespace SWLOR.Game.Server.Service
             {
                 var iconEffect = EffectIcon(statusEffectDetail.EffectIconId);
                 iconEffect = TagEffect(iconEffect, $"EFFECT_ICON_{statusEffectDetail.EffectIconId}");
-                ApplyEffectToObject(DurationType.Temporary, iconEffect, target, length);
+                
+                if(length > 0f)
+                    ApplyEffectToObject(DurationType.Temporary, iconEffect, target, length);
+                else 
+                    ApplyEffectToObject(DurationType.Permanent, iconEffect, target);
             }
 
             if(sendApplicationMessage)

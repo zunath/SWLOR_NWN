@@ -31527,6 +31527,50 @@
             },
             {
               "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Qion Hive Blood Drip"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "qionhiveslime002"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Qion Hive Blood Shaft"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "qionhiveslime003"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Qion Hive Slime Drip"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "qionhiveslimedri"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Qion Hive Slime Shaft"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "qionhiveslime001"
+              }
+            },
+            {
+              "__struct_id": 0,
               "RESREF": {
                 "type": "resref",
                 "value": "zep_crystal003"
@@ -68864,6 +68908,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "public_p_storage"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive - Byysk Chest"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_byyskchest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive - Hive Chest"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_hivechest"
                     }
                   },
                   {

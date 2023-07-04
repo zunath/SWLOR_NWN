@@ -6455,17 +6455,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Rancor Bite"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathbiterancor"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Riktasha Weapon"
                     },
                     "RESREF": {
@@ -7724,17 +7713,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dark Adept's Saberstaff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vdathsaberstaff"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Dark Lord Lightsaber"
                     },
                     "RESREF": {
@@ -7773,28 +7751,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dmnpckoyeestaff"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Peerless Bounty Hunter Rifle"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vnpcrbountyhunt"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Peerless Bounty Hunter's Vibroknife"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vnpcmbhunter"
                     }
                   },
                   {
@@ -9560,17 +9516,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dark Adept Armor"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vnpcadarkadept"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Guardian Properties"
                     },
                     "RESREF": {
@@ -9686,28 +9631,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dmnpckoyeecloak"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Peerless Bounty Hunter Armor"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vnpcabountyhunt"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Peerless Bounty Hunter Helmet"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vnpchbhunter"
                     }
                   },
                   {

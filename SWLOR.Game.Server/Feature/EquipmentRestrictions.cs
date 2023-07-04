@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -166,6 +167,11 @@ namespace SWLOR.Game.Server.Feature
 
             if ((!isPlayer && !isDroid) || GetIsDM(creature) || GetIsDMPossessed(creature)) 
                 return string.Empty;
+
+            if (Gui.IsWindowOpen(creature, GuiWindowType.Craft))
+            {
+                return "Items cannot be equipped while crafting.";
+            }
 
             var itemType = GetBaseItemType(item);
 

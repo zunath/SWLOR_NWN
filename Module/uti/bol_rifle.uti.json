@@ -34,7 +34,7 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "LocalizedName": {
     "type": "cexolocstring",
@@ -108,7 +108,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 43
+          "value": 40
         },
         "Param1": {
           "type": "byte",
@@ -170,7 +170,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 3
+          "value": 5
         },
         "Param1": {
           "type": "byte",
@@ -206,5 +206,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "bol_rifle"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 243
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

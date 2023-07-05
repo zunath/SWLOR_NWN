@@ -76,6 +76,67 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindTooltip(model => model.Enhancement2Tooltip)
                             .SetHeight(32f)
                             .SetWidth(32f);
+
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.Enhancement3Resref)
+                            .BindIsVisible(model => model.IsEnhancement3Visible)
+                            .BindIsEnabled(model => model.IsInSetupMode)
+                            .BindOnClicked(model => model.OnClickEnhancement3())
+                            .BindTooltip(model => model.Enhancement3Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.Enhancement4Resref)
+                            .BindIsVisible(model => model.IsEnhancement4Visible)
+                            .BindIsEnabled(model => model.IsInSetupMode)
+                            .BindOnClicked(model => model.OnClickEnhancement4())
+                            .BindTooltip(model => model.Enhancement4Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.Enhancement5Resref)
+                            .BindIsVisible(model => model.IsEnhancement5Visible)
+                            .BindIsEnabled(model => model.IsInSetupMode)
+                            .BindOnClicked(model => model.OnClickEnhancement5())
+                            .BindTooltip(model => model.Enhancement5Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.Enhancement6Resref)
+                            .BindIsVisible(model => model.IsEnhancement6Visible)
+                            .BindIsEnabled(model => model.IsInSetupMode)
+                            .BindOnClicked(model => model.OnClickEnhancement6())
+                            .BindTooltip(model => model.Enhancement6Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.Enhancement7Resref)
+                            .BindIsVisible(model => model.IsEnhancement7Visible)
+                            .BindIsEnabled(model => model.IsInSetupMode)
+                            .BindOnClicked(model => model.OnClickEnhancement7())
+                            .BindTooltip(model => model.Enhancement7Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+
+                        row.AddButtonImage()
+                            .BindImageResref(model => model.Enhancement8Resref)
+                            .BindIsVisible(model => model.IsEnhancement8Visible)
+                            .BindIsEnabled(model => model.IsInSetupMode)
+                            .BindOnClicked(model => model.OnClickEnhancement8())
+                            .BindTooltip(model => model.Enhancement8Tooltip)
+                            .SetHeight(32f)
+                            .SetWidth(32f);
+
+                        row.AddSpacer();
                     });
 
                     col.AddRow(row =>

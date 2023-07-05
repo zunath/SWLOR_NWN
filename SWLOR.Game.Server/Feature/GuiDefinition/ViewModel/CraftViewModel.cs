@@ -116,6 +116,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<bool>();
             set => Set(value);
         }
+        public bool IsEnhancement3Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool IsEnhancement4Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool IsEnhancement5Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool IsEnhancement6Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool IsEnhancement7Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool IsEnhancement8Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
         public string Enhancement1Resref
         {
@@ -128,6 +158,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<string>();
             set => Set(value);
         }
+        public string Enhancement3Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string Enhancement4Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string Enhancement5Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string Enhancement6Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string Enhancement7Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string Enhancement8Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
 
         public string Enhancement1Tooltip
         {
@@ -136,6 +196,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string Enhancement2Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string Enhancement3Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string Enhancement4Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string Enhancement5Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string Enhancement6Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string Enhancement7Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        public string Enhancement8Tooltip
         {
             get => Get<string>();
             set => Set(value);
@@ -249,8 +339,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly List<string> _components = new();
         private readonly List<ItemProperty> _itemPropertiesEnhancement1 = new();
         private readonly List<ItemProperty> _itemPropertiesEnhancement2 = new();
+        private readonly List<ItemProperty> _itemPropertiesEnhancement3 = new();
+        private readonly List<ItemProperty> _itemPropertiesEnhancement4 = new();
+        private readonly List<ItemProperty> _itemPropertiesEnhancement5 = new();
+        private readonly List<ItemProperty> _itemPropertiesEnhancement6 = new();
+        private readonly List<ItemProperty> _itemPropertiesEnhancement7 = new();
+        private readonly List<ItemProperty> _itemPropertiesEnhancement8 = new();
         private string _enhancement1;
         private string _enhancement2;
+        private string _enhancement3;
+        private string _enhancement4;
+        private string _enhancement5;
+        private string _enhancement6;
+        private string _enhancement7;
+        private string _enhancement8;
         private int _durability;
         private int _maxDurability;
         private int _progress;
@@ -281,6 +383,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             IsEnhancement1Visible = detail.EnhancementSlots >= 1;
             IsEnhancement2Visible = detail.EnhancementSlots >= 2;
+            IsEnhancement3Visible = detail.EnhancementSlots >= 3;
+            IsEnhancement4Visible = detail.EnhancementSlots >= 4;
+            IsEnhancement5Visible = detail.EnhancementSlots >= 5;
+            IsEnhancement6Visible = detail.EnhancementSlots >= 6;
+            IsEnhancement7Visible = detail.EnhancementSlots >= 7;
+            IsEnhancement8Visible = detail.EnhancementSlots >= 8;
 
             RecipeName = $"Recipe: {detail.Quantity}x {itemName}";
             RecipeLevel = $"Level: {detail.Level}";
@@ -480,6 +588,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _enhancement2 = string.Empty;
                 }
 
+                if (!string.IsNullOrWhiteSpace(_enhancement3))
+                {
+                    var item = ObjectPlugin.Deserialize(_enhancement3);
+                    ObjectPlugin.AcquireItem(Player, item);
+                    _enhancement3 = string.Empty;
+                }
+
+                if (!string.IsNullOrWhiteSpace(_enhancement4))
+                {
+                    var item = ObjectPlugin.Deserialize(_enhancement4);
+                    ObjectPlugin.AcquireItem(Player, item);
+                    _enhancement4 = string.Empty;
+                }
+
+                if (!string.IsNullOrWhiteSpace(_enhancement5))
+                {
+                    var item = ObjectPlugin.Deserialize(_enhancement5);
+                    ObjectPlugin.AcquireItem(Player, item);
+                    _enhancement5 = string.Empty;
+                }
+
+                if (!string.IsNullOrWhiteSpace(_enhancement6))
+                {
+                    var item = ObjectPlugin.Deserialize(_enhancement6);
+                    ObjectPlugin.AcquireItem(Player, item);
+                    _enhancement6 = string.Empty;
+                }
+
+                if (!string.IsNullOrWhiteSpace(_enhancement7))
+                {
+                    var item = ObjectPlugin.Deserialize(_enhancement7);
+                    ObjectPlugin.AcquireItem(Player, item);
+                    _enhancement7 = string.Empty;
+                }
+
+                if (!string.IsNullOrWhiteSpace(_enhancement8))
+                {
+                    var item = ObjectPlugin.Deserialize(_enhancement8);
+                    ObjectPlugin.AcquireItem(Player, item);
+                    _enhancement8 = string.Empty;
+                }
+
                 foreach (var serialized in _components)
                 {
                     var item = ObjectPlugin.Deserialize(serialized);
@@ -488,6 +638,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 _itemPropertiesEnhancement1.Clear();
                 _itemPropertiesEnhancement2.Clear();
+                _itemPropertiesEnhancement3.Clear();
+                _itemPropertiesEnhancement4.Clear();
+                _itemPropertiesEnhancement5.Clear();
+                _itemPropertiesEnhancement6.Clear();
+                _itemPropertiesEnhancement7.Clear();
+                _itemPropertiesEnhancement8.Clear();
                 _components.Clear();
             }
         };
@@ -713,6 +869,234 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         };
 
+        public Action OnClickEnhancement3() => () =>
+        {
+            if (string.IsNullOrWhiteSpace(_enhancement3))
+            {
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                    item =>
+                    {
+                        if (!IsValidEnhancement(item))
+                            return;
+
+                        var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement3);
+                        _enhancement3 = ObjectPlugin.Serialize(item);
+                        Enhancement3Tooltip = GetName(item);
+                        Enhancement3Resref = Item.GetIconResref(item);
+                        _maxProgress += progressPenalty;
+
+                        DestroyObject(item);
+                        RefreshRecipeStats();
+                    });
+            }
+            else
+            {
+                ShowModal("Will you remove the enhancement?", () =>
+                {
+                    var item = ObjectPlugin.Deserialize(_enhancement3);
+                    ObjectPlugin.AcquireItem(Player, item);
+                    var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement3);
+                    _enhancement3 = string.Empty;
+                    Enhancement3Resref = BlankTexture;
+                    Enhancement3Tooltip = "Select Enhancement #3";
+                    _maxProgress -= progressPenalty;
+                    _itemPropertiesEnhancement3.Clear();
+
+                    RefreshRecipeStats();
+                });
+            }
+        };
+
+        public Action OnClickEnhancement4() => () =>
+        {
+            if (string.IsNullOrWhiteSpace(_enhancement4))
+            {
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                    item =>
+                    {
+                        if (!IsValidEnhancement(item))
+                            return;
+
+                        var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement4);
+                        _enhancement4 = ObjectPlugin.Serialize(item);
+                        Enhancement4Tooltip = GetName(item);
+                        Enhancement4Resref = Item.GetIconResref(item);
+                        _maxProgress += progressPenalty;
+
+                        DestroyObject(item);
+                        RefreshRecipeStats();
+                    });
+            }
+            else
+            {
+                ShowModal("Will you remove the enhancement?", () =>
+                {
+                    var item = ObjectPlugin.Deserialize(_enhancement4);
+                    ObjectPlugin.AcquireItem(Player, item);
+                    var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement4);
+                    _enhancement4 = string.Empty;
+                    Enhancement4Resref = BlankTexture;
+                    Enhancement4Tooltip = "Select Enhancement #4";
+                    _maxProgress -= progressPenalty;
+                    _itemPropertiesEnhancement4.Clear();
+
+                    RefreshRecipeStats();
+                });
+            }
+        };
+
+        public Action OnClickEnhancement5() => () =>
+        {
+            if (string.IsNullOrWhiteSpace(_enhancement5))
+            {
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                    item =>
+                    {
+                        if (!IsValidEnhancement(item))
+                            return;
+
+                        var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement5);
+                        _enhancement5 = ObjectPlugin.Serialize(item);
+                        Enhancement5Tooltip = GetName(item);
+                        Enhancement5Resref = Item.GetIconResref(item);
+                        _maxProgress += progressPenalty;
+
+                        DestroyObject(item);
+                        RefreshRecipeStats();
+                    });
+            }
+            else
+            {
+                ShowModal("Will you remove the enhancement?", () =>
+                {
+                    var item = ObjectPlugin.Deserialize(_enhancement5);
+                    ObjectPlugin.AcquireItem(Player, item);
+                    var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement5);
+                    _enhancement5 = string.Empty;
+                    Enhancement5Resref = BlankTexture;
+                    Enhancement5Tooltip = "Select Enhancement #5";
+                    _maxProgress -= progressPenalty;
+                    _itemPropertiesEnhancement5.Clear();
+
+                    RefreshRecipeStats();
+                });
+            }
+        };
+
+        public Action OnClickEnhancement6() => () =>
+        {
+            if (string.IsNullOrWhiteSpace(_enhancement6))
+            {
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                    item =>
+                    {
+                        if (!IsValidEnhancement(item))
+                            return;
+
+                        var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement6);
+                        _enhancement6 = ObjectPlugin.Serialize(item);
+                        Enhancement6Tooltip = GetName(item);
+                        Enhancement6Resref = Item.GetIconResref(item);
+                        _maxProgress += progressPenalty;
+
+                        DestroyObject(item);
+                        RefreshRecipeStats();
+                    });
+            }
+            else
+            {
+                ShowModal("Will you remove the enhancement?", () =>
+                {
+                    var item = ObjectPlugin.Deserialize(_enhancement6);
+                    ObjectPlugin.AcquireItem(Player, item);
+                    var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement6);
+                    _enhancement6 = string.Empty;
+                    Enhancement6Resref = BlankTexture;
+                    Enhancement6Tooltip = "Select Enhancement #6";
+                    _maxProgress -= progressPenalty;
+                    _itemPropertiesEnhancement6.Clear();
+
+                    RefreshRecipeStats();
+                });
+            }
+        };
+
+        public Action OnClickEnhancement7() => () =>
+        {
+            if (string.IsNullOrWhiteSpace(_enhancement7))
+            {
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                    item =>
+                    {
+                        if (!IsValidEnhancement(item))
+                            return;
+
+                        var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement7);
+                        _enhancement7 = ObjectPlugin.Serialize(item);
+                        Enhancement7Tooltip = GetName(item);
+                        Enhancement7Resref = Item.GetIconResref(item);
+                        _maxProgress += progressPenalty;
+
+                        DestroyObject(item);
+                        RefreshRecipeStats();
+                    });
+            }
+            else
+            {
+                ShowModal("Will you remove the enhancement?", () =>
+                {
+                    var item = ObjectPlugin.Deserialize(_enhancement7);
+                    ObjectPlugin.AcquireItem(Player, item);
+                    var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement7);
+                    _enhancement7 = string.Empty;
+                    Enhancement7Resref = BlankTexture;
+                    Enhancement7Tooltip = "Select Enhancement #7";
+                    _maxProgress -= progressPenalty;
+                    _itemPropertiesEnhancement7.Clear();
+
+                    RefreshRecipeStats();
+                });
+            }
+        };
+
+        public Action OnClickEnhancement8() => () =>
+        {
+            if (string.IsNullOrWhiteSpace(_enhancement8))
+            {
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                    item =>
+                    {
+                        if (!IsValidEnhancement(item))
+                            return;
+
+                        var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement8);
+                        _enhancement8 = ObjectPlugin.Serialize(item);
+                        Enhancement8Tooltip = GetName(item);
+                        Enhancement8Resref = Item.GetIconResref(item);
+                        _maxProgress += progressPenalty;
+
+                        DestroyObject(item);
+                        RefreshRecipeStats();
+                    });
+            }
+            else
+            {
+                ShowModal("Will you remove the enhancement?", () =>
+                {
+                    var item = ObjectPlugin.Deserialize(_enhancement8);
+                    ObjectPlugin.AcquireItem(Player, item);
+                    var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement8);
+                    _enhancement8 = string.Empty;
+                    Enhancement8Resref = BlankTexture;
+                    Enhancement8Tooltip = "Select Enhancement #8";
+                    _maxProgress -= progressPenalty;
+                    _itemPropertiesEnhancement8.Clear();
+
+                    RefreshRecipeStats();
+                });
+            }
+        };
+
         private List<uint> GetComponents()
         {
             var components = new List<uint>();
@@ -853,8 +1237,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             Enhancement1Resref = BlankTexture;
             Enhancement2Resref = BlankTexture;
+            Enhancement3Resref = BlankTexture;
+            Enhancement4Resref = BlankTexture;
+            Enhancement5Resref = BlankTexture;
+            Enhancement6Resref = BlankTexture;
+            Enhancement7Resref = BlankTexture;
+            Enhancement8Resref = BlankTexture;
             Enhancement1Tooltip = "Select Enhancement #1";
             Enhancement2Tooltip = "Select Enhancement #2";
+            Enhancement3Tooltip = "Select Enhancement #3";
+            Enhancement4Tooltip = "Select Enhancement #4";
+            Enhancement5Tooltip = "Select Enhancement #5";
+            Enhancement6Tooltip = "Select Enhancement #6";
+            Enhancement7Tooltip = "Select Enhancement #7";
+            Enhancement8Tooltip = "Select Enhancement #8";
 
             RemoveImmobility();
         }
@@ -883,43 +1279,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsWasteNotEnabled = Perk.GetEffectivePerkLevel(Player, _wasteNotPerk) > 0;
 
             ApplyImmobility();
-        }
-
-        private void SwitchToAutoCraftMode()
-        {
-            StatusText = "Auto-crafting....";
-            StatusColor = GuiColor.Cyan;
-
-            IsInCraftMode = false;
-            IsInSetupMode = false;
-            IsClosable = false;
-
-            ApplyImmobility();
-        }
-
-        private float CalculateAutoCraftChance()
-        {
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var recipe = Craft.GetRecipe(_recipe);
-
-            const float BaseChance = 65f;
-            var craftsmanship = Stat.CalculateCraftsmanship(Player, recipe.Skill);
-            var control = Stat.CalculateControl(Player, recipe.Skill);
-            var recipeLevel = recipe.Level;
-            var levelDiff = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
-            var difficultyAdjustment = Craft.GetRecipeLevelDetail(recipeLevel).DifficultyAdjustment;
-
-            var craftsmanshipMod = craftsmanship * ((1 - recipeLevel * difficultyAdjustment) * 0.5f);
-            var controlMod = control * ((1 - recipeLevel * difficultyAdjustment) * 0.25f);
-            var chance = levelDiff * 5 + craftsmanshipMod + controlMod + BaseChance;
-
-            if (chance < 1)
-                chance = 1;
-            else if (chance > 95)
-                chance = 95;
-
-            return chance;
         }
 
         private bool ProcessComponents()
@@ -1029,7 +1388,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemPlugin.SetAddGoldPieceValue(item, (int) (30 * ((recipe.Level / 10) + 1) + 3.5f * recipe.Level));
 
             // Apply item properties provided by enhancements, provided the transfer check passes.
-            var allProperties = _itemPropertiesEnhancement1.Concat(_itemPropertiesEnhancement2);
+            var allProperties = _itemPropertiesEnhancement1
+                .Concat(_itemPropertiesEnhancement2)
+                .Concat(_itemPropertiesEnhancement3)
+                .Concat(_itemPropertiesEnhancement4)
+                .Concat(_itemPropertiesEnhancement5)
+                .Concat(_itemPropertiesEnhancement6)
+                .Concat(_itemPropertiesEnhancement7)
+                .Concat(_itemPropertiesEnhancement8);
             foreach (var ip in allProperties)
             {
                 if (Random.D100(1) <= propertyTransferChance)
@@ -1065,8 +1431,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Clean up and return to the Set Up mode.
             _itemPropertiesEnhancement1.Clear();
             _itemPropertiesEnhancement2.Clear();
+            _itemPropertiesEnhancement3.Clear();
+            _itemPropertiesEnhancement4.Clear();
+            _itemPropertiesEnhancement5.Clear();
+            _itemPropertiesEnhancement6.Clear();
+            _itemPropertiesEnhancement7.Clear();
+            _itemPropertiesEnhancement8.Clear();
             _enhancement1 = string.Empty;
             _enhancement2 = string.Empty;
+            _enhancement3 = string.Empty;
+            _enhancement4 = string.Empty;
+            _enhancement5 = string.Empty;
+            _enhancement6 = string.Empty;
+            _enhancement7 = string.Empty;
+            _enhancement8 = string.Empty;
             _components.Clear();
             SwitchToSetUpMode();
             LoadCraftingState();
@@ -1103,6 +1481,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             _enhancement2 = string.Empty;
 
+            if (!string.IsNullOrWhiteSpace(_enhancement3) && Random.D100(1) > ChanceToLoseItem)
+            {
+                var item = ObjectPlugin.Deserialize(_enhancement3);
+                ObjectPlugin.AcquireItem(Player, item);
+            }
+            _enhancement3 = string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(_enhancement4) && Random.D100(1) > ChanceToLoseItem)
+            {
+                var item = ObjectPlugin.Deserialize(_enhancement4);
+                ObjectPlugin.AcquireItem(Player, item);
+            }
+            _enhancement4 = string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(_enhancement5) && Random.D100(1) > ChanceToLoseItem)
+            {
+                var item = ObjectPlugin.Deserialize(_enhancement5);
+                ObjectPlugin.AcquireItem(Player, item);
+            }
+            _enhancement5 = string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(_enhancement6) && Random.D100(1) > ChanceToLoseItem)
+            {
+                var item = ObjectPlugin.Deserialize(_enhancement6);
+                ObjectPlugin.AcquireItem(Player, item);
+            }
+            _enhancement6 = string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(_enhancement7) && Random.D100(1) > ChanceToLoseItem)
+            {
+                var item = ObjectPlugin.Deserialize(_enhancement7);
+                ObjectPlugin.AcquireItem(Player, item);
+            }
+            _enhancement7 = string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(_enhancement8) && Random.D100(1) > ChanceToLoseItem)
+            {
+                var item = ObjectPlugin.Deserialize(_enhancement8);
+                ObjectPlugin.AcquireItem(Player, item);
+            }
+            _enhancement8 = string.Empty;
+
             // Process components
             foreach (var serialized in _components)
             {
@@ -1115,6 +1535,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _itemPropertiesEnhancement1.Clear();
             _itemPropertiesEnhancement2.Clear();
+            _itemPropertiesEnhancement3.Clear();
+            _itemPropertiesEnhancement4.Clear();
+            _itemPropertiesEnhancement5.Clear();
+            _itemPropertiesEnhancement6.Clear();
+            _itemPropertiesEnhancement7.Clear();
+            _itemPropertiesEnhancement8.Clear();
             _components.Clear();
 
             SwitchToSetUpMode();

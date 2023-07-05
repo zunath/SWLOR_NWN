@@ -11402,7 +11402,7 @@
               },
               "ArmorPart_Neck": {
                 "type": "byte",
-                "value": 128
+                "value": 1
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
@@ -11562,7 +11562,7 @@
               },
               "xArmorPart_Neck": {
                 "type": "word",
-                "value": 128
+                "value": 1
               },
               "xArmorPart_Pelvi": {
                 "type": "word",
@@ -872558,7 +872558,7 @@
           "id": 14568,
           "type": "cexolocstring",
           "value": {
-            "0": "Due to the ongoing conflict, the Council of Veles has decreed that the western gate is to be sealed. All colonists and refugees are advised to leave by the southern gate."
+            "0": "Due to the ongoing conflict, the Council of Veles has decreed that the northern gate is to be sealed. All colonists and refugees are advised to leave by the southern gate."
           }
         },
         "DisarmDC": {
@@ -873237,7 +873237,7 @@
           "id": 14568,
           "type": "cexolocstring",
           "value": {
-            "0": "Due to the ongoing conflict, the Council of Veles has decreed that the western gate is to be sealed. All colonists and refugees are advised to leave by the southern gate."
+            "0": "Due to the ongoing conflict, the Council of Veles has decreed that the eastern gate is to be sealed. All colonists and refugees are advised to leave by the southern gate."
           }
         },
         "DisarmDC": {
@@ -881297,6 +881297,41 @@
   "TriggerList": {
     "type": "list",
     "value": []
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "MAP_KEY_ITEM_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 40
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "EXPLORE_ACHIEVEMENT_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 85
+        }
+      }
+    ]
   },
   "WaypointList": {
     "type": "list",

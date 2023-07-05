@@ -1383,7 +1383,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         BookshelfJedi = 243,
-        [Structure("Metal Wall, Single, Pipes",
+        [Structure("Wooden Wall, Planks (Small)",
             "_mdrn_pl_wwall6t",
             "",
             true,

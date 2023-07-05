@@ -145,14 +145,23 @@ namespace SWLOR.Game.Server.Core.NWNX
         }
 
         // Plays the VFX at the target position in current area for the given player only
-        public static void ShowVisualEffect(uint player, int effectId, Vector3 position)
+        public static void ShowVisualEffect(uint player, int effectId, float scale, Vector3 position, Vector3 translate, Vector3 rotate)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ShowVisualEffect");
+            
+            NWNCore.NativeFunctions.nwnxPushFloat(rotate.X);
+            NWNCore.NativeFunctions.nwnxPushFloat(rotate.Y);
+            NWNCore.NativeFunctions.nwnxPushFloat(rotate.Z);
+            NWNCore.NativeFunctions.nwnxPushFloat(translate.X);
+            NWNCore.NativeFunctions.nwnxPushFloat(translate.Y);
+            NWNCore.NativeFunctions.nwnxPushFloat(translate.Z);
+            NWNCore.NativeFunctions.nwnxPushFloat(scale);
             NWNCore.NativeFunctions.nwnxPushFloat(position.X);
             NWNCore.NativeFunctions.nwnxPushFloat(position.Y);
             NWNCore.NativeFunctions.nwnxPushFloat(position.Z);
             NWNCore.NativeFunctions.nwnxPushInt(effectId);
             NWNCore.NativeFunctions.nwnxPushObject(player);
+
             NWNCore.NativeFunctions.nwnxCallFunction();
         }
 

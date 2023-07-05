@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service.TaxiService
         VelesCantina = 8,
         [TaxiDestination(1, "Veles Residential District", "TAXI_VELES_RESIDENTIAL", 100)]
         VelesResidential = 9,
-        [TaxiDestination(1, "Veles Apartments", "TAXI_VELES_APARTMENTS", 100)]
+        [TaxiDestination(1, "Veles Apartments", "TAXI_VELES_APARTMENT", 100)]
         VelesApartments = 10,
     }
 

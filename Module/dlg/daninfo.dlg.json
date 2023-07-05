@@ -201,7 +201,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The wildlife huh? Word has it there some's mutated bol in some crystal caverns. The Kinraths have also gotten a bit feisty with people getting close to their nest near the lake. Becareful when going to the farmlands further north as there is some angry Thune rampaging about."
+            "0": "The wildlife, huh? Word has it there are some mutated bol in the crystal caverns. People have been getting too close to the Kinrath nests near the lake so they've gotten pretty feisty. Be careful when going to the farmlands farther north as an angry Thune was reportedly rampaging about."
           }
         }
       }
@@ -344,7 +344,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I would like to know the local wildlife."
+            "0": "I would like to learn more about the local wildlife."
           }
         }
       }

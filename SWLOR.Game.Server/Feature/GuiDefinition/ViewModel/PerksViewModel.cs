@@ -698,6 +698,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     EventsPlugin.SignalEvent("SWLOR_BUY_PERK", Player);
                     Gui.PublishRefreshEvent(Player, new PerkAcquiredRefreshEvent(selectedPerk));
 
+                    ExportSingleCharacter(Player);
+
                     // Update UI with latest upgrade changes.
                     LoadDetails();
 
@@ -810,6 +812,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     {
                         action(target, selectedPerk, 0);
                     }
+
+                    ExportSingleCharacter(Player);
 
                     LoadDetails();
                     SelectedPerkIndex = -1;

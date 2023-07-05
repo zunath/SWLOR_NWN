@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] City, Industrial Sector"
+      "0": "Viscara - Veles - Industrial Sector"
     }
   },
   "NoRest": {
@@ -11169,7 +11169,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 5
+    "value": 11
   },
   "Width": {
     "type": "int",

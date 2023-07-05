@@ -311,7 +311,7 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Explore Dantooine Lake", "Explore Dantooine's Lake.", true)]
         ExploreDantooineLake = 114,
-        
+
         [Achievement("Explore Dantooine Kinrath Tunnels", "Explore Dantooine's Kinrath Tunnels.", true)]
         ExploreDantooineKinrathTunnels = 115,
 
@@ -326,6 +326,15 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Explore Dantooine Jungle Mountain ", "Explore Dantooine's Jungle Mountains.", true)]
         ExploreDantooineJungleMountain = 119,
+
+        [Achievement("Explore Veles Industrial Slums", "Explore Veles Industrial Slums.", true)]
+        ExploreVelesIndustrialSlums = 120,
+
+        [Achievement("Explore Veles Commercial Blocks", "Explore Veles Commercial Blocks.", true)]
+        ExploreVelesCommercialBlocks = 121,
+
+        [Achievement("Explore Veles Industrial Sector", "Explore Veles Industrial Sector.", true)]
+        ExploreVelesIndustrialSector = 122,
     }
 
     public class AchievementAttribute: Attribute

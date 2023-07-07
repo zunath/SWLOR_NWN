@@ -773,13 +773,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "volition's Bio Placeables by volition\r\n"
         }
       },
@@ -1452,13 +1445,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "Tree - Normal"
         }
       },
@@ -1600,6 +1586,20 @@
         "Comment": {
           "type": "cexostring",
           "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
         }
       }
     ]
@@ -1635,12 +1635,26 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 1,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
       }
     ]
   },
   "WaypointList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
       {
         "__struct_id": 5,
         "Comment": {

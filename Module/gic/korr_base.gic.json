@@ -5891,13 +5891,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Source: Dragon Rugs by Lisa"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": ""
         }
       },

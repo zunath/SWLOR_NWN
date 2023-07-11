@@ -223,6 +223,22 @@
                 "type": "byte",
                 "value": 14
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pitfall Trap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pitfalltrap"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 2257

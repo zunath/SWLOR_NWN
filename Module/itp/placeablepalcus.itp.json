@@ -31527,6 +31527,50 @@
             },
             {
               "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Qion Hive Blood Drip"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "qionhiveslime002"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Qion Hive Blood Shaft"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "qionhiveslime003"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Qion Hive Slime Drip"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "qionhiveslimedri"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Qion Hive Slime Shaft"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "qionhiveslime001"
+              }
+            },
+            {
+              "__struct_id": 0,
               "RESREF": {
                 "type": "resref",
                 "value": "zep_crystal003"
@@ -68870,6 +68914,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Qion Hive - Byysk Chest"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_byyskchest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive - Hive Chest"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_hivechest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Quest Item Collector"
                     },
                     "RESREF": {
@@ -74761,6 +74827,2085 @@
               "LIST": {
                 "type": "list",
                 "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Banner 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_banner0001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Bar 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_bar0001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Bottle 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_bottle1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Bottle 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_bottle02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Bottle 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_bottle03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Bottle 4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_bottle04"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Bottles 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_bottls01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Bottles 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_bottls02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Bottles 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_bottls03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Cabinet 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_cabi001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Chair 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_chair01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Chair 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_chair02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Chair 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_chair03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Gong 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_gong01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Rug 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_rug001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Rug 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_rug002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Rug 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_rug003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Table 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_table01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Table 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_table02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Table 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_table03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Table 4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_table04"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWP] Vase"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swp_vase001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Ammo Box"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_ammobox1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Animal Pen"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_animpe01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Auction House 001 (On)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_auchos01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Auction House 002 (Off)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_auchos02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Backpack 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_backpk01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Bar 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bar001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Bar 002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bar002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Bar 003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bar003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Bar 004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bar004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Bar 005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bar005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Bar 0052"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bar0052"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Bar 006"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bar006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Bar 007"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bar0007"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Bar 008"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bar008"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Bar 009"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bar009"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Barrel 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_barrel01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Barrel 002 (Stack)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_barrel02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Bench 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bench01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Biomatter Storage"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_biosto01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Bottle 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bottle01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Bottle 002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bottle02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Building 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_build001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Building 002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_build002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Building 003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_build003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Building 004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_build004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Building 005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_build005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Building 006"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_build006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Building 007"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_build007"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Burlap Sack 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bursac01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Burlap Sack 002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bursac02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Bus Stop"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_bussto01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Canopy 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_canopy01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Canopy 002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_canopy02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Canopy 003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_canopy03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Canopy 004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_canopy04"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Canopy 005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_canopy05"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Chair 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_chair001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Chair 002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_chair002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Computer 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_compu001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Computer 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_compu002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Computer 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_compu003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Container 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_conta001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Container 2 (Stack)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_conta002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Container 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_conta003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Container 4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_conta004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Container 5 (Stack)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_conta005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Container 6"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_conta006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Container 7 (Stack)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_conta007"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Conveyor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_convay01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Conveyor Screen (Off)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_convay02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Conveyor Screen (On)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_convay03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Crystal 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_cryst01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Crystal 002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_cryst02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Cup"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_cup01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Dance Floor 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_dncflo01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Datapad"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_datap001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Decal: Paper Floor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_decpap01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Dumpster (Empty)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_dump001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Dumpster 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_dump002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Dumpster 002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_dump003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Elevator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_eleva01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Fence"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_fence01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Floor (Metal Hex)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_flormh01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Floor (Metal)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_floorm01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Floor (Road End)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_florre01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Floor (Road T)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_florrt01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Floor (Road Turn)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_florrt02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Floor (Road)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_florrd01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Flower 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_flwr01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Flower 002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_flwr02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Generator (Lights)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_genl01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Generator (Off)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_geno01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Grate 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_grate01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Gun Rack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_gunrak01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Hologram 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_holog01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Hologram 002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_holog02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Hologram 003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_holog03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Hologram 004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_holog04"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Hologram 005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_holog05"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Hologram 006"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_holog06"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Hologram 007"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_holog07"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Hologram 008"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_holog08"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Hologram 009"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_holog09"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Hologram 010"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_holog10"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Holotree 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_holot01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Holotree 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_holot02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Holotree 3 (Small)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_holot03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Hutt Statue"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_hutst01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Hutt Throne"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_huttr01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Imperial Medical Shed"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_impmed01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Junk Pile 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_jkpl001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Junk Pile 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_jkpl002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Lamp 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_lamp01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Mail box"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_mailb01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Market Item 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_mrkitm01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Market Item 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_mrkitm02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Market Stand 01 (Empty)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_mstnd01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Market Stand 02 (Full)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_mstnd02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Market Stand 03 (Full)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_mstnd03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Market Stand 04 (Empty)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_mstnd04"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Market Stand 05 (Full)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_mstnd05"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Market Stand 06 (Empty)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_mstnd06"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Market Stand 07 (Full)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_mstnd07"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Market Stand 08 (Empty)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_mstnd08"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Market Stand 09 (Full)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_mstnd09"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Market Stand 10 (Full)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_mstnd10"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Mine"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_mine01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Pallet001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_palet01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Parkingmeter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_prkme01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Phonebooth"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_phnb01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Pickaxe 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_pick01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Pillar 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_pillar01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Pipes 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_pipe01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Pipes 002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_pipe02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Plant 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_plant01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Planter 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_planr01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Poster 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_postr01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Poster 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_postr02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Power Core Pair"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_pwrcp01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Power Core Station"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_pwrcs01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Projection Holo 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_pholo01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Projection Holo 002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_pholo02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Projection Holo 003"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_pholo03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Projection Holo 004"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_pholo04"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Projection Holo 005"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_pholo05"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Projection Holo 006"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_pholo06"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Resurrection Holo"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_rholo01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Rug 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_rug01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Rug 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_rug02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Rug 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_rug03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Rug 4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_rug04"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Rug 5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_rug05"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Saber Remote"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_srem01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Safe Box"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_sbox01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Salvage Pack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_spack01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Slot Machine 1 (Light)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_smach01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Slot machine 2 (Light)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_smach02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Slot machine 3 (Light)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_smach03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Slot Machine 4 (Light)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_smach04"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Slot Machine 5 (Dark)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_smach05"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Slotmachine 6 (Dark)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_smach06"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Sofa"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_sofa01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Stimpack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_stim01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Stool"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_stool01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Street Light"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_streel01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Table 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_table01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Table 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_table02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Table 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_table03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Table 4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_table04"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Table 5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_table05"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Tablet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_tablet01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Tool"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_tool01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Tool Box"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_toolb01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Toy"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_toy01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Training Dummy"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_trdum01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Training Dummy (Side)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_trdum02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Trash Can"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_trash01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Vendor Bank"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_vbank01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Vendor Sign 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_vsign01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Vendor Sign 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_vsign02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Vendor Sign 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_vsign03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Wardrobe 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_ward01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Wardrobe 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_ward02"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Wardrobe 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_ward03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Wardrobe 4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_ward04"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Waterfall 001"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_wafa01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Workbench"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swd_wrkbe01"
+                    }
+                  },
                   {
                     "__struct_id": 0,
                     "NAME": {

@@ -31809,7 +31809,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 58
+    "value": 59
   },
   "Width": {
     "type": "int",

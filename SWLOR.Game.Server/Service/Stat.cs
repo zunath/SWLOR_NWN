@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -18,9 +17,6 @@ using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using SavingThrow = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrow;
-using System.Buffers.Text;
-using System.Collections;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -1164,7 +1160,7 @@ namespace SWLOR.Game.Server.Service
                 var npcStats = GetNPCStats(creature);
                 skillLevel = npcStats.Level;
             }
-
+            
             // Accuracy increases granted by effects
             accuracyBonus = CalculateEffectAccuracy(creature, accuracyBonus);
 

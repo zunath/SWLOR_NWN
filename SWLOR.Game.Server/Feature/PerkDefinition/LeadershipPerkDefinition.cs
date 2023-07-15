@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Leadership, PerkType.CityManagement)
                 .Name("City Management")
-                .RefundRequirement((player, perkType, effectivePerkLevel) =>
+                .RefundRequirement((player) =>
                 {
                     var playerId = GetObjectUUID(player);
                     var dbPlayer = DB.Get<Player>(playerId);

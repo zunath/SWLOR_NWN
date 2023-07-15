@@ -423,16 +423,6 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static int GetPlayerPerkLevel(Player dbPlayer, PerkType perkType)
-        {
-            if (dbPlayer == null)
-                return 0;
-            if (!dbPlayer.Perks.ContainsKey(perkType))
-                return 0;
-
-            return dbPlayer.Perks[perkType];
-        }
-
         private static int GetPlayerPerkLevel(uint player, PerkType perkType)
         {
             var playerId = GetObjectUUID(player);

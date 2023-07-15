@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Increases movement rate of Dash to 25%.")
                 .Price(3)
-                .PurchaseRequirement((player, type, level) =>
+                .PurchaseRequirement((player) =>
                 {
                     if (Ability.IsAbilityToggled(player, AbilityToggleType.Dash))
                     {

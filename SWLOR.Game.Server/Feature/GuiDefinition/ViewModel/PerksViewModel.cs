@@ -659,7 +659,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Custom purchase validation logic for the perk.
                     var canPurchase = detail.PurchaseRequirement == null
                         ? string.Empty
-                        : detail.PurchaseRequirement(Player, selectedPerk, rank);
+                        : detail.PurchaseRequirement(Player);
 
                     if (!string.IsNullOrWhiteSpace(canPurchase))
                     {
@@ -754,7 +754,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Run that now if specified.
                     var canRefund = perkDetail.RefundRequirement == null
                         ? string.Empty
-                        : perkDetail.RefundRequirement(target, selectedPerk, Perk.GetPerkLevel(target, selectedPerk));
+                        : perkDetail.RefundRequirement(target);
                     if (!string.IsNullOrWhiteSpace(canRefund))
                     {
                         FloatingTextStringOnCreature(canRefund, Player, false);

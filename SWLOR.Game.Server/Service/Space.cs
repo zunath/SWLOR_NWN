@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_spaceObjects.Count} space objects.");
 
             Scheduler.ScheduleRepeating(ProcessSpaceNPCAI, TimeSpan.FromSeconds(1));
-            Scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1));
+            Scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(100d));
         }
 
         [NWNEventHandler("mod_enter")]

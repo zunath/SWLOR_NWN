@@ -40,10 +40,15 @@ namespace SWLOR.Game.Server.Native
         [UnmanagedCallersOnly]
         private static int OnGetDamageRoll(void* thisPtr, void* pTarget, int bOffHand, int bCritical, int bSneakAttack, int bDeathAttack, int bForceMax)
         {
-            ProfilerPlugin.PushPerfScope($"NATIVE:{nameof(OnGetDamageRoll)}", "RunScript", "Script");
-
             var attackerStats = CNWSCreatureStats.FromPointer(thisPtr);
             var attacker = CNWSCreature.FromPointer(attackerStats.m_pBaseCreature);
+
+            var area = attacker.GetArea();
+            ProfilerPlugin.PushPerfScope("RunScript",
+                "Script", $"NATIVE:{nameof(OnGetDamageRoll)}",
+                "Area", area.m_sTag.ToString(),
+                "ObjectType", "Creature");
+
             var targetObject = CNWSObject.FromPointer(pTarget);
             var damageFlags = attackerStats.m_pBaseCreature.GetDamageFlags();
             var pCombatRound = attacker.m_pcCombatRound;

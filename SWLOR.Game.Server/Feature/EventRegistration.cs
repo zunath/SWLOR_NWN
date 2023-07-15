@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 SetEventScript(area, EventScript.Area_OnEnter, "area_enter");
                 SetEventScript(area, EventScript.Area_OnExit, "area_exit");
-                SetEventScript(area, EventScript.Area_OnHeartbeat, "area_heartbeat");
+                SetEventScript(area, EventScript.Area_OnHeartbeat, string.Empty); // Disabled for performance reasons
                 SetEventScript(area, EventScript.Area_OnUserDefined, "area_user_def");
             }
         }

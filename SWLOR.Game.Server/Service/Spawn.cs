@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Spawn
     {
-        public const int DespawnMinutes = 20;
+        public const int DespawnMinutes = 60;
         public const int DefaultRespawnMinutes = 5;
 
         private class SpawnDetail

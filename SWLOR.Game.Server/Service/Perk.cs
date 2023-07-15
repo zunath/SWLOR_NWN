@@ -444,7 +444,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player whose perk level we're retrieving</param>
         /// <param name="perkType">The type of perk we're retrieving</param>
         /// <returns>The player's effective perk level.</returns>
-        private static int GetPlayerEffectivePerkLevel(uint player, PerkType perkType)
+        public static int GetPlayerEffectivePerkLevel(uint player, PerkType perkType)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return 0;
 

@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var user = GetLastUsedBy();
 
-            if (GetIsInCombat(user))
+            if (GetIsInCombat(user) || Enmity.HasEnmity(user))
             {
                 SendMessageToPC(user, "You are in combat.");
                 return;

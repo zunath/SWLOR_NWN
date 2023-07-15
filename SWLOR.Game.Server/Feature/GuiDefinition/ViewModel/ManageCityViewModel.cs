@@ -393,6 +393,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbCity = DB.Get<WorldProperty>(_cityId);
             var mayor = DB.Get<Player>(dbCity.OwnerPlayerId);
             var currentLevel = dbCity.Upgrades[upgradeType];
+            var mayorPerkLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
+                ? mayor.Perks[PerkType.CityManagement]
+                : 0;
 
             if (currentLevel >= MaxUpgradeLevel)
             {
@@ -408,7 +411,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return false;
             }
 
-            if (mayor.Perks[PerkType.CityManagement] + 1 <= currentLevel)
+            if (mayorPerkLevel + 1 <= currentLevel)
             {
                 Instructions = "Mayor city management perk too low.";
                 InstructionsColor = GuiColor.Red;

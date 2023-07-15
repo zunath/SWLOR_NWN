@@ -698,7 +698,7 @@ namespace SWLOR.Game.Server.Service
             var currentLevel = city.Upgrades[PropertyUpgradeType.CityLevel];
             var mayorLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
                 ? mayor.Perks[PerkType.CityManagement] + 1
-                : 0;
+                : 1;
             
             // Mayor's perk level has fallen below the city level.
             if (mayorLevel < currentLevel)

@@ -338,7 +338,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var perkLevel = Perk.GetEffectivePerkLevel(Player, PerkType.Stabling) + 1;
+            var perkLevel = Perk.GetPerkLevel(Player, PerkType.Stabling) + 1;
             var dbQuery = new DBQuery<Beast>()
                 .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
             var dbBeasts = DB.Search(dbQuery)
@@ -556,6 +556,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickToggleActive() => () =>
         {
+            var playerId = GetObjectUUID(Player);
+
             ClearInstructions();
             if (_selectedBeastIndex <= -1)
                 return;
@@ -567,6 +569,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            var dbQuery = new DBQuery<Beast>()
+                .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
+            var beastCount = DB.SearchCount(dbQuery);
+            var perkLevel = Perk.GetPerkLevel(Player, PerkType.Stabling) + 1;
+            if (perkLevel < beastCount)
+            {
+                Instructions = "Stabling perk level too low. Purchase the perk and try again.";
+                return;
+            }
+
             var beastNameColors = new GuiBindingList<GuiColor>();
             for (var index = 0; index < BeastNames.Count; index++)
             {
@@ -575,7 +587,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             BeastNameColors = beastNameColors;
 
             var beastId = _beastIds[_selectedBeastIndex];
-            var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
 
             if (dbPlayer.ActiveBeastId == beastId)

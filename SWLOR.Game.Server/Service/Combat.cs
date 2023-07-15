@@ -365,7 +365,7 @@ namespace SWLOR.Game.Server.Service
             var mgtMod = GetAbilityModifier(AbilityType.Might, attacker);
 
             if (Item.StaffBaseItemTypes.Contains(weaponType))
-                return mgtMod * Perk.GetEffectivePerkLevel(attacker, PerkService.PerkType.CrushingStyle);
+                return mgtMod * Perk.GetPerkLevel(attacker, PerkService.PerkType.CrushingStyle);
             else if (Item.LightsaberBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleLightsaber))
                 return mgtMod / 2;
             else if (Item.SaberstaffBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleSaberstaff))

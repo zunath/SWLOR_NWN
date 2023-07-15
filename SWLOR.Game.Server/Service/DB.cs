@@ -224,7 +224,10 @@ namespace SWLOR.Game.Server.Service
                 if (string.IsNullOrWhiteSpace(data))
                     return default;
 
-                return JsonConvert.DeserializeObject<T>(data);
+                var entity = JsonConvert.DeserializeObject<T>(data);
+                _cachedEntities[id] = entity;
+
+                return entity;
             }
         }
 

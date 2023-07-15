@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ReducesItemCharge()
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var perkLevel = Perk.GetEffectivePerkLevel(user, PerkType.Harvesting);
+                    var perkLevel = Perk.GetPerkLevel(user, PerkType.Harvesting);
 
                     if (perkLevel < requiredLevel)
                     {

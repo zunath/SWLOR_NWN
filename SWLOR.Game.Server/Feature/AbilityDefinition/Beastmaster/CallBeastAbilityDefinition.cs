@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         return "You are in combat and cannot call your beast.";
                     }
 
-                    var maxBeastLevel = Perk.GetEffectivePerkLevel(activator, PerkType.Tame) * 10;
+                    var maxBeastLevel = Perk.GetPerkLevel(activator, PerkType.Tame) * 10;
 
                     if (!GetIsPC(activator) || GetIsDM(activator) || GetIsDMPossessed(activator))
                     {

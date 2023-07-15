@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature
             var effectivePerkLevel =
                 ability.EffectiveLevelPerkType == PerkType.Invalid
                     ? 1 // If there's not an associated perk, default level to 1.
-                    : Perk.GetEffectivePerkLevel(activator, ability.EffectiveLevelPerkType);
+                    : Perk.GetPerkLevel(activator, ability.EffectiveLevelPerkType);
 
             // Weapon abilities are queued for the next time the activator's attack lands on an enemy.
             if (ability.ActivationType == AbilityActivationType.Weapon)

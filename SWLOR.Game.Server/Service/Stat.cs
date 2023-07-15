@@ -483,7 +483,7 @@ namespace SWLOR.Game.Server.Service
             var movementRate = 1.0f;
             if (Ability.IsAbilityToggled(player, AbilityToggleType.Dash))
             {
-                var level = Perk.GetEffectivePerkLevel(player, PerkType.Dash);
+                var level = Perk.GetPerkLevel(player, PerkType.Dash);
                 switch (level)
                 {
                     case 1:
@@ -721,7 +721,7 @@ namespace SWLOR.Game.Server.Service
                     if (GetIsObjectValid(source))
                     {
                         var sourceSOC = GetAbilityScore(source, AbilityType.Social);
-                        var perkLevel = Perk.GetEffectivePerkLevel(source, PerkType.FrenziedShout);
+                        var perkLevel = Perk.GetPerkLevel(source, PerkType.FrenziedShout);
                         switch (perkLevel)
                         {
                             case 1:
@@ -784,7 +784,7 @@ namespace SWLOR.Game.Server.Service
                 var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.SoldiersStrike);
                 if (GetIsObjectValid(source))
                 {
-                    var perkLevel = Perk.GetEffectivePerkLevel(source, PerkType.SoldiersStrike);
+                    var perkLevel = Perk.GetPerkLevel(source, PerkType.SoldiersStrike);
                     var sourceSOC = GetAbilityScore(source, AbilityType.Social);
 
                     switch (perkLevel)
@@ -1312,7 +1312,7 @@ namespace SWLOR.Game.Server.Service
                 if (GetIsObjectValid(source))
                 {
                     var sourceSOC = GetAbilityScore(creature, AbilityType.Social);
-                    var perkLevel = Perk.GetEffectivePerkLevel(creature, PerkType.SoldiersSpeed);
+                    var perkLevel = Perk.GetPerkLevel(creature, PerkType.SoldiersSpeed);
 
                     switch (perkLevel)
                     {
@@ -1364,7 +1364,7 @@ namespace SWLOR.Game.Server.Service
                 if (GetIsObjectValid(source))
                 {
                     var sourceSOC = GetAbilityScore(source, AbilityType.Social);
-                    var perkLevel = Perk.GetEffectivePerkLevel(source, PerkType.SoldiersPrecision);
+                    var perkLevel = Perk.GetPerkLevel(source, PerkType.SoldiersPrecision);
 
                     switch (perkLevel)
                     {
@@ -1631,17 +1631,17 @@ namespace SWLOR.Game.Server.Service
 
             static int GetRapidShotBonus(uint pc)
             {
-                return Perk.GetEffectivePerkLevel(pc, PerkType.RapidShot);
+                return Perk.GetPerkLevel(pc, PerkType.RapidShot);
             }
 
             static int GetFlurryBonus(uint pc)
             {
-                return Perk.GetEffectivePerkLevel(pc, PerkType.FlurryStyle);
+                return Perk.GetPerkLevel(pc, PerkType.FlurryStyle);
             }
 
             static int GetShieldBonus(uint pc)
             {
-                return Perk.GetEffectivePerkLevel(pc, PerkType.ShieldMaster);
+                return Perk.GetPerkLevel(pc, PerkType.ShieldMaster);
             }
 
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
@@ -1710,11 +1710,11 @@ namespace SWLOR.Game.Server.Service
             if (Item.ShieldBaseItemTypes.Contains(offHandType)) 
                 numberOfAttacks += GetShieldBonus(creature);
 
-            var effectiveMasteryLevel = Perk.GetEffectivePerkLevel(creature, perkType);
+            var effectiveMasteryLevel = Perk.GetPerkLevel(creature, perkType);
             numberOfAttacks += effectiveMasteryLevel;
 
             // Beast Speed (1-3)
-            numberOfAttacks += Perk.GetEffectivePerkLevel(creature, PerkType.BeastSpeed);
+            numberOfAttacks += Perk.GetPerkLevel(creature, PerkType.BeastSpeed);
 
             var bab = GetBABForAttacks(numberOfAttacks);
             CreaturePlugin.SetBaseAttackBonus(creature, bab);
@@ -1731,17 +1731,17 @@ namespace SWLOR.Game.Server.Service
             if (Item.OneHandedMeleeItemTypes.Contains(itemType) || Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
             {
                 if (Item.OneHandedMeleeItemTypes.Contains(offhandType))
-                    critMod += Perk.GetEffectivePerkLevel(player, PerkType.WailingBlows) * 3; // 15% for WB
+                    critMod += Perk.GetPerkLevel(player, PerkType.WailingBlows) * 3; // 15% for WB
                 else if(offhandType == BaseItem.Invalid || Item.ShieldBaseItemTypes.Contains(offhandType))
-                    critMod += Perk.GetEffectivePerkLevel(player, PerkType.Duelist);
+                    critMod += Perk.GetPerkLevel(player, PerkType.Duelist);
             }
 
             if(Item.ThrowingWeaponBaseItemTypes.Contains(itemType) || Item.PistolBaseItemTypes.Contains(itemType))
             {
-                critMod += Perk.GetEffectivePerkLevel(player, PerkType.DirtyBlow) * 2; // 10% for DB
+                critMod += Perk.GetPerkLevel(player, PerkType.DirtyBlow) * 2; // 10% for DB
             }
 
-            critMod += Perk.GetEffectivePerkLevel(player, PerkType.InnerStrength);
+            critMod += Perk.GetPerkLevel(player, PerkType.InnerStrength);
 
             CreaturePlugin.SetCriticalRangeModifier(player, -critMod, 0, true);
         }
@@ -1852,7 +1852,7 @@ namespace SWLOR.Game.Server.Service
 
             if (Item.ShieldBaseItemTypes.Contains(offHandType))
             {
-                amount += Perk.GetEffectivePerkLevel(player, PerkType.ShieldResistance);
+                amount += Perk.GetPerkLevel(player, PerkType.ShieldResistance);
             }
 
             return amount;

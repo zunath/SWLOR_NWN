@@ -189,12 +189,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
-                .TriggerPurchase((player, type, level) =>
+                .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyAttacksPerRound(player, item);
                 })
-                .TriggerRefund((player, type, level) =>
+                .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyAttacksPerRound(player, item);
@@ -354,12 +354,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
-                .TriggerPurchase((player, type, level) =>
+                .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyAttacksPerRound(player, item);
                 })
-                .TriggerRefund((player, type, level) =>
+                .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyAttacksPerRound(player, item);
@@ -519,12 +519,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
-                .TriggerPurchase((player, type, level) =>
+                .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyAttacksPerRound(player, item);
                 })
-                .TriggerRefund((player, type, level) =>
+                .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyAttacksPerRound(player, item);
@@ -692,12 +692,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
-                .TriggerPurchase((player, type, level) =>
+                .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyAttacksPerRound(player, item);
                 })
-                .TriggerRefund((player, type, level) =>
+                .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyAttacksPerRound(player, item);
@@ -789,11 +789,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.StrongStyleSaberstaff)
                 .Name("Strong Style (Saberstaff)")
-                .TriggerRefund((player, type, level) =>
+                .TriggerRefund((player) =>
                 {
                     Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff, false);
                 })
-                .TriggerPurchase((player, type, level) =>
+                .TriggerPurchase((player) =>
                 {
                     Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff, false);
                 })

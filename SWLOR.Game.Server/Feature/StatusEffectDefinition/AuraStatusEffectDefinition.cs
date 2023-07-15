@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .GrantAction((source, target, length, data) => 
                 {
                     RemoveEffectByTag(target, EffectTag);
-                    var effectiveLevel = Perk.GetEffectivePerkLevel(source, PerkType.Charge);
+                    var effectiveLevel = Perk.GetPerkLevel(source, PerkType.Charge);
                     Effect effect;
 
                     switch (effectiveLevel)
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(EffectIconType.Rejuvenation)
                 .TickAction((source, target, data) =>
                 {
-                    var level = Perk.GetEffectivePerkLevel(source, PerkType.Rejuvenation);
+                    var level = Perk.GetPerkLevel(source, PerkType.Rejuvenation);
                     Stat.RestoreStamina(target, level);
                 });
         }

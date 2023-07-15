@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void CalculateCoresRequired()
         {
-            var refineryManagement = Perk.GetEffectivePerkLevel(Player, PerkType.RefineryManagement);
+            var refineryManagement = Perk.GetPerkLevel(Player, PerkType.RefineryManagement);
             var itemsPerCore = BaseItemsRefinedPerCore + refineryManagement;
             _powerCoresRequired = (int)Math.Ceiling(ItemCount / (float)itemsPerCore);
             
@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 // Player doesn't have prerequisite level.
-                var perkLevel = Perk.GetEffectivePerkLevel(Player, PerkType.Refining);
+                var perkLevel = Perk.GetPerkLevel(Player, PerkType.Refining);
                 if (perkLevel < _ores[resref].RequiredLevel)
                 {
                     SendMessageToPC(Player, $"Your Refining perk level must be at least {_ores[resref].RequiredLevel} to refine that item.");

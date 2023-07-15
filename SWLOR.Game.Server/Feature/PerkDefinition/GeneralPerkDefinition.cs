@@ -22,13 +22,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             void ToggleDash(uint player)
             {
-                var playerId = GetObjectUUID(player);
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                if (dbPlayer.AbilityToggles.ContainsKey(AbilityToggleType.Dash) &&
-                    dbPlayer.AbilityToggles[AbilityToggleType.Dash])
+                if (Ability.IsAbilityToggled(player, AbilityToggleType.Dash))
                 {
-                    AssignCommand(player, () => ActionUseFeat(FeatType.Dash, player));
+                    Ability.ToggleAbility(player, AbilityToggleType.Dash, false);
                 }
             }
 
@@ -44,15 +40,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Increases movement rate of Dash to 25%.")
                 .Price(3)
                 .PurchaseRequirement((player, type, level) =>
-                {
-                    if (Ability.IsAbilityToggled(player, AbilityToggleType.Dash))
-                    {
-                        return "Please disable Dash and try again.";
-                    }
-
-                    return string.Empty;
-                })
-                .RefundRequirement((player, type, level) =>
                 {
                     if (Ability.IsAbilityToggled(player, AbilityToggleType.Dash))
                     {

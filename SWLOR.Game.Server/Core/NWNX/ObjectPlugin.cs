@@ -361,13 +361,13 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// oObject The object.
         /// The object's type (NWNX_OBJECT_TYPE_INTERNAL_*)
         /// </summary>
-        public static int GetInternalObjectType(uint oObject)
+        public static InternalObjectType GetInternalObjectType(uint oObject)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetInternalObjectType");
             NWNCore.NativeFunctions.nwnxPushObject(oObject);
             NWNCore.NativeFunctions.nwnxCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            return (InternalObjectType)NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         /// <summary>

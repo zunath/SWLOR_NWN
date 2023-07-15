@@ -165,28 +165,22 @@ namespace SWLOR.Game.Server.Feature
             var player = OBJECT_SELF;
             if (GetIsDM(player) || GetIsDMPossessed(player)) return;
 
-            ProfilerPlugin.PushPerfScope($"{nameof(CleanUpExpiredRecastTimers)}:Retrieval", "RunScript", "Script");
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            ProfilerPlugin.PopPerfScope();
 
             if (dbPlayer == null)
                 return;
 
             var now = DateTime.UtcNow;
 
-            ProfilerPlugin.PushPerfScope($"{nameof(CleanUpExpiredRecastTimers)}:Iteration", "RunScript", "Script");
             foreach (var (group, dateTime) in dbPlayer.RecastTimes)
             {
                 if (dateTime > now) continue;
 
                 dbPlayer.RecastTimes.Remove(group);
             }
-            ProfilerPlugin.PopPerfScope();
 
-            ProfilerPlugin.PushPerfScope($"{nameof(CleanUpExpiredRecastTimers)}:Save", "RunScript", "Script");
             DB.Set(dbPlayer);
-            ProfilerPlugin.PopPerfScope();
         }
     }
 }

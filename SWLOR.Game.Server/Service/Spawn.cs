@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Spawn
     {
-        public const int DespawnMinutes = 20;
+        public const int DespawnMinutes = 60;
         public const int DefaultRespawnMinutes = 5;
 
         private class SpawnDetail
@@ -394,32 +394,41 @@ namespace SWLOR.Game.Server.Service
         public static void ProcessQueuedSpawns()
         {
             var now = DateTime.UtcNow;
+            var numberSpawned = 0;
+
             for (var index = _queuedSpawns.Count - 1; index >= 0; index--)
             {
                 var queuedSpawn = _queuedSpawns.ElementAt(index);
 
                 if (now > queuedSpawn.RespawnTime)
                 {
-                    var detail = _spawns[queuedSpawn.SpawnDetailId];
-                    var spawnedObject = SpawnObject(queuedSpawn.SpawnDetailId, detail);
-
-                    // A valid spawn wasn't found because the spawn table didn't provide a resref.
-                    // Either the table is configured wrong or the requirements for that specific table weren't met.
-                    // In this case, we bump the next respawn time and move to the next queued respawn.
-                    if (spawnedObject == OBJECT_INVALID)
+                    var delay = 0.1f * numberSpawned;
+                    DelayCommand(delay, () =>
                     {
-                        queuedSpawn.RespawnTime = now.AddMinutes(detail.RespawnDelayMinutes);
-                        continue;
-                    }
+                        var detail = _spawns[queuedSpawn.SpawnDetailId];
+                        var spawnedObject = SpawnObject(queuedSpawn.SpawnDetailId, detail);
 
-                    var activeSpawn = new ActiveSpawn
-                    {
-                        SpawnDetailId = queuedSpawn.SpawnDetailId,
-                        SpawnObject = spawnedObject
-                    };
+                        // A valid spawn wasn't found because the spawn table didn't provide a resref.
+                        // Either the table is configured wrong or the requirements for that specific table weren't met.
+                        // In this case, we bump the next respawn time and move to the next queued respawn.
+                        if (spawnedObject == OBJECT_INVALID)
+                        {
+                            CreateQueuedSpawn(queuedSpawn.SpawnDetailId, now.AddMinutes(detail.RespawnDelayMinutes));
+                            return;
+                        }
 
-                    _activeSpawnsByArea[detail.Area].Add(activeSpawn);
+                        var activeSpawn = new ActiveSpawn
+                        {
+                            SpawnDetailId = queuedSpawn.SpawnDetailId,
+                            SpawnObject = spawnedObject
+                        };
+
+                        _activeSpawnsByArea[detail.Area].Add(activeSpawn);
+                    });
+
                     RemoveQueuedSpawn(queuedSpawn);
+
+                    numberSpawned++;
                 }
             }
         }

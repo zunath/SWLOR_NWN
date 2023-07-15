@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -49,6 +51,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Provoke2);
         }
 
+        private void UnequipArmorIfRequirementsNotMet(uint player, PerkType perkType, InventorySlot slot)
+        {
+            var item = GetItemInSlot(slot, player);
+            if (!GetIsObjectValid(item))
+                return;
+
+            var perkLevel = Perk.GetPerkLevel(player, perkType);
+
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                var ipType = GetItemPropertyType(ip);
+                if (ipType != ItemPropertyType.UseLimitationPerk)
+                    continue;
+
+                var requiredPerkType = (PerkType)GetItemPropertySubType(ip);
+                if (requiredPerkType != perkType)
+                    continue;
+
+                var requiredLevel = GetItemPropertyCostTableValue(ip);
+                if (perkLevel < requiredLevel)
+                {
+                    AssignCommand(player, () =>
+                    {
+                        ActionUnequipItem(item);
+                    });
+                }
+            }
+        }
+
         private void CloakProficiency()
         {
             _builder.Create(PerkCategoryType.ArmorGeneral, PerkType.CloakProficiency)
@@ -82,7 +113,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 5 Cloaks")
                 .Price(1)
                 .RequirementSkill(SkillType.Armor, 45)
-                .GrantsFeat(FeatType.CloakProficiency5);
+                .GrantsFeat(FeatType.CloakProficiency5)
+                
+                .TriggerRefund(player =>
+                {
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.CloakProficiency, InventorySlot.Cloak);
+                });
         }
 
         private void BeltProficiency()
@@ -118,7 +154,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 5 Belts")
                 .Price(1)
                 .RequirementSkill(SkillType.Armor, 45)
-                .GrantsFeat(FeatType.BeltProficiency5);
+                .GrantsFeat(FeatType.BeltProficiency5)
+
+                .TriggerRefund(player =>
+                {
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.BeltProficiency, InventorySlot.Belt);
+                });
         }
 
         private void RingProficiency()
@@ -154,7 +195,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 5 Rings")
                 .Price(1)
                 .RequirementSkill(SkillType.Armor, 45)
-                .GrantsFeat(FeatType.RingProficiency5);
+                .GrantsFeat(FeatType.RingProficiency5)
+
+                .TriggerRefund(player =>
+                {
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.RingProficiency, InventorySlot.LeftRing);
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.RingProficiency, InventorySlot.RightRing);
+                });
         }
 
         private void NecklaceProficiency()
@@ -190,7 +237,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 5 Necklaces")
                 .Price(1)
                 .RequirementSkill(SkillType.Armor, 45)
-                .GrantsFeat(FeatType.NecklaceProficiency5);
+                .GrantsFeat(FeatType.NecklaceProficiency5)
+
+                .TriggerRefund(player =>
+                {
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.NecklaceProficiency, InventorySlot.Neck);
+                });
         }
 
         private void BreastplateProficiency()
@@ -225,7 +277,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 5 Breastplates")
                 .Price(1)
                 .RequirementSkill(SkillType.Armor, 40)
-                .GrantsFeat(FeatType.BreastplateProficiency5);
+                .GrantsFeat(FeatType.BreastplateProficiency5)
+
+                .TriggerRefund(player =>
+                {
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.BreastplateProficiency, InventorySlot.Chest);
+                });
         }
 
         private void HelmetProficiency()
@@ -260,7 +317,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 5 Helmets")
                 .Price(1)
                 .RequirementSkill(SkillType.Armor, 40)
-                .GrantsFeat(FeatType.HelmetProficiency5);
+                .GrantsFeat(FeatType.HelmetProficiency5)
+
+                .TriggerRefund(player =>
+                {
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.HelmetProficiency, InventorySlot.Head);
+                });
         }
 
         private void BracerProficiency()
@@ -295,7 +357,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 5 Bracers")
                 .Price(1)
                 .RequirementSkill(SkillType.Armor, 40)
-                .GrantsFeat(FeatType.BracerProficiency5);
+                .GrantsFeat(FeatType.BracerProficiency5)
+
+                .TriggerRefund(player =>
+                {
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.BracerProficiency, InventorySlot.Arms);
+                });
         }
 
         private void LeggingProficiency()
@@ -330,7 +397,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 5 Leggings")
                 .Price(1)
                 .RequirementSkill(SkillType.Armor, 40)
-                .GrantsFeat(FeatType.LeggingProficiency5);
+                .GrantsFeat(FeatType.LeggingProficiency5)
+
+                .TriggerRefund(player =>
+                {
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.LeggingProficiency, InventorySlot.Boots);
+                });
         }
 
         private void HeavyShieldProficiency()
@@ -365,7 +437,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 5 Shields")
                 .Price(1)
                 .RequirementSkill(SkillType.Armor, 40)
-                .GrantsFeat(FeatType.ShieldProficiency5);
+                .GrantsFeat(FeatType.ShieldProficiency5)
+
+                .TriggerRefund(player =>
+                {
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.ShieldProficiency, InventorySlot.LeftHand);
+                });
         }
 
         private void TunicProficiency()
@@ -400,7 +477,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 5 Tunics")
                 .Price(1)
                 .RequirementSkill(SkillType.Armor, 40)
-                .GrantsFeat(FeatType.TunicProficiency5);
+                .GrantsFeat(FeatType.TunicProficiency5)
+
+                .TriggerRefund(player =>
+                {
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.TunicProficiency, InventorySlot.Chest);
+                });
         }
 
         private void CapProficiency()
@@ -435,7 +517,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 5 Caps")
                 .Price(1)
                 .RequirementSkill(SkillType.Armor, 40)
-                .GrantsFeat(FeatType.CapProficiency5);
+                .GrantsFeat(FeatType.CapProficiency5)
+
+                .TriggerRefund(player =>
+                {
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.CapProficiency, InventorySlot.Head);
+                });
         }
 
         private void GloveProficiency()
@@ -470,7 +557,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 5 Gloves")
                 .Price(1)
                 .RequirementSkill(SkillType.Armor, 40)
-                .GrantsFeat(FeatType.GloveProficiency5);
+                .GrantsFeat(FeatType.GloveProficiency5)
+
+                .TriggerRefund(player =>
+                {
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.GloveProficiency, InventorySlot.Arms);
+                });
         }
 
         private void BootProficiency()
@@ -505,7 +597,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 5 Boots")
                 .Price(1)
                 .RequirementSkill(SkillType.Armor, 40)
-                .GrantsFeat(FeatType.BootProficiency5);
+                .GrantsFeat(FeatType.BootProficiency5)
+
+                .TriggerRefund(player =>
+                {
+                    UnequipArmorIfRequirementsNotMet(player, PerkType.BootProficiency, InventorySlot.Boots);
+                });
         }
     }
 

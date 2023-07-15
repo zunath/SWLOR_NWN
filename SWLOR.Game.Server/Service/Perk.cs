@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
@@ -39,6 +41,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<CharacterType, CharacterTypeAttribute> _characterTypes = new();
 
         private static readonly Dictionary<PerkType, Dictionary<int, int>> _perkLevelTiers = new();
+        private static readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
 
         /// <summary>
         /// Gets the list of heavy armor perks
@@ -143,17 +146,28 @@ namespace SWLOR.Game.Server.Service
                             break;
                         }
 
-                        // Determine the tiers of each individual perk level.
                         var skillReqs = perkLevel
                             .Requirements.Where(x => x.GetType() == typeof(PerkRequirementSkill))
                             .Cast<PerkRequirementSkill>();
-                        var highestRank = 0;
 
+                        // Determine the tiers of each individual perk level.
+                        // Also track the skill types used by this perk for later retrieval by the skill/perk decay system.
+                        var highestRank = 0;
                         foreach (var req in skillReqs)
                         {
                             if (req.RequiredRank > highestRank)
                             {
                                 highestRank = req.RequiredRank;
+                            }
+
+                            if (!_perksWithSkillRequirement.ContainsKey(req.Type))
+                            {
+                                _perksWithSkillRequirement[req.Type] = new List<PerkType>();
+                            }
+
+                            if (!_perksWithSkillRequirement[req.Type].Contains(perkType))
+                            {
+                                _perksWithSkillRequirement[req.Type].Add(perkType);
                             }
                         }
                         
@@ -244,7 +258,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns></returns>
         public static Dictionary<PerkType, List<PerkTriggerEquippedAction>> GetAllEquipTriggers()
         {
-            return _equipTriggers.ToDictionary(x => x.Key, y => y.Value);
+            return _equipTriggers;
         }
 
         /// <summary>
@@ -253,7 +267,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns></returns>
         public static Dictionary<PerkType, List<PerkTriggerUnequippedAction>> GetAllUnequipTriggers()
         {
-            return _unequipTriggers.ToDictionary(x => x.Key, y => y.Value);
+            return _unequipTriggers;
         }
 
         /// <summary>
@@ -262,7 +276,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns></returns>
         public static Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> GetAllPurchaseTriggers()
         {
-            return _purchaseTriggers.ToDictionary(x => x.Key, y => y.Value);
+            return _purchaseTriggers;
         }
 
         /// <summary>
@@ -271,7 +285,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns></returns>
         public static Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> GetAllRefundTriggers()
         {
-            return _refundTriggers.ToDictionary(x => x.Key, y => y.Value);
+            return _refundTriggers;
         }
 
 
@@ -372,15 +386,18 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the effective perk level of a creature.
+        /// Retrieves the perk level of a creature.
         /// On NPCs, this will retrieve the "PERK_LEVEL_{perkId}" variable, where {perkId} is replaced with the ID of the perk.
         /// If this variable is not set, the max level of the perk will be used instead.
-        /// On PCs, this will retrieve the perk level, taking into account any skill decay.
+        /// On PCs, this will retrieve the current perk level. It does not take into account any skill decay and should be
+        /// treated as a "soft" check as requirements are assumed to have been checked prior.
+        /// It is handled this way for performance reasons (checking requirements on perks is very expensive).
+        /// If you need to perform a "hard" check on requirements, use GetEffectivePerkLevel instead.
         /// </summary>
         /// <param name="creature">The creature whose perk level will be retrieved.</param>
         /// <param name="perkType">The type of perk to retrieve.</param>
-        /// <returns>The effective perk level of a creature.</returns>
-        public static int GetEffectivePerkLevel(uint creature, PerkType perkType)
+        /// <returns>The perk level of a creature.</returns>
+        public static int GetPerkLevel(uint creature, PerkType perkType)
         {
             if (GetIsDM(creature) && !GetIsDMPossessed(creature)) 
                 return 0;
@@ -406,15 +423,28 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        private static int GetPlayerPerkLevel(uint player, PerkType perkType)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (dbPlayer == null)
+                return 0;
+            if (!dbPlayer.Perks.ContainsKey(perkType))
+                return 0;
+
+            return dbPlayer.Perks[perkType];
+        }
+
         /// <summary>
         /// Retrieves a player's effective perk level.
-        /// This will take into account scenarios where a player's purchased perk level is higher than
-        /// what their skill levels allow.
+        /// This performs a "hard" check on all perk requirements. This process is VERY expensive so please use sparingly.
+        /// It is almost always better to use GetPerkLevel instead of this method.
         /// </summary>
         /// <param name="player">The player whose perk level we're retrieving</param>
         /// <param name="perkType">The type of perk we're retrieving</param>
         /// <returns>The player's effective perk level.</returns>
-        private static int GetPlayerPerkLevel(uint player, PerkType perkType)
+        public static int GetPlayerEffectivePerkLevel(uint player, PerkType perkType)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return 0;
 
@@ -423,7 +453,7 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer == null)
                 return 0;
 
-            return GetPlayerPerkLevel(player, dbPlayer, perkType);
+            return GetPlayerEffectivePerkLevel(player, dbPlayer, perkType);
         }
 
         /// <summary>
@@ -433,7 +463,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="dbPlayer">The database entity</param>
         /// <param name="perkType">The type of perk</param>
         /// <returns>The effective level for a given player and perk</returns>
-        private static int GetPlayerPerkLevel(uint player, Player dbPlayer, PerkType perkType)
+        private static int GetPlayerEffectivePerkLevel(uint player, Player dbPlayer, PerkType perkType)
         {
             var playerPerkLevel = dbPlayer.Perks.ContainsKey(perkType) ? dbPlayer.Perks[perkType] : 0;
 
@@ -534,6 +564,66 @@ namespace SWLOR.Game.Server.Service
 
             dbPlayer.UnlockedPerks[perkType] = DateTime.UtcNow;
             DB.Set(dbPlayer);
+        }
+
+        /// <summary>
+        /// When a skill receives decay, any perks tied to that skill should be checked.
+        /// If the player no longer meets the requirements for those perks, they should be reduced in level.
+        /// </summary>
+        [NWNEventHandler("swlor_lose_skill")]
+        public static void RemovePerkLevelOnSkillDecay()
+        {
+            var skillType = (SkillType)Convert.ToInt32(EventsPlugin.GetEventData("SKILL_TYPE_ID"));
+            
+            // Early exit - if no perks are tied to this skill, then it doesn't matter. There's nothing to remove.
+            if (!_perksWithSkillRequirement.ContainsKey(skillType))
+                return;
+
+            var player = OBJECT_SELF;
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            var possiblePerks = _perksWithSkillRequirement[skillType];
+            
+            foreach (var perkType in possiblePerks)
+            {
+                // Player doesn't have this perk. Move to the next.
+                if (!dbPlayer.Perks.ContainsKey(perkType))
+                    continue;
+
+                var perkDetail = GetPerkDetails(perkType);
+                var effectiveLevel = GetPlayerEffectivePerkLevel(player, perkType);
+                var currentLevel = dbPlayer.Perks[perkType];
+
+                // Player didn't suffer a reduction in effective level. Move to the next.
+                if (effectiveLevel == currentLevel)
+                    continue;
+
+                // Found at least one perk level that needs to be removed.
+                for (var level = currentLevel; level > effectiveLevel; level--)
+                {
+                    var perkLevel = perkDetail.PerkLevels[level];
+                    dbPlayer.UnallocatedSP += perkLevel.Price;
+
+                    foreach (var feat in perkLevel.GrantedFeats)
+                    {
+                        CreaturePlugin.RemoveFeat(player, feat);
+                    }
+                    
+                    Log.Write(LogGroup.PerkRefund, $"AUTOMATIC DECAY REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {perkLevel} - PerkID {perkType}");
+                    FloatingTextStringOnCreature($"Perk '{perkDetail.Name}' level {level} was refunded because your skill fell under the minimum requirements. You reclaimed {perkLevel.Price} SP.", player, false);
+                }
+
+                dbPlayer.Perks[perkType] = effectiveLevel;
+                DB.Set(dbPlayer);
+
+                foreach (var refundTrigger in perkDetail.RefundedTriggers)
+                {
+                    refundTrigger(player);
+                }
+            }
+
+            ExportSingleCharacter(player);
         }
     }
 }

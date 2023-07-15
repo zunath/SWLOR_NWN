@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             return "Droid AI cannot be adjusted while active. Please dismiss your droid and try again.";
                         }
 
-                        var perkLevel = Perk.GetEffectivePerkLevel(user, PerkType.DroidAssembly);
+                        var perkLevel = Perk.GetPerkLevel(user, PerkType.DroidAssembly);
 
                         if (perkLevel < droidDetails.Tier)
                         {

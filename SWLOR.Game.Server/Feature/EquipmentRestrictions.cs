@@ -15,22 +15,6 @@ namespace SWLOR.Game.Server.Feature
     public static class EquipmentRestrictions
     {
         /// <summary>
-        /// When an item's usage is validated, check the custom rules to see if the item can be used by the player.
-        /// If not able to be used, item will appear red in inventory.
-        /// </summary>
-        [NWNEventHandler("item_valid_bef")]
-        public static void ValidateItemUse()
-        {
-            // todo: removed due to performance issues. Revisit later.
-
-            //var creature = OBJECT_SELF;
-            //var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
-
-            //EventsPlugin.SetEventResult(string.IsNullOrWhiteSpace(CanItemBeUsed(creature, item)) ? "1" : "0");
-            //EventsPlugin.SkipEvent();
-        }
-
-        /// <summary>
         /// When an item is equipped, check the custom rules to see if the item can be equipped by the player.
         /// If not able to be used, an error message will be sent and item will not be equipped.
         /// </summary>
@@ -141,7 +125,7 @@ namespace SWLOR.Game.Server.Feature
             };
             if (!dualWieldWeapons.Contains(baseItem)) return true;
 
-            var dualWieldLevel = Perk.GetEffectivePerkLevel(creature, PerkType.DualWield);
+            var dualWieldLevel = Perk.GetPerkLevel(creature, PerkType.DualWield);
             if (dualWieldLevel <= 0)
             {
                 SendMessageToPC(creature, ColorToken.Red("Equipping two weapons requires the Dual Wield perk."));
@@ -254,7 +238,7 @@ namespace SWLOR.Game.Server.Feature
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
-            
+
             // The unequip event doesn't fire if an item is being swapped out. 
             // If there's an item in the slot, run the unequip triggers first.
             var existingItemInSlot = GetItemInSlot(slot, player);
@@ -265,7 +249,7 @@ namespace SWLOR.Game.Server.Feature
 
             foreach (var (perkType, actionList) in Perk.GetAllEquipTriggers())
             {
-                var playerPerkLevel = Perk.GetEffectivePerkLevel(player, perkType);
+                var playerPerkLevel = Perk.GetPerkLevel(player, perkType);
                 if (playerPerkLevel <= 0) continue;
 
                 foreach (var action in actionList)
@@ -281,7 +265,7 @@ namespace SWLOR.Game.Server.Feature
 
             foreach (var (perkType, actionList) in Perk.GetAllUnequipTriggers())
             {
-                var playerPerkLevel = Perk.GetEffectivePerkLevel(player, perkType);
+                var playerPerkLevel = Perk.GetPerkLevel(player, perkType);
                 if (playerPerkLevel <= 0) continue;
 
                 foreach (var action in actionList)
@@ -303,6 +287,5 @@ namespace SWLOR.Game.Server.Feature
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             RunUnequipTriggers(player, item);
         }
-
     }
 }

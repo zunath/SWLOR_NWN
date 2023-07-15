@@ -63,10 +63,6 @@ Copy the swlor2_tlk.tlk file in the tlk directory to your NWN play directory. Al
 
 Delete all docker containers and images, then delete all files in the debugserver/modules, debugserver/tlk, and debugserver/hak folders. Then rerun the application.
 
-# Development Guide
-
-Please refer to this guide for setting up your development environment: https://wiki.starwarsnwn.com/en/Development/Environment-SetUp
-
 # Getting Help
 
 If you need help with anything related to Star Wars: Legends of the Old Republic please feel free to contact us on our Discord here: https://discord.gg/MyQAM6m

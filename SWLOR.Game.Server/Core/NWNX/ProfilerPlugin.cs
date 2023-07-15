@@ -1,4 +1,7 @@
-﻿namespace SWLOR.Game.Server.Core.NWNX
+﻿using System;
+using SWLOR.Game.Server.Core.NWNX.Enum;
+
+namespace SWLOR.Game.Server.Core.NWNX
 {
     public static class ProfilerPlugin
     {
@@ -27,18 +30,69 @@
         /// <param name="name">The name to use for your metric</param>
         /// <param name="tag0_tag">An optional tag to filter your metrics</param>
         /// <param name="tag0_value">The tag's value for which to filter.</param>
-        public static void PushPerfScope(string name, string tag0_tag = "", string tag0_value = "")
+        public static void PushPerfScope(
+            string name, 
+            string tag0_tag = "", 
+            string tag0_value = "",
+            string tag1_tag = "",
+            string tag1_value = "",
+            string tag2_tag = "",
+            string tag2_value = "")
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PushPerfScope");
-            NWNCore.NativeFunctions.nwnxPushString(name);
 
             if (!string.IsNullOrWhiteSpace(tag0_value) && !string.IsNullOrWhiteSpace(tag0_tag))
             {
                 NWNCore.NativeFunctions.nwnxPushString(tag0_value);
                 NWNCore.NativeFunctions.nwnxPushString(tag0_tag);
             }
+            
+            if (!string.IsNullOrWhiteSpace(tag1_value) && !string.IsNullOrWhiteSpace(tag1_tag))
+            {
+                NWNCore.NativeFunctions.nwnxPushString(tag1_value);
+                NWNCore.NativeFunctions.nwnxPushString(tag1_tag);
+            }
+
+            if (!string.IsNullOrWhiteSpace(tag2_value) && !string.IsNullOrWhiteSpace(tag2_tag))
+            {
+                NWNCore.NativeFunctions.nwnxPushString(tag2_value);
+                NWNCore.NativeFunctions.nwnxPushString(tag2_tag);
+            }
+
+            NWNCore.NativeFunctions.nwnxPushString(name);
 
             NWNCore.NativeFunctions.nwnxCallFunction();
+        }
+
+        /// <summary>
+        /// Pushes a timing metric scope based on a specified object.
+        /// </summary>
+        /// <param name="target">The object to target</param>
+        /// <param name="scriptName">The name of the script</param>
+        public static void PushPerfScope(uint target, string scriptName)
+        {
+            var internalObjectType = GetIsObjectValid(target) 
+                ? ObjectPlugin.GetInternalObjectType(target) 
+                : InternalObjectType.Invalid;
+            var objectTypeName = internalObjectType == InternalObjectType.Invalid 
+                ? "(unknown)" 
+                : internalObjectType.ToString();
+            string areaResref;
+
+            if (internalObjectType == InternalObjectType.Module)
+                areaResref = "--MODULE--";
+            else if (internalObjectType == InternalObjectType.Invalid)
+                areaResref = "(unknown)";
+            else 
+                areaResref = GetResRef(GetArea(target));
+
+            if (string.IsNullOrWhiteSpace(areaResref))
+                areaResref = "(unknown)";
+
+            PushPerfScope("RunScript", 
+                "Script", scriptName,
+                "Area", areaResref,
+                "ObjectType", objectTypeName);
         }
 
         /// <summary>

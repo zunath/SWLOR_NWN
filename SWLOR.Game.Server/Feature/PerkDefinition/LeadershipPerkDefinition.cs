@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.Leadership, PerkType.CityManagement)
                 .Name("City Management")
-                .RefundRequirement((player, perkType, effectivePerkLevel) =>
+                .RefundRequirement((player) =>
                 {
                     var playerId = GetObjectUUID(player);
                     var dbPlayer = DB.Get<Player>(playerId);
@@ -157,14 +157,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 50)
                 
-                .TriggerPurchase((player, type, level) =>
-                {
-                    Ability.ReapplyPlayerAuraAOE(player);
-                })
-                .TriggerRefund((player, type, level) =>
-                {
-                    Ability.ReapplyPlayerAuraAOE(player);
-                });
+                .TriggerPurchase(Ability.ReapplyPlayerAuraAOE)
+                .TriggerRefund(Ability.ReapplyPlayerAuraAOE);
         }
 
         private void RousingShout()

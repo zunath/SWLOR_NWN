@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Discord;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -76,7 +77,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (GetIsObjectValid(source))
                     {
-                        var effectiveLevel = Perk.GetEffectivePerkLevel(source, PerkType.Dedication);
+                        var effectiveLevel = Perk.GetPerkLevel(source, PerkType.Dedication);
                         social = GetAbilityScore(source, AbilityType.Social);
                         bonusPercentage += (10 + effectiveLevel * social) * 0.01f;
                     }
@@ -212,6 +213,9 @@ namespace SWLOR.Game.Server.Service
 
                     if (dbPlayer.Skills[decaySkill].Rank <= 0)
                         skillsPossibleToDecay.Remove(decaySkill);
+
+                    EventsPlugin.PushEventData("SKILL_TYPE_ID", ((int)decaySkill).ToString());
+                    EventsPlugin.SignalEvent("SWLOR_SKILL_LOST_BY_DECAY", player);
                 }
             }
 

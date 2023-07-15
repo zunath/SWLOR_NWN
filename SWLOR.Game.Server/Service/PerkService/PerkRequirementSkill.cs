@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Service.PerkService
     /// </summary>
     public class PerkRequirementSkill : IPerkRequirement
     {
-        private SkillType Type { get; }
+        public SkillType Type { get; }
         public int RequiredRank { get; }
 
         public PerkRequirementSkill(SkillType type, int requiredRank)

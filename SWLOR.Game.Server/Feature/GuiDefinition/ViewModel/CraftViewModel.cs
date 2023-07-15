@@ -1264,19 +1264,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsInSetupMode = false;
             IsClosable = false;
 
-            IsRapidSynthesisEnabled = Perk.GetEffectivePerkLevel(Player, _rapidSynthesisPerk) > 0;
-            IsCarefulSynthesisEnabled = Perk.GetEffectivePerkLevel(Player, _carefulSynthesisPerk) > 0;
+            IsRapidSynthesisEnabled = Perk.GetPerkLevel(Player, _rapidSynthesisPerk) > 0;
+            IsCarefulSynthesisEnabled = Perk.GetPerkLevel(Player, _carefulSynthesisPerk) > 0;
 
-            IsBasicTouchEnabled = Perk.GetEffectivePerkLevel(Player, _basicTouchPerk) > 0;
-            IsStandardTouchEnabled = Perk.GetEffectivePerkLevel(Player, _standardTouchPerk) > 0;
-            IsPreciseTouchEnabled = Perk.GetEffectivePerkLevel(Player, _preciseTouchPerk) > 0;
+            IsBasicTouchEnabled = Perk.GetPerkLevel(Player, _basicTouchPerk) > 0;
+            IsStandardTouchEnabled = Perk.GetPerkLevel(Player, _standardTouchPerk) > 0;
+            IsPreciseTouchEnabled = Perk.GetPerkLevel(Player, _preciseTouchPerk) > 0;
 
-            IsMastersMendEnabled = Perk.GetEffectivePerkLevel(Player, _mastersMendPerk) > 0;
-            IsSteadyHandEnabled = Perk.GetEffectivePerkLevel(Player, _steadyHandPerk) > 0;
-            IsMuscleMemoryEnabled = Perk.GetEffectivePerkLevel(Player, _muscleMemoryPerk) > 0;
+            IsMastersMendEnabled = Perk.GetPerkLevel(Player, _mastersMendPerk) > 0;
+            IsSteadyHandEnabled = Perk.GetPerkLevel(Player, _steadyHandPerk) > 0;
+            IsMuscleMemoryEnabled = Perk.GetPerkLevel(Player, _muscleMemoryPerk) > 0;
 
-            IsVenerationEnabled = Perk.GetEffectivePerkLevel(Player, _venerationPerk) > 0;
-            IsWasteNotEnabled = Perk.GetEffectivePerkLevel(Player, _wasteNotPerk) > 0;
+            IsVenerationEnabled = Perk.GetPerkLevel(Player, _venerationPerk) > 0;
+            IsWasteNotEnabled = Perk.GetPerkLevel(Player, _wasteNotPerk) > 0;
 
             ApplyImmobility();
         }

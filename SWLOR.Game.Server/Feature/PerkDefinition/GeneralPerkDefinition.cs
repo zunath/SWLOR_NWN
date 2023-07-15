@@ -61,14 +61,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     return string.Empty;
                 })
-                .TriggerPurchase((player, type, level) =>
-                {
-                    ToggleDash(player);
-                })
-                .TriggerRefund((player, type, level) =>
-                {
-                    ToggleDash(player);
-                });
+                .TriggerPurchase(ToggleDash)
+                .TriggerRefund(ToggleDash);
         }
     }
 }

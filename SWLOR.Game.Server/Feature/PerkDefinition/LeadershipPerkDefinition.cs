@@ -157,14 +157,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 50)
                 
-                .TriggerPurchase((player, type, level) =>
-                {
-                    Ability.ReapplyPlayerAuraAOE(player);
-                })
-                .TriggerRefund((player, type, level) =>
-                {
-                    Ability.ReapplyPlayerAuraAOE(player);
-                });
+                .TriggerPurchase(Ability.ReapplyPlayerAuraAOE)
+                .TriggerRefund(Ability.ReapplyPlayerAuraAOE);
         }
 
         private void RousingShout()

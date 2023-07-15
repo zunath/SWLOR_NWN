@@ -580,6 +580,7 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("SWLOR_COMPLETE_QUEST", "swlor_comp_qst");
             EventsPlugin.SubscribeEvent("SWLOR_CACHE_SKILLS_LOADED", "swlor_skl_cache");
             EventsPlugin.SubscribeEvent("SWLOR_COMBAT_POINT_DISTRIBUTED", "cp_xp_distribute");
+            EventsPlugin.SubscribeEvent("SWLOR_SKILL_LOST_BY_DECAY", "swlor_lose_skill");
         }
 
         /// <summary>

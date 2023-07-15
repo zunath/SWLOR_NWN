@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Service.PerkService
 
     public delegate void PerkTriggerEquippedAction(uint player, uint item, InventorySlot slot, PerkType perkType, int effectivePerkLevel);
     public delegate void PerkTriggerUnequippedAction(uint player, uint item, InventorySlot slot, PerkType perkType, int effectivePerkLevel);
-    public delegate void PerkTriggerPurchasedRefundedAction(uint player, PerkType perkType, int effectivePerkLevel);
+    public delegate void PerkTriggerPurchasedRefundedAction(uint player);
 
 
     public class PerkDetail

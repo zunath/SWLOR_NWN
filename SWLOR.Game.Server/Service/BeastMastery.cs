@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Service
             var player = GetMaster(beast);
             var beastId = GetBeastId(beast);
             var dbBeast = DB.Get<Beast>(beastId);
-            var maxBeastLevel = Perk.GetEffectivePerkLevel(player, PerkType.Tame) * 10;
+            var maxBeastLevel = Perk.GetPerkLevel(player, PerkType.Tame) * 10;
             var bonusPercentage = 0f;
             var social = GetAbilityScore(beast, AbilityType.Social);
 
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (GetIsObjectValid(source))
                     {
-                        var effectiveLevel = Perk.GetEffectivePerkLevel(source, PerkType.Dedication);
+                        var effectiveLevel = Perk.GetPerkLevel(source, PerkType.Dedication);
                         var sourceSocial = GetAbilityScore(source, AbilityType.Social);
                         bonusPercentage += (10 + effectiveLevel * sourceSocial) * 0.01f;
                     }

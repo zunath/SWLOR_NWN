@@ -338,7 +338,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var perkLevel = Perk.GetEffectivePerkLevel(Player, PerkType.Stabling) + 1;
+            var perkLevel = Perk.GetPerkLevel(Player, PerkType.Stabling) + 1;
             var dbQuery = new DBQuery<Beast>()
                 .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
             var dbBeasts = DB.Search(dbQuery)

@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service.CraftService
 
         public string CheckRequirements(uint player)
         {
-            var effectiveLevel = Perk.GetEffectivePerkLevel(player, _perk);
+            var effectiveLevel = Perk.GetPerkLevel(player, _perk);
 
             if (effectiveLevel < _requiredLevel)
             {

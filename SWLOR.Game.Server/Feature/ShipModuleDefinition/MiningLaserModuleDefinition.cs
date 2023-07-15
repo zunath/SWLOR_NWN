@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         }
 
                         // Perk & module bonuses
-                        var amountToMine = 1 + Perk.GetEffectivePerkLevel(activator, PerkType.StarshipMining) + (int)(moduleBonus * 0.4f);
+                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(moduleBonus * 0.4f);
                         if (amountToMine > remainingUnits)
                             amountToMine = remainingUnits;
 

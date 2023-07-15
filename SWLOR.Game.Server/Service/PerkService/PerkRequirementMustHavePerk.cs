@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service.PerkService
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            if (!dbPlayer.Perks.ContainsKey(_mustHavePerkType) || Perk.GetEffectivePerkLevel(player, _mustHavePerkType) < _mustHavePerkLevel)
+            if (!dbPlayer.Perks.ContainsKey(_mustHavePerkType) || Perk.GetPerkLevel(player, _mustHavePerkType) < _mustHavePerkLevel)
                return $"You must have perk {perkDetail.Name} at level {_mustHavePerkLevel}.";
 
             return string.Empty;

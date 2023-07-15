@@ -229,9 +229,9 @@ namespace SWLOR.Game.Server.Service
             var currentCreditFinder = GetLocalInt(target, "CREDITFINDER_LEVEL");
             var currentTreasureHunter = GetLocalInt(target, "RARE_BONUS_CHANCE");
 
-            var creditFinderLevel = Perk.GetEffectivePerkLevel(attacker, PerkType.CreditFinder);
-            var treasureHunterLevel = Perk.GetEffectivePerkLevel(attacker, PerkType.TreasureHunter) * 10;
-            var sniffLevel = Perk.GetEffectivePerkLevel(attacker, PerkType.Sniff);
+            var creditFinderLevel = Perk.GetPerkLevel(attacker, PerkType.CreditFinder);
+            var treasureHunterLevel = Perk.GetPerkLevel(attacker, PerkType.TreasureHunter) * 10;
+            var sniffLevel = Perk.GetPerkLevel(attacker, PerkType.Sniff);
             switch (sniffLevel)
             {
                 case 1:

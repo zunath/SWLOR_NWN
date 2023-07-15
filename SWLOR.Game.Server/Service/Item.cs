@@ -446,7 +446,7 @@ namespace SWLOR.Game.Server.Service
                     var perkType = (PerkType)GetItemPropertySubType(ip);
                     var levelRequired = GetItemPropertyCostTableValue(ip);
 
-                    if (Perk.GetEffectivePerkLevel(creature, perkType) < levelRequired)
+                    if (Perk.GetPerkLevel(creature, perkType) < levelRequired)
                         return false;
                 }
             }

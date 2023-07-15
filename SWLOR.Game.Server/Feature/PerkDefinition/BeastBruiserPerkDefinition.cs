@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             var player = GetMaster(beast);
             if (GetIsPC(player) && !GetIsDead(player))
             {
-                var chance = Perk.GetEffectivePerkLevel(beast, PerkType.EnduranceLink) * 10;
+                var chance = Perk.GetPerkLevel(beast, PerkType.EnduranceLink) * 10;
 
                 if (Random.D100(1) <= chance)
                 {

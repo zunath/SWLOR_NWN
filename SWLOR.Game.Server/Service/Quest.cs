@@ -502,7 +502,7 @@ namespace SWLOR.Game.Server.Service
             var guildRelations = 0f;
             if (isGuildQuest)
             {
-                var perkLevel = Perk.GetEffectivePerkLevel(player, PerkType.GuildRelations);
+                var perkLevel = Perk.GetPerkLevel(player, PerkType.GuildRelations);
                 guildRelations = perkLevel * 0.05f;
             }
             var amount = baseAmount +

@@ -1,8 +1,10 @@
-﻿using SWLOR.Game.Server.Core.NWScript.Enum;
+﻿using System.Linq;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
@@ -81,6 +83,29 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 // Attacks
                 Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
             });
+        }
+
+        protected void RefundPerk(uint player, PerkType perkType)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (!dbPlayer.Perks.ContainsKey(perkType))
+                return;
+
+            var perkLevel = dbPlayer.Perks[perkType];
+            var perkDetail = Perk.GetPerkDetails(perkType);
+            var refundAmount = perkDetail.PerkLevels
+                .Where(x => x.Key <= perkLevel)
+                .Sum(x => x.Value.Price);
+
+            dbPlayer.UnallocatedSP += refundAmount;
+            dbPlayer.Perks.Remove(perkType);
+
+            DB.Set(dbPlayer);
+
+            Log.Write(LogGroup.Migration, $"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP for perk '{perkType}'.");
+            SendMessageToPC(player, $"Perk '{perkDetail.Name}' was automatically refunded. You reclaimed {refundAmount} SP.");
         }
     }
 }

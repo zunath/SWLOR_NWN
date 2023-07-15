@@ -27,8 +27,8 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
             
-            var scavengingLevel = Perk.GetEffectivePerkLevel(user, PerkType.Scavenging);
-            var hardLookLevel = Perk.GetEffectivePerkLevel(user, PerkType.HardLook);
+            var scavengingLevel = Perk.GetPerkLevel(user, PerkType.Scavenging);
+            var hardLookLevel = Perk.GetPerkLevel(user, PerkType.HardLook);
             var requiredLevel = GetLocalInt(placeable, "SCAVENGE_POINT_LEVEL");
             var lootTableName = GetLocalString(placeable, "SCAVENGE_POINT_LOOT_TABLE_NAME");
 
@@ -69,8 +69,8 @@ namespace SWLOR.Game.Server.Feature
             var scavLevel = 10 * requiredLevel;            
             var delta = scavLevel - dbSkill.Rank;
             var deltaXP = Skill.GetDeltaXP(delta);
-            var treasureHunterLevel = Perk.GetEffectivePerkLevel(user, PerkType.TreasureHunter);
-            var creditFinderLevel = Perk.GetEffectivePerkLevel(user, PerkType.CreditFinder);
+            var treasureHunterLevel = Perk.GetPerkLevel(user, PerkType.TreasureHunter);
+            var creditFinderLevel = Perk.GetPerkLevel(user, PerkType.CreditFinder);
             var creditPercentIncrease = creditFinderLevel * 0.2f;
 
             for (var attempt = 1; attempt <= attempts; attempt++)

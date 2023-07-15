@@ -584,9 +584,7 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
 
             var possiblePerks = _perksWithSkillRequirement[skillType];
-
-            AssignCommand(player, () => ClearAllActions(true));
-
+            
             foreach (var perkType in possiblePerks)
             {
                 // Player doesn't have this perk. Move to the next.

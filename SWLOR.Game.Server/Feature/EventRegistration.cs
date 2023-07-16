@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 SetEventScript(area, EventScript.Area_OnEnter, "area_enter");
                 SetEventScript(area, EventScript.Area_OnExit, "area_exit");
-                SetEventScript(area, EventScript.Area_OnHeartbeat, "area_heartbeat");
+                SetEventScript(area, EventScript.Area_OnHeartbeat, string.Empty); // Disabled for performance reasons
                 SetEventScript(area, EventScript.Area_OnUserDefined, "area_user_def");
             }
         }
@@ -580,6 +580,7 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("SWLOR_COMPLETE_QUEST", "swlor_comp_qst");
             EventsPlugin.SubscribeEvent("SWLOR_CACHE_SKILLS_LOADED", "swlor_skl_cache");
             EventsPlugin.SubscribeEvent("SWLOR_COMBAT_POINT_DISTRIBUTED", "cp_xp_distribute");
+            EventsPlugin.SubscribeEvent("SWLOR_SKILL_LOST_BY_DECAY", "swlor_lose_skill");
         }
 
         /// <summary>

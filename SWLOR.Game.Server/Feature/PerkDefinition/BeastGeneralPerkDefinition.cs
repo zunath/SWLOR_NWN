@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             _builder.Create(PerkCategoryType.BeastGeneral, PerkType.BeastSpeed)
                 .Name("Beast Speed")
                 .GroupType(PerkGroupType.Beast)
-                .TriggerPurchase((player, type, level) =>
+                .TriggerPurchase((player) =>
                 {
                     var beast = GetAssociate(AssociateType.Henchman, player);
                     if (!BeastMastery.IsPlayerBeast(beast))
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     Stat.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
                 })
-                .TriggerRefund((player, type, level) =>
+                .TriggerRefund((player) =>
                 {
                     var beast = GetAssociate(AssociateType.Henchman, player);
                     if (!BeastMastery.IsPlayerBeast(beast))

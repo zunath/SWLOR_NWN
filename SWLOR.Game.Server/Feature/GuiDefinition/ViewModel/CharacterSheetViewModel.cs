@@ -543,32 +543,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 OffHandDMG = "-";
                 OffHandTooltip = "Est. Damage: N/A";
             }
-            
-            var damageStat = Item.GetWeaponDamageAbilityType(mainHandType);
-            var accuracyStatOverride = AbilityType.Invalid;
-            
-            // Strong Style (Lightsaber)
-            if (Item.LightsaberBaseItemTypes.Contains(mainHandType) &&
-                Ability.IsAbilityToggled(_target, AbilityToggleType.StrongStyleLightsaber))
-            {
-                damageStat = AbilityType.Might;
-                accuracyStatOverride = AbilityType.Perception;
-            }
-            // Strong Style (Saberstaff)
-            if (Item.SaberstaffBaseItemTypes.Contains(mainHandType) &&
-                Ability.IsAbilityToggled(_target, AbilityToggleType.StrongStyleSaberstaff))
-            {
-                damageStat = AbilityType.Might;
-                accuracyStatOverride = AbilityType.Perception;
-            }
 
-            // Flurry Style (Staff)
-            if (Item.StaffBaseItemTypes.Contains(mainHandType) && 
-                GetHasFeat(FeatType.CrushingStyle, _target))
+            AbilityType damageStat;
+            AbilityType accuracyStatOverride;
+
+            if (BeastMastery.IsPlayerBeast(_target))
             {
-                damageStat = AbilityType.Perception;
-                accuracyStatOverride = AbilityType.Agility;
-            } 
+                var beastType = BeastMastery.GetBeastType(_target);
+                var beastDetails = BeastMastery.GetBeastDetail(beastType);
+                damageStat = beastDetails.DamageStat;
+                accuracyStatOverride = beastDetails.AccuracyStat;
+                mainHand = GetItemInSlot(InventorySlot.CreatureArmor, _target);
+            }
+            else
+            {
+                damageStat = Item.GetWeaponDamageAbilityType(mainHandType);
+                accuracyStatOverride = AbilityType.Invalid;
+
+                // Strong Style (Lightsaber)
+                if (Item.LightsaberBaseItemTypes.Contains(mainHandType) &&
+                    Ability.IsAbilityToggled(_target, AbilityToggleType.StrongStyleLightsaber))
+                {
+                    damageStat = AbilityType.Might;
+                    accuracyStatOverride = AbilityType.Perception;
+                }
+                // Strong Style (Saberstaff)
+                if (Item.SaberstaffBaseItemTypes.Contains(mainHandType) &&
+                    Ability.IsAbilityToggled(_target, AbilityToggleType.StrongStyleSaberstaff))
+                {
+                    damageStat = AbilityType.Might;
+                    accuracyStatOverride = AbilityType.Perception;
+                }
+
+                // Flurry Style (Staff)
+                if (Item.StaffBaseItemTypes.Contains(mainHandType) &&
+                    GetHasFeat(FeatType.CrushingStyle, _target))
+                {
+                    damageStat = AbilityType.Perception;
+                    accuracyStatOverride = AbilityType.Agility;
+                }
+            }
             
             var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);
             Attack = Stat.GetAttack(_target, damageStat, mainHandSkill);

@@ -311,7 +311,8 @@ namespace SWLOR.Game.Server.Service
         {
             var target = GetHighestEnmityTarget(creature);
 
-            if (!GetIsObjectValid(target))
+            if (!GetIsObjectValid(target) || 
+                GetArea(creature) != GetArea(target))
                 return;
 
             // Same target - no need to switch.

@@ -28,10 +28,12 @@ namespace SWLOR.Game.Server.Feature
             var isSwapping = IsItemSwapping(creature, item, slot);
             var canUseItem = CanItemBeUsed(creature, item);
             var canDualWield = ValidateDualWield(item, slot);
+            var isRingSwappingPositions = IsRingSwappingPositions(creature, item, slot);
 
             if (string.IsNullOrWhiteSpace(canUseItem) &&
                 canDualWield && 
-                !isSwapping)
+                !isSwapping &&
+                !isRingSwappingPositions)
             {
                 EventsPlugin.PushEventData("ITEM", ObjectToString(item));
                 EventsPlugin.PushEventData("SLOT", Convert.ToString((int)slot));
@@ -224,6 +226,20 @@ namespace SWLOR.Game.Server.Feature
                 return "Droids may not equip that item.";
 
             return string.Empty;
+        }
+
+        private static bool IsRingSwappingPositions(uint creature, uint item, InventorySlot slot)
+        {
+            var currentRightSlot = GetItemInSlot(InventorySlot.RightRing, creature);
+            var currentLeftSlot = GetItemInSlot(InventorySlot.LeftRing, creature);
+
+            if (currentRightSlot == item && slot == InventorySlot.LeftRing)
+                return true;
+
+            if (currentLeftSlot == item && slot == InventorySlot.RightRing)
+                return true;
+
+            return false;
         }
 
 

@@ -133,23 +133,5 @@ namespace SWLOR.Game.Server.Feature
                                         ColorToken.White("Join our Discord at: https://discord.gg/MyQAM6m"));
             });
         }
-
-        /// <summary>
-        /// Every minute, export all characters to disk.
-        /// </summary>
-        [NWNEventHandler("mod_heartbeat")]
-        public static void SaveCharacters()
-        {
-            const string VariableName = "MODULE_SAVE_CHARACTERS_TICKS";
-            var module = GetModule();
-            var ticks = GetLocalInt(module, VariableName) + 1;
-
-            if (ticks >= 10)
-            {
-                ExportAllCharacters();
-            }
-
-            SetLocalInt(module, VariableName, ticks);
-        }
     }
 }

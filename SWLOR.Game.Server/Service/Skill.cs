@@ -52,6 +52,7 @@ namespace SWLOR.Game.Server.Service
             var requiredXP = GetRequiredXP(pcSkill.Rank);
             var receivedRankUp = false;
             var bonusPercentage = 0f;
+            var decayedSkills = new List<SkillType>();
 
             if (!ignoreBonuses)
             {
@@ -214,8 +215,8 @@ namespace SWLOR.Game.Server.Service
                     if (dbPlayer.Skills[decaySkill].Rank <= 0)
                         skillsPossibleToDecay.Remove(decaySkill);
 
-                    EventsPlugin.PushEventData("SKILL_TYPE_ID", ((int)decaySkill).ToString());
-                    EventsPlugin.SignalEvent("SWLOR_SKILL_LOST_BY_DECAY", player);
+                    if(!decayedSkills.Contains(decaySkill))
+                        decayedSkills.Add(decaySkill);
                 }
             }
 
@@ -235,6 +236,12 @@ namespace SWLOR.Game.Server.Service
             if(receivedRankUp)
             {
                 EventsPlugin.SignalEvent("SWLOR_GAIN_SKILL_POINT", player);
+            }
+
+            foreach (var decayedSkill in decayedSkills)
+            {
+                EventsPlugin.PushEventData("SKILL_TYPE_ID", ((int)decayedSkill).ToString());
+                EventsPlugin.SignalEvent("SWLOR_SKILL_LOST_BY_DECAY", player);
             }
         }
 

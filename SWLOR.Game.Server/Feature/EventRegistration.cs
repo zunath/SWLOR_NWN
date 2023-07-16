@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 SetEventScript(area, EventScript.Area_OnEnter, "area_enter");
                 SetEventScript(area, EventScript.Area_OnExit, "area_exit");
-                SetEventScript(area, EventScript.Area_OnHeartbeat, "area_heartbeat");
+                SetEventScript(area, EventScript.Area_OnHeartbeat, string.Empty); // Disabled for performance reasons
                 SetEventScript(area, EventScript.Area_OnUserDefined, "area_user_def");
             }
         }
@@ -580,6 +580,7 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("SWLOR_COMPLETE_QUEST", "swlor_comp_qst");
             EventsPlugin.SubscribeEvent("SWLOR_CACHE_SKILLS_LOADED", "swlor_skl_cache");
             EventsPlugin.SubscribeEvent("SWLOR_COMBAT_POINT_DISTRIBUTED", "cp_xp_distribute");
+            EventsPlugin.SubscribeEvent("SWLOR_SKILL_LOST_BY_DECAY", "swlor_lose_skill");
         }
 
         /// <summary>
@@ -591,84 +592,6 @@ namespace SWLOR.Game.Server.Feature
         {
             var firstObject = GetFirstObjectInArea(GetFirstArea());
             CreaturePlugin.SetCriticalRangeModifier(firstObject, 0, 0, true);
-        }
-
-        private static readonly Dictionary<int, List<uint>> _intervalPlayers = new();
-
-        /// <summary>
-        /// Schedules five player processors which fire off at 0.2 second intervals.
-        /// This is done to stagger out the processing overhead of scripts that run on player one-second events.
-        /// </summary>
-        [NWNEventHandler("mod_load")]
-        public static void ScheduleProcessors()
-        {
-            const int GroupCount = 5;
-
-            for (var x = 1; x <= GroupCount; x++)
-            {
-                var interval = x == 1 ? 0f : 0.2f * (x - 1);
-                var groupId = x;
-                _intervalPlayers[x] = new List<uint>();
-                Scheduler.ScheduleRepeating(() => ProcessIntervalGroup(groupId), TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(interval));
-            }
-        }
-
-        /// <summary>
-        /// When a player joins the server they are added to the processor queue with the
-        /// fewest number of active players.
-        /// DMs are excluded from this.
-        /// </summary>
-        [NWNEventHandler("mod_enter")]
-        public static void ScheduleProcessor()
-        {
-            var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
-                return;
-
-            AddPlayerToIntervalGroup(player);
-        }
-
-        private static void AddPlayerToIntervalGroup(uint player)
-        {
-            var groupId = 1;
-            var lowestCount = 999;
-            foreach (var (group, players) in _intervalPlayers)
-            {
-                if (players.Count < lowestCount)
-                {
-                    lowestCount = players.Count;
-                    groupId = group;
-                }
-            }
-
-            _intervalPlayers[groupId].Add(player);
-        }
-
-        private static void ProcessIntervalGroup(int intervalGroup)
-        {
-            var players = _intervalPlayers[intervalGroup];
-
-            for (var index = players.Count - 1; index >= 0; index--)
-            {
-                var player = players[index];
-
-                if (GetIsObjectValid(player))
-                {
-                    // It's imperative a script doesn't cause this processor to exit upon error.
-                    try
-                    {
-                        ExecuteScript("interval_pc_1s", player);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Write(LogGroup.Error, ex.ToMessageAndCompleteStacktrace());
-                    }
-                }
-                else
-                {
-                    _intervalPlayers[intervalGroup].Remove(player);
-                }
-            }
         }
     }
 }

@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            for(var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
                 // Process spawns within the area.
                 for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Service
         private static int CalculateResourceSpawnCount(uint area)
         {
             var count = GetLocalInt(area, "RESOURCE_SPAWN_COUNT");
-            
+
             // Found the local variable. Use that count.
             if (count > 0) return count;
 
@@ -311,7 +311,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetExitingObject();
             if (!GetIsPC(player) && !GetIsDM(player)) return;
-            
+
             var area = OBJECT_SELF;
             var playerCount = AreaPlugin.GetNumberOfPlayersInArea(area);
             if (playerCount > 0) return;
@@ -336,7 +336,7 @@ namespace SWLOR.Game.Server.Service
             _queuedSpawns.Add(queuedSpawn);
 
             var spawnDetail = _spawns[spawnDetailId];
-            if(!_queuedSpawnsByArea.ContainsKey(spawnDetail.Area))
+            if (!_queuedSpawnsByArea.ContainsKey(spawnDetail.Area))
                 _queuedSpawnsByArea[spawnDetail.Area] = new List<QueuedSpawn>();
 
             _queuedSpawnsByArea[spawnDetail.Area].Add(queuedSpawn);
@@ -614,7 +614,7 @@ namespace SWLOR.Game.Server.Service
             }
             // Spawn tables have their own logic which must be run to determine the spawn to use.
             // Create the object at the stored location.
-            else if(!string.IsNullOrWhiteSpace(detail.SpawnTableId))
+            else if (!string.IsNullOrWhiteSpace(detail.SpawnTableId))
             {
                 var spawnTable = _spawnTables[detail.SpawnTableId];
                 var spawnObject = spawnTable.GetNextSpawn();

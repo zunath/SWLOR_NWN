@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using NWN.Native.API;
+using Pipelines.Sockets.Unofficial.Arenas;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -52,7 +53,13 @@ namespace SWLOR.Game.Server.Native
              * Critical hits come from beating the opposed roll by 30 or more.  Crit immunity applies as normal.
              */
 
-            ProfilerPlugin.PushPerfScope($"NATIVE:{nameof(OnResolveAttackRoll)}", "RunScript", "Script");
+            var attacker = CNWSCreature.FromPointer(thisPtr);
+            var area = attacker.GetArea();
+
+            ProfilerPlugin.PushPerfScope("RunScript",
+                "Script", $"NATIVE:{nameof(OnResolveAttackRoll)}",
+                "Area", area.m_sTag.ToString(),
+                "ObjectType", "Creature");
 
             Log.Write(LogGroup.Attack, "Running OnResolveAttackRoll");
             var targetObject = CNWSObject.FromPointer(pTarget);
@@ -62,7 +69,6 @@ namespace SWLOR.Game.Server.Native
                 return;
             }
 
-            var attacker = CNWSCreature.FromPointer(thisPtr);
             var attackerStats = attacker.m_pStats;
 
             var pCombatRound = attacker.m_pcCombatRound;

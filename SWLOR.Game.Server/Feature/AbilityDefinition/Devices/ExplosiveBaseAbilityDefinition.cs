@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             if (!GetIsPC(activator))
                 return;
 
-            var chanceToNotConsume = 10 * Perk.GetEffectivePerkLevel(activator, PerkType.DemolitionExpert);
+            var chanceToNotConsume = 10 * Perk.GetPerkLevel(activator, PerkType.DemolitionExpert);
             if (Random.D100(1) <= chanceToNotConsume)
                 return;
 

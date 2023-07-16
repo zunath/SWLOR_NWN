@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
 
             var targetLocation = GetLocation(target);
             var abilityDetail = Ability.GetAbilityDetail(feat);
-            var effectiveLevel = Perk.GetEffectivePerkLevel(creature, abilityDetail.EffectiveLevelPerkType);
+            var effectiveLevel = Perk.GetPerkLevel(creature, abilityDetail.EffectiveLevelPerkType);
             return Ability.CanUseAbility(creature, target, feat, effectiveLevel, targetLocation);
         }
 

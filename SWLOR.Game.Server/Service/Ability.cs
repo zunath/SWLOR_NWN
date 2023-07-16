@@ -627,7 +627,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             RemoveEffectByTag(player, "AURA_EFFECT");
-            var shoutRangeLevel = Perk.GetEffectivePerkLevel(player, PerkType.ShoutRange);
+            var shoutRangeLevel = Perk.GetPerkLevel(player, PerkType.ShoutRange);
 
             AssignCommand(player, () =>
             {

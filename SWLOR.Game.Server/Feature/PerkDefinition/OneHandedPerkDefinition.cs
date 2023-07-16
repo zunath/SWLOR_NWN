@@ -126,12 +126,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     Stat.ApplyCritModifier(player, OBJECT_INVALID);
                 })
-                .TriggerPurchase((player, type, level) =>
+                .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyCritModifier(player, item);
                 })
-                .TriggerRefund((player, type, level) =>
+                .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyCritModifier(player, item);
@@ -161,12 +161,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     Stat.ApplyCritModifier(player, OBJECT_INVALID);
                 })
-                .TriggerPurchase((player, type, level) =>
+                .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyCritModifier(player, item);
                 })
-                .TriggerRefund((player, type, level) =>
+                .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyCritModifier(player, item);
@@ -205,13 +205,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
-                .TriggerPurchase((player, type, level) =>
+                .TriggerPurchase((player) =>
                 {
                     var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
                     var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
                     Stat.ApplyAttacksPerRound(player, mainHand, offHand);
                 })
-                .TriggerRefund((player, type, level) =>
+                .TriggerRefund((player) =>
                 {
                     var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
                     var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
@@ -308,12 +308,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                         AdjustSavingThrows(player, OBJECT_INVALID);
                     }
                 })
-                .TriggerPurchase((player, type, level) =>
+                .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.LeftHand, player);
                     AdjustSavingThrows(player, item);
                 })
-                .TriggerRefund((player, type, level) =>
+                .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.LeftHand, player);
                     AdjustSavingThrows(player, item);
@@ -331,11 +331,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             {
                 if (Random.D100(1) <= 10)
                 {
-                    if (Perk.GetEffectivePerkLevel(defender, PerkType.Alacrity) > 0)
+                    if (Perk.GetPerkLevel(defender, PerkType.Alacrity) > 0)
                     {
                         Stat.RestoreStamina(defender, 4);
                     }
-                    else if (Perk.GetEffectivePerkLevel(defender, PerkType.Clarity) > 0)
+                    else if (Perk.GetPerkLevel(defender, PerkType.Clarity) > 0)
                     {
                         Stat.RestoreFP(defender, 4);
                     }
@@ -450,12 +450,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
-                .TriggerPurchase((player, type, level) =>
+                .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyAttacksPerRound(player, item);
                 })
-                .TriggerRefund((player, type, level) =>
+                .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyAttacksPerRound(player, item);
@@ -609,12 +609,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
-                .TriggerPurchase((player, type, level) =>
+                .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyAttacksPerRound(player, item);
                 })
-                .TriggerRefund((player, type, level) =>
+                .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyAttacksPerRound(player, item);
@@ -782,12 +782,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
-                .TriggerPurchase((player, type, level) =>
+                .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyAttacksPerRound(player, item);
                 })
-                .TriggerRefund((player, type, level) =>
+                .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     Stat.ApplyAttacksPerRound(player, item);
@@ -879,11 +879,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.StrongStyleLightsaber)
                 .Name("Strong Style (Lightsaber)")
-                .TriggerRefund((player, type, level) =>
+                .TriggerRefund((player) =>
                 {
                     Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
                 })
-                .TriggerPurchase((player, type, level) =>
+                .TriggerPurchase((player) =>
                 {
                     Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
                 })

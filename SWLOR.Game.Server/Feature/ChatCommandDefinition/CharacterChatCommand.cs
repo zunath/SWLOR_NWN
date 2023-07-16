@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -41,6 +39,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Customize();
             AlwaysWalk();
             AssociateCommands();
+            Follow();
 
             return _builder.Build();
         }
@@ -430,6 +429,21 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var message = string.Join(' ', args);
 
                     AssignCommand(associate, () => SpeakString(message));
+                });
+        }
+
+        private void Follow()
+        {
+            _builder.Create("follow")
+                .Description("Makes you follow a selected target.")
+                .Permissions(AuthorizationLevel.All)
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    AssignCommand(user, () =>
+                    {
+                        ActionForceFollowObject(target, 1f);
+                    });
                 });
         }
     }

@@ -212,15 +212,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a creature's aggro aura heartbeat fires, 
-        /// </summary>
-        [NWNEventHandler("crea_aggro_hb")]
-        public static void CreatureAggroHeartbeat()
-        {
-        }
-
-
-        /// <summary>
         /// Handles custom perk usage
         /// </summary>
         public static void ProcessPerkAI(AIDefinitionType aiType, uint creature, bool usesEnmity)
@@ -313,7 +304,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void LoadAggroEffect()
         {
-            var effect = SupernaturalEffect(EffectAreaOfEffect(AreaOfEffect.CustomAoe, "crea_aggro_enter", "crea_aggro_hb", "crea_aggro_exit"));
+            var effect = SupernaturalEffect(EffectAreaOfEffect(AreaOfEffect.CustomAoe, "crea_aggro_enter", string.Empty, "crea_aggro_exit"));
             effect = TagEffect(effect, "AGGRO_AOE");
             ApplyEffectToObject(DurationType.Permanent, effect, OBJECT_SELF);
         }

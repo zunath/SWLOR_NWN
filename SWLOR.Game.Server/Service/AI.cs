@@ -27,6 +27,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_hb_aft")]
         public static void CreatureHeartbeat()
         {
+            if (GetAILevel(OBJECT_SELF) == AILevel.VeryLow)
+                return;
+
             Stat.RestoreNPCStats(true);
             ProcessFlags();
             Enmity.AttackHighestEnmityTarget(OBJECT_SELF);

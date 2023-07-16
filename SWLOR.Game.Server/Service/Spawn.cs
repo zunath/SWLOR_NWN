@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Spawn
     {
-        public const int DespawnMinutes = 60;
+        public const int DespawnMinutes = 20;
         public const int DefaultRespawnMinutes = 5;
 
         private class SpawnDetail
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            for(var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
                 // Process spawns within the area.
                 for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Service
         private static int CalculateResourceSpawnCount(uint area)
         {
             var count = GetLocalInt(area, "RESOURCE_SPAWN_COUNT");
-            
+
             // Found the local variable. Use that count.
             if (count > 0) return count;
 
@@ -311,7 +311,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetExitingObject();
             if (!GetIsPC(player) && !GetIsDM(player)) return;
-            
+
             var area = OBJECT_SELF;
             var playerCount = AreaPlugin.GetNumberOfPlayersInArea(area);
             if (playerCount > 0) return;
@@ -336,7 +336,7 @@ namespace SWLOR.Game.Server.Service
             _queuedSpawns.Add(queuedSpawn);
 
             var spawnDetail = _spawns[spawnDetailId];
-            if(!_queuedSpawnsByArea.ContainsKey(spawnDetail.Area))
+            if (!_queuedSpawnsByArea.ContainsKey(spawnDetail.Area))
                 _queuedSpawnsByArea[spawnDetail.Area] = new List<QueuedSpawn>();
 
             _queuedSpawnsByArea[spawnDetail.Area].Add(queuedSpawn);
@@ -394,41 +394,32 @@ namespace SWLOR.Game.Server.Service
         public static void ProcessQueuedSpawns()
         {
             var now = DateTime.UtcNow;
-            var numberSpawned = 0;
-
             for (var index = _queuedSpawns.Count - 1; index >= 0; index--)
             {
                 var queuedSpawn = _queuedSpawns.ElementAt(index);
 
                 if (now > queuedSpawn.RespawnTime)
                 {
-                    var delay = 0.1f * numberSpawned;
-                    DelayCommand(delay, () =>
+                    var detail = _spawns[queuedSpawn.SpawnDetailId];
+                    var spawnedObject = SpawnObject(queuedSpawn.SpawnDetailId, detail);
+
+                    // A valid spawn wasn't found because the spawn table didn't provide a resref.
+                    // Either the table is configured wrong or the requirements for that specific table weren't met.
+                    // In this case, we bump the next respawn time and move to the next queued respawn.
+                    if (spawnedObject == OBJECT_INVALID)
                     {
-                        var detail = _spawns[queuedSpawn.SpawnDetailId];
-                        var spawnedObject = SpawnObject(queuedSpawn.SpawnDetailId, detail);
+                        queuedSpawn.RespawnTime = now.AddMinutes(detail.RespawnDelayMinutes);
+                        continue;
+                    }
 
-                        // A valid spawn wasn't found because the spawn table didn't provide a resref.
-                        // Either the table is configured wrong or the requirements for that specific table weren't met.
-                        // In this case, we bump the next respawn time and move to the next queued respawn.
-                        if (spawnedObject == OBJECT_INVALID)
-                        {
-                            CreateQueuedSpawn(queuedSpawn.SpawnDetailId, now.AddMinutes(detail.RespawnDelayMinutes));
-                            return;
-                        }
+                    var activeSpawn = new ActiveSpawn
+                    {
+                        SpawnDetailId = queuedSpawn.SpawnDetailId,
+                        SpawnObject = spawnedObject
+                    };
 
-                        var activeSpawn = new ActiveSpawn
-                        {
-                            SpawnDetailId = queuedSpawn.SpawnDetailId,
-                            SpawnObject = spawnedObject
-                        };
-
-                        _activeSpawnsByArea[detail.Area].Add(activeSpawn);
-                    });
-
+                    _activeSpawnsByArea[detail.Area].Add(activeSpawn);
                     RemoveQueuedSpawn(queuedSpawn);
-
-                    numberSpawned++;
                 }
             }
         }
@@ -623,7 +614,7 @@ namespace SWLOR.Game.Server.Service
             }
             // Spawn tables have their own logic which must be run to determine the spawn to use.
             // Create the object at the stored location.
-            else if(!string.IsNullOrWhiteSpace(detail.SpawnTableId))
+            else if (!string.IsNullOrWhiteSpace(detail.SpawnTableId))
             {
                 var spawnTable = _spawnTables[detail.SpawnTableId];
                 var spawnObject = spawnTable.GetNextSpawn();

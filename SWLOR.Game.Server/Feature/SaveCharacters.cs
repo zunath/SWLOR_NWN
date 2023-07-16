@@ -5,28 +5,28 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class SaveCharacters
     {
+        private const string SaveCharactersVariable = "SAVE_CHARACTERS_TICK";
+        private const string IsBarteringVariable = "IS_BARTERING";
+
         /// <summary>
         /// Saves characters every minute unless they're currently preoccupied (barter)
         /// </summary>
-        [NWNEventHandler("mod_heartbeat")]
+        [NWNEventHandler("pc_heartbeat")]
         public static void HandleSaveCharacters()
         {
-            var module = GetModule();
-            var tick = GetLocalInt(module, "SAVE_CHARACTERS_TICK") + 1;
+            var player = OBJECT_SELF;
+            var tick = GetLocalInt(player, SaveCharactersVariable) + 1;
 
             if(tick >= 10)
             {
-                for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+                if (!GetLocalBool(player, IsBarteringVariable))
                 {
-                    if (GetLocalBool(player, "IS_BARTERING")) continue;
-
                     ExportSingleCharacter(player);
+                    tick = 0;
                 }
-
-                tick = 0;
             }
 
-            SetLocalInt(module, "SAVE_CHARACTERS_TICK", tick);
+            SetLocalInt(player, SaveCharactersVariable, tick);
         }
 
         /// <summary>
@@ -38,8 +38,8 @@ namespace SWLOR.Game.Server.Feature
             var player1 = OBJECT_SELF;
             var player2 = StringToObject(EventsPlugin.GetEventData("BARTER_TARGET"));
 
-            SetLocalBool(player1, "IS_BARTERING", true);
-            SetLocalBool(player2, "IS_BARTERING", true);
+            SetLocalBool(player1, IsBarteringVariable, true);
+            SetLocalBool(player2, IsBarteringVariable, true);
         }
 
         /// <summary>
@@ -51,8 +51,8 @@ namespace SWLOR.Game.Server.Feature
             var player1 = OBJECT_SELF;
             var player2 = StringToObject(EventsPlugin.GetEventData("BARTER_TARGET"));
 
-            DeleteLocalBool(player1, "IS_BARTERING");
-            DeleteLocalBool(player2, "IS_BARTERING");
+            DeleteLocalBool(player1, IsBarteringVariable);
+            DeleteLocalBool(player2, IsBarteringVariable);
         }
     }
 }

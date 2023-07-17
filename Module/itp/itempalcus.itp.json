@@ -11597,6 +11597,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Incubator"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0271"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Instrument Panel, Large Monitor (Technical Data)"
               },
               "RESREF": {
@@ -11646,6 +11657,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0169"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Lab - Style 1"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5017"
               }
             },
             {

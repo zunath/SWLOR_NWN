@@ -669,7 +669,7 @@
         ShelvesWarehouseFull = 1223,
         BookshelfJedi = 1224,
         MetalWallSinglePipes = 1225,
-        // 1226 is free
+        Incubator = 1226,
         TelevisionBigScreen = 1227,
         TelevisionOldModel = 1228,
         FoyerChandelier = 1229,
@@ -717,6 +717,7 @@
         LargeHouseStyle2 = 1514,
         LargeHouseStyle3 = 1515,
         LargeHouseStyle4 = 1516,
+        LabStyle1 = 1517,
 
 
         // Cooking: 2001-3000

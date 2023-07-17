@@ -1708,7 +1708,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         LargeHouseStyle4 = 5016,
 
         [Structure("Lab - Style 1",
-            "lab1", //todo update resref
+            "lab1",
             "",
             true,
             0,

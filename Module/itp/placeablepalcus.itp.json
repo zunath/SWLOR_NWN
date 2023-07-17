@@ -68463,6 +68463,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Incubator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "incubator"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Jasioclase Vein"
                     },
                     "RESREF": {
@@ -68864,6 +68875,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "house2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Player Building - Lab"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lab1"
                     }
                   },
                   {

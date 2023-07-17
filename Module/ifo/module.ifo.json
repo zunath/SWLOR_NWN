@@ -2540,6 +2540,13 @@
           "type": "resref",
           "value": "dan_repubmed"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "player_rnd"
+        }
       }
     ]
   },

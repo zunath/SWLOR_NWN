@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -22,9 +19,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             SoothePet();
             ReviveBeast();
 
-            //DNAManipulation();
-            //IncubationProcessing();
-            //ErraticGenius();
+            DNAManipulation();
+            IncubationProcessing();
+            ErraticGenius();
+            IncubationManagement();
 
             return _builder.Build();
         }
@@ -93,10 +91,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Permits you to store up to two beasts at a stable.")
                 .Price(1)
-                .RequirementSkill(SkillType.BeastMastery, 30)
+                .RequirementSkill(SkillType.BeastMastery, 10)
 
                 .AddPerkLevel()
                 .Description("Permits you to store up to three beasts at a stable.")
+                .Price(2)
+                .RequirementSkill(SkillType.BeastMastery, 20)
+
+                .AddPerkLevel()
+                .Description("Permits you to store up to four beasts at a stable.")
+                .Price(2)
+                .RequirementSkill(SkillType.BeastMastery, 30)
+
+                .AddPerkLevel()
+                .Description("Permits you to store up to five beasts at a stable.")
+                .Price(2)
+                .RequirementSkill(SkillType.BeastMastery, 40)
+
+                .AddPerkLevel()
+                .Description("Permits you to store up to six beasts at a stable.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 50);
         }
@@ -237,6 +250,22 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Increases the mutation chance by 15%.")
                 .Price(3)
                 .RequirementSkill(SkillType.BeastMastery, 40);
+        }
+
+        private void IncubationManagement()
+        {
+            _builder.Create(PerkCategoryType.BeastMasteryIncubation, PerkType.IncubationManagement)
+                .Name("Incubation Management")
+
+                .AddPerkLevel()
+                .Description("Increases the maximum number of concurrent incubation jobs by 1, for a total of 2.")
+                .Price(2)
+                .RequirementSkill(SkillType.BeastMastery, 25)
+
+                .AddPerkLevel()
+                .Description("Increases the maximum number of concurrent incubation jobs by 1, for a total of 3.")
+                .Price(3)
+                .RequirementSkill(SkillType.BeastMastery, 50);
         }
 
     }

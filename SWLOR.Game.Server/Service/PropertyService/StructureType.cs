@@ -1545,6 +1545,13 @@ namespace SWLOR.Game.Server.Service.PropertyService
             0)]
         BeastStableTerminal = 270,
 
+        [Structure("Incubator",
+            "incubator",
+            "",
+            true,
+            0)]
+        Incubator = 271,
+
         // Buildings start here (5000+)
         [Structure("City Hall - Style 1",
             "city_hall",
@@ -1699,6 +1706,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.City,
             PropertyLayoutType.LargeHouseStyle4)]
         LargeHouseStyle4 = 5016,
+
+        [Structure("Lab - Style 1",
+            "lab1", //todo update resref
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.LabStyle1)]
+        LabStyle1 = 5017,
     }
 
     public class StructureAttribute : Attribute
@@ -1727,7 +1743,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 PropertyType.MedicalCenter |
                 PropertyType.Starport |
                 PropertyType.Cantina |
-                PropertyType.House,
+                PropertyType.House |
+                PropertyType.Lab,
             PropertyLayoutType layoutType = PropertyLayoutType.Invalid,
             bool canBeRetrieved = true)
         {

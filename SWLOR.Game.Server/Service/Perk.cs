@@ -484,10 +484,19 @@ namespace SWLOR.Game.Server.Service
                 if (detail.Requirements.Count <= 0) 
                     return level;
 
+                var meetsRequirements = true;
                 foreach (var req in detail.Requirements)
                 {
-                    if (string.IsNullOrWhiteSpace(req.CheckRequirements(player))) 
-                        return level;
+                    if (!string.IsNullOrWhiteSpace(req.CheckRequirements(player)))
+                    {
+                        meetsRequirements = false;
+                        break;
+                    }
+                }
+
+                if (meetsRequirements)
+                {
+                    return level;
                 }
             }
 

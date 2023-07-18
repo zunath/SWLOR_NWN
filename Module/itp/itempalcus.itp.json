@@ -26323,6 +26323,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hydrolase Enzyme - Blue"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_blue"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hydrolase Enzyme - Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_orange"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hydrolase Enzyme - Purple"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_purple"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hydrolase Enzyme - Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_red"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hydrolase Enzyme - White"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_white"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hyperdrive"
                     },
                     "RESREF": {
@@ -29040,6 +29095,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Isomerase Enzyme - Blue"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_blue"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Isomerase Enzyme - Green"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_green"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Isomerase Enzyme - Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_orange"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Isomerase Enzyme - Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_red"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Isomerase Enzyme - Yellow"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_yellow"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Istavrit"
                     },
                     "RESREF": {
@@ -30255,6 +30365,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "luusntan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lyase Enzyme - Black"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_black"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lyase Enzyme - Blue"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_blue"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lyase Enzyme - Green"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_green"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lyase Enzyme - Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_orange"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lyase Enzyme - Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_red"
                     }
                   },
                   {

@@ -235,6 +235,16 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.EditCategories,
             };
+
+            _permissionsByPropertyType[PropertyType.Lab] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.EnterProperty,
+                PropertyPermissionType.ManageIncubators
+            };
         }
 
         /// <summary>

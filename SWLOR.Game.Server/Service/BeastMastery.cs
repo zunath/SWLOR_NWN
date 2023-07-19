@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<BeastType, BeastDetail> _beasts = new();
         private static readonly Dictionary<BeastRoleType, BeastRoleAttribute> _beastRoles = new();
         private static List<BeastFoodType> _beastFoods = new();
+        private static Dictionary<int, float> _incubationPercentages = new();
 
         private const string BeastResref = "pc_beast";
         public const string BeastClawResref = "beast_claw";
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Service
             LoadBeastRoles();
             LoadFoods();
             LoadHighestDelta();
+            LoadIncubationPercentages();
         }
 
         private static void LoadBeasts()
@@ -78,6 +80,21 @@ namespace SWLOR.Game.Server.Service
         private static void LoadHighestDelta()
         {
             _highestDelta = _deltaXP.Keys.Max();
+        }
+
+        private static void LoadIncubationPercentages()
+        {
+            const string FileName = "iprp_incubonus";
+            var rowCount = Get2DARowCount(FileName);
+            
+            for (var row = 1; row <= rowCount; row++)
+            {
+                var label = Get2DAString(FileName, "Label", row);
+                if (float.TryParse(label, out var percentage))
+                {
+                    _incubationPercentages[row] = percentage;
+                }
+            }
         }
 
         public static BeastDetail GetBeastDetail(BeastType type)
@@ -670,7 +687,16 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("incubator_term")]
         public static void UseIncubator()
         {
+            var player = GetLastUsedBy();
+            var dnaManipulationLevel = Perk.GetPerkLevel(player, PerkType.DNAManipulation);
 
+            if (dnaManipulationLevel <= 0)
+            {
+                SendMessageToPC(player, $"Perk 'DNA Manipulation I' is required to use incubators.");
+                return;
+            }
+
+            Gui.TogglePlayerWindow(player, GuiWindowType.Incubator, null, player);
         }
     }
 }

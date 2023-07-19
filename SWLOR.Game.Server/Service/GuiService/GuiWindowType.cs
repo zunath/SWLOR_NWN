@@ -54,6 +54,7 @@
         HoloNet = 49,
         Stables = 50,
         TrainingStore = 51,
+        Incubator = 52,
 
         DebugEnmity = 900,
     }

@@ -3,6 +3,8 @@
     public enum BeastType
     {
         Invalid = 0,
+
+        // Tamable Beasts (1-1000)
         Aradile = 1,
         CrystalSpider = 2,
         Gimpassa = 3,
@@ -32,5 +34,8 @@
         Warocas = 27,
         WildwoodsKinrath = 28,
         Womprat = 29,
+
+        // Incubation Beasts (1001+)
+        IncubationBeast1 = 1001
     }
 }

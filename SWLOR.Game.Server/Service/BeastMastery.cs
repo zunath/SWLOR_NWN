@@ -165,7 +165,8 @@ namespace SWLOR.Game.Server.Service
             }
 
 
-            var requiredXP = GetRequiredXP(dbBeast.Level);
+            var requiredXP = GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent);
+
             dbBeast.XP += xp;
 
             if (dbBeast.Level >= MaxLevel)
@@ -181,7 +182,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (dbBeast.Level >= maxBeastLevel)
                 {
-                    dbBeast.XP = GetRequiredXP(dbBeast.Level) - 1;
+                    dbBeast.XP = GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent) - 1;
                     break;
                 }
 
@@ -189,7 +190,7 @@ namespace SWLOR.Game.Server.Service
                 dbBeast.UnallocatedSP++;
                 dbBeast.Level++;
 
-                requiredXP = GetRequiredXP(dbBeast.Level);
+                requiredXP = GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent);
                 if (dbBeast.Level >= MaxLevel)
                 {
                     dbBeast.XP = 0;
@@ -204,9 +205,9 @@ namespace SWLOR.Game.Server.Service
             Gui.PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
         }
 
-        public static int GetRequiredXP(int level)
+        public static int GetRequiredXP(int level, int xpPenalty)
         {
-            return _beastXPRequirements[level];
+            return _beastXPRequirements[level] + (int)(_beastXPRequirements[level] * (xpPenalty * 0.01f));
         }
 
         public static void SpawnBeast(uint player, string beastId, int percentHeal)
@@ -665,5 +666,11 @@ namespace SWLOR.Game.Server.Service
             { -3, 150 },
             { -4, 76 }
         };
+
+        [NWNEventHandler("incubator_term")]
+        public static void UseIncubator()
+        {
+
+        }
     }
 }

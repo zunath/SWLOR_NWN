@@ -9,10 +9,12 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -688,6 +690,8 @@ namespace SWLOR.Game.Server.Service
         public static void UseIncubator()
         {
             var player = GetLastUsedBy();
+            var playerId = GetObjectUUID(player);
+            var incubator = OBJECT_SELF;
             var dnaManipulationLevel = Perk.GetPerkLevel(player, PerkType.DNAManipulation);
 
             if (dnaManipulationLevel <= 0)
@@ -696,7 +700,28 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            Gui.TogglePlayerWindow(player, GuiWindowType.Incubator, null, player);
+            var incubatorPropertyId = Property.GetPropertyId(incubator);
+
+            if (string.IsNullOrWhiteSpace(incubatorPropertyId))
+            {
+                SendMessageToPC(player, $"This incubator cannot be used.");
+                return;
+            }
+
+            var dbQuery = new DBQuery<IncubationJob>()
+                .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), incubatorPropertyId, false);
+            var incubatorJob = DB.Search(dbQuery).FirstOrDefault();
+
+            if (incubatorJob != null && incubatorJob.PlayerId != playerId)
+            {
+                var delta = incubatorJob.DateCompleted - DateTime.UtcNow;
+                var completionTime = Time.GetTimeLongIntervals(delta, false);
+                SendMessageToPC(player, $"Another player's incubation job is active. This job will complete in: {completionTime}.");
+                return;
+            }
+
+            var payload = new IncubatorPayload(incubatorPropertyId);
+            Gui.TogglePlayerWindow(player, GuiWindowType.Incubator, payload, player);
         }
     }
 }

@@ -237,17 +237,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Erratic Genius")
 
                 .AddPerkLevel()
-                .Description("Increases the mutation chance by 5%.")
+                .Description("Increases the mutation chance by 2%.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 20)
 
                 .AddPerkLevel()
-                .Description("Increases the mutation chance by 10%.")
+                .Description("Increases the mutation chance by 4%.")
                 .Price(3)
                 .RequirementSkill(SkillType.BeastMastery, 30)
 
                 .AddPerkLevel()
-                .Description("Increases the mutation chance by 15%.")
+                .Description("Increases the mutation chance by 8%.")
                 .Price(3)
                 .RequirementSkill(SkillType.BeastMastery, 40);
         }

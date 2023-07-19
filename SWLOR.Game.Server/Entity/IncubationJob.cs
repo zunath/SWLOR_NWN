@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Service.BeastMasteryService;
+﻿using System;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -29,6 +30,6 @@ namespace SWLOR.Game.Server.Entity
 
         public Dictionary<SavingThrow, int> SavingThrowPurities { get; set; }
 
-
+        public DateTime DateCompleted { get; set; }
     }
 }

@@ -35,8 +35,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindImageResref(model => model.DNAItemResref)
                             .BindOnClicked(model => model.OnClickDNA())
                             .SetTooltip("Select DNA")
-                            .SetHeight(64f)
-                            .SetWidth(64f);
+                            .SetHeight(32f)
+                            .SetWidth(32f);
 
                         row.AddSpacer();
                     });
@@ -68,8 +68,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindImageResref(model => model.HydrolaseItemResref)
                             .BindOnClicked(model => model.OnClickDNA())
                             .SetTooltip("Select Hydrolase")
-                            .SetHeight(64f)
-                            .SetWidth(64f);
+                            .SetHeight(32f)
+                            .SetWidth(32f);
 
                         row.AddSpacer();
 
@@ -77,8 +77,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindImageResref(model => model.LyaseItemResref)
                             .BindOnClicked(model => model.OnClickLyase())
                             .SetTooltip("Select Lyase")
-                            .SetHeight(64f)
-                            .SetWidth(64f);
+                            .SetHeight(32f)
+                            .SetWidth(32f);
 
                         row.AddSpacer();
 
@@ -86,8 +86,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindImageResref(model => model.IsomeraseItemResref)
                             .BindOnClicked(model => model.OnClickIsomerase())
                             .SetTooltip("Select Isomerase")
-                            .SetHeight(64f)
-                            .SetWidth(64f);
+                            .SetHeight(32f)
+                            .SetWidth(32f);
 
                         row.AddSpacer();
                     });

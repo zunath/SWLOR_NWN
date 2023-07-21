@@ -686,6 +686,18 @@ namespace SWLOR.Game.Server.Service
             { -4, 76 }
         };
 
+        /// <summary>
+        /// Retrieves the percentage associated with a specific item property Id for the incubation stats.
+        /// </summary>
+        /// <param name="itemPropertyId">The incubation stat Id</param>
+        /// <returns>The percentage associated or 0.0 if not found.</returns>
+        public static float GetIncubationPercentageById(int itemPropertyId)
+        {
+            return !_incubationPercentages.ContainsKey(itemPropertyId) 
+                ? 0f 
+                : _incubationPercentages[itemPropertyId];
+        }
+
         [NWNEventHandler("incubator_term")]
         public static void UseIncubator()
         {

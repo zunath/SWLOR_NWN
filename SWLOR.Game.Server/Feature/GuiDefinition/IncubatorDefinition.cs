@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddButtonImage()
                             .BindImageResref(model => model.HydrolaseItemResref)
-                            .BindOnClicked(model => model.OnClickDNA())
+                            .BindOnClicked(model => model.OnClickHydrolase())
                             .SetTooltip("Select Hydrolase")
                             .SetHeight(32f)
                             .SetWidth(32f);
@@ -133,19 +133,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.MutationChance);
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.AttackPurity);
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.AccuracyPurity);
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.EvasionPurity);
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.LearningPurity);
 
                         row.AddSpacer();
                     });
@@ -185,19 +185,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.PhysicalDefensePurity);
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.ForceDefensePurity);
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.FireDefensePurity);
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.PoisonDefensePurity);
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.ElectricalDefensePurity);
 
                         row.AddSpacer();
                     });
@@ -234,19 +234,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.IceDefensePurity);
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.FortitudePurity);
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.ReflexPurity);
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.WillPurity);
 
                         row.AddLabel()
-                            .SetText("0 [+0.0%]");
+                            .BindText(model => model.XPPenalty);
 
                         row.AddSpacer();
                     });

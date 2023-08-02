@@ -807,7 +807,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.110757350921631
+          "value": -1.570796251296997
         },
         "BodyBag": {
           "type": "byte",
@@ -1033,7 +1033,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "STARLANE_LANDING_DATHOMIR_2"
+                "value": "STARLANE_LANDING_MONCALA_3"
               }
             },
             {
@@ -1119,11 +1119,11 @@
         },
         "X": {
           "type": "float",
-          "value": 288.083251953125
+          "value": 309.1456298828125
         },
         "Y": {
           "type": "float",
-          "value": 21.25990867614746
+          "value": 185.3175811767578
         },
         "Z": {
           "type": "float",
@@ -1536,23 +1536,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9238795042037964
+          "value": -0.9924795627593994
         },
         "XPosition": {
           "type": "float",
-          "value": 283.9560546875
+          "value": 305.98193359375
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.3826834261417389
+          "value": -0.1224105879664421
         },
         "YPosition": {
           "type": "float",
-          "value": 24.53055763244629
+          "value": 185.6923522949219
         },
         "ZPosition": {
           "type": "float",
-          "value": 1.949999809265137
+          "value": 2.999990463256836
         }
       }
     ]

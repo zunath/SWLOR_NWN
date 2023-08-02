@@ -34,7 +34,7 @@
   },
   "FogClipDist": {
     "type": "float",
-    "value": 45.0
+    "value": 96.0
   },
   "Height": {
     "type": "int",
@@ -124,7 +124,7 @@
   },
   "SkyBox": {
     "type": "byte",
-    "value": 0
+    "value": 70
   },
   "SunAmbientColor": {
     "type": "dword",
@@ -1893,7 +1893,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 337
+          "value": 11
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -2323,7 +2323,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 18
+          "value": 613
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -2335,7 +2335,7 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 2
+          "value": 0
         },
         "Tile_SrcLight1": {
           "type": "byte",
@@ -2753,7 +2753,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 594
+          "value": 606
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -2765,7 +2765,7 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 0
+          "value": 1
         },
         "Tile_SrcLight1": {
           "type": "byte",
@@ -4461,7 +4461,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 9
+    "value": 10
   },
   "Width": {
     "type": "int",

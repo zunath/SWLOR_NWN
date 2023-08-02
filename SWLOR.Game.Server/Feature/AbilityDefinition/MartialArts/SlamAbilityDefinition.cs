@@ -66,17 +66,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             Enmity.ModifyEnmityOnAll(activator, 100 * level);
             CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
-            int attackerStat;
+            var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
             int attack;
 
             if (GetHasFeat(FeatType.FlurryStyle, activator))
             {
-                attackerStat = GetAbilityScore(activator, AbilityType.Perception);
                 attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.MartialArts);
             }
             else
             {
-                attackerStat = GetAbilityScore(activator, AbilityType.Might);
                 attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
             }
 

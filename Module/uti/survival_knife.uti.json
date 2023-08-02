@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -147,5 +147,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "survival_knife"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 41
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 21
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 51
   }
 }

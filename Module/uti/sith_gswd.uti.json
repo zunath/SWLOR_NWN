@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 250
+    "value": 251
   },
   "Cursed": {
     "type": "byte",
@@ -178,5 +178,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sith_gswd"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 101
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 101
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 14
   }
 }

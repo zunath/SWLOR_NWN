@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "v_lemon"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 100
   }
 }

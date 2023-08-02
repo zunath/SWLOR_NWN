@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2475
+    "value": 25
   },
   "Cursed": {
     "type": "byte",
@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sabiki_rig99"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 12
   }
 }

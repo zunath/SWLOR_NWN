@@ -140,5 +140,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dmfi_jail_widget"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 67
   }
 }

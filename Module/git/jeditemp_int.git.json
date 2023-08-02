@@ -2401,7 +2401,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -4712,7 +4712,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -6642,7 +6642,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -8572,7 +8572,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -11994,7 +11994,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 51.0
+          "value": 357.0
         },
         "ClassList": {
           "type": "list",
@@ -13548,7 +13548,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 15.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -14766,7 +14766,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 7.0
+          "value": 9.0
         },
         "ClassList": {
           "type": "list",
@@ -19994,7 +19994,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 75.0
+          "value": 316.0
         },
         "ClassList": {
           "type": "list",

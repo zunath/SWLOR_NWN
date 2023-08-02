@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "stallyxunchi"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 227
   }
 }

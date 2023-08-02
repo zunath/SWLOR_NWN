@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "veggie_clump"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 90
   }
 }

@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "d_brain4"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 18
   }
 }

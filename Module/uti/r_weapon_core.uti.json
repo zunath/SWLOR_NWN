@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "r_weapon_core"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 40
   }
 }

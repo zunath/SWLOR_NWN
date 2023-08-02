@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "elec_high"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 117
   }
 }

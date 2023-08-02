@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dmfi_voicewidget"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 6
   }
 }

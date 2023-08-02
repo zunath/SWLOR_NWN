@@ -167,5 +167,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "queenkinrathskin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

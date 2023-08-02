@@ -266,5 +266,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "imm_gloves"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 198
   }
 }

@@ -301,5 +301,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dllg003"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 16
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 32
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 41
   }
 }

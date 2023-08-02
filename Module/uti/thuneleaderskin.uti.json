@@ -198,5 +198,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "thuneleaderskin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

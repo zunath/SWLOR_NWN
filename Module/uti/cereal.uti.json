@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cereal"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 145
   }
 }

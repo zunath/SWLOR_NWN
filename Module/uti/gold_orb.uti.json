@@ -85,5 +85,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "gold_orb"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 81
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

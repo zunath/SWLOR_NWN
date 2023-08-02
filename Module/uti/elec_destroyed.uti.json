@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "elec_destroyed"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 117
   }
 }

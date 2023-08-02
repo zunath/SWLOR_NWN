@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "tsk_electronics"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 124
   }
 }

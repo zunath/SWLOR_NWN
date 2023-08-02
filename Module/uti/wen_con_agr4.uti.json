@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "wen_con_agr4"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 103
   }
 }

@@ -77,5 +77,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "mynock_tooth"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 2
   }
 }

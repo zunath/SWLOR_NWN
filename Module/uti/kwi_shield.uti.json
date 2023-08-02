@@ -204,5 +204,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "kwi_shield"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 49
   }
 }

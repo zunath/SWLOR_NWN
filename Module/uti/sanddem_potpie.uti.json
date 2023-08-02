@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sanddem_potpie"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 99
   }
 }

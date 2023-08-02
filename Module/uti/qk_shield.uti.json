@@ -204,5 +204,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "qk_shield"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 48
   }
 }

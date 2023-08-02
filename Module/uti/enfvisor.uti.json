@@ -100,5 +100,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "enfvisor"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 52
   }
 }

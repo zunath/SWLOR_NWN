@@ -177,5 +177,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "gogen_staff"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 221
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 221
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 71
   }
 }

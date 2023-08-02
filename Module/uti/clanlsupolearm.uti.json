@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -81,5 +81,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "clanlsupolearm"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 234
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 12
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 14
   }
 }

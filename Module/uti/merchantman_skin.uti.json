@@ -105,5 +105,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "merchantman_skin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

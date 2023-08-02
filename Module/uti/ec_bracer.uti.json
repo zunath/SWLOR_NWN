@@ -204,5 +204,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ec_bracer"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 113
   }
 }

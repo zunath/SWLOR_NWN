@@ -105,5 +105,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "plainsthuneskin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

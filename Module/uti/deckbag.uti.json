@@ -79,5 +79,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "deckbag"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 2
   }
 }

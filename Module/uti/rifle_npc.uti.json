@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -114,5 +114,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "rifle_npc"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 253
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

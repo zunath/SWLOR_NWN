@@ -107,5 +107,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "k_hound_bite"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

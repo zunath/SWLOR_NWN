@@ -353,5 +353,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "holoregenhide"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

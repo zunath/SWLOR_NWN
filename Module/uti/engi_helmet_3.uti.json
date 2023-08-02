@@ -191,5 +191,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "engi_helmet_3"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 36
   }
 }

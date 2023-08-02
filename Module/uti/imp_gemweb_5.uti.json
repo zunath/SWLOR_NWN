@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "imp_gemweb_5"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 97
   }
 }

@@ -99,5 +99,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "e_sith_thelmet"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 120
   }
 }

@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 250
+    "value": 251
   },
   "Cursed": {
     "type": "byte",
@@ -147,5 +147,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "poach_longsword"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 19
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 91
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

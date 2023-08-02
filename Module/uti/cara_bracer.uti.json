@@ -235,5 +235,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cara_bracer"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 113
   }
 }

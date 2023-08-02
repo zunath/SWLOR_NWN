@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "bystan"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 5
   }
 }

@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "lth_freyna"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 6
   }
 }

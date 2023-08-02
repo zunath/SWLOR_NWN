@@ -198,5 +198,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "qion_bugswarmhi"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "nickyln_stone"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 45
   }
 }

@@ -171,5 +171,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "wraid_scale"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 95
   }
 }

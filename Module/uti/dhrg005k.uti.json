@@ -235,5 +235,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dhrg005k"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 174
   }
 }

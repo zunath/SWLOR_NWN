@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dp_supply5"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 10
   }
 }

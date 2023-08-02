@@ -262,5 +262,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "chirodactyl_skin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

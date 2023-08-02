@@ -200,5 +200,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "o_aulait"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 17
   }
 }

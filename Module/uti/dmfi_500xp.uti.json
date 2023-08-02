@@ -140,5 +140,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dmfi_500xp"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 31
   }
 }

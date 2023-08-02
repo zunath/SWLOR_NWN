@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -364,5 +364,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "soluspistol"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 231
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 101
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 61
   }
 }

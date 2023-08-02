@@ -235,5 +235,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "kwi_light_belt"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 167
   }
 }

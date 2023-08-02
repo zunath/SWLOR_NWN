@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 938
+    "value": 937
   },
   "Cursed": {
     "type": "byte",
@@ -178,5 +178,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "proto_rifle"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 21
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

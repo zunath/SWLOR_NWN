@@ -194,5 +194,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "advent_helmet"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 95
   }
 }

@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sweet_butter"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 36
   }
 }

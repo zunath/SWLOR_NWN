@@ -108,5 +108,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "jungle_bug_claw"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

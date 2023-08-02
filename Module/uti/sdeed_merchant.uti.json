@@ -109,5 +109,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sdeed_merchant"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 33
   }
 }

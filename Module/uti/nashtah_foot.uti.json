@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "nashtah_foot"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 127
   }
 }

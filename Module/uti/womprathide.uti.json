@@ -167,5 +167,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "womprathide"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 7
   }
 }

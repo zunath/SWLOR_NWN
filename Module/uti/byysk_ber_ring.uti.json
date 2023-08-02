@@ -79,5 +79,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "byysk_ber_ring"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 54
   }
 }

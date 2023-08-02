@@ -191,5 +191,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "engi_cloak_5"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 6
   }
 }

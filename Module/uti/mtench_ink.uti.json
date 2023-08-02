@@ -200,5 +200,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "mtench_ink"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 116
   }
 }

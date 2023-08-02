@@ -227,5 +227,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "mando_helmet"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 28
   }
 }

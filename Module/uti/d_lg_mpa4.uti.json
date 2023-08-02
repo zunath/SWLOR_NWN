@@ -262,5 +262,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "d_lg_mpa4"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 90
   }
 }

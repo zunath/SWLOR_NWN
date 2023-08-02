@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "roast_cod"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 14
   }
 }

@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 291800
+    "value": 234040
   },
   "Cursed": {
     "type": "byte",
@@ -574,5 +574,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "solus_disg_ring"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 85
   }
 }

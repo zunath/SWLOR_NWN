@@ -325,5 +325,81 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "revan_robes_002"
+  },
+  "xArmorPart_Belt": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_LBice": {
+    "type": "word",
+    "value": 106
+  },
+  "xArmorPart_LFArm": {
+    "type": "word",
+    "value": 246
+  },
+  "xArmorPart_LFoot": {
+    "type": "word",
+    "value": 249
+  },
+  "xArmorPart_LHand": {
+    "type": "word",
+    "value": 246
+  },
+  "xArmorPart_LShin": {
+    "type": "word",
+    "value": 245
+  },
+  "xArmorPart_LShou": {
+    "type": "word",
+    "value": 185
+  },
+  "xArmorPart_LThig": {
+    "type": "word",
+    "value": 220
+  },
+  "xArmorPart_Neck": {
+    "type": "word",
+    "value": 2
+  },
+  "xArmorPart_Pelvi": {
+    "type": "word",
+    "value": 240
+  },
+  "xArmorPart_RBice": {
+    "type": "word",
+    "value": 106
+  },
+  "xArmorPart_RFArm": {
+    "type": "word",
+    "value": 246
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 249
+  },
+  "xArmorPart_RHand": {
+    "type": "word",
+    "value": 246
+  },
+  "xArmorPart_Robe": {
+    "type": "word",
+    "value": 27
+  },
+  "xArmorPart_RShin": {
+    "type": "word",
+    "value": 245
+  },
+  "xArmorPart_RShou": {
+    "type": "word",
+    "value": 185
+  },
+  "xArmorPart_RThig": {
+    "type": "word",
+    "value": 220
+  },
+  "xArmorPart_Torso": {
+    "type": "word",
+    "value": 35
   }
 }

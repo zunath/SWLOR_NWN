@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 188
+    "value": 189
   },
   "Cursed": {
     "type": "byte",
@@ -106,5 +106,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "npc_eco_shuriken"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 33
   }
 }

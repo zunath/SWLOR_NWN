@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "envgixna"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 54
   }
 }

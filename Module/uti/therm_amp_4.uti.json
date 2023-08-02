@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "therm_amp_4"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 214
   }
 }

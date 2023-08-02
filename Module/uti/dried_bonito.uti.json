@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dried_bonito"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 92
   }
 }

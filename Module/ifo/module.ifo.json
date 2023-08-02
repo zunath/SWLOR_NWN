@@ -2587,11 +2587,11 @@
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 26.66098785400391
+    "value": 26.0
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 27.19030952453613
+    "value": 27.0
   },
   "Mod_Entry_Z": {
     "type": "float",
@@ -2669,6 +2669,13 @@
         "Mod_Hak": {
           "type": "cexostring",
           "value": "swlor2_music"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "swlor2_parts"
         }
       },
       {

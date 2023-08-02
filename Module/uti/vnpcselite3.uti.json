@@ -260,5 +260,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vnpcselite3"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

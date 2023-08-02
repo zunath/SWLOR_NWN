@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "nibullxxang"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 54
   }
 }

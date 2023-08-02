@@ -225,5 +225,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "com_cap"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 4
   }
 }

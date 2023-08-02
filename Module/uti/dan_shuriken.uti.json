@@ -167,5 +167,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dan_shuriken"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
   }
 }

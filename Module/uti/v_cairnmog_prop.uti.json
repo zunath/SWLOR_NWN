@@ -139,5 +139,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "v_cairnmog_prop"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

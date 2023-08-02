@@ -259,5 +259,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "viv_cloak"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 5
   }
 }

@@ -210,5 +210,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "kwi_heavy_leg"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 69
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 12
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 12
   }
 }

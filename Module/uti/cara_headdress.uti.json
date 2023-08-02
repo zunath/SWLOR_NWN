@@ -320,5 +320,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cara_headdress"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 4
   }
 }

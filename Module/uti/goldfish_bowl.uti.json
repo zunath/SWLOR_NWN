@@ -231,5 +231,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "goldfish_bowl"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 15
   }
 }

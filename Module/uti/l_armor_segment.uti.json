@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "l_armor_segment"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 51
   }
 }

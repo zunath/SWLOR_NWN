@@ -167,5 +167,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "coonlank_blue"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 161
   }
 }

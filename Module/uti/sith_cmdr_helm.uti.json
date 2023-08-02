@@ -99,5 +99,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sith_cmdr_helm"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 120
   }
 }

@@ -142,5 +142,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "majestic_ring001"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 91
   }
 }

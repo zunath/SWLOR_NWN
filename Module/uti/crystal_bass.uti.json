@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "crystal_bass"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 17
   }
 }

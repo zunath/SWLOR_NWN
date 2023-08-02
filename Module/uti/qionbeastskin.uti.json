@@ -136,5 +136,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "qionbeastskin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

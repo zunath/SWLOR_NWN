@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "pefoate"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 196
   }
 }

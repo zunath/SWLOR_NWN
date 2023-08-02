@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 3
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -177,5 +177,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "fleshleader_ls"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 21
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 14
   }
 }

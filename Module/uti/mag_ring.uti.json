@@ -235,5 +235,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "mag_ring"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 184
   }
 }

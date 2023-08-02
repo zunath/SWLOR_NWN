@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cooked_bibikibo"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 178
   }
 }

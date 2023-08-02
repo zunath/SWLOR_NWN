@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "v_raptor_skin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

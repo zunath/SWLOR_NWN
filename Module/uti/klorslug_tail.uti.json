@@ -76,6 +76,10 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "klorslug_claw"
+    "value": "klorslug_tail"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 98
   }
 }

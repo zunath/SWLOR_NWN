@@ -107,5 +107,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ref_bisteiss"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 107
   }
 }

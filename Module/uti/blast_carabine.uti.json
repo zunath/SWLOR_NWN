@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 502
+    "value": 501
   },
   "Cursed": {
     "type": "byte",
@@ -153,5 +153,17 @@
         }
       }
     ]
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 51
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 231
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 51
   }
 }

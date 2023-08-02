@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "kylan_juice"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 26
   }
 }

@@ -235,5 +235,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "viv_gloves"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 10
   }
 }

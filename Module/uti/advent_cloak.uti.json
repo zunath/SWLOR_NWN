@@ -164,5 +164,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "advent_cloak"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 105
   }
 }

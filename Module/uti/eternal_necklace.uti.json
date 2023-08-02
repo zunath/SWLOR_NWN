@@ -204,5 +204,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "eternal_necklace"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 48
   }
 }

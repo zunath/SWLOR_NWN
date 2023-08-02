@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 72000
+    "value": 36000
   },
   "Cursed": {
     "type": "byte",
@@ -105,5 +105,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "riktashaweapon"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

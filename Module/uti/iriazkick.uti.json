@@ -105,5 +105,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "iriazkick"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

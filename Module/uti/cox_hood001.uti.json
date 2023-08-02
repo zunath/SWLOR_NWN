@@ -100,5 +100,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cox_hood001"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 33
   }
 }

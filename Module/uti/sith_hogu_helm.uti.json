@@ -99,5 +99,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sith_hogu_helm"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 120
   }
 }

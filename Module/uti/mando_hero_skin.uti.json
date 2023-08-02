@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "mando_hero_skin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

@@ -200,5 +200,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "amphi_bbroth"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 16
   }
 }

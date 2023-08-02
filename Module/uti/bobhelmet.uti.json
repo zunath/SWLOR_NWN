@@ -99,5 +99,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "bobhelmet"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 120
   }
 }

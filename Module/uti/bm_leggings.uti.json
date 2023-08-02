@@ -179,5 +179,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "bm_leggings"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 61
   }
 }

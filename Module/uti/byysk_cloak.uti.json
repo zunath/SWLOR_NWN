@@ -26,7 +26,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 375
+    "value": 376
   },
   "Cursed": {
     "type": "byte",
@@ -226,5 +226,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "byysk_cloak"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 99
   }
 }

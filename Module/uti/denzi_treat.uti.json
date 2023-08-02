@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "denzi_treat"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 178
   }
 }

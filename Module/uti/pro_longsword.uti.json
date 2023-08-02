@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 469
+    "value": 468
   },
   "Cursed": {
     "type": "byte",
@@ -147,5 +147,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "pro_longsword"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 24
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 34
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 14
   }
 }

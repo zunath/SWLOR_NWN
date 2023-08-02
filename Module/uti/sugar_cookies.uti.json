@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sugar_cookies"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 24
   }
 }

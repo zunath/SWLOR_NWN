@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ecoter_hide"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

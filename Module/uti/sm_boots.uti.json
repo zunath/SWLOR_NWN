@@ -239,5 +239,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sm_boots"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 21
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 41
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 41
   }
 }

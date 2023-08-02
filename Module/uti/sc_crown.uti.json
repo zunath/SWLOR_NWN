@@ -318,5 +318,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sc_crown"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
   }
 }

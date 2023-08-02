@@ -105,5 +105,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "voritorbite"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

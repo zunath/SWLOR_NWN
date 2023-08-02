@@ -97,5 +97,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "pil_nulaahood"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 33
   }
 }

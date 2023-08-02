@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "imp_melee_1"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 105
   }
 }

@@ -204,5 +204,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ch_shield"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 49
   }
 }

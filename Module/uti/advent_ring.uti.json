@@ -142,5 +142,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "advent_ring"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 12
   }
 }

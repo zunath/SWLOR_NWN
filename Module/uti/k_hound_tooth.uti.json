@@ -79,5 +79,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "k_hound_tooth"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 2
   }
 }

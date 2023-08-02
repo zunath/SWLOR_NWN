@@ -264,5 +264,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "testlasagne"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 170
   }
 }

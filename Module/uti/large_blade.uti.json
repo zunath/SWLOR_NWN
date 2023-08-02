@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "large_blade"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 82
   }
 }

@@ -323,5 +323,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "moncal_cruiser_p"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

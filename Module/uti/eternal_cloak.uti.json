@@ -195,5 +195,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "eternal_cloak"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 133
   }
 }

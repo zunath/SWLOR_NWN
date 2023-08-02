@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "imp_hemp_2"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 175
   }
 }

@@ -195,5 +195,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dacl001"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 99
   }
 }

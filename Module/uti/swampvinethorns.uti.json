@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 1275124
+    "value": 637562
   },
   "Cursed": {
     "type": "byte",
@@ -229,5 +229,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "swampvinethorns"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

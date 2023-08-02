@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "omedexyna"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 104
   }
 }

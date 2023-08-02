@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 250
+    "value": 251
   },
   "Cursed": {
     "type": "byte",
@@ -239,5 +239,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sith_electro"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 81
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 221
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 181
   }
 }

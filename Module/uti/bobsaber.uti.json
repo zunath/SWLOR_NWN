@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 108100
+    "value": 36098
   },
   "Cursed": {
     "type": "byte",
@@ -301,5 +301,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "bobsaber"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 32
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 14
   }
 }

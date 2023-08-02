@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 150
+    "value": 151
   },
   "Cursed": {
     "type": "byte",
@@ -105,5 +105,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "fus_lantern"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 127
   }
 }

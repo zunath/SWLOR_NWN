@@ -210,5 +210,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "eternal_leggings"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 42
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 32
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 32
   }
 }

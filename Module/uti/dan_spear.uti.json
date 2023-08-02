@@ -175,5 +175,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dan_spear"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 243
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 243
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 243
   }
 }

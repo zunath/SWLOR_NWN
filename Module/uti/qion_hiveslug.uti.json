@@ -291,5 +291,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "qion_hiveslug"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 7325
+    "value": 7324
   },
   "Cursed": {
     "type": "byte",
@@ -145,5 +145,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cer_staff"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 232
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 234
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 232
   }
 }

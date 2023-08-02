@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "manip_arm2"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 44
   }
 }

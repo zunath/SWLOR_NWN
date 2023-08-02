@@ -97,5 +97,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "helmet_fb001"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 120
   }
 }

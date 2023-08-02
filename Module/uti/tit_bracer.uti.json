@@ -204,5 +204,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "tit_bracer"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 142
   }
 }

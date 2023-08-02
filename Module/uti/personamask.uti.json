@@ -97,5 +97,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "personamask"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 46
   }
 }

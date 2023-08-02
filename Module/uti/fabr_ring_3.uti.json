@@ -136,5 +136,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "fabr_ring_3"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 40
   }
 }

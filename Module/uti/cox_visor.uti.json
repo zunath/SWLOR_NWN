@@ -100,5 +100,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cox_visor"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 110
   }
 }

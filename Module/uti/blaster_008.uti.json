@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 98002
+    "value": 49001
   },
   "Cursed": {
     "type": "byte",
@@ -362,5 +362,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "blaster_008"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 183
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "hull_boost_4"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 26
   }
 }

@@ -164,5 +164,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dream_cloak"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 132
   }
 }

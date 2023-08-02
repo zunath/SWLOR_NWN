@@ -107,5 +107,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "colicoid_claw"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

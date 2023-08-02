@@ -206,5 +206,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dan_kin_leggings"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 19
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 14
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 14
   }
 }

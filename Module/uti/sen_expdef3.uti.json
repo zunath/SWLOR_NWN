@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sen_expdef3"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 108
   }
 }

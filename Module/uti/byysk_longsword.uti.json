@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 377
+    "value": 376
   },
   "Cursed": {
     "type": "byte",
@@ -147,5 +147,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "byysk_longsword"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 171
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 21
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 14
   }
 }

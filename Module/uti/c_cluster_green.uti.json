@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "c_cluster_green"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 119
   }
 }

@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 10
+    "value": 9
   },
   "Cursed": {
     "type": "byte",
@@ -77,5 +77,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "night_water"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 4
   }
 }

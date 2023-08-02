@@ -136,5 +136,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dan_flapjack"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 128
   }
 }

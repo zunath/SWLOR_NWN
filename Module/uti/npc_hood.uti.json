@@ -100,5 +100,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "npc_hood"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 33
   }
 }

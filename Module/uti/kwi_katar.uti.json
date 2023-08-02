@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 1172
+    "value": 1171
   },
   "Cursed": {
     "type": "byte",
@@ -146,5 +146,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "kwi_katar"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 22
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 31
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 24
   }
 }

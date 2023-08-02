@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 13185
+    "value": 13184
   },
   "Cursed": {
     "type": "byte",
@@ -147,5 +147,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cer_greatsword"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 93
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 102
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 232
   }
 }

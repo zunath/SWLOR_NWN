@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ancient_wood"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 117
   }
 }

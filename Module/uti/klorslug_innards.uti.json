@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "klorslug_innards"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 28
   }
 }

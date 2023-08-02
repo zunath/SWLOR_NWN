@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "men_mod10"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 95
   }
 }

@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "msl_launch_b"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 89
   }
 }

@@ -144,5 +144,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vnpcmwar3"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 24
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 14
   }
 }

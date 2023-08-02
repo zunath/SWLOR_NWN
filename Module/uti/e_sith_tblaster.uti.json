@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 36
+    "value": 35
   },
   "Cursed": {
     "type": "byte",
@@ -302,5 +302,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "e_sith_tblaster"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 31
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 164
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 23
   }
 }

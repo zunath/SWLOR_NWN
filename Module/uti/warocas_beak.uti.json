@@ -79,5 +79,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "warocas_beak"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 35
   }
 }

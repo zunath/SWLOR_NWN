@@ -101,5 +101,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cox_helmlight"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 119
   }
 }

@@ -61549,7 +61549,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "Teleport Object"
+            "0": "Exit"
           }
         },
         "OnClick": {

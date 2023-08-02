@@ -1628,7 +1628,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 16.0
+          "value": 23.0
         },
         "ClassList": {
           "type": "list",
@@ -2900,7 +2900,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 14.0
+          "value": 105.0
         },
         "ClassList": {
           "type": "list",
@@ -3732,7 +3732,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 14.0
+          "value": 105.0
         },
         "ClassList": {
           "type": "list",
@@ -4564,7 +4564,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 14.0
+          "value": 105.0
         },
         "ClassList": {
           "type": "list",

@@ -181,5 +181,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dalg003"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 54
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 44
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 14
   }
 }

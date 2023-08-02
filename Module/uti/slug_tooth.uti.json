@@ -171,5 +171,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "slug_tooth"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 20
   }
 }

@@ -97,5 +97,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "artshood"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 167
   }
 }

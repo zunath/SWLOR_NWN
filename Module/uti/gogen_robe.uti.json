@@ -203,5 +203,81 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "gogen_robe"
+  },
+  "xArmorPart_Belt": {
+    "type": "word",
+    "value": 25
+  },
+  "xArmorPart_LBice": {
+    "type": "word",
+    "value": 109
+  },
+  "xArmorPart_LFArm": {
+    "type": "word",
+    "value": 107
+  },
+  "xArmorPart_LFoot": {
+    "type": "word",
+    "value": 105
+  },
+  "xArmorPart_LHand": {
+    "type": "word",
+    "value": 198
+  },
+  "xArmorPart_LShin": {
+    "type": "word",
+    "value": 86
+  },
+  "xArmorPart_LShou": {
+    "type": "word",
+    "value": 7
+  },
+  "xArmorPart_LThig": {
+    "type": "word",
+    "value": 88
+  },
+  "xArmorPart_Neck": {
+    "type": "word",
+    "value": 115
+  },
+  "xArmorPart_Pelvi": {
+    "type": "word",
+    "value": 30
+  },
+  "xArmorPart_RBice": {
+    "type": "word",
+    "value": 109
+  },
+  "xArmorPart_RFArm": {
+    "type": "word",
+    "value": 107
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 105
+  },
+  "xArmorPart_RHand": {
+    "type": "word",
+    "value": 198
+  },
+  "xArmorPart_Robe": {
+    "type": "word",
+    "value": 236
+  },
+  "xArmorPart_RShin": {
+    "type": "word",
+    "value": 86
+  },
+  "xArmorPart_RShou": {
+    "type": "word",
+    "value": 7
+  },
+  "xArmorPart_RThig": {
+    "type": "word",
+    "value": 88
+  },
+  "xArmorPart_Torso": {
+    "type": "word",
+    "value": 116
   }
 }

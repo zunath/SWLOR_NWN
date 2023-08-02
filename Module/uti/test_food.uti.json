@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "test_food"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 99
   }
 }

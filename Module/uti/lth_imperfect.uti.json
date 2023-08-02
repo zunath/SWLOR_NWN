@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 51
   },
   "Cursed": {
     "type": "byte",
@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "lth_imperfect"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 182
   }
 }

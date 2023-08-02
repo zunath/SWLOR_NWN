@@ -109,5 +109,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "id_shielding1"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 224
   }
 }

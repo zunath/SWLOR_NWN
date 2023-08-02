@@ -62,7 +62,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 0.25
+          "value": 0.125
         },
         "ClassList": {
           "type": "list",
@@ -1211,6 +1211,10 @@
                 "type": "resref",
                 "value": "cft_confirm"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -1341,6 +1345,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "cft_confirm"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -1473,6 +1481,10 @@
                 "type": "resref",
                 "value": "cft_confirm"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -1603,6 +1615,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "cft_confirm"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -1735,6 +1751,10 @@
                 "type": "resref",
                 "value": "cft_confirm"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -1865,6 +1885,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -1997,6 +2021,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -2127,6 +2155,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -2259,6 +2291,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -2389,6 +2425,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -2521,6 +2561,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -2651,6 +2695,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -2783,6 +2831,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -2913,6 +2965,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -3045,6 +3101,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -3175,6 +3235,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -3307,6 +3371,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -3437,6 +3505,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -3569,6 +3641,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -3699,6 +3775,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -3831,6 +3911,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -3961,6 +4045,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -4093,6 +4181,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -4223,6 +4315,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -4355,6 +4451,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -4485,6 +4585,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -4617,6 +4721,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -4747,6 +4855,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -4879,6 +4991,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -5009,6 +5125,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -5141,6 +5261,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -5271,6 +5395,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -5403,6 +5531,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -5533,6 +5665,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -5665,6 +5801,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -5795,6 +5935,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -5927,6 +6071,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -6057,6 +6205,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -6189,6 +6341,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -6319,6 +6475,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -6451,6 +6611,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -6579,6 +6743,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -6709,6 +6877,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -6837,6 +7009,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -6967,6 +7143,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -7095,6 +7275,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -7225,6 +7409,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -7353,6 +7541,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -7483,6 +7675,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -7611,6 +7807,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -7741,6 +7941,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -7869,6 +8073,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -7999,6 +8207,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -8127,6 +8339,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -8257,6 +8473,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -8385,6 +8605,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -8515,6 +8739,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -8643,6 +8871,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -8773,6 +9005,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -8901,6 +9137,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -9031,6 +9271,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -9159,6 +9403,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -9289,6 +9537,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -9417,6 +9669,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -9547,6 +9803,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -9675,6 +9935,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -9805,6 +10069,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -9933,6 +10201,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -10063,6 +10335,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -10191,6 +10467,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -10321,6 +10601,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -10449,6 +10733,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -10579,6 +10867,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -10707,6 +10999,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -10837,6 +11133,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -10965,6 +11265,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -11095,6 +11399,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -11223,6 +11531,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -11353,6 +11665,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -11481,6 +11797,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -11615,6 +11935,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -11748,6 +12072,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -11880,6 +12208,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -12246,6 +12578,10 @@
                 "type": "resref",
                 "value": "cft_confirm"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -12376,6 +12712,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "cft_confirm"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -12508,6 +12848,10 @@
                 "type": "resref",
                 "value": "cft_confirm"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -12638,6 +12982,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "cft_confirm"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -12770,6 +13118,10 @@
                 "type": "resref",
                 "value": "cft_confirm"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -12900,6 +13252,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -13032,6 +13388,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -13162,6 +13522,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -13294,6 +13658,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -13424,6 +13792,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -13556,6 +13928,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -13686,6 +14062,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -13818,6 +14198,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -13948,6 +14332,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -14080,6 +14468,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -14210,6 +14602,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -14342,6 +14738,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -14472,6 +14872,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -14604,6 +15008,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -14734,6 +15142,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -14866,6 +15278,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -14996,6 +15412,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -15128,6 +15548,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -15258,6 +15682,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -15390,6 +15818,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -15520,6 +15952,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -15652,6 +16088,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -15782,6 +16222,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -15914,6 +16358,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -16044,6 +16492,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -16176,6 +16628,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -16306,6 +16762,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -16438,6 +16898,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -16568,6 +17032,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -16700,6 +17168,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -16830,6 +17302,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -16962,6 +17438,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -17092,6 +17572,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -17224,6 +17708,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -17354,6 +17842,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -17486,6 +17978,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -17614,6 +18110,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -17744,6 +18244,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -17872,6 +18376,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -18002,6 +18510,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -18130,6 +18642,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -18260,6 +18776,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -18388,6 +18908,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -18518,6 +19042,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -18646,6 +19174,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -18776,6 +19308,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -18904,6 +19440,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -19034,6 +19574,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -19162,6 +19706,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -19292,6 +19840,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -19420,6 +19972,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -19550,6 +20106,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -19678,6 +20238,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -19808,6 +20372,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -19936,6 +20504,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -20066,6 +20638,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -20194,6 +20770,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -20324,6 +20904,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -20452,6 +21036,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -20582,6 +21170,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -20710,6 +21302,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -20840,6 +21436,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -20968,6 +21568,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -21098,6 +21702,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -21226,6 +21834,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -21356,6 +21968,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -21484,6 +22100,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -21614,6 +22234,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -21742,6 +22366,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -21872,6 +22500,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -22000,6 +22632,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -22130,6 +22766,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -22258,6 +22898,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -22388,6 +23032,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -22516,6 +23164,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -22650,6 +23302,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -22783,6 +23439,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -22915,6 +23575,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -23281,6 +23945,10 @@
                 "type": "resref",
                 "value": "cft_confirm"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -23411,6 +24079,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "cft_confirm"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -23543,6 +24215,10 @@
                 "type": "resref",
                 "value": "cft_confirm"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -23673,6 +24349,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "cft_confirm"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -23805,6 +24485,10 @@
                 "type": "resref",
                 "value": "cft_confirm"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -23935,6 +24619,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -24067,6 +24755,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -24197,6 +24889,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -24329,6 +25025,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -24459,6 +25159,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -24591,6 +25295,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -24721,6 +25429,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -24853,6 +25565,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -24983,6 +25699,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -25115,6 +25835,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -25245,6 +25969,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -25377,6 +26105,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -25507,6 +26239,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -25639,6 +26375,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -25769,6 +26509,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -25901,6 +26645,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -26031,6 +26779,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -26163,6 +26915,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -26293,6 +27049,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -26425,6 +27185,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -26555,6 +27319,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -26687,6 +27455,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -26817,6 +27589,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -26949,6 +27725,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -27079,6 +27859,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -27211,6 +27995,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -27341,6 +28129,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -27473,6 +28265,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -27603,6 +28399,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -27735,6 +28535,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -27865,6 +28669,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -27997,6 +28805,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -28127,6 +28939,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -28259,6 +29075,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -28389,6 +29209,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -28521,6 +29345,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -28649,6 +29477,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -28779,6 +29611,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -28907,6 +29743,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -29037,6 +29877,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -29165,6 +30009,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -29295,6 +30143,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -29423,6 +30275,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -29553,6 +30409,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -29681,6 +30541,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -29811,6 +30675,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -29939,6 +30807,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -30069,6 +30941,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -30197,6 +31073,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -30327,6 +31207,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -30455,6 +31339,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -30585,6 +31473,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -30713,6 +31605,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -30843,6 +31739,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -30971,6 +31871,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -31101,6 +32005,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -31229,6 +32137,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -31359,6 +32271,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -31487,6 +32403,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -31617,6 +32537,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -31745,6 +32669,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -31875,6 +32803,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -32003,6 +32935,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -32133,6 +33069,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -32261,6 +33201,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -32391,6 +33335,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -32519,6 +33467,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -32649,6 +33601,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -32777,6 +33733,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -32907,6 +33867,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -33035,6 +33999,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -33165,6 +34133,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -33293,6 +34265,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -33423,6 +34399,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -33551,6 +34531,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",
@@ -33685,6 +34669,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -33818,6 +34806,10 @@
                 "type": "resref",
                 "value": "compbon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -33950,6 +34942,10 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "compbon"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 63
               },
               "XOrientation": {
                 "type": "float",

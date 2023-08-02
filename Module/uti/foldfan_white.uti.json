@@ -83,5 +83,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "foldfan_white"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 51
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

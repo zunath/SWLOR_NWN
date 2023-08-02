@@ -204,5 +204,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "kwi_heavy_ring"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 174
   }
 }

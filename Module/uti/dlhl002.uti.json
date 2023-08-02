@@ -318,5 +318,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dlhl002"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 49
   }
 }

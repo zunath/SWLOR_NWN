@@ -297,5 +297,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cara_gloves"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 108
   }
 }

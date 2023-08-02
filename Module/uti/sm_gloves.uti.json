@@ -142,5 +142,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sm_gloves"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 6
   }
 }

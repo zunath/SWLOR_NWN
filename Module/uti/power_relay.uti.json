@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "power_relay"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 31
   }
 }

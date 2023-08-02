@@ -335,6 +335,56 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Check for weapon type and perk. Returns either the default ability score or the perk replaced ability score if the user has the relevant perk or active stance.
+        /// This is currently used for zen marksmanship, strong style, crushing style, and flurry style.
+        /// </summary>
+        /// <param name="attacker">The attacker to check</param>
+        /// <returns>The correct damage ability score, or 0 if a weapon is not equipped.</returns>
+
+        public static int GetPerkAdjustedAbilityScore(uint attacker)
+        {
+            var weapon = GetItemInSlot(InventorySlot.RightHand, attacker);
+            if (!GetIsObjectValid(weapon)) return 0;
+            var weaponType = GetBaseItemType(weapon);
+
+            // Pistol and Rifle - Zen Marksmanship
+            if (Item.PistolBaseItemTypes.Contains(weaponType) || Item.RifleBaseItemTypes.Contains(weaponType))
+            {
+                var willpower = GetAbilityScore(attacker, AbilityType.Willpower);
+                var perception = GetAbilityScore(attacker, AbilityType.Perception);
+                return (GetHasFeat(FeatType.ZenMarksmanship, attacker) && (willpower > perception)) ? willpower : perception;
+            }
+
+            // Throwing - Zen Marksmanship
+            if (Item.ThrowingWeaponBaseItemTypes.Contains(weaponType))
+            {
+                var willpower = GetAbilityScore(attacker, AbilityType.Willpower);
+                var might = GetAbilityScore(attacker, AbilityType.Might);
+                return (GetHasFeat(FeatType.ZenMarksmanship, attacker) && (willpower > might)) ? willpower : might;
+            }
+
+            // Lightsaber - Strong Style
+            if (Item.LightsaberBaseItemTypes.Contains(weaponType))
+                return Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleLightsaber) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
+
+            // Saberstaff - Strong Style
+            if (Item.SaberstaffBaseItemTypes.Contains(weaponType))
+                return Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleSaberstaff) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
+
+            // Staff: there are 3 style perks for staff so it has to be handled slightly differently.
+            if (Item.StaffBaseItemTypes.Contains(weaponType))
+            {
+                if (GetHasFeat(FeatType.FlurryStyle)) return GetAbilityScore(attacker, AbilityType.Perception);
+                if (GetHasFeat(FeatType.CrushingMastery)) return 3 * GetAbilityScore(attacker, AbilityType.Might);
+                if (GetHasFeat(FeatType.CrushingStyle)) return 2 * GetAbilityScore(attacker, AbilityType.Might);
+                return GetAbilityScore(attacker, AbilityType.Might);
+            }
+
+            //Handle weapon types without ability adjustment perks as well for consistency.
+            return GetAbilityScore(attacker, Item.GetWeaponDamageAbilityType(weaponType));
+        }
+
+        /// <summary>
         /// Retrieves the DMG bonus granted by doublehand, Power Attack, and Might scaling.
         /// </summary>
         /// <param name="attacker">The attacker to check</param>

@@ -97,5 +97,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "revan_mask"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 223
   }
 }

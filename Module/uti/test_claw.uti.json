@@ -106,5 +106,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "test_claw"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

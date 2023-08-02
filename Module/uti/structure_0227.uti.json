@@ -107,5 +107,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "structure_0227"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 202
   }
 }

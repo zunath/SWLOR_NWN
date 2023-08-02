@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "hull_plating"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 29
   }
 }

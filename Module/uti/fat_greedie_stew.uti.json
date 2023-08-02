@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "fat_greedie_stew"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 15
   }
 }

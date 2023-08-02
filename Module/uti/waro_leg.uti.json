@@ -79,5 +79,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "waro_leg"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 69
   }
 }

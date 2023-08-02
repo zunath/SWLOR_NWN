@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 250
+    "value": 251
   },
   "Cursed": {
     "type": "byte",
@@ -147,5 +147,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "poach_gswd"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 41
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 42
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 14
   }
 }

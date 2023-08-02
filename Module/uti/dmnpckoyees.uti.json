@@ -322,5 +322,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dmnpckoyees"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

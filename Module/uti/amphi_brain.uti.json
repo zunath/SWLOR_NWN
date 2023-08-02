@@ -171,5 +171,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "amphi_brain"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 167
   }
 }

@@ -167,5 +167,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "munch_fungusb"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 92
   }
 }

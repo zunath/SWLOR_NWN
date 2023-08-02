@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "p_flour"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 142
   }
 }

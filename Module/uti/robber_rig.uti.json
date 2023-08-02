@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "robber_rig"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 12
   }
 }

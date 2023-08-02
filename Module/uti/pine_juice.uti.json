@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "pine_juice"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 182
   }
 }

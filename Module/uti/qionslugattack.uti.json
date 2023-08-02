@@ -167,5 +167,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "qionslugattack"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

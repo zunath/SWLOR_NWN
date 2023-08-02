@@ -77,5 +77,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cft_confirm"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 63
   }
 }

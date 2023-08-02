@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "white_p_lobster"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 15
   }
 }

@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "tiger_cod"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 17
   }
 }

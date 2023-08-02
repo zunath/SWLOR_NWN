@@ -142,5 +142,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "majestic_bracer"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 58
   }
 }

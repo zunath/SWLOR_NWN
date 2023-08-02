@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "pow_supp_unit"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 124
   }
 }

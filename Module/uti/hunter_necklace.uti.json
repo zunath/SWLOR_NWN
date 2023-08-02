@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 250
+    "value": 251
   },
   "Cursed": {
     "type": "byte",
@@ -204,5 +204,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "hunter_necklace"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 17
   }
 }

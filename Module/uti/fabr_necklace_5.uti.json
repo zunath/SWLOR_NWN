@@ -198,5 +198,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "fabr_necklace_5"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 237
   }
 }

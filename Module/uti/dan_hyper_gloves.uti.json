@@ -260,5 +260,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dan_hyper_gloves"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 59
   }
 }

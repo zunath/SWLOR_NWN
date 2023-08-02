@@ -142,5 +142,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "bm_belt"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 255
   }
 }

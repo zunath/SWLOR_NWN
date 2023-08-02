@@ -270,5 +270,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "imm_boots"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 42
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 12
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 53
   }
 }

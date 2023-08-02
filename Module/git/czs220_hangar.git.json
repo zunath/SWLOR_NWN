@@ -379,6 +379,82 @@
                 "type": "resref",
                 "value": "czerkauniform"
               },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 109
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 107
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 243
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 3
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 239
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 239
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 237
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 109
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 107
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 243
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 3
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 239
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 239
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 189
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -881,6 +957,82 @@
           "type": "byte",
           "value": 10
         },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 40
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 1
+        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -1234,6 +1386,82 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "czerkauniform002"
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 9
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 109
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 107
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 247
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 3
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 153
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 105
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 237
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 109
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 107
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 247
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 3
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 153
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 105
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 189
               },
               "XOrientation": {
                 "type": "float",
@@ -1737,6 +1965,82 @@
           "type": "byte",
           "value": 10
         },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 40
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 1
+        },
         "XOrientation": {
           "type": "float",
           "value": -0.5555709600448608
@@ -2090,6 +2394,82 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "czerkauniform"
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 109
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 107
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 243
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 3
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 239
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 239
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 237
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 109
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 107
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 243
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 3
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 239
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 239
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 189
               },
               "XOrientation": {
                 "type": "float",
@@ -2593,6 +2973,82 @@
           "type": "byte",
           "value": 10
         },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 108
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 2
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 1
+        },
         "XOrientation": {
           "type": "float",
           "value": 0.6343931555747986
@@ -2946,6 +3402,82 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "czerkauniform"
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 109
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 107
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 243
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 3
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 239
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 239
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 237
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 109
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 107
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 243
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 3
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 239
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 239
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 189
               },
               "XOrientation": {
                 "type": "float",
@@ -3484,6 +4016,82 @@
           "type": "byte",
           "value": 10
         },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 135
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 201
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 201
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 201
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 201
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 201
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 201
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 201
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 201
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 201
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 201
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 201
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 201
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 201
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 201
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 201
+        },
         "XOrientation": {
           "type": "float",
           "value": -0.2429801374673843
@@ -3836,6 +4444,82 @@
               "TemplateResRef": {
                 "type": "resref",
                 "value": "npc_smuggler_m"
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 25
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 4
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 16
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 160
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 243
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 15
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 51
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 107
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 50
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 4
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 16
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 160
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 10
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 243
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 15
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 51
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 102
               },
               "XOrientation": {
                 "type": "float",
@@ -4388,6 +5072,82 @@
         "Wis": {
           "type": "byte",
           "value": 10
+        },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 115
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 1
         },
         "XOrientation": {
           "type": "float",
@@ -17452,6 +18212,10 @@
                       "type": "resref",
                       "value": "cap_boost_b"
                     },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 35
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -17554,6 +18318,10 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "com_laser_b"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 4
                     },
                     "XOrientation": {
                       "type": "float",
@@ -17658,6 +18426,10 @@
                       "type": "resref",
                       "value": "em_amp_b"
                     },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 210
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -17760,6 +18532,10 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "eva_boost_b"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 18
                     },
                     "XOrientation": {
                       "type": "float",
@@ -17864,6 +18640,10 @@
                       "type": "resref",
                       "value": "exp_amp_b"
                     },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 216
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -17966,6 +18746,10 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "hull_boost_b"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 26
                     },
                     "XOrientation": {
                       "type": "float",
@@ -18070,6 +18854,10 @@
                       "type": "resref",
                       "value": "hull_rep_b"
                     },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 39
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -18172,6 +18960,10 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "ion_cann_b"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 50
                     },
                     "XOrientation": {
                       "type": "float",
@@ -18276,6 +19068,10 @@
                       "type": "resref",
                       "value": "min_laser_b"
                     },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 84
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -18378,6 +19174,10 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "msl_launch_b"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 89
                     },
                     "XOrientation": {
                       "type": "float",
@@ -18482,6 +19282,10 @@
                       "type": "resref",
                       "value": "shld_boost_b"
                     },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 27
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -18584,6 +19388,10 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "shld_rep_b"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 40
                     },
                     "XOrientation": {
                       "type": "float",
@@ -18688,6 +19496,10 @@
                       "type": "resref",
                       "value": "tgt_sys_b"
                     },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 55
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -18790,6 +19602,10 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "therm_amp_b"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 214
                     },
                     "XOrientation": {
                       "type": "float",
@@ -18928,6 +19744,10 @@
                       "type": "resref",
                       "value": "sdeed_escort"
                     },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 33
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -19065,6 +19885,10 @@
                       "type": "resref",
                       "value": "sdeed_freighter"
                     },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 33
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -19167,6 +19991,10 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "min_laser_1"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 84
                     },
                     "XOrientation": {
                       "type": "float",
@@ -19271,6 +20099,10 @@
                       "type": "resref",
                       "value": "min_laser_2"
                     },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 84
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -19374,6 +20206,10 @@
                       "type": "resref",
                       "value": "min_laser_3"
                     },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 84
+                    },
                     "XOrientation": {
                       "type": "float",
                       "value": 0.0
@@ -19476,6 +20312,10 @@
                     "TemplateResRef": {
                       "type": "resref",
                       "value": "min_laser_4"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 84
                     },
                     "XOrientation": {
                       "type": "float",

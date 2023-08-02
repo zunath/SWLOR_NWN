@@ -77,5 +77,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "m_vibro_parts"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 217
   }
 }

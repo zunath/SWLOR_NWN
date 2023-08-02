@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 377
+    "value": 376
   },
   "Cursed": {
     "type": "byte",
@@ -114,5 +114,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vtdrakebruisemel"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 62
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 61
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 61
   }
 }

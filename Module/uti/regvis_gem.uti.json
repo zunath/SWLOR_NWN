@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "regvis_gem"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 131
   }
 }

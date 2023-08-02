@@ -101,5 +101,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "hat_cloak"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 100
   }
 }

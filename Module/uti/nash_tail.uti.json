@@ -171,5 +171,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "nash_tail"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 98
   }
 }

@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "carnuinch"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 5
   }
 }

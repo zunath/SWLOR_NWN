@@ -191,5 +191,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "fabr_helmet_3"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 16
   }
 }

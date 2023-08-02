@@ -262,5 +262,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vbroodmother_001"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

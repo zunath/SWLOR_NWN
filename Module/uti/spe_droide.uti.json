@@ -511,5 +511,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "spe_droide"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

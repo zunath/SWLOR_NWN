@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "octotench_skin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

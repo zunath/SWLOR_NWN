@@ -257,5 +257,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "kwi_light_cloak"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 99
   }
 }

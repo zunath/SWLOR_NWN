@@ -266,5 +266,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sc_signet"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 184
   }
 }

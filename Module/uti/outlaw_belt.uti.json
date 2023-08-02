@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 125
+    "value": 126
   },
   "Cursed": {
     "type": "byte",
@@ -173,5 +173,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "outlaw_belt"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

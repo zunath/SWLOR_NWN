@@ -85,5 +85,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "duskhavenkeycard"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 253
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 253
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 233
   }
 }

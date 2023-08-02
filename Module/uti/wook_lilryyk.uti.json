@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -178,5 +178,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "wook_lilryyk"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 91
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 108
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 91
   }
 }

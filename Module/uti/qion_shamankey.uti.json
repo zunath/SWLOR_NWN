@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "qion_shamankey"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 171
   }
 }

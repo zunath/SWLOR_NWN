@@ -110,5 +110,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "stim_pack"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 2
   }
 }

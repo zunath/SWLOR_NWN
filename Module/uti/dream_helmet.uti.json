@@ -194,5 +194,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dream_helmet"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 116
   }
 }

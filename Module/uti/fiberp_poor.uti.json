@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "fiberp_poor"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 26
   }
 }

@@ -297,5 +297,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cara_wraps"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
   }
 }

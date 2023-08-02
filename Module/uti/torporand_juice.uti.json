@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "torporand_juice"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 187
   }
 }

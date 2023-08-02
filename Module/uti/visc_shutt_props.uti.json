@@ -323,5 +323,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "visc_shutt_props"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

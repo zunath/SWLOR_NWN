@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2930
+    "value": 2931
   },
   "Cursed": {
     "type": "byte",
@@ -139,5 +139,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "car_shuriken"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 41
   }
 }

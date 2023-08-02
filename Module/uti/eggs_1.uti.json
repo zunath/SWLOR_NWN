@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "eggs_1"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 33
   }
 }

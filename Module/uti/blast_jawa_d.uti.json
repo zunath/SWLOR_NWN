@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 400
+    "value": 399
   },
   "Cursed": {
     "type": "byte",
@@ -146,5 +146,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "blast_jawa_d"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 32
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 0
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 0
   }
 }

@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 55.0
+    "value": 45.0
   },
   "ClassList": {
     "type": "list",

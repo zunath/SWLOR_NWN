@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cap_boost_3"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 35
   }
 }

@@ -198,5 +198,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vhivebroodmother"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

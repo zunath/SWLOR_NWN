@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2930
+    "value": 2929
   },
   "Cursed": {
     "type": "byte",
@@ -146,5 +146,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "car_katar"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 34
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 24
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 34
   }
 }

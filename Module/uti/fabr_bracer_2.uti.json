@@ -136,5 +136,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "fabr_bracer_2"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 6
   }
 }

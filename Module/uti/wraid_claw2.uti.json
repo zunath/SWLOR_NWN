@@ -173,5 +173,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "wraid_claw2"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 87
   }
 }

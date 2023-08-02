@@ -253,5 +253,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dan_h_cloak"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

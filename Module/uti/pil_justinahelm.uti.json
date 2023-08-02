@@ -97,5 +97,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "pil_justinahelm"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 102
   }
 }

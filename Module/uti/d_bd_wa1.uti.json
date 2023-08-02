@@ -231,5 +231,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "d_bd_wa1"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 120
   }
 }

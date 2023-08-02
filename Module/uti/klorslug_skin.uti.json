@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "klorslug_skin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

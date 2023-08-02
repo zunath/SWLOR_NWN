@@ -287,5 +287,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "for_cap"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 83
   }
 }

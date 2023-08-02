@@ -110,5 +110,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "pet_treat"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 8
   }
 }

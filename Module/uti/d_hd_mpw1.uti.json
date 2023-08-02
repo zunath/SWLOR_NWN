@@ -262,5 +262,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "d_hd_mpw1"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 110
   }
 }

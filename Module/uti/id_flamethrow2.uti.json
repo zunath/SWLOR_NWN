@@ -109,5 +109,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "id_flamethrow2"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 224
   }
 }

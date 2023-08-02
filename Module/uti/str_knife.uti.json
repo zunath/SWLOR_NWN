@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 16482
+    "value": 16481
   },
   "Cursed": {
     "type": "byte",
@@ -145,5 +145,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "str_knife"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 44
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 28
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 38
   }
 }

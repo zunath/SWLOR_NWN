@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ww_outlaw_skin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

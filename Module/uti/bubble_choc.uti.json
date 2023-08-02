@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "bubble_choc"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 118
   }
 }

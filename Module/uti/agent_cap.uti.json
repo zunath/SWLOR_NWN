@@ -26,7 +26,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 375
+    "value": 376
   },
   "Cursed": {
     "type": "byte",
@@ -225,5 +225,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "agent_cap"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 83
   }
 }

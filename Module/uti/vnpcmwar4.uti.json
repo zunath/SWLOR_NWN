@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 3
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -113,5 +113,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vnpcmwar4"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 24
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 14
   }
 }

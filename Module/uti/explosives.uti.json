@@ -108,5 +108,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "explosives"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 6
   }
 }

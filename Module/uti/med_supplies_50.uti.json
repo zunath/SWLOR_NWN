@@ -108,5 +108,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "med_supplies_50"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

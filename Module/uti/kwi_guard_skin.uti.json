@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "kwi_guard_skin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

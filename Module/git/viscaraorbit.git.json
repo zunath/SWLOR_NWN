@@ -435,6 +435,10 @@
                 "type": "resref",
                 "value": "nw_it_creitemcon"
               },
+              "xModelPart1": {
+                "type": "word",
+                "value": 1
+              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0

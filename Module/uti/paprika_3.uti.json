@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "paprika_3"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 231
   }
 }

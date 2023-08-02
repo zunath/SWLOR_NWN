@@ -129,5 +129,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "mpiandryhood"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 33
   }
 }

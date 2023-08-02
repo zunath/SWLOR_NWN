@@ -140,5 +140,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dmfi_peace"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 17
   }
 }

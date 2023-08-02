@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "eelectric_soup"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 17
   }
 }

@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "m_plate"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 77
   }
 }

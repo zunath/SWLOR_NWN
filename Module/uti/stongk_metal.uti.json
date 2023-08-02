@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "stongk_metal"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 107
   }
 }

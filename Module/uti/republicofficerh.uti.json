@@ -97,5 +97,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "republicofficerh"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 108
   }
 }

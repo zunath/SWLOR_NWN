@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 605017
+    "value": 201737
   },
   "Cursed": {
     "type": "byte",
@@ -394,5 +394,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "d_gravius_saber"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 22
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 14
   }
 }

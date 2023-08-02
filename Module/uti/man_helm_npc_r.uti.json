@@ -100,5 +100,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "man_helm_npc_r"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 113
   }
 }

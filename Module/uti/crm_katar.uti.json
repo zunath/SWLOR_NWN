@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 24721
+    "value": 24720
   },
   "Cursed": {
     "type": "byte",
@@ -146,5 +146,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "crm_katar"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 43
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 42
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 44
   }
 }

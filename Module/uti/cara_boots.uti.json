@@ -305,5 +305,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cara_boots"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 47
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 14
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 24
   }
 }

@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "iondeyn"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 13
   }
 }

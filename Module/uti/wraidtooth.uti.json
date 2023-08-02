@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "wraidtooth"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 58
   }
 }

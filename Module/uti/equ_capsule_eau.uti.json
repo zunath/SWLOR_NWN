@@ -105,5 +105,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "equ_capsule_eau"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 47
   }
 }

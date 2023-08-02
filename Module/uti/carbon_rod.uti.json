@@ -150,5 +150,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "carbon_rod"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 61
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 61
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 61
   }
 }

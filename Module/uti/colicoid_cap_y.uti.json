@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "colicoid_cap_y"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 35
   }
 }

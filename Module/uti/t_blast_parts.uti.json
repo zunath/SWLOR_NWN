@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "t_blast_parts"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 82
   }
 }

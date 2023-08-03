@@ -6353,7 +6353,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 18
+    "value": 19
   },
   "Width": {
     "type": "int",

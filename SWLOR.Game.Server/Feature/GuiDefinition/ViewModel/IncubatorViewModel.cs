@@ -1,14 +1,20 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class IncubatorViewModel : GuiViewModelBase<IncubatorViewModel, GuiPayloadBase>
+    public class IncubatorViewModel : GuiViewModelBase<IncubatorViewModel, GuiPayloadBase>,
+        IGuiRefreshable<PerkAcquiredRefreshEvent>,
+        IGuiRefreshable<PerkRefundedRefreshEvent>
     {
+        private const int BaseSecondsBetweenStages = 129600; // 36 hours
+
         private const string _blank = "Blank";
         private const string HydrolaseResrefPrefix = "hydrolase_";
         private const string LyaseResrefPrefix = "lyase_";
@@ -19,6 +25,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string _hydrolaseItem;
         private string _isomeraseItem;
         private string _lyaseItem;
+
+        private int _currentStage;
 
         private int _attack;
         private int _accuracy;
@@ -181,6 +189,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string ErraticGeniusTooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             DNAItemResref = _blank;
@@ -188,112 +202,174 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsomeraseItemResref = _blank;
             LyaseItemResref = _blank;
 
+            LoadPlayerStats();
+            RefreshAllStats();
             IsErraticGeniusChecked = false;
+            CalculateIncubationTime();
 
             WatchOnClient(model => model.IsErraticGeniusChecked);
         }
 
-        private string FormatStat(int baseStat, int bonusStat)
+        private string FormatStat(int baseStat, int bonusStat, int additionalBonus)
         {
             var bonusPercentage = BeastMastery.GetIncubationPercentageById(bonusStat);
             if (bonusPercentage > 10f)
                 bonusPercentage = 10f;
+
+            bonusPercentage += additionalBonus;
 
             var baseStatText = BeastMastery.GetIncubationPercentageById(baseStat);
 
             return $"{baseStatText}% [+{bonusPercentage:0.0###}%]";
         }
 
+        private int GetErraticGeniusBonus()
+        {
+            var erraticGenius = Perk.GetPerkLevel(Player, PerkType.ErraticGenius);
+            var mutationBonus = 0;
+            switch (erraticGenius)
+            {
+                case 1:
+                    mutationBonus = 2;
+                    break;
+                case 2:
+                    mutationBonus = 4;
+                    break;
+                case 3:
+                    mutationBonus = 8;
+                    break;
+            }
+
+            return mutationBonus;
+        }
+
+        private void LoadPlayerStats()
+        {
+            var mutationBonus = GetErraticGeniusBonus();
+            ErraticGeniusTooltip = $"Increases mutation chance by {mutationBonus}% if checked.";
+            IsErraticGeniusEnabled = mutationBonus > 0;
+
+            if (!IsErraticGeniusEnabled)
+                IsErraticGeniusChecked = false;
+        }
+
+        private void ToggleStartJob()
+        {
+            IsStartJobEnabled = !string.IsNullOrWhiteSpace(_hydrolaseItem) &&
+                                !string.IsNullOrWhiteSpace(_lyaseItem) &&
+                                !string.IsNullOrWhiteSpace(_isomeraseItem) &&
+                                !string.IsNullOrWhiteSpace(_dnaItem);
+        }
+
         private void RefreshAllStats()
         {
-            AttackPurity = FormatStat(_attack, _stageAttack);
-            AccuracyPurity = FormatStat(_accuracy, _stageAccuracy);
-            EvasionPurity = FormatStat(_evasion, _stageEvasion);
-            LearningPurity = FormatStat(_learning, _stageLearning);
-            PhysicalDefensePurity = FormatStat(_physicalDefense, _stagePhysicalDefense);
-            ForceDefensePurity = FormatStat(_forceDefense, _stageForceDefense);
-            FireDefensePurity = FormatStat(_fireDefense, _stageFireDefense);
-            PoisonDefensePurity = FormatStat(_poisonDefense, _stagePoisonDefense);
-            ElectricalDefensePurity = FormatStat(_electricalDefense, _stageElectricalDefense);
-            IceDefensePurity = FormatStat(_iceDefense, _stageIceDefense);
-            FortitudePurity = FormatStat(_fortitude, _stageFortitude);
-            ReflexPurity = FormatStat(_reflex, _stageReflex);
-            WillPurity = FormatStat(_will, _stageWill);
-            XPPenalty = FormatStat(_xpPenalty, _stageXPPenalty);
-            MutationChance = FormatStat(_mutationChance, _stageMutationChance);
+            var mutationBonus = 0;
+
+            if (IsErraticGeniusChecked)
+            {
+                mutationBonus = GetErraticGeniusBonus();
+            }
+
+            AttackPurity = FormatStat(_attack, _stageAttack, 0);
+            AccuracyPurity = FormatStat(_accuracy, _stageAccuracy, 0);
+            EvasionPurity = FormatStat(_evasion, _stageEvasion, 0);
+            LearningPurity = FormatStat(_learning, _stageLearning, 0);
+            PhysicalDefensePurity = FormatStat(_physicalDefense, _stagePhysicalDefense, 0);
+            ForceDefensePurity = FormatStat(_forceDefense, _stageForceDefense, 0);
+            FireDefensePurity = FormatStat(_fireDefense, _stageFireDefense, 0);
+            PoisonDefensePurity = FormatStat(_poisonDefense, _stagePoisonDefense, 0);
+            ElectricalDefensePurity = FormatStat(_electricalDefense, _stageElectricalDefense, 0);
+            IceDefensePurity = FormatStat(_iceDefense, _stageIceDefense, 0);
+            FortitudePurity = FormatStat(_fortitude, _stageFortitude, 0);
+            ReflexPurity = FormatStat(_reflex, _stageReflex, 0);
+            WillPurity = FormatStat(_will, _stageWill, 0);
+            XPPenalty = FormatStat(_xpPenalty, _stageXPPenalty, 0);
+            MutationChance = FormatStat(_mutationChance, _stageMutationChance, mutationBonus);
+        }
+
+        private void CalculateIncubationTime()
+        {
+            var incubationProcessingBonus = 0.01f * (Perk.GetPerkLevel(Player, PerkType.IncubationProcessing) * 10);
+            var seconds = BaseSecondsBetweenStages - (int)(BaseSecondsBetweenStages * incubationProcessingBonus);
+            var timespan = TimeSpan.FromSeconds(seconds);
+
+            EstimatedTimeToCompletion = $"Time Required: {Time.GetTimeLongIntervals(timespan, false)}";
+        }
+
+        private void RemoveDNA()
+        {
+            var item = ObjectPlugin.Deserialize(_dnaItem);
+            ObjectPlugin.AcquireItem(Player, item);
+            _dnaItem = string.Empty;
+            DNAItemResref = _blank;
+
+            if (!string.IsNullOrWhiteSpace(_hydrolaseItem))
+            {
+                item = ObjectPlugin.Deserialize(_hydrolaseItem);
+                ObjectPlugin.AcquireItem(Player, item);
+                _hydrolaseItem = string.Empty;
+                HydrolaseItemResref = _blank;
+            }
+            if (!string.IsNullOrWhiteSpace(_lyaseItem))
+            {
+                item = ObjectPlugin.Deserialize(_lyaseItem);
+                ObjectPlugin.AcquireItem(Player, item);
+                _lyaseItem = string.Empty;
+                LyaseItemResref = _blank;
+            }
+            if (!string.IsNullOrWhiteSpace(_isomeraseItem))
+            {
+                item = ObjectPlugin.Deserialize(_isomeraseItem);
+                ObjectPlugin.AcquireItem(Player, item);
+                _isomeraseItem = string.Empty;
+                IsomeraseItemResref = _blank;
+            }
+
+            IsStartJobEnabled = false;
+            IsErraticGeniusChecked = false;
+            IsErraticGeniusEnabled = false;
+
+            _mutationChance = 0;
+            _attack = 0;
+            _accuracy = 0;
+            _evasion = 0;
+            _learning = 0;
+            _physicalDefense = 0;
+            _forceDefense = 0;
+            _fireDefense = 0;
+            _poisonDefense = 0;
+            _electricalDefense = 0;
+            _iceDefense = 0;
+            _fortitude = 0;
+            _reflex = 0;
+            _will = 0;
+            _xpPenalty = 0;
+
+            _stageMutationChance = 0;
+            _stageAttack = 0;
+            _stageAccuracy = 0;
+            _stageEvasion = 0;
+            _stageLearning = 0;
+            _stagePhysicalDefense = 0;
+            _stageForceDefense = 0;
+            _stageFireDefense = 0;
+            _stagePoisonDefense = 0;
+            _stageElectricalDefense = 0;
+            _stageIceDefense = 0;
+            _stageFortitude = 0;
+            _stageReflex = 0;
+            _stageWill = 0;
+            _stageXPPenalty = 0;
+
+            RefreshAllStats();
+            ToggleStartJob();
         }
 
         public Action OnClickDNA() => () =>
         {
             if (!string.IsNullOrWhiteSpace(_dnaItem))
             {
-                ShowModal("Will you remove the DNA from the incubator? All enzymes will also be removed.", () =>
-                {
-                    var item = ObjectPlugin.Deserialize(_dnaItem);
-                    ObjectPlugin.AcquireItem(Player, item);
-                    _dnaItem = string.Empty;
-                    DNAItemResref = _blank;
-
-                    if (!string.IsNullOrWhiteSpace(_hydrolaseItem))
-                    {
-                        item = ObjectPlugin.Deserialize(_hydrolaseItem);
-                        ObjectPlugin.AcquireItem(Player, item);
-                        _hydrolaseItem = string.Empty;
-                        HydrolaseItemResref = _blank;
-                    }
-                    if (!string.IsNullOrWhiteSpace(_lyaseItem))
-                    {
-                        item = ObjectPlugin.Deserialize(_lyaseItem);
-                        ObjectPlugin.AcquireItem(Player, item);
-                        _lyaseItem = string.Empty;
-                        LyaseItemResref = _blank;
-                    }
-                    if (!string.IsNullOrWhiteSpace(_isomeraseItem))
-                    {
-                        item = ObjectPlugin.Deserialize(_isomeraseItem);
-                        ObjectPlugin.AcquireItem(Player, item);
-                        _isomeraseItem = string.Empty;
-                        IsomeraseItemResref = _blank;
-                    }
-
-                    IsStartJobEnabled = false;
-                    IsErraticGeniusChecked = false;
-                    IsErraticGeniusEnabled = false;
-
-                    _mutationChance = 0;
-                    _attack = 0;
-                    _accuracy = 0;
-                    _evasion = 0;
-                    _learning = 0;
-                    _physicalDefense = 0;
-                    _forceDefense = 0;
-                    _fireDefense = 0;
-                    _poisonDefense = 0;
-                    _electricalDefense = 0;
-                    _iceDefense = 0;
-                    _fortitude = 0;
-                    _reflex = 0;
-                    _will = 0;
-                    _xpPenalty = 0;
-
-                    _stageMutationChance = 0;
-                    _stageAttack = 0;
-                    _stageAccuracy = 0;
-                    _stageEvasion = 0;
-                    _stageLearning = 0;
-                    _stagePhysicalDefense = 0;
-                    _stageForceDefense = 0;
-                    _stageFireDefense = 0;
-                    _stagePoisonDefense = 0;
-                    _stageElectricalDefense = 0;
-                    _stageIceDefense = 0;
-                    _stageFortitude = 0;
-                    _stageReflex = 0;
-                    _stageWill = 0;
-                    _stageXPPenalty = 0;
-
-                    RefreshAllStats();
-                });
+                ShowModal("Will you remove the DNA from the incubator? All enzymes will also be removed.", RemoveDNA);
             }
             else
             {
@@ -374,6 +450,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     DestroyObject(item);
 
                     RefreshAllStats();
+                    ToggleStartJob();
                 });
             }
 
@@ -515,6 +592,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _hydrolaseItem = string.Empty;
 
                     SubtractItemStats(item);
+                    ToggleStartJob();
                 });
             }
             else
@@ -539,6 +617,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _hydrolaseItem = ObjectPlugin.Serialize(item);
                     AddItemStats(item);
                     DestroyObject(item);
+                    ToggleStartJob();
                 });
             }
         };
@@ -555,6 +634,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _lyaseItem = string.Empty;
 
                     SubtractItemStats(item);
+                    ToggleStartJob();
                 });
             }
             else
@@ -579,6 +659,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _lyaseItem = ObjectPlugin.Serialize(item);
                     AddItemStats(item);
                     DestroyObject(item);
+                    ToggleStartJob();
                 });
             }
         };
@@ -595,8 +676,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _isomeraseItem = string.Empty;
 
                     SubtractItemStats(item);
+                    ToggleStartJob();
                 });
-                
             }
             else
             {
@@ -620,14 +701,42 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _isomeraseItem = ObjectPlugin.Serialize(item);
                     AddItemStats(item);
                     DestroyObject(item);
+                    ToggleStartJob();
                 });
             }
         };
 
-        public Action OnClickStartJob() => () =>
+        public Action OnClickErraticGeniusToggled() => () =>
         {
-
+            LoadPlayerStats();
+            RefreshAllStats();
         };
 
+        public Action OnClickStartJob() => () =>
+        {
+            ShowModal($"Are you sure you want to start this job?", () =>
+            {
+
+            });
+        };
+
+        public Action OnCloseWindow() => () =>
+        {
+            RemoveDNA();
+        };
+
+        public void Refresh(PerkAcquiredRefreshEvent payload)
+        {
+            LoadPlayerStats();
+            RefreshAllStats();
+            CalculateIncubationTime();
+        }
+
+        public void Refresh(PerkRefundedRefreshEvent payload)
+        {
+            LoadPlayerStats();
+            RefreshAllStats();
+            CalculateIncubationTime();
+        }
     }
 }

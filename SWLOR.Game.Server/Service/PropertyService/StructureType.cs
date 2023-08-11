@@ -1549,7 +1549,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "incubator",
             "",
             true,
-            0)]
+            0, 
+            PropertyType.Lab)]
         Incubator = 271,
 
         // Buildings start here (5000+)

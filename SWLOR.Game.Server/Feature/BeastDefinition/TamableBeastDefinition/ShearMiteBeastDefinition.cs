@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.ShearMite)
+                .Name("Shear Mite")
                 .Appearance(AppearanceType.BeetleStag)
                 .SoundSetId(9)
                 .PortraitId(156)

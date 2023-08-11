@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Squellbug)
+                .Name("Squellbug")
                 .Appearance(AppearanceType.InsectTickGiant)
                 .SoundSetId(9)
                 .PortraitId(154)

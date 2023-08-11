@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Raivor)
+                .Name("Raivor")
                 .Appearance(AppearanceType.LizardLargeBrown)
                 .SoundSetId(97)
                 .PortraitId(1268)

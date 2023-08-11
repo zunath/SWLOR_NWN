@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Microtench)
+                .Name("Microtench")
                 .Appearance(AppearanceType.OctopusSmall)
                 .SoundSetId(442)
                 .PortraitId(4281)

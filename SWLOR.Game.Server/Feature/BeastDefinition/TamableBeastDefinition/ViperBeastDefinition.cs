@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Viper)
+                .Name("Viper")
                 .Appearance(AppearanceType.SnakeViperSwampMedium)
                 .SoundSetId(260)
                 .PortraitId(2104)

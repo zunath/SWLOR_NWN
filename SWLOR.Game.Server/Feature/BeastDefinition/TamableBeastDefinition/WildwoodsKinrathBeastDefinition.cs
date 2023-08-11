@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.WildwoodsKinrath)
+                .Name("Wildwoods Kinrath")
                 .Appearance(AppearanceType.Kinrath)
                 .SoundSetId(88)
                 .PortraitId(302)

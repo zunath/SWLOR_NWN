@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Warocas)
+                .Name("Warocas")
                 .Appearance(AppearanceType.BirdOstrich)
                 .SoundSetId(452)
                 .PortraitId(168)

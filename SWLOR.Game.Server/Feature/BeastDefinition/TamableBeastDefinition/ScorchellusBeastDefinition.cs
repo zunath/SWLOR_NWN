@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Scorchellus)
+                .Name("Scorchellus")
                 .Appearance(AppearanceType.Scutellus)
                 .SoundSetId(442)
                 .PortraitId(2096)

@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.KathHound)
+                .Name("Kath Hound")
                 .Appearance(AppearanceType.KathHound)
                 .SoundSetId(919)
                 .PortraitId(321)

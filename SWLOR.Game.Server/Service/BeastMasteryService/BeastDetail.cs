@@ -5,6 +5,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
 {
     public class BeastDetail
     {
+        public string Name { get; set; }
         public AppearanceType Appearance { get; set; }
         public float AppearanceScale { get; set; }
         public int PortraitId { get; set; }

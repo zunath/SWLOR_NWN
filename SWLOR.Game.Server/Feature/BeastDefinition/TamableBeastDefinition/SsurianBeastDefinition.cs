@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Ssurian)
+                .Name("Ssurian")
                 .Appearance(AppearanceType.CrocAztec)
                 .AppearanceScale(0.5f)
                 .SoundSetId(250)

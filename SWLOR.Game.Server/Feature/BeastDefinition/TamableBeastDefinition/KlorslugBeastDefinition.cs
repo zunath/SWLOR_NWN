@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Klorslug)
+                .Name("K'lor'slug")
                 .Appearance(AppearanceType.BuletteSmallUndead)
                 .SoundSetId(396)
                 .PortraitId(819)

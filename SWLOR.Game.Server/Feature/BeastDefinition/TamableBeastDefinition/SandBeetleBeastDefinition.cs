@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.SandBeetle)
+                .Name("Sand Beetle")
                 .Appearance(AppearanceType.BeetleSlicer)
                 .SoundSetId(9)
                 .PortraitId(154)

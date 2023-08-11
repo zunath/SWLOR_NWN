@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.ValleyCairnmog)
+                .Name("Valley Cairnmog")
                 .Appearance(AppearanceType.MonsterA)
                 .SoundSetId(53)
                 .PortraitId(819)

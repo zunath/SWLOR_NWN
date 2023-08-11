@@ -24,6 +24,18 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         }
 
         /// <summary>
+        /// Specifies the name of the beast.
+        /// </summary>
+        /// <param name="name">The name to use.</param>
+        /// <returns>A configured BeastBuilder object</returns>
+        public BeastBuilder Name(string name)
+        {
+            _activeBeast.Name = name;
+
+            return this;
+        }
+
+        /// <summary>
         /// Specifies the appearance type of the beast.
         /// </summary>
         /// <param name="appearance">The appearance to use.</param>

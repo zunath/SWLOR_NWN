@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.QionTiger)
+                .Name("Qion Tiger")
                 .Appearance(AppearanceType.CatTigerWhite)
                 .SoundSetId(16)
                 .PortraitId(165)

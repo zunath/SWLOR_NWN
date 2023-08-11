@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.ValleyNashtah)
+                .Name("Valley Nashtah")
                 .Appearance(AppearanceType.Basilisk)
                 .SoundSetId(396)
                 .PortraitId(625)

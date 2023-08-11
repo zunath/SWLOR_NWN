@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Octotench)
+                .Name("Octotench")
                 .Appearance(AppearanceType.OctopusMedium)
                 .SoundSetId(442)
                 .PortraitId(4281)

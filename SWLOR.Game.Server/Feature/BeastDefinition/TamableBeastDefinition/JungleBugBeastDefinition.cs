@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.JungleBug)
+                .Name("Jungle Bug")
                 .Appearance(AppearanceType.InsectWaspGiant)
                 .SoundSetId(6)
                 .PortraitId(2067)

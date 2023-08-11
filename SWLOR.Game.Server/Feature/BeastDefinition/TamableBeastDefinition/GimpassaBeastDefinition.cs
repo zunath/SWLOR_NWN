@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Gimpassa)
+                .Name("Gimpassa")
                 .Appearance(AppearanceType.TortoiseMedium)
                 .SoundSetId(452)
                 .PortraitId(1039)

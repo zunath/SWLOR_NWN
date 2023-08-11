@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Shyrack)
+                .Name("Shyrack")
                 .Appearance(AppearanceType.Shyrack)
                 .SoundSetId(65535)
                 .PortraitId(184)

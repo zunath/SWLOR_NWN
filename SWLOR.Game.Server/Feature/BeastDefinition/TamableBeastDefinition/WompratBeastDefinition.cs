@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Womprat)
+                .Name("Womprat")
                 .Appearance(AppearanceType.RodentCapybara)
                 .SoundSetId(249)
                 .PortraitId(603)

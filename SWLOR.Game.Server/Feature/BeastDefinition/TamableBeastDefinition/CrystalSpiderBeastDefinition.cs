@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.CrystalSpider)
+                .Name("Crystal Spider")
                 .Appearance(AppearanceType.SpiderCrystalB)
                 .SoundSetId(88)
                 .PortraitId(300)

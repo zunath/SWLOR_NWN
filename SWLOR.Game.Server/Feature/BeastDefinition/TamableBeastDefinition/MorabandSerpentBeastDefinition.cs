@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.MorabandSerpent)
+                .Name("Moraband Serpent")
                 .Appearance(AppearanceType.SnakeViperSwampLarge)
                 .SoundSetId(97)
                 .PortraitId(2104)

@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
 
                         row.AddLabel()
-                            .SetText("DNA")
+                            .BindText(model => model.DNALabel)
                             .SetHeight(20f);
 
                         row.AddSpacer();

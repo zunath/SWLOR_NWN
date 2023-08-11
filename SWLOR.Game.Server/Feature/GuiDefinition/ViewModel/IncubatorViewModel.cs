@@ -1,15 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class IncubatorViewModel : GuiViewModelBase<IncubatorViewModel, GuiPayloadBase>,
+    public class IncubatorViewModel : GuiViewModelBase<IncubatorViewModel, IncubatorPayload>,
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
         IGuiRefreshable<PerkRefundedRefreshEvent>
     {
@@ -27,6 +32,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string _lyaseItem;
 
         private int _currentStage;
+        private BeastType _dnaType;
+        private string _incubatorPropertyId;
 
         private int _attack;
         private int _accuracy;
@@ -117,6 +124,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string DNALabel
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public string AttackPurity
         {
             get => Get<string>();
@@ -195,17 +208,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(IncubatorPayload initialPayload)
         {
+            ClearStats();
             DNAItemResref = _blank;
             HydrolaseItemResref = _blank;
             IsomeraseItemResref = _blank;
             LyaseItemResref = _blank;
 
+            _incubatorPropertyId = initialPayload.PropertyId;
+
             LoadPlayerStats();
             RefreshAllStats();
             IsErraticGeniusChecked = false;
-            CalculateIncubationTime();
+            RefreshIncubationTime();
 
             WatchOnClient(model => model.IsErraticGeniusChecked);
         }
@@ -270,6 +286,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 mutationBonus = GetErraticGeniusBonus();
             }
 
+            DNALabel = _dnaType == BeastType.Invalid
+                ? "DNA [N/A]"
+                : $"DNA [{BeastMastery.GetBeastDetail(_dnaType).Name}]";
+
             AttackPurity = FormatStat(_attack, _stageAttack, 0);
             AccuracyPurity = FormatStat(_accuracy, _stageAccuracy, 0);
             EvasionPurity = FormatStat(_evasion, _stageEvasion, 0);
@@ -287,13 +307,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             MutationChance = FormatStat(_mutationChance, _stageMutationChance, mutationBonus);
         }
 
-        private void CalculateIncubationTime()
+        private int CalculateIncubationSeconds()
         {
             var incubationProcessingBonus = 0.01f * (Perk.GetPerkLevel(Player, PerkType.IncubationProcessing) * 10);
             var seconds = BaseSecondsBetweenStages - (int)(BaseSecondsBetweenStages * incubationProcessingBonus);
-            var timespan = TimeSpan.FromSeconds(seconds);
 
-            EstimatedTimeToCompletion = $"Time Required: {Time.GetTimeLongIntervals(timespan, false)}";
+            return seconds;
+        }
+
+        private void RefreshIncubationTime()
+        {
+            var seconds = CalculateIncubationSeconds();
+            var timespan = TimeSpan.FromSeconds(seconds);
+            EstimatedTimeToCompletion = $"Time Required: {Time.GetTimeShortIntervals(timespan, false)}";
         }
 
         private void RemoveDNA()
@@ -329,6 +355,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsErraticGeniusChecked = false;
             IsErraticGeniusEnabled = false;
 
+            ClearStats();
+
+            RefreshAllStats();
+            ToggleStartJob();
+        }
+
+        private void ClearStats()
+        {
+            _dnaType = BeastType.Invalid;
+
             _mutationChance = 0;
             _attack = 0;
             _accuracy = 0;
@@ -360,9 +396,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _stageReflex = 0;
             _stageWill = 0;
             _stageXPPenalty = 0;
-
-            RefreshAllStats();
-            ToggleStartJob();
         }
 
         public Action OnClickDNA() => () =>
@@ -442,6 +475,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();
+                        }
+                    }
+
+                    for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                    {
+                        if (GetItemPropertyType(ip) == ItemPropertyType.DNAType)
+                        {
+                            _dnaType = (BeastType)GetItemPropertySubType(ip);
+                            break;
                         }
                     }
 
@@ -716,7 +758,62 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             ShowModal($"Are you sure you want to start this job?", () =>
             {
+                const int MaxStageIncrease = 100; // 10.0%
+                const int MaxStat = 1000; // 100.0%
+                var incubationSeconds = CalculateIncubationSeconds();
 
+                var mutationChance = _mutationChance + (_stageMutationChance > MaxStageIncrease ? MaxStageIncrease : _stageMutationChance);
+                var attackPurity = _attack + (_stageAttack > MaxStageIncrease ? MaxStageIncrease : _stageAttack);
+                var accuracyPurity = _accuracy + (_stageAccuracy > MaxStageIncrease ? MaxStageIncrease : _stageAccuracy);
+                var evasionPurity = _evasion + (_stageEvasion > MaxStageIncrease ? MaxStageIncrease : _stageEvasion);
+                var learningPurity = _learning + (_stageLearning > MaxStageIncrease ? MaxStageIncrease : _stageLearning);
+
+                var physicalDefense = _physicalDefense + (_stagePhysicalDefense > MaxStageIncrease ? MaxStageIncrease : _stagePhysicalDefense);
+                var forceDefense = _forceDefense + (_stageForceDefense > MaxStageIncrease ? MaxStageIncrease : _stageForceDefense);
+                var iceDefense = _iceDefense + (_stageIceDefense > MaxStageIncrease ? MaxStageIncrease : _stageIceDefense);
+                var fireDefense = _fireDefense + (_stageFireDefense > MaxStageIncrease ? MaxStageIncrease : _stageFireDefense);
+                var poisonDefense = _poisonDefense + (_stagePoisonDefense > MaxStageIncrease ? MaxStageIncrease : _stagePoisonDefense);
+                var electricalDefense = _electricalDefense + (_stageElectricalDefense > MaxStageIncrease ? MaxStageIncrease : _stageElectricalDefense);
+
+                var fortitudePurity = _fortitude + (_stageFortitude > MaxStageIncrease ? MaxStageIncrease : _stageFortitude);
+                var reflexPurity = _reflex + (_stageReflex > MaxStageIncrease ? MaxStageIncrease : _stageReflex);
+                var willPurity = _will + (_stageWill > MaxStageIncrease ? MaxStageIncrease : _stageWill);
+
+                var job = new IncubationJob
+                {
+                    ParentPropertyId = _incubatorPropertyId,
+                    PlayerId = GetObjectUUID(Player),
+                    BeastDNAType = _dnaType,
+                    MutationChance = mutationChance > MaxStat ? MaxStat : mutationChance,
+                    AttackPurity = attackPurity > MaxStat ? MaxStat : attackPurity,
+                    AccuracyPurity = accuracyPurity > MaxStat ? MaxStat : accuracyPurity,
+                    EvasionPurity = evasionPurity > MaxStat ? MaxStat : evasionPurity,
+                    LearningPurity = learningPurity > MaxStat ? MaxStat : learningPurity,
+                    DefensePurities = new Dictionary<CombatDamageType, int>
+                    {
+                        {CombatDamageType.Physical, physicalDefense > MaxStat ? MaxStat: physicalDefense},
+                        {CombatDamageType.Force, forceDefense > MaxStat ? MaxStat : forceDefense},
+                        {CombatDamageType.Ice, iceDefense > MaxStat ? MaxStat : iceDefense},
+                        {CombatDamageType.Fire, fireDefense > MaxStat ? MaxStat : fireDefense},
+                        {CombatDamageType.Poison, poisonDefense > MaxStat ? MaxStat : poisonDefense},
+                        {CombatDamageType.Electrical, electricalDefense > MaxStat ? MaxStat : electricalDefense},
+                    },
+                    SavingThrowPurities = new Dictionary<SavingThrow, int>
+                    {
+                        { SavingThrow.Fortitude, fortitudePurity > MaxStat ? MaxStat : fortitudePurity},
+                        { SavingThrow.Reflex, reflexPurity > MaxStat ? MaxStat : reflexPurity},
+                        { SavingThrow.Will, willPurity > MaxStat ? MaxStat : willPurity }
+                    },
+                    DateCompleted = DateTime.UtcNow.AddSeconds(incubationSeconds)
+                };
+
+                DB.Set(job);
+
+                _dnaItem = string.Empty;
+                _hydrolaseItem = string.Empty;
+                _isomeraseItem = string.Empty;
+                _lyaseItem = string.Empty;
+                Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
             });
         };
 
@@ -729,14 +826,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             LoadPlayerStats();
             RefreshAllStats();
-            CalculateIncubationTime();
+            RefreshIncubationTime();
         }
 
         public void Refresh(PerkRefundedRefreshEvent payload)
         {
             LoadPlayerStats();
             RefreshAllStats();
-            CalculateIncubationTime();
+            RefreshIncubationTime();
         }
     }
 }

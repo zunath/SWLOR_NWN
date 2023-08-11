@@ -732,7 +732,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var payload = new IncubatorPayload(incubatorPropertyId);
+            var payload = new IncubatorPayload(incubatorPropertyId, incubatorJob?.Id ?? string.Empty);
             Gui.TogglePlayerWindow(player, GuiWindowType.Incubator, payload, player);
         }
     }

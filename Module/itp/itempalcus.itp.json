@@ -18711,6 +18711,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Beast Egg"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beast_egg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Beetle Chitin"
                     },
                     "RESREF": {

@@ -735,5 +735,53 @@ namespace SWLOR.Game.Server.Service
             var payload = new IncubatorPayload(incubatorPropertyId, incubatorJob?.Id ?? string.Empty);
             Gui.TogglePlayerWindow(player, GuiWindowType.Incubator, payload, player);
         }
+
+        private static BeastType DetermineMutation(BeastType beastType, int mutationChance)
+        {
+            if (Random.Next(1000) <= mutationChance)
+            {
+                // todo: Pick a mutation from the list of available types
+            }
+
+            return BeastType.Invalid;
+        }
+
+        public static void CreateBeastEgg(IncubationJob job, uint player)
+        {
+            var egg = CreateItemOnObject("beast_egg", player);
+
+            var mutation = DetermineMutation(job.BeastDNAType, job.MutationChance);
+            var beastType = mutation == BeastType.Invalid ? job.BeastDNAType : mutation;
+
+            var itemProperties = new List<ItemProperty>
+            {
+                ItemPropertyCustom(ItemPropertyType.DNAType, (int)beastType),
+
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AttackPurity, job.AttackPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AccuracyPurity, job.AccuracyPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.EvasionPurity, job.EvasionPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.LearningPurity, job.LearningPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.PhysicalDefensePurity, job.DefensePurities[CombatDamageType.Physical]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ForceDefensePurity, job.DefensePurities[CombatDamageType.Force]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FireDefensePurity, job.DefensePurities[CombatDamageType.Fire]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.PoisonDefensePurity, job.DefensePurities[CombatDamageType.Poison]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ElectricalDefensePurity, job.DefensePurities[CombatDamageType.Electrical]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.IceDefensePurity, job.DefensePurities[CombatDamageType.Ice]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FortitudePurity, job.SavingThrowPurities[SavingThrow.Fortitude]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ReflexPurity, job.SavingThrowPurities[SavingThrow.Reflex]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.WillPurity, job.SavingThrowPurities[SavingThrow.Will]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.XPPenalty, job.XPPenalty),
+            };
+
+            foreach (var ip in itemProperties)
+            {
+                BiowareXP2.IPSafeAddItemProperty(egg, ip, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            }
+
+            var beastDetail = GetBeastDetail(beastType);
+            SetName(egg, $"Beast Egg: {beastDetail.Name}");
+
+            DB.Delete<IncubationJob>(job.Id);
+        }
     }
 }

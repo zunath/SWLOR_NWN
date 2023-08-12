@@ -14,6 +14,8 @@ namespace SWLOR.Game.Server.Entity
         [Indexed]
         public string PlayerId { get; set; }
 
+        public int CurrentStage { get; set; }
+
         public BeastType BeastDNAType { get; set; }
 
         public int MutationChance { get; set; }
@@ -30,6 +32,15 @@ namespace SWLOR.Game.Server.Entity
 
         public Dictionary<SavingThrow, int> SavingThrowPurities { get; set; }
 
+        public int XPPenalty { get; set; }
+
+        public DateTime DateStarted { get; set; }
         public DateTime DateCompleted { get; set; }
+
+        public IncubationJob()
+        {
+            DefensePurities = new Dictionary<CombatDamageType, int>();
+            SavingThrowPurities = new Dictionary<SavingThrow, int>();
+        }
     }
 }

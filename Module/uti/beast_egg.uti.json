@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 536
+    "value": 24
   },
   "Charges": {
     "type": "byte",
@@ -26,9 +26,7 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",

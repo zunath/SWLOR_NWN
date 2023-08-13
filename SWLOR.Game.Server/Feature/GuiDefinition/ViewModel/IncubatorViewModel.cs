@@ -896,6 +896,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var job = GetJob();
 
+            if (job == null)
+                return string.Empty;
+
             if (job.CurrentStage > NumberOfStages)
                 return "Max stage reached.";
 

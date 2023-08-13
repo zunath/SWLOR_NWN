@@ -30,10 +30,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int NumberOfStages = 3;
 
         private const string _blank = "Blank";
-        private const string HydrolaseResrefPrefix = "hydrolase_";
-        private const string LyaseResrefPrefix = "lyase_";
-        private const string IsomeraseResrefPrefix = "isomerase_";
-        private const string DNAResref = "beast_dna";
 
         private string _dnaItem;
         private string _hydrolaseItem;
@@ -546,7 +542,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a DNA item from your inventory.", item =>
                 {
-                    if (GetResRef(item) != DNAResref)
+                    if (GetResRef(item) != BeastMastery.DNAResref)
                     {
                         FloatingTextStringOnCreature("Only DNA items may be selected.", Player, false);
                         return;
@@ -794,7 +790,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Hydrolase item from your inventory.",
                 item =>
                 {
-                    if (!GetResRef(item).StartsWith(HydrolaseResrefPrefix))
+                    if (!GetResRef(item).StartsWith(BeastMastery.HydrolaseResrefPrefix))
                     {
                         FloatingTextStringOnCreature("Only Hydrolase items may be selected.", Player, false);
                         return;
@@ -839,7 +835,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Lyase item from your inventory.",
                 item =>
                 {
-                    if (!GetResRef(item).StartsWith(LyaseResrefPrefix))
+                    if (!GetResRef(item).StartsWith(BeastMastery.LyaseResrefPrefix))
                     {
                         FloatingTextStringOnCreature("Only Lyase items may be selected.", Player, false);
                         return;
@@ -884,7 +880,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select an Isomerase item from your inventory.",
                 item =>
                 {
-                    if (!GetResRef(item).StartsWith(IsomeraseResrefPrefix))
+                    if (!GetResRef(item).StartsWith(BeastMastery.IsomeraseResrefPrefix))
                     {
                         FloatingTextStringOnCreature("Only Isomerase items may be selected.", Player, false);
                         return;

@@ -26,12 +26,17 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<BeastType, BeastDetail> _beasts = new();
         private static readonly Dictionary<BeastRoleType, BeastRoleAttribute> _beastRoles = new();
         private static List<BeastFoodType> _beastFoods = new();
-        private static Dictionary<int, float> _incubationPercentages = new();
+        private static readonly Dictionary<int, float> _incubationPercentages = new();
 
         private const string BeastResref = "pc_beast";
         public const string BeastClawResref = "beast_claw";
         public const int MaxLevel = 50;
         private static int _highestDelta;
+
+        public const string HydrolaseResrefPrefix = "hydrolase_";
+        public const string LyaseResrefPrefix = "lyase_";
+        public const string IsomeraseResrefPrefix = "isomerase_";
+        public const string DNAResref = "beast_dna";
 
         [NWNEventHandler("mod_cache")]
         public static void CacheData()

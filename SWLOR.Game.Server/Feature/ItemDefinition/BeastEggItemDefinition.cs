@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         private void BeastEgg()
         {
-            _builder.Create("beast_egg")
+            _builder.Create(BeastMastery.BeastEggResref)
                 .Delay(4f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ValidationAction((user, item, target, location, index) =>

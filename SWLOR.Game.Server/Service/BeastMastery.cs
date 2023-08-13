@@ -37,6 +37,8 @@ namespace SWLOR.Game.Server.Service
         public const string LyaseResrefPrefix = "lyase_";
         public const string IsomeraseResrefPrefix = "isomerase_";
         public const string DNAResref = "beast_dna";
+        public const string BeastEggResref = "beast_egg";
+        public const string EnzymeTag = "INCUBATION_ENZYME";
 
         [NWNEventHandler("mod_cache")]
         public static void CacheData()
@@ -781,7 +783,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void CreateBeastEgg(IncubationJob job, uint player)
         {
-            var egg = CreateItemOnObject("beast_egg", player);
+            var egg = CreateItemOnObject(BeastEggResref, player);
 
             var mutation = DetermineMutation(job.BeastDNAType, job);
             var beastType = mutation == BeastType.Invalid ? job.BeastDNAType : mutation;
@@ -816,5 +818,30 @@ namespace SWLOR.Game.Server.Service
 
             DB.Delete<IncubationJob>(job.Id);
         }
+
+        /// <summary>
+        /// Determines if the specified item is an incubation crafting item.
+        /// This includes enzymes and DNA but excludes beast eggs.
+        /// </summary>
+        /// <param name="item">The item to check</param>
+        /// <returns>true if used in incubation, false otherwise</returns>
+        public static bool IsIncubationCraftingItem(uint item)
+        {
+            var tag = GetTag(item);
+            var resref = GetResRef(item);
+
+            return tag == EnzymeTag || resref == DNAResref;
+        }
+
+        /// <summary>
+        /// Determines if the specified item is a beast egg.
+        /// </summary>
+        /// <param name="item">The item to check</param>
+        /// <returns>true if beast egg, false otherwise</returns>
+        public static bool IsBeastEgg(uint item)
+        {
+            return GetResRef(item) == BeastEggResref;
+        }
+
     }
 }

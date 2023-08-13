@@ -102,7 +102,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "lyase_blue"
+    "value": "INCUBATION_ENZYME"
   },
   "TemplateResRef": {
     "type": "resref",

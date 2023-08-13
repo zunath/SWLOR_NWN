@@ -100,7 +100,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "isomerase_yellow"
+    "value": "INCUBATION_ENZYME"
   },
   "TemplateResRef": {
     "type": "resref",

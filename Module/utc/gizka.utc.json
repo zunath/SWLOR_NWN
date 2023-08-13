@@ -454,7 +454,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 65535
+    "value": 10
   },
   "SpecAbilityList": {
     "type": "list",

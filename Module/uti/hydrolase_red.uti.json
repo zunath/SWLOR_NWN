@@ -102,7 +102,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "hydrolase_red"
+    "value": "INCUBATION_ENZYME"
   },
   "TemplateResRef": {
     "type": "resref",

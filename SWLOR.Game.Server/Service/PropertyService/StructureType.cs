@@ -1550,7 +1550,10 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "",
             true,
             0, 
-            PropertyType.Lab)]
+            PropertyType.Lab,
+            PropertyLayoutType.Invalid,
+            true,
+            StructureCategoryType.ResearchDevice)]
         Incubator = 271,
 
         // Buildings start here (5000+)
@@ -1728,6 +1731,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public PropertyType RestrictedPropertyTypes { get; set; }
         public PropertyLayoutType LayoutType { get; set; }
         public bool CanBeRetrieved { get; set; }
+        public StructureCategoryType Category { get; set; }
 
         public StructureAttribute(
             string name,
@@ -1747,7 +1751,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 PropertyType.House |
                 PropertyType.Lab,
             PropertyLayoutType layoutType = PropertyLayoutType.Invalid,
-            bool canBeRetrieved = true)
+            bool canBeRetrieved = true,
+            StructureCategoryType category = StructureCategoryType.Structure)
         {
             Name = name;
             Resref = resref;
@@ -1757,6 +1762,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             RestrictedPropertyTypes = restrictedPropertyTypes;
             LayoutType = layoutType;
             CanBeRetrieved = canBeRetrieved;
+            Category = category;
         }
     }
 }

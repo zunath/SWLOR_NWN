@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(40)
                 .ItemStorageLimit(0)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(20)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("player_rnd");

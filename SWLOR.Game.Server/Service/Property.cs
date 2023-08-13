@@ -1991,9 +1991,33 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType == PropertyLayoutType.Invalid);
-                structureLimit = layout.StructureLimit;
-                fixtureName = "Structure";
+                if (structureDetail.Category == StructureCategoryType.Structure)
+                {
+                    structureCount = structures.Count(x =>
+                    {
+                        var structureByType = GetStructureByType(x.StructureType);
+                        return structureByType.LayoutType == PropertyLayoutType.Invalid &&
+                               structureByType.Category == StructureCategoryType.Structure;
+                    });
+                    structureLimit = layout.StructureLimit;
+                    fixtureName = "Structure";
+                }
+                else if (structureDetail.Category == StructureCategoryType.ResearchDevice)
+                {
+                    structureCount = structures.Count(x =>
+                    {
+                        var structureByType = GetStructureByType(x.StructureType);
+                        return structureByType.LayoutType == PropertyLayoutType.Invalid &&
+                               structureByType.Category == StructureCategoryType.ResearchDevice;
+                    });
+                    structureLimit = layout.ResearchDeviceLimit;
+                    fixtureName = "Research Device";
+                }
+                else
+                {
+                    FloatingTextStringOnCreature($"Unable to place structure in this property. Notify an admin.", player, false);
+                    return;
+                }
             }
 
             // Over the structure limit.

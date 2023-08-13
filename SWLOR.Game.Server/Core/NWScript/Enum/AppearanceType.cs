@@ -459,10 +459,13 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
 
         LizardLargeBrown = 2985,
 
+        LizardLargeBlue = 2987,
+
         MonsterA = 3117,
         MonsterB = 3118,
         MonsterC = 3119,
 
+        D_Elephant = 3182,
         CrocAztec = 3221,
 
         LizardGiantBrown = 3230,
@@ -507,6 +510,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Kinrath = 10021,
 
         Ugnaught = 10033,
+        
+        Iriaz = 10039,
+        Gizka = 10040,
 
         Shyrack = 10045,
 

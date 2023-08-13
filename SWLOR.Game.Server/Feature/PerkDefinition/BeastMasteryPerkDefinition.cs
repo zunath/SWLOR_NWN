@@ -179,27 +179,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("DNA Manipulation")
 
                 .AddPerkLevel()
-                .Description("Enables you to harvest DNA from creatures between levels 0 and 10 and use incubation chambers.")
+                .Description("Enables you to harvest DNA from creatures between levels 0 and 10 and use incubators.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 5)
 
                 .AddPerkLevel()
-                .Description("Enables you to harvest DNA from creatures between levels 11 and 20.")
+                .Description("Enables you to harvest DNA from creatures between levels 0 and 20.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 15)
 
                 .AddPerkLevel()
-                .Description("Enables you to harvest DNA from creatures between levels 21 and 30.")
+                .Description("Enables you to harvest DNA from creatures between levels 0 and 30.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 25)
 
                 .AddPerkLevel()
-                .Description("Enables you to harvest DNA from creatures between levels 31 and 40.")
+                .Description("Enables you to harvest DNA from creatures between levels 0 and 40.")
                 .Price(3)
                 .RequirementSkill(SkillType.BeastMastery, 35)
 
                 .AddPerkLevel()
-                .Description("Enables you to harvest DNA from creatures between levels 41 and 50.")
+                .Description("Enables you to harvest DNA from creatures between levels 0 and 50.")
                 .Price(3)
                 .RequirementSkill(SkillType.BeastMastery, 45);
 

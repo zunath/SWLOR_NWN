@@ -292,6 +292,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string XPPenalty
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> PerkNames
         {
             get => Get<GuiBindingList<string>>();
@@ -422,6 +428,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WillPurity = string.Empty;
 
             LearningPurity = string.Empty;
+            XPPenalty = string.Empty;
 
             XPTooltip = $"XP: 0 / 0";
         }
@@ -529,6 +536,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WillPurity = $"{dbBeast.SavingThrowPurities[SavingThrow.Will]}%";
 
             LearningPurity = $"{dbBeast.LearningPurity}%";
+            XPPenalty = $"{dbBeast.XPPenaltyPercent}%";
 
             IsBeastSelected = true;
         }

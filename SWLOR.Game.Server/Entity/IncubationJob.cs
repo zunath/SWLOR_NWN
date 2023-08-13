@@ -37,10 +37,47 @@ namespace SWLOR.Game.Server.Entity
         public DateTime DateStarted { get; set; }
         public DateTime DateCompleted { get; set; }
 
+        public Dictionary<EnzymeColorType, int> LyaseColors { get; set; }
+        public Dictionary<EnzymeColorType, int> IsomeraseColors { get; set; }
+        public Dictionary<EnzymeColorType, int> HydrolaseColors { get; set; }
+
         public IncubationJob()
         {
             DefensePurities = new Dictionary<CombatDamageType, int>();
             SavingThrowPurities = new Dictionary<SavingThrow, int>();
+            LyaseColors = new Dictionary<EnzymeColorType, int>
+            {
+                { EnzymeColorType.Blue, 0 },
+                { EnzymeColorType.Orange, 0 },
+                { EnzymeColorType.Red, 0 },
+                { EnzymeColorType.Purple, 0 },
+                { EnzymeColorType.White, 0 },
+                { EnzymeColorType.Green, 0 },
+                { EnzymeColorType.Yellow, 0 },
+                { EnzymeColorType.Black, 0 },
+            };
+            IsomeraseColors = new Dictionary<EnzymeColorType, int>
+            {
+                { EnzymeColorType.Blue, 0 },
+                { EnzymeColorType.Orange, 0 },
+                { EnzymeColorType.Red, 0 },
+                { EnzymeColorType.Purple, 0 },
+                { EnzymeColorType.White, 0 },
+                { EnzymeColorType.Green, 0 },
+                { EnzymeColorType.Yellow, 0 },
+                { EnzymeColorType.Black, 0 },
+            };
+            HydrolaseColors = new Dictionary<EnzymeColorType, int>
+            {
+                { EnzymeColorType.Blue, 0 },
+                { EnzymeColorType.Orange, 0 },
+                { EnzymeColorType.Red, 0 },
+                { EnzymeColorType.Purple, 0 },
+                { EnzymeColorType.White, 0 },
+                { EnzymeColorType.Green, 0 },
+                { EnzymeColorType.Yellow, 0 },
+                { EnzymeColorType.Black, 0 },
+            };
         }
     }
 }

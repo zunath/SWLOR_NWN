@@ -39,7 +39,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string _hydrolaseItem;
         private string _isomeraseItem;
         private string _lyaseItem;
-        
+
+        private EnzymeColorType _lyaseColor;
+        private EnzymeColorType _isomeraseColor;
+        private EnzymeColorType _hydrolaseColor;
+
         private BeastType _dnaType;
         private string _incubatorPropertyId;
 
@@ -464,6 +468,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 item = ObjectPlugin.Deserialize(_hydrolaseItem);
                 ObjectPlugin.AcquireItem(Player, item);
                 _hydrolaseItem = string.Empty;
+                _hydrolaseColor = EnzymeColorType.Invalid;
                 HydrolaseItemResref = _blank;
             }
             if (!string.IsNullOrWhiteSpace(_lyaseItem))
@@ -471,6 +476,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 item = ObjectPlugin.Deserialize(_lyaseItem);
                 ObjectPlugin.AcquireItem(Player, item);
                 _lyaseItem = string.Empty;
+                _lyaseColor = EnzymeColorType.Invalid;
                 LyaseItemResref = _blank;
             }
             if (!string.IsNullOrWhiteSpace(_isomeraseItem))
@@ -478,6 +484,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 item = ObjectPlugin.Deserialize(_isomeraseItem);
                 ObjectPlugin.AcquireItem(Player, item);
                 _isomeraseItem = string.Empty;
+                _isomeraseColor = EnzymeColorType.Invalid;
                 IsomeraseItemResref = _blank;
             }
 
@@ -630,66 +637,77 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         };
 
-        private void AddItemStats(uint item)
+        private EnzymeColorType AddItemStats(uint item)
         {
+            EnzymeColorType colorType = EnzymeColorType.Invalid;
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
-                var type = (IncubationStatType)GetItemPropertySubType(ip);
-                var costId = GetItemPropertyCostTableValue(ip);
-
-                switch (type)
+                var ipType = GetItemPropertyType(ip);
+                if (ipType == ItemPropertyType.Incubation)
                 {
-                    case IncubationStatType.MutationChance:
-                        _stageMutationChance += costId;
-                        break;
-                    case IncubationStatType.AttackPurity:
-                        _stageAttack += costId;
-                        break;
-                    case IncubationStatType.AccuracyPurity:
-                        _stageAccuracy += costId;
-                        break;
-                    case IncubationStatType.EvasionPurity:
-                        _stageEvasion += costId;
-                        break;
-                    case IncubationStatType.LearningPurity:
-                        _stageLearning += costId;
-                        break;
-                    case IncubationStatType.PhysicalDefensePurity:
-                        _stagePhysicalDefense += costId;
-                        break;
-                    case IncubationStatType.ForceDefensePurity:
-                        _stageForceDefense += costId;
-                        break;
-                    case IncubationStatType.FireDefensePurity:
-                        _stageFireDefense += costId;
-                        break;
-                    case IncubationStatType.PoisonDefensePurity:
-                        _stagePoisonDefense += costId;
-                        break;
-                    case IncubationStatType.ElectricalDefensePurity:
-                        _stageElectricalDefense += costId;
-                        break;
-                    case IncubationStatType.IceDefensePurity:
-                        _stageIceDefense += costId;
-                        break;
-                    case IncubationStatType.FortitudePurity:
-                        _stageFortitude += costId;
-                        break;
-                    case IncubationStatType.ReflexPurity:
-                        _stageReflex += costId;
-                        break;
-                    case IncubationStatType.WillPurity:
-                        _stageWill += costId;
-                        break;
-                    case IncubationStatType.XPPenalty:
-                        _stageXPPenalty += costId;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    var type = (IncubationStatType)GetItemPropertySubType(ip);
+                    var costId = GetItemPropertyCostTableValue(ip);
+
+                    switch (type)
+                    {
+                        case IncubationStatType.MutationChance:
+                            _stageMutationChance += costId;
+                            break;
+                        case IncubationStatType.AttackPurity:
+                            _stageAttack += costId;
+                            break;
+                        case IncubationStatType.AccuracyPurity:
+                            _stageAccuracy += costId;
+                            break;
+                        case IncubationStatType.EvasionPurity:
+                            _stageEvasion += costId;
+                            break;
+                        case IncubationStatType.LearningPurity:
+                            _stageLearning += costId;
+                            break;
+                        case IncubationStatType.PhysicalDefensePurity:
+                            _stagePhysicalDefense += costId;
+                            break;
+                        case IncubationStatType.ForceDefensePurity:
+                            _stageForceDefense += costId;
+                            break;
+                        case IncubationStatType.FireDefensePurity:
+                            _stageFireDefense += costId;
+                            break;
+                        case IncubationStatType.PoisonDefensePurity:
+                            _stagePoisonDefense += costId;
+                            break;
+                        case IncubationStatType.ElectricalDefensePurity:
+                            _stageElectricalDefense += costId;
+                            break;
+                        case IncubationStatType.IceDefensePurity:
+                            _stageIceDefense += costId;
+                            break;
+                        case IncubationStatType.FortitudePurity:
+                            _stageFortitude += costId;
+                            break;
+                        case IncubationStatType.ReflexPurity:
+                            _stageReflex += costId;
+                            break;
+                        case IncubationStatType.WillPurity:
+                            _stageWill += costId;
+                            break;
+                        case IncubationStatType.XPPenalty:
+                            _stageXPPenalty += costId;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+                else if (ipType == ItemPropertyType.EnzymeColor)
+                {
+                    colorType = (EnzymeColorType)GetItemPropertySubType(ip);
                 }
             }
 
             RefreshAllStats();
+
+            return colorType;
         }
 
         private void SubtractItemStats(uint item)
@@ -764,6 +782,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     ObjectPlugin.AcquireItem(Player, item);
                     HydrolaseItemResref = _blank;
                     _hydrolaseItem = string.Empty;
+                    _hydrolaseColor = EnzymeColorType.Invalid;
 
                     SubtractItemStats(item);
                     ToggleStartJob();
@@ -790,7 +809,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     HydrolaseItemResref = Item.GetIconResref(item);
                     _hydrolaseItem = ObjectPlugin.Serialize(item);
-                    AddItemStats(item);
+                    _hydrolaseColor = AddItemStats(item);
                     DestroyObject(item);
                     ToggleStartJob();
                     ToggleContinueJob();
@@ -808,6 +827,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     ObjectPlugin.AcquireItem(Player, item);
                     LyaseItemResref = _blank;
                     _lyaseItem = string.Empty;
+                    _lyaseColor = EnzymeColorType.Invalid;
 
                     SubtractItemStats(item);
                     ToggleStartJob();
@@ -834,7 +854,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     LyaseItemResref = Item.GetIconResref(item);
                     _lyaseItem = ObjectPlugin.Serialize(item);
-                    AddItemStats(item);
+                    _lyaseColor = AddItemStats(item);
                     DestroyObject(item);
                     ToggleStartJob();
                     ToggleContinueJob();
@@ -852,6 +872,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     ObjectPlugin.AcquireItem(Player, item);
                     IsomeraseItemResref = _blank;
                     _isomeraseItem = string.Empty;
+                    _isomeraseColor = EnzymeColorType.Invalid;
 
                     SubtractItemStats(item);
                     ToggleStartJob();
@@ -878,7 +899,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     IsomeraseItemResref = Item.GetIconResref(item);
                     _isomeraseItem = ObjectPlugin.Serialize(item);
-                    AddItemStats(item);
+                    _isomeraseColor = AddItemStats(item);
                     DestroyObject(item);
                     ToggleStartJob();
                     ToggleContinueJob();
@@ -960,6 +981,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 job.SavingThrowPurities[SavingThrow.Fortitude] = fortitudePurity > MaxStat ? MaxStat : fortitudePurity;
                 job.SavingThrowPurities[SavingThrow.Reflex] = reflexPurity > MaxStat ? MaxStat : reflexPurity;
                 job.SavingThrowPurities[SavingThrow.Will] = willPurity > MaxStat ? MaxStat : willPurity;
+
+                if(_lyaseColor != EnzymeColorType.Invalid)
+                    job.LyaseColors[_lyaseColor]++;
+                if (_hydrolaseColor != EnzymeColorType.Invalid)
+                    job.HydrolaseColors[_hydrolaseColor]++;
+                if (_isomeraseColor != EnzymeColorType.Invalid)
+                    job.IsomeraseColors[_isomeraseColor]++;
 
                 job.DateStarted = now;
                 job.DateCompleted = now.AddSeconds(incubationSeconds);

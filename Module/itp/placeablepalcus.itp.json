@@ -68221,6 +68221,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Extract"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "extract_corpse"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Failed Jump Start Location"
                     },
                     "RESREF": {

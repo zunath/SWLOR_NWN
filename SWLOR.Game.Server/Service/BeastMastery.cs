@@ -40,6 +40,10 @@ namespace SWLOR.Game.Server.Service
         public const string BeastEggResref = "beast_egg";
         public const string EnzymeTag = "INCUBATION_ENZYME";
 
+        public const string ExtractCorpseObjectResref = "extract_corpse";
+        public const string BeastTypeVariable = "BEAST_TYPE";
+        public const string BeastLevelVariable = "BEAST_LEVEL";
+
         [NWNEventHandler("mod_cache")]
         public static void CacheData()
         {

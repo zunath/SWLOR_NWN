@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.LootService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -11,7 +13,11 @@ namespace SWLOR.Game.Server.Service
 {
     public class Loot
     {
-        private static readonly Dictionary<string, LootTable> _lootTables = new Dictionary<string, LootTable>();
+        private static readonly Dictionary<string, LootTable> _lootTables = new();
+
+        private const float CorpseLifespanSeconds = 360f;
+        public const string CorpseBodyVariable = "CORPSE_BODY";
+        private const string CorpseCopyItemVariable = "CORPSE_ITEM_COPY";
 
         [NWNEventHandler("mod_cache")]
         public static void RegisterLootTables()
@@ -278,11 +284,14 @@ namespace SWLOR.Game.Server.Service
             var position = GetPosition(self);
             var facing = GetFacing(self);
             var lootPosition = Vector3(position.X, position.Y, position.Z - 0.11f);
-            Location spawnLocation = Location(area, lootPosition, facing);
+            var spawnLocation = Location(area, lootPosition, facing);
+            var npcStats = Stat.GetNPCStats(self);
 
             var container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
-            SetLocalObject(container, "CORPSE_BODY", self);
+            SetLocalObject(container, CorpseBodyVariable, self);
             SetName(container, $"{GetName(self)}'s Corpse");
+            SetLocalInt(container, BeastMastery.BeastTypeVariable, GetLocalInt(self, BeastMastery.BeastTypeVariable));
+            SetLocalInt(container, BeastMastery.BeastLevelVariable, npcStats.Level);
 
             AssignCommand(container, () =>
             {
@@ -291,7 +300,7 @@ namespace SWLOR.Game.Server.Service
             });
 
             // Dump equipped items in container
-            for (int slot = 0; slot < NumberOfInventorySlots; slot++)
+            for (var slot = 0; slot < NumberOfInventorySlots; slot++)
             {
                 if (slot == (int)InventorySlot.CreatureArmor ||
                     slot == (int)InventorySlot.CreatureBite ||
@@ -307,7 +316,7 @@ namespace SWLOR.Game.Server.Service
                     if (slot == (int)InventorySlot.Head ||
                         slot == (int)InventorySlot.Chest)
                     {
-                        SetLocalObject(copy, "CORPSE_ITEM_COPY", item);
+                        SetLocalObject(copy, CorpseCopyItemVariable, item);
                     }
                     else
                     {
@@ -325,11 +334,17 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DelayCommand(360.0f, () =>
-            {
-                if (!GetIsObjectValid(container)) return;
+            ScheduleCorpseCleanup(container);
+        }
 
-                var body = GetLocalObject(container, "CORPSE_BODY");
+        private static void ScheduleCorpseCleanup(uint placeable)
+        {
+            DelayCommand(CorpseLifespanSeconds, () =>
+            {
+                if (!GetIsObjectValid(placeable)) 
+                    return;
+
+                var body = GetLocalObject(placeable, CorpseBodyVariable);
                 AssignCommand(body, () => SetIsDestroyable());
 
                 for (var item = GetFirstItemInInventory(body); GetIsObjectValid(item); item = GetNextItemInInventory(body))
@@ -338,32 +353,56 @@ namespace SWLOR.Game.Server.Service
                 }
                 DestroyObject(body);
 
-                for (var item = GetFirstItemInInventory(container); GetIsObjectValid(item); item = GetNextItemInInventory(container))
+                for (var item = GetFirstItemInInventory(placeable); GetIsObjectValid(item); item = GetNextItemInInventory(placeable))
                 {
                     DestroyObject(item);
                 }
-                DestroyObject(container);
+                DestroyObject(placeable);
             });
         }
 
+        /// <summary>
+        /// When the loot corpse is closed, either spawn an "Extract" placeable to be used with Beast Mastery DNA extraction
+        /// or remove the dead creature from the game.
+        /// </summary>
         [NWNEventHandler("corpse_closed")]
         public static void CloseCorpseContainer()
         {
             var container = OBJECT_SELF;
             var firstItem = GetFirstItemInInventory(container);
-            var corpseOwner = GetLocalObject(container, "CORPSE_BODY");
+            var corpseOwner = GetLocalObject(container, CorpseBodyVariable);
+            var beastTypeId = GetLocalInt(container, BeastMastery.BeastTypeVariable);
+            var level = GetLocalInt(container, BeastMastery.BeastLevelVariable);
 
             if (!GetIsObjectValid(firstItem))
             {
                 DestroyObject(container);
 
-                AssignCommand(corpseOwner, () =>
+                if (beastTypeId <= 0)
                 {
-                    SetIsDestroyable();
-                });
+                    AssignCommand(corpseOwner, () =>
+                    {
+                        SetIsDestroyable();
+                    });
+                }
+                else
+                {
+                    var beastType = (BeastType)beastTypeId;
+                    var beastDetail = BeastMastery.GetBeastDetail(beastType);
+                    var extractCorpse = CreateObject(ObjectType.Placeable, BeastMastery.ExtractCorpseObjectResref, GetLocation(container));
+                    SetLocalObject(extractCorpse, CorpseBodyVariable, corpseOwner);
+                    SetLocalInt(extractCorpse, BeastMastery.BeastTypeVariable, beastTypeId);
+                    SetLocalInt(extractCorpse, BeastMastery.BeastLevelVariable, level);
+                    ScheduleCorpseCleanup(extractCorpse);
+                    SetName(extractCorpse, $"Extract DNA: {beastDetail.Name}");
+                }
             }
         }
 
+        /// <summary>
+        /// When a player adds an item to a corpse, return it to them.
+        /// When a player removes an item from the corpse, update the connected creature's appearance if needed.
+        /// </summary>
         [NWNEventHandler("corpse_disturbed")]
         public static void DisturbCorpseContainer()
         {
@@ -383,14 +422,14 @@ namespace SWLOR.Game.Server.Service
             }
             else if (type == DisturbType.Removed)
             {
-                var copy = GetLocalObject(item, "CORPSE_ITEM_COPY");
+                var copy = GetLocalObject(item, CorpseCopyItemVariable);
 
                 if (GetIsObjectValid(copy))
                 {
                     DestroyObject(copy);
                 }
 
-                DeleteLocalObject(item, "CORPSE_ITEM_COPY");
+                DeleteLocalObject(item, CorpseCopyItemVariable);
             }
         }
     }

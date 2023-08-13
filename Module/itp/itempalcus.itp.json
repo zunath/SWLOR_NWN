@@ -21043,6 +21043,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "DNA Extractor I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA Extractor II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA Extractor III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA Extractor IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA Extractor V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "DNA: Aradile"
                     },
                     "RESREF": {

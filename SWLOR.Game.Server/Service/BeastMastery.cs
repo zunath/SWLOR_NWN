@@ -736,11 +736,39 @@ namespace SWLOR.Game.Server.Service
             Gui.TogglePlayerWindow(player, GuiWindowType.Incubator, payload, player);
         }
 
-        private static BeastType DetermineMutation(BeastType beastType, int mutationChance)
+        private static BeastType DetermineMutation(BeastType beastType, IncubationJob job)
         {
-            if (Random.Next(1000) <= mutationChance)
+            var beast = GetBeastDetail(beastType);
+
+            if (Random.Next(1000) <= job.MutationChance)
             {
-                // todo: Pick a mutation from the list of available types
+                var possibleMutations = new List<MutationDetail>();
+
+                foreach (var mutation in beast.PossibleMutations)
+                {
+                    var meetsRequirements = true;
+                    foreach (var requirement in mutation.Requirements)
+                    {
+                        if (!string.IsNullOrWhiteSpace(requirement.CheckRequirements(job)))
+                        {
+                            meetsRequirements = false;
+                            break;
+                        }
+                    }
+
+                    if (meetsRequirements)
+                    {
+                        possibleMutations.Add(mutation);
+                    }
+                }
+
+                if (possibleMutations.Count > 0)
+                {
+                    var weights = possibleMutations.Select(x => x.Weight);
+                    var index = Random.GetRandomWeightedIndex(weights.ToArray());
+
+                    return possibleMutations.ElementAt(index).Type;
+                }
             }
 
             return BeastType.Invalid;
@@ -750,7 +778,7 @@ namespace SWLOR.Game.Server.Service
         {
             var egg = CreateItemOnObject("beast_egg", player);
 
-            var mutation = DetermineMutation(job.BeastDNAType, job.MutationChance);
+            var mutation = DetermineMutation(job.BeastDNAType, job);
             var beastType = mutation == BeastType.Invalid ? job.BeastDNAType : mutation;
 
             var itemProperties = new List<ItemProperty>

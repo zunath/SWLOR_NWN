@@ -1063,9 +1063,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickCompleteJob() => () =>
         {
-            var job = GetJob();
-            BeastMastery.CreateBeastEgg(job, Player);
-            Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
+            ShowModal("Are you sure you want to complete this job?", () =>
+            {
+                var job = GetJob();
+                BeastMastery.CreateBeastEgg(job, Player);
+                Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
+            });
         };
 
         public Action OnCloseWindow() => () =>

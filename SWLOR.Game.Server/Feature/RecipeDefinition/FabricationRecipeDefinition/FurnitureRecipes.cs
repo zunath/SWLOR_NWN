@@ -472,6 +472,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 6)
                 .Component("wood", 3);
+
+            // DNA Extractor I
+            _builder.Create(RecipeType.DNAExtractor1, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Tool)
+                .Resref("dna_extractor_1")
+                .Level(10)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("ref_tilarium", 3)
+                .Component("elec_ruined", 2);
         }
 
         private void Tier2()
@@ -1047,6 +1058,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_good", 4)
                 .Component("ref_plagionite", 2);
+
+            // DNA Extractor II
+            _builder.Create(RecipeType.DNAExtractor2, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Tool)
+                .Resref("dna_extractor_2")
+                .Level(20)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("ref_currian", 3)
+                .Component("elec_flawed", 2);
         }
 
         private void Tier3()
@@ -1651,6 +1673,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 6)
                 .Component("lth_good", 3);
+
+            // DNA Extractor III
+            _builder.Create(RecipeType.DNAExtractor3, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Tool)
+                .Resref("dna_extractor_3")
+                .Level(30)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_idailia", 3)
+                .Component("elec_good", 2);
         }
 
         private void Tier4()
@@ -2227,6 +2260,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 6)
                 .Component("aracia_wood", 3);
+
+            // DNA Extractor IV
+            _builder.Create(RecipeType.DNAExtractor4, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Tool)
+                .Resref("dna_extractor_4")
+                .Level(40)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_barinium", 3)
+                .Component("elec_imperfect", 2);
         }
 
         private void Tier5()
@@ -2735,6 +2779,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("zinsiam", 6)
                 .Component("elec_imperfect", 6)
                 .Component("diamond", 2);
+
+            // DNA Extractor V
+            _builder.Create(RecipeType.DNAExtractor5, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Tool)
+                .Resref("dna_extractor_5")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_gostian", 3)
+                .Component("elec_high", 2);
         }
     }
 }

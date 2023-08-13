@@ -656,7 +656,7 @@
         MicrowaveBlack = 1210,
         BarWhite = 1211,
         CouchLeatherBlue = 1212,
-        // 1213 is free
+        DNAExtractor1 = 1213,
         TablePlasticLarge = 1214,
         TableRoundOak = 1215,
         MetalWallWideLight = 1216,
@@ -695,6 +695,10 @@
         TableDarkGlass = 1249,
         DroidAssemblyTerminal = 1250,
         BeastStablesTerminal = 1251,
+        DNAExtractor2 = 1252,
+        DNAExtractor3 = 1253,
+        DNAExtractor4 = 1254,
+        DNAExtractor5 = 1255,
 
         ReinforcedConstructionParts = 1496,
         ReinforcedPowerSupplyUnit = 1497,

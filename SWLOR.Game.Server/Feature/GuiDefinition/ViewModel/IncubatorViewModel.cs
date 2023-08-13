@@ -1008,7 +1008,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickCancelJob() => () =>
         {
-            ShowModal($"Are you sure you want to cancel this job? All DNA and isotope items will be permanently lost!",
+            ShowModal($"Are you sure you want to cancel this job? All DNA and enzyme items will be permanently lost!",
             () =>
             {
                 var dbJob = GetJob();

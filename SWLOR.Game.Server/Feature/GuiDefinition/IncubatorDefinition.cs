@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     partial.AddColumn(col =>
                     {
                         BuildDNAItemSelectionSection(col);
-                        BuildIsotopeSection(col);
+                        BuildEnzymeSection(col);
                         BuildPuritiesSection(col);
                         BuildStartNewJobSection(col);
                     });
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     partial.AddColumn(col =>
                     {
                         BuildExistingJobDetailsSection(col);
-                        BuildIsotopeSection(col);
+                        BuildEnzymeSection(col);
                         BuildPuritiesSection(col);
                         BuildContinueJobSection(col);
                     });
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         }
 
-        private void BuildIsotopeSection(GuiColumn<IncubatorViewModel> col)
+        private void BuildEnzymeSection(GuiColumn<IncubatorViewModel> col)
         {
             col.AddRow(row =>
             {

@@ -392,6 +392,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindOnClicked(model => model.OnClickContinueJob())
                     .BindIsEnabled(model => model.IsContinueJobEnabled);
 
+                row.AddButton()
+                    .SetText("Cancel Job")
+                    .BindOnClicked(model => model.OnClickCancelJob());
+
                 row.AddSpacer();
             });
         }

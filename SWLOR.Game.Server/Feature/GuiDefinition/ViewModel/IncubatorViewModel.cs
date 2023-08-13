@@ -436,8 +436,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private int CalculateIncubationSeconds()
         {
-            var incubationProcessingBonus = 0.01f * (Perk.GetPerkLevel(Player, PerkType.IncubationProcessing) * 10);
-            var seconds = BaseSecondsBetweenStages - (int)(BaseSecondsBetweenStages * incubationProcessingBonus);
+            var social = GetAbilityScore(Player, AbilityType.Social) - 10;
+            var socialBonus = 0.5f * (social <= 0 ? 0 : social);
+            if (socialBonus > 10)
+                socialBonus = 10;
+
+            var timeReductionPercentage = 0.01f * (Perk.GetPerkLevel(Player, PerkType.IncubationProcessing) * 10 + socialBonus);
+            var seconds = BaseSecondsBetweenStages - (int)(BaseSecondsBetweenStages * timeReductionPercentage);
 
             return seconds;
         }

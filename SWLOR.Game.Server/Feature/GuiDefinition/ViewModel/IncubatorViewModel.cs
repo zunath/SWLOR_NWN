@@ -915,8 +915,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private string ValidateCreateJob()
         {
-            var job = GetJob();
+            var playerId = GetObjectUUID(Player);
+            var maxConcurrentJobs = Perk.GetPerkLevel(Player, PerkType.IncubationManagement) + 1;
+            var dbQuery = new DBQuery<IncubationJob>()
+                .AddFieldSearch(nameof(IncubationJob.PlayerId), playerId, false);
+            var currentJobs = DB.Search(dbQuery).ToList();
+            var currentJobCount = currentJobs.Count(x => x.ParentPropertyId != _incubatorPropertyId);
 
+            if (currentJobCount >= maxConcurrentJobs)
+            {
+                return $"You may only have {maxConcurrentJobs} incubation job(s) active at one time.";
+            }
+
+            var job = GetJob();
             if (job == null)
                 return string.Empty;
 

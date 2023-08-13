@@ -843,5 +843,22 @@ namespace SWLOR.Game.Server.Service
             return GetResRef(item) == BeastEggResref;
         }
 
+        /// <summary>
+        /// When a property is removed, also remove any associated incubation jobs.
+        /// </summary>
+        [NWNEventHandler("swlor_del_prop")]
+        public static void OnRemoveProperty()
+        {
+            var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
+            var dbQuery = new DBQuery<IncubationJob>()
+                .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), propertyId, false);
+            var dbJobs = DB.Search(dbQuery).ToList();
+
+            foreach (var dbJob in dbJobs)
+            {
+                DB.Delete<IncubationJob>(dbJob.Id);
+            }
+        }
+
     }
 }

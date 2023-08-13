@@ -433,17 +433,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // Some structures have specific logic which must be run when they're picked up. Do that now.
                 Property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.Retrieved, structure, placeable);
-
-                DB.Delete<WorldProperty>(structure.Id);
-
-                // Remove any child instances this structure contains.
-                if (structure.ChildPropertyIds.ContainsKey(PropertyChildType.Interior))
-                {
-                    foreach (var childId in structure.ChildPropertyIds[PropertyChildType.Interior])
-                    {
-                        DB.Delete<WorldProperty>(childId);
-                    }
-                }
+                
+                Property.DeleteProperty(structure);
 
                 StructureNames.RemoveAt(SelectedStructureIndex);
                 StructureToggles.RemoveAt(SelectedStructureIndex);

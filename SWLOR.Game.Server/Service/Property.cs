@@ -841,7 +841,7 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Property, $"Finished processing citizenship fees for '{city.CustomName}' ({city.Id})");
         }
 
-        private static void DeleteProperty(WorldProperty property)
+        public static void DeleteProperty(WorldProperty property)
         {
             // Recursively clear any children properties tied to this property.
             foreach (var (childType, propertyIds) in property.ChildPropertyIds)
@@ -935,6 +935,9 @@ namespace SWLOR.Game.Server.Service
             // Finally delete the entire property.
             DB.Delete<WorldProperty>(property.Id);
             Log.Write(LogGroup.Property, $"Property '{property.CustomName}' deleted.");
+
+            EventsPlugin.PushEventData("PROPERTY_ID", property.Id);
+            EventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
         }
 
         /// <summary>

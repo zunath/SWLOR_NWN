@@ -640,6 +640,21 @@
           "type": "cexostring",
           "value": "DATHOMIR_CHIRODACTYL_RECIPES,20,1"
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_8"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "ISOMERASE_TYPE_1,95,1"
+        }
       }
     ]
   },

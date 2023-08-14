@@ -587,7 +587,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "ENZYME_TEST,100,1"
+          "value": "ISOMERASE_TYPE_1,5,1"
         }
       }
     ]

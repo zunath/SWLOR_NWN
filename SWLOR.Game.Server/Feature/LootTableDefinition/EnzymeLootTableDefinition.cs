@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 SpawnAction(item, GetDefaultHydrolasePrimaryStats(), GetDefaultHydrolaseSecondaryStats());
             }
 
-            _builder.Create("HYDROLASE")
+            _builder.Create("HYDROLASE_TYPE_1")
                 .AddItem("hydrolase_blue", 100)
                 .AddSpawnAction(HydrolaseSpawn)
                 .AddItem("hydrolase_orange", 90)
@@ -222,7 +222,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 SpawnAction(item, GetDefaultIsomerasePrimaryStats(), GetDefaultIsomeraseSecondaryStats());
             }
 
-            _builder.Create("ISOMERASE")
+            _builder.Create("ISOMERASE_TYPE_1")
                 .AddItem("isomerase_orange", 100)
                 .AddSpawnAction(IsomeraseSpawn)
                 .AddItem("isomerase_blue", 90)
@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 SpawnAction(item, GetDefaultLyasePrimaryStats(), GetDefaultLyaseSecondaryStats());
             }
 
-            _builder.Create("LYASE")
+            _builder.Create("LYASE_TYPE_1")
                 .AddItem("lyase_green", 100)
                 .AddSpawnAction(LyaseSpawn)
                 .AddItem("lyase_blue", 90)

@@ -87,7 +87,7 @@
     "id": 5656,
     "type": "cexolocstring",
     "value": {
-      "0": "Extract"
+      "0": "Extract DNA"
     }
   },
   "OnClick": {
@@ -144,7 +144,7 @@
   },
   "OnUsed": {
     "type": "resref",
-    "value": ""
+    "value": "dna_extract_used"
   },
   "OnUserDefined": {
     "type": "resref",

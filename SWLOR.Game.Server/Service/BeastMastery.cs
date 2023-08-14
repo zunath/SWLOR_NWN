@@ -864,5 +864,15 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// When a player clicks a "DNA Extract" object, they get a message stating to use the extractor item on it.
+        /// </summary>
+        [NWNEventHandler("dna_extract_used")]
+        public static void UseExtractDNAObject()
+        {
+            var player = GetLastUsedBy();
+            SendMessageToPC(player, ColorToken.Red("Use a DNA Extractor on this corpse to retrieve its DNA."));
+        }
+
     }
 }

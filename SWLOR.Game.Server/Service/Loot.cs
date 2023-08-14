@@ -144,6 +144,8 @@ namespace SWLOR.Game.Server.Service
 
                 var loot = CreateItemOnObject(item.Resref, creature, quantity);
                 lootList.Add(loot);
+
+                item.OnSpawn?.Invoke(loot);
             }
 
             return lootList;

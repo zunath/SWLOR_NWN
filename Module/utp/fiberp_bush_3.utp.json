@@ -246,6 +246,21 @@
           "type": "cexostring",
           "value": "SCAVENGING_BUSH_3"
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "HYDROLASE_TYPE_1,9,1"
+        }
       }
     ]
   },

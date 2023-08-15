@@ -117,11 +117,11 @@ namespace SWLOR.Game.Server.Service
             return (tableName, chance, attempts);
         }
 
-        private static List<uint> SpawnLoot(uint creature, string lootTableName, int chance, int attempts)
+        private static List<uint> SpawnLoot(uint source, uint receiver, string lootTableName, int chance, int attempts)
         {
-            var creditFinderLevel = GetLocalInt(creature, "CREDITFINDER_LEVEL");
+            var creditFinderLevel = GetLocalInt(source, "CREDITFINDER_LEVEL");
             var creditPercentIncrease = creditFinderLevel * 0.2f;
-            var rareBonusChance = GetLocalInt(creature, "RARE_BONUS_CHANCE");
+            var rareBonusChance = GetLocalInt(source, "RARE_BONUS_CHANCE");
 
             var lootList = new List<uint>();
             var table = GetLootTableByName(lootTableName);
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Service
                     quantity += (int)(quantity * creditPercentIncrease);
                 }
 
-                var loot = CreateItemOnObject(item.Resref, creature, quantity);
+                var loot = CreateItemOnObject(item.Resref, receiver, quantity);
                 lootList.Add(loot);
 
                 item.OnSpawn?.Invoke(loot);
@@ -152,20 +152,30 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Attempts to spawn items found in the associated loot table based on the configured variables.
+        /// </summary>
+        /// <param name="source">The source of the items (must contain the local variables)</param>
+        /// <param name="receiver">The receiver of the items</param>
+        /// <param name="lootTablePrefix">The prefix of the loot tables. In the toolset this should be numeric starting at 1.</param>
+        public static void SpawnLoot(uint source, uint receiver, string lootTablePrefix)
+        {
+            var lootTableEntries = GetLootTableDetails(source, lootTablePrefix);
+            foreach (var entry in lootTableEntries)
+            {
+                var delimitedString = GetLocalString(source, entry);
+                var (tableName, chance, attempts) = ParseLootTableArguments(delimitedString);
+
+                SpawnLoot(source, receiver, tableName, chance, attempts);
+            }
+        }
+
+        /// <summary>
         /// When a creature dies, loot tables are spawned based on local variables.
         /// </summary>
         [NWNEventHandler("crea_death_bef")]
-        public static void SpawnLoot()
+        public static void SpawnLootOnCreatureDeath()
         {
-            var creature = OBJECT_SELF;
-            var lootTableEntries = GetLootTableDetails(creature, "LOOT_TABLE_");
-            foreach (var entry in lootTableEntries)
-            {
-                var delimitedString = GetLocalString(creature, entry);
-                var (tableName, chance, attempts) = ParseLootTableArguments(delimitedString);
-
-                SpawnLoot(creature, tableName, chance, attempts);
-            }
+            SpawnLoot(OBJECT_SELF, OBJECT_SELF, "LOOT_TABLE_");
         }
 
         /// <summary>

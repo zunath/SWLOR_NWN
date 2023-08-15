@@ -653,7 +653,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "ISOMERASE_TYPE_1,95,1"
+          "value": "ISOMERASE_TYPE_2,95,1"
         }
       }
     ]

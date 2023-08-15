@@ -233,6 +233,18 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddSpawnAction(IsomeraseSpawn)
                 .AddItem("isomerase_yellow", 5)
                 .AddSpawnAction(IsomeraseSpawn);
+
+            _builder.Create("ISOMERASE_TYPE_2")
+                .AddItem("isomerase_orange", 5)
+                .AddSpawnAction(IsomeraseSpawn)
+                .AddItem("isomerase_blue", 20)
+                .AddSpawnAction(IsomeraseSpawn)
+                .AddItem("isomerase_green", 70)
+                .AddSpawnAction(IsomeraseSpawn)
+                .AddItem("isomerase_red", 90)
+                .AddSpawnAction(IsomeraseSpawn)
+                .AddItem("isomerase_yellow", 100)
+                .AddSpawnAction(IsomeraseSpawn);
         }
 
         private void Lyase()

@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var (tableName, chance, attempts) = ParseLootTableArguments(lootTable);
 
-                foreach (var item in SpawnLoot(creature, tableName, chance, attempts))
+                foreach (var item in SpawnLoot(creature, creature, tableName, chance, attempts))
                 {
                     SetItemCursedFlag(item, true);
                     SetDroppableFlag(item, false);

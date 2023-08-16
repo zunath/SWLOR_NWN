@@ -541,7 +541,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (!string.IsNullOrWhiteSpace(_dnaItem))
             {
-                ShowModal("Will you remove the DNA from the incubator? All enzymes will also be removed.", RemoveDNA);
+                ShowModal("Will you remove the DNA from the incubator? All enzymes will also be removed.", () =>
+                {
+                    RemoveDNA();
+                    SwitchViews();
+                }, SwitchViews);
             }
             else
             {
@@ -788,7 +792,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     SubtractItemStats(item);
                     ToggleStartJob();
                     ToggleContinueJob();
-                });
+
+                    SwitchViews();
+                }, SwitchViews);
             }
             else
             {
@@ -833,7 +839,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     SubtractItemStats(item);
                     ToggleStartJob();
                     ToggleContinueJob();
-                });
+                    SwitchViews();
+                }, SwitchViews);
             }
             else
             {
@@ -878,7 +885,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     SubtractItemStats(item);
                     ToggleStartJob();
                     ToggleContinueJob();
-                });
+                    SwitchViews();
+                }, SwitchViews);
             }
             else
             {
@@ -1031,7 +1039,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     BeastDNAType = _dnaType
                 };
                 StartJob(job);
-            });
+
+                SwitchViews();
+            }, SwitchViews);
         };
 
         public Action OnClickContinueJob() => () =>
@@ -1043,7 +1053,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"Are you sure you want to start this job?", () =>
             {
                 StartJob(job);
-            });
+                SwitchViews();
+            }, SwitchViews);
         };
 
         public Action OnClickCancelJob() => () =>
@@ -1059,7 +1070,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
                 Log.Write(LogGroup.Incubation, $"Player '{GetName(Player)}' ({GetObjectUUID(Player)}) canceled incubation job '{dbJob.Id}' on incubator property Id '{dbJob.ParentPropertyId}'.");
                 FloatingTextStringOnCreature($"Incubation job cancelled!", Player, false);
-            });
+
+                SwitchViews();
+            }, SwitchViews);
         };
 
         public Action OnClickCompleteJob() => () =>
@@ -1069,7 +1082,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var job = GetJob();
                 BeastMastery.CreateBeastEgg(job, Player);
                 Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
-            });
+
+                SwitchViews();
+            }, SwitchViews);
         };
 
         public Action OnCloseWindow() => () =>

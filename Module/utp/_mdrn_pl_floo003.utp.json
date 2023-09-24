@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 6846
+    "value": 5735
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -30,7 +30,7 @@
   },
   "CurrentHP": {
     "type": "short",
-    "value": 10
+    "value": 10000
   },
   "Description": {
     "type": "cexolocstring",
@@ -48,11 +48,11 @@
   },
   "Fort": {
     "type": "byte",
-    "value": 5
+    "value": 250
   },
   "Hardness": {
     "type": "byte",
-    "value": 5
+    "value": 250
   },
   "HasInventory": {
     "type": "byte",
@@ -60,7 +60,7 @@
   },
   "HP": {
     "type": "short",
-    "value": 10
+    "value": 10000
   },
   "Interruptable": {
     "type": "byte",
@@ -110,7 +110,7 @@
   },
   "OnHeartbeat": {
     "type": "resref",
-    "value": ""
+    "value": "script_1"
   },
   "OnInvDisturbed": {
     "type": "resref",
@@ -158,7 +158,7 @@
   },
   "Plot": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PortraitId": {
     "type": "word",
@@ -166,11 +166,11 @@
   },
   "Ref": {
     "type": "byte",
-    "value": 0
+    "value": 250
   },
   "Static": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Tag": {
     "type": "cexostring",
@@ -229,11 +229,26 @@
           "type": "int",
           "value": 14
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "SCRIPT_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "Placeable.PermanentVisualEffect"
+        }
       }
     ]
   },
   "Will": {
     "type": "byte",
-    "value": 0
+    "value": 250
   }
 }

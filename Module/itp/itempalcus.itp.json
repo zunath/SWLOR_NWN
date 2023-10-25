@@ -35178,6 +35178,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Thune Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thune_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thune Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thune_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tiger Blood"
                     },
                     "RESREF": {
@@ -37141,6 +37163,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "yorchete"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Yot Beans"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yot_bean"
                     }
                   },
                   {
@@ -46792,6 +46825,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "key_czerka_03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Jedi Knight ID Codes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_jedi_003"
                     }
                   },
                   {

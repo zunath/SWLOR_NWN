@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             DantooineKinrathBoss();
             DantooineMountains();
             DantooineCanyon();
-            DantooineBolBoss();
+            DantooineWorldBoss();
             DantooineSouthPlains();
             
             return _builder.Build();
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("DANTOOINE_JANTA")
                 .AddSpawn(ObjectType.Creature, "gizka")
                 .RandomlyWalks()
-                .WithFrequency(10)
+                .WithFrequency(100)
 
                 .AddSpawn(ObjectType.Creature, "voritorlizard")
                 .RandomlyWalks()
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vqueenkin")
                 .RandomlyWalks()
                 .WithFrequency(1)
-                .RespawnDelay(60 + Random.D100(1))
+                .RespawnDelay(20 + Random.D100(1))
                 .ReturnsHome();
         }
 
@@ -156,14 +156,18 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .ReturnsHome();
         }
 
-        private void DantooineBolBoss()
+        private void DantooineWorldBoss()
         {
-            _builder.Create("DANTOOINE_BOL")
+            _builder.Create("DANTOOINE_WORLD_BOSS")
                 .AddSpawn(ObjectType.Creature, "bolboss")
                 .RandomlyWalks()
+                .WithFrequency(16)
                 .RespawnDelay(60 + Random.D100(1))
-                .WithFrequency(100);
-
+                .AddSpawn(ObjectType.Creature, "dgraul")
+                .RandomlyWalks()
+                .WithFrequency(3)
+                .RespawnDelay(60 + Random.D100(1));
+          
         }
     }
 }

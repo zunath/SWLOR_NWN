@@ -9398,6 +9398,258 @@
           "type": "float",
           "value": 0.2069035172462463
         }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Fishing Point - Dantooine South Fields"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "FP_DANTOOINE_SOUTH_PLAINS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "fp_031"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 3.643376007244524e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 8.077741622924805
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 75.69475555419922
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.1100482940673828
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Fishing Point - Dantooine South Fields"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "FP_DANTOOINE_SOUTH_PLAINS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "fp_031"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 3.643376007244524e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 8.768014907836914
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 64.48161315917969
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.04564666748046875
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Fishing Point - Dantooine South Fields"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "FP_DANTOOINE_SOUTH_PLAINS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "fp_031"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 3.643376007244524e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 5.444901943206787
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 47.63599014282227
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.1461410522460938
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Fishing Point - Dantooine South Fields"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "FP_DANTOOINE_SOUTH_PLAINS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "fp_031"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 3.643376007244524e-044
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 25.71684837341309
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 37.57020568847656
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.2237262725830078
+        }
       }
     ]
   }

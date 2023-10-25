@@ -27,9 +27,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("DANTOOINE_KINRATH_QUEEN")
                 .AddItem("fiberp_high", 20)
-                .AddItem("wild_meat", 10)
-                .AddItem("wild_innards", 10);       
-
+                .AddItem("yot_bean", 100);
+      
             _builder.Create("DANTOOINE_KINRATH_QUEEN_RARES")
                 .IsRare()
                 .AddItem("emerald", 1, 1, true)
@@ -68,8 +67,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("DANTOOINE_THUNE_LEADER")
                 .AddItem("lth_high", 1)
-                .AddItem("wild_meat", 10)
-                .AddItem("wild_innards", 10);
+                .AddItem("thune_meat", 10)
+                .AddItem("thune_blood", 100);
 
             _builder.Create("DANTOOINE_THUNE_LEADER_RARES")
                 .IsRare()
@@ -157,8 +156,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void PlainsThune()
         {
             _builder.Create("DANTOOINE_PLAINS_THUNE")
-                .AddItem("wild_innards", 10)
-                .AddItem("wild_blood", 2);
+                .AddItem("thune_meat", 100)
+                .AddItem("thune_blood", 2);
 
             _builder.Create("DANTOOINE_PLAINS_THUNE_RARES")
                 .IsRare()
@@ -168,9 +167,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void VoritorLizard()
         {
             _builder.Create("DANTOOINE_VORITOR_LIZARD")
-                .AddItem("wild_innards", 10)
                 .AddItem("wild_leg", 5)
-                .AddItem("tomato", 10)
+                .AddItem("tomato", 20)
                 .AddItem("cultured_butter", 10);
 
             _builder.Create("DANTOOINE_VORITOR_LIZARD_RARES")
@@ -206,7 +204,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("DANTOOINE_IRIAZ")
                 .AddItem("wild_meat", 10)
-                .AddItem("herb_x", 5)
+                .AddItem("yot_bean", 5)
                 .AddItem("wild_leg", 2);
 
             _builder.Create("DANTOOINE_IRIAZ_RARES")

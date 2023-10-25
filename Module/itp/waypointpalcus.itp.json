@@ -54,6 +54,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantooine - Janta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "danjanta"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dantooine - Kin Boss"
                     },
                     "RESREF": {
@@ -81,6 +92,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "danlakewp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Janta"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dantooine_janta"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine World Boss"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dantooine_world_"
                     }
                   },
                   {

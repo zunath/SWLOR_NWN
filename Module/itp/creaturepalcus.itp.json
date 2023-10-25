@@ -10330,6 +10330,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 100.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Graul"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dgraul"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 59.0
                     },
                     "FACTION": {

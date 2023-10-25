@@ -26704,6 +26704,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Shadow Floor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_floo003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Teleport Pad"
                     },
                     "RESREF": {

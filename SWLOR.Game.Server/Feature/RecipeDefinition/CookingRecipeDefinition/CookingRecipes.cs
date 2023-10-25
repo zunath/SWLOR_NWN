@@ -1956,7 +1956,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("milk", 6)
-                .Component("b_flour", 3);
+                .Component("b_flour", 3)
+                .Component("yot_bean", 1);
 
             // Dantooine Carrotcake
             _builder.Create(RecipeType.DantooineCarrotCake, SkillType.Agriculture)
@@ -1979,7 +1980,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .RequirementUnlocked()
                 .RequirementPerk(PerkType.CookingRecipes, 5)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
-                .Component("wild_meat", 10)
+                .Component("thune_meat", 10)
+                .Component("thune_blood", 2)
                 .Component("cultured_butter", 3)
                 .Component("ref_jasioclase", 1);
 

@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             TarnishedJungles();
             TarnishedJunglesNorth();
             TribeVillage();
+            HidenTunnel();
 
             return _builder.Build();
         }
@@ -222,6 +223,21 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .WithFrequency(100);
         }
+        private void HiddenTunnel()
+        {
+            _builder.Create("DATHOMIR_HIDDEN_TUNNEL")
+                .AddSpawn(ObjectType.Creature, "vgapingspider")
+                .RandomlyWalks()
+                .WithFrequency(100)
 
+                .AddSpawn(ObjectType.Creature, "vdathshaman")
+                .RandomlyWalks()
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Creature, "vdathtribal")
+                .RandomlyWalks()
+                .WithFrequency(100);
+
+        }
     }
 }

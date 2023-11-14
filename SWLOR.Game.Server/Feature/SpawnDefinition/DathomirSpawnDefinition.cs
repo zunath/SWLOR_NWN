@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             TarnishedJungles();
             TarnishedJunglesNorth();
             TribeVillage();
-            HidenTunnel();
+            HiddenTunnel();
 
             return _builder.Build();
         }

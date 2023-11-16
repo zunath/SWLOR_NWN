@@ -1,0 +1,1510 @@
+{
+  "__data_type": "UTM ",
+  "BlackMarket": {
+    "type": "byte",
+    "value": 0
+  },
+  "BM_MarkDown": {
+    "type": "int",
+    "value": 25
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "ID": {
+    "type": "byte",
+    "value": 5
+  },
+  "IdentifyPrice": {
+    "type": "int",
+    "value": -1
+  },
+  "LocName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Accessories Shop"
+    }
+  },
+  "MarkDown": {
+    "type": "int",
+    "value": 40
+  },
+  "MarkUp": {
+    "type": "int",
+    "value": 100
+  },
+  "MaxBuyPrice": {
+    "type": "int",
+    "value": -1
+  },
+  "OnOpenStore": {
+    "type": "resref",
+    "value": "on_open_store"
+  },
+  "OnStoreClosed": {
+    "type": "resref",
+    "value": "on_close_store"
+  },
+  "ResRef": {
+    "type": "resref",
+    "value": "night_accessory1"
+  },
+  "StoreGold": {
+    "type": "int",
+    "value": -1
+  },
+  "StoreList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0
+      },
+      {
+        "__struct_id": 4,
+        "ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_cigar"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_cigarette"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 2,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_sithspit"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_toniraywin"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 5
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 4,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_water"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "__struct_id": 2
+      },
+      {
+        "__struct_id": 3,
+        "ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "book_a"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "book_b"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 1
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 2,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "jessoon"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "foldfan_blk"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 3
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 4,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "foldfan_1"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 5,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "foldfan_pink"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 5
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 6,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "foldfan_purp"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 7,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "foldfan_white"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 7
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 8,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "gold_orb"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 8
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 9,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "guitar"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 9
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 10,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "harp"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 11,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "kloo_horn"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 1
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 12,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "lute"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 13,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "panpipes"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 3
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 14,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "slitherhorn"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 15,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "tambourine"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 5
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 16,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "umbrella_black01"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 17,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "umbrella_drg"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 7
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 18,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "umbrella_frame"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 8
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 19,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "umbrella_yel"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 9
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 20,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "violin_bow"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 4
+              }
+            }
+          ]
+        }
+      },
+      {
+        "__struct_id": 1,
+        "ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_briefcase1"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_candle001"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 1
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 2,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_candlehold"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_candleabra"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 3
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 4,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_datapada"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 5,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_datapadb"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 5
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 6,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_drinktray"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 7,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_enrichglas"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 7
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 8,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_figurebron"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 8
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 9,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_figuregold"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 9
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 10,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_figurejade"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 11,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_figureruby"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 1
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 12,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_figuresilv"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 13,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_figureston"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 3
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 14,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_flamskull1"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 15,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_gobglass01"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 5
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 16,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_gobglsamet"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 17,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_gobglssaph"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 7
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 18,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_gobletgold"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 8
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 19,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_gobgldemrl"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 9
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 20,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_gobgldruby"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 6
+              }
+            },
+            {
+              "__struct_id": 21,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_gobskull"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 1
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 6
+              }
+            },
+            {
+              "__struct_id": 22,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_jackolante"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 6
+              }
+            },
+            {
+              "__struct_id": 23,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_lantern001"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 3
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 6
+              }
+            },
+            {
+              "__struct_id": 24,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_lantern002"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 6
+              }
+            },
+            {
+              "__struct_id": 25,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_lantern003"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 5
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 6
+              }
+            },
+            {
+              "__struct_id": 26,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_lantern004"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 6
+              }
+            },
+            {
+              "__struct_id": 27,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_lantern005"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 7
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 6
+              }
+            },
+            {
+              "__struct_id": 28,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_microbrand"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 8
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 6
+              }
+            },
+            {
+              "__struct_id": 29,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_microplain"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 9
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 6
+              }
+            },
+            {
+              "__struct_id": 30,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_pendant001"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 31,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_pendant002"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 1
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 32,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_pendant003"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 33,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_pendant004"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 3
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 34,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_pendant005"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 35,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_pendant006"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 5
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 36,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_pendant007"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 37,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_scanner001"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 7
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 38,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_skullcandl"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 8
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 39,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_skulldown"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 9
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 40,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_skullup"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 13
+              }
+            },
+            {
+              "__struct_id": 41,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_spine001"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 1
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 13
+              }
+            },
+            {
+              "__struct_id": 42,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_spinered"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 13
+              }
+            },
+            {
+              "__struct_id": 43,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_syringe001"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 3
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 13
+              }
+            },
+            {
+              "__struct_id": 44,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_torch001"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 13
+              }
+            },
+            {
+              "__struct_id": 45,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "violin_f"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 5
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 13
+              }
+            },
+            {
+              "__struct_id": 46,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "violin_m"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 13
+              }
+            },
+            {
+              "__struct_id": 47,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "night_walkstick1"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 7
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 13
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "NIGHT_ACCESSORY_SHOP"
+  },
+  "WillNotBuy": {
+    "type": "list",
+    "value": []
+  },
+  "WillOnlyBuy": {
+    "type": "list",
+    "value": []
+  }
+}

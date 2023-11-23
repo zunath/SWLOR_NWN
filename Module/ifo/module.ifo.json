@@ -1187,6 +1187,13 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "player_rnd"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "prefabcorvette"
         }
       },
@@ -2545,14 +2552,7 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "player_rnd"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "ka_trenchpr1"
+          "value": "vrotrnsrooftops2"
         }
       },
       {

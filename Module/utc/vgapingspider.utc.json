@@ -525,7 +525,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "DATHOMIR_GAPING_SPIDER_RARES,40,1"
+          "value": "DATHOMIR_GAPING_SPIDER_RARES,10,1"
         }
       }
     ]

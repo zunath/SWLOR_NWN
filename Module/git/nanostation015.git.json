@@ -8827,7 +8827,7 @@
         },
         "IsImmortal": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "IsPC": {
           "type": "byte",
@@ -9780,7 +9780,7 @@
         },
         "IsImmortal": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "IsPC": {
           "type": "byte",
@@ -10709,7 +10709,7 @@
         },
         "IsImmortal": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "IsPC": {
           "type": "byte",

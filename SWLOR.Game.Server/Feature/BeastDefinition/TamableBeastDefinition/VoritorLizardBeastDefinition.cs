@@ -12,9 +12,10 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.VoritorLizard)
+                .Name("Voritor Lizard")
                 .Appearance(AppearanceType.LizardLargeBlue)
                 .SoundSetId(311)
-                .PortraitId(311)
+                .PortraitId(267)
                 .CombatStats(AbilityType.Perception, AbilityType.Willpower)
                 .Role(BeastRoleType.Force);
 
@@ -1450,16 +1451,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(  620 )
+				.HP(620)
 				.FP(36)
 				.STM(7)
 				.DMG(24)
-				.Stat(AbilityType.Might,   15 )
-				.Stat(AbilityType.Perception,   32 )
-				.Stat(AbilityType.Vitality,   18 )
-				.Stat(AbilityType.Willpower,   28 )
-				.Stat(AbilityType.Agility,   18 )
-				.Stat(AbilityType.Social,   8 )
+				.Stat(AbilityType.Might, 15)
+				.Stat(AbilityType.Perception, 32)
+				.Stat(AbilityType.Vitality, 18)
+				.Stat(AbilityType.Willpower, 28)
+				.Stat(AbilityType.Agility, 18)
+				.Stat(AbilityType.Social, 8)
 				.MaxAttackBonus(5)
 				.MaxAccuracyBonus(5)
 				.MaxEvasionBonus(40)

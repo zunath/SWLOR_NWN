@@ -12,9 +12,10 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Iriaz)
+                .Name("Iriaz")
                 .Appearance(AppearanceType.Iriaz)
                 .SoundSetId(24)
-                .PortraitId(24)
+                .PortraitId(174)
                 .CombatStats(AbilityType.Perception, AbilityType.Vitality)
                 .Role(BeastRoleType.Balanced);
 
@@ -1450,16 +1451,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(  730 )
+				.HP(730)
 				.FP(30)
 				.STM(30)
 				.DMG(43)
-				.Stat(AbilityType.Might,   23 )
-				.Stat(AbilityType.Perception,   31 )
-				.Stat(AbilityType.Vitality,   28 )
-				.Stat(AbilityType.Willpower,   5 )
-				.Stat(AbilityType.Agility,   22 )
-				.Stat(AbilityType.Social,   10 )
+				.Stat(AbilityType.Might, 23)
+				.Stat(AbilityType.Perception, 31)
+				.Stat(AbilityType.Vitality, 28)
+				.Stat(AbilityType.Willpower, 5)
+				.Stat(AbilityType.Agility, 22)
+				.Stat(AbilityType.Social, 10)
 				.MaxAttackBonus(40)
 				.MaxAccuracyBonus(40)
 				.MaxEvasionBonus(40)

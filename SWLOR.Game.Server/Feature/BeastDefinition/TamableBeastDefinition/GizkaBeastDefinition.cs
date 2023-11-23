@@ -12,9 +12,10 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.Gizka)
+                .Name("Gizka")
                 .Appearance(AppearanceType.Gizka)
                 .SoundSetId(10)
-                .PortraitId(10)
+                .PortraitId(240)
                 .CombatStats(AbilityType.Willpower, AbilityType.Might)
                 .Role(BeastRoleType.Damage);
 
@@ -1450,16 +1451,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(  670 )
+				.HP(670)
 				.FP(15)
 				.STM(25)
 				.DMG(43)
-				.Stat(AbilityType.Might,   32 )
-				.Stat(AbilityType.Perception,   21 )
-				.Stat(AbilityType.Vitality,   21 )
-				.Stat(AbilityType.Willpower,   27 )
-				.Stat(AbilityType.Agility,   15 )
-				.Stat(AbilityType.Social,   5 )
+				.Stat(AbilityType.Might, 32)
+				.Stat(AbilityType.Perception, 21)
+				.Stat(AbilityType.Vitality, 21)
+				.Stat(AbilityType.Willpower, 27)
+				.Stat(AbilityType.Agility, 15)
+				.Stat(AbilityType.Social, 5)
 				.MaxAttackBonus(60)
 				.MaxAccuracyBonus(60)
 				.MaxEvasionBonus(30)

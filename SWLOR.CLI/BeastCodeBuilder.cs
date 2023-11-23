@@ -56,14 +56,16 @@ namespace SWLOR.CLI
                 var detail = beasts[enumName];
 
                 var className = $"{enumName}BeastDefinition";
-                var beastType = data[26];
-                var accuracyStat = data[12];
-                var damageStat = data[13];
-                var role = data[1];
-                var appearance = data[27];
-                var portraitId = data[28];
-                var soundSetId = data[29];
+                var name = data[0].Trim();
+                var beastType = data[26].Trim();
+                var accuracyStat = data[12].Trim();
+                var damageStat = data[13].Trim();
+                var role = data[1].Trim();
+                var appearance = data[27].Trim();
+                var portraitId = data[28].Trim();
+                var soundSetId = data[29].Trim();
                 detail.Code = template
+                    .Replace("%%BEASTNAME%%", name)
                     .Replace("%%APPEARANCETYPE%%", appearance)
                     .Replace("%%SOUNDSETID%%", soundSetId)
                     .Replace("%%PORTRAITID%%", portraitId)
@@ -77,28 +79,28 @@ namespace SWLOR.CLI
                 if (!detail.Levels.ContainsKey(level))
                     detail.Levels.Add(level, levelTemplate);
 
-                var hp = data[3];
-                var stm = data[4];
-                var fp = data[5];
-                var mgt = data[6];
-                var per = data[7];
-                var vit = data[8];
-                var wil = data[9];
-                var agi = data[10];
-                var soc = data[11];
-                var attackBonusMax = data[14];
-                var accuracyBonusMax = data[15];
-                var evasionBonusMax = data[16];
-                var physicalDefenseMax = data[17];
-                var forceDefenseMax = data[18];
-                var fireDefenseMax = data[19];
-                var poisonDefenseMax = data[21];
-                var electricalDefenseMax = data[22];
-                var iceDefenseMax = data[20];
-                var willMax = data[24];
-                var fortitudeMax = data[23];
-                var reflexMax = data[25];
-                var dmg = data[31];
+                var hp = data[3].Replace(",", "").Trim();
+                var stm = data[4].Replace(",", "").Trim();
+                var fp = data[5].Replace(",", "").Trim();
+                var mgt = data[6].Trim();
+                var per = data[7].Trim();
+                var vit = data[8].Trim();
+                var wil = data[9].Trim();
+                var agi = data[10].Trim();
+                var soc = data[11].Trim();
+                var attackBonusMax = data[14].Trim();
+                var accuracyBonusMax = data[15].Trim();
+                var evasionBonusMax = data[16].Trim();
+                var physicalDefenseMax = data[17].Trim();
+                var forceDefenseMax = data[18].Trim();
+                var fireDefenseMax = data[19].Trim();
+                var poisonDefenseMax = data[21].Trim();
+                var electricalDefenseMax = data[22].Trim();
+                var iceDefenseMax = data[20].Trim();
+                var willMax = data[24].Trim();
+                var fortitudeMax = data[23].Trim();
+                var reflexMax = data[25].Trim();
+                var dmg = data[31].Trim();
 
                 detail.Levels[level] = detail.Levels[level]
                     .Replace("%%LEVEL%%", level.ToString())

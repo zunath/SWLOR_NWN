@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.%%BEASTTYPE%%)
+                .Name("%%BEASTNAME%%")
                 .Appearance(AppearanceType.%%APPEARANCETYPE%%)
                 .SoundSetId(%%SOUNDSETID%%)
                 .PortraitId(%%PORTRAITID%%)

@@ -12,9 +12,10 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.PlainsThune)
+                .Name("Plains Thune")
                 .Appearance(AppearanceType.D_Elephant)
                 .SoundSetId(7)
-                .PortraitId(7)
+                .PortraitId(279)
                 .CombatStats(AbilityType.Agility, AbilityType.Vitality)
                 .Role(BeastRoleType.Bruiser);
 
@@ -1450,16 +1451,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 		{
 			_builder
 				.AddLevel()
-				.HP(  650 )
+				.HP(650)
 				.FP(21)
 				.STM(40)
 				.DMG(27)
-				.Stat(AbilityType.Might,   20 )
-				.Stat(AbilityType.Perception,   20 )
-				.Stat(AbilityType.Vitality,   28 )
-				.Stat(AbilityType.Willpower,   21 )
-				.Stat(AbilityType.Agility,   28 )
-				.Stat(AbilityType.Social,   2 )
+				.Stat(AbilityType.Might, 20)
+				.Stat(AbilityType.Perception, 20)
+				.Stat(AbilityType.Vitality, 28)
+				.Stat(AbilityType.Willpower, 21)
+				.Stat(AbilityType.Agility, 28)
+				.Stat(AbilityType.Social, 2)
 				.MaxAttackBonus(60)
 				.MaxAccuracyBonus(40)
 				.MaxEvasionBonus(30)

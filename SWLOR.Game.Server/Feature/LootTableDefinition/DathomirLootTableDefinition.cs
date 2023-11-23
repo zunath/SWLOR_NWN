@@ -508,7 +508,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("spider_guts", 10)
                 .AddItem("spider_leg", 5);
 
-            _builder.Create("DATHOMIR_GAPING_SPIDER")
+            _builder.Create("DATHOMIR_GAPING_SPIDER_RARES")
                 .IsRare()
                 .AddItem("spider_thread", 99, 1, true)
                 .AddItem("map_61", 2, 1, true)

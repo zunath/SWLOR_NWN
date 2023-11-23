@@ -442,7 +442,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     AssignCommand(user, () =>
                     {
-                        ActionForceFollowObject(target, 1f);
+                        ActionMoveToObject(target, true);
                     });
                 });
         }

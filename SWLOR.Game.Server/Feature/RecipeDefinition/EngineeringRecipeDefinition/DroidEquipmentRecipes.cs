@@ -1004,7 +1004,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             // DSHL-002
             _builder.Create(RecipeType.DSHL002, SkillType.Engineering)
                 .Category(RecipeCategoryType.Helmet)
-                .Resref("dshl001")
+                .Resref("dshl002")
                 .Level(20)
                 .Quantity(1)
                 .RequirementPerk(PerkType.DroidEquipmentBlueprints, 2)

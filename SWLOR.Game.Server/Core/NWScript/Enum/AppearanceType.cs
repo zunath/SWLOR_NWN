@@ -394,6 +394,8 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ObjectFlameLarge = 445,
         DriderFemale = 446,
         SeaHag = 454,
+        WyvernAdult = 455,
+
         GolemDemonflesh = 468,
         AnimatedChest = 469,
         GelatinousCube = 470,
@@ -429,12 +431,20 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         FreighterSmall = 967,
         CorvetteSmall = 968,
 
+        MyconidSprout = 1056,
+
+        Kyoht3 = 1092,
+
         SnakeViperSwampLarge = 1231,
         SnakeViperSwampMedium = 1232,
+
+        CrabBlueSmall = 1428,
 
         RodentCapybara = 1438,
 
         InsectWaspGiant = 1494,
+
+        Wereboar = 1786,
 
         Gibberling1 = 1933,
         Gibberling2 = 1934,
@@ -447,6 +457,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         MutantAlligator = 2121,
 
         PterosaurAnurognathus = 2137,
+
+        RancorBull = 2146,
+
         Turret1 = 2152,
         Turret2 = 2153,
         Turret3 = 2154,
@@ -461,14 +474,24 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
 
         LizardLargeBlue = 2987,
 
+        EarthDrake = 3094,
+
         MonsterA = 3117,
         MonsterB = 3118,
         MonsterC = 3119,
 
+        BirdPeacock = 3138,
+
         D_Elephant = 3182,
+        ElephantMammoth = 3183,
+
+        FoxRed = 3196,
+
         CrocAztec = 3221,
 
         LizardGiantBrown = 3230,
+
+        Behir = 3312,
 
         InsectTickGiant = 3428,
         InsectTickHuge = 3429,
@@ -486,13 +509,23 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
 
         SpiderCrystalB = 3521,
 
+        DemonBarLgura = 3873,
+
+        Alien = 6296,
+
+        PurgatoryBeast3 = 6303,
+
         Scutellus = 6315,
 
         BuletteSmallUndead = 6330,
 
+        Bearbug = 6364,
+
         CatTigerWhite = 6402,
 
         BirdOstrich = 6408,
+
+        DrakeAenean = 6415,
 
         Bothan = 10000,
         Chiss = 10001,
@@ -508,13 +541,33 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
 
         KathHound = 10020,
         Kinrath = 10021,
+        Krayt = 10022,
+        Mykal = 10023,
+        Rancor2 = 10024,
+        Hutt2 = 10025,
+        DroidHK50 = 10026,
+        DroidHK51 = 10027,
+        Hssiss = 10028,
+        Tukata = 10029,
+        ProtocolDroid2 = 10030,
+        ProtocolDroid3 = 10031,
 
         Ugnaught = 10033,
+        TogrutaFemale = 10034,
+        Porg = 10035,
         
+        Dewback = 10038,
         Iriaz = 10039,
         Gizka = 10040,
-
+        Tach = 10041,
+        KathHoundHorned = 10042,
+        Terentatek = 10043,
+        Paaerduag = 10044,
         Shyrack = 10045,
+        Wraid = 10046,
+        BomaBeast = 10047,
+        BomaBeastBaby = 10048,
+        Cannok = 10049,
 
         NeutralDropship = 10054,
         NeutralCondor = 10055,

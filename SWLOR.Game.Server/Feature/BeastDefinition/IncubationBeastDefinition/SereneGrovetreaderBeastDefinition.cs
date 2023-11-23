@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.SereneGrovetreader)
                 .Name("Serene Grovetreader")
                 .Appearance(AppearanceType.DeerStag)
+                .AppearanceScale(1f)
                 .SoundSetId(24)
                 .PortraitId(175)
                 .CombatStats(AbilityType.Agility, AbilityType.Willpower)

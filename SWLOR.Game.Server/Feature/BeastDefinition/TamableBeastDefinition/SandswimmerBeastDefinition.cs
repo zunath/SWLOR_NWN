@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.Sandswimmer)
                 .Name("Sandswimmer")
                 .Appearance(AppearanceType.Aranea)
+                .AppearanceScale(1f)
                 .SoundSetId(396)
                 .PortraitId(143)
                 .CombatStats(AbilityType.Willpower, AbilityType.Vitality)

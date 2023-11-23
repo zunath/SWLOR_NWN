@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.SpeckledSeer)
                 .Name("Speckled Seer")
                 .Appearance(AppearanceType.Kyoht3)
+                .AppearanceScale(1f)
                 .SoundSetId(77)
                 .PortraitId(318)
                 .CombatStats(AbilityType.Agility, AbilityType.Willpower)

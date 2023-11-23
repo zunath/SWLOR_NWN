@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.SandDemon)
                 .Name("Sand Demon")
                 .Appearance(AppearanceType.SpiderDemon)
+                .AppearanceScale(0.5f)
                 .SoundSetId(390)
                 .PortraitId(718)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)

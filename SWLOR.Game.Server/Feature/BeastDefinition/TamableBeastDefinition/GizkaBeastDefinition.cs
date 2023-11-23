@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.Gizka)
                 .Name("Gizka")
                 .Appearance(AppearanceType.Gizka)
+                .AppearanceScale(1.25f)
                 .SoundSetId(10)
                 .PortraitId(240)
                 .CombatStats(AbilityType.Willpower, AbilityType.Might)

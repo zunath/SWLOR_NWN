@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.WildwoodsKinrath)
                 .Name("Wildwoods Kinrath")
                 .Appearance(AppearanceType.Kinrath)
+                .AppearanceScale(1f)
                 .SoundSetId(88)
                 .PortraitId(302)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)

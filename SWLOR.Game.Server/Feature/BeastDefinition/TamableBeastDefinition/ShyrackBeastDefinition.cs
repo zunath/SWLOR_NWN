@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.Shyrack)
                 .Name("Shyrack")
                 .Appearance(AppearanceType.Shyrack)
+                .AppearanceScale(1f)
                 .SoundSetId(65535)
                 .PortraitId(184)
                 .CombatStats(AbilityType.Perception, AbilityType.Might)

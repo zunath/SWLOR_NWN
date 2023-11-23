@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.HornedKathHound)
                 .Name("Horned Kath Hound")
                 .Appearance(AppearanceType.KathHoundHorned)
+                .AppearanceScale(1f)
                 .SoundSetId(104)
                 .PortraitId(184)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)

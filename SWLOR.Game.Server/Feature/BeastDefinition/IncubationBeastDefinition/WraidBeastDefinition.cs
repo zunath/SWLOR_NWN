@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.Wraid)
                 .Name("Wraid")
                 .Appearance(AppearanceType.Wraid)
+                .AppearanceScale(1f)
                 .SoundSetId(104)
                 .PortraitId(184)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)

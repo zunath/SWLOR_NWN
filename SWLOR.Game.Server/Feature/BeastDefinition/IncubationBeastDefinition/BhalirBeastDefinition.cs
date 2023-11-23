@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.Bhalir)
                 .Name("Bha'lir")
                 .Appearance(AppearanceType.CatCatDire)
+                .AppearanceScale(1f)
                 .SoundSetId(16)
                 .PortraitId(166)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)

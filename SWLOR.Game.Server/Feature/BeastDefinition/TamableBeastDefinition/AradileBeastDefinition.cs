@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.Aradile)
                 .Name("Aradile")
                 .Appearance(AppearanceType.LizardGiantBrown)
+                .AppearanceScale(1f)
                 .SoundSetId(442)
                 .PortraitId(4279)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)

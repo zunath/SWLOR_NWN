@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.MorabandSerpent)
                 .Name("Moraband Serpent")
                 .Appearance(AppearanceType.SnakeViperSwampLarge)
+                .AppearanceScale(1f)
                 .SoundSetId(97)
                 .PortraitId(2104)
                 .CombatStats(AbilityType.Willpower, AbilityType.Perception)

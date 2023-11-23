@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.JungleBug)
                 .Name("Jungle Bug")
                 .Appearance(AppearanceType.InsectWaspGiant)
+                .AppearanceScale(1f)
                 .SoundSetId(6)
                 .PortraitId(2067)
                 .CombatStats(AbilityType.Might, AbilityType.Agility)

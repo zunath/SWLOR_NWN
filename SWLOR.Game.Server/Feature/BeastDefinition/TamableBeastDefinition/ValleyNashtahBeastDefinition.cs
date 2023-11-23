@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.ValleyNashtah)
                 .Name("Valley Nashtah")
                 .Appearance(AppearanceType.Basilisk)
+                .AppearanceScale(1f)
                 .SoundSetId(396)
                 .PortraitId(625)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)

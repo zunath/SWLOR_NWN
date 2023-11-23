@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.DeeprockMauler)
                 .Name("Deeprock Mauler")
                 .Appearance(AppearanceType.Umberhulk)
+                .AppearanceScale(0.5f)
                 .SoundSetId(95)
                 .PortraitId(309)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)

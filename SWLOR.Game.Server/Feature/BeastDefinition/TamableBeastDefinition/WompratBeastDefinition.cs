@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.Womprat)
                 .Name("Womprat")
                 .Appearance(AppearanceType.RodentCapybara)
+                .AppearanceScale(1f)
                 .SoundSetId(249)
                 .PortraitId(603)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)

@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.Octotench)
                 .Name("Octotench")
                 .Appearance(AppearanceType.OctopusMedium)
+                .AppearanceScale(0.66f)
                 .SoundSetId(442)
                 .PortraitId(4281)
                 .CombatStats(AbilityType.Agility, AbilityType.Vitality)

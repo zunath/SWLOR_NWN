@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.FungalShambler)
                 .Name("Fungal Shambler")
                 .Appearance(AppearanceType.MyconidSprout)
+                .AppearanceScale(1f)
                 .SoundSetId(9)
                 .PortraitId(2045)
                 .CombatStats(AbilityType.Social, AbilityType.Willpower)

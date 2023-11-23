@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.DeepwoodsRager)
                 .Name("Deepwoods Rager")
                 .Appearance(AppearanceType.Wereboar)
+                .AppearanceScale(0.8f)
                 .SoundSetId(257)
                 .PortraitId(1297)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)

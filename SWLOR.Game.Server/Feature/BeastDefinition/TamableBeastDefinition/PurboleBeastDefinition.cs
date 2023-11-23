@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.Purbole)
                 .Name("Purbole")
                 .Appearance(AppearanceType.Gibberling1)
+                .AppearanceScale(1f)
                 .SoundSetId(250)
                 .PortraitId(315)
                 .CombatStats(AbilityType.Agility, AbilityType.Perception)

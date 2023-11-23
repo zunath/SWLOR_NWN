@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.PlainsThune)
                 .Name("Plains Thune")
                 .Appearance(AppearanceType.D_Elephant)
+                .AppearanceScale(0.66f)
                 .SoundSetId(7)
                 .PortraitId(279)
                 .CombatStats(AbilityType.Agility, AbilityType.Vitality)

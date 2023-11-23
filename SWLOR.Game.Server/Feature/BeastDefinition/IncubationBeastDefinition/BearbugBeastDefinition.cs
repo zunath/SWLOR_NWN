@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.Bearbug)
                 .Name("Bearbug")
                 .Appearance(AppearanceType.Bearbug)
+                .AppearanceScale(1f)
                 .SoundSetId(8)
                 .PortraitId(150)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)

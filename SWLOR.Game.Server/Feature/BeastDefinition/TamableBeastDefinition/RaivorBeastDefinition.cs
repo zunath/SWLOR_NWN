@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.Raivor)
                 .Name("Raivor")
                 .Appearance(AppearanceType.LizardLargeBrown)
+                .AppearanceScale(1f)
                 .SoundSetId(97)
                 .PortraitId(1268)
                 .CombatStats(AbilityType.Vitality, AbilityType.Perception)

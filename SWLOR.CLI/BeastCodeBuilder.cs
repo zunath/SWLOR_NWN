@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NWN.Native.API;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 
 namespace SWLOR.CLI
@@ -15,6 +13,7 @@ namespace SWLOR.CLI
         {
             public string Code { get; set; }
             public Dictionary<int, string> Levels { get; set; }
+            public bool IsIncubation { get; set; }
 
             public BeastCodeDetail()
             {
@@ -54,6 +53,7 @@ namespace SWLOR.CLI
                     beasts.Add(enumName, new BeastCodeDetail());
 
                 var detail = beasts[enumName];
+                detail.IsIncubation = data[31].Trim() == "Y";
 
                 var className = $"{enumName}BeastDefinition";
                 var name = data[0].Trim();
@@ -64,9 +64,11 @@ namespace SWLOR.CLI
                 var appearance = data[27].Trim();
                 var portraitId = data[28].Trim();
                 var soundSetId = data[29].Trim();
+                var scaling = data[30].Trim() + "f";
                 detail.Code = template
                     .Replace("%%BEASTNAME%%", name)
                     .Replace("%%APPEARANCETYPE%%", appearance)
+                    .Replace("%%APPEARANCESCALE%%", scaling)
                     .Replace("%%SOUNDSETID%%", soundSetId)
                     .Replace("%%PORTRAITID%%", portraitId)
                     .Replace("%%CLASSNAME%%", className)
@@ -100,7 +102,7 @@ namespace SWLOR.CLI
                 var willMax = data[24].Trim();
                 var fortitudeMax = data[23].Trim();
                 var reflexMax = data[25].Trim();
-                var dmg = data[31].Trim();
+                var dmg = data[33].Trim();
 
                 detail.Levels[level] = detail.Levels[level]
                     .Replace("%%LEVEL%%", level.ToString())
@@ -147,7 +149,15 @@ namespace SWLOR.CLI
                 var output = detail.Code
                     .Replace("%%LEVELLIST%%", levelText)
                     .Replace("%%LEVELCALLS%%", levelFunctionCalls);
-                File.WriteAllText($"{OutputFolder}/{type}BeastDefinition.cs", output);
+
+                var folderName = detail.IsIncubation
+                    ? "IncubationBeastDefinition"
+                    : "TamableBeastDefinition";
+
+                if (!Directory.Exists($"{OutputFolder}/{folderName}"))
+                    Directory.CreateDirectory($"{OutputFolder}/{folderName}");
+
+                File.WriteAllText($"{OutputFolder}/{folderName}/{type}BeastDefinition.cs", output);
             }
         }
 

@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.Warocas)
                 .Name("Warocas")
                 .Appearance(AppearanceType.BirdOstrich)
+                .AppearanceScale(1f)
                 .SoundSetId(452)
                 .PortraitId(168)
                 .CombatStats(AbilityType.Social, AbilityType.Willpower)

@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.KathHound)
                 .Name("Kath Hound")
                 .Appearance(AppearanceType.KathHound)
+                .AppearanceScale(1f)
                 .SoundSetId(919)
                 .PortraitId(321)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)

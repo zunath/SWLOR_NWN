@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.QionSlug)
                 .Name("Qion Slug")
                 .Appearance(AppearanceType.SlugHuge)
+                .AppearanceScale(0.5f)
                 .SoundSetId(397)
                 .PortraitId(92)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)

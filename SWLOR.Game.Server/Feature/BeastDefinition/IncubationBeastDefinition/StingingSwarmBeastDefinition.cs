@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.StingingSwarm)
                 .Name("Stinging Swarm")
                 .Appearance(AppearanceType.SwarmALrg)
+                .AppearanceScale(1f)
                 .SoundSetId(6)
                 .PortraitId(2067)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)

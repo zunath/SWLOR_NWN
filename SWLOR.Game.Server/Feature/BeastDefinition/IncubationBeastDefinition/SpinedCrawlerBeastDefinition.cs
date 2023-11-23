@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.SpinedCrawler)
                 .Name("Spined Crawler")
                 .Appearance(AppearanceType.PurgatoryBeast3)
+                .AppearanceScale(1f)
                 .SoundSetId(325)
                 .PortraitId(3170)
                 .CombatStats(AbilityType.Perception, AbilityType.Vitality)

@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.Terentatek)
                 .Name("Terentatek")
                 .Appearance(AppearanceType.Terentatek)
+                .AppearanceScale(0.8f)
                 .SoundSetId(95)
                 .PortraitId(309)
                 .CombatStats(AbilityType.Willpower, AbilityType.Might)

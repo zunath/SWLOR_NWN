@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.Dreamwalker)
                 .Name("Dreamwalker")
                 .Appearance(AppearanceType.Alien)
+                .AppearanceScale(0.66f)
                 .SoundSetId(901)
                 .PortraitId(3301)
                 .CombatStats(AbilityType.Agility, AbilityType.Willpower)

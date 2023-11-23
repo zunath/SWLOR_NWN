@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.Scorchellus)
                 .Name("Scorchellus")
                 .Appearance(AppearanceType.Scutellus)
+                .AppearanceScale(1f)
                 .SoundSetId(442)
                 .PortraitId(2096)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)

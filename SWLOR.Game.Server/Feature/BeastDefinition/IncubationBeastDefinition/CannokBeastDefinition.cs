@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.Cannok)
                 .Name("Cannok")
                 .Appearance(AppearanceType.Cannok)
+                .AppearanceScale(1f)
                 .SoundSetId(1297)
                 .PortraitId(1297)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)

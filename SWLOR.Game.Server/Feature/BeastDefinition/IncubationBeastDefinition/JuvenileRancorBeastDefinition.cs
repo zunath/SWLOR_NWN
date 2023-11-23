@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.JuvenileRancor)
                 .Name("Juvenile Rancor")
                 .Appearance(AppearanceType.RancorBull)
+                .AppearanceScale(0.4f)
                 .SoundSetId(30)
                 .PortraitId(3495)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)

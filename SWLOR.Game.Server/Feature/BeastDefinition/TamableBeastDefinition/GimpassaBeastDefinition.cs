@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.Gimpassa)
                 .Name("Gimpassa")
                 .Appearance(AppearanceType.TortoiseMedium)
+                .AppearanceScale(1f)
                 .SoundSetId(452)
                 .PortraitId(1039)
                 .CombatStats(AbilityType.Vitality, AbilityType.Willpower)

@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.Ssurian)
                 .Name("Ssurian")
                 .Appearance(AppearanceType.CrocAztec)
+                .AppearanceScale(0.5f)
                 .SoundSetId(250)
                 .PortraitId(315)
                 .CombatStats(AbilityType.Vitality, AbilityType.Perception)

@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.Microtench)
                 .Name("Microtench")
                 .Appearance(AppearanceType.OctopusSmall)
+                .AppearanceScale(1f)
                 .SoundSetId(442)
                 .PortraitId(4281)
                 .CombatStats(AbilityType.Agility, AbilityType.Vitality)

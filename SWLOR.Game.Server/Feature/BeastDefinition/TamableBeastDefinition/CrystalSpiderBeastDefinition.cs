@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
             _builder.Create(BeastType.CrystalSpider)
                 .Name("Crystal Spider")
                 .Appearance(AppearanceType.SpiderCrystalB)
+                .AppearanceScale(0.75f)
                 .SoundSetId(88)
                 .PortraitId(300)
                 .CombatStats(AbilityType.Agility, AbilityType.Willpower)

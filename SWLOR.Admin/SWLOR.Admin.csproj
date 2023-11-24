@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazorise" Version="1.2.5" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="1.2.5" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.2.5" />
+    <PackageReference Include="Blazorise" Version="1.3.3" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="1.3.3" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.3.3" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
   </ItemGroup>
 

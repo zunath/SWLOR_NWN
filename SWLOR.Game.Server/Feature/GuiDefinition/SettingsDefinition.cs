@@ -105,7 +105,87 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 .DefinePartialView(SettingsViewModel.ChatPartial, view =>
                 {
+                    view.AddColumn(col =>
+                    {
+                        col.AddRow(row =>
+                        {
+                            row.AddList(template =>
+                            {
+                                template.SetHeight(64f);
 
+                                template.AddCell(cell =>
+                                {
+                                    cell.AddToggleButton()
+                                        .BindText(model => model.ChatColorNames)
+                                        .BindIsToggled(model => model.ChatColorToggles)
+                                        .BindOnClicked(model => model.OnClickSelectChat());
+                                });
+
+                                template.AddCell(cell =>
+                                {
+                                    cell.SetWidth(32f);
+                                    cell.SetIsVariable(false);
+
+                                    cell.AddGroup(group =>
+                                    {
+                                        group.AddDrawList(list =>
+                                        {
+                                            
+                                            list.AddCircle(circle =>
+                                            {
+                                                circle
+                                                    .SetIsFilled(true)
+                                                    .SetBounds(4f, -2f, 24f, 28f)
+                                                    .BindColor(model => model.ChatColors);
+                                            });
+                                        });
+                                    });
+                                });
+
+                                template.AddCell(cell =>
+                                {
+                                    cell.SetWidth(75f);
+                                    cell.SetIsVariable(false);
+
+                                    cell.AddButton()
+                                        .SetText("Reset")
+                                        .BindOnClicked(model => model.OnClickResetColor());
+                                });
+                            })
+                                .BindRowCount(model => model.ChatColorNames);
+                        });
+
+                        col.AddRow(row =>
+                        {
+                            row.AddColorPicker()
+                                .BindSelectedColor(model => model.SelectedColor);
+                        });
+
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer();
+
+                            row.AddTextEdit()
+                                .BindValue(model => model.CurrentRed)
+                                .SetColor(255, 0, 0)
+                                .SetWidth(64f)
+                                .SetIsEnabled(false);
+                            
+                            row.AddTextEdit()
+                                .BindValue(model => model.CurrentGreen)
+                                .SetColor(0, 255, 0)
+                                .SetWidth(64f)
+                                .SetIsEnabled(false);
+                            
+                            row.AddTextEdit()
+                                .BindValue(model => model.CurrentBlue)
+                                .SetColor(7, 99, 218)
+                                .SetWidth(64f)
+                                .SetIsEnabled(false);
+
+                            row.AddSpacer();
+                        });
+                    });
                 })
 
                 .AddColumn(col =>

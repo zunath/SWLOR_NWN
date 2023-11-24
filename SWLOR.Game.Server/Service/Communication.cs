@@ -19,6 +19,8 @@ namespace SWLOR.Game.Server.Service
         private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
         private const int HolonetDelayMinutes = 5;
 
+        public static (byte, byte, byte) OOCChatColor { get; } = (64, 64, 64);
+
         private class CommunicationComponent
         {
             public string Text { get; set; }
@@ -92,8 +94,8 @@ namespace SWLOR.Game.Server.Service
 
             if(type == GuiEventType.ChatBarFocus)
             {
-                var chatIndic = TagEffect(EffectVisualEffect(VisualEffect.Vfx_Dur_Chat_Bubble, false, 0.5f), "typingindicator");
-                ApplyEffectToObject(DurationType.Temporary, chatIndic, player, 120.0f);
+                var chatIndicator = TagEffect(EffectVisualEffect(VisualEffect.Vfx_Dur_Chat_Bubble, false, 0.5f), "typingindicator");
+                ApplyEffectToObject(DurationType.Temporary, chatIndicator, player, 120.0f);
             } else if (type == GuiEventType.ChatBarUnfocus)
             {
                 RemoveEffectByTag(player, "typingindicator");
@@ -169,9 +171,9 @@ namespace SWLOR.Game.Server.Service
                 {
                     Text = message,
                     IsCustomColor = true,
-                    Red = 64,
-                    Green = 64,
-                    Blue = 64,
+                    Red = OOCChatColor.Item1,
+                    Green = OOCChatColor.Item2,
+                    Blue = OOCChatColor.Item3,
                     IsTranslatable = false
                 };
                 chatComponents.Add(component);
@@ -330,8 +332,11 @@ namespace SWLOR.Game.Server.Service
 
             // Now we have a list of who is going to actually receive a message, we need to modify
             // the message for each recipient then dispatch them.
-            foreach (var obj in recipients.Distinct())
+            foreach (var receiver in recipients.Distinct())
             {
+                var receiverId = GetObjectUUID(receiver);
+                var dbReceiver = DB.Get<Player>(receiverId);
+
                 // Generate the final message as perceived by obj.
                 var finalMessage = new StringBuilder();
 
@@ -343,7 +348,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     finalMessage.Append("[Comms] ");
 
-                    if (GetIsDM(obj))
+                    if (GetIsDM(receiver))
                     {
                         // Convenience for DMs - append the party members.
                         finalMessage.Append("{ ");
@@ -396,10 +401,16 @@ namespace SWLOR.Game.Server.Service
                     language = SkillType.Shyriiwook;
                 }
 
-                var color = Language.GetColor(language);
-                var r = (byte)(color >> 24 & 0xFF);
-                var g = (byte)(color >> 16 & 0xFF);
-                var b = (byte)(color >> 8 & 0xFF);
+                var (r, g, b) = Language.GetColor(language);
+
+                if (dbReceiver != null &&
+                    dbReceiver.Settings.LanguageChatColors != null &&
+                    dbReceiver.Settings.LanguageChatColors.ContainsKey(language))
+                {
+                    r = dbReceiver.Settings.LanguageChatColors[language].Red;
+                    g = dbReceiver.Settings.LanguageChatColors[language].Green;
+                    b = dbReceiver.Settings.LanguageChatColors[language].Blue;
+                }
 
                 if (language != SkillType.Basic)
                 {
@@ -413,9 +424,9 @@ namespace SWLOR.Game.Server.Service
 
                     if (component.IsTranslatable && language != SkillType.Basic)
                     {
-                        text = Language.TranslateSnippetForListener(sender, obj, language, component.Text);
+                        text = Language.TranslateSnippetForListener(sender, receiver, language, component.Text);
 
-                        if (color != 0)
+                        if (r != 0 && g != 0 && b != 0)
                         {
                             text = ColorToken.Custom(text, r, g, b);
                         }
@@ -460,7 +471,7 @@ namespace SWLOR.Game.Server.Service
                 // set back to original sender, if it was changed by holocom connection
                 sender = originalSender;
 
-                ChatPlugin.SendMessage(finalChannel, finalMessageColoured, sender, obj);
+                ChatPlugin.SendMessage(finalChannel, finalMessageColoured, sender, receiver);
             }
         }
 

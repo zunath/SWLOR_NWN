@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         /// <param name="green">The green value to use (between 0-255)</param>
         /// <param name="blue">The blue value to use (between 0-255)</param>
         /// <param name="alpha">The alpha value to use (between 0-255)</param>
-        public GuiChartSlot<T> SetColor(int red, int green, int blue, int alpha = 255)
+        public GuiChartSlot<T> SetColor(byte red, byte green, byte blue, byte alpha = 255)
         {
             Color = new GuiColor(red, green, blue, alpha);
             return this;

@@ -27,9 +27,7 @@ namespace SWLOR.Game.Server.Service
             public bool IsTranslatable { get; set; }
             public bool IsCustomColor { get; set; }
             public bool IsOOC { get; set; }
-            public byte Red { get; set; }
-            public byte Green { get; set; }
-            public byte Blue { get; set; }
+            public bool IsEmote { get; set; }
         }
         
         private enum WorkingOnEmoteStyle
@@ -195,23 +193,16 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                if (GetEmoteStyle(sender) == EmoteStyle.Regular)
-                {
-                    chatComponents = SplitMessageIntoComponents_Regular(message);
-                }
-                else
-                {
-                    chatComponents = SplitMessageIntoComponents_Novel(message);
-                }
+                chatComponents = GetEmoteStyle(sender) == EmoteStyle.Regular 
+                    ? SplitMessageIntoComponents_Regular(message) 
+                    : SplitMessageIntoComponents_Novel(message);
 
                 // For any components with color, set the emote color.
                 foreach (var component in chatComponents)
                 {
                     if (component.IsCustomColor)
                     {
-                        component.Red = 0;
-                        component.Green = 255;
-                        component.Blue = 0;
+                        component.IsEmote = true;
                     }
                 }
             }
@@ -443,11 +434,13 @@ namespace SWLOR.Game.Server.Service
                         }
                     }
 
-                    text = ColorToken.Custom(text, r, g, b);
-
-                    if (component.IsCustomColor)
+                    if (component.IsEmote)
                     {
-                        text = ColorToken.Custom(text, component.Red, component.Green, component.Blue);
+                        text = ColorToken.Custom(text, 0, 255, 0);
+                    }
+                    else
+                    {
+                        text = ColorToken.Custom(text, r, g, b);
                     }
 
                     finalMessage.Append(text);
@@ -466,7 +459,7 @@ namespace SWLOR.Game.Server.Service
                     finalChannel = ChatChannel.DMTalk;
                 }
 
-                // There are a couple of colour overrides we want to use here.
+                // There are a couple of color overrides we want to use here.
                 // - One for holonet (shout).
                 // - One for comms (party chat).
 

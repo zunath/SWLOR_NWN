@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Service
             public string Text { get; set; }
             public bool IsTranslatable { get; set; }
             public bool IsCustomColor { get; set; }
+            public bool IsOOC { get; set; }
             public byte Red { get; set; }
             public byte Green { get; set; }
             public byte Blue { get; set; }
@@ -171,9 +172,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     Text = message,
                     IsCustomColor = true,
-                    Red = OOCChatColor.Item1,
-                    Green = OOCChatColor.Item2,
-                    Blue = OOCChatColor.Item3,
+                    IsOOC = true,
                     IsTranslatable = false
                 };
                 chatComponents.Add(component);
@@ -425,12 +424,26 @@ namespace SWLOR.Game.Server.Service
                     if (component.IsTranslatable && language != SkillType.Basic)
                     {
                         text = Language.TranslateSnippetForListener(sender, receiver, language, component.Text);
+                    }
 
-                        if (r != 0 && g != 0 && b != 0)
+                    if (component.IsOOC)
+                    {
+                        if (dbReceiver != null &&
+                            dbReceiver.Settings.OOCChatColor != null)
                         {
-                            text = ColorToken.Custom(text, r, g, b);
+                            r = dbReceiver.Settings.OOCChatColor.Red;
+                            g = dbReceiver.Settings.OOCChatColor.Green;
+                            b = dbReceiver.Settings.OOCChatColor.Blue;
+                        }
+                        else
+                        {
+                            r = OOCChatColor.Item1;
+                            g = OOCChatColor.Item2;
+                            b = OOCChatColor.Item3;
                         }
                     }
+
+                    text = ColorToken.Custom(text, r, g, b);
 
                     if (component.IsCustomColor)
                     {
@@ -457,21 +470,21 @@ namespace SWLOR.Game.Server.Service
                 // - One for holonet (shout).
                 // - One for comms (party chat).
 
-                var finalMessageColoured = finalMessage.ToString();
+                var finalMessageColored = finalMessage.ToString();
 
                 if (channel == ChatChannel.PlayerShout)
                 {
-                    finalMessageColoured = ColorToken.Custom(finalMessageColoured, 0, 180, 255);
+                    finalMessageColored = ColorToken.Custom(finalMessageColored, 0, 180, 255);
                 }
                 else if (channel == ChatChannel.PlayerParty)
                 {
-                    finalMessageColoured = ColorToken.Orange(finalMessageColoured);
+                    finalMessageColored = ColorToken.Orange(finalMessageColored);
                 }
 
                 // set back to original sender, if it was changed by holocom connection
                 sender = originalSender;
 
-                ChatPlugin.SendMessage(finalChannel, finalMessageColoured, sender, receiver);
+                ChatPlugin.SendMessage(finalChannel, finalMessageColored, sender, receiver);
             }
         }
 

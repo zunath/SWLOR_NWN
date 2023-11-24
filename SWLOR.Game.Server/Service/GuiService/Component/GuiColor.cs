@@ -8,24 +8,24 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         /// <summary>
         /// The amount of red to use. 0-255
         /// </summary>
-        public int R { get; set; }
+        public byte R { get; set; }
 
         /// <summary>
         /// The amount of green to use. 0-255
         /// </summary>
-        public int G { get; set; }
+        public byte G { get; set; }
 
         /// <summary>
         /// The amount of blue to use. 0-255
         /// </summary>
-        public int B { get; set; }
+        public byte B { get; set; }
 
         /// <summary>
         /// The amount of alpha (transparency) to use. 0-255
         /// </summary>
-        public int Alpha { get; set; }
+        public byte Alpha { get; set; }
 
-        public GuiColor(int red, int green, int blue, int alpha = 255)
+        public GuiColor(byte red, byte green, byte blue, byte alpha = 255)
         {
             R = red;
             G = green;

@@ -231,7 +231,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         /// <param name="green">The amount of green to use. 0-255</param>
         /// <param name="blue">The amount of blue to use. 0-255</param>
         /// <param name="alpha">The amount of alpha to use. 0-255</param>
-        public TDerived SetColor(int red, int green, int blue, int alpha = 255)
+        public TDerived SetColor(byte red, byte green, byte blue, byte alpha = 255)
         {
             Color = new GuiColor(red, green, blue, alpha);
             return (TDerived)this;

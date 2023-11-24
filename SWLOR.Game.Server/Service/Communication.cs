@@ -19,14 +19,16 @@ namespace SWLOR.Game.Server.Service
         private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
         private const int HolonetDelayMinutes = 5;
 
+        public static (byte, byte, byte) OOCChatColor { get; } = (64, 64, 64);
+        public static (byte, byte, byte) EmoteChatColor { get; } = (0, 255, 0);
+
         private class CommunicationComponent
         {
             public string Text { get; set; }
             public bool IsTranslatable { get; set; }
             public bool IsCustomColor { get; set; }
-            public byte Red { get; set; }
-            public byte Green { get; set; }
-            public byte Blue { get; set; }
+            public bool IsOOC { get; set; }
+            public bool IsEmote { get; set; }
         }
         
         private enum WorkingOnEmoteStyle
@@ -92,8 +94,8 @@ namespace SWLOR.Game.Server.Service
 
             if(type == GuiEventType.ChatBarFocus)
             {
-                var chatIndic = TagEffect(EffectVisualEffect(VisualEffect.Vfx_Dur_Chat_Bubble, false, 0.5f), "typingindicator");
-                ApplyEffectToObject(DurationType.Temporary, chatIndic, player, 120.0f);
+                var chatIndicator = TagEffect(EffectVisualEffect(VisualEffect.Vfx_Dur_Chat_Bubble, false, 0.5f), "typingindicator");
+                ApplyEffectToObject(DurationType.Temporary, chatIndicator, player, 120.0f);
             } else if (type == GuiEventType.ChatBarUnfocus)
             {
                 RemoveEffectByTag(player, "typingindicator");
@@ -169,9 +171,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     Text = message,
                     IsCustomColor = true,
-                    Red = 64,
-                    Green = 64,
-                    Blue = 64,
+                    IsOOC = true,
                     IsTranslatable = false
                 };
                 chatComponents.Add(component);
@@ -194,23 +194,16 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                if (GetEmoteStyle(sender) == EmoteStyle.Regular)
-                {
-                    chatComponents = SplitMessageIntoComponents_Regular(message);
-                }
-                else
-                {
-                    chatComponents = SplitMessageIntoComponents_Novel(message);
-                }
+                chatComponents = GetEmoteStyle(sender) == EmoteStyle.Regular 
+                    ? SplitMessageIntoComponents_Regular(message) 
+                    : SplitMessageIntoComponents_Novel(message);
 
                 // For any components with color, set the emote color.
                 foreach (var component in chatComponents)
                 {
                     if (component.IsCustomColor)
                     {
-                        component.Red = 0;
-                        component.Green = 255;
-                        component.Blue = 0;
+                        component.IsEmote = true;
                     }
                 }
             }
@@ -330,8 +323,11 @@ namespace SWLOR.Game.Server.Service
 
             // Now we have a list of who is going to actually receive a message, we need to modify
             // the message for each recipient then dispatch them.
-            foreach (var obj in recipients.Distinct())
+            foreach (var receiver in recipients.Distinct())
             {
+                var receiverId = GetObjectUUID(receiver);
+                var dbReceiver = DB.Get<Player>(receiverId);
+
                 // Generate the final message as perceived by obj.
                 var finalMessage = new StringBuilder();
 
@@ -343,7 +339,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     finalMessage.Append("[Comms] ");
 
-                    if (GetIsDM(obj))
+                    if (GetIsDM(receiver))
                     {
                         // Convenience for DMs - append the party members.
                         finalMessage.Append("{ ");
@@ -396,10 +392,16 @@ namespace SWLOR.Game.Server.Service
                     language = SkillType.Shyriiwook;
                 }
 
-                var color = Language.GetColor(language);
-                var r = (byte)(color >> 24 & 0xFF);
-                var g = (byte)(color >> 16 & 0xFF);
-                var b = (byte)(color >> 8 & 0xFF);
+                var (r, g, b) = Language.GetColor(language);
+
+                if (dbReceiver != null &&
+                    dbReceiver.Settings.LanguageChatColors != null &&
+                    dbReceiver.Settings.LanguageChatColors.ContainsKey(language))
+                {
+                    r = dbReceiver.Settings.LanguageChatColors[language].Red;
+                    g = dbReceiver.Settings.LanguageChatColors[language].Green;
+                    b = dbReceiver.Settings.LanguageChatColors[language].Blue;
+                }
 
                 if (language != SkillType.Basic)
                 {
@@ -413,17 +415,48 @@ namespace SWLOR.Game.Server.Service
 
                     if (component.IsTranslatable && language != SkillType.Basic)
                     {
-                        text = Language.TranslateSnippetForListener(sender, obj, language, component.Text);
+                        text = Language.TranslateSnippetForListener(sender, receiver, language, component.Text);
+                    }
 
-                        if (color != 0)
+                    if (component.IsOOC)
+                    {
+                        if (dbReceiver != null &&
+                            dbReceiver.Settings.OOCChatColor != null)
                         {
-                            text = ColorToken.Custom(text, r, g, b);
+                            r = dbReceiver.Settings.OOCChatColor.Red;
+                            g = dbReceiver.Settings.OOCChatColor.Green;
+                            b = dbReceiver.Settings.OOCChatColor.Blue;
+                        }
+                        else
+                        {
+                            r = OOCChatColor.Item1;
+                            g = OOCChatColor.Item2;
+                            b = OOCChatColor.Item3;
                         }
                     }
 
-                    if (component.IsCustomColor)
+                    if (component.IsEmote)
                     {
-                        text = ColorToken.Custom(text, component.Red, component.Green, component.Blue);
+                        byte emoteRed, emoteGreen, emoteBlue;
+
+                        if (dbReceiver != null &&
+                            dbReceiver.Settings.EmoteChatColor != null)
+                        {
+                            emoteRed = dbReceiver.Settings.EmoteChatColor.Red;
+                            emoteGreen = dbReceiver.Settings.EmoteChatColor.Green;
+                            emoteBlue = dbReceiver.Settings.EmoteChatColor.Blue;
+                        }
+                        else
+                        {
+                            emoteRed = EmoteChatColor.Item1;
+                            emoteGreen = EmoteChatColor.Item2;
+                            emoteBlue = EmoteChatColor.Item3;
+                        }
+                        text = ColorToken.Custom(text, emoteRed, emoteGreen, emoteBlue);
+                    }
+                    else
+                    {
+                        text = ColorToken.Custom(text, r, g, b);
                     }
 
                     finalMessage.Append(text);
@@ -442,25 +475,25 @@ namespace SWLOR.Game.Server.Service
                     finalChannel = ChatChannel.DMTalk;
                 }
 
-                // There are a couple of colour overrides we want to use here.
+                // There are a couple of color overrides we want to use here.
                 // - One for holonet (shout).
                 // - One for comms (party chat).
 
-                var finalMessageColoured = finalMessage.ToString();
+                var finalMessageColored = finalMessage.ToString();
 
                 if (channel == ChatChannel.PlayerShout)
                 {
-                    finalMessageColoured = ColorToken.Custom(finalMessageColoured, 0, 180, 255);
+                    finalMessageColored = ColorToken.Custom(finalMessageColored, 0, 180, 255);
                 }
                 else if (channel == ChatChannel.PlayerParty)
                 {
-                    finalMessageColoured = ColorToken.Orange(finalMessageColoured);
+                    finalMessageColored = ColorToken.Orange(finalMessageColored);
                 }
 
                 // set back to original sender, if it was changed by holocom connection
                 sender = originalSender;
 
-                ChatPlugin.SendMessage(finalChannel, finalMessageColoured, sender, obj);
+                ChatPlugin.SendMessage(finalChannel, finalMessageColored, sender, receiver);
             }
         }
 

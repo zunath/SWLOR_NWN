@@ -18,9 +18,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(396)
                 .PortraitId(819)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
-                .Role(BeastRoleType.Tank);
+                .Role(BeastRoleType.Tank)
 
-			Level1();
+                .CanMutateInto(BeastType.Dreamwalker)
+                .MutationWeight(10)
+                .MutationRequiresHydrolaseColor(EnzymeColorType.White, 3)
+
+                .CanMutateInto(BeastType.DeepwoodsRager)
+                .MutationWeight(20);
+
+            Level1();
 			Level2();
 			Level3();
 			Level4();

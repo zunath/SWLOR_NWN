@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -18,9 +19,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(10)
                 .PortraitId(240)
                 .CombatStats(AbilityType.Willpower, AbilityType.Might)
-                .Role(BeastRoleType.Damage);
+                .Role(BeastRoleType.Damage)
 
-			Level1();
+                .CanMutateInto(BeastType.DeeprockMauler)
+                .MutationWeight(10)
+                .MutationRequiresIsomeraseColor(EnzymeColorType.Green, 1)
+                .MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 2)
+
+                .CanMutateInto(BeastType.FungalShambler)
+                .MutationWeight(50)
+                .MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday);
+
+            Level1();
 			Level2();
 			Level3();
 			Level4();

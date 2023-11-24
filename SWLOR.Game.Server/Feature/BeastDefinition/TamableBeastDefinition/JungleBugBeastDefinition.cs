@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -18,9 +19,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(6)
                 .PortraitId(2067)
                 .CombatStats(AbilityType.Might, AbilityType.Agility)
-                .Role(BeastRoleType.Evasion);
+                .Role(BeastRoleType.Evasion)
 
-			Level1();
+                .CanMutateInto(BeastType.StingingSwarm)
+                .MutationWeight(30)
+
+                .CanMutateInto(BeastType.RoyalPlumage)
+                .MutationWeight(10)
+                .MutationRequiresDayOfWeek(DayOfWeek.Saturday);
+
+            Level1();
 			Level2();
 			Level3();
 			Level4();

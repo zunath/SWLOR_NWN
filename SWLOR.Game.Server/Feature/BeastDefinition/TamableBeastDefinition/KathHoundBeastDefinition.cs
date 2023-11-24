@@ -18,9 +18,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(919)
                 .PortraitId(321)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)
-                .Role(BeastRoleType.Damage);
+                .Role(BeastRoleType.Damage)
 
-			Level1();
+                .CanMutateInto(BeastType.HornedKathHound)
+                .MutationWeight(50)
+
+                .CanMutateInto(BeastType.Hanadak)
+                .MutationWeight(10)
+                .MutationRequiresLyaseColor(EnzymeColorType.Black, 1)
+                .MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 1)
+                .MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 1);
+
+            Level1();
 			Level2();
 			Level3();
 			Level4();

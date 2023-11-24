@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -18,9 +19,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(24)
                 .PortraitId(174)
                 .CombatStats(AbilityType.Perception, AbilityType.Vitality)
-                .Role(BeastRoleType.Balanced);
+                .Role(BeastRoleType.Balanced)
 
-			Level1();
+                .CanMutateInto(BeastType.UnderbrushScamp)
+                .MutationWeight(20)
+
+                .CanMutateInto(BeastType.Cannok)
+                .MutationWeight(10)
+                .MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Thursday, DayOfWeek.Sunday);
+
+            Level1();
 			Level2();
 			Level3();
 			Level4();

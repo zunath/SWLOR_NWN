@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -18,9 +19,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(397)
                 .PortraitId(92)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
-                .Role(BeastRoleType.Tank);
+                .Role(BeastRoleType.Tank)
 
-			Level1();
+                .CanMutateInto(BeastType.StonecladBehemoth)
+                .MutationWeight(5)
+                .MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Sunday)
+                .MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 2)
+                .MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 2)
+                .MutationRequiresLyaseColor(EnzymeColorType.Black, 2);
+
+            Level1();
 			Level2();
 			Level3();
 			Level4();

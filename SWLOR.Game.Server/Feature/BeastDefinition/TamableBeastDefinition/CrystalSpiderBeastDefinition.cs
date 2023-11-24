@@ -18,9 +18,17 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(88)
                 .PortraitId(300)
                 .CombatStats(AbilityType.Agility, AbilityType.Willpower)
-                .Role(BeastRoleType.Force);
+                .Role(BeastRoleType.Force)
 
-			Level1();
+                .CanMutateInto(BeastType.RazorhideHound)
+                .MutationWeight(50)
+
+                .CanMutateInto(BeastType.Tukata)
+                .MutationWeight(10)
+                .MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
+                .MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 1);
+
+            Level1();
 			Level2();
 			Level3();
 			Level4();

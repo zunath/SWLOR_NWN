@@ -18,9 +18,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(250)
                 .PortraitId(315)
                 .CombatStats(AbilityType.Agility, AbilityType.Perception)
-                .Role(BeastRoleType.Evasion);
+                .Role(BeastRoleType.Evasion)
 
-			Level1();
+                .CanMutateInto(BeastType.TundraPonderer)
+                .MutationWeight(30)
+
+                .CanMutateInto(BeastType.UnderseaCarver)
+                .MutationWeight(10);
+
+            Level1();
 			Level2();
 			Level3();
 			Level4();

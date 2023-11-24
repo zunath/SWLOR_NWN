@@ -18,9 +18,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(442)
                 .PortraitId(4281)
                 .CombatStats(AbilityType.Agility, AbilityType.Vitality)
-                .Role(BeastRoleType.Evasion);
+                .Role(BeastRoleType.Evasion)
 
-			Level1();
+                .CanMutateInto(BeastType.SereneGrovetreader)
+                .MutationWeight(20)
+
+                .CanMutateInto(BeastType.SpeckledSeer)
+                .MutationWeight(30);
+
+            Level1();
 			Level2();
 			Level3();
 			Level4();

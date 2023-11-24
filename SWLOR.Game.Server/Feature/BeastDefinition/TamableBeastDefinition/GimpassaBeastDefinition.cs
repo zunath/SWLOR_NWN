@@ -18,9 +18,20 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(452)
                 .PortraitId(1039)
                 .CombatStats(AbilityType.Vitality, AbilityType.Willpower)
-                .Role(BeastRoleType.Force);
+                .Role(BeastRoleType.Force)
 
-			Level1();
+                .CanMutateInto(BeastType.JuvenileRancor)
+                .MutationWeight(5)
+                .MutationRequiresLyaseColor(EnzymeColorType.Orange, 1)
+                .MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 1)
+                .MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 1)
+
+                .CanMutateInto(BeastType.Cragscale)
+                .MutationWeight(30)
+                .MutationRequiresLyaseColor(EnzymeColorType.Red, 2)
+                .MutationRequiresIsomeraseColor(EnzymeColorType.Red, 1);
+
+            Level1();
 			Level2();
 			Level3();
 			Level4();

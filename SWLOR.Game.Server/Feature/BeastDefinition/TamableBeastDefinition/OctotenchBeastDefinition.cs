@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -18,9 +19,20 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(442)
                 .PortraitId(4281)
                 .CombatStats(AbilityType.Agility, AbilityType.Vitality)
-                .Role(BeastRoleType.Tank);
+                .Role(BeastRoleType.Tank)
 
-			Level1();
+                .CanMutateInto(BeastType.JuvenileChirodactyl)
+                .MutationWeight(10)
+                .MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Friday)
+                .MutationRequiresLyaseColor(EnzymeColorType.Red, 1)
+                .MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
+                .MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
+
+                .CanMutateInto(BeastType.Porg)
+                .MutationWeight(10)
+                .MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 3);
+
+            Level1();
 			Level2();
 			Level3();
 			Level4();

@@ -307,6 +307,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         /// <summary>
         /// Specifies this mutation can only occur if a certain number of a specific color of Lyase are used.
         /// Valid values are between 1 and 3.
+        /// Valid colors are Blue, Orange, Red, Green, Black
         /// </summary>
         /// <param name="color">The required color</param>
         /// <param name="amount">The required number which must be used.</param>
@@ -322,6 +323,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         /// <summary>
         /// Specifies this mutation can only occur if a certain number of a specific color of Isomerase are used.
         /// Valid values are between 1 and 3.
+        /// Valid colors are Blue, Orange, Red, Green, Yellow
         /// </summary>
         /// <param name="color">The required color</param>
         /// <param name="amount">The required number which must be used.</param>
@@ -337,6 +339,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         /// <summary>
         /// Specifies this mutation can only occur if a certain number of a specific color of Hydrolase are used.
         /// Valid values are between 1 and 3.
+        /// Valid colors are Blue, Orange, Red, Purple, White
         /// </summary>
         /// <param name="color">The required color</param>
         /// <param name="amount">The required number which must be used.</param>

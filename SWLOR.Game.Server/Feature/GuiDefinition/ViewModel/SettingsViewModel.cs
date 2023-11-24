@@ -9,6 +9,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class SettingsViewModel: GuiViewModelBase<SettingsViewModel, GuiPayloadBase>
     {
+        public const string SettingsView = "SETTINGS_VIEW";
+
+        public const string GeneralPartial = "GENERAL_VIEW";
+        public const string ChatPartial = "CHAT_VIEW";
+
         public bool DisplayAchievementNotification
         {
             get => Get<bool>();
@@ -45,6 +50,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsGeneralSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsChatSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             var playerId = GetObjectUUID(Player);
@@ -57,6 +74,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
             ShareLightsaberForceXP = dbPlayer.Settings.IsLightsaberForceShareEnabled;
             DisplayServerResetReminders = dbPlayer.Settings.DisplayServerResetReminders;
+
+            IsGeneralSelected = true;
+            IsChatSelected = false;
+            ChangePartialView(SettingsView, GeneralPartial);
 
             WatchOnClient(model => model.DisplayAchievementNotification);
             WatchOnClient(model => model.DisplayHolonetChannel);
@@ -100,5 +121,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             SetLocalBool(Player, "DISPLAY_HOLONET", DisplayHolonetChannel);
         }
+
+        public Action OnClickGeneral() => () =>
+        {
+            IsGeneralSelected = true;
+            IsChatSelected = false;
+            ChangePartialView(SettingsView, GeneralPartial);
+        };
+
+        public Action OnClickChat() => () =>
+        {
+            IsGeneralSelected = false;
+            IsChatSelected = true;
+            ChangePartialView(SettingsView, ChatPartial);
+        };
     }
 }

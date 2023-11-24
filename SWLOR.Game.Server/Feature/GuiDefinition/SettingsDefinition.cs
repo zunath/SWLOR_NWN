@@ -128,9 +128,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                                     cell.AddGroup(group =>
                                     {
+                                        group.SetShowBorder(false);
+
                                         group.AddDrawList(list =>
                                         {
-                                            
                                             list.AddCircle(circle =>
                                             {
                                                 circle

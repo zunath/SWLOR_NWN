@@ -223,6 +223,7 @@ namespace SWLOR.Game.Server.Entity
         public bool DisplayServerResetReminders { get; set; }
         public Dictionary<SkillType, PlayerColor> LanguageChatColors { get; set; }
         public PlayerColor OOCChatColor { get; set; }
+        public PlayerColor EmoteChatColor { get; set; }
 
         public PlayerSettings()
         {

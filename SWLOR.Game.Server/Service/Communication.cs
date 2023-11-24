@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Service
         private const int HolonetDelayMinutes = 5;
 
         public static (byte, byte, byte) OOCChatColor { get; } = (64, 64, 64);
+        public static (byte, byte, byte) EmoteChatColor { get; } = (0, 255, 0);
 
         private class CommunicationComponent
         {
@@ -436,7 +437,22 @@ namespace SWLOR.Game.Server.Service
 
                     if (component.IsEmote)
                     {
-                        text = ColorToken.Custom(text, 0, 255, 0);
+                        byte emoteRed, emoteGreen, emoteBlue;
+
+                        if (dbReceiver != null &&
+                            dbReceiver.Settings.EmoteChatColor != null)
+                        {
+                            emoteRed = dbReceiver.Settings.EmoteChatColor.Red;
+                            emoteGreen = dbReceiver.Settings.EmoteChatColor.Green;
+                            emoteBlue = dbReceiver.Settings.EmoteChatColor.Blue;
+                        }
+                        else
+                        {
+                            emoteRed = EmoteChatColor.Item1;
+                            emoteGreen = EmoteChatColor.Item2;
+                            emoteBlue = EmoteChatColor.Item3;
+                        }
+                        text = ColorToken.Custom(text, emoteRed, emoteGreen, emoteBlue);
                     }
                     else
                     {

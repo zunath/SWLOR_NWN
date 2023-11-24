@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string GeneralPartial = "GENERAL_VIEW";
         public const string ChatPartial = "CHAT_VIEW";
 
+        private const int NumberOfSystemColors = 2; // OOC, Emotes
+
         public bool DisplayAchievementNotification
         {
             get => Get<bool>();
@@ -163,6 +165,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // OOC color
             chatColorNames.Add("OOC");
+            chatToggles.Add(false);
 
             if (dbPlayer.Settings.OOCChatColor == null)
             {
@@ -179,7 +182,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     dbPlayer.Settings.OOCChatColor.Blue));
             }
 
+
+            // Emote color
+            chatColorNames.Add("Emotes");
             chatToggles.Add(false);
+
+            if (dbPlayer.Settings.EmoteChatColor == null)
+            {
+                chatColors.Add(new GuiColor(
+                    Communication.EmoteChatColor.Item1,
+                    Communication.EmoteChatColor.Item2,
+                    Communication.EmoteChatColor.Item3));
+            }
+            else
+            {
+                chatColors.Add(new GuiColor(
+                    dbPlayer.Settings.EmoteChatColor.Red,
+                    dbPlayer.Settings.EmoteChatColor.Green,
+                    dbPlayer.Settings.EmoteChatColor.Blue));
+            }
 
             // Language colors
             foreach (var (type, skill) in languages)
@@ -236,15 +257,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.IsLightsaberForceShareEnabled = ShareLightsaberForceXP;
             dbPlayer.Settings.DisplayServerResetReminders = DisplayServerResetReminders;
 
-            var oocColor = ChatColors[0];
-            dbPlayer.Settings.OOCChatColor = new PlayerColor(oocColor.R, oocColor.G, oocColor.B);
+            // System Colors - OOC
+            var systemColor = ChatColors[0];
+            dbPlayer.Settings.OOCChatColor = new PlayerColor(systemColor.R, systemColor.G, systemColor.B);
+
+            // System Colors - Emote
+            systemColor = ChatColors[1];
+            dbPlayer.Settings.EmoteChatColor = new PlayerColor(systemColor.R, systemColor.G, systemColor.B);
 
             if (dbPlayer.Settings.LanguageChatColors == null)
                 dbPlayer.Settings.LanguageChatColors = new Dictionary<SkillType, PlayerColor>();
 
-            for (var index = 1; index < ChatColors.Count; index++)
+            for (var index = NumberOfSystemColors; index < ChatColors.Count; index++)
             {
-                var type = _languages[index - 1];
+                var type = _languages[index - NumberOfSystemColors];
                 var color = ChatColors[index];
                 dbPlayer.Settings.LanguageChatColors[type] = new PlayerColor(color.R, color.G, color.B);
             }
@@ -317,7 +343,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else
                 {
-                    var type = _languages[index - 1];
+                    var type = _languages[index - NumberOfSystemColors];
                     var (red, green, blue) = Language.GetColor(type);
                     ChatColors[index] = new GuiColor(red, green, blue);
                 }

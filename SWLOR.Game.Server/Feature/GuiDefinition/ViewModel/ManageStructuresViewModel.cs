@@ -384,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnRetrieveStructure() => () =>
         {
-            ShowModal($"Are you sure you want to retrieve this structure?", () =>
+            ShowModal($"Are you sure you want to retrieve this structure? WARNING: Any structures, items, research jobs, etc. contained inside will be permanently lost.", () =>
             {
                 var structure = GetStructure();
                 var parentProperty = DB.Get<WorldProperty>(structure.ParentPropertyId);

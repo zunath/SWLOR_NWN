@@ -22,36 +22,7 @@
   },
   "List": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      }
-    ]
+    "value": []
   },
   "Placeable List": {
     "type": "list",

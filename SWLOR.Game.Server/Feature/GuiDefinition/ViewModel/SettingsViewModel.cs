@@ -334,12 +334,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal("Are you sure you want to reset this color to the default?", () =>
             {
-                if (index == 0)
+                if (index == 0) // OOC
                 {
                     ChatColors[index] = new GuiColor(
                         Communication.OOCChatColor.Item1,
                         Communication.OOCChatColor.Item2,
                         Communication.OOCChatColor.Item3);
+                }
+                else if (index == 1) // Emotes
+                {
+                    ChatColors[index] = new GuiColor(
+                        Communication.EmoteChatColor.Item1,
+                        Communication.EmoteChatColor.Item2,
+                        Communication.EmoteChatColor.Item3);
                 }
                 else
                 {

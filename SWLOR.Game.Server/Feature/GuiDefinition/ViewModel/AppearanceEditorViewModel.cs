@@ -20,8 +20,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         GuiViewModelBase<AppearanceEditorViewModel, AppearanceEditorPayload>,
         IGuiRefreshable<EquipItemRefreshEvent>
     {
-        public const string PartialElement = "PARTIAL_VIEW";
-        public const string EditorPartial = "APPEARANCE_EDITOR_PARTIAL";
+        public const string MainPartialElement = "MAIN_PARTIAL_VIEW";
+        public const string EditorPartialElement = "EDITOR_PARTIAL_VIEW";
+        public const string EditorHeaderPartial = "APPEARANCE_EDITOR_HEADER_PARTIAL";
+        public const string EditorMainPartial = "APPEARANCE_EDITOR_MAIN_PARTIAL";
+        public const string EditorArmorPartial = "APPEARANCE_EDITOR_ARMOR_PARTIAL";
         public const string SettingsPartial = "SETTINGS_PARTIAL";
 
         private const int ColorWidthCells = 16;
@@ -269,6 +272,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
+                LoadItemTypeEditor();
                 ToggleItemEquippedFlags();
                 LoadColorCategoryOptions();
                 LoadPartCategoryOptions();
@@ -369,7 +373,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _target = initialPayload.Target;
             }
 
-            ChangePartialView(PartialElement, EditorPartial);
+            ChangePartialView(MainPartialElement, EditorHeaderPartial);
             IsAppearanceSelected = true;
             IsEquipmentSelected = false;
             IsSettingsSelected = false;
@@ -396,6 +400,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsSettingsVisible = true;
                 WatchOnClient(model => model.ShowHelmet);
                 WatchOnClient(model => model.ShowCloak);
+            }
+        }
+
+        private void LoadItemTypeEditor()
+        {
+            if (IsEquipmentSelected && SelectedItemTypeIndex == 0) // 0 = Armor
+            {
+                ChangePartialView(EditorPartialElement, EditorArmorPartial);
+            }
+            else // Helmet, Cloak, Weapon (Main), Weapon (Off)
+            {
+                ChangePartialView(EditorPartialElement, EditorMainPartial);
             }
         }
 
@@ -859,11 +875,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectAppearance() => () =>
         {
-            ChangePartialView(PartialElement, EditorPartial);
+            ChangePartialView(MainPartialElement, EditorHeaderPartial);
             IsAppearanceSelected = true;
             IsEquipmentSelected = false;
             IsSettingsSelected = false;
             ToggleItemEquippedFlags();
+            LoadItemTypeEditor();
 
             LoadColorCategoryOptions();
             LoadPartCategoryOptions();
@@ -874,11 +891,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectEquipment() => () =>
         {
-            ChangePartialView(PartialElement, EditorPartial);
+            ChangePartialView(MainPartialElement, EditorHeaderPartial);
             IsAppearanceSelected = false;
             IsEquipmentSelected = true;
             IsSettingsSelected = false;
             ToggleItemEquippedFlags();
+            LoadItemTypeEditor();
 
             LoadColorCategoryOptions();
             LoadPartCategoryOptions();
@@ -889,7 +907,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectSettings() => () =>
         {
-            ChangePartialView(PartialElement, SettingsPartial);
+            ChangePartialView(MainPartialElement, SettingsPartial);
             IsAppearanceSelected = false;
             IsEquipmentSelected = false;
             IsSettingsSelected = true;

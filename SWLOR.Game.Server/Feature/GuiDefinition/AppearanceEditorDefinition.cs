@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<AppearanceEditorViewModel> _builder = new();
 
-        private const float MainColorChannelButtonSize = 70f;
-        private const float PartColorChannelButtonSize = 18f;
+        private const float MainColorChannelButtonSize = 72f;
+        private const float PartColorChannelButtonSize = 16f;
 
         private GuiRectangle DummyRegion = new GuiRectangle(0, 0, 16, 16);
 
@@ -34,12 +34,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 .DefinePartialView(AppearanceEditorViewModel.ArmorColorsClothLeather, partial =>
                 {
-                    BuildColors(partial, "gui_pal_tattoo");
+                    BuildColorPalette(partial, "gui_pal_tattoo");
                 })
 
                 .DefinePartialView(AppearanceEditorViewModel.ArmorColorsMetal, partial =>
                 {
-                    BuildColors(partial, "gui_pal_armor01");
+                    BuildColorPalette(partial, "gui_pal_armor01");
                 })
 
                 .AddColumn(BuildNavigation);
@@ -541,28 +541,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        private void BuildColors(GuiGroup<AppearanceEditorViewModel> group, string texture)
+        private void BuildColorPalette(GuiGroup<AppearanceEditorViewModel> group, string texture)
         {
             group.AddColumn(col =>
             {
-                const int ColorsPerRow = 16;
-                const int RowCount = 11;
+                const int TextureColorsPerRow = 16;
                 const int ColorSize = 16; // 16x16 colors on the sprite sheet
+                const int UIColorsPerRow = 20;
+                const int ColorTotalCount = 176;
+                const int RowCount = 1 + ColorTotalCount / UIColorsPerRow;
 
-                for (var rowIndex = 0; rowIndex < RowCount; rowIndex++)
+                for (var y = 0; y < RowCount; ++y)
                 {
-                    var y = ColorSize * rowIndex;
-
-                    col.AddRow(row =>
+                    var yCopy = y;
+                    col.AddRow(uiRow =>
                     {
-                        for (var columnIndex = 0; columnIndex < ColorsPerRow; columnIndex++)
+                        for (var x = 0; x < UIColorsPerRow; ++x)
                         {
-                            var x = ColorSize * columnIndex;
-                            var region = new GuiRectangle(x, y, ColorSize, ColorSize);
+                            var paletteIndex = yCopy * UIColorsPerRow + x;
+                            if (paletteIndex >= ColorTotalCount)
+                                break;
 
-                            CreateFilledButton(row, texture, region, PartColorChannelButtonSize, 2f);
+                            var row = paletteIndex / TextureColorsPerRow;
+                            var offset = paletteIndex % TextureColorsPerRow;
+
+                            var region = new GuiRectangle(
+                                offset * ColorSize + 2,
+                                row * ColorSize + 2,
+                                ColorSize - 4,
+                                ColorSize - 4);
+
+                            CreateFilledButton(uiRow, texture, region, PartColorChannelButtonSize, 2f);
                         }
-
                     });
 
                 }

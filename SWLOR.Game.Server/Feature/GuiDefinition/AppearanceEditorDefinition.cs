@@ -3,6 +3,8 @@ using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using System.Linq.Expressions;
+using System;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -264,7 +266,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
             }
 
-            void CreatePartEditor(GuiColumn<AppearanceEditorViewModel> col, string partName)
+            void CreatePartEditor(
+                GuiColumn<AppearanceEditorViewModel> col, 
+                string partName,
+                Expression<Func<AppearanceEditorViewModel, GuiBindingList<GuiComboEntry>>> optionsBinding,
+                Expression<Func<AppearanceEditorViewModel, int>> selectionBinding)
             {
                 col.AddRow(row =>
                 {
@@ -287,7 +293,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetHeight(24f)
                         .SetWidth(100f)
                         .SetMargin(0f)
-                        .AddOption("1", 1);
+                        .BindOptions(optionsBinding)
+                        .BindSelectedIndex(selectionBinding);
 
                     row.AddButton()
                         .SetText(">")
@@ -335,24 +342,72 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 mainRow.AddColumn(col =>
                 {
-                    CreatePartEditor(col, "Left Shoulder");
-                    CreatePartEditor(col, "Left Bicep");
-                    CreatePartEditor(col, "Left Forearm");
-                    CreatePartEditor(col, "Left Hand");
-                    CreatePartEditor(col, "Left Thigh");
-                    CreatePartEditor(col, "Left Shin");
-                    CreatePartEditor(col, "Left Foot");
+                    CreatePartEditor(
+                        col, 
+                        "Left Shoulder", 
+                        model => model.LeftShoulderOptions, 
+                        model => model.LeftShoulderSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Left Bicep",
+                        model => model.LeftBicepOptions,
+                        model => model.LeftBicepSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Left Forearm",
+                        model => model.LeftForearmOptions,
+                        model => model.LeftForearmSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Left Hand",
+                        model => model.LeftHandOptions,
+                        model => model.LeftHandSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Left Thigh",
+                        model => model.LeftThighOptions,
+                        model => model.LeftThighSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Left Shin",
+                        model => model.LeftShinOptions,
+                        model => model.LeftShinSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Left Foot",
+                        model => model.LeftFootOptions,
+                        model => model.LeftFootSelection);
                 });
 
                 CreateGap(mainRow);
 
                 mainRow.AddColumn(col =>
                 {
-                    CreatePartEditor(col, "Neck");
-                    CreatePartEditor(col, "Chest");
-                    CreatePartEditor(col, "Belt");
-                    CreatePartEditor(col, "Pelvis");
-                    CreatePartEditor(col, "Robe");
+                    CreatePartEditor(
+                        col, 
+                        "Neck",
+                        model => model.NeckOptions,
+                        model => model.NeckSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Chest",
+                        model => model.ChestOptions,
+                        model => model.ChestSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Belt",
+                        model => model.BeltOptions,
+                        model => model.BeltSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Pelvis",
+                        model => model.PelvisOptions,
+                        model => model.PelvisSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Robe",
+                        model => model.RobeOptions,
+                        model => model.RobeSelection);
 
                     col.AddRow(row =>
                     {
@@ -372,13 +427,41 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 mainRow.AddColumn(col =>
                 {
-                    CreatePartEditor(col, "Right Shoulder");
-                    CreatePartEditor(col, "Right Bicep");
-                    CreatePartEditor(col, "Right Forearm");
-                    CreatePartEditor(col, "Right Hand");
-                    CreatePartEditor(col, "Right Thigh");
-                    CreatePartEditor(col, "Right Shin");
-                    CreatePartEditor(col, "Right Foot");
+                    CreatePartEditor(
+                        col, 
+                        "Right Shoulder",
+                        model => model.RightShoulderOptions,
+                        model => model.RightShoulderSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Right Bicep",
+                        model => model.RightBicepOptions,
+                        model => model.RightBicepSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Right Forearm",
+                        model => model.RightForearmOptions,
+                        model => model.RightForearmSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Right Hand",
+                        model => model.RightHandOptions,
+                        model => model.RightHandSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Right Thigh",
+                        model => model.RightThighOptions,
+                        model => model.RightThighSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Right Shin",
+                        model => model.RightShinOptions,
+                        model => model.RightShinSelection);
+                    CreatePartEditor(
+                        col, 
+                        "Right Foot",
+                        model => model.RightFootOptions,
+                        model => model.RightFootSelection);
                 });
             }
 

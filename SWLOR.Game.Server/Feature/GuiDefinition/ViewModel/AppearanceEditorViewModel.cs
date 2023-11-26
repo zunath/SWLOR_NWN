@@ -1642,11 +1642,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             UpdateArmorDisplay();
         };
 
-        public Action Test(int id) => () =>
-        {
-            Console.WriteLine(id);
-        };
-
         private void UpdateArmorDisplay()
         {
             var helmet = GetItemInSlot(InventorySlot.Head, _target);

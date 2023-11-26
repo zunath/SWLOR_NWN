@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string ColorBindName { get; set; }
         private bool IsColorBound => !string.IsNullOrWhiteSpace(ColorBindName);
 
-        public Dictionary<string, MethodInfo> Events { get; private set; }
+        public Dictionary<string, GuiMethodDetail> Events { get; private set; }
 
         public abstract Json BuildElement();
 
@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             IsEnabled = true;
             IsVisible = true;
             DrawLists = new List<GuiDrawList<TDataModel>>();
-            Events = new Dictionary<string, MethodInfo>();
+            Events = new Dictionary<string, GuiMethodDetail>();
             Elements = new List<IGuiWidget>();
         }
 

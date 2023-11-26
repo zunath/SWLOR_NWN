@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -211,6 +212,215 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<bool> PartCategorySelected
         {
             get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
+        public int LeftShoulderSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int LeftBicepSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int LeftForearmSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int LeftHandSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int LeftThighSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int LeftShinSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int LeftFootSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int RightShoulderSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int RightBicepSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int RightForearmSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int RightHandSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int RightThighSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int RightShinSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int RightFootSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int NeckSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int ChestSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int BeltSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int PelvisSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+        public int RobeSelection
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> LeftShoulderOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> LeftBicepOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> LeftForearmOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> LeftHandOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> LeftThighOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> LeftShinOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+        public GuiBindingList<GuiComboEntry> LeftFootOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> RightShoulderOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> RightBicepOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> RightForearmOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> RightHandOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> RightThighOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> RightShinOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> RightFootOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> NeckOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> ChestOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> BeltOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> PelvisOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiComboEntry> RobeOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
             set => Set(value);
         }
 
@@ -499,28 +709,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (SelectedItemTypeIndex == 0) // 0 = Armor
                 {
-                    partCategoryOptions.Add("Neck");
-                    partCategoryOptions.Add("Torso");
-                    partCategoryOptions.Add("Belt");
-                    partCategoryOptions.Add("Pelvis");
-
-                    partCategoryOptions.Add("Right Shoulder");
-                    partCategoryOptions.Add("Right Bicep");
-                    partCategoryOptions.Add("Right Forearm");
-                    partCategoryOptions.Add("Right Hand");
-                    partCategoryOptions.Add("Right Thigh");
-                    partCategoryOptions.Add("Right Shin");
-                    partCategoryOptions.Add("Right Foot");
-
-                    partCategoryOptions.Add("Left Shoulder");
-                    partCategoryOptions.Add("Left Bicep");
-                    partCategoryOptions.Add("Left Forearm");
-                    partCategoryOptions.Add("Left Hand");
-                    partCategoryOptions.Add("Left Thigh");
-                    partCategoryOptions.Add("Left Shin");
-                    partCategoryOptions.Add("Left Foot");
-
-                    partCategoryOptions.Add("Robe");
+                    return;
                 }
                 else if (SelectedItemTypeIndex == 1) // 1 = Helmet
                 {
@@ -729,93 +918,57 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             int[] partIds;
             int selectedPartId;
+            var appearanceType = GetAppearanceType(_target);
             var item = GetItem();
             var type = GetBaseItemType(item);
-            var appearanceType = GetAppearanceType(_target);
 
             if (SelectedItemTypeIndex == 0) // 0 = Armor
             {
-                switch (SelectedPartCategoryIndex)
-                {
-                    case 0: // Neck
-                        partIds = _armorAppearances[appearanceType].Neck;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck);
-                        break;
-                    case 1: // Torso
-                        partIds = _armorAppearances[appearanceType].Torso;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso);
-                        break;
-                    case 2: // Belt
-                        partIds = _armorAppearances[appearanceType].Belt;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt);
-                        break;
-                    case 3: // Pelvis
-                        partIds = _armorAppearances[appearanceType].Pelvis;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis);
-                        break;
-                    case 4: // Right Shoulder
-                        partIds = _armorAppearances[appearanceType].Shoulder;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder);
-                        break;
-                    case 5: // Right Bicep
-                        partIds = _armorAppearances[appearanceType].Bicep;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep);
-                        break;
-                    case 6: // Right Forearm
-                        partIds = _armorAppearances[appearanceType].Forearm;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm);
-                        break;
-                    case 7: // Right Hand
-                        partIds = _armorAppearances[appearanceType].Hand;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand);
-                        break;
-                    case 8: // Right Thigh
-                        partIds = _armorAppearances[appearanceType].Thigh;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh);
-                        break;
-                    case 9: // Right Shin
-                        partIds = _armorAppearances[appearanceType].Shin;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin);
-                        break;
-                    case 10: // Right Foot
-                        partIds = _armorAppearances[appearanceType].Foot;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot);
-                        break;
-                    case 11: // Left Shoulder
-                        partIds = _armorAppearances[appearanceType].Shoulder;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder);
-                        break;
-                    case 12: // Left Bicep
-                        partIds = _armorAppearances[appearanceType].Bicep;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep);
-                        break;
-                    case 13: // Left Forearm
-                        partIds = _armorAppearances[appearanceType].Forearm;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm);
-                        break;
-                    case 14: // Left Hand
-                        partIds = _armorAppearances[appearanceType].Hand;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand);
-                        break;
-                    case 15: // Left Thigh
-                        partIds = _armorAppearances[appearanceType].Thigh;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh);
-                        break;
-                    case 16: // Left Shin
-                        partIds = _armorAppearances[appearanceType].Shin;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin);
-                        break;
-                    case 17: // Left Foot
-                        partIds = _armorAppearances[appearanceType].Foot;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot);
-                        break;
-                    case 18: // Robe
-                        partIds = _armorAppearances[appearanceType].Robe;
-                        selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
-                }
+                NeckOptions = _armorAppearances[appearanceType].NeckOptions;
+                ChestOptions = _armorAppearances[appearanceType].TorsoOptions;
+                BeltOptions = _armorAppearances[appearanceType].BeltOptions;
+                PelvisOptions = _armorAppearances[appearanceType].PelvisOptions;
+                RobeOptions = _armorAppearances[appearanceType].RobeOptions;
+
+                LeftShoulderOptions = _armorAppearances[appearanceType].ShoulderOptions;
+                LeftBicepOptions = _armorAppearances[appearanceType].BicepOptions;
+                LeftForearmOptions = _armorAppearances[appearanceType].ForearmOptions;
+                LeftHandOptions = _armorAppearances[appearanceType].HandOptions;
+                LeftThighOptions = _armorAppearances[appearanceType].ThighOptions;
+                LeftShinOptions = _armorAppearances[appearanceType].ShinOptions;
+                LeftFootOptions = _armorAppearances[appearanceType].FootOptions;
+
+                RightShoulderOptions = _armorAppearances[appearanceType].ShoulderOptions;
+                RightBicepOptions = _armorAppearances[appearanceType].BicepOptions;
+                RightForearmOptions = _armorAppearances[appearanceType].ForearmOptions;
+                RightHandOptions = _armorAppearances[appearanceType].HandOptions;
+                RightThighOptions = _armorAppearances[appearanceType].ThighOptions;
+                RightShinOptions = _armorAppearances[appearanceType].ShinOptions;
+                RightFootOptions = _armorAppearances[appearanceType].FootOptions;
+
+                NeckSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck);
+                ChestSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso);
+                BeltSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt);
+                PelvisSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis);
+                RobeSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe);
+
+                LeftShoulderSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder);
+                LeftBicepSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep);
+                LeftForearmSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm);
+                LeftHandSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand);
+                LeftThighSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh);
+                LeftShinSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin);
+                LeftFootSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot);
+
+                RightShoulderSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder);
+                RightBicepSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep);
+                RightForearmSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm);
+                RightHandSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand);
+                RightThighSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh);
+                RightShinSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin);
+                RightFootSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot);
+
+                return;
             }
             else if (SelectedItemTypeIndex == 1) // 1 = Helmet
             {
@@ -1487,6 +1640,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SendMessageToPC(_target, ColorToken.Green("Appearance settings saved successfully."));
 
             UpdateArmorDisplay();
+        };
+
+        public Action Test(int id) => () =>
+        {
+            Console.WriteLine(id);
         };
 
         private void UpdateArmorDisplay()

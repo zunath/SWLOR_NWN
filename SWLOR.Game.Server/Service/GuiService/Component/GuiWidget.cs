@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         protected float Width { get; private set; }
         protected float Height { get; private set; }
         private float AspectRatio { get; set; }
-        private float Margin { get; set; }
+        private float Margin { get; set; } = -1f;
         private float Padding { get; set; }
         private List<GuiDrawList<TDataModel>> DrawLists { get; set; }
 
@@ -364,7 +364,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             }
 
             // Margin
-            if (Margin > 0f)
+            if (Margin > -1f)
             {
                 element = Nui.Margin(element, Margin);
             }

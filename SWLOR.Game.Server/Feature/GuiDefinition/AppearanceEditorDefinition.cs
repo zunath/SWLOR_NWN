@@ -11,7 +11,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private readonly GuiWindowBuilder<AppearanceEditorViewModel> _builder = new();
 
         private const float MainColorChannelButtonSize = 70f;
-        private const float PartColorChannelButtonSize = 16f;
+        private const float PartColorChannelButtonSize = 18f;
+
+        private GuiRectangle DummyRegion = new GuiRectangle(0, 0, 16, 16);
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -26,12 +28,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 .DefinePartialView(AppearanceEditorViewModel.EditorMainPartial, BuildMainEditor)
 
-                .DefinePartialView(AppearanceEditorViewModel.EditorArmorPartial, partial =>
-                {
-                    BuildArmorEditor(partial);
-                })
+                .DefinePartialView(AppearanceEditorViewModel.EditorArmorPartial, BuildArmorEditor)
 
                 .DefinePartialView(AppearanceEditorViewModel.SettingsPartial, BuildSettings)
+
+                .DefinePartialView(AppearanceEditorViewModel.ArmorColorsClothLeather, partial =>
+                {
+                    BuildColors(partial, "gui_pal_tattoo");
+                })
+
+                .DefinePartialView(AppearanceEditorViewModel.ArmorColorsMetal, partial =>
+                {
+                    BuildColors(partial, "gui_pal_armor01");
+                })
 
                 .AddColumn(BuildNavigation);
 
@@ -211,29 +220,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private void BuildArmorEditor(GuiGroup<AppearanceEditorViewModel> partial)
         {
-            void BuildColorPalette(GuiColumn<AppearanceEditorViewModel> col)
-            {
-                col.AddRow(row =>
-                {
-                    row.AddLabel()
-                        .SetText(" ")
-                        .SetHeight(20f)
-                        .SetWidth(MainColorChannelButtonSize);
-                });
-                col.AddRow(row =>
-                {
-                    row.AddImage()
-                        .BindResref(model => model.ColorSheetResref)
-                        .SetHeight(176f)
-                        .SetWidth(256f)
-                        .SetVerticalAlign(NuiVerticalAlign.Top)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                        .SetAspect(NuiAspect.ExactScaled);
-                    //.BindOnMouseDown(model => model.OnSelectColor());
-                });
-                
-            }
-
             void BuildMainColorChannels(GuiColumn<AppearanceEditorViewModel> col)
             {
                 col.AddRow(row =>
@@ -262,112 +248,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 col.AddRow(row =>
                 {
-                    row.AddToggleButton()
-                        .SetText("")
-                        .SetWidth(MainColorChannelButtonSize)
-                        .SetHeight(MainColorChannelButtonSize)
-                        .SetMargin(0f)
-                        .AddDrawList(drawList =>
-                        {
-                            drawList.AddImage(image =>
-                            {
-                                image.SetResref("gui_pal_armor01");
-                                image.SetPosition(4f, 4f, MainColorChannelButtonSize - 4f * 2f, MainColorChannelButtonSize - 4f * 2f);
-                                image.SetAspect(NuiAspect.Stretch);
-                                image.SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                image.SetVerticalAlign(NuiVerticalAlign.Top);
-                                image.SetDrawTextureRegion(0, 0, 16, 16);
-                            });
-                        });
-                    row.AddToggleButton()
-                        .SetText("")
-                        .SetWidth(MainColorChannelButtonSize)
-                        .SetHeight(MainColorChannelButtonSize)
-                        .SetMargin(0f)
-                        .AddDrawList(drawList =>
-                        {
-                            drawList.AddImage(image =>
-                            {
-                                image.SetResref("gui_pal_armor01");
-                                image.SetPosition(4f, 4f, MainColorChannelButtonSize - 4f * 2f, MainColorChannelButtonSize - 4f * 2f);
-                                image.SetAspect(NuiAspect.Stretch);
-                                image.SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                image.SetVerticalAlign(NuiVerticalAlign.Top);
-                                image.SetDrawTextureRegion(0, 0, 16, 16);
-                            });
-                        });
-                    row.AddToggleButton()
-                        .SetText("")
-                        .SetWidth(MainColorChannelButtonSize)
-                        .SetHeight(MainColorChannelButtonSize)
-                        .SetMargin(0f)
-                        .AddDrawList(drawList =>
-                        {
-                            drawList.AddImage(image =>
-                            {
-                                image.SetResref("gui_pal_armor01");
-                                image.SetPosition(4f, 4f, MainColorChannelButtonSize - 4f * 2f, MainColorChannelButtonSize - 4f * 2f);
-                                image.SetAspect(NuiAspect.Stretch);
-                                image.SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                image.SetVerticalAlign(NuiVerticalAlign.Top);
-                                image.SetDrawTextureRegion(0, 0, 16, 16);
-                            });
-                        });
-                    row.AddSpacer();
+                    CreateFilledButton(row, "gui_pal_armor01", DummyRegion, MainColorChannelButtonSize, 4f);
+                    CreateFilledButton(row, "gui_pal_armor01", DummyRegion, MainColorChannelButtonSize, 4f);
+                    CreateFilledButton(row, "gui_pal_armor01", DummyRegion, MainColorChannelButtonSize, 4f);
                 });
                 col.AddRow(row =>
                 {
-                    row.AddToggleButton()
-                        .SetText("")
-                        .SetWidth(MainColorChannelButtonSize)
-                        .SetHeight(MainColorChannelButtonSize)
-                        .SetMargin(0f)
-                        .AddDrawList(drawList =>
-                        {
-                            drawList.AddImage(image =>
-                            {
-                                image.SetResref("gui_pal_armor01");
-                                image.SetPosition(4f, 4f, MainColorChannelButtonSize - 4f * 2f, MainColorChannelButtonSize - 4f * 2f);
-                                image.SetAspect(NuiAspect.Stretch);
-                                image.SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                image.SetVerticalAlign(NuiVerticalAlign.Top);
-                                image.SetDrawTextureRegion(0, 0, 16, 16);
-                            });
-                        });
-                    row.AddToggleButton()
-                        .SetText("")
-                        .SetWidth(MainColorChannelButtonSize)
-                        .SetHeight(MainColorChannelButtonSize)
-                        .SetMargin(0f)
-                        .AddDrawList(drawList =>
-                        {
-                            drawList.AddImage(image =>
-                            {
-                                image.SetResref("gui_pal_armor01");
-                                image.SetPosition(4f, 4f, MainColorChannelButtonSize - 4f * 2f, MainColorChannelButtonSize - 4f * 2f);
-                                image.SetAspect(NuiAspect.Stretch);
-                                image.SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                image.SetVerticalAlign(NuiVerticalAlign.Top);
-                                image.SetDrawTextureRegion(0, 0, 16, 16);
-                            });
-                        });
-                    row.AddToggleButton()
-                        .SetText("")
-                        .SetWidth(MainColorChannelButtonSize)
-                        .SetHeight(MainColorChannelButtonSize)
-                        .SetMargin(0f)
-                        .AddDrawList(drawList =>
-                        {
-                            drawList.AddImage(image =>
-                            {
-                                image.SetResref("gui_pal_armor01");
-                                image.SetPosition(4f, 4f, MainColorChannelButtonSize - 4f * 2f, MainColorChannelButtonSize - 4f * 2f);
-                                image.SetAspect(NuiAspect.Stretch);
-                                image.SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                image.SetVerticalAlign(NuiVerticalAlign.Top);
-                                image.SetDrawTextureRegion(0, 0, 16, 16);
-                            });
-                        });
+                    CreateFilledButton(row, "gui_pal_armor01", DummyRegion, MainColorChannelButtonSize, 4f);
+                    CreateFilledButton(row, "gui_pal_armor01", DummyRegion, MainColorChannelButtonSize, 4f);
+                    CreateFilledButton(row, "gui_pal_armor01", DummyRegion, MainColorChannelButtonSize, 4f);
+                });
+                col.AddRow(row =>
+                {
+                    row.AddSpacer();
                 });
             }
 
@@ -406,115 +299,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 col.AddRow(row =>
                 {
                     row.AddSpacer();
-                    row.AddButton()
-                        .SetText("")
-                        .SetWidth(PartColorChannelButtonSize)
-                        .SetHeight(PartColorChannelButtonSize)
-                        .SetMargin(0f)
-                        .AddDrawList(drawList =>
-                        {
-                            drawList.AddImage(image =>
-                            {
-                                image.SetResref("gui_pal_armor01");
-                                image.SetPosition(2f, 2f, PartColorChannelButtonSize - 2f * 2f, PartColorChannelButtonSize - 2f * 2f);
-                                image.SetAspect(NuiAspect.Stretch);
-                                image.SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                image.SetVerticalAlign(NuiVerticalAlign.Top);
-                                image.SetDrawTextureRegion(0, 0, 16, 16);
-                            });
-                        });
-                    row.AddButton()
-                        .SetText("")
-                        .SetWidth(PartColorChannelButtonSize)
-                        .SetHeight(PartColorChannelButtonSize)
-                        .SetMargin(0f)
-                        .AddDrawList(drawList =>
-                        {
-                            drawList.AddImage(image =>
-                            {
-                                image.SetResref("gui_pal_armor01");
-                                image.SetPosition(2f, 2f, PartColorChannelButtonSize - 2f * 2f, PartColorChannelButtonSize - 2f * 2f);
-                                image.SetAspect(NuiAspect.Stretch);
-                                image.SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                image.SetVerticalAlign(NuiVerticalAlign.Top);
-                                image.SetDrawTextureRegion(0, 0, 16, 16);
-                            });
-                        });
-                    row.AddButton()
-                        .SetText("")
-                        .SetWidth(PartColorChannelButtonSize)
-                        .SetHeight(PartColorChannelButtonSize)
-                        .SetMargin(0f)
-                        .AddDrawList(drawList =>
-                        {
-                            drawList.AddImage(image =>
-                            {
-                                image.SetResref("gui_pal_armor01");
-                                image.SetPosition(2f, 2f, PartColorChannelButtonSize - 2f * 2f, PartColorChannelButtonSize - 2f * 2f);
-                                image.SetAspect(NuiAspect.Stretch);
-                                image.SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                image.SetVerticalAlign(NuiVerticalAlign.Top);
-                                image.SetDrawTextureRegion(0, 0, 16, 16);
-                            });
-                        });
+                    CreateFilledButton(row, "gui_pal_armor01", DummyRegion, PartColorChannelButtonSize, 2f);
+                    CreateFilledButton(row, "gui_pal_armor01", DummyRegion, PartColorChannelButtonSize, 2f);
+                    CreateFilledButton(row, "gui_pal_armor01", DummyRegion, PartColorChannelButtonSize, 2f);
                     row.AddSpacer();
                 });
 
                 col.AddRow(row =>
                 {
                     row.AddSpacer();
-                    row.AddButton()
-                        .SetText("")
-                        .SetWidth(PartColorChannelButtonSize)
-                        .SetHeight(PartColorChannelButtonSize)
-                        .SetMargin(0f)
-                        .AddDrawList(drawList =>
-                        {
-                            drawList.AddImage(image =>
-                            {
-                                image.SetResref("gui_pal_armor01");
-                                image.SetPosition(2f, 2f, PartColorChannelButtonSize - 2f * 2f, PartColorChannelButtonSize - 2f * 2f);
-                                image.SetAspect(NuiAspect.Stretch);
-                                image.SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                image.SetVerticalAlign(NuiVerticalAlign.Top);
-                                image.SetDrawTextureRegion(0, 0, 16, 16);
-                            });
-                        });
-                    row.AddButton()
-                        .SetText("")
-                        .SetWidth(PartColorChannelButtonSize)
-                        .SetHeight(PartColorChannelButtonSize)
-                        .SetMargin(0f)
-                        .AddDrawList(drawList =>
-                        {
-                            drawList.AddImage(image =>
-                            {
-                                image.SetResref("gui_pal_armor01");
-                                image.SetPosition(2f, 2f, PartColorChannelButtonSize - 2f * 2f, PartColorChannelButtonSize - 2f * 2f);
-                                image.SetAspect(NuiAspect.Stretch);
-                                image.SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                image.SetVerticalAlign(NuiVerticalAlign.Top);
-                                image.SetDrawTextureRegion(0, 0, 16, 16);
-                            });
-                        });
-                    row.AddButton()
-                        .SetText("")
-                        .SetWidth(PartColorChannelButtonSize)
-                        .SetHeight(PartColorChannelButtonSize)
-                        .SetMargin(0f)
-                        .AddDrawList(drawList =>
-                        {
-                            drawList.AddImage(image =>
-                            {
-                                image.SetResref("gui_pal_armor01");
-                                image.SetPosition(2f, 2f, PartColorChannelButtonSize - 2f * 2f, PartColorChannelButtonSize - 2f * 2f);
-                                image.SetAspect(NuiAspect.Stretch);
-                                image.SetHorizontalAlign(NuiHorizontalAlign.Left);
-                                image.SetVerticalAlign(NuiVerticalAlign.Top);
-                                image.SetDrawTextureRegion(0, 0, 16, 16);
-                            });
-                        });
+                    CreateFilledButton(row, "gui_pal_armor01", DummyRegion, PartColorChannelButtonSize, 2f);
+                    CreateFilledButton(row, "gui_pal_armor01", DummyRegion, PartColorChannelButtonSize, 2f);
+                    CreateFilledButton(row, "gui_pal_armor01", DummyRegion, PartColorChannelButtonSize, 2f);
                     row.AddSpacer();
+                });
+            }
+
+            void CreateGap(GuiRow<AppearanceEditorViewModel> mainRow)
+            {
+                mainRow.AddColumn(col =>
+                {
+                    for (var x = 1; x <= 7; x++)
+                    {
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer()
+                                .SetWidth(6f)
+                                .SetHeight(6f);
+                        });
+                    }
                 });
             }
 
@@ -530,6 +343,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     CreatePartEditor(col, "Left Shin");
                     CreatePartEditor(col, "Left Foot");
                 });
+
+                CreateGap(mainRow);
 
                 mainRow.AddColumn(col =>
                 {
@@ -552,6 +367,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
                     });
                 });
+
+                CreateGap(mainRow);
 
                 mainRow.AddColumn(col =>
                 {
@@ -605,22 +422,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             col.AddRow(row =>
                             {
-                                row.AddSpacer();
-                                row.AddColumn(BuildColorPalette);
-                                row.AddColumn(BuildMainColorChannels);
-                                row.AddSpacer();
+                                row.AddLabel()
+                                    .SetText(" ")
+                                    .SetHeight(20f)
+                                    .SetWidth(MainColorChannelButtonSize);
                             });
 
                             col.AddRow(row =>
                             {
-                                row.AddSpacer();
+                                row.AddColumn(col2 =>
+                                {
+                                    col2.AddRow(row2 =>
+                                    {
+                                        row2.AddPartialView(AppearanceEditorViewModel.ArmorColorElement);
+                                    });
+                                });
+
+                                row.AddColumn(BuildMainColorChannels);
+                            });
+
+                            col.AddRow(row =>
+                            {
                                 BuildParts(row);
                                 row.AddSpacer();
                             });
 
                             col.AddRow(row =>
                             {
-                                row.AddSpacer();
                                 BuildFooter(row);
                                 row.AddSpacer();
                             });
@@ -629,6 +457,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
 
             });
+        }
+
+        private void CreateFilledButton(
+            GuiExpandableComponent<AppearanceEditorViewModel> component,
+            string texture,
+            GuiRectangle region,
+            float buttonSize,
+            float drawOffset)
+        {
+            component.AddButton()
+                .SetText("")
+                .SetWidth(buttonSize)
+                .SetHeight(buttonSize)
+                .SetMargin(0f)
+                .SetIsEncouraged(true)
+                .AddDrawList(drawList =>
+                {
+                    drawList.AddImage(image =>
+                    {
+                        image.SetResref(texture);
+                        image.SetPosition(drawOffset, drawOffset, buttonSize - drawOffset * 2f, buttonSize - drawOffset * 2f);
+                        image.SetAspect(NuiAspect.Stretch);
+                        image.SetHorizontalAlign(NuiHorizontalAlign.Left);
+                        image.SetVerticalAlign(NuiVerticalAlign.Top);
+                        image.SetDrawTextureRegion(region);
+                    });
+                });
         }
 
         private void BuildSettings(GuiGroup<AppearanceEditorViewModel> partial)
@@ -683,6 +538,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindOnClicked(model => model.OnClickSaveSettings());
                     row.AddSpacer();
                 });
+            });
+        }
+
+        private void BuildColors(GuiGroup<AppearanceEditorViewModel> group, string texture)
+        {
+            group.AddColumn(col =>
+            {
+                const int ColorsPerRow = 16;
+                const int RowCount = 11;
+                const int ColorSize = 16; // 16x16 colors on the sprite sheet
+
+                for (var rowIndex = 0; rowIndex < RowCount; rowIndex++)
+                {
+                    var y = ColorSize * rowIndex;
+
+                    col.AddRow(row =>
+                    {
+                        for (var columnIndex = 0; columnIndex < ColorsPerRow; columnIndex++)
+                        {
+                            var x = ColorSize * columnIndex;
+                            var region = new GuiRectangle(x, y, ColorSize, ColorSize);
+
+                            CreateFilledButton(row, texture, region, PartColorChannelButtonSize, 2f);
+                        }
+
+                    });
+
+                }
             });
         }
     }

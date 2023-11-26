@@ -22,10 +22,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         public const string MainPartialElement = "MAIN_PARTIAL_VIEW";
         public const string EditorPartialElement = "EDITOR_PARTIAL_VIEW";
+        public const string ArmorColorElement = "ARMOR_COLOR_VIEW";
+
         public const string EditorHeaderPartial = "APPEARANCE_EDITOR_HEADER_PARTIAL";
         public const string EditorMainPartial = "APPEARANCE_EDITOR_MAIN_PARTIAL";
         public const string EditorArmorPartial = "APPEARANCE_EDITOR_ARMOR_PARTIAL";
         public const string SettingsPartial = "SETTINGS_PARTIAL";
+        public const string ArmorColorsClothLeather = "APPEARANCE_EDITOR_COLORS_CLOTH_LEATHER";
+        public const string ArmorColorsMetal = "APPEARANCE_EDITOR_COLORS_METAL";
 
         private const int ColorWidthCells = 16;
         private const int ColorHeightCells = 11;
@@ -408,6 +412,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (IsEquipmentSelected && SelectedItemTypeIndex == 0) // 0 = Armor
             {
                 ChangePartialView(EditorPartialElement, EditorArmorPartial);
+                ChangePartialView(ArmorColorElement, ArmorColorsClothLeather);
             }
             else // Helmet, Cloak, Weapon (Main), Weapon (Off)
             {

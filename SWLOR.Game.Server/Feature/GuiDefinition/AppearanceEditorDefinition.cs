@@ -567,7 +567,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     mainCol.AddRow(row =>
                     {
                         row.AddButton()
-                            .SetText("Copy to Right -->");
+                            .SetText("Copy to Right -->")
+                            .BindIsEnabled(model => model.IsCopyEnabled)
+                            .BindOnClicked(model => model.OnClickCopyToRight());
                     });
                 });
 
@@ -584,7 +586,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     mainCol.AddRow(row =>
                     {
                         row.AddButton()
-                            .SetText("<-- Copy to Left");
+                            .SetText("<-- Copy to Left")
+                            .BindIsEnabled(model => model.IsCopyEnabled)
+                            .BindOnClicked(model => model.OnClickCopyToLeft());
                     });
                 });
             }

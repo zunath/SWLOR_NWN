@@ -3092,6 +3092,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Male Twi'lek Republic Soldier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republictrooper"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 12.0
                     },
                     "FACTION": {
@@ -3352,25 +3371,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "republictechnici"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 35.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Republic Trooper"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "republictrooper"
                     }
                   },
                   {
@@ -4616,6 +4616,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vrepnpctroop1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 38.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Soldier Off Duty"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vrepnpctroop002"
                     }
                   },
                   {
@@ -10324,25 +10343,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "gizka"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 100.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Graul"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "dgraul"
                     }
                   },
                   {

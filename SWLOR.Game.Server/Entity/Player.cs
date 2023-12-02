@@ -221,9 +221,6 @@ namespace SWLOR.Game.Server.Entity
         public bool IsSubdualModeEnabled { get; set; }
         public bool IsLightsaberForceShareEnabled { get; set; }
         public bool DisplayServerResetReminders { get; set; }
-        public Dictionary<SkillType, PlayerColor> LanguageChatColors { get; set; }
-        public PlayerColor OOCChatColor { get; set; }
-        public PlayerColor EmoteChatColor { get; set; }
 
         public PlayerSettings()
         {
@@ -234,22 +231,6 @@ namespace SWLOR.Game.Server.Entity
             IsSubdualModeEnabled = false;
             IsLightsaberForceShareEnabled = true;
             DisplayServerResetReminders = true;
-
-            LanguageChatColors = new Dictionary<SkillType, PlayerColor>();
-        }
-    }
-
-    public class PlayerColor
-    {
-        public byte Red { get; set; }
-        public byte Green { get; set; }
-        public byte Blue { get; set; }
-
-        public PlayerColor(byte red, byte green, byte blue)
-        {
-            Red = red;
-            Green = green;
-            Blue = blue;
         }
     }
 

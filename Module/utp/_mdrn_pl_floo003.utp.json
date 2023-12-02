@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 5735
+    "value": 31603
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -30,13 +30,11 @@
   },
   "CurrentHP": {
     "type": "short",
-    "value": 10000
+    "value": 10
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "DisarmDC": {
     "type": "byte",
@@ -48,11 +46,11 @@
   },
   "Fort": {
     "type": "byte",
-    "value": 250
+    "value": 5
   },
   "Hardness": {
     "type": "byte",
-    "value": 250
+    "value": 5
   },
   "HasInventory": {
     "type": "byte",
@@ -60,7 +58,7 @@
   },
   "HP": {
     "type": "short",
-    "value": 10000
+    "value": 10
   },
   "Interruptable": {
     "type": "byte",
@@ -85,7 +83,7 @@
   "LocName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Shadow Floor"
+      "0": "[SWTOR] Floor 002"
     }
   },
   "OnClick": {
@@ -110,7 +108,7 @@
   },
   "OnHeartbeat": {
     "type": "resref",
-    "value": "script_1"
+    "value": ""
   },
   "OnInvDisturbed": {
     "type": "resref",
@@ -166,15 +164,15 @@
   },
   "Ref": {
     "type": "byte",
-    "value": 250
+    "value": 0
   },
   "Static": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Tag": {
     "type": "cexostring",
-    "value": "ShadowFloor"
+    "value": "_mdrn_pl_floor17"
   },
   "TemplateResRef": {
     "type": "resref",
@@ -212,43 +210,8 @@
     "type": "byte",
     "value": 0
   },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "PERMANENT_VFX_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 14
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.PermanentVisualEffect"
-        }
-      }
-    ]
-  },
   "Will": {
     "type": "byte",
-    "value": 250
+    "value": 0
   }
 }

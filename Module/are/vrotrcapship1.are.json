@@ -30,7 +30,7 @@
   },
   "Flags": {
     "type": "dword",
-    "value": 3
+    "value": 1
   },
   "FogClipDist": {
     "type": "float",
@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "[Prefab] Capital Ship"
+      "0": "[Prefab] Capital Ship 1"
     }
   },
   "NoRest": {
@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "vrotrcapship"
+    "value": "pug_isd_1"
   },
   "Tile_List": {
     "type": "list",
@@ -10481,7 +10481,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 25
+    "value": 24
   },
   "Width": {
     "type": "int",

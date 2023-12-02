@@ -90,11 +90,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 91
+    "value": 45
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 91
+    "value": 44
   },
   "Comment": {
     "type": "cexostring",
@@ -124,11 +124,11 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 99
+    "value": 45
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 99
+    "value": 22
   },
   "LocalizedName": {
     "id": 12838,

@@ -30,7 +30,7 @@
   },
   "Flags": {
     "type": "dword",
-    "value": 1
+    "value": 0
   },
   "FogClipDist": {
     "type": "float",
@@ -849,7 +849,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 20
+    "value": 19
   },
   "Width": {
     "type": "int",

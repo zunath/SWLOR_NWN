@@ -231,10 +231,10 @@ namespace SWLOR.Game.Server.Service.GuiService
             var data = JObject.Parse(jsonDump);
 
             var color = new GuiColor(
-                Convert.ToByte(data["r"]),
-                Convert.ToByte(data["g"]),
-                Convert.ToByte(data["b"]),
-                Convert.ToByte(data["a"]));
+                Convert.ToInt32(data["r"]),
+                Convert.ToInt32(data["g"]),
+                Convert.ToInt32(data["b"]),
+                Convert.ToInt32(data["a"]));
 
             return color;
         }

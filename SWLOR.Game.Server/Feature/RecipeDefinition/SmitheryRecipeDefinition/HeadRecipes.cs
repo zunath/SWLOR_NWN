@@ -236,18 +236,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("lth_good", 5)
                 .Component("citrine", 3);
 
-            // Mechanic Helmet
-            _builder.Create(RecipeType.MechanicHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
-                .Resref("engi_helmet_3")
-                .Level(30)
-                .Quantity(1)
-                .RequirementPerk(PerkType.ArmorBlueprints, 3)
-                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
-                .Component("ref_plagionite", 5)
-                .Component("lth_good", 5)
-                .Component("citrine", 3);
-
             // Designer Helmet
             _builder.Create(RecipeType.DesignerHelmet, SkillType.Smithery)
                 .Category(RecipeCategoryType.Cap)

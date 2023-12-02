@@ -21917,6 +21917,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Radar Dish"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_antb001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Statue, Sphynx, Ornate"
                     },
                     "RESREF": {
@@ -22878,6 +22889,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[SWTOR] Wall 01"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blueprint006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Wall 02"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blueprint007"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[SWTOR] Wall 03"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blueprint008"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Complex, Wall (Concrete)"
                     },
                     "RESREF": {
@@ -22956,6 +23000,17 @@
               "LIST": {
                 "type": "list",
                 "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Anti-Air Turret"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_slav001"
+                    }
+                  },
                   {
                     "__struct_id": 0,
                     "NAME": {
@@ -25747,6 +25802,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[SWTOR] Floor 002"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_floo003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Emitter/Detector"
                     },
                     "RESREF": {
@@ -26698,17 +26764,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_safecos"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shadow Floor"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "_mdrn_pl_floo003"
                     }
                   },
                   {
@@ -28127,6 +28182,72 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Decolight, White 01m"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blueprint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decolight, White 03m"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blueprint001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decolight, White 06m"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blueprint002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decolight, White 09m"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blueprint003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decolight, White 12m"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blueprint004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decolight, White 15m"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blueprint005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Floor Runner, Double Strip"
                     },
                     "RESREF": {
@@ -28154,6 +28275,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_lghtflr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "KT1 Wall Sconce"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_lamp002"
                     }
                   },
                   {
@@ -41836,6 +41968,17 @@
                       "type": "resref",
                       "value": "_mdrn_pl_plant01"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wall, Estate 5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "_mdrn_pl_bsg_001"
+                    }
                   }
                 ]
               },
@@ -51607,6 +51750,72 @@
               "LIST": {
                 "type": "list",
                 "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decolight,White 01m"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "del"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decolight,White 03m"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "del001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decolight,White 06m"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "del002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decolight,White 09m"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "del003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decolight,White 12m"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "del004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Decolight,White 15m"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "del005"
+                    }
+                  },
                   {
                     "__struct_id": 0,
                     "NAME": {

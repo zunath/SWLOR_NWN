@@ -30,7 +30,7 @@
   },
   "Flags": {
     "type": "dword",
-    "value": 1
+    "value": 0
   },
   "FogClipDist": {
     "type": "float",
@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "vrotrbescloudint"
+    "value": "bspn_admin"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -2913,7 +2913,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 15
+    "value": 14
   },
   "Width": {
     "type": "int",

@@ -492,7 +492,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Disturbance")
 
                 .AddPerkLevel()
-                .Description("Deals DMG equal to your Willpower Score to a single target and reduces target's accuracy by 10 with an 8DC fortitude check for one minute.")
+                .Description("Deals DMG equal to your Willpower Score to a single target and reduces target's accuracy by 10 with an 8DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -500,7 +500,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Disturbance1)
 
                 .AddPerkLevel()
-                .Description("Deals 15 DMG, scaling with your Willpower Score, to a single target and reduces target's accuracy by 20 with a 12DC fortitude check for one minute.")
+                .Description("Deals 15 DMG, scaling with your Willpower Score, to a single target and reduces target's accuracy by 20 with a 12DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -508,7 +508,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Disturbance2)
 
                 .AddPerkLevel()
-                .Description("Deals 30 DMG, scaling with your Willpower Score, to a single target and reduces target's accuracy by 30 with a 14DC fortitude check for one minute.")
+                .Description("Deals 30 DMG, scaling with your Willpower Score, to a single target and reduces target's accuracy by 30 with a 14DC will check for one minute.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -574,7 +574,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Spark")
 
                 .AddPerkLevel()
-                .Description("Deals DMG equal to your Willpower Score to a single target and reduces target's evasion by 2 with an 8DC fortitude check for one minute. Consumes FP, but if none remain, will consume Health instead.")
+                .Description("Deals DMG equal to your Willpower Score to a single target and reduces target's evasion by 2 with an 8DC will check for one minute. Consumes FP, but if none remain, will consume Health instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -582,7 +582,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceSpark1)
 
                 .AddPerkLevel()
-                .Description("Deals 15 DMG, scaling with your Willpower Score, to a single target and reduces target's evasion by 4 with a 12DC fortitude check for one minute. Consumes FP, but if none remain, will consume Health instead.")
+                .Description("Deals 15 DMG, scaling with your Willpower Score, to a single target and reduces target's evasion by 4 with a 12DC will check for one minute. Consumes FP, but if none remain, will consume Health instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -590,7 +590,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceSpark2)
 
                 .AddPerkLevel()
-                .Description("Deals 30 DMG, scaling with your Willpower Score, to a single target and reduces target's evasion by 6 with a 14DC fortitude check for one minute. Consumes FP, but if none remain, will consume Health instead.")
+                .Description("Deals 30 DMG, scaling with your Willpower Score, to a single target and reduces target's evasion by 6 with a 14DC will check for one minute. Consumes FP, but if none remain, will consume Health instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

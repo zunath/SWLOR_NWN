@@ -9,6 +9,7 @@ using NReJSON;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.DBService;
 
 namespace SWLOR.Game.Server.Service
@@ -52,6 +53,15 @@ namespace SWLOR.Game.Server.Service
             };
 
             _multiplexer = ConnectionMultiplexer.Connect(options);
+
+            Console.WriteLine($"Waiting for database connection. If this takes longer than 10 minutes, there's a problem.");
+            while (!_multiplexer.IsConnected)
+            {
+                // Spin
+                Thread.Sleep(100);
+            }
+            Console.WriteLine($"Database connection established.");
+
             LoadEntities();
 
             // Runs at the end of every main loop. Clears out all data retrieved during this cycle.
@@ -59,13 +69,6 @@ namespace SWLOR.Game.Server.Service
             {
                 _cachedEntities.Clear();
             };
-
-            // This is a hack to ensure the background process of index scanning completes before we kick off
-            // the rest of the server initialization process.
-            // If we don't wait long enough, DB searches won't retrieve any data. If you have a better solution 
-            // please submit a fix, thanks!
-            Console.WriteLine($"Waiting {_appSettings.DatabaseBootDelaySeconds} seconds for background index scanning to complete.");
-            Thread.Sleep(_appSettings.DatabaseBootDelaySeconds * 1000);
 
             // CLI tools also use this class and don't have access to the NWN context.
             // Perform an environment variable check to ensure we're in the game server context before executing the event.
@@ -81,19 +84,7 @@ namespace SWLOR.Game.Server.Service
         private static void ProcessIndex(EntityBase entity)
         {
             var type = entity.GetType();
-
-            // Drop any existing index
-            try
-            {
-                // FT.DROPINDEX is used here in lieu of DropIndex() as it does not cause all documents to be lost.
-                _multiplexer.GetDatabase().Execute("FT.DROPINDEX", type.Name);
-                Console.WriteLine($"Dropped index for {type}");
-            }
-            catch
-            {
-                Console.WriteLine($"Index does not exist for type {type}");
-            }
-
+            
             // Build the schema based on the IndexedAttribute associated to properties.
             var schema = new Schema();
             var indexedProperties = new List<string>();
@@ -125,12 +116,91 @@ namespace SWLOR.Game.Server.Service
             // Cache the indexed properties for quick look-up later.
             _indexedPropertiesByName[type] = indexedProperties;
 
-            // Create the index.
+
             if (schema.Fields.Count > 0)
             {
-                _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
-                Console.WriteLine($"Created index for {type}");
+                // Update fields on existing index.
+                if (DoesIndexExist(type))
+                {
+                    var info = _searchClientsByType[type].GetInfoParsed();
+
+                    var fieldsToAdd = new List<Schema.Field>();
+
+                    // Find new fields to index.
+                    foreach (var field in schema.Fields)
+                    {
+                        if (info.Fields == null || !info.Fields.ContainsKey(field.Name))
+                        {
+                            Console.WriteLine($"New field found: {field.Name}");
+                            fieldsToAdd.Add(field);
+                        }
+                    }
+
+                    if (fieldsToAdd.Count > 0)
+                    {
+                        _searchClientsByType[type].AlterIndex(fieldsToAdd.ToArray());
+                        Console.WriteLine($"Updated index for {type}.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"No changes found for index {type}.");
+                    }
+                    
+                }
+                // Create new index.
+                else
+                {
+                    _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
+                    Console.WriteLine($"Created index for {type}");
+                }
             }
+
+
+            WaitForReindexing(type);
+        }
+
+        private static bool DoesIndexExist(Type type)
+        {
+            try
+            {
+                _searchClientsByType[type].GetInfo();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("Unknown Index name"))
+                {
+                    return false;
+                }
+
+                // Got a different exception - throw.
+                throw;
+            }
+        }
+
+        private static void WaitForReindexing(Type type)
+        {
+            string indexing;
+
+            Console.WriteLine($"Waiting for Redis to complete indexing of: {type}");
+            do
+            {
+                Thread.Sleep(100);
+
+                try
+                {
+                    // If there is a lot of data or the machine is slow, this command can time out.
+                    // Ignore when this happens and retry the command in 100ms.
+                    var info = _searchClientsByType[type].GetInfo();
+                    indexing = info["percent_indexed"];
+                }
+                catch (Exception ex)
+                {
+                    indexing = "0";
+                    Console.WriteLine($"Error during indexing: {ex.ToMessageAndCompleteStacktrace()}");
+                }
+
+            } while (indexing != "1");
         }
 
         /// <summary>

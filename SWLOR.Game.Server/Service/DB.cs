@@ -70,13 +70,6 @@ namespace SWLOR.Game.Server.Service
                 _cachedEntities.Clear();
             };
 
-            // This is a hack to ensure the background process of index scanning completes before we kick off
-            // the rest of the server initialization process.
-            // If we don't wait long enough, DB searches won't retrieve any data. If you have a better solution 
-            // please submit a fix, thanks!
-            Console.WriteLine($"Waiting {_appSettings.DatabaseBootDelaySeconds} seconds for background index scanning to complete.");
-            Thread.Sleep(_appSettings.DatabaseBootDelaySeconds * 1000);
-
             // CLI tools also use this class and don't have access to the NWN context.
             // Perform an environment variable check to ensure we're in the game server context before executing the event.
             var context = Environment.GetEnvironmentVariable("GAME_SERVER_CONTEXT");
@@ -149,6 +142,17 @@ namespace SWLOR.Game.Server.Service
                 _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
                 Console.WriteLine($"Created index for {type}");
             }
+
+            string indexing;
+
+            Console.WriteLine($"Waiting for Redis to complete indexing of: {type}");
+            do
+            {
+                Thread.Sleep(100);
+                var info = _searchClientsByType[type].GetInfo();
+                indexing = info["percent_indexed"];
+
+            } while (indexing != "1");
         }
 
         /// <summary>

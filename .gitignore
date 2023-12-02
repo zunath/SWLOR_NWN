@@ -271,6 +271,8 @@ debugserver
 Module/temp0
 Module/Star Wars LOR v2.BackupMod
 Module/Star Wars LOR v2.mod
+/Module/SWLOR_Empty.mod
+/Module/SWLOR_Empty.BackupMod
 
 # Packed modules are generated from Module source files; keep them out of Git and LFS.
 *.[mM][oO][dD]

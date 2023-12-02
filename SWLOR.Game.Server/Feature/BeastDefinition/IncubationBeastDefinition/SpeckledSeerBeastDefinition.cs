@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.SpeckledSeer)
                 .Name("Speckled Seer")
-                .Appearance(AppearanceType.Kyoht3)
+                .Appearance(AppearanceType.Kyoht3hydromancerx)
                 .AppearanceScale(1f)
                 .SoundSetId(77)
                 .PortraitId(318)

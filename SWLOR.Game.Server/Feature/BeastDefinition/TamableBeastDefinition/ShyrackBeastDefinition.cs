@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.Shyrack)
                 .Name("Shyrack")
-                .Appearance(AppearanceType.Shyrack)
+                .Appearance(AppearanceType.SWLORShyrack)
                 .AppearanceScale(1f)
                 .SoundSetId(65535)
                 .PortraitId(184)

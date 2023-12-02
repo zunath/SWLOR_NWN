@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.Viper)
                 .Name("Viper")
-                .Appearance(AppearanceType.SnakeViperSwampMedium)
+                .Appearance(AppearanceType.SnakeViperSwampMediumMaleioch)
                 .AppearanceScale(1f)
                 .SoundSetId(260)
                 .PortraitId(2104)

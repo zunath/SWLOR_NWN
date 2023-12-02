@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.Tukata)
                 .Name("Tuk'ata")
-                .Appearance(AppearanceType.Tukata)
+                .Appearance(AppearanceType.SWLORTukata)
                 .AppearanceScale(1f)
                 .SoundSetId(52)
                 .PortraitId(286)

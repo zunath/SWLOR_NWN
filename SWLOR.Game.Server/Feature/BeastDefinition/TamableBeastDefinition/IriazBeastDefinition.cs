@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.Iriaz)
                 .Name("Iriaz")
-                .Appearance(AppearanceType.Iriaz)
+                .Appearance(AppearanceType.SWLORIriaz)
                 .AppearanceScale(1f)
                 .SoundSetId(24)
                 .PortraitId(174)

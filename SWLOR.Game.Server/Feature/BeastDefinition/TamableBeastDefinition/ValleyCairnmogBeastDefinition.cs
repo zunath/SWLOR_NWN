@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.ValleyCairnmog)
                 .Name("Valley Cairnmog")
-                .Appearance(AppearanceType.MonsterA)
+                .Appearance(AppearanceType.MonsterANexorcist)
                 .AppearanceScale(0.75f)
                 .SoundSetId(53)
                 .PortraitId(819)

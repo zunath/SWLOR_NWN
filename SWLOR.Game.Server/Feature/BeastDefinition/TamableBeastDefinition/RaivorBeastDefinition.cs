@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.Raivor)
                 .Name("Raivor")
-                .Appearance(AppearanceType.LizardLargeBrown)
+                .Appearance(AppearanceType.LizardLargeBrownbabayaga)
                 .AppearanceScale(1f)
                 .SoundSetId(97)
                 .PortraitId(1268)

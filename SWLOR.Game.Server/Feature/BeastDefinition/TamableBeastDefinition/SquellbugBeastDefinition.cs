@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.Squellbug)
                 .Name("Squellbug")
-                .Appearance(AppearanceType.InsectTickGiant)
+                .Appearance(AppearanceType.InsectTickGiantCCP)
                 .AppearanceScale(1f)
                 .SoundSetId(9)
                 .PortraitId(154)

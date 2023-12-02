@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.StonecladBehemoth)
                 .Name("Stoneclad Behemoth")
-                .Appearance(AppearanceType.EarthDrake)
+                .Appearance(AppearanceType.EarthDrakeCCCPLUSHHYENAofDOOM)
                 .AppearanceScale(0.5f)
                 .SoundSetId(33)
                 .PortraitId(202)

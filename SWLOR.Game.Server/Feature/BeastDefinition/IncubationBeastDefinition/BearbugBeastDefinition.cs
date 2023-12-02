@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.Bearbug)
                 .Name("Bearbug")
-                .Appearance(AppearanceType.Bearbug)
+                .Appearance(AppearanceType.BearbugCCCMecheon)
                 .AppearanceScale(1f)
                 .SoundSetId(8)
                 .PortraitId(150)

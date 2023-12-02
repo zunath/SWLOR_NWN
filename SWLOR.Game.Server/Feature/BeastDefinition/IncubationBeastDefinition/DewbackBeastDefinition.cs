@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.Dewback)
                 .Name("Dewback")
-                .Appearance(AppearanceType.Dewback)
+                .Appearance(AppearanceType.SWLORDewback)
                 .AppearanceScale(1f)
                 .SoundSetId(446)
                 .PortraitId(819)

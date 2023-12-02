@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.SpinedCrawler)
                 .Name("Spined Crawler")
-                .Appearance(AppearanceType.PurgatoryBeast3)
+                .Appearance(AppearanceType.PurgatoryBeast3PLUSHHYENAofDOOM)
                 .AppearanceScale(1f)
                 .SoundSetId(325)
                 .PortraitId(3170)

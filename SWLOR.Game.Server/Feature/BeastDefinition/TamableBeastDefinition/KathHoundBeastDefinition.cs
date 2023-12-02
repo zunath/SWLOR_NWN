@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.KathHound)
                 .Name("Kath Hound")
-                .Appearance(AppearanceType.KathHound)
+                .Appearance(AppearanceType.SWLORKathHound)
                 .AppearanceScale(1f)
                 .SoundSetId(919)
                 .PortraitId(321)

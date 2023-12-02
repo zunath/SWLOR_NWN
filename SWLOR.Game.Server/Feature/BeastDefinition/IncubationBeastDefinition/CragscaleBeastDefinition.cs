@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.Cragscale)
                 .Name("Cragscale")
-                .Appearance(AppearanceType.Behir)
+                .Appearance(AppearanceType.BehirCCP)
                 .AppearanceScale(0.5f)
                 .SoundSetId(331)
                 .PortraitId(1268)

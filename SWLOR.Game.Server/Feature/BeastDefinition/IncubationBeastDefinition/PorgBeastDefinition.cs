@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.Porg)
                 .Name("Porg")
-                .Appearance(AppearanceType.Porg)
+                .Appearance(AppearanceType.SWLORPorg)
                 .AppearanceScale(1f)
                 .SoundSetId(452)
                 .PortraitId(564)

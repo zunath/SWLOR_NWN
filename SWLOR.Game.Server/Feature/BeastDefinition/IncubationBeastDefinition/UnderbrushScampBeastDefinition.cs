@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.UnderbrushScamp)
                 .Name("Underbrush Scamp")
-                .Appearance(AppearanceType.FoxRed)
+                .Appearance(AppearanceType.FoxRedtailanimCCPhydromancerx)
                 .AppearanceScale(1f)
                 .SoundSetId(252)
                 .PortraitId(189)

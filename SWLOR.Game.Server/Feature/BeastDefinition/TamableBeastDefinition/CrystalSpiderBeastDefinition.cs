@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.CrystalSpider)
                 .Name("Crystal Spider")
-                .Appearance(AppearanceType.SpiderCrystalB)
+                .Appearance(AppearanceType.SpiderCrystalBCCCPLUSHHYENAofDOOM)
                 .AppearanceScale(0.75f)
                 .SoundSetId(88)
                 .PortraitId(300)

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.UnderseaCarver)
                 .Name("Undersea Carver")
-                .Appearance(AppearanceType.CrabBlueSmall)
+                .Appearance(AppearanceType.CrabBlueSmallEligioSacateca)
                 .AppearanceScale(1.5f)
                 .SoundSetId(9)
                 .PortraitId(2165)

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.VoritorLizard)
                 .Name("Voritor Lizard")
-                .Appearance(AppearanceType.LizardLargeBlue)
+                .Appearance(AppearanceType.LizardLargeBluebabayaga)
                 .AppearanceScale(0.75f)
                 .SoundSetId(311)
                 .PortraitId(267)

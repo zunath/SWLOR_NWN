@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.Warocas)
                 .Name("Warocas")
-                .Appearance(AppearanceType.BirdOstrich)
+                .Appearance(AppearanceType.BirdOstrichProjectQ)
                 .AppearanceScale(1f)
                 .SoundSetId(452)
                 .PortraitId(168)

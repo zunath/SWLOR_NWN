@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.Terentatek)
                 .Name("Terentatek")
-                .Appearance(AppearanceType.Terentatek)
+                .Appearance(AppearanceType.SWLORTerentatek)
                 .AppearanceScale(0.8f)
                 .SoundSetId(95)
                 .PortraitId(309)

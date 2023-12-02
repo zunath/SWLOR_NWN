@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.RoyalPlumage)
                 .Name("Royal Plumage")
-                .Appearance(AppearanceType.BirdPeacock)
+                .Appearance(AppearanceType.BirdPeacockCCCCarcerian)
                 .AppearanceScale(1.25f)
                 .SoundSetId(452)
                 .PortraitId(3788)

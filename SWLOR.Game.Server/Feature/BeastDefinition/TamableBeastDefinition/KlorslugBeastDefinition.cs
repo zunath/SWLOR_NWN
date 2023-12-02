@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.Klorslug)
                 .Name("K'lor'slug")
-                .Appearance(AppearanceType.BuletteSmallUndead)
+                .Appearance(AppearanceType.BuletteSmallUndeadPLUSHHYENAofDOOM)
                 .AppearanceScale(0.66f)
                 .SoundSetId(396)
                 .PortraitId(819)

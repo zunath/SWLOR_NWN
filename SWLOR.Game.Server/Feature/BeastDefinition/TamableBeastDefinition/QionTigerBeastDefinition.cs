@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.QionTiger)
                 .Name("Qion Tiger")
-                .Appearance(AppearanceType.CatTigerWhite)
+                .Appearance(AppearanceType.CatTigerWhiteProjectQ)
                 .AppearanceScale(1f)
                 .SoundSetId(16)
                 .PortraitId(165)

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.FungalShambler)
                 .Name("Fungal Shambler")
-                .Appearance(AppearanceType.MyconidSprout)
+                .Appearance(AppearanceType.MyconidSproutSchazzwozzer)
                 .AppearanceScale(1f)
                 .SoundSetId(9)
                 .PortraitId(2045)

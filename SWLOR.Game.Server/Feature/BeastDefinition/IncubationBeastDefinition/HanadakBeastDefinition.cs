@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.Hanadak)
                 .Name("Hanadak")
-                .Appearance(AppearanceType.DemonBarLgura)
+                .Appearance(AppearanceType.DemonBarLguraHardpoints)
                 .AppearanceScale(0.66f)
                 .SoundSetId(95)
                 .PortraitId(1294)

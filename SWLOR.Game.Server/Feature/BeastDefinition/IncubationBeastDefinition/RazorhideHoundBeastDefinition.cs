@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.RazorhideHound)
                 .Name("Razorhide Hound")
-                .Appearance(AppearanceType.DrakeAenean)
+                .Appearance(AppearanceType.DrakeAeneanTheAmethystDragon)
                 .AppearanceScale(0.8f)
                 .SoundSetId(105)
                 .PortraitId(184)

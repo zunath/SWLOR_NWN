@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.Sprantal)
                 .Name("Sprantal")
-                .Appearance(AppearanceType.MutantAlligator)
+                .Appearance(AppearanceType.MdrnMutantAlligator)
                 .AppearanceScale(1f)
                 .SoundSetId(902)
                 .PortraitId(623)

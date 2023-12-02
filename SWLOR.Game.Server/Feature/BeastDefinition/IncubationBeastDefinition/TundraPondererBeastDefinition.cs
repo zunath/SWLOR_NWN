@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.TundraPonderer)
                 .Name("Tundra Ponderer")
-                .Appearance(AppearanceType.ElephantMammoth)
+                .Appearance(AppearanceType.ElephantMammothProjectQDraygothTheAmethystDragon)
                 .AppearanceScale(0.66f)
                 .SoundSetId(8)
                 .PortraitId(174)

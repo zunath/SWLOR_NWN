@@ -9,6 +9,7 @@ using NReJSON;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.DBService;
 
 namespace SWLOR.Game.Server.Service
@@ -52,6 +53,15 @@ namespace SWLOR.Game.Server.Service
             };
 
             _multiplexer = ConnectionMultiplexer.Connect(options);
+
+            Console.WriteLine($"Waiting for database connection. If this takes longer than 10 minutes, there's a problem.");
+            while (!_multiplexer.IsConnected)
+            {
+                // Spin
+                Thread.Sleep(100);
+            }
+            Console.WriteLine($"Database connection established.");
+
             LoadEntities();
 
             // Runs at the end of every main loop. Clears out all data retrieved during this cycle.
@@ -89,9 +99,17 @@ namespace SWLOR.Game.Server.Service
                 _multiplexer.GetDatabase().Execute("FT.DROPINDEX", type.Name);
                 Console.WriteLine($"Dropped index for {type}");
             }
-            catch
+            catch(Exception ex)
             {
-                Console.WriteLine($"Index does not exist for type {type}");
+                if (ex.Message.Contains("Unknown Index name", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Console.WriteLine($"Index does not exist for type {type}.");
+                }
+                else
+                {
+                    Console.WriteLine($"Issue dropping index for type {type}. Exception: {ex.ToMessageAndCompleteStacktrace()}");
+                }
+                
             }
 
             // Build the schema based on the IndexedAttribute associated to properties.

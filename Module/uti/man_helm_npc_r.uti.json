@@ -63,7 +63,7 @@
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 90
+    "value": 64
   },
   "Metal2Color": {
     "type": "byte",

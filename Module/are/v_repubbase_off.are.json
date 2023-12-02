@@ -22,7 +22,7 @@
   },
   "DayNightCycle": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Expansion_List": {
     "type": "list",
@@ -34,7 +34,7 @@
   },
   "FogClipDist": {
     "type": "float",
-    "value": 45.0
+    "value": 120.0
   },
   "Height": {
     "type": "int",
@@ -128,7 +128,7 @@
   },
   "SunAmbientColor": {
     "type": "dword",
-    "value": 6566450
+    "value": 7164216
   },
   "SunDiffuseColor": {
     "type": "dword",
@@ -140,7 +140,7 @@
   },
   "SunFogColor": {
     "type": "dword",
-    "value": 9535080
+    "value": 2366234
   },
   "SunShadows": {
     "type": "byte",
@@ -2913,7 +2913,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 15
+    "value": 16
   },
   "Width": {
     "type": "int",

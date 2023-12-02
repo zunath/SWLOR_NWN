@@ -110,15 +110,15 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 33
+    "value": 66
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 14
+    "value": 4
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 22
+    "value": 23
   },
   "Color_Tattoo2": {
     "type": "byte",
@@ -171,7 +171,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "republictrooper"
+          "value": "item001"
         }
       },
       {
@@ -313,6 +313,26 @@
   "IsPC": {
     "type": "byte",
     "value": 0
+  },
+  "ItemList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "republictrooper"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 0
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
   },
   "LastName": {
     "type": "cexolocstring",

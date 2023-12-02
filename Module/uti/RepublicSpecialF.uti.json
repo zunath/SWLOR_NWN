@@ -1,0 +1,467 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "ArmorPart_Belt": {
+    "type": "byte",
+    "value": 189
+  },
+  "ArmorPart_LBicep": {
+    "type": "byte",
+    "value": 31
+  },
+  "ArmorPart_LFArm": {
+    "type": "byte",
+    "value": 101
+  },
+  "ArmorPart_LFoot": {
+    "type": "byte",
+    "value": 30
+  },
+  "ArmorPart_LHand": {
+    "type": "byte",
+    "value": 246
+  },
+  "ArmorPart_LShin": {
+    "type": "byte",
+    "value": 102
+  },
+  "ArmorPart_LShoul": {
+    "type": "byte",
+    "value": 197
+  },
+  "ArmorPart_LThigh": {
+    "type": "byte",
+    "value": 158
+  },
+  "ArmorPart_Neck": {
+    "type": "byte",
+    "value": 112
+  },
+  "ArmorPart_Pelvis": {
+    "type": "byte",
+    "value": 156
+  },
+  "ArmorPart_RBicep": {
+    "type": "byte",
+    "value": 31
+  },
+  "ArmorPart_RFArm": {
+    "type": "byte",
+    "value": 101
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 30
+  },
+  "ArmorPart_RHand": {
+    "type": "byte",
+    "value": 246
+  },
+  "ArmorPart_Robe": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RShin": {
+    "type": "byte",
+    "value": 102
+  },
+  "ArmorPart_RShoul": {
+    "type": "byte",
+    "value": 197
+  },
+  "ArmorPart_RThigh": {
+    "type": "byte",
+    "value": 158
+  },
+  "ArmorPart_Torso": {
+    "type": "byte",
+    "value": 99
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 16
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 171
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 23
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 49001
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 0
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 23
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 45
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Republic Special Forces Armor"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 90
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 63
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 8
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 23
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 1
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 78
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 65535
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 1
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 0
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 3
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 1
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 0
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 5
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 1
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 2
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 0
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 4
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 12
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1743
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 12
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 34
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 6
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 1
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 22
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "RepublicSpecialForcesArmor"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "republicspecialf"
+  },
+  "xArmorPart_Belt": {
+    "type": "word",
+    "value": 189
+  },
+  "xArmorPart_LBice": {
+    "type": "word",
+    "value": 31
+  },
+  "xArmorPart_LFArm": {
+    "type": "word",
+    "value": 101
+  },
+  "xArmorPart_LFoot": {
+    "type": "word",
+    "value": 30
+  },
+  "xArmorPart_LHand": {
+    "type": "word",
+    "value": 246
+  },
+  "xArmorPart_LShin": {
+    "type": "word",
+    "value": 102
+  },
+  "xArmorPart_LShou": {
+    "type": "word",
+    "value": 197
+  },
+  "xArmorPart_LThig": {
+    "type": "word",
+    "value": 158
+  },
+  "xArmorPart_Neck": {
+    "type": "word",
+    "value": 112
+  },
+  "xArmorPart_Pelvi": {
+    "type": "word",
+    "value": 156
+  },
+  "xArmorPart_RBice": {
+    "type": "word",
+    "value": 31
+  },
+  "xArmorPart_RFArm": {
+    "type": "word",
+    "value": 101
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 30
+  },
+  "xArmorPart_RHand": {
+    "type": "word",
+    "value": 246
+  },
+  "xArmorPart_Robe": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RShin": {
+    "type": "word",
+    "value": 102
+  },
+  "xArmorPart_RShou": {
+    "type": "word",
+    "value": 197
+  },
+  "xArmorPart_RThig": {
+    "type": "word",
+    "value": 158
+  },
+  "xArmorPart_Torso": {
+    "type": "word",
+    "value": 99
+  }
+}

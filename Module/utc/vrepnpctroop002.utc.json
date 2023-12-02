@@ -1,20 +1,96 @@
 {
   "__data_type": "UTC ",
+  "Appearance_Head": {
+    "type": "byte",
+    "value": 141
+  },
   "Appearance_Type": {
     "type": "word",
-    "value": 3873
+    "value": 6
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 1
   },
   "BodyBag": {
     "type": "byte",
     "value": 0
   },
+  "BodyPart_Belt": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LFoot": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_LThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Pelvis": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShin": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "BodyPart_RThigh": {
+    "type": "byte",
+    "value": 1
+  },
+  "BodyPart_Torso": {
+    "type": "byte",
+    "value": 1
+  },
   "Cha": {
     "type": "byte",
-    "value": 10
+    "value": 11
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 100.0
+    "value": 38.0
   },
   "ClassList": {
     "type": "list",
@@ -27,10 +103,26 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 9
+          "value": 15
         }
       }
     ]
+  },
+  "Color_Hair": {
+    "type": "byte",
+    "value": 3
+  },
+  "Color_Skin": {
+    "type": "byte",
+    "value": 1
+  },
+  "Color_Tattoo1": {
+    "type": "byte",
+    "value": 22
+  },
+  "Color_Tattoo2": {
+    "type": "byte",
+    "value": 164
   },
   "Comment": {
     "type": "cexostring",
@@ -38,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 40
+    "value": 17
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -34
+    "value": 27
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4885
+    "value": 105
   },
   "DecayTime": {
     "type": "dword",
@@ -63,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The graul was a large predator from the planet Dantooine. It was the planet's top predator and similar to the rancors of Dathomir except for the skin tone, which tended to be more green, and a pair of horns protruding from its head.\n\nGrauls could be domesticated by skilled beast masters and used as mounts for transportation."
+      "0": "An Off-duty soldier of the Republic. He looks like he's had a long day or marching."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 40
+    "value": 19
   },
   "Disarmable": {
     "type": "byte",
@@ -78,24 +170,24 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 16384,
+        "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "vdathbiterancor"
+          "value": "vrepnpctrooparm"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "chirodactyl_skin"
+          "value": "vnpcsinvade1"
         }
       }
     ]
   },
   "FactionID": {
     "type": "word",
-    "value": 1
+    "value": 2
   },
   "FeatList": {
     "type": "list",
@@ -104,21 +196,35 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1883
+          "value": 2
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1242
+          "value": 3
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1882
+          "value": 4
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1590
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 411
         }
       },
       {
@@ -127,13 +233,41 @@
           "type": "word",
           "value": 289
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 44
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 45
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 46
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1785
+        }
       }
     ]
   },
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Graul"
+      "0": "Republic Soldier Off Duty"
     }
   },
   "fortbonus": {
@@ -150,11 +284,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4885
+    "value": 105
   },
   "Int": {
     "type": "byte",
-    "value": 20
+    "value": 19
   },
   "Interruptable": {
     "type": "byte",
@@ -167,6 +301,56 @@
   "IsPC": {
     "type": "byte",
     "value": 0
+  },
+  "ItemList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "vnpcminvade1"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 0
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 1,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "vrepnpctroophelm"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 1
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 2,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "vnpcrinvade1"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 3
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
   },
   "LastName": {
     "type": "cexolocstring",
@@ -184,7 +368,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 5020
+    "value": 150
   },
   "NaturalAC": {
     "type": "byte",
@@ -196,11 +380,11 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 157
+    "value": 39
   },
   "PerceptionRange": {
     "type": "byte",
-    "value": 10
+    "value": 9
   },
   "Phenotype": {
     "type": "int",
@@ -212,11 +396,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 1294
+    "value": 3558
   },
   "Race": {
     "type": "byte",
-    "value": 11
+    "value": 6
   },
   "refbonus": {
     "type": "short",
@@ -224,55 +408,55 @@
   },
   "ScriptAttacked": {
     "type": "resref",
-    "value": "x2_def_attacked"
+    "value": ""
   },
   "ScriptDamaged": {
     "type": "resref",
-    "value": "x2_def_ondamage"
+    "value": ""
   },
   "ScriptDeath": {
     "type": "resref",
-    "value": "x2_def_ondeath"
+    "value": ""
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": "x2_def_onconv"
+    "value": ""
   },
   "ScriptDisturbed": {
     "type": "resref",
-    "value": "x2_def_ondisturb"
+    "value": ""
   },
   "ScriptEndRound": {
     "type": "resref",
-    "value": "x2_def_endcombat"
+    "value": ""
   },
   "ScriptHeartbeat": {
     "type": "resref",
-    "value": "x2_def_heartbeat"
+    "value": ""
   },
   "ScriptOnBlocked": {
     "type": "resref",
-    "value": "x2_def_onblocked"
+    "value": ""
   },
   "ScriptOnNotice": {
     "type": "resref",
-    "value": "x2_def_percept"
+    "value": ""
   },
   "ScriptRested": {
     "type": "resref",
-    "value": "x2_def_rested"
+    "value": ""
   },
   "ScriptSpawn": {
     "type": "resref",
-    "value": "x2_def_spawn"
+    "value": ""
   },
   "ScriptSpellAt": {
     "type": "resref",
-    "value": "x2_def_spellcast"
+    "value": ""
   },
   "ScriptUserDefine": {
     "type": "resref",
-    "value": "x2_def_userdef"
+    "value": ""
   },
   "SkillList": {
     "type": "list",
@@ -351,7 +535,7 @@
         "__struct_id": 0,
         "Rank": {
           "type": "byte",
-          "value": 4
+          "value": 0
         }
       },
       {
@@ -477,7 +661,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 70
+    "value": 926
   },
   "SpecAbilityList": {
     "type": "list",
@@ -489,7 +673,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 40
+    "value": 19
   },
   "Subrace": {
     "type": "cexostring",
@@ -497,7 +681,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "graul"
+    "value": "RepublicSoldier"
   },
   "Tail_New": {
     "type": "dword",
@@ -509,136 +693,11 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "dgraul"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "QUEST_NPC_GROUP_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 40
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "DATHOMIR_CHIRODACTYL,100,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "DATHOMIR_CHIRODACTYL,40,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_3"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "DATHOMIR_CHIRODACTYL_RARES,5,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_4"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "DATHOMIR_CHIRODACTYL_GEMS,100,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_5"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "DATHOMIR_CHIRODACTYL_GEMS,30,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_6"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "DATHOMIR_CHIRODACTYL_RECIPES,95,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_7"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "DATHOMIR_CHIRODACTYL_RECIPES,20,1"
-        }
-      }
-    ]
+    "value": "vrepnpctroop002"
   },
   "WalkRate": {
     "type": "int",
-    "value": 7
+    "value": 4
   },
   "willbonus": {
     "type": "short",
@@ -650,6 +709,82 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 20
+    "value": 11
+  },
+  "xAppearance_Head": {
+    "type": "word",
+    "value": 141
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Belt": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_LBicep": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LFArm": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LFoot": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LHand": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LShin": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LShoul": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_LThigh": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Neck": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Pelvis": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RBicep": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RFArm": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RHand": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RShin": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RShoul": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_RThigh": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Torso": {
+    "type": "word",
+    "value": 1
   }
 }

@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 178
+    "value": 115
   },
   "Appearance_Type": {
     "type": "word",
@@ -110,15 +110,15 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 63
+    "value": 53
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 0
+    "value": 104
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 1
+    "value": 149
   },
   "Color_Tattoo2": {
     "type": "byte",
@@ -173,7 +173,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "republictrooper"
+          "value": "item001"
         }
       },
       {
@@ -295,7 +295,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Republic Trooper"
+      "0": "Male Twi'lek Republic Soldier"
     }
   },
   "fortbonus": {
@@ -329,6 +329,41 @@
   "IsPC": {
     "type": "byte",
     "value": 0
+  },
+  "ItemList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "republictrooper"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 0
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 1,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "fac_pubhelm"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 2
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
   },
   "LastName": {
     "type": "cexolocstring",
@@ -691,7 +726,7 @@
   },
   "xAppearance_Head": {
     "type": "word",
-    "value": 178
+    "value": 115
   },
   "xArmorPart_RFoot": {
     "type": "word",

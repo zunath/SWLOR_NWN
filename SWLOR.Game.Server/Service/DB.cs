@@ -149,8 +149,19 @@ namespace SWLOR.Game.Server.Service
             do
             {
                 Thread.Sleep(100);
-                var info = _searchClientsByType[type].GetInfo();
-                indexing = info["percent_indexed"];
+
+                try
+                {
+                    // If there is a lot of data or the machine is slow, this command can time out.
+                    // Ignore when this happens and retry the command in 100ms.
+                    var info = _searchClientsByType[type].GetInfo();
+                    indexing = info["percent_indexed"];
+                }
+                catch (Exception ex)
+                {
+                    indexing = "0";
+                    Console.WriteLine($"Error during indexing: {ex.ToMessageAndCompleteStacktrace()}");
+                }
 
             } while (indexing != "1");
         }

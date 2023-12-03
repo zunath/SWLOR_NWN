@@ -2061,6 +2061,73 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AdjustArmorPart(partType, adjustBy);
         };
 
+        private void CopyColors(ref uint item, ColorTarget copyToTarget, ColorTarget copyFromTarget)
+        {
+            var copyFrom = GetArmorModelType(copyFromTarget);
+            var copyTo = GetArmorModelType(copyToTarget);
+
+            // Cloth 1
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+            {
+                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Cloth1);
+                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Cloth1);
+                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
+                ChangeColor(copyToTarget, AppearanceArmorColor.Cloth1, newColor);
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                DestroyObject(item);
+            }
+            // Cloth 2
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+            {
+                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Cloth2);
+                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Cloth2);
+                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
+                ChangeColor(copyToTarget, AppearanceArmorColor.Cloth2, newColor);
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                DestroyObject(item);
+            }
+            // Leather 1
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+            {
+                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Leather1);
+                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Leather1);
+                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
+                ChangeColor(copyToTarget, AppearanceArmorColor.Leather1, newColor);
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                DestroyObject(item);
+            }
+            // Leather 2
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+            {
+                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Leather2);
+                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Leather2);
+                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
+                ChangeColor(copyToTarget, AppearanceArmorColor.Leather2, newColor);
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                DestroyObject(item);
+            }
+            // Metal 1
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+            {
+                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Metal1);
+                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Metal1);
+                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
+                ChangeColor(copyToTarget, AppearanceArmorColor.Metal1, newColor);
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                DestroyObject(item);
+            }
+            // Metal 2
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+            {
+                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Metal2);
+                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Metal2);
+                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
+                ChangeColor(copyToTarget, AppearanceArmorColor.Metal2, newColor);
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                DestroyObject(item);
+            }
+        }
+
         public Action OnClickCopyToRight() => () =>
         {
             var appearanceType = GetAppearanceType(_target);
@@ -2076,6 +2143,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DestroyObject(item);
             }
 
+            // Color modification
+            CopyColors(ref item, ColorTarget.RightShoulder, ColorTarget.LeftShoulder);
+            CopyColors(ref item, ColorTarget.RightBicep, ColorTarget.LeftBicep);
+            CopyColors(ref item, ColorTarget.RightForearm, ColorTarget.LeftForearm);
+            CopyColors(ref item, ColorTarget.RightHand, ColorTarget.LeftHand);
+            CopyColors(ref item, ColorTarget.RightThigh, ColorTarget.LeftThigh);
+            CopyColors(ref item, ColorTarget.RightShin, ColorTarget.LeftShin);
+            CopyColors(ref item, ColorTarget.RightFoot, ColorTarget.LeftFoot);
+
+            // Part modification
             if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 RightShoulderSelection = LeftShoulderSelection;
@@ -2134,6 +2211,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _skipAdjustArmorPart = false;
         };
 
+
         public Action OnClickCopyToLeft() => () =>
         {
             var appearanceType = GetAppearanceType(_target);
@@ -2148,7 +2226,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 DestroyObject(item);
             }
-            
+
+            // Color modification
+            CopyColors(ref item, ColorTarget.LeftShoulder, ColorTarget.RightShoulder);
+            CopyColors(ref item, ColorTarget.LeftBicep, ColorTarget.RightBicep);
+            CopyColors(ref item, ColorTarget.LeftForearm, ColorTarget.RightForearm);
+            CopyColors(ref item, ColorTarget.LeftHand, ColorTarget.RightHand);
+            CopyColors(ref item, ColorTarget.LeftThigh, ColorTarget.RightThigh);
+            CopyColors(ref item, ColorTarget.LeftShin, ColorTarget.RightShin);
+            CopyColors(ref item, ColorTarget.LeftFoot, ColorTarget.RightFoot);
+
+            // Part modification
             if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 LeftShoulderSelection = RightShoulderSelection;

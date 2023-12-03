@@ -16,8 +16,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float MainColorChannelButtonSize = 72f;
         private const float PartColorChannelButtonSize = 16f;
 
-        private GuiRectangle DummyRegion = new GuiRectangle(0, 0, 16, 16);
-
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.AppearanceEditor)
@@ -252,54 +250,55 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 col.AddRow(row =>
                 {
                     CreateFilledButton(
-                        row, 
-                        "gui_pal_armor01", 
-                        DummyRegion, 
+                        row,
+                        "gui_pal_tattoo", 
+                        model => model.GlobalLeather1Region, 
                         MainColorChannelButtonSize, 
                         4f,
-                        model => model.OnClickColorTarget());
+                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather1));
+                    CreateFilledButton(
+                        row,
+                        "gui_pal_tattoo",
+                        model => model.GlobalCloth1Region,
+                        MainColorChannelButtonSize, 
+                        4f,
+                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth1));
                     CreateFilledButton(
                         row, 
-                        "gui_pal_armor01", 
-                        DummyRegion, 
+                        "gui_pal_armor01",
+                        model => model.GlobalMetal1Region,
                         MainColorChannelButtonSize, 
                         4f,
-                        model => model.OnClickColorTarget());
-                    CreateFilledButton(
-                        row, 
-                        "gui_pal_armor01", 
-                        DummyRegion, 
-                        MainColorChannelButtonSize, 
-                        4f,
-                        model => model.OnClickColorTarget());
+                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal1));
                 });
                 col.AddRow(row =>
                 {
                     CreateFilledButton(
-                        row, 
-                        "gui_pal_armor01", 
-                        DummyRegion, 
+                        row,
+                        "gui_pal_tattoo",
+                        model => model.GlobalLeather2Region,
                         MainColorChannelButtonSize, 
                         4f,
-                        model => model.OnClickColorTarget());
+                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2));
+                    CreateFilledButton(
+                        row,
+                        "gui_pal_tattoo",
+                        model => model.GlobalCloth2Region,
+                        MainColorChannelButtonSize, 
+                        4f,
+                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth2));
                     CreateFilledButton(
                         row, 
-                        "gui_pal_armor01", 
-                        DummyRegion, 
+                        "gui_pal_armor01",
+                        model => model.GlobalMetal2Region,
                         MainColorChannelButtonSize, 
                         4f,
-                        model => model.OnClickColorTarget());
-                    CreateFilledButton(
-                        row, 
-                        "gui_pal_armor01", 
-                        DummyRegion, 
-                        MainColorChannelButtonSize, 
-                        4f,
-                        model => model.OnClickColorTarget());
+                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal2));
                 });
                 col.AddRow(row =>
                 {
-                    row.AddSpacer();
+                    row.AddSpacer()
+                        .SetHeight(32f);
                 });
             }
 
@@ -307,6 +306,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 GuiColumn<AppearanceEditorViewModel> col, 
                 string partName,
                 AppearanceArmor partType,
+                AppearanceEditorViewModel.ColorTarget colorTarget,
                 Expression<Func<AppearanceEditorViewModel, GuiBindingList<GuiComboEntry>>> optionsBinding,
                 Expression<Func<AppearanceEditorViewModel, int>> selectionBinding)
             {
@@ -347,26 +347,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     row.AddSpacer();
                     CreateFilledButton(
-                        row, 
-                        "gui_pal_armor01", 
-                        DummyRegion, 
+                        row,
+                        "gui_pal_tattoo", 
+                        model => model.DummyRegion, 
                         PartColorChannelButtonSize, 
                         2f,
-                        model => model.OnClickColorTarget());
+                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Leather1));
                     CreateFilledButton(
-                        row, 
-                        "gui_pal_armor01", 
-                        DummyRegion, 
+                        row,
+                        "gui_pal_tattoo",
+                        model => model.DummyRegion,
                         PartColorChannelButtonSize, 
                         2f,
-                        model => model.OnClickColorTarget());
+                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Cloth1));
                     CreateFilledButton(
-                        row, 
-                        "gui_pal_armor01", 
-                        DummyRegion, 
+                        row,
+                        "gui_pal_armor01",
+                        model => model.DummyRegion,
                         PartColorChannelButtonSize, 
                         2f,
-                        model => model.OnClickColorTarget());
+                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Metal1));
                     row.AddSpacer();
                 });
 
@@ -374,26 +374,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     row.AddSpacer();
                     CreateFilledButton(
-                        row, 
-                        "gui_pal_armor01",
-                        DummyRegion, 
+                        row,
+                        "gui_pal_tattoo",
+                        model => model.DummyRegion,
                         PartColorChannelButtonSize, 
                         2f,
-                        model => model.OnClickColorTarget());
+                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Leather2));
+                    CreateFilledButton(
+                        row,
+                        "gui_pal_tattoo",
+                        model => model.DummyRegion,
+                        PartColorChannelButtonSize, 
+                        2f,
+                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Cloth2));
                     CreateFilledButton(
                         row, 
                         "gui_pal_armor01",
-                        DummyRegion, 
+                        model => model.DummyRegion,
                         PartColorChannelButtonSize, 
                         2f,
-                        model => model.OnClickColorTarget());
-                    CreateFilledButton(
-                        row, 
-                        "gui_pal_armor01",
-                        DummyRegion,
-                        PartColorChannelButtonSize, 
-                        2f,
-                        model => model.OnClickColorTarget());
+                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Metal2));
                     row.AddSpacer();
                 });
             }
@@ -422,42 +422,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         col, 
                         "Left Shoulder", 
                         AppearanceArmor.LeftShoulder,
+                        AppearanceEditorViewModel.ColorTarget.LeftShoulder,
                         model => model.LeftShoulderOptions, 
                         model => model.LeftShoulderSelection);
                     CreatePartEditor(
                         col, 
                         "Left Bicep",
                         AppearanceArmor.LeftBicep,
+                        AppearanceEditorViewModel.ColorTarget.LeftBicep,
                         model => model.LeftBicepOptions,
                         model => model.LeftBicepSelection);
                     CreatePartEditor(
                         col, 
                         "Left Forearm",
                         AppearanceArmor.LeftForearm,
+                        AppearanceEditorViewModel.ColorTarget.LeftForearm,
                         model => model.LeftForearmOptions,
                         model => model.LeftForearmSelection);
                     CreatePartEditor(
                         col, 
                         "Left Hand",
                         AppearanceArmor.LeftHand,
+                        AppearanceEditorViewModel.ColorTarget.LeftHand,
                         model => model.LeftHandOptions,
                         model => model.LeftHandSelection);
                     CreatePartEditor(
                         col, 
                         "Left Thigh",
                         AppearanceArmor.LeftThigh,
+                        AppearanceEditorViewModel.ColorTarget.LeftThigh,
                         model => model.LeftThighOptions,
                         model => model.LeftThighSelection);
                     CreatePartEditor(
                         col, 
                         "Left Shin",
                         AppearanceArmor.LeftShin,
+                        AppearanceEditorViewModel.ColorTarget.LeftShin,
                         model => model.LeftShinOptions,
                         model => model.LeftShinSelection);
                     CreatePartEditor(
                         col, 
                         "Left Foot",
                         AppearanceArmor.LeftFoot,
+                        AppearanceEditorViewModel.ColorTarget.LeftFoot,
                         model => model.LeftFootOptions,
                         model => model.LeftFootSelection);
                 });
@@ -470,30 +477,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         col, 
                         "Neck",
                         AppearanceArmor.Neck,
+                        AppearanceEditorViewModel.ColorTarget.Neck,
                         model => model.NeckOptions,
                         model => model.NeckSelection);
                     CreatePartEditor(
                         col, 
                         "Chest",
                         AppearanceArmor.Torso,
+                        AppearanceEditorViewModel.ColorTarget.Chest,
                         model => model.ChestOptions,
                         model => model.ChestSelection);
                     CreatePartEditor(
                         col, 
                         "Belt",
                         AppearanceArmor.Belt,
+                        AppearanceEditorViewModel.ColorTarget.Belt,
                         model => model.BeltOptions,
                         model => model.BeltSelection);
                     CreatePartEditor(
                         col, 
                         "Pelvis",
                         AppearanceArmor.Pelvis,
+                        AppearanceEditorViewModel.ColorTarget.Pelvis,
                         model => model.PelvisOptions,
                         model => model.PelvisSelection);
                     CreatePartEditor(
                         col, 
                         "Robe",
                         AppearanceArmor.Robe,
+                        AppearanceEditorViewModel.ColorTarget.Robe,
                         model => model.RobeOptions,
                         model => model.RobeSelection);
 
@@ -519,42 +531,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         col, 
                         "Right Shoulder",
                         AppearanceArmor.RightShoulder,
+                        AppearanceEditorViewModel.ColorTarget.RightShoulder,
                         model => model.RightShoulderOptions,
                         model => model.RightShoulderSelection);
                     CreatePartEditor(
                         col, 
                         "Right Bicep",
                         AppearanceArmor.RightBicep,
+                        AppearanceEditorViewModel.ColorTarget.RightBicep,
                         model => model.RightBicepOptions,
                         model => model.RightBicepSelection);
                     CreatePartEditor(
                         col, 
                         "Right Forearm",
                         AppearanceArmor.RightForearm,
+                        AppearanceEditorViewModel.ColorTarget.RightForearm,
                         model => model.RightForearmOptions,
                         model => model.RightForearmSelection);
                     CreatePartEditor(
                         col, 
                         "Right Hand",
                         AppearanceArmor.RightHand,
+                        AppearanceEditorViewModel.ColorTarget.RightHand,
                         model => model.RightHandOptions,
                         model => model.RightHandSelection);
                     CreatePartEditor(
                         col, 
                         "Right Thigh",
                         AppearanceArmor.RightThigh,
+                        AppearanceEditorViewModel.ColorTarget.RightThigh,
                         model => model.RightThighOptions,
                         model => model.RightThighSelection);
                     CreatePartEditor(
                         col, 
                         "Right Shin",
                         AppearanceArmor.RightShin,
+                        AppearanceEditorViewModel.ColorTarget.RightShin,
                         model => model.RightShinOptions,
                         model => model.RightShinSelection);
                     CreatePartEditor(
                         col, 
                         "Right Foot",
                         AppearanceArmor.RightFoot,
+                        AppearanceEditorViewModel.ColorTarget.RightFoot,
                         model => model.RightFootOptions,
                         model => model.RightFootSelection);
                 });
@@ -644,10 +663,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private void CreateFilledButton(
             GuiExpandableComponent<AppearanceEditorViewModel> component,
             string texture,
-            GuiRectangle region,
+            Expression<Func<AppearanceEditorViewModel, GuiRectangle>> regionBind,
             float buttonSize,
             float drawOffset,
-            Expression<Func<AppearanceEditorViewModel, Action>> onClickBind)
+            Expression<Func<AppearanceEditorViewModel, Action>> onClickBind,
+            GuiRectangle staticRegion = null)
         {
             component.AddButton()
                 .SetText("")
@@ -664,7 +684,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         image.SetAspect(NuiAspect.Stretch);
                         image.SetHorizontalAlign(NuiHorizontalAlign.Left);
                         image.SetVerticalAlign(NuiVerticalAlign.Top);
-                        image.SetDrawTextureRegion(region);
+                        if (regionBind != null)
+                        {
+                            image.BindDrawTextureRegion(regionBind);
+                        }
+
+                        if (staticRegion != null)
+                        {
+                            image.SetDrawTextureRegion(staticRegion);
+                        }
                     });
                 })
                 .BindOnClicked(onClickBind);
@@ -729,6 +757,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             group.AddColumn(col =>
             {
+                col.AddRow(row =>
+                {
+                    row.AddLabel()
+                        .SetHeight(20f)
+                        .BindText(model => model.ColorTargetText)
+                        .BindIsVisible(model => model.IsEquipmentSelected);
+                });
+
                 const int TextureColorsPerRow = 16;
                 const int ColorSize = 16; // 16x16 colors on the sprite sheet
                 const int UIColorsPerRow = 20;
@@ -758,14 +794,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             CreateFilledButton(
                                 uiRow, 
                                 texture, 
-                                region, 
+                                null, 
                                 PartColorChannelButtonSize, 
                                 2f,
-                                model => model.OnClickColorPalette(paletteIndex));
+                                model => model.OnClickColorPalette(paletteIndex),
+                                region);
                         }
                     });
-
                 }
+
             });
         }
     }

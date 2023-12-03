@@ -17,12 +17,13 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class AppearanceEditorViewModel :
+    public partial class AppearanceEditorViewModel :
         GuiViewModelBase<AppearanceEditorViewModel, AppearanceEditorPayload>,
         IGuiRefreshable<EquipItemRefreshEvent>
     {
         public enum ColorTarget
         {
+            Invalid = 0,
             Global = 1,
             LeftShoulder = 2,
             LeftBicep = 3,
@@ -56,6 +57,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string ArmorColorsClothLeather = "APPEARANCE_EDITOR_COLORS_CLOTH_LEATHER";
         public const string ArmorColorsMetal = "APPEARANCE_EDITOR_COLORS_METAL";
 
+        public const int TextureColorsPerRow = 16;
+        public const int ColorSize = 16; // 16x16 colors on the sprite sheet
         private const int ColorWidthCells = 16;
         private const int ColorHeightCells = 11;
 
@@ -68,15 +71,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private AppearanceArmorColor _selectedColorChannel;
         private ColorTarget _colorTarget;
-
-        public GuiRectangle GlobalLeather1Region { get => Get<GuiRectangle>(); set => Set(value); }
-        public GuiRectangle GlobalLeather2Region { get => Get<GuiRectangle>(); set => Set(value); }
-        public GuiRectangle GlobalCloth1Region { get => Get<GuiRectangle>(); set => Set(value); }
-        public GuiRectangle GlobalCloth2Region { get => Get<GuiRectangle>(); set => Set(value); }
-        public GuiRectangle GlobalMetal1Region { get => Get<GuiRectangle>(); set => Set(value); }
-        public GuiRectangle GlobalMetal2Region { get => Get<GuiRectangle>(); set => Set(value); }
-
-        public GuiRectangle DummyRegion { get => Get<GuiRectangle>(); set => Set(value); }
 
         [NWNEventHandler("mod_load")]
         public static void LoadAppearances()
@@ -733,6 +727,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _target = initialPayload.Target;
             }
 
+            _colorTarget = ColorTarget.Invalid;
+            RegisterColorMappings();
             ChangePartialView(MainPartialElement, EditorHeaderPartial);
             IsAppearanceSelected = true;
             IsEquipmentSelected = false;
@@ -1094,16 +1090,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var item = GetItem();
-            GuiRectangle BuildColorRegion(AppearanceArmorColor colorChannel)
-            {
-                const int ColorSize = 16;
-                var colorId = GetItemAppearance(item, ItemAppearanceType.ArmorColor, (int)colorChannel);
-                var x = colorId / 11;
-                var y = colorId / 16;
-
-                return new GuiRectangle(x * ColorSize, y * ColorSize, ColorSize, ColorSize);
-            }
-
             int[] partIds;
             int selectedPartId;
             var appearanceType = GetAppearanceType(_target);
@@ -1157,14 +1143,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 RightShinSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin);
                 RightFootSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot);
 
-                DummyRegion = new GuiRectangle(0, 0, 16, 16);
-
-                GlobalLeather1Region = BuildColorRegion(AppearanceArmorColor.Leather1);
-                GlobalLeather2Region = BuildColorRegion(AppearanceArmorColor.Leather2);
-                GlobalCloth1Region = BuildColorRegion(AppearanceArmorColor.Cloth1);
-                GlobalCloth2Region = BuildColorRegion(AppearanceArmorColor.Cloth2);
-                GlobalMetal1Region = BuildColorRegion(AppearanceArmorColor.Metal1);
-                GlobalMetal2Region = BuildColorRegion(AppearanceArmorColor.Metal2);
+                UpdateAllColors();
 
                 _skipAdjustArmorPart = false;
 
@@ -1728,6 +1707,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            if (_colorTarget == ColorTarget.Invalid)
+                return;
+
             if (_colorTarget == ColorTarget.Global)
             {
                 var item = GetItem();
@@ -1740,73 +1722,86 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var item = GetItem();
                 DestroyObject(item);
 
-                var armorModelId = 0;
-                switch (_colorTarget)
-                {
-                    case ColorTarget.LeftShoulder:
-                        armorModelId = (int)AppearanceArmor.LeftShoulder;
-                        break;
-                    case ColorTarget.LeftBicep:
-                        armorModelId = (int)AppearanceArmor.LeftBicep;
-                        break;
-                    case ColorTarget.LeftForearm:
-                        armorModelId = (int)AppearanceArmor.LeftForearm;
-                        break;
-                    case ColorTarget.LeftHand:
-                        armorModelId = (int)AppearanceArmor.LeftHand;
-                        break;
-                    case ColorTarget.LeftThigh:
-                        armorModelId = (int)AppearanceArmor.LeftThigh;
-                        break;
-                    case ColorTarget.LeftShin:
-                        armorModelId = (int)AppearanceArmor.LeftShin;
-                        break;
-                    case ColorTarget.LeftFoot:
-                        armorModelId = (int)AppearanceArmor.LeftFoot;
-                        break;
-                    case ColorTarget.RightShoulder:
-                        armorModelId = (int)AppearanceArmor.RightShoulder;
-                        break;
-                    case ColorTarget.RightBicep:
-                        armorModelId = (int)AppearanceArmor.RightBicep;
-                        break;
-                    case ColorTarget.RightForearm:
-                        armorModelId = (int)AppearanceArmor.RightForearm;
-                        break;
-                    case ColorTarget.RightHand:
-                        armorModelId = (int)AppearanceArmor.RightHand;
-                        break;
-                    case ColorTarget.RightThigh:
-                        armorModelId = (int)AppearanceArmor.RightThigh;
-                        break;
-                    case ColorTarget.RightShin:
-                        armorModelId = (int)AppearanceArmor.RightShin;
-                        break;
-                    case ColorTarget.RightFoot:
-                        armorModelId = (int)AppearanceArmor.RightFoot;
-                        break;
-                    case ColorTarget.Neck:
-                        armorModelId = (int)AppearanceArmor.Neck;
-                        break;
-                    case ColorTarget.Chest:
-                        armorModelId = (int)AppearanceArmor.Torso;
-                        break;
-                    case ColorTarget.Belt:
-                        armorModelId = (int)AppearanceArmor.Belt;
-                        break;
-                    case ColorTarget.Pelvis:
-                        armorModelId = (int)AppearanceArmor.Pelvis;
-                        break;
-                    case ColorTarget.Robe:
-                        armorModelId = (int)AppearanceArmor.Robe;
-                        break;
-                }
-
-                var index = (int)AppearanceArmorColor.NumColors + armorModelId * (int)AppearanceArmorColor.NumColors + (int)_selectedColorChannel;
+                var armorModel = GetArmorModelType(_colorTarget);
+                var index = CalculatePerPartColorIndex(armorModel, _selectedColorChannel);
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, index, colorId, true);
                 AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
             }
+
+            ChangeColor(_colorTarget, _selectedColorChannel, colorId);
         };
+
+        private AppearanceArmor GetArmorModelType(ColorTarget colorTarget)
+        {
+            var armorModel = AppearanceArmor.Invalid;
+            switch (colorTarget)
+            {
+                case ColorTarget.LeftShoulder:
+                    armorModel = AppearanceArmor.LeftShoulder;
+                    break;
+                case ColorTarget.LeftBicep:
+                    armorModel = AppearanceArmor.LeftBicep;
+                    break;
+                case ColorTarget.LeftForearm:
+                    armorModel = AppearanceArmor.LeftForearm;
+                    break;
+                case ColorTarget.LeftHand:
+                    armorModel = AppearanceArmor.LeftHand;
+                    break;
+                case ColorTarget.LeftThigh:
+                    armorModel = AppearanceArmor.LeftThigh;
+                    break;
+                case ColorTarget.LeftShin:
+                    armorModel = AppearanceArmor.LeftShin;
+                    break;
+                case ColorTarget.LeftFoot:
+                    armorModel = AppearanceArmor.LeftFoot;
+                    break;
+                case ColorTarget.RightShoulder:
+                    armorModel = AppearanceArmor.RightShoulder;
+                    break;
+                case ColorTarget.RightBicep:
+                    armorModel = AppearanceArmor.RightBicep;
+                    break;
+                case ColorTarget.RightForearm:
+                    armorModel = AppearanceArmor.RightForearm;
+                    break;
+                case ColorTarget.RightHand:
+                    armorModel = AppearanceArmor.RightHand;
+                    break;
+                case ColorTarget.RightThigh:
+                    armorModel = AppearanceArmor.RightThigh;
+                    break;
+                case ColorTarget.RightShin:
+                    armorModel = AppearanceArmor.RightShin;
+                    break;
+                case ColorTarget.RightFoot:
+                    armorModel = AppearanceArmor.RightFoot;
+                    break;
+                case ColorTarget.Neck:
+                    armorModel = AppearanceArmor.Neck;
+                    break;
+                case ColorTarget.Chest:
+                    armorModel = AppearanceArmor.Torso;
+                    break;
+                case ColorTarget.Belt:
+                    armorModel = AppearanceArmor.Belt;
+                    break;
+                case ColorTarget.Pelvis:
+                    armorModel = AppearanceArmor.Pelvis;
+                    break;
+                case ColorTarget.Robe:
+                    armorModel = AppearanceArmor.Robe;
+                    break;
+            }
+
+            return armorModel;
+        }
+
+        private int CalculatePerPartColorIndex(AppearanceArmor armorModel, AppearanceArmorColor colorChannel)
+        {
+            return (int)AppearanceArmorColor.NumColors + (int)armorModel * (int)AppearanceArmorColor.NumColors + (int)colorChannel;
+        }
 
         public Action OnClickColorTarget(ColorTarget target, AppearanceArmorColor channel) => () =>
         {
@@ -1824,6 +1819,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ChangePartialView(ArmorColorElement, ArmorColorsClothLeather);
             }
         };
+
+        private GuiRectangle BuildColorRegion(ColorTarget target, AppearanceArmorColor colorChannel)
+        {
+            var item = GetItem();
+            int colorId;
+
+            if (target == ColorTarget.Global)
+            {
+                colorId = GetItemAppearance(item, ItemAppearanceType.ArmorColor, (int)colorChannel);
+            }
+            else
+            {
+                var armorModel = GetArmorModelType(target);
+                var perPartColorIndex = CalculatePerPartColorIndex(armorModel, colorChannel);
+                colorId = GetItemAppearance(item, ItemAppearanceType.ArmorColor, perPartColorIndex);
+            }
+
+            var (x, y) = ColorIdToCoordinates(colorId);
+
+            return new GuiRectangle(x * ColorSize, y * ColorSize, ColorSize, ColorSize);
+        }
+
+        private void UpdateAllColors()
+        {
+            foreach (var (target, regions) in _colorMappings)
+            {
+                foreach (var (channel, detail) in regions)
+                {
+                    GetType().GetProperty(detail.PropertyName)?.SetValue(this, BuildColorRegion(target, channel));
+                }
+            }
+        }
 
         private void UpdateTargetedColor()
         {

@@ -308,7 +308,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 AppearanceArmor partType,
                 AppearanceEditorViewModel.ColorTarget colorTarget,
                 Expression<Func<AppearanceEditorViewModel, GuiBindingList<GuiComboEntry>>> optionsBinding,
-                Expression<Func<AppearanceEditorViewModel, int>> selectionBinding)
+                Expression<Func<AppearanceEditorViewModel, int>> selectionBinding,
+                Expression<Func<AppearanceEditorViewModel, GuiRectangle>> leather1RegionBinding,
+                Expression<Func<AppearanceEditorViewModel, GuiRectangle>> leather2RegionBinding,
+                Expression<Func<AppearanceEditorViewModel, GuiRectangle>> cloth1RegionBinding,
+                Expression<Func<AppearanceEditorViewModel, GuiRectangle>> cloth2RegionBinding,
+                Expression<Func<AppearanceEditorViewModel, GuiRectangle>> metal1RegionBinding,
+                Expression<Func<AppearanceEditorViewModel, GuiRectangle>> metal2RegionBinding)
             {
                 col.AddRow(row =>
                 {
@@ -349,21 +355,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     CreateFilledButton(
                         row,
                         "gui_pal_tattoo", 
-                        model => model.DummyRegion, 
+                        leather1RegionBinding, 
                         PartColorChannelButtonSize, 
                         2f,
                         model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Leather1));
                     CreateFilledButton(
                         row,
                         "gui_pal_tattoo",
-                        model => model.DummyRegion,
+                        cloth1RegionBinding,
                         PartColorChannelButtonSize, 
                         2f,
                         model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Cloth1));
                     CreateFilledButton(
                         row,
                         "gui_pal_armor01",
-                        model => model.DummyRegion,
+                        metal1RegionBinding,
                         PartColorChannelButtonSize, 
                         2f,
                         model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Metal1));
@@ -376,21 +382,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     CreateFilledButton(
                         row,
                         "gui_pal_tattoo",
-                        model => model.DummyRegion,
+                        leather2RegionBinding,
                         PartColorChannelButtonSize, 
                         2f,
                         model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Leather2));
                     CreateFilledButton(
                         row,
                         "gui_pal_tattoo",
-                        model => model.DummyRegion,
+                        cloth2RegionBinding,
                         PartColorChannelButtonSize, 
                         2f,
                         model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Cloth2));
                     CreateFilledButton(
                         row, 
                         "gui_pal_armor01",
-                        model => model.DummyRegion,
+                        metal2RegionBinding,
                         PartColorChannelButtonSize, 
                         2f,
                         model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Metal2));
@@ -424,49 +430,91 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         AppearanceArmor.LeftShoulder,
                         AppearanceEditorViewModel.ColorTarget.LeftShoulder,
                         model => model.LeftShoulderOptions, 
-                        model => model.LeftShoulderSelection);
+                        model => model.LeftShoulderSelection,
+                        model => model.LeftShoulderLeather1Region,
+                        model => model.LeftShoulderLeather2Region,
+                        model => model.LeftShoulderCloth1Region,
+                        model => model.LeftShoulderCloth2Region,
+                        model => model.LeftShoulderMetal1Region,
+                        model => model.LeftShoulderMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Left Bicep",
                         AppearanceArmor.LeftBicep,
                         AppearanceEditorViewModel.ColorTarget.LeftBicep,
                         model => model.LeftBicepOptions,
-                        model => model.LeftBicepSelection);
+                        model => model.LeftBicepSelection,
+                        model => model.LeftBicepLeather1Region,
+                        model => model.LeftBicepLeather2Region,
+                        model => model.LeftBicepCloth1Region,
+                        model => model.LeftBicepCloth2Region,
+                        model => model.LeftBicepMetal1Region,
+                        model => model.LeftBicepMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Left Forearm",
                         AppearanceArmor.LeftForearm,
                         AppearanceEditorViewModel.ColorTarget.LeftForearm,
                         model => model.LeftForearmOptions,
-                        model => model.LeftForearmSelection);
+                        model => model.LeftForearmSelection,
+                        model => model.LeftForearmLeather1Region,
+                        model => model.LeftForearmLeather2Region,
+                        model => model.LeftForearmCloth1Region,
+                        model => model.LeftForearmCloth2Region,
+                        model => model.LeftForearmMetal1Region,
+                        model => model.LeftForearmMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Left Hand",
                         AppearanceArmor.LeftHand,
                         AppearanceEditorViewModel.ColorTarget.LeftHand,
                         model => model.LeftHandOptions,
-                        model => model.LeftHandSelection);
+                        model => model.LeftHandSelection,
+                        model => model.LeftHandLeather1Region,
+                        model => model.LeftHandLeather2Region,
+                        model => model.LeftHandCloth1Region,
+                        model => model.LeftHandCloth2Region,
+                        model => model.LeftHandMetal1Region,
+                        model => model.LeftHandMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Left Thigh",
                         AppearanceArmor.LeftThigh,
                         AppearanceEditorViewModel.ColorTarget.LeftThigh,
                         model => model.LeftThighOptions,
-                        model => model.LeftThighSelection);
+                        model => model.LeftThighSelection,
+                        model => model.LeftThighLeather1Region,
+                        model => model.LeftThighLeather2Region,
+                        model => model.LeftThighCloth1Region,
+                        model => model.LeftThighCloth2Region,
+                        model => model.LeftThighMetal1Region,
+                        model => model.LeftThighMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Left Shin",
                         AppearanceArmor.LeftShin,
                         AppearanceEditorViewModel.ColorTarget.LeftShin,
                         model => model.LeftShinOptions,
-                        model => model.LeftShinSelection);
+                        model => model.LeftShinSelection,
+                        model => model.LeftShinLeather1Region,
+                        model => model.LeftShinLeather2Region,
+                        model => model.LeftShinCloth1Region,
+                        model => model.LeftShinCloth2Region,
+                        model => model.LeftShinMetal1Region,
+                        model => model.LeftShinMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Left Foot",
                         AppearanceArmor.LeftFoot,
                         AppearanceEditorViewModel.ColorTarget.LeftFoot,
                         model => model.LeftFootOptions,
-                        model => model.LeftFootSelection);
+                        model => model.LeftFootSelection,
+                        model => model.LeftFootLeather1Region,
+                        model => model.LeftFootLeather2Region,
+                        model => model.LeftFootCloth1Region,
+                        model => model.LeftFootCloth2Region,
+                        model => model.LeftFootMetal1Region,
+                        model => model.LeftFootMetal2Region);
                 });
 
                 CreateGap(mainRow);
@@ -479,35 +527,65 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         AppearanceArmor.Neck,
                         AppearanceEditorViewModel.ColorTarget.Neck,
                         model => model.NeckOptions,
-                        model => model.NeckSelection);
+                        model => model.NeckSelection,
+                        model => model.NeckLeather1Region,
+                        model => model.NeckLeather2Region,
+                        model => model.NeckCloth1Region,
+                        model => model.NeckCloth2Region,
+                        model => model.NeckMetal1Region,
+                        model => model.NeckMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Chest",
                         AppearanceArmor.Torso,
                         AppearanceEditorViewModel.ColorTarget.Chest,
                         model => model.ChestOptions,
-                        model => model.ChestSelection);
+                        model => model.ChestSelection,
+                        model => model.ChestLeather1Region,
+                        model => model.ChestLeather2Region,
+                        model => model.ChestCloth1Region,
+                        model => model.ChestCloth2Region,
+                        model => model.ChestMetal1Region,
+                        model => model.ChestMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Belt",
                         AppearanceArmor.Belt,
                         AppearanceEditorViewModel.ColorTarget.Belt,
                         model => model.BeltOptions,
-                        model => model.BeltSelection);
+                        model => model.BeltSelection,
+                        model => model.BeltLeather1Region,
+                        model => model.BeltLeather2Region,
+                        model => model.BeltCloth1Region,
+                        model => model.BeltCloth2Region,
+                        model => model.BeltMetal1Region,
+                        model => model.BeltMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Pelvis",
                         AppearanceArmor.Pelvis,
                         AppearanceEditorViewModel.ColorTarget.Pelvis,
                         model => model.PelvisOptions,
-                        model => model.PelvisSelection);
+                        model => model.PelvisSelection,
+                        model => model.PelvisLeather1Region,
+                        model => model.PelvisLeather2Region,
+                        model => model.PelvisCloth1Region,
+                        model => model.PelvisCloth2Region,
+                        model => model.PelvisMetal1Region,
+                        model => model.PelvisMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Robe",
                         AppearanceArmor.Robe,
                         AppearanceEditorViewModel.ColorTarget.Robe,
                         model => model.RobeOptions,
-                        model => model.RobeSelection);
+                        model => model.RobeSelection,
+                        model => model.RobeLeather1Region,
+                        model => model.RobeLeather2Region,
+                        model => model.RobeCloth1Region,
+                        model => model.RobeCloth2Region,
+                        model => model.RobeMetal1Region,
+                        model => model.RobeMetal2Region);
 
                     col.AddRow(row =>
                     {
@@ -533,49 +611,91 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         AppearanceArmor.RightShoulder,
                         AppearanceEditorViewModel.ColorTarget.RightShoulder,
                         model => model.RightShoulderOptions,
-                        model => model.RightShoulderSelection);
+                        model => model.RightShoulderSelection,
+                        model => model.RightShoulderLeather1Region,
+                        model => model.RightShoulderLeather2Region,
+                        model => model.RightShoulderCloth1Region,
+                        model => model.RightShoulderCloth2Region,
+                        model => model.RightShoulderMetal1Region,
+                        model => model.RightShoulderMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Right Bicep",
                         AppearanceArmor.RightBicep,
                         AppearanceEditorViewModel.ColorTarget.RightBicep,
                         model => model.RightBicepOptions,
-                        model => model.RightBicepSelection);
+                        model => model.RightBicepSelection,
+                        model => model.RightBicepLeather1Region,
+                        model => model.RightBicepLeather2Region,
+                        model => model.RightBicepCloth1Region,
+                        model => model.RightBicepCloth2Region,
+                        model => model.RightBicepMetal1Region,
+                        model => model.RightBicepMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Right Forearm",
                         AppearanceArmor.RightForearm,
                         AppearanceEditorViewModel.ColorTarget.RightForearm,
                         model => model.RightForearmOptions,
-                        model => model.RightForearmSelection);
+                        model => model.RightForearmSelection,
+                        model => model.RightForearmLeather1Region,
+                        model => model.RightForearmLeather2Region,
+                        model => model.RightForearmCloth1Region,
+                        model => model.RightForearmCloth2Region,
+                        model => model.RightForearmMetal1Region,
+                        model => model.RightForearmMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Right Hand",
                         AppearanceArmor.RightHand,
                         AppearanceEditorViewModel.ColorTarget.RightHand,
                         model => model.RightHandOptions,
-                        model => model.RightHandSelection);
+                        model => model.RightHandSelection,
+                        model => model.RightHandLeather1Region,
+                        model => model.RightHandLeather2Region,
+                        model => model.RightHandCloth1Region,
+                        model => model.RightHandCloth2Region,
+                        model => model.RightHandMetal1Region,
+                        model => model.RightHandMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Right Thigh",
                         AppearanceArmor.RightThigh,
                         AppearanceEditorViewModel.ColorTarget.RightThigh,
                         model => model.RightThighOptions,
-                        model => model.RightThighSelection);
+                        model => model.RightThighSelection,
+                        model => model.RightThighLeather1Region,
+                        model => model.RightThighLeather2Region,
+                        model => model.RightThighCloth1Region,
+                        model => model.RightThighCloth2Region,
+                        model => model.RightThighMetal1Region,
+                        model => model.RightThighMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Right Shin",
                         AppearanceArmor.RightShin,
                         AppearanceEditorViewModel.ColorTarget.RightShin,
                         model => model.RightShinOptions,
-                        model => model.RightShinSelection);
+                        model => model.RightShinSelection,
+                        model => model.RightShinLeather1Region,
+                        model => model.RightShinLeather2Region,
+                        model => model.RightShinCloth1Region,
+                        model => model.RightShinCloth2Region,
+                        model => model.RightShinMetal1Region,
+                        model => model.RightShinMetal2Region);
                     CreatePartEditor(
                         col, 
                         "Right Foot",
                         AppearanceArmor.RightFoot,
                         AppearanceEditorViewModel.ColorTarget.RightFoot,
                         model => model.RightFootOptions,
-                        model => model.RightFootSelection);
+                        model => model.RightFootSelection,
+                        model => model.RightFootLeather1Region,
+                        model => model.RightFootLeather2Region,
+                        model => model.RightFootCloth1Region,
+                        model => model.RightFootCloth2Region,
+                        model => model.RightFootMetal1Region,
+                        model => model.RightFootMetal2Region);
                 });
             }
 
@@ -765,8 +885,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindIsVisible(model => model.IsEquipmentSelected);
                 });
 
-                const int TextureColorsPerRow = 16;
-                const int ColorSize = 16; // 16x16 colors on the sprite sheet
                 const int UIColorsPerRow = 20;
                 const int ColorTotalCount = 176;
                 const int RowCount = 1 + ColorTotalCount / UIColorsPerRow;
@@ -782,14 +900,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             if (paletteIndex >= ColorTotalCount)
                                 break;
 
-                            var row = paletteIndex / TextureColorsPerRow;
-                            var offset = paletteIndex % TextureColorsPerRow;
+                            var row = paletteIndex / AppearanceEditorViewModel.TextureColorsPerRow;
+                            var offset = paletteIndex % AppearanceEditorViewModel.TextureColorsPerRow;
 
                             var region = new GuiRectangle(
-                                offset * ColorSize + 2,
-                                row * ColorSize + 2,
-                                ColorSize - 4,
-                                ColorSize - 4);
+                                offset * AppearanceEditorViewModel.ColorSize + 2,
+                                row * AppearanceEditorViewModel.ColorSize + 2,
+                                AppearanceEditorViewModel.ColorSize - 4,
+                                AppearanceEditorViewModel.ColorSize - 4);
 
                             CreateFilledButton(
                                 uiRow, 

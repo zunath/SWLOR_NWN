@@ -211,10 +211,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void InitializeRegions()
         {
-            const int X = 0;
-            const int Y = 0;
-            const int Width = ColorSize;
-            const int Height = ColorSize;
+            const int X = 247;
+            const int Y = 55;
+            const int Width = 1;
+            const int Height = 1;
 
             // Global
             GlobalLeather1Region = new GuiRectangle(X, Y, Width, Height);
@@ -386,8 +386,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
         private void ChangeColor(ColorTarget target, AppearanceArmorColor channel, int colorId)
         {
-            var (x, y) = ColorIdToCoordinates(colorId);
-            _colorMappings[target][channel].Region = new GuiRectangle(x * ColorSize, y * ColorSize, ColorSize, ColorSize);
+            if (colorId >= 255)
+            {
+                _colorMappings[target][channel].Region = new GuiRectangle(247, 55, 1, 1);
+            }
+            else
+            {
+                var (x, y) = ColorIdToCoordinates(colorId);
+                _colorMappings[target][channel].Region = new GuiRectangle(x * ColorSize, y * ColorSize, ColorSize, ColorSize);
+            }
+
             GetType().GetProperty(_colorMappings[target][channel].PropertyName)?.SetValue(this, _colorMappings[target][channel].Region);
         }
 

@@ -255,21 +255,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.GlobalLeather1Region, 
                         MainColorChannelButtonSize, 
                         4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather1));
+                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather1),
+                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Leather1));
                     CreateFilledButton(
                         row,
                         "gui_pal_tattoo",
                         model => model.GlobalCloth1Region,
                         MainColorChannelButtonSize, 
                         4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth1));
+                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth1),
+                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Cloth1));
                     CreateFilledButton(
                         row, 
                         "gui_pal_armor01",
                         model => model.GlobalMetal1Region,
                         MainColorChannelButtonSize, 
                         4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal1));
+                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal1),
+                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Metal1));
                 });
                 col.AddRow(row =>
                 {
@@ -279,21 +282,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.GlobalLeather2Region,
                         MainColorChannelButtonSize, 
                         4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2));
+                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2),
+                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Leather2));
                     CreateFilledButton(
                         row,
                         "gui_pal_tattoo",
                         model => model.GlobalCloth2Region,
                         MainColorChannelButtonSize, 
                         4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth2));
+                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth2),
+                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Cloth2));
                     CreateFilledButton(
                         row, 
                         "gui_pal_armor01",
                         model => model.GlobalMetal2Region,
                         MainColorChannelButtonSize, 
                         4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal2));
+                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal2),
+                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Metal2));
                 });
                 col.AddRow(row =>
                 {
@@ -358,21 +364,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         leather1RegionBinding, 
                         PartColorChannelButtonSize, 
                         2f,
-                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Leather1));
+                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Leather1),
+                        model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Leather1));
                     CreateFilledButton(
                         row,
                         "gui_pal_tattoo",
                         cloth1RegionBinding,
                         PartColorChannelButtonSize, 
                         2f,
-                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Cloth1));
+                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Cloth1),
+                        model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Cloth1));
                     CreateFilledButton(
                         row,
                         "gui_pal_armor01",
                         metal1RegionBinding,
                         PartColorChannelButtonSize, 
                         2f,
-                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Metal1));
+                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Metal1),
+                        model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Metal1));
                     row.AddSpacer();
                 });
 
@@ -385,21 +394,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         leather2RegionBinding,
                         PartColorChannelButtonSize, 
                         2f,
-                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Leather2));
+                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Leather2),
+                        model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Leather2));
                     CreateFilledButton(
                         row,
                         "gui_pal_tattoo",
                         cloth2RegionBinding,
                         PartColorChannelButtonSize, 
                         2f,
-                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Cloth2));
+                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Cloth2),
+                        model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Cloth2));
                     CreateFilledButton(
                         row, 
                         "gui_pal_armor01",
                         metal2RegionBinding,
                         PartColorChannelButtonSize, 
                         2f,
-                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Metal2));
+                        model => model.OnClickColorTarget(colorTarget, AppearanceArmorColor.Metal2),
+                        model => model.OnClickClearColor(colorTarget, AppearanceArmorColor.Metal2));
                     row.AddSpacer();
                 });
             }
@@ -787,6 +799,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             float buttonSize,
             float drawOffset,
             Expression<Func<AppearanceEditorViewModel, Action>> onClickBind,
+            Expression<Func<AppearanceEditorViewModel, Action>> onClickClearColor,
             GuiRectangle staticRegion = null)
         {
             component.AddButton()
@@ -815,7 +828,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         }
                     });
                 })
-                .BindOnClicked(onClickBind);
+                .BindOnClicked(onClickBind)
+                .BindOnMouseDown(onClickClearColor);
         }
 
         private void BuildSettings(GuiGroup<AppearanceEditorViewModel> partial)
@@ -916,6 +930,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 PartColorChannelButtonSize, 
                                 2f,
                                 model => model.OnClickColorPalette(paletteIndex),
+                                model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Cloth1),
                                 region);
                         }
                     });

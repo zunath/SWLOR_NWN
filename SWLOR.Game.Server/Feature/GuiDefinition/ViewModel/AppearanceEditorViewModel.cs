@@ -1731,6 +1731,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ChangeColor(_colorTarget, _selectedColorChannel, colorId);
         };
 
+        public Action OnClickClearColor(ColorTarget colorTarget, AppearanceArmorColor colorChannel) => () =>
+        {
+            if (colorTarget == ColorTarget.Invalid)
+                return;
+
+            // Right clicks only.
+            var payload = NuiGetEventPayload();
+            var button = JsonGetInt(JsonObjectGet(payload, "mouse_btn"));
+            if (button != 2)
+                return;
+
+            var item = GetItem();
+            DestroyObject(item);
+
+            var armorModel = GetArmorModelType(colorTarget);
+            var index = CalculatePerPartColorIndex(armorModel, colorChannel);
+            item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, index, 255, true);
+            AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
+
+            ChangeColor(colorTarget, colorChannel, 255);
+        };
+
         private AppearanceArmor GetArmorModelType(ColorTarget colorTarget)
         {
             var armorModel = AppearanceArmor.Invalid;

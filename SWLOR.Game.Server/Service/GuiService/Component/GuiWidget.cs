@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         }
 
         /// <summary>
-        /// Binds an action to the Mouse Down event of the button.
+        /// Binds an action to the Mouse Down event of the element.
         /// Fires when the user's mouse is pressed down on the element.
         /// </summary>
         /// <typeparam name="TMethod">The method of the view model.</typeparam>
@@ -277,7 +277,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         }
 
         /// <summary>
-        /// Binds an action to the Mouse Up event of the button.
+        /// Binds an action to the Mouse Up event of the element.
         /// Fires when the user's mouse is released on the element.
         /// </summary>
         /// <typeparam name="TMethod">The method of the view model.</typeparam>

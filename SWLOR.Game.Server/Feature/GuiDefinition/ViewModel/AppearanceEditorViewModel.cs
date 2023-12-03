@@ -42,6 +42,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private uint _target;
 
+
+
         [NWNEventHandler("mod_load")]
         public static void LoadAppearances()
         {
@@ -1843,61 +1845,61 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var item = GetItem();
 
-            // At least one modification will fit in the player's inventory. Delete the original.
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            // At least one modification will fit in the target's inventory. Delete the original.
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 DestroyObject(item);
             }
 
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 RightShoulderSelection = LeftShoulderSelection;
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder, _armorAppearances[appearanceType].Shoulder[ArmorValueToIndex(RightShoulderOptions, RightShoulderSelection)], true);
                 DestroyObject(item);
             }
             
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 RightBicepSelection = LeftBicepSelection;
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep, _armorAppearances[appearanceType].Bicep[ArmorValueToIndex(RightBicepOptions, RightBicepSelection)], true);
                 DestroyObject(item);
             }
 
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 RightForearmSelection = LeftForearmSelection;
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm, _armorAppearances[appearanceType].Forearm[ArmorValueToIndex(RightForearmOptions, RightForearmSelection)], true);
                 DestroyObject(item);
             }
 
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 RightHandSelection = LeftHandSelection;
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(RightHandOptions, RightHandSelection)], true);
                 DestroyObject(item);
             }
 
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 RightThighSelection = LeftThighSelection;
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh, _armorAppearances[appearanceType].Thigh[ArmorValueToIndex(RightThighOptions, RightThighSelection)], true);
                 DestroyObject(item);
             }
             
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 RightShinSelection = LeftShinSelection;
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin, _armorAppearances[appearanceType].Shin[ArmorValueToIndex(RightShinOptions, RightShinSelection)], true);
                 DestroyObject(item);
             }
 
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 RightFootSelection = LeftFootSelection;
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot, _armorAppearances[appearanceType].Foot[ArmorValueToIndex(RightFootOptions, RightFootSelection)], true);
             }
 
-            AssignCommand(Player, () => ActionEquipItem(item, InventorySlot.Chest));
+            AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
 
             DelayCommand(1f, () =>
             {
@@ -1916,61 +1918,61 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var item = GetItem();
 
-            // At least one modification will fit in the player's inventory. Delete the original.
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            // At least one modification will fit in the target's inventory. Delete the original.
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 DestroyObject(item);
             }
             
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 LeftShoulderSelection = RightShoulderSelection;
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder, _armorAppearances[appearanceType].Shoulder[ArmorValueToIndex(LeftShoulderOptions, LeftShoulderSelection)], true);
                 DestroyObject(item);
             }
 
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 LeftBicepSelection = RightBicepSelection;
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep, _armorAppearances[appearanceType].Bicep[ArmorValueToIndex(LeftBicepOptions, LeftBicepSelection)], true);
                 DestroyObject(item);
             }
 
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 LeftForearmSelection = RightForearmSelection;
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, _armorAppearances[appearanceType].Forearm[ArmorValueToIndex(LeftForearmOptions, LeftForearmSelection)], true);
                 DestroyObject(item);
             }
 
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 LeftHandSelection = RightHandSelection;
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(LeftHandOptions, LeftHandSelection)], true);
                 DestroyObject(item);
             }
 
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 LeftThighSelection = RightThighSelection;
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh, _armorAppearances[appearanceType].Thigh[ArmorValueToIndex(LeftThighOptions, LeftThighSelection)], true);
                 DestroyObject(item);
             }
 
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 LeftShinSelection = RightShinSelection;
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin, _armorAppearances[appearanceType].Shin[ArmorValueToIndex(LeftShinOptions, LeftShinSelection)], true);
                 DestroyObject(item);
             }
 
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 LeftFootSelection = RightFootSelection;
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot, _armorAppearances[appearanceType].Foot[ArmorValueToIndex(LeftFootOptions, LeftFootSelection)], true);
             }
 
-            AssignCommand(Player, () => ActionEquipItem(item, InventorySlot.Chest));
+            AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
 
             DelayCommand(1f, () =>
             {

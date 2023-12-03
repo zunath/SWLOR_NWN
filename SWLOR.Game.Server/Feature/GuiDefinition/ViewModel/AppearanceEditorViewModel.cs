@@ -229,7 +229,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder))
                     AdjustArmorPart(AppearanceArmor.LeftShoulder, 0);
             }
         }
@@ -240,7 +240,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep))
                     AdjustArmorPart(AppearanceArmor.LeftBicep, 0);
             }
         }
@@ -250,7 +250,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm))
                     AdjustArmorPart(AppearanceArmor.LeftForearm, 0);
             }
         }
@@ -260,7 +260,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand))
                     AdjustArmorPart(AppearanceArmor.LeftHand, 0);
             }
         }
@@ -270,7 +270,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh))
                     AdjustArmorPart(AppearanceArmor.LeftThigh, 0);
             }
         }
@@ -280,7 +280,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin))
                     AdjustArmorPart(AppearanceArmor.LeftShin, 0);
             }
         }
@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot))
                     AdjustArmorPart(AppearanceArmor.LeftFoot, 0);
             }
         }
@@ -300,7 +300,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder))
                     AdjustArmorPart(AppearanceArmor.RightShoulder, 0);
             }
         }
@@ -310,7 +310,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep))
                     AdjustArmorPart(AppearanceArmor.RightBicep, 0);
             }
         }
@@ -320,7 +320,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm))
                     AdjustArmorPart(AppearanceArmor.RightForearm, 0);
             }
         }
@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand))
                     AdjustArmorPart(AppearanceArmor.RightHand, 0);
             }
         }
@@ -340,7 +340,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh))
                     AdjustArmorPart(AppearanceArmor.RightThigh, 0);
             }
         }
@@ -350,7 +350,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin))
                     AdjustArmorPart(AppearanceArmor.RightShin, 0);
             }
         }
@@ -360,7 +360,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot))
                     AdjustArmorPart(AppearanceArmor.RightFoot, 0);
             }
         }
@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck))
                     AdjustArmorPart(AppearanceArmor.Neck, 0);
             }
         }
@@ -380,7 +380,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso))
                     AdjustArmorPart(AppearanceArmor.Torso, 0);
             }
         }
@@ -390,7 +390,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt))
                     AdjustArmorPart(AppearanceArmor.Belt, 0);
             }
         }
@@ -400,7 +400,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis))
                     AdjustArmorPart(AppearanceArmor.Pelvis, 0);
             }
         }
@@ -410,7 +410,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (!_skipAdjustArmorPart)
+                if (!_skipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe))
                     AdjustArmorPart(AppearanceArmor.Robe, 0);
             }
         }
@@ -709,6 +709,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadBodyParts();
             LoadSettings();
 
+            StartArmorClientWatches();
+
+            if (GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target))
+            {
+                IsSettingsVisible = true;
+                WatchOnClient(model => model.ShowHelmet);
+                WatchOnClient(model => model.ShowCloak);
+            }
+        }
+
+        private void StartArmorClientWatches()
+        {
+            _skipAdjustArmorPart = true;
             WatchOnClient(model => model.SelectedColorCategoryIndex);
             WatchOnClient(model => model.SelectedPartCategoryIndex);
             WatchOnClient(model => model.SelectedPartIndex);
@@ -735,13 +748,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.BeltSelection);
             WatchOnClient(model => model.PelvisSelection);
             WatchOnClient(model => model.RobeSelection);
-
-            if (GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target))
-            {
-                IsSettingsVisible = true;
-                WatchOnClient(model => model.ShowHelmet);
-                WatchOnClient(model => model.ShowCloak);
-            }
+            _skipAdjustArmorPart = false;
         }
 
         private void LoadItemTypeEditor()
@@ -1390,6 +1397,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var modelType = GetModelType();
             var copy = item;
 
+            Console.WriteLine($"Modifying part: type = {type}, modelType = {modelType}, partId = {partId}");
+
             if (colorId > -1)
             {
                 var oldCopy = copy;
@@ -1832,48 +1841,63 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _skipAdjustArmorPart = true;
             IsCopyEnabled = false;
 
-            RightShoulderSelection = LeftShoulderSelection;
-            RightBicepSelection = LeftBicepSelection;
-            RightForearmSelection = LeftForearmSelection;
-            RightHandSelection = LeftHandSelection;
-            RightThighSelection = LeftThighSelection;
-            RightShinSelection = LeftShinSelection;
-            RightFootSelection = LeftFootSelection;
+            var item = GetItem();
 
-            DelayCommand(0.01f, () =>
+            // At least one modification will fit in the player's inventory. Delete the original.
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
             {
-                ModifyItemPart((int)AppearanceArmor.RightShoulder, _armorAppearances[appearanceType].Shoulder[ArmorValueToIndex(RightShoulderOptions, RightShoulderSelection)]);
-            });
+                DestroyObject(item);
+            }
 
-            DelayCommand(0.02f, () =>
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
             {
-                ModifyItemPart((int)AppearanceArmor.RightBicep, _armorAppearances[appearanceType].Bicep[ArmorValueToIndex(RightBicepOptions, RightBicepSelection)]);
-            });
+                RightShoulderSelection = LeftShoulderSelection;
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder, _armorAppearances[appearanceType].Shoulder[ArmorValueToIndex(RightShoulderOptions, RightShoulderSelection)], true);
+                DestroyObject(item);
+            }
+            
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            {
+                RightBicepSelection = LeftBicepSelection;
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep, _armorAppearances[appearanceType].Bicep[ArmorValueToIndex(RightBicepOptions, RightBicepSelection)], true);
+                DestroyObject(item);
+            }
 
-            DelayCommand(0.03f, () =>
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
             {
-                ModifyItemPart((int)AppearanceArmor.RightForearm, _armorAppearances[appearanceType].Forearm[ArmorValueToIndex(RightForearmOptions, RightForearmSelection)]);
-            });
+                RightForearmSelection = LeftForearmSelection;
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm, _armorAppearances[appearanceType].Forearm[ArmorValueToIndex(RightForearmOptions, RightForearmSelection)], true);
+                DestroyObject(item);
+            }
 
-            DelayCommand(0.04f, () =>
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
             {
-                ModifyItemPart((int)AppearanceArmor.RightHand, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(RightHandOptions, RightHandSelection)]);
-            });
+                RightHandSelection = LeftHandSelection;
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(RightHandOptions, RightHandSelection)], true);
+                DestroyObject(item);
+            }
 
-            DelayCommand(0.05f, () =>
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
             {
-                ModifyItemPart((int)AppearanceArmor.RightThigh, _armorAppearances[appearanceType].Thigh[ArmorValueToIndex(RightThighOptions, RightThighSelection)]);
-            });
+                RightThighSelection = LeftThighSelection;
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh, _armorAppearances[appearanceType].Thigh[ArmorValueToIndex(RightThighOptions, RightThighSelection)], true);
+                DestroyObject(item);
+            }
+            
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            {
+                RightShinSelection = LeftShinSelection;
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin, _armorAppearances[appearanceType].Shin[ArmorValueToIndex(RightShinOptions, RightShinSelection)], true);
+                DestroyObject(item);
+            }
 
-            DelayCommand(0.06f, () =>
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
             {
-                ModifyItemPart((int)AppearanceArmor.RightShin, _armorAppearances[appearanceType].Shin[ArmorValueToIndex(RightShinOptions, RightShinSelection)]);
-            });
+                RightFootSelection = LeftFootSelection;
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot, _armorAppearances[appearanceType].Foot[ArmorValueToIndex(RightFootOptions, RightFootSelection)], true);
+            }
 
-            DelayCommand(0.07f, () =>
-            {
-                ModifyItemPart((int)AppearanceArmor.RightFoot, _armorAppearances[appearanceType].Foot[ArmorValueToIndex(RightFootOptions, RightFootSelection)]);
-            });
+            AssignCommand(Player, () => ActionEquipItem(item, InventorySlot.Chest));
 
             DelayCommand(1f, () =>
             {
@@ -1890,42 +1914,63 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _skipAdjustArmorPart = true;
             IsCopyEnabled = false;
 
-            LeftShoulderSelection = RightShoulderSelection;
-            LeftBicepSelection = RightBicepSelection;
-            LeftForearmSelection = RightForearmSelection;
-            LeftHandSelection = RightHandSelection;
-            LeftThighSelection = RightThighSelection;
-            LeftShinSelection = RightShinSelection;
-            LeftFootSelection = RightFootSelection;
+            var item = GetItem();
 
-            DelayCommand(0.01f, () =>
+            // At least one modification will fit in the player's inventory. Delete the original.
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
             {
-                ModifyItemPart((int)AppearanceArmor.LeftShoulder, _armorAppearances[appearanceType].Shoulder[ArmorValueToIndex(LeftShoulderOptions, LeftShoulderSelection)]);
-            });
-            DelayCommand(0.02f, () =>
+                DestroyObject(item);
+            }
+            
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
             {
-                ModifyItemPart((int)AppearanceArmor.LeftBicep, _armorAppearances[appearanceType].Bicep[ArmorValueToIndex(LeftBicepOptions, LeftBicepSelection)]);
-            });
-            DelayCommand(0.03f, () =>
+                LeftShoulderSelection = RightShoulderSelection;
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder, _armorAppearances[appearanceType].Shoulder[ArmorValueToIndex(LeftShoulderOptions, LeftShoulderSelection)], true);
+                DestroyObject(item);
+            }
+
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
             {
-                ModifyItemPart((int)AppearanceArmor.LeftForearm, _armorAppearances[appearanceType].Forearm[ArmorValueToIndex(LeftForearmOptions, LeftForearmSelection)]);
-            });
-            DelayCommand(0.04f, () =>
+                LeftBicepSelection = RightBicepSelection;
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep, _armorAppearances[appearanceType].Bicep[ArmorValueToIndex(LeftBicepOptions, LeftBicepSelection)], true);
+                DestroyObject(item);
+            }
+
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
             {
-                ModifyItemPart((int)AppearanceArmor.LeftHand, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(LeftHandOptions, LeftHandSelection)]);
-            });
-            DelayCommand(0.05f, () =>
+                LeftForearmSelection = RightForearmSelection;
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, _armorAppearances[appearanceType].Forearm[ArmorValueToIndex(LeftForearmOptions, LeftForearmSelection)], true);
+                DestroyObject(item);
+            }
+
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
             {
-                ModifyItemPart((int)AppearanceArmor.LeftThigh, _armorAppearances[appearanceType].Thigh[ArmorValueToIndex(LeftThighOptions, LeftThighSelection)]);
-            });
-            DelayCommand(0.06f, () =>
+                LeftHandSelection = RightHandSelection;
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(LeftHandOptions, LeftHandSelection)], true);
+                DestroyObject(item);
+            }
+
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
             {
-                ModifyItemPart((int)AppearanceArmor.LeftShin, _armorAppearances[appearanceType].Shin[ArmorValueToIndex(LeftShinOptions, LeftShinSelection)]);
-            });
-            DelayCommand(0.07f, () =>
+                LeftThighSelection = RightThighSelection;
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh, _armorAppearances[appearanceType].Thigh[ArmorValueToIndex(LeftThighOptions, LeftThighSelection)], true);
+                DestroyObject(item);
+            }
+
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
             {
-                ModifyItemPart((int)AppearanceArmor.LeftFoot, _armorAppearances[appearanceType].Foot[ArmorValueToIndex(LeftFootOptions, LeftFootSelection)]);
-            });
+                LeftShinSelection = RightShinSelection;
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin, _armorAppearances[appearanceType].Shin[ArmorValueToIndex(LeftShinOptions, LeftShinSelection)], true);
+                DestroyObject(item);
+            }
+
+            if (GetBaseItemFitsInInventory(BaseItem.Armor, Player))
+            {
+                LeftFootSelection = RightFootSelection;
+                item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot, _armorAppearances[appearanceType].Foot[ArmorValueToIndex(LeftFootOptions, LeftFootSelection)], true);
+            }
+
+            AssignCommand(Player, () => ActionEquipItem(item, InventorySlot.Chest));
 
             DelayCommand(1f, () =>
             {

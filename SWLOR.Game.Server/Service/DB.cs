@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Service
                 _multiplexer.GetDatabase().Execute("FT.DROPINDEX", type.Name);
                 Console.WriteLine($"Dropped index for {type}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 if (ex.Message.Contains("Unknown Index name", StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     Console.WriteLine($"Issue dropping index for type {type}. Exception: {ex.ToMessageAndCompleteStacktrace()}");
                 }
-                
+
             }
 
             // Build the schema based on the IndexedAttribute associated to properties.
@@ -136,13 +136,13 @@ namespace SWLOR.Game.Server.Service
             // Cache the indexed properties for quick look-up later.
             _indexedPropertiesByName[type] = indexedProperties;
 
-            // Create the index.
-            if (schema.Fields.Count > 0)
-            {
-                _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
-                Console.WriteLine($"Created index for {type}");
-            }
+            _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
+            Console.WriteLine($"Created index for {type}");
+            WaitForReindexing(type);
+        }
 
+        private static void WaitForReindexing(Type type)
+        {
             string indexing;
 
             Console.WriteLine($"Waiting for Redis to complete indexing of: {type}");

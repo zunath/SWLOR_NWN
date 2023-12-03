@@ -746,8 +746,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
             partial.AddColumn(mainCol  =>
             {
+                mainCol.AddRow(row =>
+                {
+                    row.AddLabel()
+                        .SetText("No item is equipped or the equipped item cannot be modified.")
+                        .BindIsVisible(model => model.DoesNotHaveItemEquipped);
+
+                    row.SetHeight(20f);
+                    row.BindIsVisible(model => model.DoesNotHaveItemEquipped);
+                });
+
                 mainCol.AddRow(mainRow =>
                 {
+                    mainRow.BindIsVisible(model => model.HasItemEquipped);
                     mainRow.AddGroup(group =>
                     {
                         group.SetShowBorder(false);

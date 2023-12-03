@@ -1701,6 +1701,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickColorPalette(int colorId) => () =>
         {
+            ToggleItemEquippedFlags();
+            if (DoesNotHaveItemEquipped)
+                return;
+
             if (!GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 SendMessageToPC(Player, "Not enough space to modify item.");
@@ -1733,6 +1737,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickClearColor(ColorTarget colorTarget, AppearanceArmorColor colorChannel) => () =>
         {
+            ToggleItemEquippedFlags();
+            if (DoesNotHaveItemEquipped)
+                return;
+
             if (colorTarget == ColorTarget.Invalid)
                 return;
 
@@ -1827,6 +1835,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickColorTarget(ColorTarget target, AppearanceArmorColor channel) => () =>
         {
+            ToggleItemEquippedFlags();
+            if (DoesNotHaveItemEquipped)
+                return;
+
             _colorTarget = target;
             _selectedColorChannel = channel;
 
@@ -2080,6 +2092,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickAdjustArmorPart(AppearanceArmor partType, int adjustBy) => () =>
         {
+            ToggleItemEquippedFlags();
+            if (DoesNotHaveItemEquipped)
+                return;
+
             AdjustArmorPart(partType, adjustBy);
         };
 
@@ -2152,6 +2168,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickCopyToRight() => () =>
         {
+            ToggleItemEquippedFlags();
+            if (DoesNotHaveItemEquipped)
+                return;
+
             var appearanceType = GetAppearanceType(_target);
 
             _skipAdjustArmorPart = true;
@@ -2236,6 +2256,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickCopyToLeft() => () =>
         {
+            ToggleItemEquippedFlags();
+            if (DoesNotHaveItemEquipped)
+                return;
+
             var appearanceType = GetAppearanceType(_target);
 
             _skipAdjustArmorPart = true;

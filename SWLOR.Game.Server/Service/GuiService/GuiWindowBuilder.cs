@@ -30,14 +30,14 @@ namespace SWLOR.Game.Server.Service.GuiService
         {
             foreach (var element in elements)
             {
-                foreach (var (eventName, eventAction) in element.Events)
+                foreach (var (eventName, methodDetail) in element.Events)
                 {
                     // NWN only fires events for elements with Ids.
                     // Skip any that don't have an Id
                     if (!string.IsNullOrWhiteSpace(element.Id))
                     {
                         var eventKey = Gui.BuildEventKey(windowId, element.Id);
-                        Gui.RegisterElementEvent(eventKey, eventName, eventAction);
+                        Gui.RegisterElementEvent(eventKey, eventName, methodDetail);
                     }
                 }
 

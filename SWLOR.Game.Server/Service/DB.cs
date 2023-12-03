@@ -84,7 +84,27 @@ namespace SWLOR.Game.Server.Service
         private static void ProcessIndex(EntityBase entity)
         {
             var type = entity.GetType();
-            
+
+            // Drop any existing index
+            try
+            {
+                // FT.DROPINDEX is used here in lieu of DropIndex() as it does not cause all documents to be lost.
+                _multiplexer.GetDatabase().Execute("FT.DROPINDEX", type.Name);
+                Console.WriteLine($"Dropped index for {type}");
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("Unknown Index name", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Console.WriteLine($"Index does not exist for type {type}.");
+                }
+                else
+                {
+                    Console.WriteLine($"Issue dropping index for type {type}. Exception: {ex.ToMessageAndCompleteStacktrace()}");
+                }
+
+            }
+
             // Build the schema based on the IndexedAttribute associated to properties.
             var schema = new Schema();
             var indexedProperties = new List<string>();
@@ -116,66 +136,9 @@ namespace SWLOR.Game.Server.Service
             // Cache the indexed properties for quick look-up later.
             _indexedPropertiesByName[type] = indexedProperties;
 
-
-            if (schema.Fields.Count > 0)
-            {
-                // Update fields on existing index.
-                if (DoesIndexExist(type))
-                {
-                    var info = _searchClientsByType[type].GetInfoParsed();
-
-                    var fieldsToAdd = new List<Schema.Field>();
-
-                    // Find new fields to index.
-                    foreach (var field in schema.Fields)
-                    {
-                        if (info.Fields == null || !info.Fields.ContainsKey(field.Name))
-                        {
-                            Console.WriteLine($"New field found: {field.Name}");
-                            fieldsToAdd.Add(field);
-                        }
-                    }
-
-                    if (fieldsToAdd.Count > 0)
-                    {
-                        _searchClientsByType[type].AlterIndex(fieldsToAdd.ToArray());
-                        Console.WriteLine($"Updated index for {type}.");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"No changes found for index {type}.");
-                    }
-                    
-                }
-                // Create new index.
-                else
-                {
-                    _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
-                    Console.WriteLine($"Created index for {type}");
-                }
-            }
-
-
+            _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
+            Console.WriteLine($"Created index for {type}");
             WaitForReindexing(type);
-        }
-
-        private static bool DoesIndexExist(Type type)
-        {
-            try
-            {
-                _searchClientsByType[type].GetInfo();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.Contains("Unknown Index name"))
-                {
-                    return false;
-                }
-
-                // Got a different exception - throw.
-                throw;
-            }
         }
 
         private static void WaitForReindexing(Type type)

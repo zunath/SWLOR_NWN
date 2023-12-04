@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NRediSearch.QueryBuilder;
+using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -37,13 +39,19 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <typeparam name="TMethod">The type of method being targeted.</typeparam>
         /// <param name="expression">Expression to target the method.</param>
         /// <returns>Method info of the targeted action.</returns>
-        public static MethodInfo GetMethodInfo<TMethod>(Expression<Func<T, TMethod>> expression)
+        public static GuiMethodDetail GetMethodInfo<TMethod>(Expression<Func<T, TMethod>> expression)
         {
-            var constantExpression = (MethodCallExpression)expression.Body;
-            var method = constantExpression.Method;
+            var body = (MethodCallExpression)expression.Body;
+            var method = body.Method;
+            var values = new List<KeyValuePair<Type, object>>();
 
-            return method;
+            foreach (var argument in body.Arguments)
+            {
+                var value = Expression.Lambda(argument).Compile().DynamicInvoke();
+                values.Add(new KeyValuePair<Type, object>(value.GetType(), value));
+            }
+
+            return new GuiMethodDetail(method, values);
         }
-
     }
 }

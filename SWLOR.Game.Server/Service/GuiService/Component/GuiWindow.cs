@@ -239,8 +239,8 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
         
-        public MethodInfo OpenedEventMethodInfo { get; private set; }
-        public MethodInfo ClosedEventMethodInfo { get; private set; }
+        public GuiMethodDetail OpenedEventMethodInfo { get; private set; }
+        public GuiMethodDetail ClosedEventMethodInfo { get; private set; }
 
         /// <summary>
         /// Binds an action to the Open event of the window.

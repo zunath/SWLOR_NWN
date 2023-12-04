@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         protected float Width { get; private set; }
         protected float Height { get; private set; }
         private float AspectRatio { get; set; }
-        private float Margin { get; set; }
+        private float Margin { get; set; } = -1f;
         private float Padding { get; set; }
         private List<GuiDrawList<TDataModel>> DrawLists { get; set; }
 
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string ColorBindName { get; set; }
         private bool IsColorBound => !string.IsNullOrWhiteSpace(ColorBindName);
 
-        public Dictionary<string, MethodInfo> Events { get; private set; }
+        public Dictionary<string, GuiMethodDetail> Events { get; private set; }
 
         public abstract Json BuildElement();
 
@@ -231,7 +231,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         /// <param name="green">The amount of green to use. 0-255</param>
         /// <param name="blue">The amount of blue to use. 0-255</param>
         /// <param name="alpha">The amount of alpha to use. 0-255</param>
-        public TDerived SetColor(int red, int green, int blue, int alpha = 255)
+        public TDerived SetColor(byte red, byte green, byte blue, byte alpha = 255)
         {
             Color = new GuiColor(red, green, blue, alpha);
             return (TDerived)this;
@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         }
 
         /// <summary>
-        /// Binds an action to the Mouse Down event of the button.
+        /// Binds an action to the Mouse Down event of the element.
         /// Fires when the user's mouse is pressed down on the element.
         /// </summary>
         /// <typeparam name="TMethod">The method of the view model.</typeparam>
@@ -277,7 +277,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         }
 
         /// <summary>
-        /// Binds an action to the Mouse Up event of the button.
+        /// Binds an action to the Mouse Up event of the element.
         /// Fires when the user's mouse is released on the element.
         /// </summary>
         /// <typeparam name="TMethod">The method of the view model.</typeparam>
@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             IsEnabled = true;
             IsVisible = true;
             DrawLists = new List<GuiDrawList<TDataModel>>();
-            Events = new Dictionary<string, MethodInfo>();
+            Events = new Dictionary<string, GuiMethodDetail>();
             Elements = new List<IGuiWidget>();
         }
 
@@ -364,7 +364,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             }
 
             // Margin
-            if (Margin > 0f)
+            if (Margin > -1f)
             {
                 element = Nui.Margin(element, Margin);
             }

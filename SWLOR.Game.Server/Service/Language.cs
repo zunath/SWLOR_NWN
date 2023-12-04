@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Service
             return textAsForeignLanguage;
         }
 
-        public static int GetColor(SkillType language)
+        public static (byte, byte, byte) GetColor(SkillType language)
         {
             byte r = 0;
             byte g = 0;
@@ -186,6 +186,7 @@ namespace SWLOR.Game.Server.Service
 
             switch (language)
             {
+                case SkillType.Basic: r = 255; g = 255; b = 255; break;
                 case SkillType.Bothese: r = 132; g = 56; b = 18; break;
                 case SkillType.Catharese: r = 235; g = 235; b = 199; break;
                 case SkillType.Cheunh: r = 82; g = 143; b = 174; break;
@@ -205,7 +206,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Nautila: r = 76; g = 230; b = 104; break;
             }
 
-            return r << 24 | g << 16 | b << 8;
+            return (r, g, b);
         }
 
         public static string GetName(SkillType language)

@@ -1,2 +1,2 @@
-{WalkWaypoints()
-ActionSit( GetNearestObjectByTag( "Chair")); }
+> @@ -1,20 +0,0 @@
+-//::///////////////////////////////////////////////

@@ -266,11 +266,13 @@ namespace SWLOR.Game.Server.Service.GuiService
             var property = _propertyValues[propertyName];
             var json = NuiGetBind(Player, WindowToken, propertyName);
             var value = _converter.ToObject(json, property.Type);
+            var currentValue = GetType().GetProperty(propertyName)?.GetValue(this);
 
             _propertyValues[propertyName].Value = value;
-
             _propertyValues[propertyName].SkipNotify = true;
-            GetType().GetProperty(propertyName)?.SetValue(this, value);
+            if (!currentValue.Equals(value))
+                GetType().GetProperty(propertyName)?.SetValue(this, value);
+
             _propertyValues[propertyName].SkipNotify = false;
         }
 
@@ -291,7 +293,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             NuiSetBind(Player, WindowToken, propertyName, json);
             NuiSetBindWatch(Player, WindowToken, propertyName, true);
         }
-        
+
         /// <summary>
         /// Displays a modal window on top of the active window being displayed.
         /// </summary>

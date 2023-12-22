@@ -255,7 +255,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadOutfit()
         {
-
             var armor = GetItemInSlot(InventorySlot.Chest, Player);
             var dbOutfit = DB.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
 

@@ -1244,6 +1244,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadItemParts();
             SelectedColorCategoryIndex = 0;
             _lastModifiedItem = OBJECT_INVALID;
+
+            _colorTarget = ColorTarget.Invalid;
+            ColorTargetText = string.Empty;
         };
 
         public Action OnSelectSettings() => () =>

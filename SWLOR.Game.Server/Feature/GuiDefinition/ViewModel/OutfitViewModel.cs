@@ -248,8 +248,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 });
         };
 
+        private int CalculatePerPartColorIndex(AppearanceArmor armorModel, AppearanceArmorColor colorChannel)
+        {
+            return (int)AppearanceArmorColor.NumColors + (int)armorModel * (int)AppearanceArmorColor.NumColors + (int)colorChannel;
+        }
+
         private void LoadOutfit()
         {
+
             var armor = GetItemInSlot(InventorySlot.Chest, Player);
             var dbOutfit = DB.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
 
@@ -258,62 +264,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var deserialized = ObjectPlugin.Deserialize(dbOutfit.Data);
             var copy = CopyItem(armor, tempStorage, true);
 
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftBicep, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftBicep), true);
+            uint CopyColors(AppearanceArmor part)
+            {
+                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)part, GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)part), true);
+                DestroyObject(copy);
+                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)part, GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)part), true);
+                DestroyObject(copy);
+                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Cloth1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Cloth1)));
+                DestroyObject(copy);
+                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Cloth2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Cloth2)));
+                DestroyObject(copy);
+                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Leather1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Leather1)));
+                DestroyObject(copy);
+                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Leather2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Leather2)));
+                DestroyObject(copy);
+                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Metal1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Metal1)));
+                DestroyObject(copy);
+                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Metal2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Metal2)));
+                DestroyObject(copy);
 
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Belt, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Belt), true);
+                return copy;
+            }
 
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftFoot, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftFoot), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftForearm, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftForearm), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftHand, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftHand), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftShin, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftShin), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftShoulder, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftShoulder), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftThigh, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftThigh), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Neck, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Neck), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Pelvis, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Pelvis), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightBicep, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightBicep), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightFoot, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightFoot), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightForearm, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightForearm), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightHand, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightHand), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Robe, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Robe), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightShin, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightShin), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightShoulder, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightShoulder), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightThigh, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.RightThigh), true);
-
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso), true);
-            copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Torso, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.Torso), true);
+            copy = CopyColors(AppearanceArmor.LeftBicep);
+            copy = CopyColors(AppearanceArmor.Belt);
+            copy = CopyColors(AppearanceArmor.LeftFoot);
+            copy = CopyColors(AppearanceArmor.LeftForearm);
+            copy = CopyColors(AppearanceArmor.LeftHand);
+            copy = CopyColors(AppearanceArmor.LeftShin);
+            copy = CopyColors(AppearanceArmor.LeftShoulder);
+            copy = CopyColors(AppearanceArmor.LeftThigh);
+            copy = CopyColors(AppearanceArmor.Neck);
+            copy = CopyColors(AppearanceArmor.Pelvis);
+            copy = CopyColors(AppearanceArmor.RightBicep);
+            copy = CopyColors(AppearanceArmor.RightFoot);
+            copy = CopyColors(AppearanceArmor.RightForearm);
+            copy = CopyColors(AppearanceArmor.RightHand);
+            copy = CopyColors(AppearanceArmor.Robe);
+            copy = CopyColors(AppearanceArmor.RightShin);
+            copy = CopyColors(AppearanceArmor.RightShoulder);
+            copy = CopyColors(AppearanceArmor.RightThigh);
+            copy = CopyColors(AppearanceArmor.Torso);
 
             var final = CopyItem(copy, Player, true);
             DestroyObject(armor);

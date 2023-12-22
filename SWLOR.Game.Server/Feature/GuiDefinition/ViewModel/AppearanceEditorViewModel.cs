@@ -755,6 +755,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 WatchOnClient(model => model.ShowHelmet);
                 WatchOnClient(model => model.ShowCloak);
             }
+            else
+            {
+                IsSettingsVisible = false;
+            }
         }
 
         private void StartArmorClientWatches()

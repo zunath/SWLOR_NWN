@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <summary>
         /// Retrieves the set of events registered for this widget.
         /// </summary>
-        public Dictionary<string, MethodInfo> Events { get; }
+        public Dictionary<string, GuiMethodDetail> Events { get; }
 
         /// <summary>
         /// Builds the widget element.

@@ -28,6 +28,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string VerticalAlignBindName { get; set; }
         private bool IsVerticalAlignBound => !string.IsNullOrWhiteSpace(VerticalAlignBindName);
 
+        private GuiRectangle DrawTextureRegion { get; set; }
+        private string DrawTextureRegionBindName { get; set; }
+        private bool IsDrawTextureRegionBound => !string.IsNullOrWhiteSpace(DrawTextureRegionBindName);
+
         public GuiDrawListItemImage()
         {
             Position = new GuiRectangle(0, 0, 0, 0);
@@ -152,6 +156,40 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         }
 
         /// <summary>
+        /// Sets a static value for the draw texture region of the image.
+        /// </summary>
+        /// <param name="rect">The draw texture region</param>
+        public GuiDrawListItemImage<T> SetDrawTextureRegion(GuiRectangle rect)
+        {
+            DrawTextureRegion = rect;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets a static value for the draw texture region of the image.
+        /// </summary>
+        /// <param name="x">The x position</param>
+        /// <param name="y">The y position</param>
+        /// <param name="width">The width</param>
+        /// <param name="height">The height</param>
+        public GuiDrawListItemImage<T> SetDrawTextureRegion(int x, int y, int width, int height)
+        {
+            DrawTextureRegion = new GuiRectangle(x, y, width, height);
+            return this;
+        }
+
+        /// <summary>
+        /// Binds a dynamic value for the draw texture region of the image.
+        /// </summary>
+        /// <typeparam name="TProperty">The property of the view model.</typeparam>
+        /// <param name="expression">Expression to target the property.</param>
+        public GuiDrawListItemImage<T> BindDrawTextureRegion<TProperty>(Expression<Func<T, TProperty>> expression)
+        {
+            DrawTextureRegionBindName = GuiHelper<T>.GetPropertyName(expression);
+            return this;
+        }
+
+        /// <summary>
         /// Builds a GuiDrawListItemImage element.
         /// </summary>
         /// <returns>Json representing the image draw list item.</returns>
@@ -163,8 +201,16 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             var aspect = IsAspectBound ? Nui.Bind(AspectBindName) : JsonInt((int)Aspect);
             var hAlign = IsHorizontalAlignBound ? Nui.Bind(HorizontalAlignBindName) : JsonInt((int)HorizontalAlign);
             var vAlign = IsVerticalAlignBound ? Nui.Bind(VerticalAlignBindName) : JsonInt((int)VerticalAlign);
+            var drawTextureRegion = IsDrawTextureRegionBound ? Nui.Bind(DrawTextureRegionBindName) : DrawTextureRegion?.ToJson();
 
-            return Nui.DrawListImage(isEnabled, resref, position, aspect, hAlign, vAlign);
+            var image = Nui.DrawListImage(isEnabled, resref, position, aspect, hAlign, vAlign);
+
+            if (drawTextureRegion != null)
+            {
+                image = Nui.DrawListImageRegion(image, drawTextureRegion);
+            }
+
+            return image;
         }
     }
 }

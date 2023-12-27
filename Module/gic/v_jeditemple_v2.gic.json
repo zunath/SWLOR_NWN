@@ -1978,20 +1978,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Moss"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Moss"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": ""
         }
       },
@@ -2909,13 +2895,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": ""
         }
       },
@@ -3539,13 +3518,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "Source: LOK Dungeon Tileset 1.04 Full by Danmar\r\n(Placeables only extracted)"
         }
       },
@@ -3582,13 +3554,6 @@
         "Comment": {
           "type": "cexostring",
           "value": "Source: Megalith Placeables v1.0 by Mr._X & Chanteur"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
         }
       },
       {
@@ -3763,6 +3728,27 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
           "value": ""
         }
       },
@@ -3771,6 +3757,55 @@
         "Comment": {
           "type": "cexostring",
           "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
         }
       }
     ]

@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void PlainsThune()
         {
             _builder.Create("DANTOOINE_PLAINS_THUNE")
-                .AddItem("thune_meat", 100)
+                .AddItem("thune_meat", 10)
                 .AddItem("thune_blood", 2);
 
             _builder.Create("DANTOOINE_PLAINS_THUNE_RARES")

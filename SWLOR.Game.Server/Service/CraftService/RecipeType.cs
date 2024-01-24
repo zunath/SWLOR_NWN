@@ -928,7 +928,7 @@
         DantooineFlapJack = 2201,
         DantooineCarrotCake = 2202,
         KraftersKebab = 2203,
-
+        DathomirPie = 2204,
 
         // Engineering: 3001-6000
         BasicCapacitorBooster = 3001,

@@ -446,5 +446,38 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     });
                 });
         }
+
+        private void SetSelfPortrait()
+        {
+            _builder.Create("setselfportrait")
+                .Description("Sets portrait of the target player using the string specified. (Remember to add po_ to the portrait)")
+                .Permissions(AuthorizationLevel.All)
+                .AvailableToAllOnTestEnvironment()
+                .Validate((user, args) =>
+                {
+                    if (args.Length <= 0)
+                    {
+                        return "Please enter the name of the portrait and try again. Example: /SetPortrait po_myportrait";
+                    }
+
+                    if (args[0].Length > 16)
+                    {
+                        return "The portrait you entered is too long. Portrait names should be between 1 and 16 characters.";
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsObjectValid(target) || GetObjectType(target) != ObjectType.Creature)
+                    {
+                        SendMessageToPC(user, "Only creatures may be targeted with this command.");
+                        return;
+                    }
+
+                    SetPortraitResRef(target, args[0]);
+                    FloatingTextStringOnCreature("Your portrait has been changed.", target, false);
+                });
+        }
     }
 }

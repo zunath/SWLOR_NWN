@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             AlwaysWalk();
             AssociateCommands();
             Follow();
+            ReapplyAuras();
 
             return _builder.Build();
         }
@@ -444,6 +445,18 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         ActionMoveToObject(target, true);
                     });
+                });
+        }
+
+        private void ReapplyAuras()
+        {
+            _builder.Create("reapplyauras", "reaura")
+                .Description("Removes then reapplies your auras to resolve any errors.")
+                .Permissions(AuthorizationLevel.All)
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    Ability.ReapplyPlayerAuraAOE(user);
                 });
         }
     }

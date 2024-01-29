@@ -453,7 +453,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("reapplyauras", "reaura")
                 .Description("Removes then reapplies your auras to resolve any errors.")
                 .Permissions(AuthorizationLevel.All)
-                .RequiresTarget()
                 .Action((user, target, location, args) =>
                 {
                     Ability.ReapplyPlayerAuraAOE(user);

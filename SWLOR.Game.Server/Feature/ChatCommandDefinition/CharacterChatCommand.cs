@@ -451,7 +451,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void ReapplyAuras()
         {
             _builder.Create("reapplyauras", "reaura")
-                .Description("Removes then reapplies your auras to resolve any errors.")
+                .Description("Removes all your auras, allowing you to reactivate the skills and reapply them without relogging.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {

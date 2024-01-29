@@ -54,6 +54,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Broadcast();
             SetScale();
             GetScale();
+            GiveProperty();
+            TogglePlot();
+            RemoveAllProperties();
 
             return _builder.Build();
         }
@@ -111,6 +114,30 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     SendMessageToPC(user, GetPlotFlag(target) ? "Target is marked plot." : "Target is NOT marked plot.");
+                })
+                .RequiresTarget();
+        }
+
+        private void TogglePlot()
+        {
+            _builder.Create("toggleplot")
+                .Description("Toggle the plot flag on an item on and off.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    if(GetObjectType(target) != ObjectType.Item)
+                    {
+                        SendMessageToPC(user, "This command can only be used on an item.");
+                    }
+                    else
+                    {
+                        if (GetPlotFlag(target) == true)
+                        {
+                            SetPlotFlag(target, false);
+                        }
+                        else { SetPlotFlag(target, true); }
+                    }
                 })
                 .RequiresTarget();
         }
@@ -1017,6 +1044,153 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var shownScale = targetScale.ToString("0.###");
 
                     SendMessageToPC(user, $"{targetName} has a scale of {shownScale}.");
+                });
+        }
+
+        private void RemoveAllProperties()
+        {
+            _builder.Create("removeallproperties", "removeprops")
+                .Description("Remove all item properties from an item.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                    {
+                    if (GetObjectType(target) != ObjectType.Item)
+                    {
+                        SendMessageToPC(user, "This command can only target an item.");
+                    }
+                    else
+                    {
+                        for (var ip = GetFirstItemProperty(target); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(target))
+                        {
+                            RemoveItemProperty(target, ip);
+                        }
+                    }
+                });
+        }
+        
+        private void GiveProperty()
+        {
+            _builder.Create("giveproperty", "giveprop", "gp")
+                .Description("Give an item property to an item. Type '/giveproperty and target yourself for a full breakdown.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    if(target == user)
+                    {
+                        SendMessageToPC(user, "This command adds properties to an item. \n " +
+                            "The format for this is /giveproperty (or /giveprop or /gp) followed by the property's ID, followed by its value. \n" +
+                            "Invalid item properties for a given item type will automatically fail, as will invalid values. \n" +
+                            "These are permanent item properties, and there is not at present a way to strip item properties, using /copyitem may be wise in some cases. \n\n" +
+                            "The full list of item properties: \n" +
+                            "1: Defense - Physical\n" +
+                            "2: Defense - Force\n" +
+                            "3: Defense - Fire\n" +
+                            "4: Defense - Poison\n" +
+                            "5: Defense - Electrical\n" +
+                            "6: Defense - Ice\n" +
+                            "7: Evasion\n" +
+                            "8: HP\n" +
+                            "9: FP\n" +
+                            "10: Stamina\n" +
+                            "11: Vitality\n" +
+                            "12: Social\n" +
+                            "13: Willpower\n" +
+                            "14: Control - Smithery\n" +
+                            "15: Craftsmanship - Smithery\n" +
+                            "16 and 17: Not actual item properties (applied within the view model)\n" +
+                            "18: DMG - Physical\n" +
+                            "19: DMG - Force\n" +
+                            "20: DMG - Fire\n" +
+                            "21: DMG - Poison\n" +
+                            "22: DMG - Electrical\n" +
+                            "23: DMG - Ice\n" +
+                            "24: Might\n" +
+                            "25: Perception\n" +
+                            "26: Accuracy\n" +
+                            "27: Recast Reduction\n" +
+                            "28: Structure Bonus\n" +
+                            "29: Food Bonus - HP Regen\n" +
+                            "30: Food Bonus - FP Regen\n" +
+                            "31: Food Bonus - STM Regen\n" +
+                            "32: Food Bonus - Rest Regen\n" +
+                            "33: Food Bonus - XP Bonus\n" +
+                            "34: Food Bonus - Recast Reduction\n" +
+                            "35: Food Bonus - Duration\n" +
+                            "36: Food Bonus - HP\n" +
+                            "37: Food Bonus - FP\n" +
+                            "38: Food Bonus - STM\n" +
+                            "39: Control - Engineering\n" +
+                            "40: Craftsmanship - Engineering\n" +
+                            "41: Control - Fabrication\n" +
+                            "42: Craftsmanship - Fabrication\n" +
+                            "43: Control - Agriculture\n" +
+                            "44: Craftsmanship - Agriculture\n" +
+                            "45: Module Bonus\n" +
+                            "46: Starship Hull\n" +
+                            "47: Starship Capacitor\n" +
+                            "48: Starship Shield\n" +
+                            "49: Starship Shield Recharge Rate\n" +
+                            "50: Starship EM Damage\n" +
+                            "51: Starship Thermal Damage\n" +
+                            "52: Starship Explosive Damage\n" +
+                            "53: Starship Accuracy\n" +
+                            "54: Starship Evasion\n" +
+                            "55: Starship Thermal Defense\n" +
+                            "56: Starship Explosive Defense\n" +
+                            "57: Starship EM Defense\n" +
+                            "58: Agility\n" +
+                            "59: Attack\n" +
+                            "60: Food Bonus - Attack\n" +
+                            "61: Food Bonus - Accuracy\n" +
+                            "62: Food Bonus - Physical Defense\n" +
+                            "63: Food Bonus - Force Defense\n" +
+                            "64: Food Bonus - Poison Defense\n" +
+                            "65: Food Bonus - Fire Defense\n" +
+                            "66: Food Bonus - Ice Defense\n" +
+                            "67: Food Bonus - Electrical Defense\n" +
+                            "68: Food Bonus - Evasion \n" +
+                            "69: Food Bonus - Control Smithery\n" +
+                            "70: Food Bonus - Craftsmanship Smithery\n" +
+                            "71: Food Bonus - Control Fabrication\n" +
+                            "72: Food Bonus - Craftsmanship Fabrication\n" +
+                            "73: Food Bonus - Control Engineering\n" +
+                            "74: Food Bonus - Craftsmanship Engineering\n" +
+                            "75: Food Bonus - Control Agriculture\n" +
+                            "76: Food Bonus - Craftsmanship Agriculture\n" +
+                            "77: Food Bonus - Might\n" +
+                            "78: Food Bonus - Perception\n" +
+                            "79: Food Bonus - Vitality\n" +
+                            "80: Food Bonus - Willpower\n" +
+                            "81: Food Bonus - Agility\n" +
+                            "82: Food Bonus - Social\n" +
+                            "83: Attack\n" +
+                            "84: Force Attack\n" +
+                            "102: Droid: AI Slot\n" +
+                            "103: Droid: HP\n" +
+                            "104: Droid: STM\n" +
+                            "105: Droid: MGT\n" +
+                            "106: Droid: PER\n" +
+                            "107: Droid: VIT\n" +
+                            "108: Droid: WIL\n" +
+                            "109: Droid: AGI\n" +
+                            "110: Droid: SOC\n" +
+                            "111: Droid: 1-Handed\n" +
+                            "112: Droid: 2-Handed\n" +
+                            "113: Droid: Martial Arts\n" +
+                            "114: Droid: Ranged");
+                    } else if (GetObjectType(target) != ObjectType.Item)
+                    {
+                        SendMessageToPC(user, "This command can only target yourself or an item.");
+                    } else
+                    {
+                        var itemProperty = int.Parse(args[0]);
+                        var value = int.Parse(args[1]);
+                        AddItemProperty(DurationType.Permanent, Craft.BuildItemPropertyForEnhancement(itemProperty, value), target);
+                    }
                 });
         }
     }

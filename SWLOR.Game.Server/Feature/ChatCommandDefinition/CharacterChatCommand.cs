@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             DeleteCommand();
             LanguageCommand();
             ToggleEmoteStyle();
-            ChangeItemDescription();
+            ChangeDescription();
             ConcentrationAbility();
             Customize();
             AlwaysWalk();
@@ -299,31 +299,27 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private void ChangeItemDescription()
+        private void ChangeDescription()
         {
-            _builder.Create("changeitemdescription", "itemdesc")
-                .Description("Changes the description of an item in your inventory. Example: /changeitemdescription New Name")
+            _builder.Create("changemdescription", "changedesc")
+                .Description("Brings up an NUI window to change the description of a target. Players may only target items in their own inventory.")
                 .Permissions(AuthorizationLevel.All)
                 .RequiresTarget()
                 .Action((user, target, location, args) =>
                 {
-                    if (!GetIsObjectValid(target) ||
-                        GetItemPossessor(target) != user ||
-                        GetObjectType(target) != ObjectType.Item)
-                    {
-                        SendMessageToPC(user, "Only items in your inventory may be targeted with this command.");
-                        return;
-                    }
-                    
-                    var sb = new StringBuilder();
+                    var isDM = GetIsDM(user) || GetIsDMPossessed(user);
 
-                    foreach (var arg in args)
+                    if (!isDM || GetIsObjectValid(target) == false)
                     {
-                        sb.Append(' ').Append(arg);
+                        if (!GetIsObjectValid(target) || GetItemPossessor(target) != user || GetObjectType(target) != ObjectType.Item)
+                        {
+                            SendMessageToPC(user, "You can only change descriptions of items in your inventory with this command.");
+                            return;
+                        }
                     }
 
-                    SetDescription(target, sb.ToString());
-                    SendMessageToPC(user, "New description set!");
+                    var payload = new TargetDescriptionPayload(target);
+                    Gui.TogglePlayerWindow(user, GuiWindowType.TargetDescription, payload);
                 });
         }
 

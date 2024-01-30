@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Service
         /// Clears an enemy's enmity tables and removes associated creatures from cache.
         /// </summary>
         /// <param name="enemy">The enemy whose tables we're clearing</param>
-        private static void ClearEnmityTables(uint enemy)
+        public static void ClearEnmityTables(uint enemy)
         {
             // Enemy isn't registered as having an enmity table.
             if (!_enemyEnmityTables.ContainsKey(enemy)) return;

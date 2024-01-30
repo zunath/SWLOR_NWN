@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -40,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             AlwaysWalk();
             AssociateCommands();
             Follow();
+            OrderCompanion();
 
             return _builder.Build();
         }
@@ -444,6 +448,43 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         ActionMoveToObject(target, true);
                     });
+                });
+        }
+
+        private void OrderCompanion()
+        {
+            _builder.Create("ordercompanion", "order", "oc")
+                .Description("Orders your active companion to move to perform an interaction with a target. \n" +
+                "Use this command on your henchman to clear its enmity table and cancel all actions.")
+                .Permissions(AuthorizationLevel.All)
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    var associate = GetHenchman(user);
+                    if (target == associate)
+                    {
+                        Enmity.ClearEnmityTables(associate);
+                        AssignCommand(associate, () =>
+                        {
+                            ClearAllActions(true);
+                        });
+                    }
+                    else if (GetIsEnemy(target, user) == true || GetObjectType(target) == ObjectType.Placeable)
+                    {
+                        AssignCommand(associate, () =>
+                        {
+                            ClearAllActions(true);
+                            ActionAttack(target);
+                        });
+                    }
+                    else if (GetObjectType(target) == ObjectType.Door && GetLocked(target) == false)
+                    {
+                        AssignCommand(associate, () =>
+                        {
+                            ClearAllActions(true);
+                            ActionOpenDoor(target);
+                        });
+                    }
                 });
         }
     }

@@ -17,6 +17,8 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
 using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Feature.ShipDefinition;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -54,6 +56,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Broadcast();
             SetScale();
             GetScale();
+            ShipStats();
+            RepairShip();
 
             return _builder.Build();
         }
@@ -1017,6 +1021,54 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var shownScale = targetScale.ToString("0.###");
 
                     SendMessageToPC(user, $"{targetName} has a scale of {shownScale}.");
+                });
+        }
+
+        private void ShipStats()
+        {
+            _builder.Create("shipstats")
+                .Description("Provides a readout of a given ship's stats.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    if (Space.GetShipStatus(target) != null)
+                    {
+                        var targetName = GetName(target);
+                        var targetStatus = Space.GetShipStatus(target);
+                        SendMessageToPC(user, $"{targetName} stats: \n" +
+                            $"Armor: {targetStatus.Hull} Max: {targetStatus.MaxHull} \n" +
+                            $"Shields: {targetStatus.Shield} Max: {targetStatus.MaxShield} \n" +
+                            $"Capacitor: {targetStatus.Capacitor} Max: {targetStatus.MaxCapacitor} \n" +
+                            $"Shield Regen: {targetStatus.ShieldRechargeRate} \n" +
+                            $"EM Damage Bonus: {targetStatus.EMDamage} \n" +
+                            $"Thermal Damage Bonus: {targetStatus.ThermalDamage} \n" +
+                            $"Explosive Damage Bonus: {targetStatus.ExplosiveDamage} \n" +
+                            $"Accuracy: {targetStatus.Accuracy} \n" +
+                            $"Evasion: {targetStatus.Evasion} \n" +
+                            $"Thermal Defense: {targetStatus.ThermalDefense} \n" +
+                            $"EM Defense: {targetStatus.EMDefense} \n" +
+                            $"Explosive Defense: {targetStatus.ExplosiveDefense}");
+                    }
+                });
+        }
+
+        private void RepairShip()
+        {
+            _builder.Create("repairship")
+                .Description("Restores a ship's armor, shield and capacitor by the indicated amount.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    if (Space.GetShipStatus(target) != null && int.TryParse(args[0], out var amount))
+                    {
+                        Space.RestoreHull(target, Space.GetShipStatus(target), amount);
+                        Space.RestoreShield(target, Space.GetShipStatus(target), amount);
+                        Space.RestoreCapacitor(target, Space.GetShipStatus(target), amount);
+                    }
                 });
         }
     }

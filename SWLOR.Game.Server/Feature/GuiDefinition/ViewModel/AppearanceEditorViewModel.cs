@@ -70,6 +70,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const string OutfitBarrelTag = "OUTFIT_BARREL";
 
         private uint _target;
+        private bool _isMetalPalette;
 
         private AppearanceArmorColor _selectedColorChannel;
         private ColorTarget _colorTarget;
@@ -1902,13 +1903,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             UpdateTargetedColor();
 
-            if (channel == AppearanceArmorColor.Metal1 || channel == AppearanceArmorColor.Metal2)
+            // We only swap the palette if we're moving from a Cloth/Leather palette to a Metal palette or vice-versa.
+            // This (slightly) works around a NUI issue where the palette will disappear when switching between Cloth/Leather and Metal.
+            if ((channel == AppearanceArmorColor.Metal1 || channel == AppearanceArmorColor.Metal2) && !_isMetalPalette)
             {
                 ChangePartialView(ArmorColorElement, ArmorColorsMetal);
+                _isMetalPalette = true;
             }
-            else
+            else if(_isMetalPalette && channel != AppearanceArmorColor.Metal1 && channel != AppearanceArmorColor.Metal2)
             {
                 ChangePartialView(ArmorColorElement, ArmorColorsClothLeather);
+                _isMetalPalette = false;
             }
         };
 

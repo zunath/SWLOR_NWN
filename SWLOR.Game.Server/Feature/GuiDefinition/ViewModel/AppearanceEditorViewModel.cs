@@ -676,6 +676,41 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (GetItemCursedFlag(item) || GetPlotFlag(item))
                 return false;
 
+            // Armors must have parts that are publicly available.
+            // If any single part ID is not in the list of available parts, the entire outfit cannot be edited.
+            if (SelectedItemTypeIndex == 0)
+            {
+                var appearanceType = GetAppearanceType(_target);
+
+                if (!_armorAppearances[appearanceType].Neck.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck)) ||
+                    !_armorAppearances[appearanceType].Torso.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso)) ||
+                    !_armorAppearances[appearanceType].Belt.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt)) ||
+                    !_armorAppearances[appearanceType].Pelvis.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis)) ||
+
+                    !_armorAppearances[appearanceType].Shoulder.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder)) ||
+                    !_armorAppearances[appearanceType].Bicep.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep)) ||
+                    !_armorAppearances[appearanceType].Forearm.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm)) ||
+                    !_armorAppearances[appearanceType].Hand.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand)) ||
+                    
+                    !_armorAppearances[appearanceType].Thigh.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh)) ||
+                    !_armorAppearances[appearanceType].Shin.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin)) ||
+                    !_armorAppearances[appearanceType].Foot.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot)) ||
+
+                    !_armorAppearances[appearanceType].Shoulder.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder)) ||
+                    !_armorAppearances[appearanceType].Bicep.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep)) ||
+                    !_armorAppearances[appearanceType].Forearm.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm)) ||
+                    !_armorAppearances[appearanceType].Hand.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand)) ||
+
+                    !_armorAppearances[appearanceType].Thigh.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh)) ||
+                    !_armorAppearances[appearanceType].Shin.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin)) ||
+                    !_armorAppearances[appearanceType].Foot.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot)) ||
+
+                    !_armorAppearances[appearanceType].Robe.Contains(GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe)))
+                {
+                    return false;
+                }
+            }
+            
             // Weapons must be registered in the weapon appearances list in order to show up.
             // Also, if it has an appearance on the top, middle,or bottom model which isn't available in the menu, we treat it as invalid.
             if (SelectedItemTypeIndex == 3 || SelectedItemTypeIndex == 4) // 3 = Weapon (Main Hand), 4 = Weapon (Off Hand)

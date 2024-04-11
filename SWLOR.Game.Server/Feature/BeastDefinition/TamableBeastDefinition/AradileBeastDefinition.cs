@@ -19,13 +19,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .PortraitId(4279)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser)
-                
+
                 .CanMutateInto(BeastType.Bearbug)
-                .MutationWeight(10)
-                .MutationRequiresLyaseColor(EnzymeColorType.Blue, 1)
-                
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 1)
+
                 .CanMutateInto(BeastType.Wraid)
-                .MutationWeight(50);
+				.MutationWeight(50)
+
+                ;
 
 			Level1();
 			Level2();

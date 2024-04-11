@@ -18,7 +18,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(250)
                 .PortraitId(315)
                 .CombatStats(AbilityType.Vitality, AbilityType.Perception)
-                .Role(BeastRoleType.Tank);
+                .Role(BeastRoleType.Tank)
+
+                .CanMutateInto(BeastType.OrbakWaterHorse)
+				.MutationWeight(40)
+
+                .CanMutateInto(BeastType.BomaBeast)
+				.MutationWeight(10)
+
+                ;
 
 			Level1();
 			Level2();

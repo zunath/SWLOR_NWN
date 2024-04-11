@@ -22,15 +22,17 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .Role(BeastRoleType.Damage)
 
                 .CanMutateInto(BeastType.DeeprockMauler)
-                .MutationWeight(10)
-                .MutationRequiresIsomeraseColor(EnzymeColorType.Green, 1)
-                .MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 2)
+				.MutationWeight(10)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 2)
 
                 .CanMutateInto(BeastType.FungalShambler)
-                .MutationWeight(50)
-                .MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday);
+				.MutationWeight(50)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Wednesday, DayOfWeek.Friday)
 
-            Level1();
+                ;
+
+			Level1();
 			Level2();
 			Level3();
 			Level4();

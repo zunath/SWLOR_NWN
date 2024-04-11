@@ -22,13 +22,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .Role(BeastRoleType.Tank)
 
                 .CanMutateInto(BeastType.StonecladBehemoth)
-                .MutationWeight(5)
-                .MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Sunday)
-                .MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 2)
-                .MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 2)
-                .MutationRequiresLyaseColor(EnzymeColorType.Black, 2);
+				.MutationWeight(5)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 2)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 2)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Sunday)
 
-            Level1();
+                .CanMutateInto(BeastType.MutatedBoar)
+				.MutationWeight(50)
+
+                ;
+
+			Level1();
 			Level2();
 			Level3();
 			Level4();

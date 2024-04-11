@@ -18,7 +18,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(311)
                 .PortraitId(267)
                 .CombatStats(AbilityType.Perception, AbilityType.Willpower)
-                .Role(BeastRoleType.Force);
+                .Role(BeastRoleType.Force)
+
+                .CanMutateInto(BeastType.GaruBearRipper)
+				.MutationWeight(20)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 1)
+
+                .CanMutateInto(BeastType.ScrapRat)
+				.MutationWeight(30)
+
+                ;
 
 			Level1();
 			Level2();

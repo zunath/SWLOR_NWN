@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -18,7 +19,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(16)
                 .PortraitId(165)
                 .CombatStats(AbilityType.Might, AbilityType.Agility)
-                .Role(BeastRoleType.Damage);
+                .Role(BeastRoleType.Damage)
+
+                .CanMutateInto(BeastType.BinarianSabercat)
+				.MutationWeight(20)
+
+                .CanMutateInto(BeastType.BomaBeastBaby)
+				.MutationWeight(30)
+				.MutationRequiresDayOfWeek(DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Sunday)
+
+                ;
 
 			Level1();
 			Level2();

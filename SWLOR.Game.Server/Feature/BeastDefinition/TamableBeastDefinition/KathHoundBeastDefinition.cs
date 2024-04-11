@@ -21,15 +21,17 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .Role(BeastRoleType.Damage)
 
                 .CanMutateInto(BeastType.HornedKathHound)
-                .MutationWeight(50)
+				.MutationWeight(50)
 
                 .CanMutateInto(BeastType.Hanadak)
-                .MutationWeight(10)
-                .MutationRequiresLyaseColor(EnzymeColorType.Black, 1)
-                .MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 1)
-                .MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 1);
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 1)
 
-            Level1();
+                ;
+
+			Level1();
 			Level2();
 			Level3();
 			Level4();

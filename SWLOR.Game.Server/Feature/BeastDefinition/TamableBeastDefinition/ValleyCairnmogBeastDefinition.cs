@@ -18,7 +18,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(53)
                 .PortraitId(819)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
-                .Role(BeastRoleType.Bruiser);
+                .Role(BeastRoleType.Bruiser)
+
+                .CanMutateInto(BeastType.GiantGaruBear)
+				.MutationWeight(35)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 1)
+
+                .CanMutateInto(BeastType.BurrowberryBird)
+				.MutationWeight(80)
+
+                ;
 
 			Level1();
 			Level2();

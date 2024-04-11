@@ -18,7 +18,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(88)
                 .PortraitId(302)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
-                .Role(BeastRoleType.Evasion);
+                .Role(BeastRoleType.Evasion)
+
+                .CanMutateInto(BeastType.MutatedBoar)
+				.MutationWeight(50)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
+
+                .CanMutateInto(BeastType.BrambleLynx)
+				.MutationWeight(15)
+
+                ;
 
 			Level1();
 			Level2();

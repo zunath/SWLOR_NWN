@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -18,7 +19,19 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(442)
                 .PortraitId(2096)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
-                .Role(BeastRoleType.Balanced);
+                .Role(BeastRoleType.Balanced)
+
+                .CanMutateInto(BeastType.SinkCrab)
+				.MutationWeight(50)
+
+                .CanMutateInto(BeastType.Triceratops)
+				.MutationWeight(5)
+				.MutationRequiresLyaseColor(EnzymeColorType.Orange, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
+				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday)
+
+                ;
 
 			Level1();
 			Level2();

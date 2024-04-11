@@ -18,7 +18,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(260)
                 .PortraitId(2104)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
-                .Role(BeastRoleType.Evasion);
+                .Role(BeastRoleType.Evasion)
+
+                .CanMutateInto(BeastType.Crocodile)
+				.MutationWeight(30)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 1)
+
+                .CanMutateInto(BeastType.Weasel)
+				.MutationWeight(25)
+
+                ;
 
 			Level1();
 			Level2();

@@ -22,17 +22,19 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .Role(BeastRoleType.Tank)
 
                 .CanMutateInto(BeastType.JuvenileChirodactyl)
-                .MutationWeight(10)
-                .MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Friday)
-                .MutationRequiresLyaseColor(EnzymeColorType.Red, 1)
-                .MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
-                .MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
+				.MutationWeight(10)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Friday)
 
                 .CanMutateInto(BeastType.Porg)
-                .MutationWeight(10)
-                .MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 3);
+				.MutationWeight(10)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 3)
 
-            Level1();
+                ;
+
+			Level1();
 			Level2();
 			Level3();
 			Level4();

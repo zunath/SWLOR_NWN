@@ -22,13 +22,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .Role(BeastRoleType.Evasion)
 
                 .CanMutateInto(BeastType.StingingSwarm)
-                .MutationWeight(30)
+				.MutationWeight(30)
 
                 .CanMutateInto(BeastType.RoyalPlumage)
-                .MutationWeight(10)
-                .MutationRequiresDayOfWeek(DayOfWeek.Saturday);
+				.MutationWeight(10)
+				.MutationRequiresDayOfWeek(DayOfWeek.Saturday)
 
-            Level1();
+                ;
+
+			Level1();
 			Level2();
 			Level3();
 			Level4();

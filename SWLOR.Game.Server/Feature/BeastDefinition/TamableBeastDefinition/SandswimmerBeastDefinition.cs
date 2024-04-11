@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -18,7 +19,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(396)
                 .PortraitId(143)
                 .CombatStats(AbilityType.Willpower, AbilityType.Vitality)
-                .Role(BeastRoleType.Force);
+                .Role(BeastRoleType.Force)
+
+                .CanMutateInto(BeastType.Stegosaurus)
+				.MutationWeight(5)
+				.MutationRequiresLyaseColor(EnzymeColorType.Green, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 1)
+				.MutationRequiresDayOfWeek(DayOfWeek.Saturday, DayOfWeek.Sunday)
+
+                .CanMutateInto(BeastType.MushWarrior)
+				.MutationWeight(15)
+
+                ;
 
 			Level1();
 			Level2();

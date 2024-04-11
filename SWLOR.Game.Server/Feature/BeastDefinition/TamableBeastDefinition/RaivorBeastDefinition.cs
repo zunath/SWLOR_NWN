@@ -18,7 +18,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(97)
                 .PortraitId(1268)
                 .CombatStats(AbilityType.Vitality, AbilityType.Perception)
-                .Role(BeastRoleType.Balanced);
+                .Role(BeastRoleType.Balanced)
+
+                .CanMutateInto(BeastType.Katarn)
+				.MutationWeight(15)
+
+                .CanMutateInto(BeastType.Tach)
+				.MutationWeight(40)
+
+                ;
 
 			Level1();
 			Level2();

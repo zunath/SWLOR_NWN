@@ -18,7 +18,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(396)
                 .PortraitId(625)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
-                .Role(BeastRoleType.Balanced);
+                .Role(BeastRoleType.Balanced)
+
+                .CanMutateInto(BeastType.Aardvark)
+				.MutationWeight(50)
+
+                .CanMutateInto(BeastType.Blastail)
+				.MutationWeight(15)
+
+                ;
 
 			Level1();
 			Level2();

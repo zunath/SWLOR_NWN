@@ -21,14 +21,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .Role(BeastRoleType.Force)
 
                 .CanMutateInto(BeastType.RazorhideHound)
-                .MutationWeight(50)
+				.MutationWeight(50)
 
                 .CanMutateInto(BeastType.Tukata)
-                .MutationWeight(10)
-                .MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
-                .MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 1);
+				.MutationWeight(10)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 1)
 
-            Level1();
+                ;
+
+			Level1();
 			Level2();
 			Level3();
 			Level4();

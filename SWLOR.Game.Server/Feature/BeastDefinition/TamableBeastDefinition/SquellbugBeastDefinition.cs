@@ -18,7 +18,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(9)
                 .PortraitId(154)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)
-                .Role(BeastRoleType.Damage);
+                .Role(BeastRoleType.Damage)
+
+                .CanMutateInto(BeastType.MutatedFrog)
+				.MutationWeight(50)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
+
+                .CanMutateInto(BeastType.HutlarPenguin)
+				.MutationWeight(15)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
+
+                ;
 
 			Level1();
 			Level2();

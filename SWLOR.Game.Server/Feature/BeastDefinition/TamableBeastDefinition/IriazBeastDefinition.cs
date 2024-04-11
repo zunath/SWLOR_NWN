@@ -22,13 +22,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .Role(BeastRoleType.Balanced)
 
                 .CanMutateInto(BeastType.UnderbrushScamp)
-                .MutationWeight(20)
+				.MutationWeight(20)
 
                 .CanMutateInto(BeastType.Cannok)
-                .MutationWeight(10)
-                .MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Thursday, DayOfWeek.Sunday);
+				.MutationWeight(10)
+				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Thursday, DayOfWeek.Sunday)
 
-            Level1();
+                ;
+
+			Level1();
 			Level2();
 			Level3();
 			Level4();

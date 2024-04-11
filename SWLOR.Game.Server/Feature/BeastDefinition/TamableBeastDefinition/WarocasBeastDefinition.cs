@@ -18,7 +18,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(452)
                 .PortraitId(168)
                 .CombatStats(AbilityType.Social, AbilityType.Willpower)
-                .Role(BeastRoleType.Balanced);
+                .Role(BeastRoleType.Balanced)
+
+                .CanMutateInto(BeastType.Grutchin)
+				.MutationWeight(50)
+
+                .CanMutateInto(BeastType.BurrowberryPack)
+				.MutationWeight(10)
+
+                ;
 
 			Level1();
 			Level2();

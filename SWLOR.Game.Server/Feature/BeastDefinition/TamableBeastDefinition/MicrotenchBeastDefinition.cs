@@ -21,12 +21,14 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .Role(BeastRoleType.Evasion)
 
                 .CanMutateInto(BeastType.SereneGrovetreader)
-                .MutationWeight(20)
+				.MutationWeight(20)
 
                 .CanMutateInto(BeastType.SpeckledSeer)
-                .MutationWeight(30);
+				.MutationWeight(30)
 
-            Level1();
+                ;
+
+			Level1();
 			Level2();
 			Level3();
 			Level4();

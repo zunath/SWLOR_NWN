@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -21,12 +22,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .Role(BeastRoleType.Bruiser)
 
                 .CanMutateInto(BeastType.Bhalir)
-                .MutationWeight(20)
+				.MutationWeight(20)
+				.MutationRequiresDayOfWeek(DayOfWeek.Wednesday, DayOfWeek.Friday, DayOfWeek.Saturday)
 
                 .CanMutateInto(BeastType.Dewback)
-                .MutationWeight(10);
+				.MutationWeight(10)
 
-            Level1();
+                ;
+
+			Level1();
 			Level2();
 			Level3();
 			Level4();

@@ -22,16 +22,18 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .Role(BeastRoleType.Force)
 
                 .CanMutateInto(BeastType.Terentatek)
-                .MutationWeight(5)
-                .MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday)
-                .MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 2)
-                .MutationRequiresIsomeraseColor(EnzymeColorType.Green, 1)
-                .MutationRequiresLyaseColor(EnzymeColorType.Black, 1)
+				.MutationWeight(5)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Green, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Orange, 2)
+				.MutationRequiresDayOfWeek(DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday)
 
                 .CanMutateInto(BeastType.SpinedCrawler)
-                .MutationWeight(20);
+				.MutationWeight(20)
 
-            Level1();
+                ;
+
+			Level1();
 			Level2();
 			Level3();
 			Level4();

@@ -18,7 +18,16 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(249)
                 .PortraitId(603)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
-                .Role(BeastRoleType.Evasion);
+                .Role(BeastRoleType.Evasion)
+
+                .CanMutateInto(BeastType.SwampRat)
+				.MutationWeight(50)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 1)
+
+                .CanMutateInto(BeastType.BalanoroForceMite)
+				.MutationWeight(15)
+
+                ;
 
 			Level1();
 			Level2();

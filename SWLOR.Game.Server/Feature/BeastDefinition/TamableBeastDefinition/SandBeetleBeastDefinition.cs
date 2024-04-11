@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -18,7 +19,20 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(9)
                 .PortraitId(154)
                 .CombatStats(AbilityType.Might, AbilityType.Agility)
-                .Role(BeastRoleType.Damage);
+                .Role(BeastRoleType.Damage)
+
+                .CanMutateInto(BeastType.Dewback)
+				.MutationWeight(25)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 1)
+
+                .CanMutateInto(BeastType.Tyrannosaurus)
+				.MutationWeight(5)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Orange, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Purple, 1)
+				.MutationRequiresDayOfWeek(DayOfWeek.Monday)
+
+                ;
 
 			Level1();
 			Level2();

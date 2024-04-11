@@ -18,7 +18,15 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(9)
                 .PortraitId(156)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)
-                .Role(BeastRoleType.Damage);
+                .Role(BeastRoleType.Damage)
+
+                .CanMutateInto(BeastType.Ronto)
+				.MutationWeight(40)
+
+                .CanMutateInto(BeastType.Frog)
+				.MutationWeight(80)
+
+                ;
 
 			Level1();
 			Level2();

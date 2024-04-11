@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -18,7 +19,19 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
                 .SoundSetId(65535)
                 .PortraitId(184)
                 .CombatStats(AbilityType.Perception, AbilityType.Might)
-                .Role(BeastRoleType.Balanced);
+                .Role(BeastRoleType.Balanced)
+
+                .CanMutateInto(BeastType.DathomirWyrmling)
+				.MutationWeight(40)
+
+                .CanMutateInto(BeastType.Spinosaurus)
+				.MutationWeight(5)
+				.MutationRequiresLyaseColor(EnzymeColorType.Blue, 1)
+				.MutationRequiresIsomeraseColor(EnzymeColorType.Yellow, 1)
+				.MutationRequiresHydrolaseColor(EnzymeColorType.Red, 1)
+				.MutationRequiresDayOfWeek(DayOfWeek.Thursday)
+
+                ;
 
 			Level1();
 			Level2();

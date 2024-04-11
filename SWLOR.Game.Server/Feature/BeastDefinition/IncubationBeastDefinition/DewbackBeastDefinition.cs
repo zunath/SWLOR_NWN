@@ -18,7 +18,11 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .SoundSetId(446)
                 .PortraitId(819)
                 .CombatStats(AbilityType.Perception, AbilityType.Vitality)
-                .Role(BeastRoleType.Tank);
+                .Role(BeastRoleType.Tank)
+
+                
+                
+                ;
 
 			Level1();
 			Level2();

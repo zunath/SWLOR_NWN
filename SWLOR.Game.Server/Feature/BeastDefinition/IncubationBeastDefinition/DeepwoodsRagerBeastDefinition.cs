@@ -18,7 +18,11 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .SoundSetId(257)
                 .PortraitId(1297)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
-                .Role(BeastRoleType.Bruiser);
+                .Role(BeastRoleType.Bruiser)
+
+                
+                
+                ;
 
 			Level1();
 			Level2();

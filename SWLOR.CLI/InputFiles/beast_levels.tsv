@@ -3024,7 +3024,7 @@ Grutchin	Evasion	1	119	3	3	30	23	8	26	13	14	PER	SOC	0	0	1	0	0	0	0	0	0	0	0	0	Grut
 Balanoro Force Mite	Force	1	112	2	2	11	14	20	22	10	10	WIL	PER	0	0	0	0	1	0	0	0	1	0	0	0	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force0	6	24	39	43	67	31	5	6	2
 Mutated Frog	Tank	1	172	4	4	15	23	22	26	9	6	VIT	MGT	0	0	0	1	1	0	0	0	0	0	0	0	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank0	6	25	43	49	67	28	6	8	6
 Crocodile	Damage	1	112	5	5	21	14	11	12	12	15	MGT	VIT	1	1	0	0	0	0	0	0	0	0	0	0	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage0	8	22	25	27	66	37	0	1	2
-Weasel	Bruiser	1	109	6	6	13	9	30	25	13	12	WIL	PER	1	0	0	1	0	0	0	0	0	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser0	8	20	55	46	76	40	10	7	0
+Weasel	Bruiser	1	109	6	6	13	9	30	25	13	12	WIL	PER	1	0	0	1	0	0	0	0	0	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser0	8	20	55	46	76	40	10	7	0
 Giant Garu Bear	Bruiser	1	115	6	6	21	17	8	23	14	15	MGT	AGI	1	0	0	1	0	0	0	0	0	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser0	8	25	22	43	65	43	0	6	3
 Garu Bear Ripper	Damage	1	115	5	5	30	8	22	12	8	18	AGI	MGT	1	1	0	0	0	0	0	0	0	0	0	0	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage0	8	41	42	27	26	25	6	1	0
 Blistering Beetle	Evasion	1	107	3	3	10	16	22	13	19	17	PER	WIL	0	0	1	0	0	0	0	0	0	0	0	0	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion0	6	23	42	28	50	59	6	1	3
@@ -3061,7 +3061,7 @@ Grutchin	Evasion	2	138	3	3	31	23	8	26	13	14	PER	SOC	0	2	3	2	2	1	1	1	1	0	0	0	Grut
 Balanoro Force Mite	Force	2	124	2	3	12	14	20	22	10	10	WIL	PER	0	0	2	0	3	1	1	1	3	0	0	0	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force0	6	27	40	46	69	34	5	6	2
 Mutated Frog	Tank	2	194	4	4	16	23	22	26	9	6	VIT	MGT	0	0	1	3	3	2	2	2	2	0	0	0	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank0	6	28	46	52	69	31	6	8	6
 Crocodile	Damage	2	124	5	5	22	14	11	12	12	15	MGT	VIT	3	3	1	1	1	2	2	0	0	0	0	0	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage0	8	27	27	29	70	40	0	1	2
-Weasel	Bruiser	2	118	7	6	14	9	30	25	13	12	WIL	PER	3	2	1	3	1	1	1	0	0	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser0	8	25	58	48	79	43	10	7	0
+Weasel	Bruiser	2	118	7	6	14	9	30	25	13	12	WIL	PER	3	2	1	3	1	1	1	0	0	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser0	8	25	58	48	79	43	10	7	0
 Giant Garu Bear	Bruiser	2	130	7	6	22	17	8	23	14	15	MGT	AGI	3	2	1	3	1	1	1	0	0	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser0	8	30	25	45	68	46	0	6	3
 Garu Bear Ripper	Damage	2	130	5	5	31	8	22	12	8	18	AGI	MGT	3	3	1	1	1	2	2	0	0	0	0	0	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage0	8	46	44	29	30	28	6	1	0
 Blistering Beetle	Evasion	2	114	3	3	11	16	22	13	19	17	PER	WIL	0	2	3	2	2	1	1	1	1	0	0	0	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion0	6	25	45	31	53	63	6	1	3
@@ -3098,7 +3098,7 @@ Grutchin	Evasion	3	157	4	3	31	24	8	26	13	14	PER	SOC	0	2	5	2	2	2	2	1	1	0	0	0	Grut
 Balanoro Force Mite	Force	3	136	2	3	12	15	20	22	10	10	WIL	PER	0	0	2	1	5	2	2	1	5	0	0	0	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force0	6	29	42	49	71	37	5	6	2
 Mutated Frog	Tank	3	216	4	4	16	24	22	26	9	6	VIT	MGT	0	0	2	5	5	2	2	2	2	0	0	0	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank0	6	30	49	55	70	33	6	8	6
 Crocodile	Damage	3	136	6	5	22	15	11	12	12	15	MGT	VIT	5	5	2	1	2	2	2	0	0	0	0	0	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage0	8	30	29	31	73	42	0	1	2
-Weasel	Bruiser	3	127	7	7	14	10	30	25	13	12	WIL	PER	5	2	2	5	2	1	1	1	1	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser0	8	28	61	51	82	45	10	7	0
+Weasel	Bruiser	3	127	7	7	14	10	30	25	13	12	WIL	PER	5	2	2	5	2	1	1	1	1	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser0	8	28	61	51	82	45	10	7	0
 Giant Garu Bear	Bruiser	3	145	7	7	22	18	8	23	14	15	MGT	AGI	5	2	2	5	2	1	1	1	1	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser0	8	33	28	48	71	48	0	6	3
 Garu Bear Ripper	Damage	3	145	6	5	31	9	22	12	8	18	AGI	MGT	5	5	2	1	2	2	2	0	0	0	0	0	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage0	8	49	45	31	33	30	6	1	0
 Blistering Beetle	Evasion	3	121	4	3	11	17	22	13	19	17	PER	WIL	0	2	5	2	2	2	2	1	1	0	0	0	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion0	6	28	46	33	55	66	6	1	3
@@ -3135,7 +3135,7 @@ Grutchin	Evasion	4	176	4	3	31	24	8	27	13	15	PER	SOC	0	3	6	3	3	2	2	2	2	0	0	0	Grut
 Balanoro Force Mite	Force	4	148	2	4	12	15	20	23	10	11	WIL	PER	0	0	3	1	6	2	2	2	6	0	0	0	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force0	6	31	43	51	72	39	5	6	2
 Mutated Frog	Tank	4	238	5	5	16	24	22	27	9	7	VIT	MGT	0	0	2	6	6	3	3	3	3	0	0	0	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank0	6	32	51	57	72	35	6	8	6
 Crocodile	Damage	4	148	6	6	22	15	11	13	12	16	MGT	VIT	6	6	2	2	2	3	3	0	0	0	0	0	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage0	8	33	31	32	76	44	0	1	2
-Weasel	Bruiser	4	136	8	7	14	10	30	26	13	13	WIL	PER	6	3	2	6	2	2	2	1	1	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser0	8	32	63	52	84	47	10	7	0
+Weasel	Bruiser	4	136	8	7	14	10	30	26	13	13	WIL	PER	6	3	2	6	2	2	2	1	1	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser0	8	32	63	52	84	47	10	7	0
 Giant Garu Bear	Bruiser	4	160	8	7	22	18	8	24	14	16	MGT	AGI	6	3	2	6	2	2	2	1	1	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser0	8	36	30	49	73	50	0	6	3
 Garu Bear Ripper	Damage	4	160	6	6	31	9	22	13	8	19	AGI	MGT	6	6	2	2	2	3	3	0	0	0	0	0	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage0	8	53	47	32	35	32	6	1	0
 Blistering Beetle	Evasion	4	128	4	3	11	17	22	14	19	18	PER	WIL	0	3	6	3	3	2	2	2	2	0	0	0	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion0	6	30	48	35	57	68	6	1	3
@@ -3172,7 +3172,7 @@ Grutchin	Evasion	5	195	4	3	31	24	9	27	14	15	PER	SOC	1	4	7	4	4	3	3	2	2	0	0	1	Grut
 Balanoro Force Mite	Force	5	160	2	5	12	15	21	23	11	11	WIL	PER	1	1	4	1	7	3	3	2	7	0	1	0	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force0	6	33	44	54	74	41	5	6	2
 Mutated Frog	Tank	5	260	5	5	16	24	23	27	10	7	VIT	MGT	1	1	3	7	7	4	4	4	4	0	0	0	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank0	6	35	53	60	73	37	6	8	6
 Crocodile	Damage	5	160	7	6	22	15	12	13	13	16	MGT	VIT	7	7	3	2	3	4	4	1	1	0	0	1	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage0	8	37	32	35	79	46	0	1	2
-Weasel	Bruiser	5	145	9	7	14	10	31	26	14	13	WIL	PER	7	4	3	7	3	2	2	1	1	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser0	8	35	65	54	86	49	10	7	0
+Weasel	Bruiser	5	145	9	7	14	10	31	26	14	13	WIL	PER	7	4	3	7	3	2	2	1	1	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser0	8	35	65	54	86	49	10	7	0
 Giant Garu Bear	Bruiser	5	175	9	7	22	18	9	24	15	16	MGT	AGI	7	4	3	7	3	2	2	1	1	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser0	8	40	32	51	76	52	0	6	3
 Garu Bear Ripper	Damage	5	175	7	6	31	9	23	13	9	19	AGI	MGT	7	7	3	2	3	4	4	1	1	0	0	1	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage0	8	56	48	35	38	34	6	1	0
 Blistering Beetle	Evasion	5	135	4	3	11	17	23	14	20	18	PER	WIL	1	4	7	4	4	3	3	2	2	0	0	1	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion0	6	32	50	37	60	71	6	1	3
@@ -3209,7 +3209,7 @@ Grutchin	Evasion	6	214	5	4	32	24	9	27	14	15	PER	SOC	1	5	8	5	5	4	4	2	2	0	0	1	Grut
 Balanoro Force Mite	Force	6	172	3	6	13	15	21	23	11	11	WIL	PER	1	1	5	1	8	4	4	2	8	0	1	0	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force0	6	36	46	56	75	43	5	6	2
 Mutated Frog	Tank	6	282	5	5	17	24	23	27	10	7	VIT	MGT	1	1	4	8	8	5	5	5	5	0	0	0	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank0	6	37	56	62	75	39	6	8	7
 Crocodile	Damage	6	172	7	6	23	15	12	13	13	16	MGT	VIT	8	8	4	2	4	5	5	1	1	0	0	1	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage0	8	40	33	37	82	48	0	1	2
-Weasel	Bruiser	6	154	10	8	15	10	31	26	14	13	WIL	PER	8	5	4	8	4	2	2	1	1	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser0	8	38	68	56	88	51	10	7	0
+Weasel	Bruiser	6	154	10	8	15	10	31	26	14	13	WIL	PER	8	5	4	8	4	2	2	1	1	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser0	8	38	68	56	88	51	10	7	0
 Giant Garu Bear	Bruiser	6	190	10	8	23	18	9	24	15	16	MGT	AGI	8	5	4	8	4	2	2	1	1	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser0	8	43	35	53	79	54	0	6	4
 Garu Bear Ripper	Damage	6	190	7	6	32	9	23	13	9	19	AGI	MGT	8	8	4	2	4	5	5	1	1	0	0	1	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage0	8	60	50	37	40	36	6	1	0
 Blistering Beetle	Evasion	6	142	5	4	12	17	23	14	20	18	PER	WIL	1	5	8	5	5	4	4	2	2	0	0	1	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion0	6	34	53	39	62	73	6	1	3
@@ -3246,7 +3246,7 @@ Grutchin	Evasion	7	233	5	4	32	24	9	27	14	15	PER	SOC	1	6	9	6	6	4	4	3	3	0	0	1	Grut
 Balanoro Force Mite	Force	7	184	3	6	13	15	21	23	11	11	WIL	PER	1	1	6	1	9	4	4	3	9	1	1	1	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force0	6	38	47	58	77	45	5	6	2
 Mutated Frog	Tank	7	304	5	5	17	24	23	27	10	7	VIT	MGT	1	1	4	9	9	6	6	6	6	0	0	0	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank0	6	40	58	64	76	41	6	8	7
 Crocodile	Damage	7	184	7	6	23	15	12	13	13	16	MGT	VIT	9	9	4	3	4	6	6	1	1	0	0	1	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage0	8	43	35	38	85	50	0	1	2
-Weasel	Bruiser	7	163	10	8	15	10	31	26	14	13	WIL	PER	9	6	4	9	4	3	3	1	1	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser0	8	42	70	58	91	53	10	8	0
+Weasel	Bruiser	7	163	10	8	15	10	31	26	14	13	WIL	PER	9	6	4	9	4	3	3	1	1	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser0	8	42	70	58	91	53	10	8	0
 Giant Garu Bear	Bruiser	7	205	10	8	23	18	9	24	15	16	MGT	AGI	9	6	4	9	4	3	3	1	1	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser0	8	46	37	55	81	56	0	7	4
 Garu Bear Ripper	Damage	7	205	7	6	32	9	23	13	9	19	AGI	MGT	9	9	4	3	4	6	6	1	1	0	0	1	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage0	8	63	52	38	43	38	6	1	0
 Blistering Beetle	Evasion	7	149	5	4	12	17	23	14	20	18	PER	WIL	1	6	9	6	6	4	4	3	3	0	0	1	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion0	6	37	55	42	65	76	6	2	3
@@ -3283,7 +3283,7 @@ Grutchin	Evasion	8	252	5	4	32	24	9	27	14	15	PER	SOC	1	7	11	7	7	5	5	3	3	0	0	1	Gru
 Balanoro Force Mite	Force	8	196	3	7	13	15	21	23	11	11	WIL	PER	1	1	7	2	11	5	5	3	11	1	1	1	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force0	6	40	49	61	78	47	5	6	2
 Mutated Frog	Tank	8	326	5	5	17	24	23	27	10	7	VIT	MGT	1	1	5	11	11	7	7	7	7	0	0	0	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank0	6	42	61	67	78	43	6	8	7
 Crocodile	Damage	8	196	8	6	23	15	12	13	13	16	MGT	VIT	11	11	5	3	5	7	7	1	1	0	0	1	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage0	8	47	36	40	88	52	0	1	2
-Weasel	Bruiser	8	172	11	8	15	10	31	26	14	13	WIL	PER	11	7	5	11	5	3	3	2	2	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser0	8	45	73	60	93	55	10	8	0
+Weasel	Bruiser	8	172	11	8	15	10	31	26	14	13	WIL	PER	11	7	5	11	5	3	3	2	2	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser0	8	45	73	60	93	55	10	8	0
 Giant Garu Bear	Bruiser	8	220	11	8	23	18	9	24	15	16	MGT	AGI	11	7	5	11	5	3	3	2	2	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser0	8	50	40	57	84	58	0	7	4
 Garu Bear Ripper	Damage	8	220	8	6	32	9	23	13	9	19	AGI	MGT	11	11	5	3	5	7	7	1	1	0	0	1	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage0	8	67	53	40	46	40	6	1	0
 Blistering Beetle	Evasion	8	156	5	4	12	17	23	14	20	18	PER	WIL	1	7	11	7	7	5	5	3	3	0	0	1	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion0	6	39	57	44	67	79	6	2	3
@@ -3320,7 +3320,7 @@ Grutchin	Evasion	9	271	5	4	32	25	9	27	14	15	PER	SOC	1	7	12	7	7	6	6	4	4	0	0	1	Gru
 Balanoro Force Mite	Force	9	208	3	8	13	16	21	23	11	11	WIL	PER	1	1	7	2	12	6	6	4	12	1	1	1	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force0	6	43	50	63	80	50	5	6	2
 Mutated Frog	Tank	9	348	6	6	17	25	23	27	10	7	VIT	MGT	1	1	6	12	12	7	7	7	7	1	0	0	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank0	6	44	63	69	79	45	6	8	7
 Crocodile	Damage	9	208	8	7	23	16	12	13	13	16	MGT	VIT	12	12	6	4	6	7	7	1	1	0	0	1	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage0	8	50	39	42	91	54	1	1	2
-Weasel	Bruiser	9	181	12	8	15	11	31	26	14	13	WIL	PER	12	7	6	12	6	4	4	2	2	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser0	8	48	75	62	95	57	10	8	0
+Weasel	Bruiser	9	181	12	8	15	11	31	26	14	13	WIL	PER	12	7	6	12	6	4	4	2	2	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser0	8	48	75	62	95	57	10	8	0
 Giant Garu Bear	Bruiser	9	235	12	8	23	19	9	24	15	16	MGT	AGI	12	7	6	12	6	4	4	2	2	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser0	8	53	42	59	87	60	0	7	4
 Garu Bear Ripper	Damage	9	235	8	7	32	10	23	13	9	19	AGI	MGT	12	12	6	4	6	7	7	1	1	0	0	1	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage0	8	70	55	42	48	42	6	1	0
 Blistering Beetle	Evasion	9	163	5	4	12	18	23	14	20	18	PER	WIL	1	7	12	7	7	6	6	4	4	0	0	1	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion0	6	41	58	45	69	81	6	2	3
@@ -3357,7 +3357,7 @@ Grutchin	Evasion	10	290	6	4	33	25	9	27	14	15	PER	SOC	1	8	13	8	8	6	6	4	4	0	0	1	Gr
 Balanoro Force Mite	Force	10	220	3	8	14	16	21	23	11	11	WIL	PER	1	1	8	2	13	6	6	4	13	1	1	1	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force10	10	45	51	66	81	52	5	6	2
 Mutated Frog	Tank	10	370	6	6	18	25	23	27	10	7	VIT	MGT	1	1	6	13	13	8	8	8	8	1	0	0	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank10	10	47	65	72	81	47	6	8	7
 Crocodile	Damage	10	220	9	7	24	16	12	13	13	16	MGT	VIT	13	13	6	4	6	8	8	1	1	0	0	1	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage10	16	53	40	44	94	56	1	1	2
-Weasel	Bruiser	10	190	12	9	16	11	31	26	14	13	WIL	PER	13	8	6	13	6	4	4	2	2	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser10	13	52	77	63	97	59	10	8	0
+Weasel	Bruiser	10	190	12	9	16	11	31	26	14	13	WIL	PER	13	8	6	13	6	4	4	2	2	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser10	13	52	77	63	97	59	10	8	0
 Giant Garu Bear	Bruiser	10	250	12	9	24	19	9	24	15	16	MGT	AGI	13	8	6	13	6	4	4	2	2	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser10	13	56	44	60	89	62	0	7	4
 Garu Bear Ripper	Damage	10	250	9	7	33	10	23	13	9	19	AGI	MGT	13	13	6	4	6	8	8	1	1	0	0	1	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage10	16	74	56	44	51	44	6	1	0
 Blistering Beetle	Evasion	10	170	6	4	13	18	23	14	20	18	PER	WIL	1	8	13	8	8	6	6	4	4	0	0	1	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion10	10	43	60	47	72	84	6	2	3
@@ -3394,7 +3394,7 @@ Grutchin	Evasion	11	309	6	4	33	25	9	28	14	16	PER	SOC	1	9	14	9	9	7	7	4	4	0	0	1	Gr
 Balanoro Force Mite	Force	11	232	3	9	14	16	21	24	11	12	WIL	PER	1	1	9	2	14	7	7	4	14	1	1	1	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force10	10	47	53	68	83	54	5	6	3
 Mutated Frog	Tank	11	392	6	6	18	25	23	28	10	8	VIT	MGT	1	1	7	14	14	9	9	9	9	1	0	0	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank10	10	49	68	74	82	49	6	8	7
 Crocodile	Damage	11	232	9	7	24	16	12	14	13	17	MGT	VIT	14	14	7	4	7	9	9	1	1	0	0	1	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage10	16	57	41	46	97	58	1	1	3
-Weasel	Bruiser	11	199	13	9	16	11	31	27	14	14	WIL	PER	14	9	7	14	7	4	4	2	2	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser10	13	55	80	65	100	61	10	8	0
+Weasel	Bruiser	11	199	13	9	16	11	31	27	14	14	WIL	PER	14	9	7	14	7	4	4	2	2	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser10	13	55	80	65	100	61	10	8	0
 Giant Garu Bear	Bruiser	11	265	13	9	24	19	9	25	15	17	MGT	AGI	14	9	7	14	7	4	4	2	2	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser10	13	60	47	62	92	64	0	7	4
 Garu Bear Ripper	Damage	11	265	9	7	33	10	23	14	9	20	AGI	MGT	14	14	7	4	7	9	9	1	1	0	0	1	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage10	16	77	58	46	53	46	6	1	0
 Blistering Beetle	Evasion	11	177	6	4	13	18	23	15	20	19	PER	WIL	1	9	14	9	9	7	7	4	4	0	0	1	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion10	10	46	63	49	74	86	6	2	4
@@ -3431,7 +3431,7 @@ Grutchin	Evasion	12	328	6	4	33	25	9	28	14	16	PER	SOC	1	10	15	10	10	7	7	5	5	0	0	1
 Balanoro Force Mite	Force	12	244	3	10	14	16	21	24	11	12	WIL	PER	1	1	10	2	15	7	7	5	15	1	1	1	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force10	10	49	54	70	84	56	5	6	3
 Mutated Frog	Tank	12	414	6	6	18	25	23	28	10	8	VIT	MGT	1	1	7	15	15	10	10	10	10	1	0	0	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank10	10	51	70	76	84	51	6	8	7
 Crocodile	Damage	12	244	9	7	24	16	12	14	13	17	MGT	VIT	15	15	7	5	7	10	10	1	1	0	0	1	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage10	16	60	43	47	100	60	1	1	3
-Weasel	Bruiser	12	208	14	9	16	11	31	27	14	14	WIL	PER	15	10	7	15	7	5	5	2	2	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser10	13	59	82	67	102	63	10	8	0
+Weasel	Bruiser	12	208	14	9	16	11	31	27	14	14	WIL	PER	15	10	7	15	7	5	5	2	2	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser10	13	59	82	67	102	63	10	8	0
 Giant Garu Bear	Bruiser	12	280	14	9	24	19	9	25	15	17	MGT	AGI	15	10	7	15	7	5	5	2	2	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser10	13	63	49	64	94	66	0	7	4
 Garu Bear Ripper	Damage	12	280	9	7	33	10	23	14	9	20	AGI	MGT	15	15	7	5	7	10	10	1	1	0	0	1	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage10	16	81	60	47	56	48	6	1	0
 Blistering Beetle	Evasion	12	184	6	4	13	18	23	15	20	19	PER	WIL	1	10	15	10	10	7	7	5	5	0	0	1	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion10	10	48	65	52	76	89	6	2	4
@@ -3468,7 +3468,7 @@ Grutchin	Evasion	13	347	7	4	33	25	10	28	15	16	PER	SOC	1	11	17	11	11	8	8	5	5	0	0	
 Balanoro Force Mite	Force	13	256	3	10	14	16	22	24	12	12	WIL	PER	1	1	11	3	17	8	8	5	17	1	1	1	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force10	10	52	56	73	86	58	5	6	3
 Mutated Frog	Tank	13	436	6	6	18	25	24	28	11	8	VIT	MGT	1	1	8	17	17	11	11	11	11	1	0	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank10	10	54	73	79	85	53	6	8	7
 Crocodile	Damage	13	256	10	7	24	16	13	14	14	17	MGT	VIT	17	17	8	5	8	11	11	1	1	1	0	1	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage10	16	63	44	49	103	62	1	1	3
-Weasel	Bruiser	13	217	14	10	16	11	32	27	15	14	WIL	PER	17	11	8	17	8	5	5	3	3	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser10	13	62	85	69	104	65	10	8	0
+Weasel	Bruiser	13	217	14	10	16	11	32	27	15	14	WIL	PER	17	11	8	17	8	5	5	3	3	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser10	13	62	85	69	104	65	10	8	0
 Giant Garu Bear	Bruiser	13	295	14	10	24	19	10	25	16	17	MGT	AGI	17	11	8	17	8	5	5	3	3	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser10	13	66	52	66	97	68	0	7	4
 Garu Bear Ripper	Damage	13	295	10	7	33	10	24	14	10	20	AGI	MGT	17	17	8	5	8	11	11	1	1	1	0	1	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage10	16	84	61	49	58	50	6	1	0
 Blistering Beetle	Evasion	13	191	7	4	13	18	24	15	21	19	PER	WIL	1	11	17	11	11	8	8	5	5	0	0	1	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion10	10	50	67	54	79	91	6	2	4
@@ -3505,7 +3505,7 @@ Grutchin	Evasion	14	366	7	4	34	26	10	28	15	16	PER	SOC	1	11	18	11	11	9	9	6	6	0	0	
 Balanoro Force Mite	Force	14	268	3	11	15	17	22	24	12	12	WIL	PER	1	1	11	3	18	9	9	6	18	1	1	1	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force10	10	54	57	76	87	61	5	7	3
 Mutated Frog	Tank	14	458	7	7	19	26	24	28	11	8	VIT	MGT	1	1	9	18	18	11	11	11	11	1	0	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank10	10	56	75	82	87	55	6	9	7
 Crocodile	Damage	14	268	10	8	25	17	13	14	14	17	MGT	VIT	18	18	9	6	9	11	11	1	1	1	0	1	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage10	16	67	47	52	106	64	1	2	3
-Weasel	Bruiser	14	226	15	10	17	12	32	27	15	14	WIL	PER	18	11	9	18	9	6	6	3	3	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser10	13	65	87	71	106	67	10	8	0
+Weasel	Bruiser	14	226	15	10	17	12	32	27	15	14	WIL	PER	18	11	9	18	9	6	6	3	3	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser10	13	65	87	71	106	67	10	8	0
 Giant Garu Bear	Bruiser	14	310	15	10	25	20	10	25	16	17	MGT	AGI	18	11	9	18	9	6	6	3	3	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser10	13	70	54	68	100	70	0	7	4
 Garu Bear Ripper	Damage	14	310	10	8	34	11	24	14	10	20	AGI	MGT	18	18	9	6	9	11	11	1	1	1	0	1	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage10	16	88	63	52	61	52	6	2	0
 Blistering Beetle	Evasion	14	198	7	4	14	19	24	15	21	19	PER	WIL	1	11	18	11	11	9	9	6	6	0	0	1	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion10	10	52	68	55	81	94	6	2	4
@@ -3542,7 +3542,7 @@ Grutchin	Evasion	15	385	7	4	34	26	10	28	15	16	PER	SOC	2	12	19	12	12	9	9	6	6	0	0	
 Balanoro Force Mite	Force	15	280	3	12	15	17	22	24	12	12	WIL	PER	2	2	12	3	19	9	9	6	19	1	2	1	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force10	10	56	58	78	89	63	5	7	3
 Mutated Frog	Tank	15	480	7	7	19	26	24	28	11	8	VIT	MGT	2	2	9	19	19	12	12	12	12	1	0	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank10	10	59	77	84	88	57	6	9	7
 Crocodile	Damage	15	280	11	8	25	17	13	14	14	17	MGT	VIT	19	19	9	6	9	12	12	2	2	1	0	2	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage10	16	70	48	53	109	66	1	2	3
-Weasel	Bruiser	15	235	16	10	17	12	32	27	15	14	WIL	PER	19	12	9	19	9	6	6	3	3	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser10	13	69	89	72	109	69	10	8	0
+Weasel	Bruiser	15	235	16	10	17	12	32	27	15	14	WIL	PER	19	12	9	19	9	6	6	3	3	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser10	13	69	89	72	109	69	10	8	0
 Giant Garu Bear	Bruiser	15	325	16	10	25	20	10	25	16	17	MGT	AGI	19	12	9	19	9	6	6	3	3	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser10	13	73	56	69	102	72	0	7	4
 Garu Bear Ripper	Damage	15	325	11	8	34	11	24	14	10	20	AGI	MGT	19	19	9	6	9	12	12	2	2	1	0	2	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage10	16	91	64	53	64	54	6	2	0
 Blistering Beetle	Evasion	15	205	7	4	14	19	24	15	21	19	PER	WIL	2	12	19	12	12	9	9	6	6	0	0	2	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion10	10	55	70	57	84	97	6	2	4
@@ -3579,7 +3579,7 @@ Grutchin	Evasion	16	404	8	5	34	26	10	28	15	16	PER	SOC	2	13	20	13	13	10	10	7	7	0	
 Balanoro Force Mite	Force	16	292	4	13	15	17	22	24	12	12	WIL	PER	2	2	13	3	20	10	10	7	20	1	2	1	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force10	10	59	59	80	90	65	5	7	3
 Mutated Frog	Tank	16	502	7	7	19	26	24	28	11	8	VIT	MGT	2	2	10	20	20	13	13	13	13	1	0	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank10	10	61	79	86	90	59	6	9	7
 Crocodile	Damage	16	292	11	8	25	17	13	14	14	17	MGT	VIT	20	20	10	7	10	13	13	2	2	1	0	2	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage10	16	73	50	55	112	68	1	2	3
-Weasel	Bruiser	16	244	17	11	17	12	32	27	15	14	WIL	PER	20	13	10	20	10	7	7	3	3	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser10	13	72	91	74	111	71	10	8	0
+Weasel	Bruiser	16	244	17	11	17	12	32	27	15	14	WIL	PER	20	13	10	20	10	7	7	3	3	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser10	13	72	91	74	111	71	10	8	0
 Giant Garu Bear	Bruiser	16	340	17	11	25	20	10	25	16	17	MGT	AGI	20	13	10	20	10	7	7	3	3	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser10	13	76	58	71	105	74	0	7	4
 Garu Bear Ripper	Damage	16	340	11	8	34	11	24	14	10	20	AGI	MGT	20	20	10	7	10	13	13	2	2	1	0	2	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage10	16	95	66	55	66	56	6	2	0
 Blistering Beetle	Evasion	16	212	8	5	14	19	24	15	21	19	PER	WIL	2	13	20	13	13	10	10	7	7	0	0	2	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion10	10	57	72	59	86	99	6	2	4
@@ -3616,7 +3616,7 @@ Grutchin	Evasion	17	423	8	5	35	26	10	28	15	16	PER	SOC	2	14	21	14	14	10	10	7	7	0	
 Balanoro Force Mite	Force	17	304	4	13	16	17	22	24	12	12	WIL	PER	2	2	14	3	21	10	10	7	21	1	2	1	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force10	10	61	61	82	92	67	6	7	3
 Mutated Frog	Tank	17	524	7	7	20	26	24	28	11	8	VIT	MGT	2	2	10	21	21	14	14	14	14	1	0	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank10	10	63	82	88	91	61	7	9	8
 Crocodile	Damage	17	304	11	8	26	17	13	14	14	17	MGT	VIT	21	21	10	7	10	14	14	2	2	1	0	2	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage10	16	77	51	56	115	70	1	2	3
-Weasel	Bruiser	17	253	17	11	18	12	32	27	15	14	WIL	PER	21	14	10	21	10	7	7	3	3	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser10	13	76	94	76	113	73	11	8	1
+Weasel	Bruiser	17	253	17	11	18	12	32	27	15	14	WIL	PER	21	14	10	21	10	7	7	3	3	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser10	13	76	94	76	113	73	11	8	1
 Giant Garu Bear	Bruiser	17	355	17	11	26	20	10	25	16	17	MGT	AGI	21	14	10	21	10	7	7	3	3	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser10	13	80	61	73	107	76	0	7	5
 Garu Bear Ripper	Damage	17	355	11	8	35	11	24	14	10	20	AGI	MGT	21	21	10	7	10	14	14	2	2	1	0	2	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage10	16	98	68	56	69	58	7	2	0
 Blistering Beetle	Evasion	17	219	8	5	15	19	24	15	21	19	PER	WIL	2	14	21	14	14	10	10	7	7	0	0	2	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion10	10	59	75	62	88	102	7	2	4
@@ -3653,7 +3653,7 @@ Grutchin	Evasion	18	442	8	5	35	26	10	29	15	17	PER	SOC	2	15	23	15	15	11	11	7	7	0	
 Balanoro Force Mite	Force	18	316	4	14	16	17	22	25	12	13	WIL	PER	2	2	15	4	23	11	11	7	23	1	2	1	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force10	10	63	63	85	94	69	6	7	3
 Mutated Frog	Tank	18	546	7	7	20	26	24	29	11	9	VIT	MGT	2	2	11	23	23	15	15	15	15	1	0	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank10	10	66	85	91	92	63	7	9	8
 Crocodile	Damage	18	316	12	8	26	17	13	15	14	18	MGT	VIT	23	23	11	7	11	15	15	2	2	1	0	2	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage10	16	80	52	58	118	72	1	2	3
-Weasel	Bruiser	18	262	18	11	18	12	32	28	15	15	WIL	PER	23	15	11	23	11	7	7	4	4	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser10	13	79	97	78	115	75	11	8	1
+Weasel	Bruiser	18	262	18	11	18	12	32	28	15	15	WIL	PER	23	15	11	23	11	7	7	4	4	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser10	13	79	97	78	115	75	11	8	1
 Giant Garu Bear	Bruiser	18	370	18	11	26	20	10	26	16	18	MGT	AGI	23	15	11	23	11	7	7	4	4	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser10	13	83	64	75	110	78	0	7	5
 Garu Bear Ripper	Damage	18	370	12	8	35	11	24	15	10	21	AGI	MGT	23	23	11	7	11	15	15	2	2	1	0	2	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage10	16	101	69	58	71	60	7	2	0
 Blistering Beetle	Evasion	18	226	8	5	15	19	24	16	21	20	PER	WIL	2	15	23	15	15	11	11	7	7	0	0	2	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion10	10	61	77	64	91	104	7	2	4
@@ -3690,7 +3690,7 @@ Grutchin	Evasion	19	461	8	5	35	26	10	29	15	17	PER	SOC	2	16	24	16	16	12	12	8	8	0	
 Balanoro Force Mite	Force	19	328	4	15	16	17	22	25	12	13	WIL	PER	2	2	16	4	24	12	12	8	24	2	2	2	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force10	10	65	64	88	95	71	6	7	3
 Mutated Frog	Tank	19	568	8	8	20	26	24	29	11	9	VIT	MGT	2	2	12	24	24	16	16	16	16	1	0	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank10	10	68	87	94	94	65	7	9	8
 Crocodile	Damage	19	328	12	9	26	17	13	15	14	18	MGT	VIT	24	24	12	8	12	16	16	2	2	1	0	2	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage10	16	83	54	61	121	74	1	2	3
-Weasel	Bruiser	19	271	19	11	18	12	32	28	15	15	WIL	PER	24	16	12	24	12	8	8	4	4	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser10	13	82	99	80	118	77	11	8	1
+Weasel	Bruiser	19	271	19	11	18	12	32	28	15	15	WIL	PER	24	16	12	24	12	8	8	4	4	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser10	13	82	99	80	118	77	11	8	1
 Giant Garu Bear	Bruiser	19	385	19	11	26	20	10	26	16	18	MGT	AGI	24	16	12	24	12	8	8	4	4	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser10	13	86	66	77	113	80	0	7	5
 Garu Bear Ripper	Damage	19	385	12	9	35	11	24	15	10	21	AGI	MGT	24	24	12	8	12	16	16	2	2	1	0	2	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage10	16	105	71	61	74	62	7	2	0
 Blistering Beetle	Evasion	19	233	8	5	15	19	24	16	21	20	PER	WIL	2	16	24	16	16	12	12	8	8	0	0	2	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion10	10	64	79	66	93	107	7	2	4
@@ -3727,7 +3727,7 @@ Grutchin	Evasion	20	480	9	5	35	27	10	29	15	17	PER	SOC	2	16	25	16	16	12	12	8	8	0	
 Balanoro Force Mite	Force	20	340	4	15	16	18	22	25	12	13	WIL	PER	2	2	16	4	25	12	12	8	25	2	2	2	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force20	15	68	65	90	97	74	6	7	3
 Mutated Frog	Tank	20	590	8	8	20	27	24	29	11	9	VIT	MGT	2	2	12	25	25	16	16	16	16	1	0	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank20	15	70	89	96	95	67	7	9	8
 Crocodile	Damage	20	340	13	9	26	18	13	15	14	18	MGT	VIT	25	25	12	8	12	16	16	2	2	1	0	2	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage20	29	87	56	62	124	76	1	2	3
-Weasel	Bruiser	20	280	19	12	18	13	32	28	15	15	WIL	PER	25	16	12	25	12	8	8	4	4	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser20	18	86	101	81	120	79	11	8	1
+Weasel	Bruiser	20	280	19	12	18	13	32	28	15	15	WIL	PER	25	16	12	25	12	8	8	4	4	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser20	18	86	101	81	120	79	11	8	1
 Giant Garu Bear	Bruiser	20	400	19	12	26	21	10	26	16	18	MGT	AGI	25	16	12	25	12	8	8	4	4	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser20	18	90	68	78	115	82	0	7	5
 Garu Bear Ripper	Damage	20	400	13	9	35	12	24	15	10	21	AGI	MGT	25	25	12	8	12	16	16	2	2	1	0	2	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage20	29	108	72	62	76	64	7	2	0
 Blistering Beetle	Evasion	20	240	9	5	15	20	24	16	21	20	PER	WIL	2	16	25	16	16	12	12	8	8	0	0	2	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion20	15	66	80	67	95	109	7	2	4
@@ -3764,7 +3764,7 @@ Grutchin	Evasion	21	499	9	5	36	27	11	29	16	17	PER	SOC	2	17	26	17	17	13	13	9	9	0	
 Balanoro Force Mite	Force	21	352	4	16	17	18	23	25	13	13	WIL	PER	2	2	17	4	26	13	13	9	26	2	2	2	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force20	15	70	66	92	98	76	6	7	3
 Mutated Frog	Tank	21	612	8	8	21	27	25	29	12	9	VIT	MGT	2	2	13	26	26	17	17	17	17	1	0	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank20	15	73	91	98	97	69	7	9	8
 Crocodile	Damage	21	352	13	9	27	18	14	15	15	18	MGT	VIT	26	26	13	9	13	17	17	2	2	1	0	2	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage20	29	90	58	64	127	78	1	2	3
-Weasel	Bruiser	21	289	20	12	19	13	33	28	16	15	WIL	PER	26	17	13	26	13	9	9	4	4	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser20	18	89	103	84	122	81	11	9	1
+Weasel	Bruiser	21	289	20	12	19	13	33	28	16	15	WIL	PER	26	17	13	26	13	9	9	4	4	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser20	18	89	103	84	122	81	11	9	1
 Giant Garu Bear	Bruiser	21	415	20	12	27	21	11	26	17	18	MGT	AGI	26	17	13	26	13	9	9	4	4	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser20	18	93	70	81	118	84	0	8	5
 Garu Bear Ripper	Damage	21	415	13	9	36	12	25	15	11	21	AGI	MGT	26	26	13	9	13	17	17	2	2	1	0	2	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage20	29	112	74	64	79	66	7	2	0
 Blistering Beetle	Evasion	21	247	9	5	16	20	25	16	22	20	PER	WIL	2	17	26	17	17	13	13	9	9	0	0	2	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion20	15	68	82	70	98	112	7	3	4
@@ -3801,7 +3801,7 @@ Grutchin	Evasion	22	518	9	5	36	27	11	29	16	17	PER	SOC	2	18	27	18	18	13	13	9	9	0	
 Balanoro Force Mite	Force	22	364	4	17	17	18	23	25	13	13	WIL	PER	2	2	18	4	27	13	13	9	27	2	2	2	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force20	15	72	68	94	100	78	6	7	4
 Mutated Frog	Tank	22	634	8	8	21	27	25	29	12	9	VIT	MGT	2	2	13	27	27	18	18	18	18	1	0	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank20	15	75	94	100	98	71	7	9	8
 Crocodile	Damage	22	364	13	9	27	18	14	15	15	18	MGT	VIT	27	27	13	9	13	18	18	2	2	1	0	2	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage20	29	93	59	65	130	80	1	2	4
-Weasel	Bruiser	22	298	21	12	19	13	33	28	16	15	WIL	PER	27	18	13	27	13	9	9	4	4	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser20	18	93	106	85	124	83	11	9	1
+Weasel	Bruiser	22	298	21	12	19	13	33	28	16	15	WIL	PER	27	18	13	27	13	9	9	4	4	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser20	18	93	106	85	124	83	11	9	1
 Giant Garu Bear	Bruiser	22	430	21	12	27	21	11	26	17	18	MGT	AGI	27	18	13	27	13	9	9	4	4	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser20	18	96	73	82	120	86	0	8	5
 Garu Bear Ripper	Damage	22	430	13	9	36	12	25	15	11	21	AGI	MGT	27	27	13	9	13	18	18	2	2	1	0	2	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage20	29	115	76	65	82	68	7	2	1
 Blistering Beetle	Evasion	22	254	9	5	16	20	25	16	22	20	PER	WIL	2	18	27	18	18	13	13	9	9	0	0	2	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion20	15	70	85	72	100	115	7	3	5
@@ -3838,7 +3838,7 @@ Grutchin	Evasion	23	537	10	5	36	27	11	29	16	17	PER	SOC	2	19	29	19	19	14	14	9	9	0
 Balanoro Force Mite	Force	23	376	4	17	17	18	23	25	13	13	WIL	PER	2	2	19	5	29	14	14	9	29	2	2	2	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force20	15	75	70	97	101	80	6	7	4
 Mutated Frog	Tank	23	656	8	8	21	27	25	29	12	9	VIT	MGT	2	2	14	29	29	19	19	19	19	1	0	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank20	15	77	97	103	100	73	7	9	8
 Crocodile	Damage	23	376	14	9	27	18	14	15	15	18	MGT	VIT	29	29	14	9	14	19	19	2	2	1	0	2	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage20	29	97	60	67	133	82	1	2	4
-Weasel	Bruiser	23	307	21	13	19	13	33	28	16	15	WIL	PER	29	19	14	29	14	9	9	5	5	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser20	18	96	109	87	127	85	11	9	1
+Weasel	Bruiser	23	307	21	13	19	13	33	28	16	15	WIL	PER	29	19	14	29	14	9	9	5	5	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser20	18	96	109	87	127	85	11	9	1
 Giant Garu Bear	Bruiser	23	445	21	13	27	21	11	26	17	18	MGT	AGI	29	19	14	29	14	9	9	5	5	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser20	18	100	76	84	123	88	0	8	5
 Garu Bear Ripper	Damage	23	445	14	9	36	12	25	15	11	21	AGI	MGT	29	29	14	9	14	19	19	2	2	1	0	2	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage20	29	119	77	67	84	70	7	2	1
 Blistering Beetle	Evasion	23	261	10	5	16	20	25	16	22	20	PER	WIL	2	19	29	19	19	14	14	9	9	0	0	2	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion20	15	73	87	74	102	117	7	3	5
@@ -3875,7 +3875,7 @@ Grutchin	Evasion	24	556	10	5	36	27	11	29	16	17	PER	SOC	2	20	30	20	20	15	15	10	10
 Balanoro Force Mite	Force	24	388	4	18	17	18	23	25	13	13	WIL	PER	2	2	20	5	30	15	15	10	30	2	2	2	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force20	15	77	71	100	103	82	6	7	4
 Mutated Frog	Tank	24	678	9	9	21	27	25	29	12	9	VIT	MGT	2	2	15	30	30	20	20	20	20	1	0	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank20	15	80	99	106	101	75	7	9	8
 Crocodile	Damage	24	388	14	10	27	18	14	15	15	18	MGT	VIT	30	30	15	10	15	20	20	2	2	1	0	2	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage20	29	100	62	70	136	84	1	2	4
-Weasel	Bruiser	24	316	22	13	19	13	33	28	16	15	WIL	PER	30	20	15	30	15	10	10	5	5	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser20	18	99	111	89	129	87	11	9	1
+Weasel	Bruiser	24	316	22	13	19	13	33	28	16	15	WIL	PER	30	20	15	30	15	10	10	5	5	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser20	18	99	111	89	129	87	11	9	1
 Giant Garu Bear	Bruiser	24	460	22	13	27	21	11	26	17	18	MGT	AGI	30	20	15	30	15	10	10	5	5	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser20	18	103	78	86	126	90	0	8	5
 Garu Bear Ripper	Damage	24	460	14	10	36	12	25	15	11	21	AGI	MGT	30	30	15	10	15	20	20	2	2	1	0	2	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage20	29	122	79	70	87	72	7	2	1
 Blistering Beetle	Evasion	24	268	10	5	16	20	25	16	22	20	PER	WIL	2	20	30	20	20	15	15	10	10	0	0	2	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion20	15	75	89	76	105	120	7	3	5
@@ -3912,7 +3912,7 @@ Grutchin	Evasion	25	575	10	5	37	28	11	30	16	18	PER	SOC	3	20	31	20	20	15	15	10	10
 Balanoro Force Mite	Force	25	400	4	19	18	19	23	26	13	14	WIL	PER	3	3	20	5	31	15	15	10	31	2	3	2	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force20	15	79	72	102	104	85	6	7	4
 Mutated Frog	Tank	25	700	9	9	22	28	25	30	12	10	VIT	MGT	3	3	15	31	31	20	20	20	20	2	1	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank20	15	82	101	108	103	76	7	9	8
 Crocodile	Damage	25	400	15	10	28	19	14	16	15	19	MGT	VIT	31	31	15	10	15	20	20	3	3	1	1	3	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage20	29	103	64	71	139	85	2	2	4
-Weasel	Bruiser	25	325	23	13	20	14	33	29	16	16	WIL	PER	31	20	15	31	15	10	10	5	5	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser20	18	103	113	90	131	88	11	9	1
+Weasel	Bruiser	25	325	23	13	20	14	33	29	16	16	WIL	PER	31	20	15	31	15	10	10	5	5	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser20	18	103	113	90	131	88	11	9	1
 Giant Garu Bear	Bruiser	25	475	23	13	28	22	11	27	17	19	MGT	AGI	31	20	15	31	15	10	10	5	5	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser20	18	106	80	87	128	91	0	8	5
 Garu Bear Ripper	Damage	25	475	15	10	37	13	25	16	11	22	AGI	MGT	31	31	15	10	15	20	20	3	3	1	1	3	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage20	29	126	80	71	89	73	7	2	1
 Blistering Beetle	Evasion	25	275	10	5	17	21	25	17	22	21	PER	WIL	3	20	31	20	20	15	15	10	10	1	1	3	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion20	15	77	90	77	107	122	7	3	5
@@ -3949,7 +3949,7 @@ Grutchin	Evasion	26	594	11	6	37	28	11	30	16	18	PER	SOC	3	21	32	21	21	16	16	11	11
 Balanoro Force Mite	Force	26	412	5	20	18	19	23	26	13	14	WIL	PER	3	3	21	5	32	16	16	11	32	2	3	2	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force20	15	81	73	104	106	87	6	7	4
 Mutated Frog	Tank	26	722	9	9	22	28	25	30	12	10	VIT	MGT	3	3	16	32	32	21	21	21	21	2	1	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank20	15	85	103	110	104	78	7	9	8
 Crocodile	Damage	26	412	15	10	28	19	14	16	15	19	MGT	VIT	32	32	16	11	16	21	21	3	3	1	1	3	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage20	29	106	66	73	142	87	2	2	4
-Weasel	Bruiser	26	334	24	14	20	14	33	29	16	16	WIL	PER	32	21	16	32	16	11	11	5	5	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser20	18	106	115	93	133	90	11	9	1
+Weasel	Bruiser	26	334	24	14	20	14	33	29	16	16	WIL	PER	32	21	16	32	16	11	11	5	5	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser20	18	106	115	93	133	90	11	9	1
 Giant Garu Bear	Bruiser	26	490	24	14	28	22	11	27	17	19	MGT	AGI	32	21	16	32	16	11	11	5	5	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser20	18	109	82	90	131	93	0	8	5
 Garu Bear Ripper	Damage	26	490	15	10	37	13	25	16	11	22	AGI	MGT	32	32	16	11	16	21	21	3	3	1	1	3	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage20	29	129	82	73	92	75	7	2	1
 Blistering Beetle	Evasion	26	282	11	6	17	21	25	17	22	21	PER	WIL	3	21	32	21	21	16	16	11	11	1	1	3	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion20	15	79	92	80	110	125	7	3	5
@@ -3986,7 +3986,7 @@ Grutchin	Evasion	27	613	11	6	37	28	11	30	16	18	PER	SOC	3	22	34	22	22	17	17	11	11
 Balanoro Force Mite	Force	27	424	5	20	18	19	23	26	13	14	WIL	PER	3	3	22	6	34	17	17	11	34	2	3	2	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force20	15	84	75	107	107	89	6	7	4
 Mutated Frog	Tank	27	744	9	9	22	28	25	30	12	10	VIT	MGT	3	3	17	34	34	22	22	22	22	2	1	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank20	15	87	106	113	106	80	7	9	8
 Crocodile	Damage	27	424	15	10	28	19	14	16	15	19	MGT	VIT	34	34	17	11	17	22	22	3	3	1	1	3	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage20	29	110	67	75	145	89	2	2	4
-Weasel	Bruiser	27	343	24	14	20	14	33	29	16	16	WIL	PER	34	22	17	34	17	11	11	6	6	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser20	18	109	118	95	136	92	11	9	1
+Weasel	Bruiser	27	343	24	14	20	14	33	29	16	16	WIL	PER	34	22	17	34	17	11	11	6	6	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser20	18	109	118	95	136	92	11	9	1
 Giant Garu Bear	Bruiser	27	505	24	14	28	22	11	27	17	19	MGT	AGI	34	22	17	34	17	11	11	6	6	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser20	18	113	85	92	134	95	0	8	5
 Garu Bear Ripper	Damage	27	505	15	10	37	13	25	16	11	22	AGI	MGT	34	34	17	11	17	22	22	3	3	1	1	3	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage20	29	133	83	75	94	77	7	2	1
 Blistering Beetle	Evasion	27	289	11	6	17	21	25	17	22	21	PER	WIL	3	22	34	22	22	17	17	11	11	1	1	3	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion20	15	82	94	82	112	127	7	3	5
@@ -4023,7 +4023,7 @@ Grutchin	Evasion	28	632	11	6	37	28	11	30	16	18	PER	SOC	3	23	35	23	23	17	17	11	11
 Balanoro Force Mite	Force	28	436	5	21	18	19	23	26	13	14	WIL	PER	3	3	23	6	35	17	17	11	35	2	3	2	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force20	15	86	77	110	109	91	6	8	4
 Mutated Frog	Tank	28	766	9	9	22	28	25	30	12	10	VIT	MGT	3	3	17	35	35	23	23	23	23	2	1	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank20	15	89	109	116	107	82	7	10	9
 Crocodile	Damage	28	436	16	10	28	19	14	16	15	19	MGT	VIT	35	35	17	11	17	23	23	3	3	1	1	3	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage20	29	113	68	77	148	91	2	3	4
-Weasel	Bruiser	28	352	25	14	20	14	33	29	16	16	WIL	PER	35	23	17	35	17	11	11	6	6	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser20	18	113	121	96	138	94	11	9	2
+Weasel	Bruiser	28	352	25	14	20	14	33	29	16	16	WIL	PER	35	23	17	35	17	11	11	6	6	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser20	18	113	121	96	138	94	11	9	2
 Giant Garu Bear	Bruiser	28	520	25	14	28	22	11	27	17	19	MGT	AGI	35	23	17	35	17	11	11	6	6	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser20	18	116	88	93	136	97	0	8	6
 Garu Bear Ripper	Damage	28	520	16	10	37	13	25	16	11	22	AGI	MGT	35	35	17	11	17	23	23	3	3	1	1	3	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage20	29	136	85	77	97	79	7	3	1
 Blistering Beetle	Evasion	28	296	11	6	17	21	25	17	22	21	PER	WIL	3	23	35	23	23	17	17	11	11	1	1	3	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion20	15	84	97	84	114	130	7	3	5
@@ -4060,7 +4060,7 @@ Grutchin	Evasion	29	651	11	6	38	28	12	30	17	18	PER	SOC	3	24	36	24	24	18	18	12	12
 Balanoro Force Mite	Force	29	448	5	22	19	19	24	26	14	14	WIL	PER	3	3	24	6	36	18	18	12	36	2	3	2	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force20	15	88	78	112	110	93	6	8	4
 Mutated Frog	Tank	29	788	10	10	23	28	26	30	13	10	VIT	MGT	3	3	18	36	36	24	24	24	24	2	1	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank20	15	92	111	118	109	84	7	10	9
 Crocodile	Damage	29	448	16	11	29	19	15	16	16	19	MGT	VIT	36	36	18	12	18	24	24	3	3	1	1	3	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage20	29	116	70	79	151	93	2	3	4
-Weasel	Bruiser	29	361	26	14	21	14	34	29	17	16	WIL	PER	36	24	18	36	18	12	12	6	6	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser20	18	116	123	98	140	96	11	9	2
+Weasel	Bruiser	29	361	26	14	21	14	34	29	17	16	WIL	PER	36	24	18	36	18	12	12	6	6	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser20	18	116	123	98	140	96	11	9	2
 Giant Garu Bear	Bruiser	29	535	26	14	29	22	12	27	18	19	MGT	AGI	36	24	18	36	18	12	12	6	6	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser20	18	119	90	95	139	99	0	8	6
 Garu Bear Ripper	Damage	29	535	16	11	38	13	26	16	12	22	AGI	MGT	36	36	18	12	18	24	24	3	3	1	1	3	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage20	29	140	87	79	100	81	7	3	1
 Blistering Beetle	Evasion	29	303	11	6	18	21	26	17	23	21	PER	WIL	3	24	36	24	24	18	18	12	12	1	1	3	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion20	15	86	99	86	117	133	7	3	5
@@ -4097,7 +4097,7 @@ Grutchin	Evasion	30	670	12	6	38	29	12	30	17	18	PER	SOC	3	24	37	24	24	18	18	12	12
 Balanoro Force Mite	Force	30	460	5	22	19	20	24	26	14	14	WIL	PER	3	3	24	6	37	18	18	12	37	2	3	2	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force30	19	91	79	114	112	96	6	8	4
 Mutated Frog	Tank	30	810	10	10	23	29	26	30	13	10	VIT	MGT	3	3	18	37	37	24	24	24	24	2	1	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank30	19	94	113	120	110	86	7	10	9
 Crocodile	Damage	30	460	17	11	29	20	15	16	16	19	MGT	VIT	37	37	18	12	18	24	24	3	3	1	1	3	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage30	37	120	72	80	154	95	2	3	4
-Weasel	Bruiser	30	370	26	15	21	15	34	29	17	16	WIL	PER	37	24	18	37	18	12	12	6	6	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser30	22	120	125	99	142	98	11	9	2
+Weasel	Bruiser	30	370	26	15	21	15	34	29	17	16	WIL	PER	37	24	18	37	18	12	12	6	6	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser30	22	120	125	99	142	98	11	9	2
 Giant Garu Bear	Bruiser	30	550	26	15	29	23	12	27	18	19	MGT	AGI	37	24	18	37	18	12	12	6	6	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser30	22	123	92	96	141	101	0	8	6
 Garu Bear Ripper	Damage	30	550	17	11	38	14	26	16	12	22	AGI	MGT	37	37	18	12	18	24	24	3	3	1	1	3	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage30	37	143	88	80	102	83	7	3	1
 Blistering Beetle	Evasion	30	310	12	6	18	22	26	17	23	21	PER	WIL	3	24	37	24	24	18	18	12	12	1	1	3	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion30	19	88	100	87	119	135	7	3	5
@@ -4134,7 +4134,7 @@ Grutchin	Evasion	31	689	12	6	38	29	12	30	17	18	PER	SOC	3	25	38	25	25	19	19	13	13
 Balanoro Force Mite	Force	31	472	5	23	19	20	24	26	14	14	WIL	PER	3	3	25	6	38	19	19	13	38	3	3	3	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force30	19	93	80	116	113	98	6	8	4
 Mutated Frog	Tank	31	832	10	10	23	29	26	30	13	10	VIT	MGT	3	3	19	38	38	25	25	25	25	2	1	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank30	19	96	115	122	112	88	7	10	9
 Crocodile	Damage	31	472	17	11	29	20	15	16	16	19	MGT	VIT	38	38	19	13	19	25	25	3	3	1	1	3	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage30	37	123	74	82	157	97	2	3	4
-Weasel	Bruiser	31	379	27	15	21	15	34	29	17	16	WIL	PER	38	25	19	38	19	13	13	6	6	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser30	22	123	127	102	145	100	11	9	2
+Weasel	Bruiser	31	379	27	15	21	15	34	29	17	16	WIL	PER	38	25	19	38	19	13	13	6	6	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser30	22	123	127	102	145	100	11	9	2
 Giant Garu Bear	Bruiser	31	565	27	15	29	23	12	27	18	19	MGT	AGI	38	25	19	38	19	13	13	6	6	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser30	22	126	94	99	144	103	0	8	6
 Garu Bear Ripper	Damage	31	565	17	11	38	14	26	16	12	22	AGI	MGT	38	38	19	13	19	25	25	3	3	1	1	3	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage30	37	147	90	82	105	85	7	3	1
 Blistering Beetle	Evasion	31	317	12	6	18	22	26	17	23	21	PER	WIL	3	25	38	25	25	19	19	13	13	1	1	3	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion30	19	91	102	90	121	138	7	3	5
@@ -4171,7 +4171,7 @@ Grutchin	Evasion	32	708	12	6	38	29	12	31	17	19	PER	SOC	3	26	40	26	26	20	20	13	13
 Balanoro Force Mite	Force	32	484	5	24	19	20	24	27	14	15	WIL	PER	3	3	26	7	40	20	20	13	40	3	3	3	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force30	19	95	82	119	115	100	6	8	4
 Mutated Frog	Tank	32	854	10	10	23	29	26	31	13	11	VIT	MGT	3	3	20	40	40	26	26	26	26	2	1	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank30	19	99	118	125	113	90	7	10	9
 Crocodile	Damage	32	484	17	11	29	20	15	17	16	20	MGT	VIT	40	40	20	13	20	26	26	3	3	1	1	3	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage30	37	126	75	84	160	99	2	3	4
-Weasel	Bruiser	32	388	28	15	21	15	34	30	17	17	WIL	PER	40	26	20	40	20	13	13	7	7	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser30	22	126	130	104	147	102	11	9	2
+Weasel	Bruiser	32	388	28	15	21	15	34	30	17	17	WIL	PER	40	26	20	40	20	13	13	7	7	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser30	22	126	130	104	147	102	11	9	2
 Giant Garu Bear	Bruiser	32	580	28	15	29	23	12	28	18	20	MGT	AGI	40	26	20	40	20	13	13	7	7	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser30	22	129	97	101	147	105	0	8	6
 Garu Bear Ripper	Damage	32	580	17	11	38	14	26	17	12	23	AGI	MGT	40	40	20	13	20	26	26	3	3	1	1	3	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage30	37	150	91	84	107	87	7	3	1
 Blistering Beetle	Evasion	32	324	12	6	18	22	26	18	23	22	PER	WIL	3	26	40	26	26	20	20	13	13	1	1	3	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion30	19	93	104	92	124	140	7	3	5
@@ -4208,7 +4208,7 @@ Grutchin	Evasion	33	727	13	6	39	29	12	31	17	19	PER	SOC	3	27	41	27	27	20	20	13	13
 Balanoro Force Mite	Force	33	496	5	24	20	20	24	27	14	15	WIL	PER	3	3	27	7	41	20	20	13	41	3	3	3	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force30	19	97	84	122	117	102	7	8	5
 Mutated Frog	Tank	33	876	10	10	24	29	26	31	13	11	VIT	MGT	3	3	20	41	41	27	27	27	27	2	1	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank30	19	101	121	128	114	92	8	10	9
 Crocodile	Damage	33	496	18	11	30	20	15	17	16	20	MGT	VIT	41	41	20	13	20	27	27	3	3	1	1	3	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage30	37	130	76	86	163	101	2	3	5
-Weasel	Bruiser	33	397	28	16	22	15	34	30	17	17	WIL	PER	41	27	20	41	20	13	13	7	7	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser30	22	130	133	105	149	104	12	9	2
+Weasel	Bruiser	33	397	28	16	22	15	34	30	17	17	WIL	PER	41	27	20	41	20	13	13	7	7	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser30	22	130	133	105	149	104	12	9	2
 Giant Garu Bear	Bruiser	33	595	28	16	30	23	12	28	18	20	MGT	AGI	41	27	20	41	20	13	13	7	7	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser30	22	133	100	102	149	107	1	8	6
 Garu Bear Ripper	Damage	33	595	18	11	39	14	26	17	12	23	AGI	MGT	41	41	20	13	20	27	27	3	3	1	1	3	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage30	37	153	93	86	110	89	8	3	2
 Blistering Beetle	Evasion	33	331	13	6	19	22	26	18	23	22	PER	WIL	3	27	41	27	27	20	20	13	13	1	1	3	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion30	19	95	107	94	126	143	8	3	6
@@ -4245,7 +4245,7 @@ Grutchin	Evasion	34	746	13	6	39	29	12	31	17	19	PER	SOC	3	28	42	28	28	21	21	14	14
 Balanoro Force Mite	Force	34	508	5	25	20	20	24	27	14	15	WIL	PER	3	3	28	7	42	21	21	14	42	3	3	3	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force30	19	100	85	124	118	104	7	8	5
 Mutated Frog	Tank	34	898	11	11	24	29	26	31	13	11	VIT	MGT	3	3	21	42	42	28	28	28	28	2	1	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank30	19	103	123	130	116	94	8	10	9
 Crocodile	Damage	34	508	18	12	30	20	15	17	16	20	MGT	VIT	42	42	21	14	21	28	28	3	3	1	1	3	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage30	37	133	78	88	166	103	2	3	5
-Weasel	Bruiser	34	406	29	16	22	15	34	30	17	17	WIL	PER	42	28	21	42	21	14	14	7	7	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser30	22	133	135	107	151	106	12	9	2
+Weasel	Bruiser	34	406	29	16	22	15	34	30	17	17	WIL	PER	42	28	21	42	21	14	14	7	7	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser30	22	133	135	107	151	106	12	9	2
 Giant Garu Bear	Bruiser	34	610	29	16	30	23	12	28	18	20	MGT	AGI	42	28	21	42	21	14	14	7	7	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser30	22	136	102	104	152	109	1	8	6
 Garu Bear Ripper	Damage	34	610	18	12	39	14	26	17	12	23	AGI	MGT	42	42	21	14	21	28	28	3	3	1	1	3	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage30	37	157	95	88	112	91	8	3	2
 Blistering Beetle	Evasion	34	338	13	6	19	22	26	18	23	22	PER	WIL	3	28	42	28	28	21	21	14	14	1	1	3	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion30	19	97	109	96	128	145	8	3	6
@@ -4282,7 +4282,7 @@ Grutchin	Evasion	35	765	13	6	39	29	12	31	17	19	PER	SOC	4	29	43	29	29	21	21	14	14
 Balanoro Force Mite	Force	35	520	5	26	20	20	24	27	14	15	WIL	PER	4	4	29	7	43	21	21	14	43	3	4	3	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force30	19	102	86	126	120	106	7	8	5
 Mutated Frog	Tank	35	920	11	11	24	29	26	31	13	11	VIT	MGT	4	4	21	43	43	29	29	29	29	2	1	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank30	19	106	125	132	117	96	8	10	9
 Crocodile	Damage	35	520	19	12	30	20	15	17	16	20	MGT	VIT	43	43	21	14	21	29	29	4	4	1	1	4	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage30	37	136	79	89	169	105	2	3	5
-Weasel	Bruiser	35	415	30	16	22	15	34	30	17	17	WIL	PER	43	29	21	43	21	14	14	7	7	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser30	22	137	137	109	154	108	12	10	2
+Weasel	Bruiser	35	415	30	16	22	15	34	30	17	17	WIL	PER	43	29	21	43	21	14	14	7	7	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser30	22	137	137	109	154	108	12	10	2
 Giant Garu Bear	Bruiser	35	625	30	16	30	23	12	28	18	20	MGT	AGI	43	29	21	43	21	14	14	7	7	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser30	22	139	104	106	154	111	1	9	6
 Garu Bear Ripper	Damage	35	625	19	12	39	14	26	17	12	23	AGI	MGT	43	43	21	14	21	29	29	4	4	1	1	4	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage30	37	160	96	89	115	93	8	3	2
 Blistering Beetle	Evasion	35	345	13	6	19	22	26	18	23	22	PER	WIL	4	29	43	29	29	21	21	14	14	1	1	4	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion30	19	100	111	99	131	148	8	4	6
@@ -4319,7 +4319,7 @@ Grutchin	Evasion	36	784	14	7	40	30	12	31	17	19	PER	SOC	4	29	44	29	29	22	22	15	15
 Balanoro Force Mite	Force	36	532	6	27	21	21	24	27	14	15	WIL	PER	4	4	29	7	44	22	22	15	44	3	4	3	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force30	19	104	87	128	121	109	7	8	5
 Mutated Frog	Tank	36	942	11	11	25	30	26	31	13	11	VIT	MGT	4	4	22	44	44	29	29	29	29	2	1	1	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank30	19	108	127	134	119	98	8	10	9
 Crocodile	Damage	36	532	19	12	31	21	15	17	16	20	MGT	VIT	44	44	22	15	22	29	29	4	4	1	1	4	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage30	37	140	82	91	172	107	2	3	5
-Weasel	Bruiser	36	424	31	17	23	16	34	30	17	17	WIL	PER	44	29	22	44	22	15	15	7	7	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser30	22	140	139	111	156	110	12	10	2
+Weasel	Bruiser	36	424	31	17	23	16	34	30	17	17	WIL	PER	44	29	22	44	22	15	15	7	7	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser30	22	140	139	111	156	110	12	10	2
 Giant Garu Bear	Bruiser	36	640	31	17	31	24	12	28	18	20	MGT	AGI	44	29	22	44	22	15	15	7	7	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser30	22	143	106	108	157	113	1	9	6
 Garu Bear Ripper	Damage	36	640	19	12	40	15	26	17	12	23	AGI	MGT	44	44	22	15	22	29	29	4	4	1	1	4	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage30	37	164	98	91	118	95	8	3	2
 Blistering Beetle	Evasion	36	352	14	7	20	23	26	18	23	22	PER	WIL	4	29	44	29	29	22	22	15	15	1	1	4	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion30	19	102	112	100	133	151	8	4	6
@@ -4356,7 +4356,7 @@ Grutchin	Evasion	37	803	14	7	40	30	13	31	18	19	PER	SOC	4	30	46	30	30	23	23	15	15
 Balanoro Force Mite	Force	37	544	6	27	21	21	25	27	15	15	WIL	PER	4	4	30	8	46	23	23	15	46	3	4	3	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force30	19	107	89	131	123	111	7	8	5
 Mutated Frog	Tank	37	964	11	11	25	30	27	31	14	11	VIT	MGT	4	4	23	46	46	30	30	30	30	2	1	2	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank30	19	111	130	137	120	100	8	10	9
 Crocodile	Damage	37	544	19	12	31	21	16	17	17	20	MGT	VIT	46	46	23	15	23	30	30	4	4	2	1	4	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage30	37	143	83	93	175	109	2	3	5
-Weasel	Bruiser	37	433	31	17	23	16	35	30	18	17	WIL	PER	46	30	23	46	23	15	15	8	8	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser30	22	143	142	113	158	112	12	10	2
+Weasel	Bruiser	37	433	31	17	23	16	35	30	18	17	WIL	PER	46	30	23	46	23	15	15	8	8	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser30	22	143	142	113	158	112	12	10	2
 Giant Garu Bear	Bruiser	37	655	31	17	31	24	13	28	19	20	MGT	AGI	46	30	23	46	23	15	15	8	8	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser30	22	146	109	110	160	115	1	9	6
 Garu Bear Ripper	Damage	37	655	19	12	40	15	27	17	13	23	AGI	MGT	46	46	23	15	23	30	30	4	4	2	1	4	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage30	37	167	99	93	120	97	8	3	2
 Blistering Beetle	Evasion	37	359	14	7	20	23	27	18	24	22	PER	WIL	4	30	46	30	30	23	23	15	15	1	1	4	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion30	19	104	114	102	136	153	8	4	6
@@ -4393,7 +4393,7 @@ Grutchin	Evasion	38	822	14	7	40	30	13	31	18	19	PER	SOC	4	31	47	31	31	23	23	16	16
 Balanoro Force Mite	Force	38	556	6	28	21	21	25	27	15	15	WIL	PER	4	4	31	8	47	23	23	16	47	3	4	3	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force30	19	109	90	134	124	113	7	8	5
 Mutated Frog	Tank	38	986	11	11	25	30	27	31	14	11	VIT	MGT	4	4	23	47	47	31	31	31	31	2	1	2	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank30	19	113	132	140	122	102	8	10	9
 Crocodile	Damage	38	556	20	12	31	21	16	17	17	20	MGT	VIT	47	47	23	16	23	31	31	4	4	2	1	4	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage30	37	146	85	95	178	111	2	3	5
-Weasel	Bruiser	38	442	32	17	23	16	35	30	18	17	WIL	PER	47	31	23	47	23	16	16	8	8	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser30	22	147	144	114	160	114	12	10	2
+Weasel	Bruiser	38	442	32	17	23	16	35	30	18	17	WIL	PER	47	31	23	47	23	16	16	8	8	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser30	22	147	144	114	160	114	12	10	2
 Giant Garu Bear	Bruiser	38	670	32	17	31	24	13	28	19	20	MGT	AGI	47	31	23	47	23	16	16	8	8	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser30	22	149	111	111	162	117	1	9	6
 Garu Bear Ripper	Damage	38	670	20	12	40	15	27	17	13	23	AGI	MGT	47	47	23	16	23	31	31	4	4	2	1	4	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage30	37	171	101	95	123	99	8	3	2
 Blistering Beetle	Evasion	38	366	14	7	20	23	27	18	24	22	PER	WIL	4	31	47	31	31	23	23	16	16	1	1	4	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion30	19	106	116	104	138	156	8	4	6
@@ -4430,7 +4430,7 @@ Grutchin	Evasion	39	841	14	7	40	30	13	32	18	20	PER	SOC	4	32	48	32	32	24	24	16	16
 Balanoro Force Mite	Force	39	568	6	29	21	21	25	28	15	16	WIL	PER	4	4	32	8	48	24	24	16	48	3	4	3	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force30	19	111	92	136	126	115	7	8	5
 Mutated Frog	Tank	39	1008	12	12	25	30	27	32	14	12	VIT	MGT	4	4	24	48	48	32	32	32	32	2	1	2	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank30	19	115	135	142	123	104	8	10	10
 Crocodile	Damage	39	568	20	13	31	21	16	18	17	21	MGT	VIT	48	48	24	16	24	32	32	4	4	2	1	4	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage30	37	150	86	97	181	113	2	3	5
-Weasel	Bruiser	39	451	33	17	23	16	35	31	18	18	WIL	PER	48	32	24	48	24	16	16	8	8	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser30	22	150	147	116	163	116	12	10	3
+Weasel	Bruiser	39	451	33	17	23	16	35	31	18	18	WIL	PER	48	32	24	48	24	16	16	8	8	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser30	22	150	147	116	163	116	12	10	3
 Giant Garu Bear	Bruiser	39	685	33	17	31	24	13	29	19	21	MGT	AGI	48	32	24	48	24	16	16	8	8	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser30	22	153	114	113	165	119	1	9	7
 Garu Bear Ripper	Damage	39	685	20	13	40	15	27	18	13	24	AGI	MGT	48	48	24	16	24	32	32	4	4	2	1	4	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage30	37	174	103	97	125	101	8	3	2
 Blistering Beetle	Evasion	39	373	14	7	20	23	27	19	24	23	PER	WIL	4	32	48	32	32	24	24	16	16	1	1	4	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion30	19	109	119	106	140	158	8	4	6
@@ -4467,7 +4467,7 @@ Grutchin	Evasion	40	860	15	7	41	30	13	32	18	20	PER	SOC	4	33	49	33	33	24	24	16	16
 Balanoro Force Mite	Force	40	580	6	29	22	21	25	28	15	16	WIL	PER	4	4	33	8	49	24	24	16	49	3	4	3	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force40	24	113	93	138	127	117	7	8	5
 Mutated Frog	Tank	40	1030	12	12	26	30	27	32	14	12	VIT	MGT	4	4	24	49	49	33	33	33	33	2	1	2	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank40	19	118	137	144	125	106	8	10	10
 Crocodile	Damage	40	580	21	13	32	21	16	18	17	21	MGT	VIT	49	49	24	16	24	33	33	4	4	2	1	4	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage40	43	153	87	98	184	115	2	3	5
-Weasel	Bruiser	40	460	33	18	24	16	35	31	18	18	WIL	PER	49	33	24	49	24	16	16	8	8	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser40	27	154	149	118	165	118	12	10	3
+Weasel	Bruiser	40	460	33	18	24	16	35	31	18	18	WIL	PER	49	33	24	49	24	16	16	8	8	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser40	27	154	149	118	165	118	12	10	3
 Giant Garu Bear	Bruiser	40	700	33	18	32	24	13	29	19	21	MGT	AGI	49	33	24	49	24	16	16	8	8	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser40	27	156	116	115	167	121	1	9	7
 Garu Bear Ripper	Damage	40	700	21	13	41	15	27	18	13	24	AGI	MGT	49	49	24	16	24	33	33	4	4	2	1	4	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage40	43	178	104	98	128	103	8	3	2
 Blistering Beetle	Evasion	40	380	15	7	21	23	27	19	24	23	PER	WIL	4	33	49	33	33	24	24	16	16	1	1	4	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion40	24	111	121	109	143	161	8	4	6
@@ -4504,7 +4504,7 @@ Grutchin	Evasion	41	879	15	7	41	31	13	32	18	20	PER	SOC	4	33	50	33	33	25	25	17	17
 Balanoro Force Mite	Force	41	592	6	30	22	22	25	28	15	16	WIL	PER	4	4	33	8	50	25	25	17	50	3	4	3	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force40	24	116	94	140	129	120	7	8	5
 Mutated Frog	Tank	41	1052	12	12	26	31	27	32	14	12	VIT	MGT	4	4	25	50	50	33	33	33	33	3	1	2	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank40	19	120	139	146	126	108	8	10	10
 Crocodile	Damage	41	592	21	13	32	22	16	18	17	21	MGT	VIT	50	50	25	17	25	33	33	4	4	2	1	4	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage40	43	156	90	100	187	117	3	3	5
-Weasel	Bruiser	41	469	34	18	24	17	35	31	18	18	WIL	PER	50	33	25	50	25	17	17	8	8	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser40	27	157	151	120	167	120	12	10	3
+Weasel	Bruiser	41	469	34	18	24	17	35	31	18	18	WIL	PER	50	33	25	50	25	17	17	8	8	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser40	27	157	151	120	167	120	12	10	3
 Giant Garu Bear	Bruiser	41	715	34	18	32	25	13	29	19	21	MGT	AGI	50	33	25	50	25	17	17	8	8	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser40	27	159	118	117	170	123	1	9	7
 Garu Bear Ripper	Damage	41	715	21	13	41	16	27	18	13	24	AGI	MGT	50	50	25	17	25	33	33	4	4	2	1	4	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage40	43	181	106	100	130	105	8	3	2
 Blistering Beetle	Evasion	41	387	15	7	21	24	27	19	24	23	PER	WIL	4	33	50	33	33	25	25	17	17	1	1	4	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion40	24	113	122	110	145	163	8	4	6
@@ -4541,7 +4541,7 @@ Grutchin	Evasion	42	898	15	7	41	31	13	32	18	20	PER	SOC	4	34	52	34	34	26	26	17	17
 Balanoro Force Mite	Force	42	604	6	31	22	22	25	28	15	16	WIL	PER	4	4	34	9	52	26	26	17	52	3	4	3	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force40	24	118	96	144	130	122	7	9	5
 Mutated Frog	Tank	42	1074	12	12	26	31	27	32	14	12	VIT	MGT	4	4	26	52	52	34	34	34	34	3	1	2	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank40	19	122	142	150	128	110	8	11	10
 Crocodile	Damage	42	604	21	13	32	22	16	18	17	21	MGT	VIT	52	52	26	17	26	34	34	4	4	2	1	4	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage40	43	160	91	103	190	119	3	4	5
-Weasel	Bruiser	42	478	35	18	24	17	35	31	18	18	WIL	PER	52	34	26	52	26	17	17	9	9	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser40	27	160	154	122	169	122	12	10	3
+Weasel	Bruiser	42	478	35	18	24	17	35	31	18	18	WIL	PER	52	34	26	52	26	17	17	9	9	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser40	27	160	154	122	169	122	12	10	3
 Giant Garu Bear	Bruiser	42	730	35	18	32	25	13	29	19	21	MGT	AGI	52	34	26	52	26	17	17	9	9	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser40	27	163	121	119	173	125	1	9	7
 Garu Bear Ripper	Damage	42	730	21	13	41	16	27	18	13	24	AGI	MGT	52	52	26	17	26	34	34	4	4	2	1	4	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage40	43	185	107	103	133	107	8	4	2
 Blistering Beetle	Evasion	42	394	15	7	21	24	27	19	24	23	PER	WIL	4	34	52	34	34	26	26	17	17	1	1	4	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion40	24	115	124	112	147	166	8	4	6
@@ -4578,7 +4578,7 @@ Grutchin	Evasion	43	917	16	7	41	31	13	32	18	20	PER	SOC	4	35	53	35	35	26	26	18	18
 Balanoro Force Mite	Force	43	616	6	31	22	22	25	28	15	16	WIL	PER	4	4	35	9	53	26	26	18	53	4	4	4	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force40	24	120	97	146	132	124	7	9	5
 Mutated Frog	Tank	43	1096	12	12	26	31	27	32	14	12	VIT	MGT	4	4	26	53	53	35	35	35	35	3	1	2	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank40	19	125	144	152	129	112	8	11	10
 Crocodile	Damage	43	616	22	13	32	22	16	18	17	21	MGT	VIT	53	53	26	18	26	35	35	4	4	2	1	4	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage40	43	163	93	104	193	121	3	4	5
-Weasel	Bruiser	43	487	35	19	24	17	35	31	18	18	WIL	PER	53	35	26	53	26	18	18	9	9	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser40	27	164	156	123	172	124	12	10	3
+Weasel	Bruiser	43	487	35	19	24	17	35	31	18	18	WIL	PER	53	35	26	53	26	18	18	9	9	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser40	27	164	156	123	172	124	12	10	3
 Giant Garu Bear	Bruiser	43	745	35	19	32	25	13	29	19	21	MGT	AGI	53	35	26	53	26	18	18	9	9	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser40	27	166	123	120	175	127	1	9	7
 Garu Bear Ripper	Damage	43	745	22	13	41	16	27	18	13	24	AGI	MGT	53	53	26	18	26	35	35	4	4	2	1	4	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage40	43	188	109	104	136	109	8	4	2
 Blistering Beetle	Evasion	43	401	16	7	21	24	27	19	24	23	PER	WIL	4	35	53	35	35	26	26	18	18	1	1	4	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion40	24	118	126	114	150	169	8	4	6
@@ -4615,7 +4615,7 @@ Grutchin	Evasion	44	936	16	7	42	31	13	32	18	20	PER	SOC	4	36	54	36	36	27	27	18	18
 Balanoro Force Mite	Force	44	628	6	32	23	22	25	28	15	16	WIL	PER	4	4	36	9	54	27	27	18	54	4	4	4	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force40	24	123	99	148	133	126	7	9	6
 Mutated Frog	Tank	44	1118	13	13	27	31	27	32	14	12	VIT	MGT	4	4	27	54	54	36	36	36	36	3	1	2	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank40	19	127	147	154	131	114	8	11	10
 Crocodile	Damage	44	628	22	14	33	22	16	18	17	21	MGT	VIT	54	54	27	18	27	36	36	4	4	2	1	4	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage40	43	166	94	106	196	123	3	4	6
-Weasel	Bruiser	44	496	36	19	25	17	35	31	18	18	WIL	PER	54	36	27	54	27	18	18	9	9	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser40	27	167	159	125	174	126	12	10	3
+Weasel	Bruiser	44	496	36	19	25	17	35	31	18	18	WIL	PER	54	36	27	54	27	18	18	9	9	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser40	27	167	159	125	174	126	12	10	3
 Giant Garu Bear	Bruiser	44	760	36	19	33	25	13	29	19	21	MGT	AGI	54	36	27	54	27	18	18	9	9	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser40	27	169	126	122	178	129	1	9	7
 Garu Bear Ripper	Damage	44	760	22	14	42	16	27	18	13	24	AGI	MGT	54	54	27	18	27	36	36	4	4	2	1	4	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage40	43	192	111	106	138	111	8	4	3
 Blistering Beetle	Evasion	44	408	16	7	22	24	27	19	24	23	PER	WIL	4	36	54	36	36	27	27	18	18	1	1	4	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion40	24	120	129	116	152	171	8	4	7
@@ -4652,7 +4652,7 @@ Grutchin	Evasion	45	955	16	7	42	31	14	32	19	20	PER	SOC	5	37	55	37	37	28	28	18	18
 Balanoro Force Mite	Force	45	640	6	33	23	22	26	28	16	16	WIL	PER	5	5	37	9	55	28	28	18	55	4	5	4	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force40	24	125	100	150	135	128	7	9	6
 Mutated Frog	Tank	45	1140	13	13	27	31	28	32	15	12	VIT	MGT	5	5	28	55	55	37	37	37	37	3	1	2	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank40	19	130	149	156	132	116	8	11	10
 Crocodile	Damage	45	640	23	14	33	22	17	18	18	21	MGT	VIT	55	55	28	18	28	37	37	5	5	2	1	5	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage40	43	170	95	108	199	125	3	4	6
-Weasel	Bruiser	45	505	37	19	25	17	36	31	19	18	WIL	PER	55	37	28	55	28	18	18	9	9	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser40	27	170	161	128	176	128	12	10	3
+Weasel	Bruiser	45	505	37	19	25	17	36	31	19	18	WIL	PER	55	37	28	55	28	18	18	9	9	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser40	27	170	161	128	176	128	12	10	3
 Giant Garu Bear	Bruiser	45	775	37	19	33	25	14	29	20	21	MGT	AGI	55	37	28	55	28	18	18	9	9	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser40	27	173	128	125	181	131	1	9	7
 Garu Bear Ripper	Damage	45	775	23	14	42	16	28	18	14	24	AGI	MGT	55	55	28	18	28	37	37	5	5	2	1	5	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage40	43	195	112	108	141	113	8	4	3
 Blistering Beetle	Evasion	45	415	16	7	22	24	28	19	25	23	PER	WIL	5	37	55	37	37	28	28	18	18	1	1	5	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion40	24	122	131	119	155	174	8	4	7
@@ -4689,7 +4689,7 @@ Grutchin	Evasion	46	974	17	8	42	31	14	33	19	21	PER	SOC	5	38	56	38	38	28	28	19	19
 Balanoro Force Mite	Force	46	652	7	34	23	22	26	29	16	17	WIL	PER	5	5	38	9	56	28	28	19	56	4	5	4	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force40	24	127	101	152	136	130	7	9	6
 Mutated Frog	Tank	46	1162	13	13	27	31	28	33	15	13	VIT	MGT	5	5	28	56	56	38	38	38	38	3	1	2	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank40	19	132	151	158	134	118	8	11	10
 Crocodile	Damage	46	652	23	14	33	22	17	19	18	22	MGT	VIT	56	56	28	19	28	38	38	5	5	2	1	5	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage40	43	173	97	109	202	127	3	4	6
-Weasel	Bruiser	46	514	38	20	25	17	36	32	19	19	WIL	PER	56	38	28	56	28	19	19	9	9	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser40	27	174	163	129	178	130	12	10	3
+Weasel	Bruiser	46	514	38	20	25	17	36	32	19	19	WIL	PER	56	38	28	56	28	19	19	9	9	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser40	27	174	163	129	178	130	12	10	3
 Giant Garu Bear	Bruiser	46	790	38	20	33	25	14	30	20	22	MGT	AGI	56	38	28	56	28	19	19	9	9	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser40	27	176	130	126	183	133	1	9	7
 Garu Bear Ripper	Damage	46	790	23	14	42	16	28	19	14	25	AGI	MGT	56	56	28	19	28	38	38	5	5	2	1	5	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage40	43	199	114	109	143	115	8	4	3
 Blistering Beetle	Evasion	46	422	17	8	22	24	28	20	25	24	PER	WIL	5	38	56	38	38	28	28	19	19	1	1	5	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion40	24	124	133	121	157	176	8	4	7
@@ -4726,7 +4726,7 @@ Grutchin	Evasion	47	993	17	8	42	32	14	33	19	21	PER	SOC	5	38	58	38	38	29	29	19	19
 Balanoro Force Mite	Force	47	664	7	34	23	23	26	29	16	17	WIL	PER	5	5	38	10	58	29	29	19	58	4	5	4	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force40	24	129	103	156	138	133	7	9	6
 Mutated Frog	Tank	47	1184	13	13	27	32	28	33	15	13	VIT	MGT	5	5	29	58	58	38	38	38	38	3	1	2	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank40	19	134	154	162	135	120	8	11	10
 Crocodile	Damage	47	664	23	14	33	23	17	19	18	22	MGT	VIT	58	58	29	19	29	38	38	5	5	2	1	5	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage40	43	176	99	112	205	129	3	4	6
-Weasel	Bruiser	47	523	38	20	25	18	36	32	19	19	WIL	PER	58	38	29	58	29	19	19	10	10	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser40	27	177	166	131	181	132	12	10	3
+Weasel	Bruiser	47	523	38	20	25	18	36	32	19	19	WIL	PER	58	38	29	58	29	19	19	10	10	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser40	27	177	166	131	181	132	12	10	3
 Giant Garu Bear	Bruiser	47	805	38	20	33	26	14	30	20	22	MGT	AGI	58	38	29	58	29	19	19	10	10	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser40	27	179	133	128	186	135	1	9	7
 Garu Bear Ripper	Damage	47	805	23	14	42	17	28	19	14	25	AGI	MGT	58	58	29	19	29	38	38	5	5	2	1	5	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage40	43	202	115	112	146	117	8	4	3
 Blistering Beetle	Evasion	47	429	17	8	22	25	28	20	25	24	PER	WIL	5	38	58	38	38	29	29	19	19	1	1	5	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion40	24	127	134	122	159	179	8	4	7
@@ -4763,7 +4763,7 @@ Grutchin	Evasion	48	1012	17	8	43	32	14	33	19	21	PER	SOC	5	39	59	39	39	29	29	20	2
 Balanoro Force Mite	Force	48	676	7	35	24	23	26	29	16	17	WIL	PER	5	5	39	10	59	29	29	20	59	4	5	4	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force40	24	132	104	158	139	135	7	9	6
 Mutated Frog	Tank	48	1206	13	13	28	32	28	33	15	13	VIT	MGT	5	5	29	59	59	39	39	39	39	3	1	2	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank40	19	137	156	164	137	122	8	11	10
 Crocodile	Damage	48	676	24	14	34	23	17	19	18	22	MGT	VIT	59	59	29	20	29	39	39	5	5	2	1	5	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage40	43	180	101	113	208	131	3	4	6
-Weasel	Bruiser	48	532	39	20	26	18	36	32	19	19	WIL	PER	59	39	29	59	29	20	20	10	10	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser40	27	181	168	132	183	134	12	10	3
+Weasel	Bruiser	48	532	39	20	26	18	36	32	19	19	WIL	PER	59	39	29	59	29	20	20	10	10	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser40	27	181	168	132	183	134	12	10	3
 Giant Garu Bear	Bruiser	48	820	39	20	34	26	14	30	20	22	MGT	AGI	59	39	29	59	29	20	20	10	10	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser40	27	183	135	129	188	137	1	9	7
 Garu Bear Ripper	Damage	48	820	24	14	43	17	28	19	14	25	AGI	MGT	59	59	29	20	29	39	39	5	5	2	1	5	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage40	43	206	117	113	148	119	8	4	3
 Blistering Beetle	Evasion	48	436	17	8	23	25	28	20	25	24	PER	WIL	5	39	59	39	39	29	29	20	20	1	1	5	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion40	24	129	136	124	162	181	8	4	7
@@ -4800,7 +4800,7 @@ Grutchin	Evasion	49	1031	17	8	43	32	14	33	19	21	PER	SOC	5	40	60	40	40	30	30	20	2
 Balanoro Force Mite	Force	49	688	7	36	24	23	26	29	16	17	WIL	PER	5	5	40	10	60	30	30	20	60	4	5	4	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force40	24	134	106	160	141	137	8	9	6
 Mutated Frog	Tank	49	1228	14	14	28	32	28	33	15	13	VIT	MGT	5	5	30	60	60	40	40	40	40	3	1	2	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank40	19	139	159	166	138	124	9	11	11
 Crocodile	Damage	49	688	24	15	34	23	17	19	18	22	MGT	VIT	60	60	30	20	30	40	40	5	5	2	1	5	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage40	43	183	102	115	211	133	3	4	6
-Weasel	Bruiser	49	541	40	20	26	18	36	32	19	19	WIL	PER	60	40	30	60	30	20	20	10	10	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser40	27	184	171	135	185	136	13	11	4
+Weasel	Bruiser	49	541	40	20	26	18	36	32	19	19	WIL	PER	60	40	30	60	30	20	20	10	10	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser40	27	184	171	135	185	136	13	11	4
 Giant Garu Bear	Bruiser	49	835	40	20	34	26	14	30	20	22	MGT	AGI	60	40	30	60	30	20	20	10	10	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser40	27	186	138	132	191	139	2	10	8
 Garu Bear Ripper	Damage	49	835	24	15	43	17	28	19	14	25	AGI	MGT	60	60	30	20	30	40	40	5	5	2	1	5	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage40	43	209	119	115	151	121	9	4	3
 Blistering Beetle	Evasion	49	443	17	8	23	25	28	20	25	24	PER	WIL	5	40	60	40	40	30	30	20	20	1	1	5	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion40	24	131	139	127	164	184	9	5	7
@@ -4837,7 +4837,7 @@ Grutchin	Evasion	50	1050	18	8	43	32	14	33	19	21	PER	SOC	5	41	61	41	41	31	31	20	2
 Balanoro Force Mite	Force	50	700	7	36	24	23	26	29	16	17	WIL	PER	5	5	41	10	61	31	31	20	61	4	5	4	BalanoroForceMite	BugGFSquittyPLUSHHYENAofDOOM	150	9	1	Y																			Force50	24	136	107	162	143	139	8	9	6
 Mutated Frog	Tank	50	1250	14	14	28	32	28	33	15	13	VIT	MGT	5	5	31	61	61	41	41	41	41	3	1	2	MutatedFrog	BullywugGreenbabayaga	3095	84	1	Y																			Tank50	24	141	161	168	139	126	9	11	11
 Crocodile	Damage	50	700	25	15	34	23	17	19	18	22	MGT	VIT	61	61	31	20	31	41	41	5	5	2	1	5	Crocodile	CrocodileProjectQ	3170	325	1	Y																			Damage50	43	186	103	117	214	135	3	4	6
-Weasel	Bruiser	50	550	40	21	26	18	36	32	19	19	WIL	PER	61	41	31	61	31	20	20	10	10	0	0	0	Weasel	Weasel* (hydromancerx)	603	250	1	Y																			Bruiser50	27	187	173	137	187	138	13	11	4
+Weasel	Bruiser	50	550	40	21	26	18	36	32	19	19	WIL	PER	61	41	31	61	31	20	20	10	10	0	0	0	Weasel	Weaselhydromancerx	603	250	1	Y																			Bruiser50	27	187	173	137	187	138	13	11	4
 Giant Garu Bear	Bruiser	50	850	40	21	34	26	14	30	20	22	MGT	AGI	61	41	31	61	31	20	20	10	10	0	0	0	GiantGaruBear	BeastmanBear1bloodsong	3479	12	1	Y																			Bruiser50	27	189	140	134	194	141	2	10	8
 Garu Bear Ripper	Damage	50	850	25	15	43	17	28	19	14	25	AGI	MGT	61	61	31	20	31	41	41	5	5	2	1	5	GaruBearRipper	BeastmanBear2bloodsong	3479	12	1	Y																			Damage50	43	212	120	117	154	123	9	4	3
 Blistering Beetle	Evasion	50	450	18	8	23	25	28	20	25	24	PER	WIL	5	41	61	41	41	31	31	20	20	1	1	5	BlisteringBeetle	BeetleBombardierBiowareSoulFilcher	150	9	1	Y																			Evasion50	24	133	141	129	166	187	9	5	7

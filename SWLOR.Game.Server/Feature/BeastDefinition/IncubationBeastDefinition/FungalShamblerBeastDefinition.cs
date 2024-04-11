@@ -18,7 +18,11 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .SoundSetId(9)
                 .PortraitId(2045)
                 .CombatStats(AbilityType.Social, AbilityType.Willpower)
-                .Role(BeastRoleType.Force);
+                .Role(BeastRoleType.Force)
+
+                
+                
+                ;
 
 			Level1();
 			Level2();

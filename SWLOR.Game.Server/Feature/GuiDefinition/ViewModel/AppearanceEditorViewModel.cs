@@ -755,6 +755,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 WatchOnClient(model => model.ShowHelmet);
                 WatchOnClient(model => model.ShowCloak);
             }
+            else
+            {
+                IsSettingsVisible = false;
+            }
         }
 
         private void StartArmorClientWatches()
@@ -1240,6 +1244,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadItemParts();
             SelectedColorCategoryIndex = 0;
             _lastModifiedItem = OBJECT_INVALID;
+
+            _colorTarget = ColorTarget.Invalid;
+            ColorTargetText = string.Empty;
         };
 
         public Action OnSelectSettings() => () =>
@@ -1493,7 +1500,60 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         break;
                 }
             }
+            // Helmet/Cloak - Cloth 1, Cloth 2, Leather 1, Leather 2, Metal 1, Metal 2
+            else if (IsEquipmentSelected && (SelectedItemTypeIndex == 1 || SelectedItemTypeIndex == 2))
+            {
+                switch (SelectedColorCategoryIndex)
+                {
+                    case 0: // 0 = Leather 1
+                        ModifyHelmetCloakColor(AppearanceArmorColor.Leather1, colorId);
+                        break;
+                    case 1: // 1 = Leather 2
+                        ModifyHelmetCloakColor(AppearanceArmorColor.Leather2, colorId);
+                        break;
+                    case 2: // 2 = Cloth 1
+                        ModifyHelmetCloakColor(AppearanceArmorColor.Cloth1, colorId);
+                        break;
+                    case 3: // 3 = Cloth 2
+                        ModifyHelmetCloakColor(AppearanceArmorColor.Cloth2, colorId);
+                        break;
+                    case 4: // 4 = Metal 1
+                        ModifyHelmetCloakColor(AppearanceArmorColor.Metal1, colorId);
+                        break;
+                    case 5: // 5 = Metal 2
+                        ModifyHelmetCloakColor(AppearanceArmorColor.Metal2, colorId);
+                        break;
+                }
+            }
         };
+
+        private void ModifyHelmetCloakColor(AppearanceArmorColor colorChannel, int colorId)
+        {
+            ToggleItemEquippedFlags();
+            if (DoesNotHaveItemEquipped)
+                return;
+
+            var slot = GetInventorySlot();
+            var item = GetItem();
+            var copy = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, (int)colorChannel, colorId, true);
+
+            if (item != _lastModifiedItem && _lastModifiedItem != OBJECT_INVALID)
+            {
+                DestroyObject(_lastModifiedItem);
+            }
+            else
+            {
+                DestroyObject(item);
+            }
+
+            AssignCommand(_target, () =>
+            {
+                ClearAllActions();
+                ActionEquipItem(copy, slot);
+            });
+
+            _lastModifiedItem = copy;
+        }
 
         private void LoadBodyPart()
         {

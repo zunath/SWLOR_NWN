@@ -352,7 +352,7 @@ namespace SWLOR.Game.Server.Service
         {
             DelayCommand(CorpseLifespanSeconds, () =>
             {
-                if (!GetIsObjectValid(placeable)) 
+                if (!GetIsObjectValid(placeable))
                     return;
 
                 var body = GetLocalObject(placeable, CorpseBodyVariable);
@@ -404,7 +404,11 @@ namespace SWLOR.Game.Server.Service
                     SetLocalObject(extractCorpse, CorpseBodyVariable, corpseOwner);
                     SetLocalInt(extractCorpse, BeastMastery.BeastTypeVariable, beastTypeId);
                     SetLocalInt(extractCorpse, BeastMastery.BeastLevelVariable, level);
-                    ScheduleCorpseCleanup(extractCorpse);
+                    
+                    AssignCommand(extractCorpse, () =>
+                    {
+                        ScheduleCorpseCleanup(extractCorpse);
+                    });
                     SetName(extractCorpse, $"Extract DNA: {beastDetail.Name}");
                 }
             }

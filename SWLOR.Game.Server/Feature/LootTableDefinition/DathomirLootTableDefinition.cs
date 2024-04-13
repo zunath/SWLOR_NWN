@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             Squellbug();
             Ssurian();
             JungleBug();
+            GapingSpider();
 
             return _builder.Build();
         }
@@ -495,6 +496,32 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("map_68", 2, 1, true)
                 .AddItem("map_69", 2, 1, true)
                 .AddItem("emerald", 1, 1, true);
+
+
         }
+
+        private void GapingSpider()
+        {
+            _builder.Create("DATHOMIR_GAPING_SPIDER")
+                .AddItem("lth_high", 10)
+                .AddItem("lth_imperfect", 5)
+                .AddItem("spider_guts", 10)
+                .AddItem("spider_leg", 5);
+
+            _builder.Create("DATHOMIR_GAPING_SPIDER_RARES")
+                .IsRare()
+                .AddItem("spider_thread", 99, 1, true)
+                .AddItem("map_61", 2, 1, true)
+                .AddItem("map_62", 2, 1, true)
+                .AddItem("map_63", 2, 1, true)
+                .AddItem("map_64", 2, 1, true)
+                .AddItem("map_65", 2, 1, true)
+                .AddItem("map_66", 2, 1, true)
+                .AddItem("map_67", 2, 1, true)
+                .AddItem("map_68", 2, 1, true)
+                .AddItem("map_69", 2, 1, true)
+                .AddItem("emerald", 1, 1, true);
+        }
+
     }
 }

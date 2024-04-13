@@ -566,67 +566,66 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                     {
-                        var type = (IncubationStatType)GetItemPropertySubType(ip);
-                        var costId = GetItemPropertyCostTableValue(ip);
-
-                        switch (type)
-                        {
-                            case IncubationStatType.MutationChance:
-                                _mutationChance = costId;
-                                break;
-                            case IncubationStatType.AttackPurity:
-                                _attack = costId;
-                                break;
-                            case IncubationStatType.AccuracyPurity:
-                                _accuracy = costId;
-                                break;
-                            case IncubationStatType.EvasionPurity:
-                                _evasion = costId;
-                                break;
-                            case IncubationStatType.LearningPurity:
-                                _learning = costId;
-                                break;
-                            case IncubationStatType.PhysicalDefensePurity:
-                                _physicalDefense = costId;
-                                break;
-                            case IncubationStatType.ForceDefensePurity:
-                                _forceDefense = costId;
-                                break;
-                            case IncubationStatType.FireDefensePurity:
-                                _fireDefense = costId;
-                                break;
-                            case IncubationStatType.PoisonDefensePurity:
-                                _poisonDefense = costId;
-                                break;
-                            case IncubationStatType.ElectricalDefensePurity:
-                                _electricalDefense = costId;
-                                break;
-                            case IncubationStatType.IceDefensePurity:
-                                _iceDefense = costId;
-                                break;
-                            case IncubationStatType.FortitudePurity:
-                                _fortitude = costId;
-                                break;
-                            case IncubationStatType.ReflexPurity:
-                                _reflex = costId;
-                                break;
-                            case IncubationStatType.WillPurity:
-                                _will = costId;
-                                break;
-                            case IncubationStatType.XPPenalty:
-                                _xpPenalty = costId;
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                    }
-
-                    for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-                    {
-                        if (GetItemPropertyType(ip) == ItemPropertyType.DNAType)
+                        var type = GetItemPropertyType(ip);
+                        if (type == ItemPropertyType.DNAType)
                         {
                             _dnaType = (BeastType)GetItemPropertySubType(ip);
-                            break;
+                        }
+                        else if(type == ItemPropertyType.Incubation)
+                        {
+                            var subType = (IncubationStatType)GetItemPropertySubType(ip);
+                            var costId = GetItemPropertyCostTableValue(ip);
+
+                            switch (subType)
+                            {
+                                case IncubationStatType.MutationChance:
+                                    _mutationChance = costId;
+                                    break;
+                                case IncubationStatType.AttackPurity:
+                                    _attack = costId;
+                                    break;
+                                case IncubationStatType.AccuracyPurity:
+                                    _accuracy = costId;
+                                    break;
+                                case IncubationStatType.EvasionPurity:
+                                    _evasion = costId;
+                                    break;
+                                case IncubationStatType.LearningPurity:
+                                    _learning = costId;
+                                    break;
+                                case IncubationStatType.PhysicalDefensePurity:
+                                    _physicalDefense = costId;
+                                    break;
+                                case IncubationStatType.ForceDefensePurity:
+                                    _forceDefense = costId;
+                                    break;
+                                case IncubationStatType.FireDefensePurity:
+                                    _fireDefense = costId;
+                                    break;
+                                case IncubationStatType.PoisonDefensePurity:
+                                    _poisonDefense = costId;
+                                    break;
+                                case IncubationStatType.ElectricalDefensePurity:
+                                    _electricalDefense = costId;
+                                    break;
+                                case IncubationStatType.IceDefensePurity:
+                                    _iceDefense = costId;
+                                    break;
+                                case IncubationStatType.FortitudePurity:
+                                    _fortitude = costId;
+                                    break;
+                                case IncubationStatType.ReflexPurity:
+                                    _reflex = costId;
+                                    break;
+                                case IncubationStatType.WillPurity:
+                                    _will = costId;
+                                    break;
+                                case IncubationStatType.XPPenalty:
+                                    _xpPenalty = costId;
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
                         }
                     }
 

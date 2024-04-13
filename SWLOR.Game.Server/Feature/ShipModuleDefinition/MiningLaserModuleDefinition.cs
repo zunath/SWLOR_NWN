@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidationAction((activator, status, target, shipStatus, moduleBonus) =>
                 {
                     // Ensure an asteroid ore type has been specified by the builder.
-                    var lootTableId = GetLocalString(target, "LOOT_TABLE_ID");
+                    var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
                     if (string.IsNullOrWhiteSpace(lootTableId))
                     {
                         return "Only asteroids may be targeted with this module.";
@@ -76,6 +76,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     // At the end of the process, spawn the ore on the activator and reduce remaining units.
                     DelayCommand(recast + 0.1f, () =>
                     {
+                        // Refresh remaining units (could have changed since the start)
                         remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
 
                         // Safety check - if another player pulls all of the ore from the asteroid, give an error message.
@@ -92,9 +93,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                         remainingUnits -= amountToMine;
 
-                        // Refresh remaining units (could have changed since the start)
-                        var lootTableId = GetLocalString(target, "LOOT_TABLE_ID");
-                        var lootTable = Loot.GetLootTableByName(lootTableId);
 
                         // Fully deplete the rock - destroy it.
                         if (remainingUnits <= 0)
@@ -111,6 +109,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         {
                             SetLocalInt(target, "ASTEROID_REMAINING_UNITS", remainingUnits);
                         }
+
+                        Loot.SpawnLoot(target, activator, "LOOT_TABLE_");
+
+                        var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
+                        var lootTable = Loot.GetLootTableByName(lootTableId);
 
                         // Spawn the units.
                         for (var count = 1; count <= amountToMine; count++)

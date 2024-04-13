@@ -231,6 +231,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("r_const_parts", 4)
                 .Component("r_pow_supp_unit", 2);
 
+            // Lab - Style 1
+            _builder.Create(RecipeType.LabStyle1, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Structure)
+                .Resref("structure_5017")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StructureBlueprints, 2)
+                .Component("r_const_parts", 4)
+                .Component("r_pow_supp_unit", 3)
+                .Component("zinsiam", 8);
+
         }
     }
 }

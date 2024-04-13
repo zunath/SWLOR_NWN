@@ -2743,7 +2743,21 @@
           "type": "resref",
           "value": "zomb_abanstation"
         }
-      }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "dath_hidtunnels"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "dath_waterfallru"
+        }
+      },
     ]
   },
   "Mod_Creator_ID": {
@@ -3046,7 +3060,7 @@
   },
   "Mod_ID": {
     "type": "void",
-    "value": "ÿÿÿÿ\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "ï¿½ï¿½ï¿½ï¿½\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",

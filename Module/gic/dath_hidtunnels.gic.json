@@ -11,7 +11,14 @@
         "__struct_id": 8,
         "Comment": {
           "type": "cexostring",
-          "value": "Fancy Door"
+          "value": "CaveExit"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Comment": {
+          "type": "cexostring",
+          "value": "DungeonExit"
         }
       }
     ]
@@ -31,14 +38,21 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Stones"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Tree - Normal"
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
         }
       },
       {
@@ -60,6 +74,356 @@
         "Comment": {
           "type": "cexostring",
           "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Pine Tree Placeables by JaffBarrow and Scooterpb"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Pine Tree Placeables by JaffBarrow and Scooterpb"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Pine Tree Placeables by JaffBarrow and Scooterpb"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Pine Tree Placeables by JaffBarrow and Scooterpb"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Pine Tree Placeables by JaffBarrow and Scooterpb"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Pine Tree Placeables by JaffBarrow and Scooterpb"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Pine Tree Placeables by JaffBarrow and Scooterpb"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Pine Tree Placeables by JaffBarrow and Scooterpb"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Pine Tree Placeables by JaffBarrow and Scooterpb"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Pine Tree Placeables by JaffBarrow and Scooterpb"
         }
       },
       {
@@ -87,104 +451,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Tir Na Og Tree Pack 1 v2.01 By Martin E"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": ""
         }
       },
@@ -298,335 +564,6 @@
         "Comment": {
           "type": "cexostring",
           "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: All Purpose Placeables 1.1 by M.G.Skaggs"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: All Purpose Placeables 1.1 by M.G.Skaggs"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: All Purpose Placeables 1.1 by M.G.Skaggs"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: All Purpose Placeables 1.1 by M.G.Skaggs"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: All Purpose Placeables 1.1 by M.G.Skaggs"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: All Purpose Placeables 1.1 by M.G.Skaggs"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: All Purpose Placeables 1.1 by M.G.Skaggs"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "9 big fire placeables by Okto\r\n"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "9 big fire placeables by Okto\r\n"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "9 big fire placeables by Okto\r\n"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: LOK Dungeon Tileset 1.04 Full by Danmar\r\n(Placeables only extracted)"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: LOK Dungeon Tileset 1.04 Full by Danmar\r\n(Placeables only extracted)"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: LOK Dungeon Tileset 1.04 Full by Danmar\r\n(Placeables only extracted)"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: LOK Dungeon Tileset 1.04 Full by Danmar\r\n(Placeables only extracted)"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: LOK Dungeon Tileset 1.04 Full by Danmar\r\n(Placeables only extracted)"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: LOK Dungeon Tileset 1.04 Full by Danmar\r\n(Placeables only extracted)"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: LOK Dungeon Tileset 1.04 Full by Danmar\r\n(Placeables only extracted)"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: LOK Dungeon Tileset 1.04 Full by Danmar\r\n(Placeables only extracted)"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: LOK Dungeon Tileset 1.04 Full by Danmar\r\n(Placeables only extracted)"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: LOK Dungeon Tileset 1.04 Full by Danmar\r\n(Placeables only extracted)"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Shed Placeable by Ice-Child"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: All Purpose Placeables 1.1 by M.G.Skaggs"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Fireflies v1.00 by Dobervich"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Fireflies v1.00 by Dobervich"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Fireflies v1.00 by Dobervich"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Fireflies v1.00 by Dobervich"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Fireflies v1.00 by Dobervich"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Fireflies v1.00 by Dobervich"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Tree - Normal"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Tree - Normal"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Tree - Normal"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Tree - Normal"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Fireflies v1.00 by Dobervich"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Fireflies v1.00 by Dobervich"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: Fireflies v1.00 by Dobervich"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Tree - Normal"
         }
       }
     ]
@@ -641,138 +578,11 @@
   },
   "TriggerList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 1,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Prevents random resource spawns from spawning within the trigger."
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Prevents random resource spawns from spawning within the trigger."
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Prevents random resource spawns from spawning within the trigger."
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Prevents random resource spawns from spawning within the trigger."
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Prevents random resource spawns from spawning within the trigger."
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Prevents random resource spawns from spawning within the trigger."
-        }
-      }
-    ]
+    "value": []
   },
   "WaypointList": {
     "type": "list",
     "value": [
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
       {
         "__struct_id": 5,
         "Comment": {

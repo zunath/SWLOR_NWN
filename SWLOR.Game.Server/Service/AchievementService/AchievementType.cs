@@ -326,6 +326,9 @@ namespace SWLOR.Game.Server.Service.AchievementService
 
         [Achievement("Explore Dantooine Jungle Mountain ", "Explore Dantooine's Jungle Mountains.", true)]
         ExploreDantooineJungleMountain = 119,
+
+        [Achievement("Explore Dathomir Hidden Cave ", "Explore Dathomir's Hidden Cave.", true)]
+        ExploreDathomirHiddenCave = 120,
     }
 
     public class AchievementAttribute: Attribute

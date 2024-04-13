@@ -1303,6 +1303,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("sanddemon_meat", 3)
                 .Component("r_flour", 2);
 
+            _builder.Create(RecipeType.DathomirPie, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("dathomir_pie")
+                .Level(34)
+                .Quantity(1)
+                .RequirementPerk(PerkType.CookingRecipes, 4)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("spider_leg", 3)
+                .Component("spider_guts", 2)
+                .Component("spider_thread", 1)
+                .Component("r_flour", 2);
+
             // Fish & Chips
             _builder.Create(RecipeType.FishChips, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)

@@ -775,6 +775,16 @@ namespace SWLOR.Game.Server.Service
                 SetPortraitId(droid, constructedDroid.PortraitId);
             }
 
+            if (constructedDroid.SoundSetId == -1)
+            {
+                constructedDroid.SoundSetId = GetSoundset(droid);
+                SaveConstructedDroid(controller, constructedDroid);
+            }
+            else
+            {
+                SetSoundset(droid, constructedDroid.SoundSetId);
+            }
+
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the droid being created.
             ExecuteScriptNWScript(GetEventScript(droid, EventScript.Creature_OnSpawnIn), droid);

@@ -280,8 +280,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickChangePortrait() => () =>
         {
-            var payload = new ChangePortraitPayload(_target);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.ChangePortrait, payload);
+            var payload = new CustomizeCharacterPayload(_target);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.CustomizeCharacter, payload);
         };
 
         public Action OnClickQuests() => () =>

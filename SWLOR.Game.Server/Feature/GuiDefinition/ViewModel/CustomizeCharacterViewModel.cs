@@ -35,6 +35,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsCustomPortraitVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        
+        public string CustomPortraitFile
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        
         private int _selectedSoundSetIndex;
         private List<int> _soundSetIds;
         public GuiBindingList<string> SoundSetNames
@@ -92,9 +104,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             IsPortraitSelected = true;
             IsVoiceSelected = false;
-
+            IsCustomPortraitVisible = _target == Player;
+            
             ChangePartialView(PartialElement, PortraitPartial);
             LoadCurrentPortrait();
+            
+            WatchOnClient(model => model.CustomPortraitFile);
         }
 
         private void LoadVoiceView()
@@ -141,6 +156,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _target = GetIsObjectValid(initialPayload.Target) ? initialPayload.Target : Player;
 
+            CustomPortraitFile = string.Empty;
             MaximumPortraits = Cache.PortraitCount;
             MaxPortraitsText = $"/ {MaximumPortraits}";
             
@@ -188,10 +204,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSavePortraitClick() => () =>
         {
+            var isDroid = Droid.IsDroid(_target);
+            var isBeast = BeastMastery.IsPlayerBeast(_target);
             var portraitId = Cache.GetPortraitByInternalId(_activePortraitInternalId);
-            SetPortraitId(_target, portraitId);
 
-            if (Droid.IsDroid(_target))
+            if (isDroid || isBeast || string.IsNullOrWhiteSpace(CustomPortraitFile))
+            {
+                SetPortraitId(_target, portraitId);
+            }
+            else if(!string.IsNullOrWhiteSpace(CustomPortraitFile))
+            {
+                SetPortraitResRef(_target, CustomPortraitFile);
+                ActivePortrait = CustomPortraitFile + "l";
+            }
+            
+            if (isDroid)
             {
                 var controller = Droid.GetControllerItem(_target);
                 var constructedDroid = Droid.LoadConstructedDroid(controller);
@@ -200,7 +227,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 Droid.SaveConstructedDroid(controller, constructedDroid);
             }
-            else if (BeastMastery.IsPlayerBeast(_target))
+            else if (isBeast)
             {
                 var beastId = BeastMastery.GetBeastId(_target);
                 var dbBeast = DB.Get<Beast>(beastId);

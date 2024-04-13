@@ -62,6 +62,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         col.AddRow(row =>
                         {
+                            row.AddTextEdit()
+                                .SetPlaceholder("Custom File ( ex: po_me_ )")
+                                .BindValue(model => model.CustomPortraitFile)
+                                .BindIsVisible(model => model.IsCustomPortraitVisible);
+                        });
+                        
+                        col.AddRow(row =>
+                        {
                             row.AddButton()
                                 .SetText("Previous")
                                 .BindOnClicked(model => model.OnPreviousPortraitClick())

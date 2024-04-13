@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidationAction((activator, status, target, shipStatus, moduleBonus) =>
                 {
                     // Ensure an asteroid ore type has been specified by the builder.
-                    var lootTableId = GetLocalString(target, "LOOT_TABLE_ID");
+                    var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
                     if (string.IsNullOrWhiteSpace(lootTableId))
                     {
                         return "Only asteroids may be targeted with this module.";

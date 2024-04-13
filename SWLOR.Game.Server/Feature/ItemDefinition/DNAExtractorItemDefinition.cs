@@ -157,6 +157,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     DestroyObject(target);
                     var body = GetLocalObject(target, Loot.CorpseBodyVariable);
                     AssignCommand(body, () => SetIsDestroyable());
+                    DestroyObject(body);
                 });
         }
     }

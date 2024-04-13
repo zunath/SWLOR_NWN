@@ -157,14 +157,14 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Calculates the critical hit rate against a given target.
         /// </summary>
-        /// <param name="attackerStat">The attacker's attack stat (Perception for melee, Agility for ranged)</param>
-        /// <param name="defenderAGI">The defender's agility stat.</param>
+        /// <param name="attackerPER">The attacker's perception stat</param>
+        /// <param name="defenderMGT">The defender's might stat.</param>
         /// <param name="criticalModifier">A modifier to the critical rating based on external factors.</param>
         /// <returns>The critical rate, in a percentage</returns>
-        public static int CalculateCriticalRate(int attackerStat, int defenderAGI, int criticalModifier)
+        public static int CalculateCriticalRate(int attackerPER, int defenderMGT, int criticalModifier)
         {
             const int BaseCriticalRate = 5;
-            var delta = attackerStat - defenderAGI;
+            var delta = attackerPER - defenderMGT;
 
             if (delta < 0)
                 delta = 0;

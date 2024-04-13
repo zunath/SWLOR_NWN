@@ -9,10 +9,12 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -24,11 +26,23 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<BeastType, BeastDetail> _beasts = new();
         private static readonly Dictionary<BeastRoleType, BeastRoleAttribute> _beastRoles = new();
         private static List<BeastFoodType> _beastFoods = new();
+        private static readonly Dictionary<int, float> _incubationPercentages = new();
 
         private const string BeastResref = "pc_beast";
         public const string BeastClawResref = "beast_claw";
         public const int MaxLevel = 50;
         private static int _highestDelta;
+
+        public const string HydrolaseResrefPrefix = "hydrolase_";
+        public const string LyaseResrefPrefix = "lyase_";
+        public const string IsomeraseResrefPrefix = "isomerase_";
+        public const string DNAResref = "beast_dna";
+        public const string BeastEggResref = "beast_egg";
+        public const string EnzymeTag = "INCUBATION_ENZYME";
+
+        public const string ExtractCorpseObjectResref = "extract_corpse";
+        public const string BeastTypeVariable = "BEAST_TYPE";
+        public const string BeastLevelVariable = "BEAST_LEVEL";
 
         [NWNEventHandler("mod_cache")]
         public static void CacheData()
@@ -37,6 +51,7 @@ namespace SWLOR.Game.Server.Service
             LoadBeastRoles();
             LoadFoods();
             LoadHighestDelta();
+            LoadIncubationPercentages();
         }
 
         private static void LoadBeasts()
@@ -78,6 +93,21 @@ namespace SWLOR.Game.Server.Service
         private static void LoadHighestDelta()
         {
             _highestDelta = _deltaXP.Keys.Max();
+        }
+
+        private static void LoadIncubationPercentages()
+        {
+            const string FileName = "iprp_incubonus";
+            var rowCount = Get2DARowCount(FileName);
+            
+            for (var row = 1; row <= rowCount; row++)
+            {
+                var label = Get2DAString(FileName, "Label", row);
+                if (float.TryParse(label, out var percentage))
+                {
+                    _incubationPercentages[row] = percentage;
+                }
+            }
         }
 
         public static BeastDetail GetBeastDetail(BeastType type)
@@ -165,7 +195,8 @@ namespace SWLOR.Game.Server.Service
             }
 
 
-            var requiredXP = GetRequiredXP(dbBeast.Level);
+            var requiredXP = GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent);
+
             dbBeast.XP += xp;
 
             if (dbBeast.Level >= MaxLevel)
@@ -181,7 +212,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (dbBeast.Level >= maxBeastLevel)
                 {
-                    dbBeast.XP = GetRequiredXP(dbBeast.Level) - 1;
+                    dbBeast.XP = GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent) - 1;
                     break;
                 }
 
@@ -189,7 +220,7 @@ namespace SWLOR.Game.Server.Service
                 dbBeast.UnallocatedSP++;
                 dbBeast.Level++;
 
-                requiredXP = GetRequiredXP(dbBeast.Level);
+                requiredXP = GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent);
                 if (dbBeast.Level >= MaxLevel)
                 {
                     dbBeast.XP = 0;
@@ -204,9 +235,9 @@ namespace SWLOR.Game.Server.Service
             Gui.PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
         }
 
-        public static int GetRequiredXP(int level)
+        public static int GetRequiredXP(int level, int xpPenalty)
         {
-            return _beastXPRequirements[level];
+            return _beastXPRequirements[level] + (int)(_beastXPRequirements[level] * (xpPenalty * 0.01f));
         }
 
         public static void SpawnBeast(uint player, string beastId, int percentHeal)
@@ -665,5 +696,183 @@ namespace SWLOR.Game.Server.Service
             { -3, 150 },
             { -4, 76 }
         };
+
+        /// <summary>
+        /// Retrieves the percentage associated with a specific item property Id for the incubation stats.
+        /// </summary>
+        /// <param name="itemPropertyId">The incubation stat Id</param>
+        /// <returns>The percentage associated or 0.0 if not found.</returns>
+        public static float GetIncubationPercentageById(int itemPropertyId)
+        {
+            return !_incubationPercentages.ContainsKey(itemPropertyId) 
+                ? 0f 
+                : _incubationPercentages[itemPropertyId];
+        }
+
+        [NWNEventHandler("incubator_term")]
+        public static void UseIncubator()
+        {
+            var player = GetLastUsedBy();
+            var playerId = GetObjectUUID(player);
+            var incubator = OBJECT_SELF;
+            var dnaManipulationLevel = Perk.GetPerkLevel(player, PerkType.DNAManipulation);
+
+            if (dnaManipulationLevel <= 0)
+            {
+                SendMessageToPC(player, $"Perk 'DNA Manipulation I' is required to use incubators.");
+                return;
+            }
+
+            var incubatorPropertyId = Property.GetPropertyId(incubator);
+
+            if (string.IsNullOrWhiteSpace(incubatorPropertyId))
+            {
+                SendMessageToPC(player, $"This incubator cannot be used.");
+                return;
+            }
+
+            var dbQuery = new DBQuery<IncubationJob>()
+                .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), incubatorPropertyId, false);
+            var incubatorJob = DB.Search(dbQuery).FirstOrDefault();
+
+            if (incubatorJob != null && incubatorJob.PlayerId != playerId)
+            {
+                var delta = incubatorJob.DateCompleted - DateTime.UtcNow;
+                var completionTime = Time.GetTimeLongIntervals(delta, false);
+                SendMessageToPC(player, $"Another player's incubation job is active. This job will complete in: {completionTime}.");
+                return;
+            }
+
+            var payload = new IncubatorPayload(incubatorPropertyId, incubatorJob?.Id ?? string.Empty);
+            Gui.TogglePlayerWindow(player, GuiWindowType.Incubator, payload, player);
+        }
+
+        private static BeastType DetermineMutation(BeastType beastType, IncubationJob job)
+        {
+            var beast = GetBeastDetail(beastType);
+
+            if (Random.Next(1000) <= job.MutationChance)
+            {
+                var possibleMutations = new List<MutationDetail>();
+
+                foreach (var mutation in beast.PossibleMutations)
+                {
+                    var meetsRequirements = true;
+                    foreach (var requirement in mutation.Requirements)
+                    {
+                        if (!string.IsNullOrWhiteSpace(requirement.CheckRequirements(job)))
+                        {
+                            meetsRequirements = false;
+                            break;
+                        }
+                    }
+
+                    if (meetsRequirements)
+                    {
+                        possibleMutations.Add(mutation);
+                    }
+                }
+
+                if (possibleMutations.Count > 0)
+                {
+                    var weights = possibleMutations.Select(x => x.Weight);
+                    var index = Random.GetRandomWeightedIndex(weights.ToArray());
+
+                    return possibleMutations.ElementAt(index).Type;
+                }
+            }
+
+            return BeastType.Invalid;
+        }
+
+        public static void CreateBeastEgg(IncubationJob job, uint player)
+        {
+            var egg = CreateItemOnObject(BeastEggResref, player);
+
+            var mutation = DetermineMutation(job.BeastDNAType, job);
+            var beastType = mutation == BeastType.Invalid ? job.BeastDNAType : mutation;
+
+            var itemProperties = new List<ItemProperty>
+            {
+                ItemPropertyCustom(ItemPropertyType.DNAType, (int)beastType),
+
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AttackPurity, job.AttackPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AccuracyPurity, job.AccuracyPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.EvasionPurity, job.EvasionPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.LearningPurity, job.LearningPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.PhysicalDefensePurity, job.DefensePurities[CombatDamageType.Physical]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ForceDefensePurity, job.DefensePurities[CombatDamageType.Force]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FireDefensePurity, job.DefensePurities[CombatDamageType.Fire]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.PoisonDefensePurity, job.DefensePurities[CombatDamageType.Poison]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ElectricalDefensePurity, job.DefensePurities[CombatDamageType.Electrical]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.IceDefensePurity, job.DefensePurities[CombatDamageType.Ice]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FortitudePurity, job.SavingThrowPurities[SavingThrow.Fortitude]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ReflexPurity, job.SavingThrowPurities[SavingThrow.Reflex]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.WillPurity, job.SavingThrowPurities[SavingThrow.Will]),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.XPPenalty, job.XPPenalty),
+            };
+
+            foreach (var ip in itemProperties)
+            {
+                BiowareXP2.IPSafeAddItemProperty(egg, ip, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            }
+
+            var beastDetail = GetBeastDetail(beastType);
+            SetName(egg, $"Beast Egg: {beastDetail.Name}");
+
+            DB.Delete<IncubationJob>(job.Id);
+        }
+
+        /// <summary>
+        /// Determines if the specified item is an incubation crafting item.
+        /// This includes enzymes and DNA but excludes beast eggs.
+        /// </summary>
+        /// <param name="item">The item to check</param>
+        /// <returns>true if used in incubation, false otherwise</returns>
+        public static bool IsIncubationCraftingItem(uint item)
+        {
+            var tag = GetTag(item);
+            var resref = GetResRef(item);
+
+            return tag == EnzymeTag || resref == DNAResref;
+        }
+
+        /// <summary>
+        /// Determines if the specified item is a beast egg.
+        /// </summary>
+        /// <param name="item">The item to check</param>
+        /// <returns>true if beast egg, false otherwise</returns>
+        public static bool IsBeastEgg(uint item)
+        {
+            return GetResRef(item) == BeastEggResref;
+        }
+
+        /// <summary>
+        /// When a property is removed, also remove any associated incubation jobs.
+        /// </summary>
+        [NWNEventHandler("swlor_del_prop")]
+        public static void OnRemoveProperty()
+        {
+            var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
+            var dbQuery = new DBQuery<IncubationJob>()
+                .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), propertyId, false);
+            var dbJobs = DB.Search(dbQuery).ToList();
+
+            foreach (var dbJob in dbJobs)
+            {
+                DB.Delete<IncubationJob>(dbJob.Id);
+            }
+        }
+
+        /// <summary>
+        /// When a player clicks a "DNA Extract" object, they get a message stating to use the extractor item on it.
+        /// </summary>
+        [NWNEventHandler("dna_extract_used")]
+        public static void UseExtractDNAObject()
+        {
+            var player = GetLastUsedBy();
+            SendMessageToPC(player, ColorToken.Red("Use a DNA Extractor on this corpse to retrieve its DNA."));
+        }
+
     }
 }

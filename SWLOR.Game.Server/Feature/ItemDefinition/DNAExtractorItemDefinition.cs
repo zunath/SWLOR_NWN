@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         private void DNAExtractor()
         {
-            _builder.Create("dna_extractor_1")
+            _builder.Create("dna_extractor_1", "dna_extractor_2", "dna_extractor_3", "dna_extractor_4", "dna_extractor_5")
                 .Delay(10f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ValidationAction((user, item, target, location, index) =>
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var chargesRequired = 1 + level / 10;
                     var charges = GetItemCharges(item);
                     var requiredExtractorLevel = level / 10;
-                    var extractorLevel = Convert.ToInt32(itemResref[^1]);
+                    var extractorLevel = Convert.ToInt32(itemResref.Substring(itemResref.Length - 1, 1));
                     var beastTypeId = GetLocalInt(target, BeastMastery.BeastTypeVariable);
 
                     if (targetResref != BeastMastery.ExtractCorpseObjectResref)

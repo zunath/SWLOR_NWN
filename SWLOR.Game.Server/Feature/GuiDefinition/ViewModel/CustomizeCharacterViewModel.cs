@@ -1,20 +1,51 @@
 ﻿using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class ChangePortraitViewModel: GuiViewModelBase<ChangePortraitViewModel, ChangePortraitPayload>
+    public class CustomizeCharacterViewModel: GuiViewModelBase<CustomizeCharacterViewModel, CustomizeCharacterPayload>
     {
         private uint _target;
 
+        public const string PartialElement = "PARTIAL_VIEW";
+        public const string PortraitPartial = "PORTRAIT_PARTIAL";
+        public const string VoicePartial = "VOICE_PARTIAL";
+
+        public bool IsPortraitSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsVoiceSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        
         public string ActivePortrait
         {
             get => Get<string>();
+            set => Set(value);
+        }
+
+        private int _selectedSoundSetIndex;
+        private List<int> _soundSetIds;
+        public GuiBindingList<string> SoundSetNames
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<bool> SoundSetToggles
+        {
+            get => Get<GuiBindingList<bool>>();
             set => Set(value);
         }
 
@@ -57,6 +88,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        private void LoadPortraitView()
+        {
+            IsPortraitSelected = true;
+            IsVoiceSelected = false;
+
+            ChangePartialView(PartialElement, PortraitPartial);
+            LoadCurrentPortrait();
+        }
+
+        private void LoadVoiceView()
+        {
+            IsPortraitSelected = false;
+            IsVoiceSelected = true;
+            
+            ChangePartialView(PartialElement, VoicePartial);
+            LoadSoundSets();
+        }
+        
         private void LoadCurrentPortrait()
         {
             var resref = GetPortraitResRef(_target);
@@ -69,18 +118,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ActivePortrait = Cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
         }
 
-        protected override void Initialize(ChangePortraitPayload initialPayload)
+        private void LoadSoundSets()
+        {
+            _selectedSoundSetIndex = -1;
+            var activeSoundSetId = GetSoundset(_target);
+            var soundSetNames = new GuiBindingList<string>();
+            var soundSetToggles = new GuiBindingList<bool>();
+            _soundSetIds = new List<int>();
+
+            foreach (var (soundSet, label) in Cache.GetSoundSets())
+            {
+                soundSetNames.Add(label);
+                soundSetToggles.Add(activeSoundSetId == soundSet);
+                _soundSetIds.Add(soundSet);
+            }
+            
+            SoundSetNames = soundSetNames;
+            SoundSetToggles = soundSetToggles;
+        }
+        
+        protected override void Initialize(CustomizeCharacterPayload initialPayload)
         {
             _target = GetIsObjectValid(initialPayload.Target) ? initialPayload.Target : Player;
 
             MaximumPortraits = Cache.PortraitCount;
             MaxPortraitsText = $"/ {MaximumPortraits}";
             
-            LoadCurrentPortrait();
+            LoadPortraitView();
+            
             WatchOnClient(model => model.ActivePortraitInternalId);
         }
 
-        public Action OnPreviousClick() => () =>
+        public Action OnPortraitClick() => () =>
+        {
+            LoadPortraitView();
+        };
+
+        public Action OnVoiceClick() => () =>
+        {
+            LoadVoiceView();
+        };
+        
+        public Action OnPreviousPortraitClick() => () =>
         {
             var newId = _activePortraitInternalId - 1;
 
@@ -91,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ActivePortrait = Cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
         };
 
-        public Action OnNextClick() => () =>
+        public Action OnNextPortraitClick() => () =>
         {
             var newId = _activePortraitInternalId + 1;
 
@@ -102,12 +181,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ActivePortrait = Cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
         };
 
-        public Action OnRevertClick() => () =>
+        public Action OnRevertPortraitClick() => () =>
         {
             LoadCurrentPortrait();
         };
 
-        public Action OnSaveClick() => () =>
+        public Action OnSavePortraitClick() => () =>
         {
             var portraitId = Cache.GetPortraitByInternalId(_activePortraitInternalId);
             SetPortraitId(_target, portraitId);
@@ -130,9 +209,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Set(dbBeast);
             }
 
-
             Gui.PublishRefreshEvent(Player, new ChangePortraitRefreshEvent());
         };
 
+        public Action OnSoundSetClick() => () =>
+        {
+            if (_selectedSoundSetIndex > -1)
+            {
+                SoundSetToggles[_selectedSoundSetIndex] = false;
+            }
+
+            _selectedSoundSetIndex = NuiGetEventArrayIndex();
+            SoundSetToggles[_selectedSoundSetIndex] = true;
+
+            var soundSetId = _soundSetIds[_selectedSoundSetIndex];
+            SetSoundset(_target, soundSetId);
+
+            if (Droid.IsDroid(_target))
+            {
+                var controller = Droid.GetControllerItem(_target);
+                var constructedDroid = Droid.LoadConstructedDroid(controller);
+
+                constructedDroid.SoundSetId = soundSetId;
+
+                Droid.SaveConstructedDroid(controller, constructedDroid);
+            }
+            else if (BeastMastery.IsPlayerBeast(_target))
+            {
+                var beastId = BeastMastery.GetBeastId(_target);
+                var dbBeast = DB.Get<Beast>(beastId);
+
+                dbBeast.SoundSetId = soundSetId;
+                DB.Set(dbBeast);
+            }
+        };
     }
 }

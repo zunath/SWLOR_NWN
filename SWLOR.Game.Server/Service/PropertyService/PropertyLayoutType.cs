@@ -47,6 +47,8 @@
         LargeHouseStyle2 = 107,
         LargeHouseStyle3 = 108,
         LargeHouseStyle4 = 109,
+
+        LabStyle1 = 110,
     }
 
 }

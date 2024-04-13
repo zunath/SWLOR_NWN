@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NWN.Native.API;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 
 namespace SWLOR.CLI
@@ -15,6 +13,7 @@ namespace SWLOR.CLI
         {
             public string Code { get; set; }
             public Dictionary<int, string> Levels { get; set; }
+            public bool IsIncubation { get; set; }
 
             public BeastCodeDetail()
             {
@@ -37,7 +36,8 @@ namespace SWLOR.CLI
             var inputLines = File.ReadAllLines(InputData).ToList();
             var beasts = new Dictionary<BeastType, BeastCodeDetail>();
 
-            // Throw away the first three lines.
+            // Throw away the first four lines.
+            inputLines.RemoveAt(3);
             inputLines.RemoveAt(2);
             inputLines.RemoveAt(1);
             inputLines.RemoveAt(0);
@@ -54,51 +54,82 @@ namespace SWLOR.CLI
                     beasts.Add(enumName, new BeastCodeDetail());
 
                 var detail = beasts[enumName];
+                detail.IsIncubation = data[31].Trim() == "Y";
 
                 var className = $"{enumName}BeastDefinition";
-                var beastType = data[26];
-                var accuracyStat = data[12];
-                var damageStat = data[13];
-                var role = data[1];
-                var appearance = data[27];
-                var portraitId = data[28];
-                var soundSetId = data[29];
+                var name = data[0].Trim();
+                var beastType = data[26].Trim();
+                var accuracyStat = data[12].Trim();
+                var damageStat = data[13].Trim();
+                var role = data[1].Trim();
+                var appearance = data[27].Trim();
+                var portraitId = data[28].Trim();
+                var soundSetId = data[29].Trim();
+                var scaling = data[30].Trim() + "f";
+
+                var mutation1 = BuildMutation(
+                    data[32].Trim(),
+                    data[33].Trim(),
+                    data[34].Trim(),
+                    data[35].Trim(),
+                    data[36].Trim(),
+                    data[37].Trim(),
+                    data[38].Trim(),
+                    data[39].Trim(),
+                    data[40].Trim()
+                );
+                var mutation2 = BuildMutation(
+                    data[41].Trim(),
+                    data[42].Trim(),
+                    data[43].Trim(),
+                    data[44].Trim(),
+                    data[45].Trim(),
+                    data[46].Trim(),
+                    data[47].Trim(),
+                    data[48].Trim(),
+                    data[49].Trim()
+                );
+
                 detail.Code = template
+                    .Replace("%%BEASTNAME%%", name)
                     .Replace("%%APPEARANCETYPE%%", appearance)
+                    .Replace("%%APPEARANCESCALE%%", scaling)
                     .Replace("%%SOUNDSETID%%", soundSetId)
                     .Replace("%%PORTRAITID%%", portraitId)
                     .Replace("%%CLASSNAME%%", className)
                     .Replace("%%BEASTTYPE%%", beastType)
                     .Replace("%%ACCURACYSTAT%%", GetAbilityEnumName(accuracyStat))
                     .Replace("%%DAMAGESTAT%%", GetAbilityEnumName(damageStat))
-                    .Replace("%%BEASTROLE%%", role);
+                    .Replace("%%BEASTROLE%%", role)
+                    .Replace("%%MUTATION_TEMPLATE1%%", mutation1)
+                    .Replace("%%MUTATION_TEMPLATE2%%", mutation2);
 
                 var level = Convert.ToInt32(data[2]);
                 if (!detail.Levels.ContainsKey(level))
                     detail.Levels.Add(level, levelTemplate);
 
-                var hp = data[3];
-                var stm = data[4];
-                var fp = data[5];
-                var mgt = data[6];
-                var per = data[7];
-                var vit = data[8];
-                var wil = data[9];
-                var agi = data[10];
-                var soc = data[11];
-                var attackBonusMax = data[14];
-                var accuracyBonusMax = data[15];
-                var evasionBonusMax = data[16];
-                var physicalDefenseMax = data[17];
-                var forceDefenseMax = data[18];
-                var fireDefenseMax = data[19];
-                var poisonDefenseMax = data[21];
-                var electricalDefenseMax = data[22];
-                var iceDefenseMax = data[20];
-                var willMax = data[24];
-                var fortitudeMax = data[23];
-                var reflexMax = data[25];
-                var dmg = data[31];
+                var hp = data[3].Replace(",", "").Trim();
+                var stm = data[4].Replace(",", "").Trim();
+                var fp = data[5].Replace(",", "").Trim();
+                var mgt = data[6].Trim();
+                var per = data[7].Trim();
+                var vit = data[8].Trim();
+                var wil = data[9].Trim();
+                var agi = data[10].Trim();
+                var soc = data[11].Trim();
+                var attackBonusMax = data[14].Trim();
+                var accuracyBonusMax = data[15].Trim();
+                var evasionBonusMax = data[16].Trim();
+                var physicalDefenseMax = data[17].Trim();
+                var forceDefenseMax = data[18].Trim();
+                var fireDefenseMax = data[19].Trim();
+                var poisonDefenseMax = data[21].Trim();
+                var electricalDefenseMax = data[22].Trim();
+                var iceDefenseMax = data[20].Trim();
+                var willMax = data[24].Trim();
+                var fortitudeMax = data[23].Trim();
+                var reflexMax = data[25].Trim();
+                var dmg = data[51].Trim();
 
                 detail.Levels[level] = detail.Levels[level]
                     .Replace("%%LEVEL%%", level.ToString())
@@ -145,7 +176,15 @@ namespace SWLOR.CLI
                 var output = detail.Code
                     .Replace("%%LEVELLIST%%", levelText)
                     .Replace("%%LEVELCALLS%%", levelFunctionCalls);
-                File.WriteAllText($"{OutputFolder}/{type}BeastDefinition.cs", output);
+
+                var folderName = detail.IsIncubation
+                    ? "IncubationBeastDefinition"
+                    : "TamableBeastDefinition";
+
+                if (!Directory.Exists($"{OutputFolder}/{folderName}"))
+                    Directory.CreateDirectory($"{OutputFolder}/{folderName}");
+
+                File.WriteAllText($"{OutputFolder}/{folderName}/{type}BeastDefinition.cs", output);
             }
         }
 
@@ -170,6 +209,94 @@ namespace SWLOR.CLI
             return AbilityType.Invalid.ToString();
         }
 
+        private string GetMutationDays(string days)
+        {
+            var output = string.Empty;
+            foreach(var c in days)
+            {
+                var day = "DayOfWeek.";
+                if (c == 'M')
+                {
+                    day += "Monday";
+                }
+                else if (c == 'T')
+                {
+                    day += "Tuesday";
+                }
+                else if (c == 'W')
+                {
+                    day += "Wednesday";
+                }
+                else if (c == 'R')
+                {
+                    day += "Thursday";
+                }
+                else if (c == 'F')
+                {
+                    day += "Friday";
+                }
+                else if (c == 'S')
+                {
+                    day += "Saturday";
+                }
+                else if (c == 'U')
+                {
+                    day += "Sunday";
+                }
+
+                if (!string.IsNullOrWhiteSpace(output))
+                {
+                    output += ", ";
+                }
+
+                output += day;
+            }
+
+            return output;
+        }
+
+        private string BuildMutation(
+            string enumName,
+            string weight,
+            string lyaseColor,
+            string isomeraseColor,
+            string hydrolaseColor,
+            string lyaseCount,
+            string isomeraseCount,
+            string hydrolaseCount,
+            string days)
+        {
+            if (string.IsNullOrWhiteSpace(enumName))
+                return string.Empty;
+
+            const string Tabs = "\t\t\t\t";
+            var output = string.Empty;
+
+            output += $".CanMutateInto(BeastType.{enumName})" + Environment.NewLine +
+                      $"{Tabs}.MutationWeight({weight})" + Environment.NewLine;
+
+            if (!string.IsNullOrWhiteSpace(lyaseColor))
+            {
+                output += $"{Tabs}.MutationRequiresLyaseColor(EnzymeColorType.{lyaseColor}, {lyaseCount})" + Environment.NewLine;
+            }
+            if (!string.IsNullOrWhiteSpace(isomeraseColor))
+            {
+                output += $"{Tabs}.MutationRequiresIsomeraseColor(EnzymeColorType.{isomeraseColor}, {isomeraseCount})" + Environment.NewLine;
+            }
+            if (!string.IsNullOrWhiteSpace(hydrolaseColor))
+            {
+                output += $"{Tabs}.MutationRequiresHydrolaseColor(EnzymeColorType.{hydrolaseColor}, {hydrolaseCount})" + Environment.NewLine;
+            }
+
+            if (!string.IsNullOrWhiteSpace(days))
+            {
+                var formattedDays = GetMutationDays(days);
+                output += $"{Tabs}.MutationRequiresDayOfWeek({formattedDays})" + Environment.NewLine;
+            }
+
+            return output;
+        }
+        
         private void ClearOutputDirectory()
         {
             if (Directory.Exists(OutputFolder))

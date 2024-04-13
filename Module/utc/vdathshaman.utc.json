@@ -581,6 +581,21 @@
           "type": "cexostring",
           "value": "DATHOMIR_KWI_SHAMAN_RARES,5,1"
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_5"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "ISOMERASE_TYPE_1,8,1"
+        }
       }
     ]
   },

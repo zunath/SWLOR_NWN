@@ -29,6 +29,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
         Cantina = 512,
         [PropertyType("House", true, PropertyPublicType.Adjustable, PropertySpawnType.Instance)]
         House = 1024,
+        [PropertyType("Lab", false, PropertyPublicType.Adjustable, PropertySpawnType.Instance)]
+        Lab = 2048
     }
 
     public class PropertyTypeAttribute : Attribute

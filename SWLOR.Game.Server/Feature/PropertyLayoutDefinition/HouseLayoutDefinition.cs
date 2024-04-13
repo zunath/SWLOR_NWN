@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(80)
                 .ItemStorageLimit(40)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("house_int_1");
@@ -33,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(80)
                 .ItemStorageLimit(40)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("house_int_4");
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(80)
                 .ItemStorageLimit(40)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("house_int_7");
@@ -53,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(80)
                 .ItemStorageLimit(40)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("house_int_10");
@@ -66,6 +70,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(90)
                 .ItemStorageLimit(60)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("house_int_2");
@@ -76,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(90)
                 .ItemStorageLimit(60)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("house_int_5");
@@ -86,6 +92,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(90)
                 .ItemStorageLimit(60)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("house_int_8");
@@ -96,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(90)
                 .ItemStorageLimit(60)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("house_int_11");
@@ -109,6 +117,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(100)
                 .ItemStorageLimit(80)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("house_int_3");
@@ -119,6 +128,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(100)
                 .ItemStorageLimit(80)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("house_int_6");
@@ -129,6 +139,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(100)
                 .ItemStorageLimit(80)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("house_int_9");
@@ -139,6 +150,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(100)
                 .ItemStorageLimit(80)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("house_int_12");

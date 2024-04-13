@@ -258,6 +258,9 @@
         ShockingShout = 251,
         Rejuvenation = 252,
         FrenziedShout = 253,
+        IncubationManagement = 254,
+
+        // 255-256 are free
 
         FishingRods = 257,
         ShoutRange = 258,

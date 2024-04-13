@@ -85,6 +85,19 @@ namespace SWLOR.Game.Server.Service.PropertyService
         }
 
         /// <summary>
+        /// Specifies the number of research devices which can be placed within this type of layout.
+        /// Only applicable for labs.
+        /// </summary>
+        /// <param name="deviceLimit"></param>
+        /// <returns></returns>
+        public PropertyLayoutBuilder ResearchDeviceLimit(int deviceLimit)
+        {
+            _currentLayout.ResearchDeviceLimit = deviceLimit;
+
+            return this;
+        }
+
+        /// <summary>
         /// Specifies the initial price paid to purchase this layout.
         /// Only applicable for cities and apartments.
         /// </summary>

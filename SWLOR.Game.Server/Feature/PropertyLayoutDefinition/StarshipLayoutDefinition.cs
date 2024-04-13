@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(60)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("starship1_int");
@@ -46,6 +47,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(60)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("starship2_int");
@@ -59,6 +61,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(60)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("ship_condor_z");
@@ -72,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(80)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("ship_consul_z");
@@ -85,6 +89,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(70)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("ship_falchion_z");
@@ -98,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(60)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("ship_hound_z");
@@ -111,6 +117,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(70)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("ship_merchant_z");
@@ -124,6 +131,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(70)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("ship_mule_z");
@@ -137,6 +145,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(60)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("ship_panth_z");
@@ -150,6 +159,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(70)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("ship_saber_z");
@@ -163,6 +173,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(60)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("ship_strike_z");
@@ -176,6 +187,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(80)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("ship_throne_z");

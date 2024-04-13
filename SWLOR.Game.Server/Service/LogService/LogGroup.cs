@@ -34,7 +34,9 @@ namespace SWLOR.Game.Server.Service.LogService
         [LogGroup("Migration", ServerEnvironmentType.All)]
         Migration,
         [LogGroup("Crafting", ServerEnvironmentType.All)]
-        Crafting
+        Crafting,
+        [LogGroup("Incubation", ServerEnvironmentType.All)]
+        Incubation
     }
 
     public class LogGroupAttribute : Attribute

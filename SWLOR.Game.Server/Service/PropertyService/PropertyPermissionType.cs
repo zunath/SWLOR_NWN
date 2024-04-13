@@ -66,6 +66,10 @@ namespace SWLOR.Game.Server.Service.PropertyService
         // City
         [PropertyPermission("Manage Upkeep", "Can pay maintenance fees.", true)]
         ManageUpkeep = 15,
+
+        // Labs
+        [PropertyPermission("Manage Incubators", "Can manage incubators.", true)]
+        ManageIncubators = 16,
     }
 
     public class PropertyPermissionAttribute : Attribute

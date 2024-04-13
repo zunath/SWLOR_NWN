@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.LargeHouseStyle2, StructureChangeType.PositionChanged, ChangeHouse());
             Assign(StructureType.LargeHouseStyle3, StructureChangeType.PositionChanged, ChangeHouse());
             Assign(StructureType.LargeHouseStyle4, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(StructureType.LabStyle1, StructureChangeType.PositionChanged, ChangeLab());
 
             // Structure retrieved actions
             Assign(StructureType.CityHall, StructureChangeType.Retrieved, ClearDoor());
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.LargeHouseStyle2, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.LargeHouseStyle3, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.LargeHouseStyle4, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.LabStyle1, StructureChangeType.Retrieved, ClearDoor());
 
             return _actions;
         }
@@ -256,5 +258,14 @@ namespace SWLOR.Game.Server.Service.PropertyService
             };
         }
 
+        private static Action<WorldProperty, uint> ChangeLab()
+        {
+            return (property, building) =>
+            {
+                var location = GetDoorLocation(building, 270f, 65f);
+                SpawnDoor(building, location, property.CustomName);
+                AdjustBuildingName(property);
+            };
+        }
     }
 }

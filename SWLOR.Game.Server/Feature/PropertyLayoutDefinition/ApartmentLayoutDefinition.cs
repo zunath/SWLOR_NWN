@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(50)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(5000)
                 .PricePerDay(200)
                 .AreaInstance("apartment_002");
@@ -34,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(50)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(5000)
                 .PricePerDay(200)
                 .AreaInstance("playerap_s_unf");
@@ -44,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(30)
                 .ItemStorageLimit(25)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(7000)
                 .PricePerDay(300)
                 .AreaInstance("playerap_s_fur");
@@ -57,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(70)
                 .ItemStorageLimit(40)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(10000)
                 .PricePerDay(300)
                 .AreaInstance("apartment_2");
@@ -67,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(70)
                 .ItemStorageLimit(40)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(10000)
                 .PricePerDay(300)
                 .AreaInstance("playerap_m_unf");
@@ -77,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(50)
                 .ItemStorageLimit(40)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(13000)
                 .PricePerDay(400)
                 .AreaInstance("playerap_m_fur");
@@ -90,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(90)
                 .ItemStorageLimit(80)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(25000)
                 .PricePerDay(800)
                 .AreaInstance("apartment_3");
@@ -100,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(90)
                 .ItemStorageLimit(80)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(25000)
                 .PricePerDay(800)
                 .AreaInstance("playerap_l_unf");
@@ -110,6 +118,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(70)
                 .ItemStorageLimit(80)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(30000)
                 .PricePerDay(900)
                 .AreaInstance("playerap_l_fur");

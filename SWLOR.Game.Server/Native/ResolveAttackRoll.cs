@@ -344,9 +344,7 @@ namespace SWLOR.Game.Server.Native
             // Hit
             if (isHit)
             {
-                var criticalStat = attackType == (uint)AttackType.Ranged
-                    ? attackerStats.GetINTStat()
-                    : attackerStats.GetDEXStat();
+                var criticalStat = attackerStats.GetDEXStat();
                 var criticalRoll = Random.Next(1, 100);
                 var criticalBonus = Math.Clamp((20 - attacker.m_pStats.GetCriticalHitRoll()) * 5, 0, 100); // GetCriticalHitRoll() returns the lowest d20 value that results in a crit, so we convert that to % bonus
                 Log.Write(LogGroup.Attack, $"Base crit threat identified as: {criticalBonus}");
@@ -368,7 +366,7 @@ namespace SWLOR.Game.Server.Native
                     }
                 }
 
-                var criticalRate = Combat.CalculateCriticalRate(criticalStat, defender.m_pStats.GetINTStat(), criticalBonus);
+                var criticalRate = Combat.CalculateCriticalRate(criticalStat, defender.m_pStats.GetSTRStat(), criticalBonus);
 
                 // Critical
                 if (criticalRoll <= criticalRate)

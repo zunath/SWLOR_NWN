@@ -255,8 +255,8 @@ namespace SWLOR.Game.Server.Native
                     if (damageType == CombatDamageType.Physical)
                     {
                         damage = target.DoDamageImmunity(attacker, damage, damageFlags, 0, 1);
-                        damage = target.DoDamageResistance(attacker, damage, damageFlags, 0, 1, 1);
-                        damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1);
+                        damage = target.DoDamageResistance(attacker, damage, damageFlags, 0, 1, 1, attackType  == (uint)AttackType.Ranged ? 1 : 0);
+                        damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1, attackType == (uint)AttackType.Ranged ? 1 : 0);
                     }
                 }
                 else if (targetObject.m_nObjectType == (int)ObjectType.Placeable)

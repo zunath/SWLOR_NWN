@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Service
         /// Each tick, creatures with a concentration effect will be processed.
         /// This will drain FP and reapply whatever effect is associated with an ability.
         /// </summary>
-        [NWNEventHandler("mod_heartbeat")]
+        [NWNEventHandler("swlor_heartbeat")]
         public static void ProcessConcentrationEffects()
         {
             var pairs = _activeConcentrationAbilities.ToList();

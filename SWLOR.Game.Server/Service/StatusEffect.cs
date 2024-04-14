@@ -334,7 +334,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module heartbeat runs, execute and clean up status effects on all creatures.
         /// </summary>
-        [NWNEventHandler("mod_heartbeat")]
+        [NWNEventHandler("swlor_heartbeat")]
         public static void TickStatusEffects()
         {
             var now = DateTime.UtcNow;

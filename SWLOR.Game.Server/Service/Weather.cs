@@ -700,7 +700,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        [NWNEventHandler("mod_heartbeat")]
+        [NWNEventHandler("swlor_heartbeat")]
         public static void OnModuleHeartbeat()
         {
             var oMod = GetModule();

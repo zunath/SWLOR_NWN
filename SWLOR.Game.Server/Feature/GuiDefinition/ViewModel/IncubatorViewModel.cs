@@ -957,10 +957,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             const int MaxStat = 1000; // 100.0%
             var incubationSeconds = CalculateIncubationSeconds();
             var now = DateTime.UtcNow;
-            var erraticGeniusBonus = job.CurrentStage <= 0 && IsErraticGeniusChecked ? GetErraticGeniusBonus() : 0;
-            var mutationBonus = _stageMutationChance + erraticGeniusBonus;
 
-            var mutationChance = _mutationChance + (mutationBonus > MaxStageIncrease ? MaxStageIncrease : mutationBonus);
+            var erraticGeniusBonus = (job.CurrentStage <= 0 && IsErraticGeniusChecked ? GetErraticGeniusBonus() : 0) * 10;
+            var mutationChance = _mutationChance + (_stageMutationChance > MaxStageIncrease ? MaxStageIncrease : _stageMutationChance) + erraticGeniusBonus;
+            
             var attackPurity = _attack + (_stageAttack > MaxStageIncrease ? MaxStageIncrease : _stageAttack);
             var accuracyPurity = _accuracy + (_stageAccuracy > MaxStageIncrease ? MaxStageIncrease : _stageAccuracy);
             var evasionPurity = _evasion + (_stageEvasion > MaxStageIncrease ? MaxStageIncrease : _stageEvasion);

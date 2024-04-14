@@ -2758,6 +2758,13 @@
           "value": "dath_waterfallru"
         }
       },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "velesrestgarden"
+        }
+      }
     ]
   },
   "Mod_Creator_ID": {
@@ -3060,7 +3067,7 @@
   },
   "Mod_ID": {
     "type": "void",
-    "value": "ï¿½ï¿½ï¿½ï¿½\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "ÿÿÿÿ\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",
@@ -3068,7 +3075,7 @@
   },
   "Mod_MinGameVer": {
     "type": "cexostring",
-    "value": "1.87"
+    "value": "1.88"
   },
   "Mod_MinPerHour": {
     "type": "byte",
@@ -3195,6 +3202,10 @@
   "Mod_Tag": {
     "type": "cexostring",
     "value": "SWLOR"
+  },
+  "Mod_UUID": {
+    "type": "cexostring",
+    "value": ""
   },
   "Mod_Version": {
     "type": "dword",

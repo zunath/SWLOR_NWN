@@ -57,5 +57,6 @@
         Incubator = 52,
 
         DebugEnmity = 900,
+        ChangePortrait = 9999
     }
 }

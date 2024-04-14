@@ -585,7 +585,6 @@ namespace SWLOR.Game.Server.Feature
 
             Scheduler.ScheduleRepeating(() =>
             {
-                Console.WriteLine($"swlor_heartbeat running");
                 ExecuteScript("swlor_heartbeat", GetModule());
             }, TimeSpan.FromSeconds(6));
         }

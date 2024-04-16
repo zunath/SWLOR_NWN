@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.StonecladBehemoth)
 				.MutationWeight(5)
-				.MutationRequiresLyaseColor(EnzymeColorType.Black, 2)
+				.MutationRequiresLyaseColor(EnzymeColorType.Red, 2)
 				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 2)
 				.MutationRequiresHydrolaseColor(EnzymeColorType.Blue, 2)
 				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Sunday)

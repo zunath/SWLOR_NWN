@@ -91,6 +91,10 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     if (social < 0)
                         social = 0;
                     var statChance = (int)(social * 0.75f) + BaseStatChance;
+                    var itemResref = GetResRef(item);
+                    var extractorLevel = Convert.ToInt32(itemResref.Substring(itemResref.Length - 1, 1));
+                    var requiredExtractorLevel = level / 10;
+                    var deltaBonus = (extractorLevel - requiredExtractorLevel) * 10;
 
                     SetItemCharges(item, charges);
 
@@ -135,12 +139,12 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                             if (possibleStat != IncubationStatType.XPPenalty)
                             {
-                                minimum += structureBonus * 10;
+                                minimum += structureBonus * 5;
                                 if (minimum > 150)
                                     minimum = 150;
                             }
 
-                            var amount = Random.Next(minimum, Maximum) + 1;
+                            var amount = Random.Next(minimum, Maximum + deltaBonus) + 1;
                             var ip = ItemPropertyCustom(ItemPropertyType.Incubation, (int)possibleStat, amount);
                             itemProperties.Add(ip);
                         }

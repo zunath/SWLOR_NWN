@@ -10,7 +10,7 @@
   },
   "Charges": {
     "type": "byte",
-    "value": 30
+    "value": 35
   },
   "Comment": {
     "type": "cexostring",

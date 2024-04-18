@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string StageCompleteJobPartial = "STAGE_COMPLETE_PARTIAL";
         public const string CompleteJobPartial = "COMPLETE_JOB_PARTIAL";
 
-        private const int BaseSecondsBetweenStages = 30; // 129600 = 36 hours
+        private const int BaseSecondsBetweenStages = 129600; // 129600 = 36 hours
         private const int NumberOfStages = 3;
 
         private const string _blank = "Blank";

@@ -143,9 +143,6 @@ namespace SWLOR.Game.Server.Feature
             // Chat Plugin Events start here.
             ChatPlugin.RegisterChatScript("on_nwnx_chat");
 
-            // Damage Plugin Events start here.
-            DamagePlugin.SetDamageEventScript("on_nwnx_dmg", OBJECT_INVALID);
-
             // Events Plugin Events start here.
 
             // Associate events

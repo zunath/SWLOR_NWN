@@ -1,4 +1,6 @@
-﻿using SWLOR.Game.Server.Core.NWScript.Enum;
+﻿using Newtonsoft.Json.Linq;
+using NWN.Native.API;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Core.NWScript
 {
@@ -614,5 +616,78 @@ namespace SWLOR.Game.Server.Core.NWScript
 
             return VM.StackPopStruct((int)EngineStructure.Json);
         }
+
+
+        // Serializes the given JSON structure (which must be a valid template spec) into a template.
+        // * The template will be stored in the TEMP: alias and currently NOT stored in savegames.
+        // * The stored template will override anything currently available in the module.
+        // * Supported GFF resource types are the same as TemplateToJson().
+        //   However, some types will not be read by the game (e.g. module.IFO is only read at module load).
+        // * Returns TRUE if the serialization was successful.
+        // * Any target file in TEMP: will be overwritten, even if the serialisation is not successful.
+        //   JsonToTemplate(JSON_NULL, ..) can be used to delete a previously-generated file.
+        public static int JsonToTemplate(Json jTemplateSpec, string sResRef, ResType nResType)
+        {
+            VM.StackPush((int)nResType);
+            VM.StackPush(sResRef);
+            VM.StackPush(jTemplateSpec);
+            VM.Call(1133);
+            return VM.StackPopInt();
+        }
+
+        // Modifies jObject in-place (with no memory copies of the full object).
+        // jObject will have the key at sKey set to jValue.
+        public static void JsonObjectSetInplace(Json jObject, string sKey, Json jValue)
+        {
+            VM.StackPush(jValue);
+            VM.StackPush(sKey);
+            VM.StackPush(jObject);
+            VM.Call(1134);
+        }
+
+        // Modifies jObject in-place (with no memory copies needed).
+        // jObject will have the element at the key sKey removed.
+        // Will do nothing if jObject is not a object, or sKey does not exist on the object.
+        public static void JsonObjectDelInplace(Json jObject, string sKey)
+        {
+            VM.StackPush(sKey);
+            VM.StackPush(jObject);
+            VM.Call(1135);
+        }
+
+        // Modifies jArray in-place (with no memory copies needed).
+        // jArray will have jValue inserted at position nIndex.
+        // All succeeding elements in the array will move by one.
+        // By default (-1), inserts elements at the end of the array ("push").
+        // nIndex = 0 inserts at the beginning of the array.
+        public static void JsonArrayInsertInplace(Json jArray, Json jValue, int nIndex = -1)
+        {
+            VM.StackPush(nIndex);
+            VM.StackPush(jValue);
+            VM.StackPush(jArray);
+            VM.Call(1136);
+        }
+
+        // Modifies jArray in-place (with no memory copies needed).
+        // jArray will have jValue set at position nIndex.
+        // Will do nothing if jArray is not an array or nIndex is out of range.
+        public static void JsonArraySetInplace(Json jArray, int nIndex, Json jValue)
+        {
+            VM.StackPush(jValue);
+            VM.StackPush(nIndex);
+            VM.StackPush(jArray);
+            VM.Call(1137);
+        }
+
+        // Modifies jArray in-place (with no memory copies needed).
+        // jArray will have the element at nIndex removed, and the array will be resized accordingly.
+        // Will do nothing if jArray is not an array or nIndex is out of range.
+        public static void JsonArrayDelInplace(Json jArray, int nIndex)
+        {
+            VM.StackPush(nIndex);
+            VM.StackPush(jArray);
+            VM.Call(1138);
+        }
+
     }
 }

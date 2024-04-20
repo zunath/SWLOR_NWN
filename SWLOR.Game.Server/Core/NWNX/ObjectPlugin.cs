@@ -392,10 +392,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param oDefender The object defending against the spell.
         /// @param oCaster The object casting the spell.
         /// @return -1 if defender has no immunity, 2 if the defender is immune
-        public static int DoSpellImmunity(uint oDefender, uint oCaster)
+        public static int DoSpellImmunity(uint oDefender, uint oCaster, int nSpellId = -1)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "DoSpellImmunity");
-
+            NWNCore.NativeFunctions.nwnxPushInt(nSpellId);
             NWNCore.NativeFunctions.nwnxPushObject(oCaster);
             NWNCore.NativeFunctions.nwnxPushObject(oDefender);
             NWNCore.NativeFunctions.nwnxCallFunction();
@@ -407,9 +407,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param oDefender The object defending against the spell.
         /// @param oCaster The object casting the spell.
         /// @return -1 defender no immunity. 2 if immune. 3 if immune, but the immunity has a limit (example: mantles)
-        public static int DoSpellLevelAbsorption(uint oDefender, uint oCaster)
+        public static int DoSpellLevelAbsorption(uint oDefender, uint oCaster, int nSpellId = -1, int nSpellLevel = -1, int nSpellSchool = -1)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "DoSpellLevelAbsorption");
+            NWNCore.NativeFunctions.nwnxPushInt(nSpellSchool);
+            NWNCore.NativeFunctions.nwnxPushInt(nSpellLevel);
+            NWNCore.NativeFunctions.nwnxPushInt(nSpellId);
             NWNCore.NativeFunctions.nwnxPushObject(oCaster);
             NWNCore.NativeFunctions.nwnxPushObject(oDefender);
             NWNCore.NativeFunctions.nwnxCallFunction();

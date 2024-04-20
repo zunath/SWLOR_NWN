@@ -275,7 +275,10 @@ namespace SWLOR.Game.Server.Native
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, void*, uint> pHook = &OnAIActionAttackObject;
-            var hookPtr = VM.RequestHook(new IntPtr(FunctionsLinux._ZN12CNWSCreature20AIActionAttackObjectEP20CNWSObjectActionNode), (IntPtr)pHook, -1000000);
+            var hookPtr = VM.RequestHook(NativeLibrary.GetExport(
+                    NativeLibrary.GetMainProgramHandle(),
+                    "_ZN12CNWSCreature20AIActionAttackObjectEP20CNWSObjectActionNode"),
+                (IntPtr)pHook, -1000000);
             _callOriginal = Marshal.GetDelegateForFunctionPointer<AIActionAttackObjectHook>(hookPtr);
         }
 

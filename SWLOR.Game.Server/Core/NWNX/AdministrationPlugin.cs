@@ -18,7 +18,6 @@ namespace SWLOR.Game.Server.Core.NWNX
         public static void SetPlayerPassword(string password)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPlayerPassword");
-            NWNCore.NativeFunctions.nwnxPushString(password);
             NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
@@ -41,7 +40,6 @@ namespace SWLOR.Game.Server.Core.NWNX
         public static void SetDMPassword(string password)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDMPassword");
-            NWNCore.NativeFunctions.nwnxPushString(password);
             NWNCore.NativeFunctions.nwnxCallFunction();
         }
 

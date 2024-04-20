@@ -449,6 +449,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// * RESTYPE_UTW
         /// * RESTYPE_UTE
         /// * RESTYPE_UTM
+        /// * RESTYPE_DLG
+        /// * RESTYPE_UTS
+        /// * RESTYPE_IFO
+        /// * RESTYPE_FAC
+        /// * RESTYPE_ITP
+        /// * RESTYPE_GUI
+        /// * RESTYPE_GFF
         /// Returns a valid gff-type json structure, or a null value with GetJsonError() set.
         /// </summary>
         public static Json TemplateToJson(string sResRef, ResType nResType)

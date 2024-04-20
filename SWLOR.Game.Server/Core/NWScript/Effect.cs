@@ -111,10 +111,13 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         ///   Get the possessor of oItem
+        ///     bReturnBags: If TRUE will potentially return a bag container item the item is in, instead of
+        ///     the object holding the bag. Make sure to check the returning item object type with this flag.
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetItemPossessor(uint oItem)
+        public static uint GetItemPossessor(uint oItem, bool bReturnBags = false)
         {
+            VM.StackPush(bReturnBags ? 1 : 0);
             VM.StackPush(oItem);
             VM.Call(29);
             return VM.StackPopObject();
@@ -328,10 +331,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nAmount: amount of damage reduction
         ///   - nDamagePower: DAMAGE_POWER_*
         ///   - nLimit: How much damage the effect can absorb before disappearing.
+        ///   - bRangedOnly: Set to TRUE to have this reduction only apply to ranged attacks 
         ///   Set to zero for infinite
         /// </summary>
-        public static Effect EffectDamageReduction(int nAmount, DamagePower nDamagePower, int nLimit = 0)
+        public static Effect EffectDamageReduction(int nAmount, DamagePower nDamagePower, int nLimit = 0, bool bRangedOnly = false)
         {
+            VM.StackPush(bRangedOnly ? 1 : 0);
             VM.StackPush(nLimit);
             VM.StackPush((int)nDamagePower);
             VM.StackPush(nAmount);
@@ -527,11 +532,14 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Create a Damage Resistance effect that removes the first nAmount points of
         ///   damage of type nDamageType, up to nLimit (or infinite if nLimit is 0)
         ///   - nDamageType: DAMAGE_TYPE_*
-        ///   - nAmount
-        ///   - nLimit
+        /// - nAmount: The amount of damage to soak each time the target is damaged.
+        /// - nLimit: How much damage the effect can absorb before disappearing.
+        ///   Set to zero for infinite.
+        /// - bRangedOnly: Set to TRUE to have this resistance only apply to ranged attacks.
         /// </summary>
-        public static Effect EffectDamageResistance(DamageType nDamageType, int nAmount, int nLimit = 0)
+        public static Effect EffectDamageResistance(DamageType nDamageType, int nAmount, int nLimit = 0, bool bRangedOnly = false)
         {
+            VM.StackPush(bRangedOnly ? 1 : 0);
             VM.StackPush(nLimit);
             VM.StackPush(nAmount);
             VM.StackPush((int)nDamageType);
@@ -1327,10 +1335,13 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         ///   Get the effect type (EFFECT_TYPE_*) of eEffect.
+        /// - bAllTypes: Set to TRUE to return additional values the game used to return EFFECT_INVALIDEFFECT for, specifically:
+        ///  EFFECT_TYPE: APPEAR, CUTSCENE_DOMINATED, DAMAGE, DEATH, DISAPPEAR, HEAL, HITPOINTCHANGEWHENDYING, KNOCKDOWN, MODIFYNUMATTACKS, SUMMON_CREATURE, TAUNT, WOUNDING
         ///   * Return value if eEffect is invalid: EFFECT_INVALIDEFFECT
         /// </summary>
-        public static EffectTypeScript GetEffectType(Effect eEffect)
+        public static EffectTypeScript GetEffectType(Effect eEffect, bool bAllTypes = false)
         {
+            VM.StackPush(bAllTypes ? 1 : 0);
             VM.StackPush((int)EngineStructure.Effect, eEffect);
             VM.Call(170);
             return (EffectTypeScript)VM.StackPopInt();

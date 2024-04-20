@@ -73,6 +73,9 @@
         public static string UISpellbookSortSpells = "ui.spellbook.sort-spells";
         public static string UIRadialSpellcastingAlwaysSubradial = "ui.radial.spellcasting.always-show-as-subradial";
         public static string UIRadialClassAbilitiesAlwaysSubradial = "ui.radial.class-abilities.always-show-as-subradial";
+        public static string UIDisplayLoadscreenHintsInChatLog = "ui.display-loadscreen-hints-in-chatlog";
+        public static string UIMouseScale = "ui.mouse.scale.enabled";
+        public static string UIMouseScaleValue = "ui.mouse.scale.value";
         public static string CameraMode = "camera.mode";
         public static string CameraEdgeTurning = "camera.edge-turning";
         public static string CameraDialogZoom = "camera.dialog-zoom";

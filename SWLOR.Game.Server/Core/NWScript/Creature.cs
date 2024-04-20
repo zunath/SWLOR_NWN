@@ -260,6 +260,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   spell as.
         ///   - Returns CLASS_TYPE_INVALID if the caster has
         ///   no valid class (placeables, etc...)
+        ///   If used in an Area of Effect script it will return the creators spellcasting class.
         /// </summary>
         public static ClassType GetLastSpellCastClass()
         {
@@ -268,10 +269,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        ///   Sets the number of base attacks for the specified
-        ///   creatures. The range of values accepted are from
-        ///   1 to 6
-        ///   Note: This function does not work on Player Characters
+        /// Sets the number of base attacks each round for the specified creature (PC or NPC).
+        /// If set on a PC it will not be shown on their character sheet, but will save to BIC/savegame.
+        /// - nBaseAttackBonus - Number of base attacks per round, 1 to 6
         /// </summary>
         public static void SetBaseAttackBonus(int nBaseAttackBonus, uint oCreature = OBJECT_INVALID)
         {
@@ -1048,12 +1048,15 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        ///   Get the level at which this creature cast it's last spell (or spell-like ability)
-        ///   * Return value on error, or if oCreature has not yet cast a spell: 0;
+        /// Get the caster level of an object. This is consistent with the caster level used when applying effects if OBJECT_SELF is used.
+        /// - oObject: A creature will return the caster level of their currently cast spell or ability, or the item's caster level if an item was used
+        ///            A placeable will return an automatic caster level: floor(10, (spell innate level * 2) - 1)
+        ///            An Area of Effect object will return the caster level that was used to create the Area of Effect.
+        /// * Return value on error, or if oObject has not yet cast a spell: 0;
         /// </summary>
-        public static int GetCasterLevel(uint oCreature)
+        public static int GetCasterLevel(uint oObject)
         {
-            VM.StackPush(oCreature);
+            VM.StackPush(oObject);
             VM.Call(84);
             return VM.StackPopInt();
         }

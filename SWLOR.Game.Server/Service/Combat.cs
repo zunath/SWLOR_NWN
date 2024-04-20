@@ -374,9 +374,9 @@ namespace SWLOR.Game.Server.Service
             // Staff: there are 3 style perks for staff so it has to be handled slightly differently.
             if (Item.StaffBaseItemTypes.Contains(weaponType))
             {
-                if (GetHasFeat(FeatType.FlurryStyle)) return GetAbilityScore(attacker, AbilityType.Perception);
-                if (GetHasFeat(FeatType.CrushingMastery)) return 3 * GetAbilityScore(attacker, AbilityType.Might);
-                if (GetHasFeat(FeatType.CrushingStyle)) return 2 * GetAbilityScore(attacker, AbilityType.Might);
+                if (GetHasFeat(FeatType.FlurryStyle, attacker)) return GetAbilityScore(attacker, AbilityType.Perception);
+                if (GetHasFeat(FeatType.CrushingMastery, attacker)) return 3 * GetAbilityScore(attacker, AbilityType.Might);
+                if (GetHasFeat(FeatType.CrushingStyle, attacker)) return 2 * GetAbilityScore(attacker, AbilityType.Might);
                 return GetAbilityScore(attacker, AbilityType.Might);
             }
 

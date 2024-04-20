@@ -1698,44 +1698,5 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.Call(1117);
             return VM.StackPopStruct((int)EngineStructure.Effect);
         }
-
-        // Sets the effect creator
-        // - oCreator: The creator of the effect. Can be OBJECT_INVALID.
-        public static Effect SetEffectCreator(Effect eEffect, uint oCreator)
-        {
-            VM.StackPush(oCreator);
-            VM.StackPush(eEffect);
-            VM.Call(1123);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
-        }
-
-        // Sets the effect caster level
-        // - nCasterLevel: The caster level of the effect for the purposes of dispel magic and GetEffectCasterlevel. Must be >= 0.
-        public static Effect SetEffectCasterLevel(Effect eEffect, int nCasterLevel)
-        {
-            VM.StackPush(nCasterLevel);
-            VM.StackPush(eEffect);
-            VM.Call(1124);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
-        }
-
-        // Sets the effect spell id
-        // - nSpellId: The spell id for the purposes of effect stacking, dispel magic and GetEffectSpellId. Must be >= -1 (-1 being invalid/no spell)
-        public static Effect SetEffectSpellId(Effect eEffect, Spell nSpellId)
-        {
-            VM.StackPush((int)nSpellId);
-            VM.StackPush(eEffect);
-            VM.Call(1125);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
-        }
-
-        // Create an Enemy Attack Bonus effect. Creatures attacking the given creature with melee/ranged attacks or touch attacks get a bonus to hit.
-        public static Effect EffectEnemyAttackBonus(int nBonus)
-        {
-            VM.StackPush(nBonus);
-            VM.Call(1146);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
-        }
-
     }
 }

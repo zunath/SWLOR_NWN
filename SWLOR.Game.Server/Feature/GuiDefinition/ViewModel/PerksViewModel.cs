@@ -565,7 +565,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 foreach (var action in perkDetail.PurchasedTriggers)
                 {
-                    action(target, selectedPerk, perkLevel);
+                    action(target);
                 }
             }
         }
@@ -659,7 +659,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Custom purchase validation logic for the perk.
                     var canPurchase = detail.PurchaseRequirement == null
                         ? string.Empty
-                        : detail.PurchaseRequirement(Player, selectedPerk, rank);
+                        : detail.PurchaseRequirement(Player);
 
                     if (!string.IsNullOrWhiteSpace(canPurchase))
                     {
@@ -697,6 +697,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     EventsPlugin.SignalEvent("SWLOR_BUY_PERK", Player);
                     Gui.PublishRefreshEvent(Player, new PerkAcquiredRefreshEvent(selectedPerk));
+
+                    ExportSingleCharacter(Player);
 
                     // Update UI with latest upgrade changes.
                     LoadDetails();
@@ -752,7 +754,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Run that now if specified.
                     var canRefund = perkDetail.RefundRequirement == null
                         ? string.Empty
-                        : perkDetail.RefundRequirement(target, selectedPerk, Perk.GetEffectivePerkLevel(target, selectedPerk));
+                        : perkDetail.RefundRequirement(target);
                     if (!string.IsNullOrWhiteSpace(canRefund))
                     {
                         FloatingTextStringOnCreature(canRefund, Player, false);
@@ -808,8 +810,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Run all of the triggers related to refunding this perk.
                     foreach (var action in perkDetail.RefundedTriggers)
                     {
-                        action(target, selectedPerk, 0);
+                        action(target);
                     }
+
+                    ExportSingleCharacter(Player);
 
                     LoadDetails();
                     SelectedPerkIndex = -1;

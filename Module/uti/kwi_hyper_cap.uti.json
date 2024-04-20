@@ -287,5 +287,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "kwi_hyper_cap"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 14
   }
 }

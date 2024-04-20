@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "yellow_curry"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 64
   }
 }

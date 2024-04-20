@@ -107,5 +107,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "mynock_claw"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

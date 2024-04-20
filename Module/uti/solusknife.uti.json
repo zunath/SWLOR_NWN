@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 200002
+    "value": 100001
   },
   "Cursed": {
     "type": "byte",
@@ -395,5 +395,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "solusknife"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 24
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 64
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 14
   }
 }

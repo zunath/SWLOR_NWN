@@ -175,5 +175,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "chef_leggings_4"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 41
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 41
   }
 }

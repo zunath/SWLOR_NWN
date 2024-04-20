@@ -173,5 +173,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "qion_tiger_fang"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 95
   }
 }

@@ -11948,7 +11948,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
@@ -11988,26 +11988,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
-        },
-        "VisualTransform": {
-          "__struct_id": 6,
-          "type": "struct",
-          "value": {
-            "__struct_id": 6,
-            "ScaleX": {
-              "type": "float",
-              "value": 0.6302493214607239
-            },
-            "ScaleY": {
-              "type": "float",
-              "value": 0.6302493214607239
-            },
-            "ScaleZ": {
-              "type": "float",
-              "value": 0.6302493214607239
-            }
-          }
+          "value": 0
         },
         "Will": {
           "type": "byte",
@@ -69998,7 +69979,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
@@ -70038,7 +70019,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Will": {
           "type": "byte",

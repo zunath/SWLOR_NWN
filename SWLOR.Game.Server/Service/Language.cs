@@ -39,7 +39,8 @@ namespace SWLOR.Game.Server.Service
                 { SkillType.Mirialan, new TranslatorMirialan() },
                 { SkillType.MonCalamarian, new TranslatorMonCalamarian() },
                 { SkillType.Ugnaught, new TranslatorUgnaught() },
-                { SkillType.KelDor, new TranslatorKelDor() }
+                { SkillType.KelDor, new TranslatorKelDor() },
+                { SkillType.Nautila, new TranslatorNautila() }
             };
         }
 
@@ -177,7 +178,7 @@ namespace SWLOR.Game.Server.Service
             return textAsForeignLanguage;
         }
 
-        public static int GetColor(SkillType language)
+        public static (byte, byte, byte) GetColor(SkillType language)
         {
             byte r = 0;
             byte g = 0;
@@ -185,6 +186,7 @@ namespace SWLOR.Game.Server.Service
 
             switch (language)
             {
+                case SkillType.Basic: r = 255; g = 255; b = 255; break;
                 case SkillType.Bothese: r = 132; g = 56; b = 18; break;
                 case SkillType.Catharese: r = 235; g = 235; b = 199; break;
                 case SkillType.Cheunh: r = 82; g = 143; b = 174; break;
@@ -201,9 +203,10 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Mirialan: r = 77; g = 230; b = 215; break;
                 case SkillType.MonCalamarian: r = 128; g = 128; b = 192; break;
                 case SkillType.Ugnaught: r = 255; g = 193; b = 233; break;
+                case SkillType.Nautila: r = 76; g = 230; b = 104; break;
             }
 
-            return r << 24 | g << 16 | b << 8;
+            return (r, g, b);
         }
 
         public static string GetName(SkillType language)
@@ -226,6 +229,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Mirialan: return "Mirialan";
                 case SkillType.MonCalamarian: return "Mon Calamarian";
                 case SkillType.Ugnaught: return "Ugnaught";
+                case SkillType.Nautila: return "Nautila";
             }
 
             return "Basic";
@@ -276,6 +280,7 @@ namespace SWLOR.Game.Server.Service
                         new LanguageCommand("Mando'a", SkillType.Mandoa, new []{"mandoa"}),
                         new LanguageCommand("Mirialan", SkillType.Mirialan, new []{"mirialan"}),
                         new LanguageCommand("Mon Calamarian", SkillType.MonCalamarian, new []{"moncalamarian", "moncal"}),
+                        new LanguageCommand("Nautila", SkillType.Nautila, new []{ "nautilan" }),
                         new LanguageCommand("Rodese", SkillType.Rodese, new []{"rodese", "rodian"}),
                         new LanguageCommand("Shyriiwook", SkillType.Shyriiwook, new []{"shyriiwook", "wookieespeak"}),
                         new LanguageCommand("Togruti", SkillType.Togruti, new []{"togruti"}),

@@ -99,5 +99,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "basicscarf"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 52
   }
 }

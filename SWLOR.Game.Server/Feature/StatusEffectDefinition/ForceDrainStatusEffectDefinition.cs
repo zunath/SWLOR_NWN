@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -29,15 +30,19 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .CannotReplace(StatusEffectType.ForceDrain2, StatusEffectType.ForceDrain3, StatusEffectType.ForceDrain4, StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 10, 10, target, source);
+                    var willBonus = GetAbilityScore(source, AbilityType.Willpower);
+                    var willDMG = willBonus + Random.D2(willBonus / 3);
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 200);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 })
                 .TickAction((source, target, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 10, 10, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 80);
+                    var willBonus = GetAbilityScore(source, AbilityType.Willpower);
+                    var willDMG = willBonus + Random.D2(willBonus / 3);
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
+                    Enmity.ModifyEnmityOnAll(source, 75);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 });
@@ -51,14 +56,18 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .CannotReplace(StatusEffectType.ForceDrain3, StatusEffectType.ForceDrain4, StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 15, 15, target, source);
+                    var willBonus = GetAbilityScore(source, AbilityType.Willpower);
+                    var willDMG = 10 + willBonus + Random.D3(willBonus / 3);
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 250);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 })
                 .TickAction((source, target, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 15, 15, target, source);
+                    var willBonus = GetAbilityScore(source, AbilityType.Willpower);
+                    var willDMG = 10 + willBonus + Random.D3(willBonus / 3);
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 100);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
@@ -73,15 +82,19 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .CannotReplace(StatusEffectType.ForceDrain4, StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 20, 20, target, source);
+                    var willBonus = GetAbilityScore(source, AbilityType.Willpower);
+                    var willDMG = 15 + willBonus + Random.D4(willBonus / 3);
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 250);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 })
                 .TickAction((source, target, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 20, 20, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 150);
+                    var willBonus = GetAbilityScore(source, AbilityType.Willpower);
+                    var willDMG = 15 + willBonus + Random.D4(willBonus / 3);
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
+                    Enmity.ModifyEnmityOnAll(source, 125);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 });
@@ -95,15 +108,19 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .CannotReplace(StatusEffectType.ForceDrain5)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 25, 25, target, source);
+                    var willBonus = GetAbilityScore(source, AbilityType.Willpower);
+                    var willDMG = 20 + willBonus + Random.D6(willBonus / 3);
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 300);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 })
                 .TickAction((source, target, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 25, 25, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 200);
+                    var willBonus = GetAbilityScore(source, AbilityType.Willpower);
+                    var willDMG = 20 + willBonus + Random.D6(willBonus / 3);
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
+                    Enmity.ModifyEnmityOnAll(source, 150);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 });
@@ -116,15 +133,19 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .Replaces(StatusEffectType.ForceDrain1, StatusEffectType.ForceDrain2, StatusEffectType.ForceDrain3, StatusEffectType.ForceDrain4)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 30, 30, target, source);
+                    var willBonus = GetAbilityScore(source, AbilityType.Willpower);
+                    var willDMG = 25 + willBonus + Random.D8(willBonus / 3);
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 350);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 })
                 .TickAction((source, target, effectData) =>
                 {
-                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, 30, 30, target, source);
-                    Enmity.ModifyEnmityOnAll(source, 250);
+                    var willBonus = GetAbilityScore(source, AbilityType.Willpower);
+                    var willDMG = 25 + willBonus + Random.D8(willBonus / 3);
+                    ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
+                    Enmity.ModifyEnmityOnAll(source, 175);
 
                     CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
                 });

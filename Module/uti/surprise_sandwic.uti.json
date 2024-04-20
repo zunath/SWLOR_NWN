@@ -200,5 +200,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "surprise_sandwic"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 108
   }
 }

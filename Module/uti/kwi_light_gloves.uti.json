@@ -266,5 +266,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "kwi_light_gloves"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 198
   }
 }

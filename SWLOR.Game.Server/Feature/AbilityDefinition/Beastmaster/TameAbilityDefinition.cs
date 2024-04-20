@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         return "That target cannot be tamed.";
                     }
 
-                    var tameLevel = Perk.GetEffectivePerkLevel(activator, PerkType.Tame) * 10;
+                    var tameLevel = Perk.GetPerkLevel(activator, PerkType.Tame) * 10;
                     var npcStats = Stat.GetNPCStats(target);
 
                     if (tameLevel < npcStats.Level)
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         return $"You may only tame creatures between levels 0-{tameLevel}. Your target is level {npcStats.Level}.";
                     }
 
-                    var maxBeasts = 1 + Perk.GetEffectivePerkLevel(activator, PerkType.Stabling);
+                    var maxBeasts = 1 + Perk.GetPerkLevel(activator, PerkType.Stabling);
                     var dbQuery = new DBQuery<Beast>()
                         .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
                     var beastCount = (int)DB.SearchCount(dbQuery);

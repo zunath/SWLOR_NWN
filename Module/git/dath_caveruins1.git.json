@@ -15971,7 +15971,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 78.83149719238281
+          "value": 78.92957305908203
         },
         "YOrientation": {
           "type": "float",
@@ -15983,7 +15983,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 3.576278686523438e-007
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -16929,6 +16929,69 @@
         "ZPosition": {
           "type": "float",
           "value": 0.1999998539686203
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dathomir - Grottos Boss"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DATHOMIR_GROTTOS_BOSS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dath_grottosboss"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 76.44534301757813
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 39.07900619506836
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
         }
       }
     ]

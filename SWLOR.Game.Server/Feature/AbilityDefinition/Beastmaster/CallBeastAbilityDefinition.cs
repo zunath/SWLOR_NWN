@@ -28,7 +28,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.CallBeast, 60f * 10f)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .HasActivationDelay(6f)
-                .RequirementStamina(15)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
@@ -38,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         return "You are in combat and cannot call your beast.";
                     }
 
-                    var maxBeastLevel = Perk.GetEffectivePerkLevel(activator, PerkType.Tame) * 10;
+                    var maxBeastLevel = Perk.GetPerkLevel(activator, PerkType.Tame) * 10;
 
                     if (!GetIsPC(activator) || GetIsDM(activator) || GetIsDMPossessed(activator))
                     {

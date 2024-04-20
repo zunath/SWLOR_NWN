@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "omedia"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 104
   }
 }

@@ -93,7 +93,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 3
+          "value": 4
         },
         "Param1": {
           "type": "byte",
@@ -191,5 +191,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "engi_helmet_4"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 36
   }
 }

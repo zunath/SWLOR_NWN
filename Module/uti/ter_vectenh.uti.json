@@ -99,5 +99,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ter_vectenh"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 145
   }
 }

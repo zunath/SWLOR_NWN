@@ -117,5 +117,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "spawn_ban_rod"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 33
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 43
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 43
   }
 }

@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cooked_sardine"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 16
   }
 }

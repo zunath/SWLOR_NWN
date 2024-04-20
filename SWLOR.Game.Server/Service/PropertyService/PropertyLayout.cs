@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public int StructureLimit { get; set; }
         public int ItemStorageLimit { get; set; }
         public int BuildingLimit { get; set; }
+        public int ResearchDeviceLimit { get; set; }
         public int InitialPrice { get; set; }
         public int PricePerDay { get; set; }
         public string AreaInstanceResref { get; set; }

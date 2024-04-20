@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service.WeatherService
             {
                 [PlanetType.Viscara] = new WeatherClimate
                 {
-                    HeatModifier = -2, 
+                    HeatModifier = -2,
                     HumidityModifier = +2
                 },
                 [PlanetType.Tatooine] = new WeatherClimate
@@ -73,7 +73,12 @@ namespace SWLOR.Game.Server.Service.WeatherService
                 {
                     HeatModifier = -1,
                     HumidityModifier = +1
-                }
+                },
+                [PlanetType.Dantooine] = new WeatherClimate
+                 {
+                     HeatModifier = -1,
+                     HumidityModifier = +1
+                 },
             };
         }
     }

@@ -178,7 +178,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "street_food"
+                "value": "TreatVendor"
               }
             }
           ]

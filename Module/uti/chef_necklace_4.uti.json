@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "chef_necklace_4"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 41
   }
 }

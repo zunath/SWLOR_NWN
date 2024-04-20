@@ -108,5 +108,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "aradile_bite"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

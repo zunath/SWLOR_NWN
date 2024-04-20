@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "pebble_soup"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 161
   }
 }

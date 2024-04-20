@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.SpawnService;
+using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
@@ -20,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             AridHillyDesert();
             Flatlands();
             NorthernDunes();
+            TatooineWorldBoss();
 
             return _builder.Build();
         }
@@ -152,6 +154,26 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(40)
                 .RandomlyWalks()
                 .ReturnsHome();
+        }
+
+        private void TatooineWorldBoss()
+        {
+            _builder.Create("TATOOINE_WORLD_BOSS")
+
+                .AddSpawn(ObjectType.Creature, "vtattbountyhunt")
+                .RandomlyWalks()
+                .WithFrequency(16)
+                .RespawnDelay(60 + Random.D100(1))
+
+                .AddSpawn(ObjectType.Creature, "vdatthrancor")
+                .RandomlyWalks()
+                .WithFrequency(3)
+                .RespawnDelay(60 + Random.D100(1))
+
+                .AddSpawn(ObjectType.Creature, "vtattkrayt")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(60 + Random.D100(1));
         }
     }
 }

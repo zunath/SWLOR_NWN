@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             {
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
-                    var attackerStat = GetAbilityScore(activator, stat);
+                    var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
                     var attack = Stat.GetAttack(activator, stat, SkillType.TwoHanded);
                     var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), dTarget));
 
                     CombatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
-                    Enmity.ModifyEnmity(activator, creature, 250 * level + damage);
+                    Enmity.ModifyEnmity(activator, creature, 100 * level + damage);
                     count++;
                 }
 

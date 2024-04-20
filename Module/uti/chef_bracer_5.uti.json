@@ -167,5 +167,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "chef_bracer_5"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 7
   }
 }

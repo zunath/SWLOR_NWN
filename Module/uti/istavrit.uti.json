@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "istavrit"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 17
   }
 }

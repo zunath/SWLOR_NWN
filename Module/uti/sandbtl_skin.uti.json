@@ -107,5 +107,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sandbtl_skin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

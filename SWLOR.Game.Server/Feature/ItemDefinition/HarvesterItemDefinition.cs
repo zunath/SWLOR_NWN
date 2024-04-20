@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ReducesItemCharge()
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var perkLevel = Perk.GetEffectivePerkLevel(user, PerkType.Harvesting);
+                    var perkLevel = Perk.GetPerkLevel(user, PerkType.Harvesting);
 
                     if (perkLevel < requiredLevel)
                     {
@@ -109,6 +109,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     resourceCount--;
 
                     CreateItemOnObject(loot.Resref, user);
+
+                    // Additional loot tables - these adhere to standard loot table rules.
+                    Loot.SpawnLoot(target, user, "LOOT_TABLE_");
 
                     // Check against the user's Might; create a second item if they are 
                     // strong.  This is 'free' and does not count towards the limit in the resource point.

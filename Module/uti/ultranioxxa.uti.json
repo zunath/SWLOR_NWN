@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ultranioxxa"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 54
   }
 }

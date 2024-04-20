@@ -198,5 +198,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vnpcsmark3"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

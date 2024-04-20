@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 500
+    "value": 501
   },
   "Cursed": {
     "type": "byte",
@@ -146,5 +146,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "raider_katar"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 43
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 41
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 41
   }
 }

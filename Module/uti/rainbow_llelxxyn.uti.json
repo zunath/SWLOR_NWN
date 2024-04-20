@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "rainbow_llelxxyn"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 161
   }
 }

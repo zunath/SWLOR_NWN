@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             TarnishedJungles();
             TarnishedJunglesNorth();
             TribeVillage();
+            HiddenTunnel();
 
             return _builder.Build();
         }
@@ -122,6 +123,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void GrottosBoss()
         {
             _builder.Create("DATHOMIR_GROTTOS_BOSS")
+
+                .AddSpawn(ObjectType.Creature, "vdathdarkadept")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(60 + Random.D100(1))
+
+                .AddSpawn(ObjectType.Creature, "vdatthrancor")
+                .RandomlyWalks()
+                .WithFrequency(1)
+                .RespawnDelay(60 + Random.D100(1))
+
                 .AddSpawn(ObjectType.Creature, "vdathchirodac")
                 .RandomlyWalks()
                 .WithFrequency(1)
@@ -211,6 +223,21 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .WithFrequency(100);
         }
+        private void HiddenTunnel()
+        {
+            _builder.Create("DATHOMIR_HIDDEN_TUNNEL")
+                .AddSpawn(ObjectType.Creature, "vgapingspider")
+                .RandomlyWalks()
+                .WithFrequency(100)
 
+                .AddSpawn(ObjectType.Creature, "vdathshaman")
+                .RandomlyWalks()
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Creature, "vdathtribal")
+                .RandomlyWalks()
+                .WithFrequency(100);
+
+        }
     }
 }

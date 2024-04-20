@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 stat = AbilityType.Might;
             }
 
-            var attackerStat = GetAbilityScore(activator, stat);
+            var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
             var attack = Stat.GetAttack(activator, stat, SkillType.OneHanded);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.RiotBlade));
 
-            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
+            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private static void SaberStrike1(AbilityBuilder builder)

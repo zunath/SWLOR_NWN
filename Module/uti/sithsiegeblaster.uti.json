@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -239,5 +239,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sithsiegeblaster"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 161
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

@@ -107,5 +107,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ref_tilarium"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 107
   }
 }

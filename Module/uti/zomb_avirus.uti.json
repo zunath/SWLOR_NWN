@@ -109,5 +109,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "zomb_avirus"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 73
   }
 }

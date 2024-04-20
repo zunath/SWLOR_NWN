@@ -21,6 +21,10 @@
     "value": [
       {
         "__struct_id": 0,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -60,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Being homeless is trouble enough but having to deal with the constant rain? That's too much!"
+            "0": "\"I am tired, so tired. Some of my friends have been disappearing, too, with some saying that they went to join the gangs. Me? I think Czerka took them. Took them for one of their foul experiments, treating us like lab-rats.\""
           }
         }
       }
@@ -68,7 +72,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 16
+    "value": 41
   },
   "PreventZoomIn": {
     "type": "byte",
@@ -86,6 +90,10 @@
         "Active": {
           "type": "resref",
           "value": ""
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": []
         },
         "Index": {
           "type": "dword",

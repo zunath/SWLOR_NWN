@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using NWN.Native.API;
+using Pipelines.Sockets.Unofficial.Arenas;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -13,7 +13,6 @@ using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using FeatType = SWLOR.Game.Server.Core.NWScript.Enum.FeatType;
 using ImmunityType = NWN.Native.API.ImmunityType;
-using InventorySlot = NWN.Native.API.InventorySlot;
 using ObjectType = NWN.Native.API.ObjectType;
 using Random = SWLOR.Game.Server.Service.Random;
 
@@ -30,8 +29,9 @@ namespace SWLOR.Game.Server.Native
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, void*, void> pHook = &OnResolveAttackRoll;
-
-            var hookPtr = VM.RequestHook(new IntPtr(FunctionsLinux._ZN12CNWSCreature17ResolveAttackRollEP10CNWSObject), (IntPtr)pHook, -1000000);
+            var hookPtr = VM.RequestHook(NativeLibrary.GetExport(
+                    NativeLibrary.GetMainProgramHandle(), "_ZN12CNWSCreature17ResolveAttackRollEP10CNWSObject"),
+                (IntPtr)pHook, -1000000);
             _callOriginal = Marshal.GetDelegateForFunctionPointer<ResolveAttackRollHook>(hookPtr);
         }
 
@@ -53,7 +53,13 @@ namespace SWLOR.Game.Server.Native
              * Critical hits come from beating the opposed roll by 30 or more.  Crit immunity applies as normal.
              */
 
-            ProfilerPlugin.PushPerfScope($"NATIVE:{nameof(OnResolveAttackRoll)}", "RunScript", "Script");
+            var attacker = CNWSCreature.FromPointer(thisPtr);
+            var area = attacker.GetArea();
+
+            ProfilerPlugin.PushPerfScope("RunScript",
+                "Script", $"NATIVE:{nameof(OnResolveAttackRoll)}",
+                "Area", area.m_sTag.ToString(),
+                "ObjectType", "Creature");
 
             Log.Write(LogGroup.Attack, "Running OnResolveAttackRoll");
             var targetObject = CNWSObject.FromPointer(pTarget);
@@ -63,7 +69,6 @@ namespace SWLOR.Game.Server.Native
                 return;
             }
 
-            var attacker = CNWSCreature.FromPointer(thisPtr);
             var attackerStats = attacker.m_pStats;
 
             var pCombatRound = attacker.m_pcCombatRound;
@@ -83,6 +88,11 @@ namespace SWLOR.Game.Server.Native
 
             // If we get to this point, we are fighting a creature.  Pull the target's stats.
             var defender = CNWSCreature.FromPointer(pTarget);
+
+            if (pCombatRound.m_bRoundStarted == 1)
+            {
+                defender.m_ScriptVars.SetInt(new CExoString("RESOLVE_ATTACK_ROLL_DEFLECT_BLASTER"), 0);
+            }
 
             var attackType = (uint)AttackType.Melee; 
             var weapon = pCombatRound.GetCurrentAttackWeapon();
@@ -294,66 +304,47 @@ namespace SWLOR.Game.Server.Native
 
             var defenderWeapon = defender.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
             var defenderOffhand = defender.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
-            var saberBlock = false;
-            var shieldBlock = false;
-
-            var defenderPER = defender.m_pStats.GetDEXStat();
-            var defenderVIT = defender.m_pStats.GetCONStat();
-
-            if(defenderWeapon != null && (
-                (BaseItem)defenderWeapon.m_nBaseItem == BaseItem.Lightsaber ||
-                (BaseItem)defenderWeapon.m_nBaseItem == BaseItem.Saberstaff))
-            {
-                saberBlock = true;
-            }
-
-            // Checking for Bulwark shield reflect - need to have the feat and a shield equipped
-            if (defenderOffhand != null)
-                shieldBlock = defender.m_pStats.HasFeat((ushort)FeatType.Bulwark) == 1 &&
-                    Item.ShieldBaseItemTypes.Contains((BaseItem)defenderOffhand.m_nBaseItem);
+            var saberBlock = defenderWeapon != null && Item.LightsaberBaseItemTypes.Contains((BaseItem)defenderWeapon.m_nBaseItem);
+            var shieldBlock = defenderOffhand != null && 
+                              defender.m_pStats.HasFeat((ushort)FeatType.Bulwark) == 1 && 
+                              Item.ShieldBaseItemTypes.Contains((BaseItem)defenderOffhand.m_nBaseItem);
 
             // Deflect Ranged Attacks
             var deflected = false;
+            var hasDeflected = defender.m_ScriptVars.GetInt(new CExoString("RESOLVE_ATTACK_ROLL_DEFLECT_BLASTER"));
 
             if (attackType == (uint)AttackType.Ranged &&            // Ranged Attacks only
-                isHit && defender.GetFlatFooted() == 0 &&           // Only triggers on hits and the defender isn't incapacitated
-                defender.m_pcCombatRound.m_bDeflectArrow == 0 &&    // Can only trigger once per combat round
+                isHit &&                                            // Only triggers on hits 
+                hasDeflected == 0 &&                                // Can only trigger once per combat round
                 (shieldBlock || saberBlock))                        // Must have either a lightsaber or Bulwark + a shield equipped
             {
-                var defenderStat = saberBlock ? defenderPER : defenderVIT;
-                if (shieldBlock && saberBlock && (defenderVIT > defenderPER))
-                    defenderStat = defenderVIT;
-
-                defender.m_pcCombatRound.SetDeflectArrow(1);        // We set the Deflect Arrow var to true for this round so it doesn't fire again
-
+                defender.m_ScriptVars.SetInt(new CExoString("RESOLVE_ATTACK_ROLL_DEFLECT_BLASTER"), 1);
                 var deflectRoll = Random.Next(1, 100);
-                var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
-                var attackerStat = weaponStyleAbilityOverride == AbilityType.Invalid 
-                    ? Item.GetWeaponAccuracyAbilityType(baseItemType) 
-                    : weaponStyleAbilityOverride;
-                var attackerStatValue = Stat.GetStatValueNative(attacker, attackerStat);
+                var deflectChance = 0;
+                if (saberBlock)
+                    deflectChance += 5;
+                if (shieldBlock)
+                    deflectChance += 10;
+                
+                deflected = deflectRoll <= deflectChance;
 
-                var statDelta = Math.Clamp((defenderStat - attackerStatValue) * 5, -50, 75);
-
-                isHit = deflectRoll + statDelta < attackRoll;
-                deflected = !isHit;
+                if (deflected)
+                    isHit = false;
 
                 var feedbackString = deflected ? "*success*" : "*failure*";
                 var attackerName = ColorToken.GetNameColorNative(attacker);
                 var defenderName = ColorToken.GetNameColorNative(defender);
-                feedbackString = $"{defenderName} attempts to deflect {attackerName}'s ranged attack: {feedbackString}";
+                feedbackString = ColorToken.Combat($"{defenderName} attempts to deflect {attackerName}'s ranged attack: {feedbackString}");
 
                 attacker.SendFeedbackString(new CExoString(feedbackString));
                 defender.SendFeedbackString(new CExoString(feedbackString));
-                Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, statDelta: {statDelta}, attackRoll: {attackRoll} -- Hit: {isHit}");
+                Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, Hit: {isHit}");
             }
 
             // Hit
             if (isHit)
             {
-                var criticalStat = attackType == (uint)AttackType.Ranged
-                    ? attackerStats.GetINTStat()
-                    : attackerStats.GetDEXStat();
+                var criticalStat = attackerStats.GetDEXStat();
                 var criticalRoll = Random.Next(1, 100);
                 var criticalBonus = Math.Clamp((20 - attacker.m_pStats.GetCriticalHitRoll()) * 5, 0, 100); // GetCriticalHitRoll() returns the lowest d20 value that results in a crit, so we convert that to % bonus
                 Log.Write(LogGroup.Attack, $"Base crit threat identified as: {criticalBonus}");
@@ -375,7 +366,7 @@ namespace SWLOR.Game.Server.Native
                     }
                 }
 
-                var criticalRate = Combat.CalculateCriticalRate(criticalStat, defender.m_pStats.GetINTStat(), criticalBonus);
+                var criticalRate = Combat.CalculateCriticalRate(criticalStat, defender.m_pStats.GetSTRStat(), criticalBonus);
 
                 // Critical
                 if (criticalRoll <= criticalRate)

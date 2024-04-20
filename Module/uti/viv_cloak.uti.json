@@ -192,7 +192,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 5
+          "value": 2
         },
         "Param1": {
           "type": "byte",
@@ -259,5 +259,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "viv_cloak"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 5
   }
 }

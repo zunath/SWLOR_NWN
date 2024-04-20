@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "imp_flex_2"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 198
   }
 }

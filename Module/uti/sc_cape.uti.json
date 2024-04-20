@@ -319,5 +319,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sc_cape"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 99
   }
 }

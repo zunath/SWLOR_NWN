@@ -200,5 +200,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cooked_salpa"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 15
   }
 }

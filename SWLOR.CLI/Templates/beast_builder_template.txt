@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -12,11 +13,17 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.%%BEASTTYPE%%)
+                .Name("%%BEASTNAME%%")
                 .Appearance(AppearanceType.%%APPEARANCETYPE%%)
+                .AppearanceScale(%%APPEARANCESCALE%%)
                 .SoundSetId(%%SOUNDSETID%%)
                 .PortraitId(%%PORTRAITID%%)
                 .CombatStats(AbilityType.%%ACCURACYSTAT%%, AbilityType.%%DAMAGESTAT%%)
-                .Role(BeastRoleType.%%BEASTROLE%%);
+                .Role(BeastRoleType.%%BEASTROLE%%)
+
+                %%MUTATION_TEMPLATE1%%
+                %%MUTATION_TEMPLATE2%%
+                ;
 
 %%LEVELCALLS%%
 

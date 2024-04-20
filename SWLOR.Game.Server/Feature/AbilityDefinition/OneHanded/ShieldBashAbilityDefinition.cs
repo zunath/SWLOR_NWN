@@ -86,13 +86,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.ShieldWall));
 
-            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
+            Enmity.ModifyEnmity(activator, target, 400 * level + damage);
         }
 
         private static void ShieldBash1(AbilityBuilder builder)
         {
             builder.Create(FeatType.ShieldBash1, PerkType.ShieldBash)
                 .Name("Shield Bash I")
+                .Level(1)
                 .HasRecastDelay(RecastGroup.ShieldBash, 60f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
@@ -105,6 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.ShieldBash2, PerkType.ShieldBash)
                 .Name("Shield Bash II")
+                .Level(2)
                 .HasRecastDelay(RecastGroup.ShieldBash, 60f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
@@ -117,6 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.ShieldBash3, PerkType.ShieldBash)
                 .Name("Shield Bash III")
+                .Level(3)
                 .HasRecastDelay(RecastGroup.ShieldBash, 60f)
                 .RequirementStamina(8)
                 .IsCastedAbility()

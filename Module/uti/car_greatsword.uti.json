@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 8790
+    "value": 8789
   },
   "Cursed": {
     "type": "byte",
@@ -147,5 +147,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "car_greatsword"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 133
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 84
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 202
   }
 }

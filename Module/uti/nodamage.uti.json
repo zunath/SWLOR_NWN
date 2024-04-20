@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 242000
+    "value": 121000
   },
   "Cursed": {
     "type": "byte",
@@ -291,5 +291,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "nodamage"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

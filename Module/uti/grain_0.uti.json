@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "grain_0"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 3
   }
 }

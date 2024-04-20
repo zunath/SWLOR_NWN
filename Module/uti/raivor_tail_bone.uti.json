@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "raivor_tail_bone"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 111
   }
 }

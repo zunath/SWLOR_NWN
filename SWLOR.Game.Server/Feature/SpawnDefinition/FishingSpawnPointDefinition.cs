@@ -68,6 +68,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             CreateFishingPoint("FP_DATH_GROTTOS", FishingLocationType.DathomirGrottos);
             CreateFishingPoint("FP_DATH_MOUNTAINS", FishingLocationType.DathomirMountains);
             CreateFishingPoint("FP_DATH_TRIBE_VILLAGE", FishingLocationType.DathomirTribeVillage);
+            CreateFishingPoint("FP_DANTOOINE_LAKE", FishingLocationType.DantooineLake);
+            CreateFishingPoint("FP_DANTOOINE_MOUNTAIN_JUNGLES", FishingLocationType.DantooineMountainJungles);
+            CreateFishingPoint("FP_DANTOOINE_CANYON", FishingLocationType.DantooineCanyon);
+            CreateFishingPoint("FP_DANTOOINE_SOUTH_PLAINS", FishingLocationType.DantooineSouthFields);
+            CreateFishingPoint("FP_DAN_FORSAKEN_JUNGLES", FishingLocationType.DantooineForsakenJungles);
         }
 
     }

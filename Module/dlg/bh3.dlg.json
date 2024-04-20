@@ -21,6 +21,10 @@
     "value": [
       {
         "__struct_id": 0,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -60,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "*The alien stares at you and says nothing.*"
+            "0": "The alien stares at you with an assessing look and says nothing, though there is something dangerous in the gleam of its eyes."
           }
         }
       }
@@ -68,7 +72,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 8
+    "value": 23
   },
   "PreventZoomIn": {
     "type": "byte",
@@ -86,6 +90,10 @@
         "Active": {
           "type": "resref",
           "value": ""
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": []
         },
         "Index": {
           "type": "dword",

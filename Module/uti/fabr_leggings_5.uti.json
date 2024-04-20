@@ -206,5 +206,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "fabr_leggings_5"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 12
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 44
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 22
   }
 }

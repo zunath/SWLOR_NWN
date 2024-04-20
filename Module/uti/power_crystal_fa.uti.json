@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "power_crystal_fa"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 9
   }
 }

@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 505
+    "value": 504
   },
   "Cursed": {
     "type": "byte",
@@ -238,5 +238,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "h_pistol_4"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 61
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

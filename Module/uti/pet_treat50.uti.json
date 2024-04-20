@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 100
+    "value": 2
   },
   "Cursed": {
     "type": "byte",
@@ -110,5 +110,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "pet_treat50"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 8
   }
 }

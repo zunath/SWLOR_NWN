@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 100
+    "value": 98
   },
   "Cursed": {
     "type": "byte",
@@ -270,5 +270,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "lightsaber_zhar"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 33
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 12
   }
 }

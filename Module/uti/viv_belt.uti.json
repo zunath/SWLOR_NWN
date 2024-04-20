@@ -235,5 +235,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "viv_belt"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 154
   }
 }

@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 StatusEffect.Apply(activator, target, StatusEffectType.Poison, duration);
             }
 
-            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
+            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private static void StrikingCobra1(AbilityBuilder builder)

@@ -440,6 +440,7 @@
         ImmortalCap = 403,
         ImmortalGloves = 404,
         ImmortalBoots = 405,
+        BolRifle = 406,
 
         // Fabrication:  1001-2000
         BedRoll = 1001,
@@ -655,7 +656,7 @@
         MicrowaveBlack = 1210,
         BarWhite = 1211,
         CouchLeatherBlue = 1212,
-        // 1213 is free
+        DNAExtractor1 = 1213,
         TablePlasticLarge = 1214,
         TableRoundOak = 1215,
         MetalWallWideLight = 1216,
@@ -668,7 +669,7 @@
         ShelvesWarehouseFull = 1223,
         BookshelfJedi = 1224,
         MetalWallSinglePipes = 1225,
-        // 1226 is free
+        Incubator = 1226,
         TelevisionBigScreen = 1227,
         TelevisionOldModel = 1228,
         FoyerChandelier = 1229,
@@ -694,6 +695,10 @@
         TableDarkGlass = 1249,
         DroidAssemblyTerminal = 1250,
         BeastStablesTerminal = 1251,
+        DNAExtractor2 = 1252,
+        DNAExtractor3 = 1253,
+        DNAExtractor4 = 1254,
+        DNAExtractor5 = 1255,
 
         ReinforcedConstructionParts = 1496,
         ReinforcedPowerSupplyUnit = 1497,
@@ -716,6 +721,7 @@
         LargeHouseStyle2 = 1514,
         LargeHouseStyle3 = 1515,
         LargeHouseStyle4 = 1516,
+        LabStyle1 = 1517,
 
 
         // Cooking: 2001-3000
@@ -923,6 +929,11 @@
         TenderMeatSubstitute3 = 2197,
         TenderMeatSubstitute4 = 2198,
         TenderMeatSubstitute5 = 2199,
+        MunchFungusBread = 2200,
+        DantooineFlapJack = 2201,
+        DantooineCarrotCake = 2202,
+        KraftersKebab = 2203,
+        DathomirPie = 2204,
 
         // Engineering: 3001-6000
         BasicCapacitorBooster = 3001,
@@ -2330,6 +2341,12 @@
         DAHL005 = 4361,
         DABR005 = 4362,
         DALG005 = 4363,
+
+        WeaponEnhancementAccuracy1 = 4364,
+        WeaponEnhancementAccuracy2 = 4365,
+        WeaponEnhancementAccuracy3 = 4366,
+        WeaponEnhancementAccuracy4 = 4367,
+        WeaponEnhancementAccuracy5 = 4368,
 
         ArmorEnhancementAttack1 = 4664,
         ArmorEnhancementAttack2 = 4665,

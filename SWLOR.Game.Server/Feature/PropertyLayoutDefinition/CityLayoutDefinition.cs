@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(50) // For Cities, determines how many regular structures (non-buildings) can be placed in the area
                 .ItemStorageLimit(0)
                 .BuildingLimit(21)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(100000)
                 .PricePerDay(5000)
                 .AreaInstance("");

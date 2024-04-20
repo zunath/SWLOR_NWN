@@ -297,5 +297,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sc_band"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 93
   }
 }

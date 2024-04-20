@@ -109,5 +109,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "saberstaff_upg1"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 116
   }
 }

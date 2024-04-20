@@ -21,6 +21,10 @@
     "value": [
       {
         "__struct_id": 0,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -60,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "If you don't get out of my way I will have to introduce you to my blaster."
+            "0": "\"If you don't get out of my way I will have to introduce you to my blaster.\""
           }
         }
       }
@@ -86,6 +90,10 @@
         "Active": {
           "type": "resref",
           "value": ""
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": []
         },
         "Index": {
           "type": "dword",

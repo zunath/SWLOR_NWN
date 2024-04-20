@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ogre_eel"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 17
   }
 }

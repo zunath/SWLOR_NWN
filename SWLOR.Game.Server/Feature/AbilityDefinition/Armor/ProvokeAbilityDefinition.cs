@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
             _builder.Create(FeatType.Provoke1, PerkType.Provoke)
                 .Name("Provoke")
                 .Level(1)
-                .HasRecastDelay(RecastGroup.Provoke, 20f)
+                .HasRecastDelay(RecastGroup.Provoke, 10f)
                 .HasActivationDelay(1f)
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .IsCastedAbility()
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     var enmityBonus = GetAbilityScore(activator, AbilityType.Vitality) * 50;
-                    Impact(activator, target, 350 + enmityBonus);
+                    Impact(activator, target, 700 + enmityBonus);
                 });
         }
 
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
             _builder.Create(FeatType.Provoke2, PerkType.Provoke)
                 .Name("Provoke II")
                 .Level(2)
-                .HasRecastDelay(RecastGroup.Provoke2, 40f)
+                .HasRecastDelay(RecastGroup.Provoke2, 20f)
                 .HasActivationDelay(1f)
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .IsCastedAbility()

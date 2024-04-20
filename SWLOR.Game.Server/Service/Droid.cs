@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            if (Perk.GetEffectivePerkLevel(player, PerkType.DroidAssembly) <= 0)
+            if (Perk.GetPerkLevel(player, PerkType.DroidAssembly) <= 0)
             {
                 SendMessageToPC(player, ColorToken.Red("The 'Droid Assembly' perk is required to use this terminal."));
                 return;
@@ -773,6 +773,16 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 SetPortraitId(droid, constructedDroid.PortraitId);
+            }
+
+            if (constructedDroid.SoundSetId == -1)
+            {
+                constructedDroid.SoundSetId = GetSoundset(droid);
+                SaveConstructedDroid(controller, constructedDroid);
+            }
+            else
+            {
+                SetSoundset(droid, constructedDroid.SoundSetId);
             }
 
             // Ensure the spawn script gets called as it normally gets skipped

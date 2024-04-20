@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ship_blaster_1"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 76
   }
 }

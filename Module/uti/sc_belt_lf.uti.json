@@ -266,5 +266,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sc_belt_lf"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 51
   }
 }

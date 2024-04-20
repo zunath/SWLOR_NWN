@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "s_frame_small"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 26
   }
 }

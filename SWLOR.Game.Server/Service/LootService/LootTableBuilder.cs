@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service.LootService
 {
     public class LootTableBuilder
     {
-        private readonly Dictionary<string, LootTable> LootTables = new Dictionary<string, LootTable>();
+        private readonly Dictionary<string, LootTable> _lootTables = new();
 
-        private LootTable ActiveTable { get; set; }
+        private LootTable _activeTable;
+        private LootTableItem _activeItem { get; set; }
 
 
         /// <summary>
@@ -16,8 +18,8 @@ namespace SWLOR.Game.Server.Service.LootService
         /// <returns>A loot table builder with the configured settings.</returns>
         public LootTableBuilder Create(string lootTableId)
         {
-            ActiveTable = new LootTable();
-            LootTables[lootTableId] = ActiveTable;
+            _activeTable = new LootTable();
+            _lootTables[lootTableId] = _activeTable;
 
             return this;
         }
@@ -28,7 +30,7 @@ namespace SWLOR.Game.Server.Service.LootService
         /// <returns>A loot table builder with the configured settings.</returns>
         public LootTableBuilder IsRare()
         {
-            ActiveTable.IsRare = true;
+            _activeTable.IsRare = true;
 
             return this;
         }
@@ -43,7 +45,8 @@ namespace SWLOR.Game.Server.Service.LootService
         /// <returns>A loot table builder with the configured settings.</returns>
         public LootTableBuilder AddItem(string resref, int frequency, int maxQuantity = 1, bool isRare = false)
         {
-            ActiveTable.Add(new LootTableItem(resref, maxQuantity, frequency, isRare));
+            _activeItem = new LootTableItem(resref, maxQuantity, frequency, isRare);
+            _activeTable.Add(_activeItem);
 
             return this;
         }
@@ -57,7 +60,21 @@ namespace SWLOR.Game.Server.Service.LootService
         public LootTableBuilder AddGold(int maxAmount, int frequency)
         {
             const string GoldResref = "nw_it_gold001";
-            ActiveTable.Add(new LootTableItem(GoldResref, maxAmount, frequency, false));
+            _activeItem = new LootTableItem(GoldResref, maxAmount, frequency, false);
+            _activeTable.Add(_activeItem);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a custom spawn action to run when this item is created.
+        /// This can be useful for applying random item properties, sending a message, etc.
+        /// </summary>
+        /// <param name="spawnAction">The action to run when the item is spawned.</param>
+        /// <returns>A loot table builder with the configured settings.</returns>
+        public LootTableBuilder AddSpawnAction(Action<uint> spawnAction)
+        {
+            _activeItem.OnSpawn = spawnAction;
 
             return this;
         }
@@ -68,7 +85,7 @@ namespace SWLOR.Game.Server.Service.LootService
         /// <returns>A dictionary of loot tables.</returns>
         public Dictionary<string, LootTable> Build()
         {
-            return LootTables;
+            return _lootTables;
         }
     }
 }

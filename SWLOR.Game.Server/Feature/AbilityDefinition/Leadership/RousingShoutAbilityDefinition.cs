@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     var social = GetAbilityScore(activator, AbilityType.Social);
                     var targetMaxHP = GetMaxHitPoints(target);
                     int hp;
-                    var perkLevel = Perk.GetEffectivePerkLevel(activator, PerkType.RousingShout);
+                    var perkLevel = Perk.GetPerkLevel(activator, PerkType.RousingShout);
 
                     switch (perkLevel)
                     {

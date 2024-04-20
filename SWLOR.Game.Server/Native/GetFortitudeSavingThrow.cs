@@ -18,7 +18,9 @@ namespace SWLOR.Game.Server.Native
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, int, sbyte> pHook = &OnGetFortitudeSavingThrow;
-            var hookPtr = VM.RequestHook(new IntPtr(FunctionsLinux._ZN17CNWSCreatureStats18GetFortSavingThrowEi), (IntPtr)pHook, -1000001);
+            var hookPtr = VM.RequestHook(NativeLibrary.GetExport(
+                    NativeLibrary.GetMainProgramHandle(), "_ZN17CNWSCreatureStats18GetFortSavingThrowEi"),
+                (IntPtr)pHook, -1000000);
             _callOriginal = Marshal.GetDelegateForFunctionPointer<GetFortitudeSavingThrowHook>(hookPtr);
         }
 
@@ -40,7 +42,7 @@ namespace SWLOR.Game.Server.Native
                         (int)SavingThrow.Fortitude);
 
             if (stats.HasFeat((ushort)FeatType.LuckOfHeroes) == 1)
-                modifier += (sbyte)rules.GetRulesetIntEntry(new CExoString("LUCKOFHEROES_SAVE_BONUS"), 1);
+                modifier += (sbyte)rules.GetRulesetIntEntry( RulesetKeys.LUCKOFHEROES_SAVE_BONUS, 1);
 
             if (stats.HasFeat((ushort)FeatType.PrestigeDarkBlessing) == 1)
                 modifier += (sbyte)stats.m_nCharismaModifier;

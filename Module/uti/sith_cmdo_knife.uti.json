@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -550,5 +550,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sith_cmdo_knife"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 14
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

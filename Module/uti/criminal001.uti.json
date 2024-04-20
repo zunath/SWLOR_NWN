@@ -10,11 +10,11 @@
   },
   "ArmorPart_LBicep": {
     "type": "byte",
-    "value": 1
+    "value": 2
   },
   "ArmorPart_LFArm": {
     "type": "byte",
-    "value": 168
+    "value": 157
   },
   "ArmorPart_LFoot": {
     "type": "byte",
@@ -38,7 +38,7 @@
   },
   "ArmorPart_Neck": {
     "type": "byte",
-    "value": 128
+    "value": 1
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
@@ -46,11 +46,11 @@
   },
   "ArmorPart_RBicep": {
     "type": "byte",
-    "value": 1
+    "value": 2
   },
   "ArmorPart_RFArm": {
     "type": "byte",
-    "value": 113
+    "value": 159
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -171,5 +171,81 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "criminal001"
+  },
+  "xArmorPart_Belt": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_LBice": {
+    "type": "word",
+    "value": 2
+  },
+  "xArmorPart_LFArm": {
+    "type": "word",
+    "value": 157
+  },
+  "xArmorPart_LFoot": {
+    "type": "word",
+    "value": 63
+  },
+  "xArmorPart_LHand": {
+    "type": "word",
+    "value": 113
+  },
+  "xArmorPart_LShin": {
+    "type": "word",
+    "value": 235
+  },
+  "xArmorPart_LShou": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_LThig": {
+    "type": "word",
+    "value": 234
+  },
+  "xArmorPart_Neck": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_Pelvi": {
+    "type": "word",
+    "value": 235
+  },
+  "xArmorPart_RBice": {
+    "type": "word",
+    "value": 2
+  },
+  "xArmorPart_RFArm": {
+    "type": "word",
+    "value": 159
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 63
+  },
+  "xArmorPart_RHand": {
+    "type": "word",
+    "value": 113
+  },
+  "xArmorPart_Robe": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RShin": {
+    "type": "word",
+    "value": 235
+  },
+  "xArmorPart_RShou": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RThig": {
+    "type": "word",
+    "value": 234
+  },
+  "xArmorPart_Torso": {
+    "type": "word",
+    "value": 54
   }
 }

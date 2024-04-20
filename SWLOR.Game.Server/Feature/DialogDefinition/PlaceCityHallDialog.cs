@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                             return;
                         }
 
-                        if (Perk.GetEffectivePerkLevel(player, PerkType.CityManagement) < 1)
+                        if (Perk.GetPerkLevel(player, PerkType.CityManagement) < 1)
                         {
                             FloatingTextStringOnCreature("The City Management I perk is required to establish a city.", player, false);
                             return;

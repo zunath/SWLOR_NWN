@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>String containing the formatted time.</returns>
         public static string GetTimeShortIntervals(int days, int hours, int minutes, int seconds, bool showIfZero)
         {
-            string result = "";
+            var result = "";
 
             if (showIfZero || days > 0)
                 result += days + "D, ";
@@ -118,6 +118,18 @@ namespace SWLOR.Game.Server.Service
             result += seconds + "S";
 
             return result;
+        }
+
+        /// <summary>
+        /// Returns time in the following manner:
+        /// 2D, 12H, 5M, 45S
+        /// </summary>
+        /// <param name="timespan">The timespan</param>
+        /// <param name="showIfZero">Will show the units if they are zero.</param>
+        /// <returns>String containing the formatted time.</returns>
+        public static string GetTimeShortIntervals(TimeSpan timespan, bool showIfZero)
+        {
+            return GetTimeShortIntervals(timespan.Days, timespan.Hours, timespan.Minutes, timespan.Seconds, showIfZero);
         }
 
     }

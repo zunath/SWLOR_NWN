@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "beetle_chitin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 86
   }
 }

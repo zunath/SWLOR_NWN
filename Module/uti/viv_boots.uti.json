@@ -270,5 +270,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "viv_boots"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 22
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 41
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 22
   }
 }

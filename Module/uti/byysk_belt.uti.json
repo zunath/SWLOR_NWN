@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 375
+    "value": 376
   },
   "Cursed": {
     "type": "byte",
@@ -204,5 +204,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "byysk_belt"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 124
   }
 }

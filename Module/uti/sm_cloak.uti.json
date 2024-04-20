@@ -228,5 +228,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sm_cloak"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 99
   }
 }

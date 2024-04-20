@@ -139,5 +139,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "hu_qutig_bite"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

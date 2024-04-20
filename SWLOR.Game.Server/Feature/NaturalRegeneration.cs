@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// On module heartbeat, process a player's HP/FP/STM regeneration.
         /// </summary>
-        [NWNEventHandler("interval_pc_6s")]
+        [NWNEventHandler("pc_heartbeat")]
         public static void ProcessRegeneration()
         {
             var player = OBJECT_SELF;

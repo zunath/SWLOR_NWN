@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "tiny_goldfish"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 17
   }
 }

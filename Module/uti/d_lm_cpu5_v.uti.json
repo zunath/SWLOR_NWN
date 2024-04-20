@@ -479,5 +479,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "d_lm_cpu5_v"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 188
   }
 }

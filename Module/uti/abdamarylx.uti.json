@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "abdamarylx"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 5
   }
 }

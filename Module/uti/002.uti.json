@@ -202,5 +202,81 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "002"
+  },
+  "xArmorPart_Belt": {
+    "type": "word",
+    "value": 156
+  },
+  "xArmorPart_LBice": {
+    "type": "word",
+    "value": 112
+  },
+  "xArmorPart_LFArm": {
+    "type": "word",
+    "value": 126
+  },
+  "xArmorPart_LFoot": {
+    "type": "word",
+    "value": 248
+  },
+  "xArmorPart_LHand": {
+    "type": "word",
+    "value": 113
+  },
+  "xArmorPart_LShin": {
+    "type": "word",
+    "value": 244
+  },
+  "xArmorPart_LShou": {
+    "type": "word",
+    "value": 185
+  },
+  "xArmorPart_LThig": {
+    "type": "word",
+    "value": 253
+  },
+  "xArmorPart_Neck": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_Pelvi": {
+    "type": "word",
+    "value": 111
+  },
+  "xArmorPart_RBice": {
+    "type": "word",
+    "value": 112
+  },
+  "xArmorPart_RFArm": {
+    "type": "word",
+    "value": 126
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 248
+  },
+  "xArmorPart_RHand": {
+    "type": "word",
+    "value": 113
+  },
+  "xArmorPart_Robe": {
+    "type": "word",
+    "value": 203
+  },
+  "xArmorPart_RShin": {
+    "type": "word",
+    "value": 244
+  },
+  "xArmorPart_RShou": {
+    "type": "word",
+    "value": 186
+  },
+  "xArmorPart_RThig": {
+    "type": "word",
+    "value": 253
+  },
+  "xArmorPart_Torso": {
+    "type": "word",
+    "value": 188
   }
 }

@@ -301,7 +301,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void AddPart(DroidPartItemPropertyDetails part, uint item)
         {
-            var assemblyLevel = Perk.GetEffectivePerkLevel(Player, PerkType.DroidAssembly);
+            var assemblyLevel = Perk.GetPerkLevel(Player, PerkType.DroidAssembly);
 
             var serialized = ObjectPlugin.Serialize(item);
             var icon = Item.GetIconResref(item);

@@ -1,6 +1,4 @@
-﻿//using Random = SWLOR.Game.Server.Service.Random;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -28,7 +26,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceHeal, 12f)
-                .RequirementFP(1)
+                .HasActivationDelay(2f)
+                .RequirementFP(3)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal1)
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -41,7 +40,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceHeal, 12f)
-                .RequirementFP(2)
+                .HasActivationDelay(2f)
+                .RequirementFP(4)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal2)
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -54,7 +54,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ForceHeal, 12f)
-                .RequirementFP(3)
+                .HasActivationDelay(2f)
+                .RequirementFP(5)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal3)
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -67,7 +68,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.ForceHeal, 12f)
-                .RequirementFP(4)
+                .HasActivationDelay(2f)
+                .RequirementFP(6)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal4)
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -80,7 +82,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.ForceHeal, 12f)
-                .RequirementFP(5)
+                .HasActivationDelay(2f)
+                .RequirementFP(7)
                 .HasMaxRange(15)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal5)
                 .UsesAnimation(Animation.LoopingConjure1)

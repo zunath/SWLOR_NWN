@@ -200,5 +200,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "tusk_b_broth"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 16
   }
 }

@@ -173,5 +173,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "majestic_necklac"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 57
   }
 }

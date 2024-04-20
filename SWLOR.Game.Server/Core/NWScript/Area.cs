@@ -1,7 +1,10 @@
 using System;
 using System.Numerics;
+using System.Runtime.Intrinsics;
+using NWN.Native.API;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
+using ObjectType = SWLOR.Game.Server.Core.NWScript.Enum.ObjectType;
 
 namespace SWLOR.Game.Server.Core.NWScript
 {
@@ -528,24 +531,30 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        ///   Get the first object in oArea.
-        ///   If no valid area is specified, it will use the caller's area.
-        ///   * Return value on error: OBJECT_INVALID
+        /// Get the first object in oArea.
+        /// If no valid area is specified, it will use the caller's area.
+        /// - nObjectFilter: This allows you to filter out undesired object types, using bitwise "or".
+        ///   For example, to return only creatures and doors, the value for this parameter would be OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR
+        /// * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetFirstObjectInArea(uint oArea = OBJECT_INVALID)
+        public static uint GetFirstObjectInArea(uint oArea = OBJECT_INVALID, ObjectType nObjectFilter = ObjectType.All)
         {
+            VM.StackPush((int)nObjectFilter);
             VM.StackPush(oArea);
             VM.Call(93);
             return VM.StackPopObject();
         }
 
         /// <summary>
-        ///   Get the next object in oArea.
-        ///   If no valid area is specified, it will use the caller's area.
-        ///   * Return value on error: OBJECT_INVALID
+        /// Get the next object in oArea.
+        /// If no valid area is specified, it will use the caller's area.
+        /// - nObjectFilter: This allows you to filter out undesired object types, using bitwise "or".
+        ///   For example, to return only creatures and doors, the value for this parameter would be OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR
+        /// * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetNextObjectInArea(uint oArea = OBJECT_INVALID)
+        public static uint GetNextObjectInArea(uint oArea = OBJECT_INVALID, ObjectType nObjectFilter = ObjectType.All)
         {
+            VM.StackPush((int)nObjectFilter);
             VM.StackPush(oArea);
             VM.Call(94);
             return VM.StackPopObject();
@@ -907,5 +916,157 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.Call(919);
         }
 
+        /// <summary>
+        /// Gets the light color in the area specified.
+        /// nColorType specifies the color type returned.
+        ///    Valid values for nColorType are the AREA_LIGHT_COLOR_* values.
+        /// If no valid area (or object) is specified, it uses the area of caller.
+        /// If an object other than an area is specified, will use the area that the object is currently in.
+        /// </summary>
+        public static int GetAreaLightColor(AreaLightColorType nColorType, uint oArea = OBJECT_INVALID)
+        {
+            VM.StackPush(oArea);
+            VM.StackPush((int)nColorType);
+            VM.Call(1080);
+
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Sets the light color in the area specified.
+        /// nColorType = AREA_LIGHT_COLOR_* specifies the color type.
+        /// nColor = FOG_COLOR_* specifies the color the fog is being set to.
+        /// The color can also be represented as a hex RGB number if specific color shades
+        /// are desired.
+        /// The format of a hex specified color would be 0xFFEEDD where
+        /// FF would represent the amount of red in the color
+        /// EE would represent the amount of green in the color
+        /// DD would represent the amount of blue in the color.
+        /// If no valid area (or object) is specified, it uses the area of caller.
+        /// If an object other than an area is specified, will use the area that the object is currently in.
+        /// If fFadeTime is above 0.0, it will fade to the new color in the amount of seconds specified. 
+        /// </summary>
+        public static void SetAreaLightColor(
+            AreaLightColorType nColorType, 
+            FogColor nColor, 
+            uint oArea = OBJECT_INVALID, 
+            float fFadeTime = 0.0f)
+        {
+            VM.StackPush(fFadeTime);
+            VM.StackPush(oArea);
+            VM.StackPush((int)nColor);
+            VM.StackPush((int)nColorType);
+            VM.Call(1081);
+        }
+
+        /// <summary>
+        /// Gets the light direction of origin in the area specified.
+        /// nLightType specifies whether the Moon or Sun light direction is returned.
+        ///    Valid values for nColorType are the AREA_LIGHT_DIRECTION_* values.
+        /// If no valid area (or object) is specified, it uses the area of caller.
+        /// If an object other than an area is specified, will use the area that the object is currently in.
+        /// </summary>
+        public static Vector3 GetAreaLightDirection(AreaLightDirectionType nLightType, uint oArea = OBJECT_INVALID)
+        {
+            VM.StackPush((int)nLightType);
+            VM.StackPush(oArea);
+            VM.Call(1082);
+
+            return VM.StackPopVector();
+        }
+
+        /// <summary>
+        /// Sets the light direction of origin in the area specified.
+        /// nLightType = AREA_LIGHT_DIRECTION_* specifies the light type.
+        /// vDirection = specifies the direction of origin of the light type, i.e. the direction the sun/moon is in from the area.
+        /// If no valid area (or object) is specified, it uses the area of caller.
+        /// If an object other than an area is specified, will use the area that the object is currently in.
+        /// If fFadeTime is above 0.0, it will fade to the new color in the amount of seconds specified. 
+        /// </summary>
+        public static void SetAreaLightDirection(
+            AreaLightDirectionType nLightType, 
+            Vector3 vDirection, 
+            uint oArea = OBJECT_INVALID, 
+            float fFadeTime = 0.0f)
+        {
+            VM.StackPush(fFadeTime);
+            VM.StackPush(oArea);
+            VM.StackPush(vDirection);
+            VM.StackPush((int)nLightType);
+            VM.Call(1083);
+        }
+
+        // Sets a grass override for nMaterialId in oArea.
+        // * You can have multiple grass types per area by using different materials.
+        // * You can add grass to areas that normally do not have grass, for example by calling this on the
+        //   wood surface material(5) for an inn area.
+        //
+        //   - nMaterialId: a surface material, see surfacemat.2da. 3 is the default grass material.
+        //   - sTexture: the grass texture, cannot be empty.
+        //   - fDensity: the density of the grass.
+        //   - fHeight: the height of the grass.
+        //   - vAmbientColor: the ambient color of the grass, xyz as RGB clamped to 0.0-1.0f per value.
+        //   - vDiffuseColor: the diffuse color of the grass, xyz as RGB clamped to 0.0-1.0f per value.
+        public static void SetAreaGrassOverride(
+            uint oArea,
+            int nMaterialId,
+            string sTexture,
+            float fDensity,
+            float fHeight,
+            Vector3 vAmbientColor,
+            Vector3 vDiffuseColor)
+        {
+            VM.StackPush(vDiffuseColor);
+            VM.StackPush(vAmbientColor);
+            VM.StackPush(fHeight);
+            VM.StackPush(fDensity);
+            VM.StackPush(sTexture);
+            VM.StackPush(nMaterialId);
+            VM.StackPush(oArea);
+            VM.Call(1139);
+        }
+
+        // Remove a grass override from oArea for nMaterialId.
+        public static void RemoveAreaGrassOverride(uint oArea, int nMaterialId)
+        {
+            VM.StackPush(nMaterialId);
+            VM.StackPush(oArea);
+            VM.Call(1140);
+        }
+
+        // Set to TRUE to disable the default grass of oArea.
+        public static void SetAreaDefaultGrassDisabled(uint oArea, bool bDisabled)
+        {
+            VM.StackPush(bDisabled ? 1 : 0);
+            VM.StackPush(oArea);
+            VM.Call(1141);
+        }
+
+        // Gets the NoRest area flag.
+        // Returns TRUE if resting is not allowed in the area.
+        // Passing in OBJECT_INVALID to parameter oArea will result in operating on the area of the caller.
+        public static bool GetAreaNoRestFlag(uint oArea = OBJECT_INVALID)
+        {
+            VM.StackPush(oArea);
+            VM.Call(1142);
+            return VM.StackPopInt() == 1;
+        }
+
+        // Sets the NoRest flag on an area.
+        // Passing in OBJECT_INVALID to parameter oArea will result in operating on the area of the caller.
+        public static void SetAreaNoRestFlag(bool bNoRestFlag, uint oArea = OBJECT_INVALID)
+        {
+            VM.StackPush(oArea);
+            VM.StackPush(bNoRestFlag ? 1 : 0);
+            VM.Call(1143);
+        }
+        
+        // Set to TRUE to disable the inaccessible tile border of oArea. Requires a client area reload to take effect.
+        public static void SetAreaTileBorderDisabled(uint oArea, bool bDisabled)
+        {
+            VM.StackPush(bDisabled ? 1 : 0);
+            VM.StackPush(oArea);
+            VM.Call(1147);
+        }
     }
 }

@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 406
+    "value": 405
   },
   "Cursed": {
     "type": "byte",
@@ -207,5 +207,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "h_twinblade_3"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 23
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 31
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 31
   }
 }

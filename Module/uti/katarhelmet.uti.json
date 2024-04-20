@@ -163,5 +163,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "katarhelmet"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 36
   }
 }

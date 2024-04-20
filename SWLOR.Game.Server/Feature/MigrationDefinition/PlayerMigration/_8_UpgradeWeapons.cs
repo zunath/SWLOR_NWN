@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 
                 foreach (var action in perkDetail.RefundedTriggers)
                 {
-                    action(player, PerkType.RapidShot, 0);
+                    action(player);
                 }
             }
         }

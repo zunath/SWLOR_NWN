@@ -105,5 +105,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sandbeetlebite"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

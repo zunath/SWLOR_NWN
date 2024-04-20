@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "imp_cotton_3"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 245
   }
 }

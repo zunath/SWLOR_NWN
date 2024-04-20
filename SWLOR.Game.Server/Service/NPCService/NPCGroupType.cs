@@ -109,6 +109,18 @@ namespace SWLOR.Game.Server.Service.NPCService
         Dathomir_Ssurian = 49,
         [NPCGroup("Swampland Bug")]
         Dathomir_SwamplandBug = 50,
+        [NPCGroup("Kinrath Queen")]
+        Dantooine_KinrathQueen = 51,
+        [NPCGroup("Iriaz")]
+        Dantooine_Iriaz = 52,
+        [NPCGroup("Voritor Lizard")]
+        Dantooine_VoritorLizard = 53,
+        [NPCGroup("Gizka")]
+        Dantooine_Gizka = 54,
+        [NPCGroup("Plains Thune")]
+        Dantooine_PlainsThune = 55,
+        [NPCGroup("Bol")]
+        Dantooine_Bol = 56,
     }
 
     public class NPCGroupAttribute : Attribute

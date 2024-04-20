@@ -164,5 +164,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "bm_cloak"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 99
   }
 }

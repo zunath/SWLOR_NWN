@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "v_power_cell"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 199
   }
 }

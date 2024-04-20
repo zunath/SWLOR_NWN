@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 500
+    "value": 501
   },
   "Cursed": {
     "type": "byte",
@@ -147,5 +147,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "raider_spear"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 141
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 141
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 141
   }
 }

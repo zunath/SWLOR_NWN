@@ -17,27 +17,21 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Once every 30 minutes, the RP system will check all players and distribute RP XP if applicable.
         /// </summary>
-        [NWNEventHandler("mod_heartbeat")]
+        [NWNEventHandler("pc_heartbeat")]
         public static void DistributeRoleplayXP()
         {
-            var module = GetModule();
-            var ticks = GetLocalInt(module, "RP_SYSTEM_TICKS") + 1;
+            const string TrackerVariableName = "RP_SYSTEM_TICKS";
+            var player = OBJECT_SELF;
+            var ticks = GetLocalInt(player, TrackerVariableName) + 1;
 
             // Is it time to process RP points?
             if (ticks >= 300) // 300 ticks * 6 seconds per HB = 1800 seconds = 30 minutes
             {
-                var player = GetFirstPC();
-                while (GetIsObjectValid(player))
-                {
-                    ProcessPlayerRoleplayXP(player);
-
-                    player = GetNextPC();
-                }
-
+                ProcessPlayerRoleplayXP(player);
                 ticks = 0;
             }
 
-            SetLocalInt(module, "RP_SYSTEM_TICKS", ticks);
+            SetLocalInt(player, TrackerVariableName, ticks);
         }
 
         /// <summary>

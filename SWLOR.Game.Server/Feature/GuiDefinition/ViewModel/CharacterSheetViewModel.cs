@@ -5,12 +5,14 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -278,8 +280,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickChangePortrait() => () =>
         {
-            var payload = new ChangePortraitPayload(_target);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.ChangePortrait, payload);
+            var payload = new CustomizeCharacterPayload(_target);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.CustomizeCharacter, payload);
         };
 
         public Action OnClickQuests() => () =>
@@ -513,6 +515,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return (dmgText, tooltip);
             }
 
+            var food = StatusEffect.GetEffectData<FoodEffectData>(Player, StatusEffectType.Food) ?? new FoodEffectData();
             var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
             var mainHandType = GetBaseItemType(mainHand);
@@ -540,32 +543,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 OffHandDMG = "-";
                 OffHandTooltip = "Est. Damage: N/A";
             }
-            
-            var damageStat = Item.GetWeaponDamageAbilityType(mainHandType);
-            var accuracyStatOverride = AbilityType.Invalid;
-            
-            // Strong Style (Lightsaber)
-            if (Item.LightsaberBaseItemTypes.Contains(mainHandType) &&
-                Ability.IsAbilityToggled(_target, AbilityToggleType.StrongStyleLightsaber))
-            {
-                damageStat = AbilityType.Might;
-                accuracyStatOverride = AbilityType.Perception;
-            }
-            // Strong Style (Saberstaff)
-            if (Item.SaberstaffBaseItemTypes.Contains(mainHandType) &&
-                Ability.IsAbilityToggled(_target, AbilityToggleType.StrongStyleSaberstaff))
-            {
-                damageStat = AbilityType.Might;
-                accuracyStatOverride = AbilityType.Perception;
-            }
 
-            // Flurry Style (Staff)
-            if (Item.StaffBaseItemTypes.Contains(mainHandType) && 
-                GetHasFeat(FeatType.CrushingStyle, _target))
+            AbilityType damageStat;
+            AbilityType accuracyStatOverride;
+
+            if (BeastMastery.IsPlayerBeast(_target))
             {
-                damageStat = AbilityType.Perception;
-                accuracyStatOverride = AbilityType.Agility;
-            } 
+                var beastType = BeastMastery.GetBeastType(_target);
+                var beastDetails = BeastMastery.GetBeastDetail(beastType);
+                damageStat = beastDetails.DamageStat;
+                accuracyStatOverride = beastDetails.AccuracyStat;
+                mainHand = GetItemInSlot(InventorySlot.CreatureArmor, _target);
+            }
+            else
+            {
+                damageStat = Item.GetWeaponDamageAbilityType(mainHandType);
+                accuracyStatOverride = AbilityType.Invalid;
+
+                // Strong Style (Lightsaber)
+                if (Item.LightsaberBaseItemTypes.Contains(mainHandType) &&
+                    Ability.IsAbilityToggled(_target, AbilityToggleType.StrongStyleLightsaber))
+                {
+                    damageStat = AbilityType.Might;
+                    accuracyStatOverride = AbilityType.Perception;
+                }
+                // Strong Style (Saberstaff)
+                if (Item.SaberstaffBaseItemTypes.Contains(mainHandType) &&
+                    Ability.IsAbilityToggled(_target, AbilityToggleType.StrongStyleSaberstaff))
+                {
+                    damageStat = AbilityType.Might;
+                    accuracyStatOverride = AbilityType.Perception;
+                }
+
+                // Flurry Style (Staff)
+                if (Item.StaffBaseItemTypes.Contains(mainHandType) &&
+                    GetHasFeat(FeatType.CrushingStyle, _target))
+                {
+                    damageStat = AbilityType.Perception;
+                    accuracyStatOverride = AbilityType.Agility;
+                }
+            }
             
             var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);
             Attack = Stat.GetAttack(_target, damageStat, mainHandSkill);
@@ -577,10 +594,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var playerId = GetObjectUUID(_target);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                var fireDefense = dbPlayer.Defenses[CombatDamageType.Fire].ToString();
-                var poisonDefense = dbPlayer.Defenses[CombatDamageType.Poison].ToString();
-                var electricalDefense = dbPlayer.Defenses[CombatDamageType.Electrical].ToString();
-                var iceDefense = dbPlayer.Defenses[CombatDamageType.Ice].ToString();
+                var fireDefense = (dbPlayer.Defenses[CombatDamageType.Fire] + food.DefenseFire).ToString();
+                var poisonDefense = (dbPlayer.Defenses[CombatDamageType.Poison] + food.DefensePoison).ToString();
+                var electricalDefense = (dbPlayer.Defenses[CombatDamageType.Electrical + food.DefenseElectrical]).ToString();
+                var iceDefense = (dbPlayer.Defenses[CombatDamageType.Ice] + food.DefenseIce).ToString();
 
                 DefenseElemental = $"{fireDefense}/{poisonDefense}/{electricalDefense}/{iceDefense}";
             }
@@ -629,7 +646,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
                 APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
-                APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level)}";
+                APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
             }
         }
 
@@ -699,7 +716,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
             APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
-            APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level)}";
+            APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
         }
 
         public void Refresh(EquipItemRefreshEvent payload)

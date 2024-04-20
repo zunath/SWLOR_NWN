@@ -194,5 +194,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "majestic_helmet"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 104
   }
 }

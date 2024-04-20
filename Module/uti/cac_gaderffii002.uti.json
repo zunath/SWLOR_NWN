@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 20
+    "value": 19
   },
   "Cursed": {
     "type": "byte",
@@ -84,5 +84,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cac_gaderffii002"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 44
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 21
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 34
   }
 }

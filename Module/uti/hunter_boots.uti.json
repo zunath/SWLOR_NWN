@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 250
+    "value": 251
   },
   "Cursed": {
     "type": "byte",
@@ -208,5 +208,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "hunter_boots"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 13
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 22
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 71
   }
 }

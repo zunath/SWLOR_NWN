@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Service
         /// Each tick, creatures with a concentration effect will be processed.
         /// This will drain FP and reapply whatever effect is associated with an ability.
         /// </summary>
-        [NWNEventHandler("mod_heartbeat")]
+        [NWNEventHandler("swlor_heartbeat")]
         public static void ProcessConcentrationEffects()
         {
             var pairs = _activeConcentrationAbilities.ToList();
@@ -570,6 +570,44 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        /// <summary>
+        /// Removes all auras which are currently active on a creature.
+        /// </summary>
+        /// <param name="activator">The creature who originally activated the auras.</param>
+        private static void RemoveAllAuras(uint activator)
+        {
+            if (!_playerAuras.ContainsKey(activator))
+                return;
+
+            var auraDetails = _playerAuras[activator];
+
+            foreach (var aura in auraDetails.Auras)
+            {
+                if (aura.TargetsSelf)
+                {
+                    StatusEffect.Remove(activator, aura.Type);
+                }
+
+                if (aura.TargetsParty)
+                {
+                    foreach (var member in auraDetails.PartyMembersInRange)
+                    {
+                        StatusEffect.Remove(member, aura.Type, false);
+                    }
+                }
+
+                if (aura.TargetsNPCs)
+                {
+                    foreach (var npc in auraDetails.CreaturesInRange)
+                    {
+                        StatusEffect.Remove(npc, aura.Type, false);
+                    }
+                }
+            }
+
+            _playerAuras.Remove(activator);
+        }
+
         private static AreaOfEffect GetAuraAOE(int level)
         {
             switch (level)
@@ -589,7 +627,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             RemoveEffectByTag(player, "AURA_EFFECT");
-            var shoutRangeLevel = Perk.GetEffectivePerkLevel(player, PerkType.ShoutRange);
+            var shoutRangeLevel = Perk.GetPerkLevel(player, PerkType.ShoutRange);
 
             AssignCommand(player, () =>
             {
@@ -608,6 +646,46 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetEnteringObject();
             ReapplyPlayerAuraAOE(player);
+        }
+
+        /// <summary>
+        /// When a player exits the server, remove all of their Aura effects.
+        /// </summary>
+        [NWNEventHandler("mod_exit")]
+        public static void ClearAurasOnExit()
+        {
+            var player = GetExitingObject();
+            RemoveAllAuras(player);
+        }
+
+        /// <summary>
+        /// When a player dies, remove all of their Aura effects.
+        /// </summary>
+        [NWNEventHandler("mod_death")]
+        public static void ClearAurasOnDeath()
+        {
+            var player = GetLastPlayerDied();
+            RemoveAllAuras(player);
+        }
+
+        /// <summary>
+        /// When a player respawns, reapply the aura AOE effect
+        /// </summary>
+        [NWNEventHandler("mod_respawn")]
+        public static void ReapplyAuraOnRespawn()
+        {
+            var player = GetLastRespawnButtonPresser();
+            ReapplyPlayerAuraAOE(player);
+        }
+
+        /// <summary>
+        /// When a player enters space mode, remove all of their Aura effects.
+        /// </summary>
+        [NWNEventHandler("space_enter")]
+        public static void ClearAurasOnSpaceEntry()
+        {
+            var player = OBJECT_SELF;
+            RemoveAllAuras(player);
         }
 
         /// <summary>

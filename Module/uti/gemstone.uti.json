@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "gemstone"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 68
   }
 }

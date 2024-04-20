@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 30
+    "value": 29
   },
   "Cursed": {
     "type": "byte",
@@ -145,5 +145,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "npc_outlaw_pisto"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 204
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

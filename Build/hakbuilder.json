@@ -113,6 +113,11 @@
       "CompileModels": false
     },
     {
+      "Name":  "swlor2_parts",
+      "Path": "../SWLOR_Haks/swlor2_parts/",
+      "CompileModels": false
+    },
+    {
       "Name":  "swlor2_plt",
       "Path": "../SWLOR_Haks/swlor2_plt/",
       "CompileModels": false

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<GuiWindowType, GuiConstructedWindow> _windowTemplates = new();
         private static readonly Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> _playerWindows = new();
-        private static readonly Dictionary<string, Dictionary<string, MethodInfo>> _elementEvents = new();
+        private static readonly Dictionary<string, Dictionary<string, GuiMethodDetail>> _elementEvents = new();
         private static readonly Dictionary<string, GuiWindowType> _windowTypesByKey = new();
         private static readonly Dictionary<Type, List<GuiWindowType>> _windowTypesByRefreshEvent = new();
 
@@ -158,10 +158,10 @@ namespace SWLOR.Game.Server.Service
         /// <param name="elementId">The Id of the element to register.</param>
         /// <param name="eventName">The name of the event.</param>
         /// <param name="eventAction">The action to run when the event is raised.</param>
-        public static void RegisterElementEvent(string elementId, string eventName, MethodInfo eventAction)
+        public static void RegisterElementEvent(string elementId, string eventName, GuiMethodDetail eventAction)
         {
             if (!_elementEvents.ContainsKey(elementId))
-                _elementEvents[elementId] = new Dictionary<string, MethodInfo>();
+                _elementEvents[elementId] = new Dictionary<string, GuiMethodDetail>();
 
             _elementEvents[elementId][eventName] = eventAction;
         }
@@ -232,8 +232,9 @@ namespace SWLOR.Game.Server.Service
             // Note: This section has the possibility of being slow.
             // If it is, look into building the methods and caching them at the time of window creation.
             var methodInfo = eventGroup[eventType];
-            var method = viewModel.GetType().GetMethod(methodInfo.Name);
-            var action = method?.Invoke(playerWindow.ViewModel, null);
+            var method = viewModel.GetType().GetMethod(methodInfo.Method.Name);
+            var args = methodInfo.Arguments.Select(s => s.Value);
+            var action = method?.Invoke(playerWindow.ViewModel, args.ToArray());
             ((Action)action)?.Invoke();
 
             // If the window was closed, save its geometry 

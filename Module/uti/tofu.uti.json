@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "tofu"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 49
   }
 }

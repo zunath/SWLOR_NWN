@@ -74,7 +74,7 @@
         },
         "Cost": {
           "type": "dword",
-          "value": 1
+          "value": 2
         },
         "Cursed": {
           "type": "byte",
@@ -156,6 +156,10 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "nw_it_torch001"
+        },
+        "xModelPart1": {
+          "type": "word",
+          "value": 0
         },
         "XOrientation": {
           "type": "float",

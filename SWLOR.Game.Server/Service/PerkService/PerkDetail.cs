@@ -3,12 +3,12 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
-    public delegate string PerkPurchaseRequirementAction(uint player, PerkType perkType, int effectivePerkLevel);
-    public delegate string PerkRefundRequirementAction(uint player, PerkType perkType, int effectivePerkLevel);
+    public delegate string PerkPurchaseRequirementAction(uint player);
+    public delegate string PerkRefundRequirementAction(uint player);
 
     public delegate void PerkTriggerEquippedAction(uint player, uint item, InventorySlot slot, PerkType perkType, int effectivePerkLevel);
     public delegate void PerkTriggerUnequippedAction(uint player, uint item, InventorySlot slot, PerkType perkType, int effectivePerkLevel);
-    public delegate void PerkTriggerPurchasedRefundedAction(uint player, PerkType perkType, int effectivePerkLevel);
+    public delegate void PerkTriggerPurchasedRefundedAction(uint player);
 
 
     public class PerkDetail

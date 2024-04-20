@@ -26,7 +26,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 125
+    "value": 126
   },
   "Cursed": {
     "type": "byte",
@@ -225,5 +225,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "outlaw_cap"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 5
   }
 }

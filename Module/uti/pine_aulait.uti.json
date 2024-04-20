@@ -200,5 +200,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "pine_aulait"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 17
   }
 }

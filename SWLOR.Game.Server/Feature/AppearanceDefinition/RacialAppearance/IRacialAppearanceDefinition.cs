@@ -2,6 +2,8 @@
 {
     public interface IRacialAppearanceDefinition
     {
+        float MaximumScale { get; }
+        float MinimumScale { get; }
         int[] MaleHeads { get; }
         int[] FemaleHeads { get; }
 

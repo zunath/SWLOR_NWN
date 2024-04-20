@@ -107,5 +107,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "raw_croknor"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 82
   }
 }

@@ -97,5 +97,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "malak_cloak002"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

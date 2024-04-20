@@ -1378,12 +1378,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         ShelvesWarehouseFull = 242,
         [Structure("Bookshelf, Jedi",
-            "swlor_0001",
+            "swlor_0486",
             "",
             true,
             1)]
         BookshelfJedi = 243,
-        [Structure("Metal Wall, Single, Pipes",
+        [Structure("Wooden Wall, Planks (Small)",
             "_mdrn_pl_wwall6t",
             "",
             true,
@@ -1538,6 +1538,23 @@ namespace SWLOR.Game.Server.Service.PropertyService
             0)]
         DroidAssemblyTerminal = 269,
 
+        [Structure("Beast Stable Terminal",
+            "bst_stables_term",
+            "",
+            true,
+            0)]
+        BeastStableTerminal = 270,
+
+        [Structure("Incubator",
+            "incubator",
+            "",
+            true,
+            0, 
+            PropertyType.Lab,
+            PropertyLayoutType.Invalid,
+            true,
+            StructureCategoryType.ResearchDevice)]
+        Incubator = 271,
 
         // Buildings start here (5000+)
         [Structure("City Hall - Style 1",
@@ -1693,6 +1710,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.City,
             PropertyLayoutType.LargeHouseStyle4)]
         LargeHouseStyle4 = 5016,
+
+        [Structure("Lab - Style 1",
+            "lab1",
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.LabStyle1)]
+        LabStyle1 = 5017,
     }
 
     public class StructureAttribute : Attribute
@@ -1705,6 +1731,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public PropertyType RestrictedPropertyTypes { get; set; }
         public PropertyLayoutType LayoutType { get; set; }
         public bool CanBeRetrieved { get; set; }
+        public StructureCategoryType Category { get; set; }
 
         public StructureAttribute(
             string name,
@@ -1721,9 +1748,11 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 PropertyType.MedicalCenter |
                 PropertyType.Starport |
                 PropertyType.Cantina |
-                PropertyType.House,
+                PropertyType.House |
+                PropertyType.Lab,
             PropertyLayoutType layoutType = PropertyLayoutType.Invalid,
-            bool canBeRetrieved = true)
+            bool canBeRetrieved = true,
+            StructureCategoryType category = StructureCategoryType.Structure)
         {
             Name = name;
             Resref = resref;
@@ -1733,6 +1762,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             RestrictedPropertyTypes = restrictedPropertyTypes;
             LayoutType = layoutType;
             CanBeRetrieved = canBeRetrieved;
+            Category = category;
         }
     }
 }

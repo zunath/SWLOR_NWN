@@ -235,5 +235,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "for_belt"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 137
   }
 }

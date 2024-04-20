@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sliced_sardine"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 178
   }
 }

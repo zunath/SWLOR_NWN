@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2344
+    "value": 2343
   },
   "Cursed": {
     "type": "byte",
@@ -177,5 +177,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "electroblade_5"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 124
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 221
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 193
   }
 }

@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "steamed_catfish"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 14
   }
 }

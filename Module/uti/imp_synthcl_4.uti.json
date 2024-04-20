@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "imp_synthcl_4"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 78
   }
 }

@@ -167,5 +167,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "engi_belt_5"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 56
   }
 }

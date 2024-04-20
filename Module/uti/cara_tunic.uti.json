@@ -1,0 +1,472 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 2999
+  },
+  "ArmorPart_Belt": {
+    "type": "byte",
+    "value": 100
+  },
+  "ArmorPart_LBicep": {
+    "type": "byte",
+    "value": 133
+  },
+  "ArmorPart_LFArm": {
+    "type": "byte",
+    "value": 221
+  },
+  "ArmorPart_LFoot": {
+    "type": "byte",
+    "value": 186
+  },
+  "ArmorPart_LHand": {
+    "type": "byte",
+    "value": 246
+  },
+  "ArmorPart_LShin": {
+    "type": "byte",
+    "value": 7
+  },
+  "ArmorPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_LThigh": {
+    "type": "byte",
+    "value": 94
+  },
+  "ArmorPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_Pelvis": {
+    "type": "byte",
+    "value": 122
+  },
+  "ArmorPart_RBicep": {
+    "type": "byte",
+    "value": 133
+  },
+  "ArmorPart_RFArm": {
+    "type": "byte",
+    "value": 221
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 186
+  },
+  "ArmorPart_RHand": {
+    "type": "byte",
+    "value": 246
+  },
+  "ArmorPart_Robe": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RShin": {
+    "type": "byte",
+    "value": 7
+  },
+  "ArmorPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RThigh": {
+    "type": "byte",
+    "value": 94
+  },
+  "ArmorPart_Torso": {
+    "type": "byte",
+    "value": 32
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 16
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 44
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 44
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": "1"
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 3000
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "The elites and chieftains amongst the Byysks would harvest molted or fallen carapaces from matured slugs and fashion them into thick and sturdy armor which often prove surprisingly resistant to acid and poison."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 19
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 22
+  },
+  "LocalizedName": {
+    "id": 12843,
+    "type": "cexolocstring",
+    "value": {
+      "0": "Carapace Tunic"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 110
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 110
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 8
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 14
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 14
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 30
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 4
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 37
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 45
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 90
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 36
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 10
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 92
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 4
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 120
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 33
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 5
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 100
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 111
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "cara_tunic"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "cara_tunic"
+  },
+  "xArmorPart_Belt": {
+    "type": "word",
+    "value": 100
+  },
+  "xArmorPart_LBice": {
+    "type": "word",
+    "value": 133
+  },
+  "xArmorPart_LFArm": {
+    "type": "word",
+    "value": 221
+  },
+  "xArmorPart_LFoot": {
+    "type": "word",
+    "value": 186
+  },
+  "xArmorPart_LHand": {
+    "type": "word",
+    "value": 246
+  },
+  "xArmorPart_LShin": {
+    "type": "word",
+    "value": 7
+  },
+  "xArmorPart_LShou": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_LThig": {
+    "type": "word",
+    "value": 94
+  },
+  "xArmorPart_Neck": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_Pelvi": {
+    "type": "word",
+    "value": 122
+  },
+  "xArmorPart_RBice": {
+    "type": "word",
+    "value": 133
+  },
+  "xArmorPart_RFArm": {
+    "type": "word",
+    "value": 221
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 186
+  },
+  "xArmorPart_RHand": {
+    "type": "word",
+    "value": 246
+  },
+  "xArmorPart_Robe": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RShin": {
+    "type": "word",
+    "value": 7
+  },
+  "xArmorPart_RShou": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RThig": {
+    "type": "word",
+    "value": 94
+  },
+  "xArmorPart_Torso": {
+    "type": "word",
+    "value": 32
+  }
+}

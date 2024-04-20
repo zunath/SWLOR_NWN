@@ -109,5 +109,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "id_skewer3"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 224
   }
 }

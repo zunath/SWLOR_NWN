@@ -107,5 +107,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "mora_serpent_bit"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

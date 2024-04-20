@@ -122,7 +122,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         DroidInstruction = 56,
         [RecipeCategory("Pet Food", true)]
         PetFood = 57,
-
+        [RecipeCategory("Tool", true)]
+        Tool = 58,
     }
 
     public class RecipeCategoryAttribute : Attribute

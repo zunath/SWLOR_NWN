@@ -4,7 +4,7 @@
     {
         Invalid = -1,
         Gui = 1,
-        TIle = 2,
+        Tile = 2,
         Module = 3,
         Area = 4,
         Creature = 5,

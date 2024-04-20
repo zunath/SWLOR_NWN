@@ -9,6 +9,7 @@ using NReJSON;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.DBService;
 
 namespace SWLOR.Game.Server.Service
@@ -44,6 +45,7 @@ namespace SWLOR.Game.Server.Service
         public static void Load()
         {
             _appSettings = ApplicationSettings.Get();
+
             var options = new ConfigurationOptions
             {
                 AbortOnConnectFail = false,
@@ -51,6 +53,15 @@ namespace SWLOR.Game.Server.Service
             };
 
             _multiplexer = ConnectionMultiplexer.Connect(options);
+
+            Console.WriteLine($"Waiting for database connection. If this takes longer than 10 minutes, there's a problem.");
+            while (!_multiplexer.IsConnected)
+            {
+                // Spin
+                Thread.Sleep(100);
+            }
+            Console.WriteLine($"Database connection established.");
+
             LoadEntities();
 
             // Runs at the end of every main loop. Clears out all data retrieved during this cycle.
@@ -58,13 +69,6 @@ namespace SWLOR.Game.Server.Service
             {
                 _cachedEntities.Clear();
             };
-
-            // This is a hack to ensure the background process of index scanning completes before we kick off
-            // the rest of the server initialization process.
-            // If we don't wait long enough, DB searches won't retrieve any data. If you have a better solution 
-            // please submit a fix, thanks!
-            Console.WriteLine($"Waiting ten seconds for background index scanning to complete.");
-            Thread.Sleep(10000);
 
             // CLI tools also use this class and don't have access to the NWN context.
             // Perform an environment variable check to ensure we're in the game server context before executing the event.
@@ -88,9 +92,17 @@ namespace SWLOR.Game.Server.Service
                 _multiplexer.GetDatabase().Execute("FT.DROPINDEX", type.Name);
                 Console.WriteLine($"Dropped index for {type}");
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine($"Index does not exist for type {type}");
+                if (ex.Message.Contains("Unknown Index name", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Console.WriteLine($"Index does not exist for type {type}.");
+                }
+                else
+                {
+                    Console.WriteLine($"Issue dropping index for type {type}. Exception: {ex.ToMessageAndCompleteStacktrace()}");
+                }
+
             }
 
             // Build the schema based on the IndexedAttribute associated to properties.
@@ -124,12 +136,34 @@ namespace SWLOR.Game.Server.Service
             // Cache the indexed properties for quick look-up later.
             _indexedPropertiesByName[type] = indexedProperties;
 
-            // Create the index.
-            if (schema.Fields.Count > 0)
+            _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
+            Console.WriteLine($"Created index for {type}");
+            WaitForReindexing(type);
+        }
+
+        private static void WaitForReindexing(Type type)
+        {
+            string indexing;
+
+            Console.WriteLine($"Waiting for Redis to complete indexing of: {type}");
+            do
             {
-                _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
-                Console.WriteLine($"Created index for {type}");
-            }
+                Thread.Sleep(100);
+
+                try
+                {
+                    // If there is a lot of data or the machine is slow, this command can time out.
+                    // Ignore when this happens and retry the command in 100ms.
+                    var info = _searchClientsByType[type].GetInfo();
+                    indexing = info["percent_indexed"];
+                }
+                catch (Exception ex)
+                {
+                    indexing = "0";
+                    Console.WriteLine($"Error during indexing: {ex.ToMessageAndCompleteStacktrace()}");
+                }
+
+            } while (indexing != "1");
         }
 
         /// <summary>
@@ -223,7 +257,10 @@ namespace SWLOR.Game.Server.Service
                 if (string.IsNullOrWhiteSpace(data))
                     return default;
 
-                return JsonConvert.DeserializeObject<T>(data);
+                var entity = JsonConvert.DeserializeObject<T>(data);
+                _cachedEntities[id] = entity;
+
+                return entity;
             }
         }
 

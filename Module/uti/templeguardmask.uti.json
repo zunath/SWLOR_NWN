@@ -194,5 +194,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "templeguardmask"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 30
   }
 }

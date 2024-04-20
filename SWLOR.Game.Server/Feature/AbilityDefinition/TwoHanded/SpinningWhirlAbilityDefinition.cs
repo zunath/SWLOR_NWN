@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), dTarget));
 
                     CombatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
-                    Enmity.ModifyEnmity(activator, creature, 250 * level + damage);
+                    Enmity.ModifyEnmity(activator, creature, 100 * level + damage);
                     count++;
                 }
                 creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Large, GetLocation(activator), true, ObjectType.Creature);

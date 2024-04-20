@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
@@ -15,10 +14,8 @@ using SWLOR.Game.Server.Service.LogService;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
-using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using ObjectType = NWN.Native.API.ObjectType;
 using RacialType = SWLOR.Game.Server.Core.NWScript.Enum.RacialType;
-using Random = SWLOR.Game.Server.Service.Random;
 using DamageType = NWN.Native.API.DamageType;
 
 namespace SWLOR.Game.Server.Native
@@ -33,17 +30,25 @@ namespace SWLOR.Game.Server.Native
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, void*, int, int, int, int, int, int> pHook = &OnGetDamageRoll;
-            var hookPtr = VM.RequestHook(new IntPtr(FunctionsLinux._ZN17CNWSCreatureStats13GetDamageRollEP10CNWSObjectiiiii), (IntPtr)pHook, -1000000);
+            var hookPtr = VM.RequestHook(NativeLibrary.GetExport(
+                NativeLibrary.GetMainProgramHandle(), "_ZN17CNWSCreatureStats13GetDamageRollEP10CNWSObjectiiiii"),
+                (IntPtr)pHook, -1000000);
+                
             _callOriginal = Marshal.GetDelegateForFunctionPointer<GetDamageRollHook>(hookPtr);
         }
 
         [UnmanagedCallersOnly]
         private static int OnGetDamageRoll(void* thisPtr, void* pTarget, int bOffHand, int bCritical, int bSneakAttack, int bDeathAttack, int bForceMax)
         {
-            ProfilerPlugin.PushPerfScope($"NATIVE:{nameof(OnGetDamageRoll)}", "RunScript", "Script");
-
             var attackerStats = CNWSCreatureStats.FromPointer(thisPtr);
             var attacker = CNWSCreature.FromPointer(attackerStats.m_pBaseCreature);
+
+            var area = attacker.GetArea();
+            ProfilerPlugin.PushPerfScope("RunScript",
+                "Script", $"NATIVE:{nameof(OnGetDamageRoll)}",
+                "Area", area.m_sTag.ToString(),
+                "ObjectType", "Creature");
+
             var targetObject = CNWSObject.FromPointer(pTarget);
             var damageFlags = attackerStats.m_pBaseCreature.GetDamageFlags();
             var pCombatRound = attacker.m_pcCombatRound;
@@ -250,8 +255,8 @@ namespace SWLOR.Game.Server.Native
                     if (damageType == CombatDamageType.Physical)
                     {
                         damage = target.DoDamageImmunity(attacker, damage, damageFlags, 0, 1);
-                        damage = target.DoDamageResistance(attacker, damage, damageFlags, 0, 1, 1);
-                        damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1);
+                        damage = target.DoDamageResistance(attacker, damage, damageFlags, 0, 1, 1, attackType  == (uint)AttackType.Ranged ? 1 : 0);
+                        damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1, attackType == (uint)AttackType.Ranged ? 1 : 0);
                     }
                 }
                 else if (targetObject.m_nObjectType == (int)ObjectType.Placeable)

@@ -136,5 +136,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sanddemonhide001"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

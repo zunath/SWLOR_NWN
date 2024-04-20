@@ -107,5 +107,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "shyrack_claw"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

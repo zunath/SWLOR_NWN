@@ -277,6 +277,24 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
+
+            // Bol Rifle
+            _builder.Create(RecipeType.BolRifle, SkillType.Smithery)
+                .Category(RecipeCategoryType.Rifle)
+                .Resref("bol_rifle")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.RangedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .Component("ref_arkoxit", 2)
+                .Component("ref_jasioclase", 10)
+                .Component("elec_high", 20)
+                .Component("bol_leather", 2)
+                .Component("ref_veldite", 5)
+                .Component("ref_scordspar", 5)
+                .Component("ref_plagionite", 5)
+                .Component("ref_keromber", 5);
         }
     }
 }

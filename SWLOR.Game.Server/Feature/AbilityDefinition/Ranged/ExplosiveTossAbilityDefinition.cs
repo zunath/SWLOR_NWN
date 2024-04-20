@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Ranged);
-            var attackerStat = GetAbilityScore(activator, AbilityType.Might);
+            var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
             var count = 0;
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count < 3)

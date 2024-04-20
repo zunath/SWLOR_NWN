@@ -235,5 +235,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "reg_necklace"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 46
   }
 }

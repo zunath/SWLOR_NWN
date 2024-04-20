@@ -85,5 +85,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "tambourine"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 111
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

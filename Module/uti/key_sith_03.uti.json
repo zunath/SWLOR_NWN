@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "key_sith_03"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 240
   }
 }

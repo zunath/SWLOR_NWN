@@ -142,5 +142,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "frontier_ring"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 31
   }
 }

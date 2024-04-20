@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 36
+    "value": 35
   },
   "Cursed": {
     "type": "byte",
@@ -178,5 +178,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "rifle_enforcer"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 64
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

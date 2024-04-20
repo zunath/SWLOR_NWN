@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service.DroidService
         public string SerializedArms { get; set; }
         public string SerializedLegs { get; set; }
         public int PortraitId { get; set; }
+        public int SoundSetId { get; set; }
         public Dictionary<CreaturePart, int> AppearanceParts { get; set; }
         public List<DroidPerk> LearnedPerks { get; set; }
         public List<DroidPerk> ActivePerks { get; set; }
@@ -28,6 +29,7 @@ namespace SWLOR.Game.Server.Service.DroidService
             SerializedArms = string.Empty;
             SerializedLegs = string.Empty;
             PortraitId = -1;
+            SoundSetId = -1;
             AppearanceParts = new Dictionary<CreaturePart, int>();
             LearnedPerks = new List<DroidPerk>();
             ActivePerks = new List<DroidPerk>();

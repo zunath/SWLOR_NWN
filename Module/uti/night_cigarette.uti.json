@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 500
+    "value": 499
   },
   "Cursed": {
     "type": "byte",
@@ -77,5 +77,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "night_cigarette"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

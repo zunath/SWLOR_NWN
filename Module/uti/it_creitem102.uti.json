@@ -76,5 +76,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "it_creitem102"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

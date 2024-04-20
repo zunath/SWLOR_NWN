@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var user = GetLastUsedBy();
 
-            if (GetIsInCombat(user))
+            if (GetIsInCombat(user) || Enmity.HasEnmity(user))
             {
                 SendMessageToPC(user, "You are in combat.");
                 return;
@@ -56,12 +56,18 @@ namespace SWLOR.Game.Server.Feature
 
             if (!GetIsObjectValid(waypoint))
             {
-                SendMessageToPC(user, "Cannot locate waypoint. Inform an admin this teleporter is broken.");
-                return;
+                waypoint = GetObjectByTag(destination);
+
+                if (!GetIsObjectValid(waypoint))
+                {
+                    SendMessageToPC(user, "Cannot locate waypoint. Inform an admin this teleporter is broken.");
+                    return;
+                }
             }
 
             var location = GetLocation(waypoint);
             AssignCommand(user, () => JumpToLocation(location));
+            AssignCommand(user, () => SetFacing(GetFacing(waypoint)));
 
             var henchman = GetAssociate(AssociateType.Henchman, user);
             if (GetIsObjectValid(henchman))

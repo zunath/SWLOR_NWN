@@ -386,5 +386,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "b_hoptoad"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 15
   }
 }

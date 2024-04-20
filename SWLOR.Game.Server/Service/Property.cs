@@ -235,6 +235,16 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.EditCategories,
             };
+
+            _permissionsByPropertyType[PropertyType.Lab] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.EnterProperty,
+                PropertyPermissionType.ManageIncubators
+            };
         }
 
         /// <summary>
@@ -698,7 +708,7 @@ namespace SWLOR.Game.Server.Service
             var currentLevel = city.Upgrades[PropertyUpgradeType.CityLevel];
             var mayorLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
                 ? mayor.Perks[PerkType.CityManagement] + 1
-                : 0;
+                : 1;
             
             // Mayor's perk level has fallen below the city level.
             if (mayorLevel < currentLevel)
@@ -831,7 +841,7 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Property, $"Finished processing citizenship fees for '{city.CustomName}' ({city.Id})");
         }
 
-        private static void DeleteProperty(WorldProperty property)
+        public static void DeleteProperty(WorldProperty property)
         {
             // Recursively clear any children properties tied to this property.
             foreach (var (childType, propertyIds) in property.ChildPropertyIds)
@@ -925,6 +935,9 @@ namespace SWLOR.Game.Server.Service
             // Finally delete the entire property.
             DB.Delete<WorldProperty>(property.Id);
             Log.Write(LogGroup.Property, $"Property '{property.CustomName}' deleted.");
+
+            EventsPlugin.PushEventData("PROPERTY_ID", property.Id);
+            EventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
         }
 
         /// <summary>
@@ -1074,10 +1087,18 @@ namespace SWLOR.Game.Server.Service
                 else
                 {
                     var parent = DB.Get<WorldProperty>(property.ParentPropertyId);
-                    var areaResref = parent.ParentPropertyId;
-                    var area = Area.GetAreaByResref(areaResref);
 
-                    SpawnIntoWorld(property, area);
+                    if (parent == null)
+                    {
+                        Log.Write(LogGroup.Error, $"Error loading property '{property.Id}'. Its parent object '{property.ParentPropertyId}' does not exist in database.");
+                    }
+                    else
+                    {
+                        var areaResref = parent.ParentPropertyId;
+                        var area = Area.GetAreaByResref(areaResref);
+
+                        SpawnIntoWorld(property, area);
+                    }
                 }
             }
 
@@ -1970,9 +1991,33 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType == PropertyLayoutType.Invalid);
-                structureLimit = layout.StructureLimit;
-                fixtureName = "Structure";
+                if (structureDetail.Category == StructureCategoryType.Structure)
+                {
+                    structureCount = structures.Count(x =>
+                    {
+                        var structureByType = GetStructureByType(x.StructureType);
+                        return structureByType.LayoutType == PropertyLayoutType.Invalid &&
+                               structureByType.Category == StructureCategoryType.Structure;
+                    });
+                    structureLimit = layout.StructureLimit;
+                    fixtureName = "Structure";
+                }
+                else if (structureDetail.Category == StructureCategoryType.ResearchDevice)
+                {
+                    structureCount = structures.Count(x =>
+                    {
+                        var structureByType = GetStructureByType(x.StructureType);
+                        return structureByType.LayoutType == PropertyLayoutType.Invalid &&
+                               structureByType.Category == StructureCategoryType.ResearchDevice;
+                    });
+                    structureLimit = layout.ResearchDeviceLimit;
+                    fixtureName = "Research Device";
+                }
+                else
+                {
+                    FloatingTextStringOnCreature($"Unable to place structure in this property. Notify an admin.", player, false);
+                    return;
+                }
             }
 
             // Over the structure limit.
@@ -2282,7 +2327,7 @@ namespace SWLOR.Game.Server.Service
             if (buildingCount <= 0)
                 return 0;
 
-            return effectiveLevel - 1;
+            return effectiveLevel;
         }
     }
 }

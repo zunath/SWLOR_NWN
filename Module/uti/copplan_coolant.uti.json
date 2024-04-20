@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "copplan_coolant"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 3
   }
 }

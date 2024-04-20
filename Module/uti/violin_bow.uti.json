@@ -85,5 +85,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "violin_bow"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 161
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

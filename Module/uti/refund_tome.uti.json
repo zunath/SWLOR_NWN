@@ -140,5 +140,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "refund_tome"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 244
   }
 }

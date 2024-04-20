@@ -262,5 +262,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "d_ar_vwa4"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 37
   }
 }

@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 188
+    "value": 187
   },
   "Cursed": {
     "type": "byte",
@@ -145,5 +145,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "del_staff"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

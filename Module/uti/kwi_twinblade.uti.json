@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2344
+    "value": 2343
   },
   "Cursed": {
     "type": "byte",
@@ -145,5 +145,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "kwi_twinblade"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 33
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 12
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 22
   }
 }

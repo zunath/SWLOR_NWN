@@ -225,5 +225,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "kwi_heavy_helm"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 121
   }
 }

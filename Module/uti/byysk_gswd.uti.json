@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 375
+    "value": 376
   },
   "Cursed": {
     "type": "byte",
@@ -147,5 +147,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "byysk_gswd"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 71
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 53
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 15
   }
 }

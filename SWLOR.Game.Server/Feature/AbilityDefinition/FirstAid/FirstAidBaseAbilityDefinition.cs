@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (!GetIsPC(activator))
                 return;
 
-            var chanceToNotConsume = 10 * Perk.GetEffectivePerkLevel(activator, PerkType.FrugalMedic);
+            var chanceToNotConsume = 10 * Perk.GetPerkLevel(activator, PerkType.FrugalMedic);
             if (Random.D100(1) <= chanceToNotConsume)
                 return;
 
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         protected bool IsWithinRange(uint activator, uint target)
         {
             const float BaseDistance = 6f;
-            var distance = BaseDistance + Perk.GetEffectivePerkLevel(activator, PerkType.RangedHealing);
+            var distance = BaseDistance + Perk.GetPerkLevel(activator, PerkType.RangedHealing);
 
             return !(GetDistanceBetween(activator, target) > distance);
         }

@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "meatball"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 12
   }
 }

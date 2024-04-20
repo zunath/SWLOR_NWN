@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -457,5 +457,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "zomb_telgun"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 31
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 254
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

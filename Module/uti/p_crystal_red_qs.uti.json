@@ -233,5 +233,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "p_crystal_red_qs"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 214
   }
 }

@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Run all of the triggers related to refunding this perk.
                     foreach (var action in perkDetail.RefundedTriggers)
                     {
-                        action(Player, type, 0);
+                        action(Player);
                     }
                 }
 

@@ -107,5 +107,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vellenking_0001"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

@@ -204,5 +204,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ar_ring"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 92
   }
 }

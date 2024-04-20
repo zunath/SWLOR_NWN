@@ -901,17 +901,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Jolee's Robes"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "pil_joleerobes"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Linen Belt"
                     },
                     "RESREF": {
@@ -2237,6 +2226,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Carapace Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cara_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Carapace Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cara_robes"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Carapace Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cara_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Chaos Breastplate"
                     },
                     "RESREF": {
@@ -2941,6 +2963,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tribal Protection"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_heavy_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Valor Tunic"
                     },
                     "RESREF": {
@@ -3193,6 +3226,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "byysk_helmet"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Carapace Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cara_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Carapace Headdress"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cara_headdress"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Carapace Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cara_helmet"
                     }
                   },
                   {
@@ -6246,6 +6312,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bol Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bolbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Card Bulette Bite"
                     },
                     "RESREF": {
@@ -6290,6 +6367,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Gizka Lick"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gizkalick"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hive Kinrath Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hivekinrathbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Iriaz Kick"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "iriazkick"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Purbole Bite"
                     },
                     "RESREF": {
@@ -6301,11 +6411,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Qion Hive Broodmother"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vhivebroodmother"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive Tunneler Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qiontunnelerbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Qion Tiger Bite"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "hu_qutig_bite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Queen Kinrath Stab"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "queenkinrathstab"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rancor Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathbiterancor"
                     }
                   },
                   {
@@ -6433,6 +6587,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Thune Leader Stomp"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thuneleaderstomp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thune Stompz"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thunestompz"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Vellen Raptor Bite"
                     },
                     "RESREF": {
@@ -6449,6 +6625,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "viperbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Voritor Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "voritorbite"
                     }
                   },
                   {
@@ -6641,6 +6828,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "droidclaw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive Bug Swarm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_hivebugs001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive Slug Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qionhiveslugatt"
                     }
                   },
                   {
@@ -7460,6 +7669,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Byysk Guardian Shield"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "byysk_shield002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Autoblaster"
                     },
                     "RESREF": {
@@ -7476,6 +7696,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vkorrdunautobolt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Chieftain Sword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vbyyskchiefsw001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Guardian Sword"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vbyyskguardsword"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dark Adept's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdathsaberstaff"
                     }
                   },
                   {
@@ -7526,6 +7779,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Peerless Bounty Hunter Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcrbountyhunt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Peerless Bounty Hunter's Vibroknife"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcmbhunter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Prototype Pyroform Rifle"
                     },
                     "RESREF": {
@@ -7553,6 +7828,72 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vkorrdun4melee"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Brusier Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakebruisemel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Captain's Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakecaprifle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Flamer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakeburnerran"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Flamer Fuel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakeflamerfue"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Repeater"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakegungungun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Shiv"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakegruntmele"
                     }
                   }
                 ]
@@ -7591,6 +7932,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "aradile_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bol Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bolskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Guardian Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hu_byyskgua_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Shaman Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hu_byyskshaman01"
                     }
                   },
                   {
@@ -7773,6 +8147,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantari Hunter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dantarihunter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantari Shaman"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dantarishman"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dark Lord Skin"
                     },
                     "RESREF": {
@@ -7839,6 +8235,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Gizka Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gizkaskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hive Kinrath Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hivekinrathskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hologram Regenerating Hide"
                     },
                     "RESREF": {
@@ -7855,6 +8273,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vkorrdunhvyskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Iriaz Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "iriazskin"
                     }
                   },
                   {
@@ -8169,11 +8598,66 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Plains Thune Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "plainsthuneskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Purbole Skin"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "purbole_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Bug Swarm Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_bugswarmhi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive Broodmother Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vbroodmother_001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive Slug Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_hiveslug"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Qion Hive Tunneler Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qiontunnel001"
                     }
                   },
                   {
@@ -8207,6 +8691,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "qionbeastskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Queen Kinrath Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "queenkinrathskin"
                     }
                   },
                   {
@@ -8774,11 +9269,88 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Thune Leader Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thuneleaderskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tuk'ata Skin"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "pelko_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Bruiser Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtundrakebruises"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Burner Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtundrakeburners"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Captain Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtundrakecapts"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Crimeboss Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtundrakebossskn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Grunt Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtundrakegrunts"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Gunner Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtundrakegunskin"
                     }
                   },
                   {
@@ -8895,6 +9467,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Voritor Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "voritorskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Warocas Skin"
                     },
                     "RESREF": {
@@ -8971,6 +9554,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vnpcjediweapm001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dark Adept Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcadarkadept"
                     }
                   },
                   {
@@ -9092,6 +9686,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dmnpckoyeecloak"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Peerless Bounty Hunter Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpcabountyhunt"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Peerless Bounty Hunter Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vnpchbhunter"
                     }
                   },
                   {
@@ -9499,6 +10115,83 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "it_crewpb003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Bruiser Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakebruisea"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Bruiser Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakebruisehel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Burner Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakeburnarm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Captain Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakecaparmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Crimeboss Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakebossarmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Grunt Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakegruntarm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunnel Drake Gunner Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vtdrakegunnerarm"
                     }
                   }
                 ]
@@ -10904,6 +11597,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Incubator"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0271"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Instrument Panel, Large Monitor (Technical Data)"
               },
               "RESREF": {
@@ -10953,6 +11657,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0169"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Lab - Style 1"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5017"
               }
             },
             {
@@ -13481,6 +14196,39 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Carapace Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cara_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carapace Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cara_leggings"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carapace Shoes"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cara_shoes"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Chaos Leggings"
                           },
                           "RESREF": {
@@ -14020,6 +14768,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Kinrath Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dan_kin_leggings"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Kwi Heavy Leggings"
                           },
                           "RESREF": {
@@ -14283,6 +15042,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "byysk_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carapace Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cara_bracer"
                           }
                         },
                         {
@@ -14871,6 +15641,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "dacl005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dantari Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dan_h_cloak"
                           }
                         },
                         {
@@ -15608,11 +16389,44 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Carapace Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cara_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carapace Wraps"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cara_wraps"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Combat Gloves"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "com_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dantari Hyper Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dan_hyper_gloves"
                           }
                         },
                         {
@@ -17886,6 +18700,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Beast DNA"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beast_dna"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Beast Egg"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beast_egg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Beetle Chitin"
                     },
                     "RESREF": {
@@ -18315,6 +19151,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bol Leather"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bol_leather"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Boncexdryn"
                     },
                     "RESREF": {
@@ -18584,6 +19431,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "carnuinch"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Carrot"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "carrot"
                     }
                   },
                   {
@@ -20179,6 +21037,380 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "distilled_water"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA Extractor I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA Extractor II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA Extractor III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA Extractor IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA Extractor V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Aradile"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Crystal Spider"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Gimpassa"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Jungle Bug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Kath Hound"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: K'lor'slug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Microtench"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0007"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Moraband Serpent"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0008"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Octotench"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0009"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Purbole"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0010"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Qion Slug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0011"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Qion Tiger"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0012"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Raivor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0013"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Sand Beetle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0014"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Sand Demon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0015"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Sandswimmer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0016"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Scorchellus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0017"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Shear Mite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0018"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Shyrack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0019"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Sprantal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0020"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Squellbug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0021"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Ssurian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0022"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Valley Cairnmog"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0023"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Valley Cairnmog Alpha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0024"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Valley Nashtah"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0025"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Viper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0026"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Warocas"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0027"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Wildwoods Kinrath"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0028"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Womprat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0029"
                     }
                   },
                   {
@@ -25487,6 +26719,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hydrolase Enzyme - Blue"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_blue"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hydrolase Enzyme - Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_orange"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hydrolase Enzyme - Purple"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_purple"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hydrolase Enzyme - Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_red"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hydrolase Enzyme - White"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_white"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hyperdrive"
                     },
                     "RESREF": {
@@ -28204,6 +29491,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Isomerase Enzyme - Blue"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_blue"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Isomerase Enzyme - Green"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_green"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Isomerase Enzyme - Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_orange"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Isomerase Enzyme - Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_red"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Isomerase Enzyme - Yellow"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_yellow"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Istavrit"
                     },
                     "RESREF": {
@@ -29425,6 +30767,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Lyase Enzyme - Black"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_black"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lyase Enzyme - Blue"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_blue"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lyase Enzyme - Green"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_green"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lyase Enzyme - Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_orange"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lyase Enzyme - Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_red"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mackerel"
                     },
                     "RESREF": {
@@ -29887,6 +31284,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Milk"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "milk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Moat Carp"
                     },
                     "RESREF": {
@@ -29969,6 +31377,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "men_mod5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Module Enhancement - Module Bonus X"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "men_mod10"
                     }
                   },
                   {
@@ -33759,6 +35178,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Thune Blood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thune_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thune Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thune_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Tiger Blood"
                     },
                     "RESREF": {
@@ -34446,6 +35887,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "waro_feathers"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Accuracy I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_acc1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Accuracy II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_acc2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Accuracy III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_acc3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Accuracy IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_acc4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Enhancement - Accuracy V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wen_acc5"
                     }
                   },
                   {
@@ -35667,6 +37163,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "yorchete"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Yot Beans"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yot_bean"
                     }
                   },
                   {
@@ -38438,6 +39945,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantooine Carrotcake"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_carrotcake"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Flapjacks"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_flapjack"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dath Herb Soup"
                     },
                     "RESREF": {
@@ -38999,6 +40528,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Krafter's Kebab"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "krafters_kebab"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Large Bag"
                     },
                     "RESREF": {
@@ -39147,6 +40687,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "moncal_hsoup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Munch Fungus Bread"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "munch_fungusb"
                     }
                   },
                   {
@@ -40307,6 +41858,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Bol Rifle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_bolrifle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Chaos Belt"
                     },
                     "RESREF": {
@@ -41346,6 +42908,105 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "map_023"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Abandon Warehouse"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_077"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Canyon River"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_078"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Crystal Cave"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_076"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Forsaken Jungles"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_074"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Kinrath Caves Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_072"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Lake Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_71"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - Mountain Jungle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_075"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine - South Plains"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_073"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Orbit Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_70"
                     }
                   },
                   {
@@ -43090,6 +44751,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Recipe: Dantooine Carrotcake"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_dancarrot"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Dantooine Flapjacks"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_danflap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Recipe: Dorado Sushi"
                     },
                     "RESREF": {
@@ -43106,6 +44789,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_iksushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Recipe: Krafter's Kebab"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_krafters"
                     }
                   },
                   {
@@ -45137,6 +46831,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantooine Jedi Knight ID Codes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_jedi_003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "HoloNet News Employee Key"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_hnn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Hive Key - Chieftain's Chamber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_shamankey"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Hive Key - Outer Hive"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_chieftainke"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Qion Hive Key - Shaman's Chamber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "qion_championkey"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Jedi Knight ID Codes"
                     },
                     "RESREF": {
@@ -45296,6 +47045,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "key_sith_03"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Smuggler Access Keycode"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_smuggler01"
                     }
                   }
                 ]
@@ -46680,6 +48440,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Training Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "t_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Vreego's Shiv"
                           },
                           "RESREF": {
@@ -46998,6 +48769,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "tit_greatsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Training Great Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "t_greatsword"
                           }
                         }
                       ]
@@ -47581,6 +49363,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Training Electroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "t_electroblade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Training Longsword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "t_longsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Training Saber I"
                           },
                           "RESREF": {
@@ -47932,6 +49736,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "tit_katar"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Training Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "t_katar"
                           }
                         }
                       ]
@@ -48885,6 +50700,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Training Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Twin Electroblade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t_twin_elec"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Twin Electroblade I"
                     },
                     "RESREF": {
@@ -49802,11 +51650,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Byysk Shaman's Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vdhutbyyskshaman"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Elk's Antler"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "elkspear001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Janta Shaman Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "danshamspear"
                     }
                   },
                   {
@@ -49917,6 +51787,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "clanlsupolearm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantari Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_spear"
                     }
                   },
                   {
@@ -50104,6 +51985,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tit_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t_spear"
                     }
                   },
                   {
@@ -50735,6 +52627,17 @@
                             "type": "resref",
                             "value": "tit_pistol"
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Training Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "t_pistol"
+                          }
                         }
                       ]
                     },
@@ -50805,6 +52708,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "b_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bol Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bol_rifle"
                           }
                         },
                         {
@@ -51058,6 +52972,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "tit_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Training Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "t_rifle"
                           }
                         }
                       ]
@@ -51356,6 +53281,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tit_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Training Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tribal Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_shuriken"
                     }
                   }
                 ]

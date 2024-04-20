@@ -83,5 +83,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "umbrella_yel"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 21
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

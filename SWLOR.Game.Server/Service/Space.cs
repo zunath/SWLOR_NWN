@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_spaceObjects.Count} space objects.");
 
             Scheduler.ScheduleRepeating(ProcessSpaceNPCAI, TimeSpan.FromSeconds(1));
-            Scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1));
+            Scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(100d));
         }
 
         [NWNEventHandler("mod_enter")]
@@ -387,7 +387,7 @@ namespace SWLOR.Game.Server.Service
             // Targeted the same object - remove it.
             if (currentTarget == target)
             {
-                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Cancel, position);
+                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Cancel, 1f, position, Vector3.Zero, Vector3.Zero);
                 ClearCurrentTarget(player);
             }
             // Targeted something new. Remove existing target and pick the new one.
@@ -395,7 +395,7 @@ namespace SWLOR.Game.Server.Service
             {
                 ClearCurrentTarget(player);
                 SetCurrentTarget(player, target);
-                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Select, position);
+                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Select, 1f, position, Vector3.Zero, Vector3.Zero);
             }
         }
 
@@ -1069,7 +1069,7 @@ namespace SWLOR.Game.Server.Service
             var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(activator, activatorShipStatus, shipModule.ModuleBonus) ?? 0;
 
             // Perk bonuses
-            var capacitorReduction = 1.0f - Perk.GetEffectivePerkLevel(activator, PerkType.EnergyManagement) * 0.2f;
+            var capacitorReduction = 1.0f - Perk.GetPerkLevel(activator, PerkType.EnergyManagement) * 0.2f;
             requiredCapacitor = (int)(requiredCapacitor * capacitorReduction);
 
             if (activatorShipStatus.Capacitor < requiredCapacitor)

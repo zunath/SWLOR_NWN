@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 125
+    "value": 126
   },
   "Cursed": {
     "type": "byte",
@@ -178,5 +178,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "mando_staff"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 13
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 12
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 12
   }
 }

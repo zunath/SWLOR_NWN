@@ -105,5 +105,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vdathbiteturtle"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

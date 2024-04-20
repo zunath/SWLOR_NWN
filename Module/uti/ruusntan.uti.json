@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ruusntan"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 5
   }
 }

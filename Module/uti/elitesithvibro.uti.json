@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -211,5 +211,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "elitesithvibro"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 29
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 39
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 39
   }
 }

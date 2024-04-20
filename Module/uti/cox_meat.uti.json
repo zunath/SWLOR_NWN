@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cox_meat"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 3
   }
 }

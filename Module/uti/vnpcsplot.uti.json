@@ -386,5 +386,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vnpcsplot"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

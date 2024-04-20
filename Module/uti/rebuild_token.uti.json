@@ -109,5 +109,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "rebuild_token"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 234
   }
 }

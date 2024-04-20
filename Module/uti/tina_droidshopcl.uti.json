@@ -172,5 +172,81 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "tina_droidshopcl"
+  },
+  "xArmorPart_Belt": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_LBice": {
+    "type": "word",
+    "value": 140
+  },
+  "xArmorPart_LFArm": {
+    "type": "word",
+    "value": 186
+  },
+  "xArmorPart_LFoot": {
+    "type": "word",
+    "value": 198
+  },
+  "xArmorPart_LHand": {
+    "type": "word",
+    "value": 7
+  },
+  "xArmorPart_LShin": {
+    "type": "word",
+    "value": 198
+  },
+  "xArmorPart_LShou": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_LThig": {
+    "type": "word",
+    "value": 198
+  },
+  "xArmorPart_Neck": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_Pelvi": {
+    "type": "word",
+    "value": 161
+  },
+  "xArmorPart_RBice": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RFArm": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 198
+  },
+  "xArmorPart_RHand": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_Robe": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RShin": {
+    "type": "word",
+    "value": 198
+  },
+  "xArmorPart_RShou": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RThig": {
+    "type": "word",
+    "value": 198
+  },
+  "xArmorPart_Torso": {
+    "type": "word",
+    "value": 58
   }
 }

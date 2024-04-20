@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cayenne_4"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 111
   }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Numerics;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
+using SWLOR.Game.Server.Entity;
 
 
 namespace SWLOR.Game.Server.Core.NWScript
@@ -369,19 +370,33 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   This action casts a spell at oTarget.
         ///   - nSpell: SPELL_*
         ///   - oTarget: Target for the spell
-        ///   - nMetamagic: METAMAGIC_*
+        ///   - nMetaMagic: METAMAGIC_*
         ///   - bCheat: If this is TRUE, then the executor of the action doesn't have to be
         ///   able to cast the spell.
-        ///   - nDomainLevel: TBD - SS
+        ///   - nDomainLevel: The level of the spell if cast from a domain slot.
+        ///     eg SPELL_HEAL can be spell level 5 on a cleric. Use 0 for no domain slot.
         ///   - nProjectilePathType: PROJECTILE_PATH_TYPE_*
         ///   - bInstantSpell: If this is TRUE, the spell is cast immediately. This allows
         ///   the end-user to simulate a high-level magic-user having lots of advance
         ///   warning of impending trouble
+        /// - nClass: If set to a CLASS_TYPE_* it will cast using that class specifically.
+        ///   CLASS_TYPE_INVALID will use spell abilities.
+        /// - bSpontaneousCast: If set to TRUE will attempt to cast the given spell spontaneously,
+        ///   ie a Cleric casting Cure Light Wounds using any level 1 slot. Needs a valid nClass set.
         /// </summary>
-        public static void ActionCastSpellAtObject(Spell nSpell, uint oTarget, MetaMagic nMetaMagic = MetaMagic.Any,
-            bool nCheat = false, int nDomainLevel = 0,
-            ProjectilePathType nProjectilePathType = ProjectilePathType.Default, bool bInstantSpell = false)
+        public static void ActionCastSpellAtObject(
+            Spell nSpell, 
+            uint oTarget, 
+            MetaMagic nMetaMagic = MetaMagic.Any,
+            bool nCheat = false, 
+            int nDomainLevel = 0,
+            ProjectilePathType nProjectilePathType = ProjectilePathType.Default, 
+            bool bInstantSpell = false,
+            int nClass = -1,
+            bool bSpontaneousCast = false)
         {
+            VM.StackPush(bSpontaneousCast ? 1 : 0);
+            VM.StackPush(nClass);
             VM.StackPush(bInstantSpell ? 1 : 0);
             VM.StackPush((int)nProjectilePathType);
             VM.StackPush(nDomainLevel);
@@ -1284,18 +1299,36 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Cast spell nSpell at lTargetLocation.
         ///   - nSpell: SPELL_*
         ///   - lTargetLocation
-        ///   - nMetaMagic: METAMAGIC_*
-        ///   - bCheat: If this is TRUE, then the executor of the action doesn't have to be
+        /// - nMetaMagic: METAMAGIC_*. If nClass is specified, cannot be METAMAGIC_ANY.
+        /// - bCheat: If this is TRUE, then the executor of the action doesn't have to be
+        ///   able to cast the spell. Ignored if nClass is specified.
+        /// - bCheat: If this is TRUE, then the executor of the action doesn't have to be
         ///   able to cast the spell.
-        ///   - nProjectilePathType: PROJECTILE_PATH_TYPE_*
-        ///   - bInstantSpell: If this is TRUE, the spell is cast immediately; this allows
+        /// - nProjectilePathType: PROJECTILE_PATH_TYPE_*
+        /// - bInstantSpell: If this is TRUE, the spell is cast immediately; this allows
         ///   the end-user to simulate
         ///   a high-level magic user having lots of advance warning of impending trouble.
+        /// - nClass: If set to a CLASS_TYPE_* it will cast using that class specifically.
+        ///   CLASS_TYPE_INVALID will use spell abilities.
+        /// - bSpontaneousCast: If set to TRUE will attempt to cast the given spell spontaneously,
+        ///   ie a Cleric casting Cure Light Wounds using any level 1 slot. Needs a valid nClass set.
+        /// - nDomainLevel: The level of the spell if cast from a domain slot.
+        ///   eg SPELL_HEAL can be spell level 5 on a cleric. Use 0 for no domain slot.
         /// </summary>
-        public static void ActionCastSpellAtLocation(Spell nSpell, Location lTargetLocation,
-            MetaMagic nMetaMagic = MetaMagic.Any, bool bCheat = false,
-            ProjectilePathType nProjectilePathType = ProjectilePathType.Default, bool bInstantSpell = false)
+        public static void ActionCastSpellAtLocation(
+            Spell nSpell, 
+            Location lTargetLocation,
+            MetaMagic nMetaMagic = MetaMagic.Any, 
+            bool bCheat = false,
+            ProjectilePathType nProjectilePathType = ProjectilePathType.Default, 
+            bool bInstantSpell = false,
+            int nClass = -1,
+            bool bSpontaneousCast = false,
+            int nDomainLevel = 0)
         {
+            VM.StackPush(nDomainLevel);
+            VM.StackPush(bSpontaneousCast ? 1 : 0);
+            VM.StackPush(nClass);
             VM.StackPush(bInstantSpell ? 1 : 0);
             VM.StackPush((int)nProjectilePathType);
             VM.StackPush(bCheat ? 1 : 0);
@@ -1404,8 +1437,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        ///   This is for use in a Spell script, it gets the ID of the spell that is being
-        ///   cast (SPELL_*).
+        /// This is for use in a Spell script, it gets the ID of the spell that is being cast.
+        /// If used in an Area of Effect script it will return the ID of the spell that generated the AOE effect.
+        /// * Returns the spell ID (SPELL_*) or -1 if no spell was cast or on error
         /// </summary>
         public static int GetSpellId()
         {
@@ -1426,12 +1460,8 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         ///   Set the name of oObject.
-        ///   - oObject: the object for which you are changing the name (area, creature, placeable, item, or door).
-        ///   - sNewName: the new name that the object will use.
-        ///   Note: SetName() does not work on player objects.
-        ///   Setting an object's name to "" will make the object
-        ///   revert to using the name it had originally before any
-        ///   SetName() calls were made on the object.
+        /// - bOriginalName:  if set to true any new name specified via a SetName scripting command
+        ///                   is ignored and the original object's name is returned instead.
         /// </summary>
         public static string GetName(uint oObject, bool bOriginalName = false)
         {
@@ -1731,12 +1761,14 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        ///   Determine whether oCreature has nFeat, and nFeat is useable.
-        ///   - nFeat: FEAT_*
-        ///   - oCreature
+        /// Determine whether oCreature has nFeat, optionally if nFeat is useable.
+        /// - nFeat: FEAT_*
+        /// - oCreature
+        /// - bIgnoreUses: Will check if the creature has the given feat even if it has no uses remaining
         /// </summary>
-        public static bool GetHasFeat(FeatType nFeat, uint oCreature = OBJECT_INVALID)
+        public static bool GetHasFeat(FeatType nFeat, uint oCreature, bool bIgnoreUses = false)
         {
+            VM.StackPush(bIgnoreUses ? 1 : 0);
             VM.StackPush(oCreature);
             VM.StackPush((int)nFeat);
             VM.Call(285);
@@ -2524,10 +2556,15 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - bBroadcastToFaction: If this is TRUE then only creatures in the same faction
         ///   as oCreatureToFloatAbove
         ///   will see the floaty text, and only if they are within range (30 metres).
+        ///   - bChatWindow:  If TRUE, the string reference will be displayed in oCreatureToFloatAbove's chat window
         /// </summary>
-        public static void FloatingTextStrRefOnCreature(int nStrRefToDisplay, uint oCreatureToFloatAbove,
-            bool bBroadcastToFaction = true)
+        public static void FloatingTextStrRefOnCreature(
+            int nStrRefToDisplay, 
+            uint oCreatureToFloatAbove,
+            bool bBroadcastToFaction = true,
+            bool bChatWindow = true)
         {
+            VM.StackPush(bChatWindow ? 1 : 0);
             VM.StackPush(bBroadcastToFaction ? 1 : 0);
             VM.StackPush(oCreatureToFloatAbove);
             VM.StackPush(nStrRefToDisplay);
@@ -2543,10 +2580,15 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - bBroadcastToFaction: If this is TRUE then only creatures in the same faction
         ///   as oCreatureToFloatAbove
         ///   will see the floaty text, and only if they are within range (30 metres).
+        ///   - bChatWindow:  If TRUE, sStringToDisplay will be displayed in oCreatureToFloatAbove's chat window.
         /// </summary>
-        public static void FloatingTextStringOnCreature(string sStringToDisplay, uint oCreatureToFloatAbove,
-            bool bBroadcastToFaction = true)
+        public static void FloatingTextStringOnCreature(
+            string sStringToDisplay, 
+            uint oCreatureToFloatAbove,
+            bool bBroadcastToFaction = true,
+            bool bChatWindow = true)
         {
+            VM.StackPush(bChatWindow ? 1 : 0);
             VM.StackPush(bBroadcastToFaction ? 1 : 0);
             VM.StackPush(oCreatureToFloatAbove);
             VM.StackPush(sStringToDisplay);
@@ -2928,7 +2970,7 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         ///   Stores an object with the given id.
-        ///   NOTE: this command can only be used for storing Creatures and Items.
+        ///   NOTE: this command can be used for storing Creatures, Items, Placeables, Waypoints, Stores, Doors, Triggers, Encounters.
         ///   Returns 0 if it failled, 1 if it worked.
         ///   If bSaveObjectState is TRUE, local vars, effects, action queue, and transition info (triggers, doors) are saved out
         ///   (except for Combined Area Format, which always has object state saved out).
@@ -3240,14 +3282,29 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        ///  Sets a visual transform on the given object.
+        /// Sets a visual transform on the given object.
         /// - oObject can be any valid Creature, Placeable, Item or Door.
         /// - nTransform is one of OBJECT_VISUAL_TRANSFORM_*
         /// - fValue depends on the transformation to apply.
+        /// - nScope is one of OBJECT_VISUAL_TRANSFORM_DATA_SCOPE_* and specific to the object type being VT'ed.
+        /// - nBehaviorFlags: bitmask of OBJECT_VISUAL_TRANSFORM_BEHAVIOR_*.
+        /// - nRepeats: If > 0: N times, jump back to initial/from state after completing the transform. If -1: Do forever.
         /// Returns the old/previous value.
         /// </summary>
-        public static float SetObjectVisualTransform(uint oObject, ObjectVisualTransform nTransform, float fValue, Lerp nLerpType = Lerp.None, float fLerpDuration = 0.0f, bool bPauseWithGame = true)
+        public static float SetObjectVisualTransform(
+            uint oObject, 
+            ObjectVisualTransform nTransform, 
+            float fValue, 
+            Lerp nLerpType = Lerp.None, 
+            float fLerpDuration = 0.0f, 
+            bool bPauseWithGame = true, 
+            ObjectVisualTransformDataScopeType nScope = ObjectVisualTransformDataScopeType.Base, 
+            ObjectVisualTransformBehaviorType nBehaviorFlags = ObjectVisualTransformBehaviorType.Default , 
+            int nRepeats = 0)
         {
+            VM.StackPush(nRepeats);
+            VM.StackPush((int)nBehaviorFlags);
+            VM.StackPush((int)nScope);
             VM.StackPush(bPauseWithGame ? 1 : 0);
             VM.StackPush(fLerpDuration);
             VM.StackPush((int)nLerpType);
@@ -3608,5 +3665,810 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.Call(953);
         }
 
+        /// <summary>
+        ///  Returns the column name of s2DA at nColumn index (starting at 0).
+        /// Returns "" if column nColumn doesn't exist (at end).
+        /// </summary>
+        public static string Get2DAColumn(string s2DA, int nColumnIdx)
+        {
+            VM.StackPush(nColumnIdx);
+            VM.StackPush(s2DA);
+            VM.Call(1034);
+
+            return VM.StackPopString();
+        }
+
+        /// <summary>
+        /// Returns the number of defined rows in the 2da s2DA.
+        /// </summary>
+        public static int Get2DARowCount(string s2DA)
+        {
+            VM.StackPush(s2DA);
+            VM.Call(1035);
+
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Sets the spell targeting data manually for the player. This data is usually specified in spells.2da.
+        /// This data persists through spell casts; you're overwriting the entry in spells.2da for this session.
+        /// In multiplayer, these need to be reapplied when a player rejoins.
+        /// - nSpell: SPELL_*
+        /// - nShape: SPELL_TARGETING_SHAPE_*
+        /// - nFlags: SPELL_TARGETING_FLAGS_*
+        /// </summary>
+        public static void SetSpellTargetingData(uint oPlayer, Spell nSpell, int nShape, float fSizeX, float fSizeY, int nFlags)
+        {
+            VM.StackPush(nFlags);
+            VM.StackPush(fSizeY);
+            VM.StackPush(fSizeX);
+            VM.StackPush(nShape);
+            VM.StackPush((int)nSpell);
+            VM.StackPush(oPlayer);
+            VM.Call(1041);
+        }
+
+        /// <summary>
+        /// Sets the spell targeting data which is used for the next call to EnterTargetingMode() for this player.
+        /// If the shape is set to SPELL_TARGETING_SHAPE_NONE and the range is provided, the dotted line range indicator will still appear.
+        /// - nShape: SPELL_TARGETING_SHAPE_*
+        /// - nFlags: SPELL_TARGETING_FLAGS_*
+        /// - nSpell: SPELL_* (optional, passed to the shader but does nothing by default, you need to edit the shader to use it)
+        /// - nFeat: FEAT_* (optional, passed to the shader but does nothing by default, you need to edit the shader to use it)
+        /// </summary>
+        public static void SetEnterTargetingModeData(
+            uint oPlayer, 
+            int nShape, 
+            float fSizeX, 
+            float fSizeY, 
+            int nFlags, 
+            float fRange = 0.0f, 
+            Spell nSpell = Spell.AllSpells, 
+            FeatType nFeat = FeatType.Invalid)
+        {
+            VM.StackPush((int)nFeat);
+            VM.StackPush((int)nSpell);
+            VM.StackPush(fRange);
+            VM.StackPush(nFlags);
+            VM.StackPush(fSizeY);
+            VM.StackPush(fSizeX);
+            VM.StackPush(nShape);
+            VM.StackPush(oPlayer);
+            VM.Call(1042);
+        }
+        /// <summary>
+        /// Gets the number of memorized spell slots for a given spell level.
+        /// - nClassType: a CLASS_TYPE_* constant. Must be a MemorizesSpells class.
+        /// - nSpellLevel: the spell level, 0-9.
+        /// Returns: the number of spell slots.
+        /// </summary>
+        public static int GetMemorizedSpellCountByLevel(uint oCreature, ClassType nClassType, int nSpellLevel)
+        {
+            VM.StackPush(nSpellLevel);
+            VM.StackPush((int)nClassType);
+            VM.StackPush(oCreature);
+            VM.Call(1043);
+
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Gets the spell id of a memorized spell slot.
+        /// - nClassType: a CLASS_TYPE_* constant. Must be a MemorizesSpells class.
+        /// - nSpellLevel: the spell level, 0-9.
+        /// - nIndex: the index of the spell slot. Bounds: 0 <= nIndex < GetMemorizedSpellCountByLevel()
+        /// Returns: a SPELL_* constant or -1 if the slot is not set.
+        /// </summary>
+        public static int GetMemorizedSpellId(uint oCreature, ClassType nClassType, int nSpellLevel, int nIndex)
+        {
+            VM.StackPush(nIndex);
+            VM.StackPush(nSpellLevel);
+            VM.StackPush((int)nClassType);
+            VM.StackPush(oCreature);
+            VM.Call(1044);
+
+            return VM.StackPopInt();
+        }
+        /// <summary>
+        /// Gets the ready state of a memorized spell slot.
+        /// - nClassType: a CLASS_TYPE_* constant. Must be a MemorizesSpells class.
+        /// - nSpellLevel: the spell level, 0-9.
+        /// - nIndex: the index of the spell slot. Bounds: 0 <= nIndex < GetMemorizedSpellCountByLevel()
+        /// Returns: TRUE/FALSE or -1 if the slot is not set.
+        /// </summary>
+        public static int GetMemorizedSpellReady(uint oCreature, ClassType nClassType, int nSpellLevel, int nIndex)
+        {
+            VM.StackPush(nIndex);
+            VM.StackPush(nSpellLevel);
+            VM.StackPush((int)nClassType);
+            VM.StackPush(oCreature);
+            VM.Call(1045);
+
+            return VM.StackPopInt();
+        }
+        /// <summary>
+        /// Gets the metamagic of a memorized spell slot.
+        /// - nClassType: a CLASS_TYPE_* constant. Must be a MemorizesSpells class.
+        /// - nSpellLevel: the spell level, 0-9.
+        /// - nIndex: the index of the spell slot. Bounds: 0 <= nIndex < GetMemorizedSpellCountByLevel()
+        /// Returns: a METAMAGIC_* constant or -1 if the slot is not set.
+        /// </summary>
+        public static int GetMemorizedSpellMetaMagic(uint oCreature, ClassType nClassType, int nSpellLevel, int nIndex)
+        {
+            VM.StackPush(nIndex);
+            VM.StackPush(nSpellLevel);
+            VM.StackPush((int)nClassType);
+            VM.StackPush(oCreature);
+            VM.Call(1046);
+
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Gets if the memorized spell slot has a domain spell.
+        /// - nClassType: a CLASS_TYPE_* constant. Must be a MemorizesSpells class.
+        /// - nSpellLevel: the spell level, 0-9.
+        /// - nIndex: the index of the spell slot. Bounds: 0 <= nIndex < GetMemorizedSpellCountByLevel()
+        /// Returns: TRUE/FALSE or -1 if the slot is not set.
+        /// </summary>
+        public static int GetMemorizedSpellIsDomainSpell(uint oCreature, ClassType nClassType, int nSpellLevel, int nIndex)
+        {
+            VM.StackPush(nIndex);
+            VM.StackPush(nSpellLevel);
+            VM.StackPush((int)nClassType);
+            VM.StackPush(oCreature);
+            VM.Call(1047);
+
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Set a memorized spell slot.
+        /// - nClassType: a CLASS_TYPE_* constant. Must be a MemorizesSpells class.
+        /// - nSpellLevel: the spell level, 0-9.
+        /// - nIndex: the index of the spell slot. Bounds: 0 <= nIndex < GetMemorizedSpellCountByLevel()
+        /// - nSpellId: a SPELL_* constant.
+        /// - bReady: TRUE to mark the slot ready.
+        /// - nMetaMagic: a METAMAGIC_* constant.
+        /// - bIsDomainSpell: TRUE for a domain spell.
+        /// </summary>
+        public static void SetMemorizedSpell(
+            uint oCreature, 
+            ClassType nClassType, 
+            int nSpellLevel, 
+            int nIndex, 
+            Spell nSpellId, 
+            bool bReady = true, 
+            MetaMagic nMetaMagic = MetaMagic.None, 
+            bool bIsDomainSpell = false)
+        {
+            VM.StackPush(bIsDomainSpell ? 1 : 0);
+            VM.StackPush((int)nMetaMagic);
+            VM.StackPush(bReady ? 1 : 0);
+            VM.StackPush((int)nSpellId);
+            VM.StackPush(nIndex);
+            VM.StackPush(nSpellLevel);
+            VM.StackPush((int)nClassType);
+            VM.StackPush(oCreature);
+            VM.Call(1048);
+        }
+
+        /// <summary>
+        /// Set the ready state of a memorized spell slot.
+        /// - nClassType: a CLASS_TYPE_* constant. Must be a MemorizesSpells class.
+        /// - nSpellLevel: the spell level, 0-9.
+        /// - nIndex: the index of the spell slot. Bounds: 0 <= nIndex < GetMemorizedSpellCountByLevel()
+        /// - bReady: TRUE to mark the slot ready.
+        /// </summary>
+        public static void SetMemorizedSpellReady(uint oCreature, ClassType nClassType, int nSpellLevel, int nIndex, bool bReady)
+        {
+            VM.StackPush(bReady ? 1 : 0);
+            VM.StackPush(nIndex);
+            VM.StackPush(nSpellLevel);
+            VM.StackPush((int)nClassType);
+            VM.StackPush(oCreature);
+            VM.Call(1049);
+        }
+
+        /// <summary>
+        /// Clear a specific memorized spell slot.
+        /// - nClassType: a CLASS_TYPE_* constant. Must be a MemorizesSpells class.
+        /// - nSpellLevel: the spell level, 0-9.
+        /// - nIndex: the index of the spell slot. Bounds: 0 <= nIndex < GetMemorizedSpellCountByLevel()
+        /// </summary>
+        public static void ClearMemorizedSpell(uint oCreature, ClassType nClassType, int nSpellLevel, int nIndex)
+        {
+            VM.StackPush(nIndex);
+            VM.StackPush(nSpellLevel);
+            VM.StackPush((int)nClassType);
+            VM.StackPush(oCreature);
+            VM.Call(1050);
+        }
+
+        /// <summary>
+        /// Clear all memorized spell slots of a specific spell id, including metamagic'd ones.
+        /// - nClassType: a CLASS_TYPE_* constant. Must be a MemorizesSpells class.
+        /// - nSpellId: a SPELL_* constant.
+        /// </summary>
+        public static void ClearMemorizedSpellBySpellId(uint oCreature, ClassType nClassType, int nSpellId)
+        {
+            VM.StackPush(nSpellId);
+            VM.StackPush((int)nClassType);
+            VM.StackPush(oCreature);
+            VM.Call(1051);
+        }
+
+        /// <summary>
+        ///  Gets the number of known spells for a given spell level.
+        /// - nClassType: a CLASS_TYPE_* constant. Must be a SpellBookRestricted class.
+        /// - nSpellLevel: the spell level, 0-9.
+        /// Returns: the number of known spells.
+        /// </summary>
+        public static int GetKnownSpellCount(uint oCreature, ClassType nClassType, int nSpellLevel)
+        {
+            VM.StackPush(nSpellLevel);
+            VM.StackPush((int)nClassType);
+            VM.StackPush(oCreature);
+            VM.Call(1052);
+
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Gets the spell id of a known spell.
+        /// - nClassType: a CLASS_TYPE_* constant. Must be a SpellBookRestricted class.
+        /// - nSpellLevel: the spell level, 0-9.
+        /// - nIndex: the index of the known spell. Bounds: 0 <= nIndex < GetKnownSpellCount()
+        /// Returns: a SPELL_* constant or -1 on error.
+        /// </summary>
+        public static int GetKnownSpellId(uint oCreature, ClassType nClassType, int nSpellLevel, int nIndex)
+        {
+            VM.StackPush(nIndex);
+            VM.StackPush(nSpellLevel);
+            VM.StackPush((int)nClassType);
+            VM.StackPush(oCreature);
+            VM.Call(1053);
+
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Gets if a spell is in the known spell list.
+        /// - nClassType: a CLASS_TYPE_* constant. Must be a SpellBookRestricted class.
+        /// - nSpellId: a SPELL_* constant.
+        /// Returns: TRUE if the spell is in the known spell list.
+        /// </summary>
+        public static bool GetIsInKnownSpellList(uint oCreature, ClassType nClassType, Spell nSpellId)
+        {
+            VM.StackPush((int)nSpellId);
+            VM.StackPush((int)nClassType);
+            VM.StackPush(oCreature);
+            VM.Call(1054);
+
+            return VM.StackPopInt() == 1;
+        }
+
+        /// <summary>
+        /// Gets the amount of uses a spell has left.
+        /// - nClassType: a CLASS_TYPE_* constant.
+        /// - nSpellid: a SPELL_* constant.
+        /// - nMetaMagic: a METAMAGIC_* constant.
+        /// - nDomainLevel: the domain level, if a domain spell.
+        /// Returns: the amount of spell uses left.
+        /// </summary>
+        public static int GetSpellUsesLeft(
+            uint oCreature, 
+            ClassType nClassType, 
+            Spell nSpellId, 
+            MetaMagic nMetaMagic = MetaMagic.None, 
+            int nDomainLevel = 0)
+        {
+            VM.StackPush(nDomainLevel);
+            VM.StackPush((int)nMetaMagic);
+            VM.StackPush((int)nSpellId);
+            VM.StackPush((int)nClassType);
+            VM.StackPush(oCreature);
+            VM.Call(1055);
+
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Gets the spell level at which a class gets a spell.
+        /// - nClassType: a CLASS_TYPE_* constant.
+        /// - nSpellId: a SPELL_* constant.
+        /// Returns: the spell level or -1 if the class does not get the spell.
+        /// </summary>
+        public static int GetSpellLevelByClass(ClassType nClassType, Spell nSpellId)
+        {
+            VM.StackPush((int)nSpellId);
+            VM.StackPush((int)nClassType);
+            VM.Call(1056);
+
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Replaces oObject's animation sOld with sNew.
+        /// Specifying sNew = "" will restore the original animation.
+        /// </summary>
+        public static void ReplaceObjectAnimation(uint oObject, string sOld, string sNew = "")
+        {
+            VM.StackPush(sNew);
+            VM.StackPush(sOld);
+            VM.StackPush(oObject);
+            VM.Call(1057);
+        }
+
+        /// <summary>
+        /// Sets the distance (in meters) at which oObject info will be sent to clients (default 45.0)
+        /// This is still subject to other limitations, such as perception ranges for creatures
+        /// Note: Increasing visibility ranges of many objects can have a severe negative effect on
+        ///       network latency and server performance, and rendering additional objects will
+        ///       impact graphics performance of clients. Use cautiously.
+        /// </summary>
+        public static void SetObjectVisibleDistance(uint oObject, float fDistance = 45.0f)
+        {
+            VM.StackPush(fDistance);
+            VM.StackPush(oObject);
+            VM.Call(1058);
+        }
+
+        /// <summary>
+        /// Gets oObject's visible distance, as set by SetObjectVisibleDistance()
+        /// Returns -1.0f on error
+        /// </summary>
+        public static float GetObjectVisibleDistance(uint oObject)
+        {
+            VM.StackPush(oObject);
+            VM.Call(1059);
+
+            return VM.StackPopFloat();
+        }
+
+        /// <summary>
+        /// Sets the active game pause state - same as if the player requested pause.
+        /// </summary>
+        public static void SetGameActivePause(bool bState)
+        {
+            VM.StackPush(bState ? 1 : 0);
+            VM.Call(1060);
+        }
+
+        /// <summary>
+        /// Returns >0 if the game is currently paused:
+        /// - 0: Game is not paused.
+        /// - 1: Timestop
+        /// - 2: Active Player Pause (optionally on top of timestop)
+        /// </summary>
+        public static int GetGamePauseState()
+        {
+            VM.Call(1061);
+
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Set the gender of oCreature.
+        /// - nGender: a GENDER_* constant.
+        /// </summary>
+        public static void SetGender(uint oCreature, Gender nGender)
+        {
+            VM.StackPush((int)nGender);
+            VM.StackPush(oCreature);
+            VM.Call(1062);
+        }
+
+        /// <summary>
+        /// Get the soundset of oCreature.
+        /// Returns -1 on error.
+        /// </summary>
+        public static int GetSoundset(uint oCreature)
+        {
+            VM.StackPush(oCreature);
+            VM.Call(1063);
+
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Set the soundset of oCreature, see soundset.2da for possible values.
+        /// </summary>
+        public static void SetSoundset(uint oCreature, int nSoundset)
+        {
+            VM.StackPush(nSoundset);
+            VM.StackPush(oCreature);
+            VM.Call(1064);
+        }
+
+        /// <summary>
+        /// Ready a spell level for oCreature.
+        /// - nSpellLevel: 0-9
+        /// - nClassType: a CLASS_TYPE_* constant or CLASS_TYPE_INVALID to ready the spell level for all classes.
+        /// </summary>
+        public static void ReadySpellLevel(uint oCreature, int nSpellLevel, ClassType nClassType = ClassType.Invalid)
+        {
+            VM.StackPush((int)nClassType);
+            VM.StackPush(nSpellLevel);
+            VM.StackPush(oCreature);
+            VM.Call(1065);
+        }
+
+        /// <summary>
+        /// Makes oCreature controllable by oPlayer, if player party control is enabled
+        /// Setting oPlayer=OBJECT_INVALID removes the override and reverts to regular party control behavior
+        /// NB: A creature is only controllable by one player, so if you set oPlayer to a non-Player object
+        ///    (e.g. the module) it will disable regular party control for this creature
+        /// </summary>
+        public static void SetCommandingPlayer(uint oCreature, uint oPlayer)
+        {
+            VM.StackPush(oPlayer);
+            VM.StackPush(oCreature);
+            VM.Call(1066);
+        }
+
+        /// <summary>
+        /// Sets oPlayer's camera limits that override any client configuration limits
+        /// Value of -1.0 means use the client config instead
+        /// NB: Like all other camera settings, this is not saved when saving the game
+        /// </summary>
+        public static void SetCameraLimits(
+            uint oPlayer, 
+            float fMinPitch = -1.0f, 
+            float fMaxPitch = -1.0f, 
+            float fMinDist = -1.0f, 
+            float fMaxDist = -1.0f)
+        {
+            VM.StackPush(fMaxDist);
+            VM.StackPush(fMinDist);
+            VM.StackPush(fMaxPitch);
+            VM.StackPush(fMinPitch);
+            VM.StackPush(oPlayer);
+            VM.Call(1067);
+        }
+
+        /// <summary>
+        /// Sets the object oPlayer's camera will be attached to.
+        /// - oTarget: A valid creature or placeable. If oTarget is OBJECT_INVALID, it will revert the camera back to oPlayer's character.
+        ///            The target must be known to oPlayer's client, this means it must be in the same area and within visible distance.
+        ///              - SetObjectVisibleDistance() can be used to increase this range.
+        ///              - If the target is a creature, it also must be within the perception range of oPlayer and perceived.
+        /// - bFindClearView: if TRUE, the client will attempt to find a camera position where oTarget is in view.
+        /// Notes:
+        ///       - If oTarget gets destroyed while oPlayer's camera is attached to it, the camera will revert back to oPlayer's character.
+        ///       - If oPlayer goes through a transition with its camera attached to a different object, it will revert back to oPlayer's character.
+        ///       - The object the player's camera is attached to is not saved when saving the game.
+        /// </summary>
+        public static void AttachCamera(uint oPlayer, uint oTarget, bool bFindClearView = false)
+        {
+            VM.StackPush(bFindClearView ? 1 : 0);
+            VM.StackPush(oTarget);
+            VM.StackPush(oPlayer);
+            VM.Call(1073);
+        }
+
+        /// <summary>
+        /// Get the current discoverability mask of oObject.
+        /// Returns -1 if oObject cannot have a discovery mask.
+        /// </summary>
+        public static int GetObjectUiDiscoveryMask(uint oObject)
+        {
+            VM.StackPush(oObject);
+            VM.Call(1074);
+
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Sets the discoverability mask on oObject.
+        /// This allows toggling areahilite (TAB key by default) and mouseover discovery in the area view.
+        /// * nMask is a bitmask of OBJECT_UI_DISCOVERY_*
+        /// Will currently only work on Creatures, Doors (Hilite only), Items and Useable Placeables.
+        /// Does not affect inventory items.
+        /// </summary>
+        public static void SetObjectUiDiscoveryMask(uint oObject, ObjectUIDiscoveryType nMask = ObjectUIDiscoveryType.Default)
+        {
+            VM.StackPush((int)nMask);
+            VM.StackPush(oObject);
+            VM.Call(1075);
+        }
+
+        /// <summary>
+        /// Sets a text override for the mouseover/tab-highlight text bubble of oObject.
+        /// Will currently only work on Creatures, Items and Useable Placeables.
+        /// * nMode is one of OBJECT_UI_TEXT_BUBBLE_OVERRIDE_*.
+        /// </summary>
+        public static void SetObjectTextBubbleOverride(uint oObject, ObjectUITextBubbleOverrideType nMode, string sText)
+        {
+            VM.StackPush(sText);
+            VM.StackPush((int)nMode);
+            VM.StackPush(oObject);
+            VM.Call(1076);
+        }
+
+        /// <summary>
+        /// Immediately unsets a VTs for the given object, with no lerp.
+        /// * nScope: one of OBJECT_VISUAL_TRANSFORM_DATA_SCOPE_, or -1 for all scopes
+        /// Returns TRUE only if transforms were successfully removed (valid object, transforms existed).
+        /// </summary>
+        public static bool ClearObjectVisualTransform(uint oObject, ObjectVisualTransformDataScopeType nScope = ObjectVisualTransformDataScopeType.Invalid)
+        {
+            VM.StackPush((int)nScope);
+            VM.StackPush(oObject);
+            VM.Call(1077);
+
+            return VM.StackPopInt() == 1;
+        }
+
+        /// <summary>
+        /// Gets an optional vector of specific gui events in the module OnPlayerGuiEvent event.
+        /// GUIEVENT_RADIAL_OPEN - World vector position of radial if on tile.
+        /// </summary>
+        /// <returns></returns>
+        public static Vector3 GetLastGuiEventVector()
+        {
+            VM.Call(1078);
+
+            return VM.StackPopVector();
+        }
+
+        /// <summary>
+        /// Sets oPlayer's camera settings that override any client configuration settings
+        /// nFlags is a bitmask of CAMERA_FLAG_* constants;
+        /// NB: Like all other camera settings, this is not saved when saving the game
+        /// </summary>
+        public static void SetCameraFlags(uint oPlayer, int nFlags = 0)
+        {
+            VM.StackPush(nFlags);
+            VM.StackPush(oPlayer);
+            VM.Call(1079);
+        }
+
+        /// <summary>
+        /// In the spell script returns the feat used, or -1 if no feat was used
+        /// </summary>
+        public static int GetSpellFeatId()
+        {
+            VM.Call(1095);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// If oCreature has nFeat, and nFeat is useable, returns the number of remaining uses left
+        /// or the maximum int value if the feat has unlimited uses (eg FEAT_KNOCKDOWN)
+        /// - nFeat: FEAT_*
+        /// - oCreature: Creature to check the feat of
+        /// </summary>
+        public static int GetFeatRemainingUses(FeatType nFeat, uint oCreature)
+        {
+            VM.StackPush(oCreature);
+            VM.StackPush((int)nFeat);
+            VM.Call(1097);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Change a tile in an area, it will also update the tile for all players in the area.
+        /// * Notes:
+        ///   - For optimal use you should be familiar with how tilesets / .set files work.
+        ///   - Will not update the height of non-creature objects.
+        ///   - Creatures may get stuck on non-walkable terrain.
+        ///
+        /// - locTile: The location of the tile.
+        /// - nTileID: the ID of the tile, for values see the .set file of the tileset.
+        /// - nOrientation: the orientation of the tile, 0-3.
+        ///                 0 = Normal orientation
+        ///                 1 = 90 degrees counterclockwise
+        ///                 2 = 180 degrees counterclockwise
+        ///                 3 = 270 degrees counterclockwise
+        /// - nHeight: the height of the tile.
+        /// - nFlags: a bitmask of SETTILE_FLAG_* constants.
+        ///           - SETTILE_FLAG_RELOAD_GRASS: reloads the area's grass, use if your tile used to have grass or should have grass now.
+        ///           - SETTILE_FLAG_RELOAD_BORDER: reloads the edge tile border, use if you changed a tile on the edge of the area.
+        ///           - SETTILE_FLAG_RECOMPUTE_LIGHTING: recomputes the area's lighting and static shadows, use most of time.
+        /// </summary>
+        public static void SetTile(
+            Location locTile, 
+            int nTileID, 
+            int nOrientation, 
+            int nHeight = 0, 
+            SetTileFlagType nFlags = SetTileFlagType.RecomputeLighting)
+        {
+            VM.StackPush((int)nFlags);
+            VM.StackPush(nHeight);
+            VM.StackPush(nOrientation);
+            VM.StackPush(nTileID);
+            VM.StackPush(locTile);
+            VM.Call(1098);
+        }
+
+        /// <summary>
+        ///  Get the ID of the tile at location locTile.
+        /// Returns -1 on error.
+        /// </summary>
+        public static int GetTileID(Location locTile)
+        {
+            VM.StackPush(locTile);
+            VM.Call(1099);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Get the orientation of the tile at location locTile.
+        /// Returns -1 on error.
+        /// </summary>
+        public static int GetTileOrientation(Location locTile)
+        {
+            VM.StackPush(locTile);
+            VM.Call(1100);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Get the height of the tile at location locTile.
+        /// Returns -1 on error.
+        /// </summary>
+        public static int GetTileHeight(Location locTile)
+        {
+            VM.StackPush(locTile);
+            VM.Call(1101);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// All clients in oArea will reload the area's grass.
+        /// This can be used to update the grass of an area after changing a tile with SetTile() that will have or used to have grass.
+        /// </summary>
+        public static void ReloadAreaGrass(uint oArea)
+        {
+            VM.StackPush(oArea);
+            VM.Call(1102);
+        }
+
+        /// <summary>
+        /// Set the state of the tile animation loops of the tile at location locTile.
+        /// </summary>
+        public static void SetTileAnimationLoops(Location locTile, bool bAnimLoop1, bool bAnimLoop2, bool bAnimLoop3)
+        {
+            VM.StackPush(bAnimLoop3 ? 1 : 0);
+            VM.StackPush(bAnimLoop2 ? 1 : 0);
+            VM.StackPush(bAnimLoop1 ? 1 : 0);
+            VM.StackPush(locTile);
+            VM.Call(1103);
+        }
+
+        /// <summary>
+        /// Change multiple tiles in an area, it will also update the tiles for all players in the area.
+        /// Note: See SetTile() for additional information.
+        /// - oArea: the area to change one or more tiles of.
+        /// - jTileData: a JsonArray() with one or more JsonObject()s with the following keys:
+        ///               - index: the index of the tile as a JsonInt()
+        ///                        For example, a 3x3 area has the following tile indexes:
+        ///                        6 7 8
+        ///                        3 4 5
+        ///                        0 1 2
+        ///               - tileid: the ID of the tile as a JsonInt(), defaults to 0 if not set
+        ///               - orientation: the orientation of the tile as JsonInt(), defaults to 0 if not set
+        ///               - height: the height of the tile as JsonInt(), defaults to 0 if not set
+        ///               - animloop1: the state of a tile animation, 1/0 as JsonInt(), defaults to the current value if not set
+        ///               - animloop2: the state of a tile animation, 1/0 as JsonInt(), defaults to the current value if not set
+        ///               - animloop3: the state of a tile animation, 1/0 as JsonInt(), defaults to the current value if not set
+        /// - nFlags: a bitmask of SETTILE_FLAG_* constants.
+        /// - sTileset: if not empty, it will also change the area's tileset
+        ///             Warning: only use this if you really know what you're doing, it's very easy to break things badly.
+        ///                      Make sure jTileData changes *all* tiles in the area and to a tile id that's supported by sTileset.
+        /// </summary>
+        public static void SetTileJson(
+            uint oArea, 
+            Json jTileData, 
+            SetTileFlagType nFlags = SetTileFlagType.RecomputeLighting, 
+            string sTileset = "")
+        {
+            VM.StackPush(sTileset);
+            VM.StackPush((int)nFlags);
+            VM.StackPush(jTileData);
+            VM.StackPush(oArea);
+            VM.Call(1104);
+        }
+
+        /// <summary>
+        /// All clients in oArea will reload the inaccesible border tiles.
+        /// This can be used to update the edge tiles after changing a tile with SetTile().
+        /// </summary>
+        public static void ReloadAreaBorder(uint oArea)
+        {
+            VM.StackPush(oArea);
+            VM.Call(1105);
+        }
+
+        /// <summary>
+        /// Sets whether or not oCreatures's nIconId is flashing in their GUI icon bar.  If oCreature does not
+        /// have an icon associated with nIconId, nothing happens. This function does not add icons to 
+        /// oCreatures's GUI icon bar. The icon will flash until the underlying effect is removed or this 
+        /// function is called again with bFlashing = FALSE.
+        /// - oCreature: Player object to affect
+        /// - nIconId: Referenced to effecticons.2da or EFFECT_ICON_*
+        /// - bFlashing: TRUE to force an existing icon to flash, FALSE to to stop.
+        /// </summary>
+        public static void SetEffectIconFlashing(uint oCreature, int nIconId, bool bFlashing = true)
+        {
+            VM.StackPush(bFlashing ? 1 : 0);
+            VM.StackPush(nIconId);
+            VM.StackPush(oCreature);
+            VM.Call(1106);
+        }
+
+        /// <summary>
+        /// Returns the INVENTORY_SLOT_* constant of the last item equipped.  Can only be used in the
+        /// module's OnPlayerEquip event.  Returns -1 on error.
+        /// </summary>
+        public static InventorySlot GetPCItemLastEquippedSlot()
+        {
+            VM.Call(1108);
+            return (InventorySlot)VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Returns the INVENTORY_SLOT_* constant of the last item unequipped.  Can only be used in the
+        /// module's OnPlayerUnequip event.  Returns -1 on error.
+        /// </summary>
+        public static InventorySlot GetPCItemLastUnequippedSlot()
+        {
+            VM.Call(1109);
+            return (InventorySlot)VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Returns TRUE if the last spell was cast spontaneously
+        /// eg; a Cleric casting SPELL_CURE_LIGHT_WOUNDS when it is not prepared, using another level 1 slot
+        /// </summary>
+        public static bool GetSpellCastSpontaneously()
+        {
+            VM.Call(1110);
+            return VM.StackPopInt() == 1;
+        }
+
+        /// <summary>
+        /// Return the current game tick rate (mainloop iterations per second).
+        /// This is equivalent to graphics frames per second when the module is running inside a client.
+        /// </summary>
+        public static int GetTickRate()
+        {
+            VM.Call(1113);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Returns the level of the last spell cast. This value is only valid in a Spell script.
+        /// </summary>
+        public static int GetLastSpellLevel()
+        {
+            VM.Call(1114);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Returns the 32bit integer hash of sString
+        /// This hash is stable and will always have the same value for same input string, regardless of platform.
+        /// The hash algorithm is the same as the one used internally for strings in case statements, so you can do:
+        ///    switch (HashString(sString))
+        ///    {
+        ///         case "AAA":    HandleAAA(); break;
+        ///         case "BBB":    HandleBBB(); break;
+        ///    }
+        /// NOTE: The exact algorithm used is XXH32(sString) ^ XXH32(""). This means that HashString("") is 0.
+        /// </summary>
+        public static int HashString(string sString)
+        {
+            VM.StackPush(sString);
+            VM.Call(1115);
+            return VM.StackPopInt();
+        }
+
+        public static int GetMicrosecondCounter()
+        {
+            VM.Call(1116);
+            return VM.StackPopInt();
+        }
     }
 }

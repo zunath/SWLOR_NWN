@@ -100,5 +100,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ashlashood00"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 33
   }
 }

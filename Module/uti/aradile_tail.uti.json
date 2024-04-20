@@ -77,5 +77,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "aradile_tail"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 98
   }
 }

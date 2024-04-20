@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "gimp_blood"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 26
   }
 }

@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "min_laser_2"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 84
   }
 }

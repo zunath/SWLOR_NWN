@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sygium_gem"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 133
   }
 }

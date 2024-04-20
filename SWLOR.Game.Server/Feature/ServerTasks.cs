@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature
         /// The server application is expected to restart the server when it sees it's down.
         /// This isn't handled by the C# code and should be set up on your server.
         /// </summary>
-        [NWNEventHandler("mod_heartbeat")]
+        [NWNEventHandler("swlor_heartbeat")]
         public static void ProcessAutoRestart()
         {
             var now = DateTime.UtcNow.TimeOfDay;
@@ -35,11 +35,16 @@ namespace SWLOR.Game.Server.Feature
             {
                 for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
                 {
+                    ExportSingleCharacter(player);
                     BootPC(player, "The server is automatically restarting.");
                 }
 
                 Log.Write(LogGroup.Server, "Server shutting down for automated restart.", true);
-                AdministrationPlugin.ShutdownServer();
+                
+                DelayCommand(0.1f, () =>
+                {
+                    AdministrationPlugin.ShutdownServer();
+                });
             }
         }
 

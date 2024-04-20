@@ -97,5 +97,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "forcewitmsk"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 27
   }
 }

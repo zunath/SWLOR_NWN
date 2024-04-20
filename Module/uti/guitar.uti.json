@@ -85,5 +85,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "guitar"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 151
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

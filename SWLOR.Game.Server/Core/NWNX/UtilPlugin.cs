@@ -69,15 +69,6 @@ namespace SWLOR.Game.Server.Core.NWNX
             return NWNCore.NativeFunctions.nwnxPopString();
         }
 
-        public static int IsValidResRef(string resRef, int type = (int)ResRefType.Creature)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "IsValidResRef");
-            NWNCore.NativeFunctions.nwnxPushInt(type);
-            NWNCore.NativeFunctions.nwnxPushString(resRef);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
-        }
-
         public static string GetEnvironmentVariable(string varname)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEnvironmentVariable");
@@ -109,14 +100,6 @@ namespace SWLOR.Game.Server.Core.NWNX
             return NWNCore.NativeFunctions.nwnxPopString();
         }
 
-        public static int Get2DARowCount(string str)
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "Get2DARowCount");
-            NWNCore.NativeFunctions.nwnxPushString(str);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
-        }
-
         public static string GetFirstResRef(ResRefType type, string regexFilter = "", bool moduleResourcesOnly = true)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFirstResRef");
@@ -132,13 +115,6 @@ namespace SWLOR.Game.Server.Core.NWNX
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNextResRef");
             NWNCore.NativeFunctions.nwnxCallFunction();
             return NWNCore.NativeFunctions.nwnxPopString();
-        }
-
-        public static int GetServerTicksPerSecond()
-        {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetServerTicksPerSecond");
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         /// @brief Get the world time as calendar day and time of day.

@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "grand_mball"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 28
   }
 }

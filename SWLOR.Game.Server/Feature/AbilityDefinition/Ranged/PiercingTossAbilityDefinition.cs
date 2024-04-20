@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
             dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
-            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
+            var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
             var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Ranged);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             }
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
-            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
+            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private static void PiercingToss1(AbilityBuilder builder)

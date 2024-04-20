@@ -73,5 +73,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "pistol_barrel"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 5
   }
 }

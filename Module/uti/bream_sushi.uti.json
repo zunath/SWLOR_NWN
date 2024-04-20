@@ -138,5 +138,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "bream_sushi"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 88
   }
 }

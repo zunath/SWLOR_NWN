@@ -110,8 +110,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        ///   Set oPlaceable's useable object status.
-        ///   Note: Only works on non-static placeables.
+        /// Set oTarget's useable object status.
+        /// Note: Only works on non-static placeables, creatures, doors and items.
+        /// On items, it affects interactivity when they're on the ground, and not useability in inventory.
         /// </summary>
         public static void SetUseableFlag(uint oPlaceable, bool nUseable)
         {
@@ -434,7 +435,7 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         ///   Duplicates the object specified by oSource.
-        ///   ONLY creatures and items can be specified.
+        ///   NOTE: this command can be used for copying Creatures, Items, Placeables, Waypoints, Stores, Doors, Triggers, Encounters.
         ///   If an owner is specified and the object is an item, it will be put into their inventory
         ///   If the object is a creature, they will be created at the location.
         ///   If a new tag is specified, it will be assigned to the new object.

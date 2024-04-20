@@ -102,7 +102,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 375
+    "value": 376
   },
   "Cursed": {
     "type": "byte",
@@ -299,5 +299,81 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "byysk_armor"
+  },
+  "xArmorPart_Belt": {
+    "type": "word",
+    "value": 63
+  },
+  "xArmorPart_LBice": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_LFArm": {
+    "type": "word",
+    "value": 198
+  },
+  "xArmorPart_LFoot": {
+    "type": "word",
+    "value": 186
+  },
+  "xArmorPart_LHand": {
+    "type": "word",
+    "value": 63
+  },
+  "xArmorPart_LShin": {
+    "type": "word",
+    "value": 186
+  },
+  "xArmorPart_LShou": {
+    "type": "word",
+    "value": 19
+  },
+  "xArmorPart_LThig": {
+    "type": "word",
+    "value": 232
+  },
+  "xArmorPart_Neck": {
+    "type": "word",
+    "value": 2
+  },
+  "xArmorPart_Pelvi": {
+    "type": "word",
+    "value": 232
+  },
+  "xArmorPart_RBice": {
+    "type": "word",
+    "value": 156
+  },
+  "xArmorPart_RFArm": {
+    "type": "word",
+    "value": 198
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 186
+  },
+  "xArmorPart_RHand": {
+    "type": "word",
+    "value": 63
+  },
+  "xArmorPart_Robe": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RShin": {
+    "type": "word",
+    "value": 186
+  },
+  "xArmorPart_RShou": {
+    "type": "word",
+    "value": 19
+  },
+  "xArmorPart_RThig": {
+    "type": "word",
+    "value": 232
+  },
+  "xArmorPart_Torso": {
+    "type": "word",
+    "value": 187
   }
 }

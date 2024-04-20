@@ -24,18 +24,19 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             void ApplyDamage(uint source, uint target, int level)
             {
                 int dmg;
+                var willBonus = GetAbilityScore(source, AbilityType.Willpower);
 
                 switch (level)
                 {
                     default:
                     case 1:
-                        dmg = 8;
+                        dmg = willBonus * 1 / 2;
                         break;
                     case 2:
-                        dmg = 12;
+                        dmg = willBonus;
                         break;
                     case 3:
-                        dmg = 16;
+                        dmg = willBonus * 3 / 2;
                         break;
                 }
 
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Poison_S), target);
 
-                var enmity = level * 120 + damage + 6;
+                var enmity = level * 50 + damage + 6;
                 Enmity.ModifyEnmity(source, target, enmity);
                 CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
             }
@@ -63,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .GrantAction((source, target, length, effectData) =>
                 {
                     var level = (int)effectData;
-                    const float Duration = 2f;
+                    const float Duration = 6f;
                     int dc;
 
                     switch (level)
@@ -86,8 +87,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     if (checkResult == SavingThrowResultType.Failed)
                     {
-                        ApplyEffectToObject(DurationType.Temporary, EffectParalyze(), target, Duration);
-                        Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Paralysis);
+                        ApplyEffectToObject(DurationType.Temporary, EffectEntangle(), target, Duration);
+                        Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Entangle);
                     }
 
                     ApplyDamage(source, target, level);

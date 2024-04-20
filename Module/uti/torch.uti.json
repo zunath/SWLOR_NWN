@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 1
+    "value": 2
   },
   "Cursed": {
     "type": "byte",
@@ -106,5 +106,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "torch"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 0
   }
 }

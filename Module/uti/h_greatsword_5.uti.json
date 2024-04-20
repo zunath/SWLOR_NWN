@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2444
+    "value": 2443
   },
   "Cursed": {
     "type": "byte",
@@ -178,5 +178,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "h_greatsword_5"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 44
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 44
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 44
   }
 }

@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -330,5 +330,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "republicagentrif"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 254
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

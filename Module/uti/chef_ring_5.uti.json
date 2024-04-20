@@ -198,5 +198,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "chef_ring_5"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 8
   }
 }

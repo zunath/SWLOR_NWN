@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         public void Migrate()
         {
             RemoveGrenadesRecast();
-            RefundSP();
+            RefundPerksByMapping(_refundMap);
         }
 
         private void RemoveGrenadesRecast()
@@ -121,47 +121,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     DB.Set(dbPlayer);
 
                     Log.Write(LogGroup.Migration, $"{dbPlayer.Name} ({dbPlayer.Id}): Replaced recast timer for Grenades.");
-                }
-            }
-        }
-
-        private void RefundSP()
-        {
-            var dbQuery = new DBQuery<Player>();
-            var playerCount = (int)DB.SearchCount(dbQuery);
-
-            var dbPlayers = DB.Search(dbQuery
-                .AddPaging(playerCount, 0));
-
-            foreach (var dbPlayer in dbPlayers)
-            {
-                var refundAmount = 0;
-
-                // Calculate the refund amount first.
-                foreach (var ((type, level), sp) in _refundMap)
-                {
-                    if (dbPlayer.Perks.ContainsKey(type) && dbPlayer.Perks[type] >= level)
-                    {
-                        refundAmount += sp;
-                    }
-                }
-
-                // Then remove the perks being refunded.
-                foreach (var ((type, _), _) in _refundMap)
-                {
-                    if (dbPlayer.Perks.ContainsKey(type))
-                    {
-                        dbPlayer.Perks.Remove(type);
-                    }
-                }
-
-                if (refundAmount > 0)
-                {
-                    dbPlayer.UnallocatedSP += refundAmount;
-
-                    Log.Write(LogGroup.Migration, $"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP.");
-
-                    DB.Set(dbPlayer);
                 }
             }
         }

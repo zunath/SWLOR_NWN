@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2079
+    "value": 21
   },
   "Cursed": {
     "type": "byte",
@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sardine_ball99"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 12
   }
 }

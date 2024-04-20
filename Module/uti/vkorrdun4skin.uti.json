@@ -293,5 +293,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vkorrdun4skin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

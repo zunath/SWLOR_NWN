@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "diag_circuit1"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 4
   }
 }

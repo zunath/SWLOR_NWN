@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 60
+    "value": 58
   },
   "Cursed": {
     "type": "byte",
@@ -146,5 +146,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "trn_saberstaff_1"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 71
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 21
   }
 }

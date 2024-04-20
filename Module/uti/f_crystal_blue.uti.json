@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "f_crystal_blue"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 79
   }
 }

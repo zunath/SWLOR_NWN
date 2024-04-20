@@ -171,5 +171,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "p_crystal_green"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 80
   }
 }

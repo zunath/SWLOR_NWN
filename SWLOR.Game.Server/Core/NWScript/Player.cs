@@ -419,6 +419,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// * GUIEVENT_PLAYERLIST_PLAYER_CLICK: The player clicked on.
         /// * GUIEVENT_PARTYBAR_PORTRAIT_CLICK: The creature clicked on.
         /// * GUIEVENT_DISABLED_PANEL_ATTEMPT_OPEN: For GUI_PANEL_CHARACTERSHEET, the owner of the character sheet.
+        ///                                         For GUI_PANEL_EXAMINE_*, the object being examined.
+        /// * GUIEVENT_*SELECT_CREATURE: The creature that was (un)selected
+        /// * GUIEVENT_EXAMINE_OBJECT: The object being examined.
+        /// * GUIEVENT_CHATLOG_PORTRAIT_CLICK: The owner of the portrait.
+        /// * GUIEVENT_PLAYERLIST_PLAYER_TELL: The selected player.
         /// </summary>
         /// <returns></returns>
         public static uint GetLastGuiEventObject()
@@ -429,17 +434,16 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         /// Disable a gui panel for the client that controls oPlayer.
-        /// Notes: Will close the gui panel if currently open.
+        /// Notes: Will close the gui panel if currently open, except GUI_PANEL_LEVELUP / GUI_PANEL_GOLD_*
         ///        Does not persist through relogging or in savegames.
         ///        Will fire a GUIEVENT_DISABLED_PANEL_ATTEMPT_OPEN OnPlayerGuiEvent for some gui panels if a player attempts to open them.
         ///        You can still force show a panel with PopUpGUIPanel().
+        ///        You can still force examine an object with ActionExamine().
         /// * nGuiPanel: A GUI_PANEL_* constant, except GUI_PANEL_PLAYER_DEATH.
         /// </summary>
-        /// <param name="oPlayer"></param>
-        /// <param name="nGuiPanel"></param>
-        /// <param name="bDisabled"></param>
-        public static void SetGuiPanelDisabled(uint oPlayer, GuiPanel nGuiPanel, bool bDisabled)
+        public static void SetGuiPanelDisabled(uint oPlayer, GuiPanel nGuiPanel, bool bDisabled, uint oTarget = OBJECT_INVALID)
         {
+            VM.StackPush(oTarget);
             VM.StackPush(bDisabled ? 1 : 0);
             VM.StackPush((int)nGuiPanel);
             VM.StackPush(oPlayer);
@@ -516,5 +520,28 @@ namespace SWLOR.Game.Server.Core.NWScript
             return (PlayerDevicePlatformType)VM.StackPopInt();
         }
 
+        /// <summary>
+        /// Returns the patch postfix of oPlayer (i.e. the 29 out of "87.8193.35-29 abcdef01").
+        /// Returns 0 if the given object isn't a player or did not advertise their build info, or the
+        /// player version is old enough not to send this bit of build info to the server.
+        /// </summary>
+        public static int GetPlayerBuildVersionPostfix(uint oPlayer)
+        {
+            VM.StackPush(oPlayer);
+            VM.Call(1093);
+            return VM.StackPopInt();
+        }
+
+        /// <summary>
+        /// Returns the patch commit sha1 of oPlayer (i.e. the "abcdef01" out of "87.8193.35-29 abcdef01").
+        /// Returns "" if the given object isn't a player or did not advertise their build info, or the
+        /// player version is old enough not to send this bit of build info to the server.
+        /// </summary>
+        public static string GetPlayerBuildVersionCommitSha1(uint oPlayer)
+        {
+            VM.StackPush(oPlayer);
+            VM.Call(1094);
+            return VM.StackPopString();
+        }
     }
 }

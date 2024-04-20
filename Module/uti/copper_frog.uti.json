@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "copper_frog"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 17
   }
 }

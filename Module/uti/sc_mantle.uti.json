@@ -290,5 +290,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sc_mantle"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 10
   }
 }

@@ -142,5 +142,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "frontier_bracer"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 10
   }
 }

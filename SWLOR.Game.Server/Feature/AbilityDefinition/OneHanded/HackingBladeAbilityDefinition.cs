@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 StatusEffect.Apply(activator, target, StatusEffectType.Bleed, 60f);
             }
             
-            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
+            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private static void HackingBlade1(AbilityBuilder builder)

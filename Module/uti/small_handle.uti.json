@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "small_handle"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 90
   }
 }

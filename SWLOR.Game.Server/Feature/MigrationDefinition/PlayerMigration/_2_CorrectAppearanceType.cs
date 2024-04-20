@@ -128,12 +128,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                         headId = new KelDorRacialAppearanceDefinition().FemaleHeads.First();
                     break;
                 default:
-                    appearanceType = AppearanceType.Human;
-                    if (gender == Gender.Male)
-                        headId = new HumanRacialAppearanceDefinition().MaleHeads.First();
-                    else
-                        headId = new HumanRacialAppearanceDefinition().FemaleHeads.First();
-                    break;
+                    return;
             }
 
             SetCreatureAppearanceType(player, appearanceType);

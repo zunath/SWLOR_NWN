@@ -100,5 +100,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "man_helm"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 51
   }
 }

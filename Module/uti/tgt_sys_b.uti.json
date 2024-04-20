@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "tgt_sys_b"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 55
   }
 }

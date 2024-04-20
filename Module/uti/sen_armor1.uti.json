@@ -169,5 +169,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sen_armor1"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 66
   }
 }

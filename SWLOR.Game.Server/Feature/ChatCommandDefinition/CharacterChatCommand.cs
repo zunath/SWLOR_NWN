@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -22,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
+            Char();
             CDKey();
             Save();
             Skills();
@@ -36,8 +39,49 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Customize();
             AlwaysWalk();
             AssociateCommands();
+            Follow();
 
             return _builder.Build();
+        }
+
+        private void Char()
+        {
+            _builder.Create("character", "char")
+                .Description("Displays your character's info.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) =>
+                {
+                    if (GetIsDM(user))
+                    {
+                        return "This command can only be used on PCs.";
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    var playerId = GetObjectUUID(user);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    var cdKey = GetPCPublicCDKey(user);
+                    var daysOld = (DateTime.UtcNow - dbPlayer.DateCreated).Days;
+                    var daysOldMessage = daysOld == 1 ? "day old" : "days old";
+                    var statRebuild = "Now";
+
+                    var (isOnDelay, timeToWait) = Recast.IsOnRecastDelay(user, RecastGroup.StatRebuild);
+                    if (isOnDelay)
+                    {
+                        statRebuild = timeToWait;
+                    }
+
+                    var message = $"{ColorToken.Green("Character Info:")}\n" +
+                                  $"{ColorToken.Green("Public CD Key:")} {ColorToken.White(cdKey)}\n" +
+                                  $"{ColorToken.Green("Player Id:")} {ColorToken.White(playerId)}\n" +
+                                  $"{ColorToken.Green("Date Created:")} {ColorToken.White(dbPlayer.DateCreated.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture))}\n" +
+                                  $"{ColorToken.Green("Age:")} {ColorToken.White(daysOld.ToString())} {ColorToken.White(daysOldMessage)}\n" +
+                                  $"{ColorToken.Green("AP Rebuild Available:")} {ColorToken.White(statRebuild)}";
+
+                    SendMessageToPC(user, message);
+                });
         }
 
         private void CDKey()
@@ -361,13 +405,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {
-                    var droid = Droid.GetDroid(user);
-                    if (!GetIsObjectValid(droid))
+                    var associate = GetAssociate(AssociateType.Henchman, user);
+                    if (!GetIsObjectValid(associate))
                     {
                         return "You do not have an active associate.";
                     }
 
-                    if (GetIsDead(droid))
+                    if (GetIsDead(associate))
                     {
                         return "Your associate is dead.";
                     }
@@ -381,10 +425,25 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .Action((user, target, location, args) =>
                 {
-                    var droid = Droid.GetDroid(user);
+                    var associate = GetAssociate(AssociateType.Henchman, user);
                     var message = string.Join(' ', args);
 
-                    AssignCommand(droid, () => SpeakString(message));
+                    AssignCommand(associate, () => SpeakString(message));
+                });
+        }
+
+        private void Follow()
+        {
+            _builder.Create("follow")
+                .Description("Makes you follow a selected target.")
+                .Permissions(AuthorizationLevel.All)
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    AssignCommand(user, () =>
+                    {
+                        ActionMoveToObject(target, true);
+                    });
                 });
         }
     }

@@ -152,7 +152,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Yes, but I'm not sure you're prepared for the task. I heard some of the other colony residents might need help though. Why don't you help them out first and then get back to me?"
+            "0": "Yes, but I'm not sure you're prepared for the task. I heard some of the other colony residents might need help though. Why don't you help them out first and then get back to me? Try talking to Orlando Doon. He might have something."
           }
         }
       },
@@ -875,7 +875,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 373
+    "value": 382
   },
   "PreventZoomIn": {
     "type": "byte",

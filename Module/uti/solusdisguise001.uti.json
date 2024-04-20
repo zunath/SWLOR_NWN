@@ -79,5 +79,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "solusdisguise001"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 196
   }
 }

@@ -145,7 +145,7 @@
   },
   "Conversation": {
     "type": "resref",
-    "value": ""
+    "value": "veles_colonist14"
   },
   "CRAdjust": {
     "type": "int",
@@ -165,7 +165,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The largest population centre on Viscara is Veles, a burgeoning city with a fast-growing population as refugees and colonists from across the Randon sector stream towards the planet. Some are forced to seek refuge amidst the turmoil of war, while others are attracted by the opportunities that Czerka corporation has been offering. As rumors abound of riches and secrets hidden within Viscara's crust, the population of Veles has grown into the tens of thousands."
+    }
   },
   "Dex": {
     "type": "byte",
@@ -676,5 +678,81 @@
   "Wis": {
     "type": "byte",
     "value": 10
+  },
+  "xAppearance_Head": {
+    "type": "word",
+    "value": 114
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Belt": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_LBicep": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LFArm": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LFoot": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LHand": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LShin": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LShoul": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_LThigh": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Neck": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Pelvis": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RBicep": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RFArm": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RHand": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RShin": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RShoul": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_RThigh": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Torso": {
+    "type": "word",
+    "value": 1
   }
 }

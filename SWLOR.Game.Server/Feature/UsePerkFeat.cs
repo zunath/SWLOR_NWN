@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature
             var effectivePerkLevel =
                 ability.EffectiveLevelPerkType == PerkType.Invalid
                     ? 1 // If there's not an associated perk, default level to 1.
-                    : Perk.GetEffectivePerkLevel(activator, ability.EffectiveLevelPerkType);
+                    : Perk.GetPerkLevel(activator, ability.EffectiveLevelPerkType);
 
             // Weapon abilities are queued for the next time the activator's attack lands on an enemy.
             if (ability.ActivationType == AbilityActivationType.Weapon)
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature
                 Activity.ClearBusy(activator);
 
                 // Moved during casting or activator died. Cancel the activation.
-                if (GetLocalInt(activator, id) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0)
+                if (GetLocalInt(activator, id) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0 || (GetCurrentAction(activator) != ActionType.Invalid && GetIsPC(activator) == true))
                     return;
                 
                 if (!Ability.CanUseAbility(activator, target, feat, ability.AbilityLevel, targetLocation))
@@ -338,7 +338,11 @@ namespace SWLOR.Game.Server.Feature
             if (string.IsNullOrWhiteSpace(abilityId))
                 return;
 
-            var featType = (FeatType)GetLocalInt(target, ActiveAbilityIdName);
+            var featId = GetLocalInt(target, ActiveAbilityFeatIdName);
+            if (featId == 0)
+                return;
+
+            var featType = (FeatType)featId;
             var abilityDetail = Ability.GetAbilityDetail(featType);
 
             // Remove the local variables.

@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 3
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -237,5 +237,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "mpiandrystorment"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 14
   }
 }

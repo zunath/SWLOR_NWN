@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 150
+    "value": 149
   },
   "Cursed": {
     "type": "byte",
@@ -116,5 +116,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "npc_mando_twnbld"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 31
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 21
   }
 }

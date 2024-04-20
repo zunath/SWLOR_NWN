@@ -204,5 +204,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "kwi_heavy_neck"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 80
   }
 }

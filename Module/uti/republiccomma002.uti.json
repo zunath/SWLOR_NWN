@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 112502
+    "value": 56251
   },
   "Cursed": {
     "type": "byte",
@@ -609,5 +609,17 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "republiccomma002"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 11
+  },
+  "xModelPart2": {
+    "type": "word",
+    "value": 84
+  },
+  "xModelPart3": {
+    "type": "word",
+    "value": 11
   }
 }

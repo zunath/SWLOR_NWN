@@ -105,5 +105,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ranger_hide"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

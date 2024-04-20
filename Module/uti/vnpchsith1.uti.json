@@ -97,5 +97,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vnpchsith1"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 33
   }
 }

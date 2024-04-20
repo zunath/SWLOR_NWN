@@ -105,5 +105,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cap_frigate_skin"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
   }
 }

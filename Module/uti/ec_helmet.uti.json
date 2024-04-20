@@ -225,5 +225,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ec_helmet"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 121
   }
 }

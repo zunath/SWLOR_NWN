@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Resref("chi_staff")
                 .Level(52)
                 .Quantity(1)
-                .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
+                .RequirementPerk(PerkType.MartialBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_arkoxit", 2)

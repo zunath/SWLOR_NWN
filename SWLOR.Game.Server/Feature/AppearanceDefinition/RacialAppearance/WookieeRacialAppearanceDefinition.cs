@@ -2,6 +2,8 @@
 {
     public class WookieeRacialAppearanceDefinition: RacialAppearanceBaseDefinition
     {
+        public override float MaximumScale => 1.5f;
+
         public override int[] MaleHeads { get; } = { 117, 119, 192, 193 };
         public override int[] FemaleHeads { get; } = { 110, 185, 186, 190, 192, 193, 195 };
         public override int[] Torsos { get; } = { 208, 209 };

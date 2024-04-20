@@ -75,5 +75,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "carbosyrup_b"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 203
   }
 }

@@ -111,5 +111,9 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "bag_b"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 53
   }
 }

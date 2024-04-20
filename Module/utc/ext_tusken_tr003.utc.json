@@ -829,6 +829,21 @@
           "type": "cexostring",
           "value": "TATOOINE_TUSKEN_RAIDER,40,1"
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "ISOMERASE_TYPE_1,10,1"
+        }
       }
     ]
   },
@@ -847,5 +862,81 @@
   "Wis": {
     "type": "byte",
     "value": 20
+  },
+  "xAppearance_Head": {
+    "type": "word",
+    "value": 192
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_Belt": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_LBicep": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_LFArm": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_LFoot": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_LHand": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LShin": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_LShoul": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_LThigh": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Neck": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Pelvis": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RBicep": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_RFArm": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_RHand": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RShin": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_RShoul": {
+    "type": "word",
+    "value": 0
+  },
+  "xBodyPart_RThigh": {
+    "type": "word",
+    "value": 1
+  },
+  "xBodyPart_Torso": {
+    "type": "word",
+    "value": 1
   }
 }

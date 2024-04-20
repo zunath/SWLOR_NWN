@@ -279,5 +279,35 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.StackPush(sqlQuery);
             VM.Call(1111);
         }
+
+        // Retrieve the column count of a prepared query.  
+        // * sqlQuery must be prepared before this function is called, but can be called before or after parameters are bound.
+        // * If the prepared query contains no columns (such as with an UPDATE or INSERT query), 0 is returned.
+        // * If a non-SELECT query contains a RETURNING clause, the number of columns in the RETURNING clause will be returned.
+        // * A returned value greater than 0 does not guarantee the query will return rows.
+        public static int SqlGetColumnCount(SQLQuery sqlQuery)
+        {
+            VM.StackPush(sqlQuery);
+            VM.Call(1126);
+
+            return VM.StackPopInt();
+        }
+
+        // Retrieve the column name of the Nth column of a prepared query.
+        // * sqlQuery must be prepared before this function is called, but can be called before or after parameters are bound.
+        // * If the prepared query contains no columns (such as with an UPDATE or INSERT query), an empty string is returned.
+        // * If a non-SELECT query contains a RETURNING clause, the name of the nNth column in the RETURNING clause is returned.
+        // * If nNth is out of range, an sqlite error is broadcast and an empty string is returned.
+        // * The value of the AS clause will be returned, if the clause exists for the nNth column.
+        // * A returned non-empty string does not guarantee the query will return rows.
+        public static string SqlGetColumnName(SQLQuery sqlQuery, int nNth)
+        {
+            VM.StackPush(nNth);
+            VM.StackPush(sqlQuery);
+            VM.Call(1127);
+
+            return VM.StackPopString();
+        }
+
     }
 }

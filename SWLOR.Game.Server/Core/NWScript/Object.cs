@@ -435,7 +435,7 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         ///   Duplicates the object specified by oSource.
-        ///   NOTE: this command can be used for copying Creatures, Items, Placeables, Waypoints, Stores, Doors, Triggers, Encounters.
+        ///   ONLY creatures and items can be specified.
         ///   If an owner is specified and the object is an item, it will be put into their inventory
         ///   If the object is a creature, they will be created at the location.
         ///   If a new tag is specified, it will be assigned to the new object.

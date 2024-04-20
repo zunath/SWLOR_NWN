@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         /// Bind a object to a named parameter of the given prepared query.
         /// Objects are serialized, NOT stored as a reference!
-        /// Currently supported object types: Creatures, Items, Placeables, Waypoints, Stores, Doors, Triggers, Encounters, Areas (CAF format)
+        /// // Currently supported object types: Creatures, Items, Placeables, Waypoints, Stores, Doors, Triggers, Areas (CAF format)
         /// If bSaveObjectState is TRUE, local vars, effects, action queue, and transition info (triggers, doors) are saved out
         /// (except for Combined Area Format, which always has object state saved out).
         /// </summary>

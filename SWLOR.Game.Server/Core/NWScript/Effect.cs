@@ -111,13 +111,10 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         ///   Get the possessor of oItem
-        ///     bReturnBags: If TRUE will potentially return a bag container item the item is in, instead of
-        ///     the object holding the bag. Make sure to check the returning item object type with this flag.
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetItemPossessor(uint oItem, bool bReturnBags = false)
+        public static uint GetItemPossessor(uint oItem)
         {
-            VM.StackPush(bReturnBags ? 1 : 0);
             VM.StackPush(oItem);
             VM.Call(29);
             return VM.StackPopObject();
@@ -331,12 +328,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nAmount: amount of damage reduction
         ///   - nDamagePower: DAMAGE_POWER_*
         ///   - nLimit: How much damage the effect can absorb before disappearing.
-        ///   - bRangedOnly: Set to TRUE to have this reduction only apply to ranged attacks 
         ///   Set to zero for infinite
         /// </summary>
-        public static Effect EffectDamageReduction(int nAmount, DamagePower nDamagePower, int nLimit = 0, bool bRangedOnly = false)
+        public static Effect EffectDamageReduction(int nAmount, DamagePower nDamagePower, int nLimit = 0)
         {
-            VM.StackPush(bRangedOnly ? 1 : 0);
             VM.StackPush(nLimit);
             VM.StackPush((int)nDamagePower);
             VM.StackPush(nAmount);
@@ -532,14 +527,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Create a Damage Resistance effect that removes the first nAmount points of
         ///   damage of type nDamageType, up to nLimit (or infinite if nLimit is 0)
         ///   - nDamageType: DAMAGE_TYPE_*
-        /// - nAmount: The amount of damage to soak each time the target is damaged.
-        /// - nLimit: How much damage the effect can absorb before disappearing.
-        ///   Set to zero for infinite.
-        /// - bRangedOnly: Set to TRUE to have this resistance only apply to ranged attacks.
+        ///   - nAmount
+        ///   - nLimit
         /// </summary>
-        public static Effect EffectDamageResistance(DamageType nDamageType, int nAmount, int nLimit = 0, bool bRangedOnly = false)
+        public static Effect EffectDamageResistance(DamageType nDamageType, int nAmount, int nLimit = 0)
         {
-            VM.StackPush(bRangedOnly ? 1 : 0);
             VM.StackPush(nLimit);
             VM.StackPush(nAmount);
             VM.StackPush((int)nDamageType);
@@ -1335,13 +1327,10 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         ///   Get the effect type (EFFECT_TYPE_*) of eEffect.
-        /// - bAllTypes: Set to TRUE to return additional values the game used to return EFFECT_INVALIDEFFECT for, specifically:
-        ///  EFFECT_TYPE: APPEAR, CUTSCENE_DOMINATED, DAMAGE, DEATH, DISAPPEAR, HEAL, HITPOINTCHANGEWHENDYING, KNOCKDOWN, MODIFYNUMATTACKS, SUMMON_CREATURE, TAUNT, WOUNDING
         ///   * Return value if eEffect is invalid: EFFECT_INVALIDEFFECT
         /// </summary>
-        public static EffectTypeScript GetEffectType(Effect eEffect, bool bAllTypes = false)
+        public static EffectTypeScript GetEffectType(Effect eEffect)
         {
-            VM.StackPush(bAllTypes ? 1 : 0);
             VM.StackPush((int)EngineStructure.Effect, eEffect);
             VM.Call(170);
             return (EffectTypeScript)VM.StackPopInt();
@@ -1698,44 +1687,5 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.Call(1117);
             return VM.StackPopStruct((int)EngineStructure.Effect);
         }
-
-        // Sets the effect creator
-        // - oCreator: The creator of the effect. Can be OBJECT_INVALID.
-        public static Effect SetEffectCreator(Effect eEffect, uint oCreator)
-        {
-            VM.StackPush(oCreator);
-            VM.StackPush(eEffect);
-            VM.Call(1123);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
-        }
-
-        // Sets the effect caster level
-        // - nCasterLevel: The caster level of the effect for the purposes of dispel magic and GetEffectCasterlevel. Must be >= 0.
-        public static Effect SetEffectCasterLevel(Effect eEffect, int nCasterLevel)
-        {
-            VM.StackPush(nCasterLevel);
-            VM.StackPush(eEffect);
-            VM.Call(1124);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
-        }
-
-        // Sets the effect spell id
-        // - nSpellId: The spell id for the purposes of effect stacking, dispel magic and GetEffectSpellId. Must be >= -1 (-1 being invalid/no spell)
-        public static Effect SetEffectSpellId(Effect eEffect, Spell nSpellId)
-        {
-            VM.StackPush((int)nSpellId);
-            VM.StackPush(eEffect);
-            VM.Call(1125);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
-        }
-
-        // Create an Enemy Attack Bonus effect. Creatures attacking the given creature with melee/ranged attacks or touch attacks get a bonus to hit.
-        public static Effect EffectEnemyAttackBonus(int nBonus)
-        {
-            VM.StackPush(nBonus);
-            VM.Call(1146);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
-        }
-
     }
 }

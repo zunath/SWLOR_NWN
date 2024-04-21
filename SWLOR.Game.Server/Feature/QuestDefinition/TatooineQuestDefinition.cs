@@ -37,11 +37,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             builder.Create("stinky_womprats", "Stinky Womprats")
 
                 .AddState()
-                .SetStateJournalText("You've agreed to take care of those pesky, stinky, womprats. Track down as many as you can!")
+                .SetStateJournalText("You've agreed to take care of those pesky, stinky, womprats. Slay them and return 10 hides to Haderach in Anchorhead.")
                 .AddCollectItemObjective("womprathide", 10)
-
-                .AddState()
-                .SetStateJournalText("Return to Haderach in Anchorhead for your reward.")
 
                 .AddGoldReward(1000)
                 .AddXPReward(1750);

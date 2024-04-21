@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
+using SWLOR.Core.Enumeration;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SWLOR.Core;
 using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Extension;
@@ -28,6 +29,7 @@ namespace SWLOR.Game.Server.Core
         private const int ScriptHandled = 0;
         private const int ScriptNotHandled = -1;
 
+        private static readonly PluginManager _pluginManager = new();
         private delegate bool ConditionalScriptDelegate();
 
         private static Dictionary<string, List<ActionScript>> _scripts;
@@ -40,9 +42,10 @@ namespace SWLOR.Game.Server.Core
 
         public static int Bootstrap(IntPtr nativeHandlesPtr, int nativeHandlesLength)
         {
-
             Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "true");
 
+            _pluginManager.LoadPlugins();
+            
             var retVal = NWNCore.Init(nativeHandlesPtr, nativeHandlesLength, out CoreGameManager coreGameManager);
             coreGameManager.OnSignal += OnSignal;
             coreGameManager.OnServerLoop += OnServerLoop;

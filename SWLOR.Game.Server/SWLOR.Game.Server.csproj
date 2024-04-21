@@ -28,6 +28,10 @@
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SWLOR.Core\SWLOR.Core.csproj" />
+  </ItemGroup>
+
   <Target Name="NWN" AfterTargets="Build">
     <ItemGroup>
       <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).dll" />

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Core.Service.Random;
 
 namespace SWLOR.CLI
 {

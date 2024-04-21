@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32407.343
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Game.Server", "SWLOR.Game.Server\SWLOR.Game.Server.csproj", "{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Web", "SWLOR.Web\SWLOR.Web.csproj", "{4CF51B54-4FE9-4167-8BD6-742A067BBEF3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.CLI", "SWLOR.CLI\SWLOR.CLI.csproj", "{0AF50AD5-8CAC-4CFD-92C9-A2AAAAEE64BE}"
@@ -13,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Admin", "SWLOR.Admin\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Runner", "SWLOR.Runner\SWLOR.Runner.csproj", "{CAD52F45-F4DC-4EE3-8008-068CC00E27B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Plugin.Test", "SWLOR.Plugin.Test\SWLOR.Plugin.Test.csproj", "{527E7367-7172-4D66-B67A-D892214A6AA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Plugin.Test", "SWLOR.Plugin.Test\SWLOR.Plugin.Test.csproj", "{527E7367-7172-4D66-B67A-D892214A6AA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Core", "SWLOR.Core\SWLOR.Core.csproj", "{22423AE4-5E03-4503-B112-42AB0F97F040}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Core", "SWLOR.Core\SWLOR.Core.csproj", "{22423AE4-5E03-4503-B112-42AB0F97F040}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4CF51B54-4FE9-4167-8BD6-742A067BBEF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4CF51B54-4FE9-4167-8BD6-742A067BBEF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CF51B54-4FE9-4167-8BD6-742A067BBEF3}.Release|Any CPU.ActiveCfg = Release|Any CPU

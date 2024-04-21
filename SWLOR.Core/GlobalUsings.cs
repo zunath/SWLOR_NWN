@@ -1,0 +1,1 @@
+﻿global using static SWLOR.Core.NWScript.NWScript;

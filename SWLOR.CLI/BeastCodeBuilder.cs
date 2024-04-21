@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Core.NWScript.Enum;
+using SWLOR.Core.Service.BeastMasteryService;
 
 namespace SWLOR.CLI
 {

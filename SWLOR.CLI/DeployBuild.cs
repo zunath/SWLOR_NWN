@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 
 namespace SWLOR.CLI
@@ -18,7 +17,7 @@ namespace SWLOR.CLI
         public void Process()
         {
             CreateDebugServerDirectory();
-            CopyBinaries();
+            CopyBinaries("../SWLOR.Core/bin/Debug/net7.0/");
             CopyPlugins();
             BuildHaks();
             BuildModule();
@@ -32,17 +31,15 @@ namespace SWLOR.CLI
             Directory.CreateDirectory(ModulesPath);
             Directory.CreateDirectory(TlkPath);
 
-            var source = new DirectoryInfo("../SWLOR.Game.Server/Docker");
+            var source = new DirectoryInfo("../SWLOR.Core/Docker");
             var target = new DirectoryInfo(DebugServerPath);
 
             CopyAll(source, target, "swlor.env");
         }
 
-        private void CopyBinaries()
+        private void CopyBinaries(string path)
         {
-            var binPath = "../SWLOR.Game.Server/bin/Debug/net7.0/";
-
-            var source = new DirectoryInfo(binPath);
+            var source = new DirectoryInfo(path);
             var target = new DirectoryInfo(DotnetPath);
 
             CopyAll(source, target, string.Empty);

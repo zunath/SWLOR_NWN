@@ -1,7 +1,7 @@
 ﻿using System;
-using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Core.Entity;
+using SWLOR.Core.Service;
+using SWLOR.Core.Service.DBService;
 
 namespace SWLOR.CLI
 {

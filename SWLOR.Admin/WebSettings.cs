@@ -1,4 +1,6 @@
-﻿namespace SWLOR.Admin
+﻿using SWLOR.Core.Service;
+
+namespace SWLOR.Admin
 {
     public class WebSettings
     {

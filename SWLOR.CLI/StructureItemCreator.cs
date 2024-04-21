@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Core.Extension;
+using SWLOR.Core.Service.PropertyService;
 
 namespace SWLOR.CLI
 {

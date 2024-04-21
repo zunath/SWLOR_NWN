@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using SWLOR.Game.Server;
 
 namespace SWLOR.Core
 {

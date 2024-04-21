@@ -260,7 +260,6 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   spell as.
         ///   - Returns CLASS_TYPE_INVALID if the caster has
         ///   no valid class (placeables, etc...)
-        ///   If used in an Area of Effect script it will return the creators spellcasting class.
         /// </summary>
         public static ClassType GetLastSpellCastClass()
         {
@@ -269,9 +268,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        /// Sets the number of base attacks each round for the specified creature (PC or NPC).
-        /// If set on a PC it will not be shown on their character sheet, but will save to BIC/savegame.
-        /// - nBaseAttackBonus - Number of base attacks per round, 1 to 6
+        ///   Sets the number of base attacks for the specified
+        ///   creatures. The range of values accepted are from
+        ///   1 to 6
+        ///   Note: This function does not work on Player Characters
         /// </summary>
         public static void SetBaseAttackBonus(int nBaseAttackBonus, uint oCreature = OBJECT_INVALID)
         {
@@ -1048,15 +1048,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        /// Get the caster level of an object. This is consistent with the caster level used when applying effects if OBJECT_SELF is used.
-        /// - oObject: A creature will return the caster level of their currently cast spell or ability, or the item's caster level if an item was used
-        ///            A placeable will return an automatic caster level: floor(10, (spell innate level * 2) - 1)
-        ///            An Area of Effect object will return the caster level that was used to create the Area of Effect.
-        /// * Return value on error, or if oObject has not yet cast a spell: 0;
+        ///   Get the level at which this creature cast it's last spell (or spell-like ability)
+        ///   * Return value on error, or if oCreature has not yet cast a spell: 0;
         /// </summary>
-        public static int GetCasterLevel(uint oObject)
+        public static int GetCasterLevel(uint oCreature)
         {
-            VM.StackPush(oObject);
+            VM.StackPush(oCreature);
             VM.Call(84);
             return VM.StackPopInt();
         }
@@ -1071,77 +1068,5 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.Call(107);
             return (RacialType)VM.StackPopInt();
         }
-
-        // Gets the total number of spell abilities a creature has.
-        public static int GetSpellAbilityCount(uint oCreature)
-        {
-            VM.StackPush(oCreature);
-            VM.Call(1128);
-            return VM.StackPopInt();
-        }
-
-        // Gets the spell Id of the spell ability at the given index.
-        // - nIndex: the index of the spell ability. Bounds: 0 <= nIndex < GetSpellAbilityCount()
-        // Returns: a SPELL_* constant or -1 if the slot is not set.
-        public static Spell GetSpellAbilitySpell(uint oCreature, int nIndex)
-        {
-            VM.StackPush(nIndex);
-            VM.StackPush(oCreature);
-            VM.Call(1129);
-            return (Spell)VM.StackPopInt();
-        }
-
-        // Gets the caster level of the spell ability in the given slot. Returns 0 by default.
-        // - nIndex: the index of the spell ability. Bounds: 0 <= nIndex < GetSpellAbilityCount()
-        // Returns: the caster level or -1 if the slot is not set.
-        public static int GetSpellAbilityCasterLevel(uint oCreature, int nIndex)
-        {
-            VM.StackPush(nIndex);
-            VM.StackPush(oCreature);
-            VM.Call(1130);
-            return VM.StackPopInt();
-        }
-
-        // Gets the ready state of a spell ability.
-        // - nIndex: the index of the spell ability. Bounds: 0 <= nIndex < GetSpellAbilityCount()
-        // Returns: TRUE/FALSE or -1 if the slot is not set.
-        public static int GetSpellAbilityReady(uint oCreature, int nIndex)
-        {
-            VM.StackPush(nIndex);
-            VM.StackPush(oCreature);
-            VM.Call(1131);
-            return VM.StackPopInt();
-        }
-
-        // Set the ready state of a spell ability slot.
-        // - nIndex: the index of the spell ability. Bounds: 0 <= nIndex < GetSpellAbilityCount()
-        // - bReady: TRUE to mark the slot ready.
-        public static void SetSpellAbilityReady(uint oCreature, int nIndex, bool bReady = true)
-        {
-            VM.StackPush(bReady ? 1 : 0);
-            VM.StackPush(nIndex);
-            VM.StackPush(oCreature);
-            VM.Call(1132);
-        }
-
-        // Sets the age of oCreature.
-        public static void SetAge(uint oCreature, int nAge)
-        {
-            VM.StackPush(nAge);
-            VM.StackPush(oCreature);
-            VM.Call(1144);
-        }
-
-        // Gets the base number of attacks oCreature can make every round
-        // Excludes additional effects such as haste, slow, spells, circle kick, attack modes, etc.
-        // * bCheckOverridenValue - Checks for SetBaseAttackBonus() on the creature, if FALSE will return the non-overriden version
-        public static int GetAttacksPerRound(uint oCreature, bool bCheckOverridenValue = true)
-        {
-            VM.StackPush(bCheckOverridenValue ? 1 : 0);
-            VM.StackPush(oCreature);
-            VM.Call(1145);
-            return VM.StackPopInt();
-        }
-
     }
 }

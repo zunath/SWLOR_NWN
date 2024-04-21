@@ -419,11 +419,6 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// * GUIEVENT_PLAYERLIST_PLAYER_CLICK: The player clicked on.
         /// * GUIEVENT_PARTYBAR_PORTRAIT_CLICK: The creature clicked on.
         /// * GUIEVENT_DISABLED_PANEL_ATTEMPT_OPEN: For GUI_PANEL_CHARACTERSHEET, the owner of the character sheet.
-        ///                                         For GUI_PANEL_EXAMINE_*, the object being examined.
-        /// * GUIEVENT_*SELECT_CREATURE: The creature that was (un)selected
-        /// * GUIEVENT_EXAMINE_OBJECT: The object being examined.
-        /// * GUIEVENT_CHATLOG_PORTRAIT_CLICK: The owner of the portrait.
-        /// * GUIEVENT_PLAYERLIST_PLAYER_TELL: The selected player.
         /// </summary>
         /// <returns></returns>
         public static uint GetLastGuiEventObject()

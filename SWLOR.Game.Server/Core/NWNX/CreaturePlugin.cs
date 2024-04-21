@@ -519,10 +519,9 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         // Add count levels of class to the creature, bypassing all validation
         // This will not work on player characters
-        public static void LevelUp(uint creature, ClassType classId, int count = 1, Package package = Package.Invalid)
+        public static void LevelUp(uint creature, ClassType classId, int count = 1)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "LevelUp");
-            NWNCore.NativeFunctions.nwnxPushInt((int)package);
             NWNCore.NativeFunctions.nwnxPushInt(count);
             NWNCore.NativeFunctions.nwnxPushInt((int)classId);
             NWNCore.NativeFunctions.nwnxPushObject(creature);

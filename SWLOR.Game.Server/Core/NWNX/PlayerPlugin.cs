@@ -237,16 +237,9 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         // Apply visualeffect to target that only player can see
         // Note: Only works with instant effects: VFX_COM_*, VFX_FNF_*, VFX_IMP_*
-        public static void ApplyInstantVisualEffectToObject(uint player, uint target, VisualEffect visualEffect, float scale, Vector3 translate, Vector3 rotate)
+        public static void ApplyInstantVisualEffectToObject(uint player, uint target, VisualEffect visualEffect)
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ApplyInstantVisualEffectToObject");
-            NWNCore.NativeFunctions.nwnxPushFloat(rotate.Z);
-            NWNCore.NativeFunctions.nwnxPushFloat(rotate.Y);
-            NWNCore.NativeFunctions.nwnxPushFloat(rotate.X);
-            NWNCore.NativeFunctions.nwnxPushFloat(translate.Z);
-            NWNCore.NativeFunctions.nwnxPushFloat(translate.Y);
-            NWNCore.NativeFunctions.nwnxPushFloat(translate.X);
-            NWNCore.NativeFunctions.nwnxPushFloat(scale);
             NWNCore.NativeFunctions.nwnxPushInt((int)visualEffect);
             NWNCore.NativeFunctions.nwnxPushObject(target);
             NWNCore.NativeFunctions.nwnxPushObject(player);

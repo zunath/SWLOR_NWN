@@ -370,33 +370,19 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   This action casts a spell at oTarget.
         ///   - nSpell: SPELL_*
         ///   - oTarget: Target for the spell
-        ///   - nMetaMagic: METAMAGIC_*
+        ///   - nMetamagic: METAMAGIC_*
         ///   - bCheat: If this is TRUE, then the executor of the action doesn't have to be
         ///   able to cast the spell.
-        ///   - nDomainLevel: The level of the spell if cast from a domain slot.
-        ///     eg SPELL_HEAL can be spell level 5 on a cleric. Use 0 for no domain slot.
+        ///   - nDomainLevel: TBD - SS
         ///   - nProjectilePathType: PROJECTILE_PATH_TYPE_*
         ///   - bInstantSpell: If this is TRUE, the spell is cast immediately. This allows
         ///   the end-user to simulate a high-level magic-user having lots of advance
         ///   warning of impending trouble
-        /// - nClass: If set to a CLASS_TYPE_* it will cast using that class specifically.
-        ///   CLASS_TYPE_INVALID will use spell abilities.
-        /// - bSpontaneousCast: If set to TRUE will attempt to cast the given spell spontaneously,
-        ///   ie a Cleric casting Cure Light Wounds using any level 1 slot. Needs a valid nClass set.
         /// </summary>
-        public static void ActionCastSpellAtObject(
-            Spell nSpell, 
-            uint oTarget, 
-            MetaMagic nMetaMagic = MetaMagic.Any,
-            bool nCheat = false, 
-            int nDomainLevel = 0,
-            ProjectilePathType nProjectilePathType = ProjectilePathType.Default, 
-            bool bInstantSpell = false,
-            int nClass = -1,
-            bool bSpontaneousCast = false)
+        public static void ActionCastSpellAtObject(Spell nSpell, uint oTarget, MetaMagic nMetaMagic = MetaMagic.Any,
+            bool nCheat = false, int nDomainLevel = 0,
+            ProjectilePathType nProjectilePathType = ProjectilePathType.Default, bool bInstantSpell = false)
         {
-            VM.StackPush(bSpontaneousCast ? 1 : 0);
-            VM.StackPush(nClass);
             VM.StackPush(bInstantSpell ? 1 : 0);
             VM.StackPush((int)nProjectilePathType);
             VM.StackPush(nDomainLevel);
@@ -1299,36 +1285,18 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Cast spell nSpell at lTargetLocation.
         ///   - nSpell: SPELL_*
         ///   - lTargetLocation
-        /// - nMetaMagic: METAMAGIC_*. If nClass is specified, cannot be METAMAGIC_ANY.
-        /// - bCheat: If this is TRUE, then the executor of the action doesn't have to be
-        ///   able to cast the spell. Ignored if nClass is specified.
-        /// - bCheat: If this is TRUE, then the executor of the action doesn't have to be
+        ///   - nMetaMagic: METAMAGIC_*
+        ///   - bCheat: If this is TRUE, then the executor of the action doesn't have to be
         ///   able to cast the spell.
-        /// - nProjectilePathType: PROJECTILE_PATH_TYPE_*
-        /// - bInstantSpell: If this is TRUE, the spell is cast immediately; this allows
+        ///   - nProjectilePathType: PROJECTILE_PATH_TYPE_*
+        ///   - bInstantSpell: If this is TRUE, the spell is cast immediately; this allows
         ///   the end-user to simulate
         ///   a high-level magic user having lots of advance warning of impending trouble.
-        /// - nClass: If set to a CLASS_TYPE_* it will cast using that class specifically.
-        ///   CLASS_TYPE_INVALID will use spell abilities.
-        /// - bSpontaneousCast: If set to TRUE will attempt to cast the given spell spontaneously,
-        ///   ie a Cleric casting Cure Light Wounds using any level 1 slot. Needs a valid nClass set.
-        /// - nDomainLevel: The level of the spell if cast from a domain slot.
-        ///   eg SPELL_HEAL can be spell level 5 on a cleric. Use 0 for no domain slot.
         /// </summary>
-        public static void ActionCastSpellAtLocation(
-            Spell nSpell, 
-            Location lTargetLocation,
-            MetaMagic nMetaMagic = MetaMagic.Any, 
-            bool bCheat = false,
-            ProjectilePathType nProjectilePathType = ProjectilePathType.Default, 
-            bool bInstantSpell = false,
-            int nClass = -1,
-            bool bSpontaneousCast = false,
-            int nDomainLevel = 0)
+        public static void ActionCastSpellAtLocation(Spell nSpell, Location lTargetLocation,
+            MetaMagic nMetaMagic = MetaMagic.Any, bool bCheat = false,
+            ProjectilePathType nProjectilePathType = ProjectilePathType.Default, bool bInstantSpell = false)
         {
-            VM.StackPush(nDomainLevel);
-            VM.StackPush(bSpontaneousCast ? 1 : 0);
-            VM.StackPush(nClass);
             VM.StackPush(bInstantSpell ? 1 : 0);
             VM.StackPush((int)nProjectilePathType);
             VM.StackPush(bCheat ? 1 : 0);
@@ -1437,9 +1405,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        /// This is for use in a Spell script, it gets the ID of the spell that is being cast.
-        /// If used in an Area of Effect script it will return the ID of the spell that generated the AOE effect.
-        /// * Returns the spell ID (SPELL_*) or -1 if no spell was cast or on error
+        ///   This is for use in a Spell script, it gets the ID of the spell that is being
+        ///   cast (SPELL_*).
         /// </summary>
         public static int GetSpellId()
         {
@@ -1460,8 +1427,12 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         ///   Set the name of oObject.
-        /// - bOriginalName:  if set to true any new name specified via a SetName scripting command
-        ///                   is ignored and the original object's name is returned instead.
+        ///   - oObject: the object for which you are changing the name (area, creature, placeable, item, or door).
+        ///   - sNewName: the new name that the object will use.
+        ///   Note: SetName() does not work on player objects.
+        ///   Setting an object's name to "" will make the object
+        ///   revert to using the name it had originally before any
+        ///   SetName() calls were made on the object.
         /// </summary>
         public static string GetName(uint oObject, bool bOriginalName = false)
         {
@@ -1761,14 +1732,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        /// Determine whether oCreature has nFeat, optionally if nFeat is useable.
-        /// - nFeat: FEAT_*
-        /// - oCreature
-        /// - bIgnoreUses: Will check if the creature has the given feat even if it has no uses remaining
+        ///   Determine whether oCreature has nFeat, and nFeat is useable.
+        ///   - nFeat: FEAT_*
+        ///   - oCreature
         /// </summary>
-        public static bool GetHasFeat(FeatType nFeat, uint oCreature, bool bIgnoreUses = false)
+        public static bool GetHasFeat(FeatType nFeat, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(bIgnoreUses ? 1 : 0);
             VM.StackPush(oCreature);
             VM.StackPush((int)nFeat);
             VM.Call(285);
@@ -2556,15 +2525,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - bBroadcastToFaction: If this is TRUE then only creatures in the same faction
         ///   as oCreatureToFloatAbove
         ///   will see the floaty text, and only if they are within range (30 metres).
-        ///   - bChatWindow:  If TRUE, the string reference will be displayed in oCreatureToFloatAbove's chat window
         /// </summary>
-        public static void FloatingTextStrRefOnCreature(
-            int nStrRefToDisplay, 
-            uint oCreatureToFloatAbove,
-            bool bBroadcastToFaction = true,
-            bool bChatWindow = true)
+        public static void FloatingTextStrRefOnCreature(int nStrRefToDisplay, uint oCreatureToFloatAbove,
+            bool bBroadcastToFaction = true)
         {
-            VM.StackPush(bChatWindow ? 1 : 0);
             VM.StackPush(bBroadcastToFaction ? 1 : 0);
             VM.StackPush(oCreatureToFloatAbove);
             VM.StackPush(nStrRefToDisplay);
@@ -2580,15 +2544,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - bBroadcastToFaction: If this is TRUE then only creatures in the same faction
         ///   as oCreatureToFloatAbove
         ///   will see the floaty text, and only if they are within range (30 metres).
-        ///   - bChatWindow:  If TRUE, sStringToDisplay will be displayed in oCreatureToFloatAbove's chat window.
         /// </summary>
-        public static void FloatingTextStringOnCreature(
-            string sStringToDisplay, 
-            uint oCreatureToFloatAbove,
-            bool bBroadcastToFaction = true,
-            bool bChatWindow = true)
+        public static void FloatingTextStringOnCreature(string sStringToDisplay, uint oCreatureToFloatAbove,
+            bool bBroadcastToFaction = true)
         {
-            VM.StackPush(bChatWindow ? 1 : 0);
             VM.StackPush(bBroadcastToFaction ? 1 : 0);
             VM.StackPush(oCreatureToFloatAbove);
             VM.StackPush(sStringToDisplay);
@@ -2970,7 +2929,7 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         ///   Stores an object with the given id.
-        ///   NOTE: this command can be used for storing Creatures, Items, Placeables, Waypoints, Stores, Doors, Triggers, Encounters.
+        ///   NOTE: this command can only be used for storing Creatures and Items.
         ///   Returns 0 if it failled, 1 if it worked.
         ///   If bSaveObjectState is TRUE, local vars, effects, action queue, and transition info (triggers, doors) are saved out
         ///   (except for Combined Area Format, which always has object state saved out).
@@ -4162,7 +4121,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         /// Sets the discoverability mask on oObject.
         /// This allows toggling areahilite (TAB key by default) and mouseover discovery in the area view.
-        /// * nMask is a bitmask of OBJECT_UI_DISCOVERY_*
+        /// * nMask is a mask of OBJECT_UI_DISCOVERY_MODE_*
         /// Will currently only work on Creatures, Doors (Hilite only), Items and Useable Placeables.
         /// Does not affect inventory items.
         /// </summary>

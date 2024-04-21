@@ -2229,7 +2229,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 94
+    "value": 95
   },
   "Width": {
     "type": "int",

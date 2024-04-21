@@ -88,7 +88,8 @@ namespace SWLOR.CLI
         
         private async Task GenerateQuest()
         {
-            _chat.AppendUserInput("Generate a quest outline involving the fictional planet Hutlar");
+            _chat.AppendUserInput("Create a quest for the fictional planet of Mon Cala. Include the outline, template, and NPC dialogue information");
+            _chat.Model = OpenAI_API.Models.Model.GPT4;
 
             await foreach (var res in _chat.StreamResponseEnumerableFromChatbotAsync())
             {

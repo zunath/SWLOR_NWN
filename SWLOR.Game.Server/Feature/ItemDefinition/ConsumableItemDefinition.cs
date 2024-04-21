@@ -208,7 +208,6 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             _builder.Create("PET_FOOD")
                 .Delay(1f)
                 .PlaysAnimation(Animation.LoopingGetLow)
-                .ReducesItemCharge()
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var minimumLevel = (GetLocalInt(item, "BEAST_FOOD_TIER") - 1) * 10;

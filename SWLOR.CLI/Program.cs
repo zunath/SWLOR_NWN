@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.CommandLineUtils;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.CommandLineUtils;
 
 namespace SWLOR.CLI
 {
@@ -15,8 +16,9 @@ namespace SWLOR.CLI
         private static readonly DroidItemBuilder _droidItemBuilder = new();
         private static readonly DeployBuild _deployBuild = new();
         private static readonly BeastCodeBuilder _beastBuilder = new();
+        private static readonly QuestBuilder _questBuilder = new();
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var app = new CommandLineApplication();
 
@@ -73,6 +75,12 @@ namespace SWLOR.CLI
                 CommandOptionType.SingleValue
             );
 
+            var questBuilderOption = app.Option(
+                "-$|-q |--quest",
+                "Runs the quest builder which uses ChatGPT (API key required).",
+                CommandOptionType.NoValue
+            );
+
             var recipeOption = app.Option(
                 "-$|-r |--recipe",
                 "Generates code file for all of the recipes in the recipes.tsv file.",
@@ -91,7 +99,7 @@ namespace SWLOR.CLI
 
             app.HelpOption("-? | -h | --help");
 
-            app.OnExecute(() =>
+            app.OnExecute(async () =>
             {
                 if (placeableOption.HasValue())
                 {
@@ -121,6 +129,11 @@ namespace SWLOR.CLI
                 if (modulePackerOption.HasValue())
                 {
                     _modulePacker.PackModule(modulePackerOption.Value());
+                }
+
+                if (questBuilderOption.HasValue())
+                {
+                    await _questBuilder.ProcessAsync();
                 }
 
                 if (moduleUnpackOption.HasValue())

@@ -1,15 +1,27 @@
 ﻿using SWLOR.Core;
+using SWLOR.Core.Plugin;
 
 namespace SWLOR.Plugin.Test
 {
-    public class TestPlugin: IPlugin
+    public class TestPlugin
     {
-        public void OnStart()
+        public TestPlugin()
+        {
+            Console.WriteLine($"Starting up TestPlugin");
+        }
+        
+        public void OnLoad()
         {
             Console.WriteLine("TestPlugin starting up...");
         }
 
-        public void OnShutdown()
+        [NWNEventHandler("mod_heartbeat")]
+        public static void HeartbeatTest()
+        {
+            Console.WriteLine("TestPlugin heartbeat2");
+        }
+        
+        public void OnUnload()
         {
             Console.WriteLine($"TestPlugin shutting down...");
         }

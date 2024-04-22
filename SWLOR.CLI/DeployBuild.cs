@@ -47,12 +47,17 @@ namespace SWLOR.CLI
 
         private void CopyPlugins()
         {
-            var pluginPath = "../plugins/Debug/net7.0/";
+            var pluginFolderPath = "../plugins/";
 
-            var source = new DirectoryInfo(pluginPath);
-            var target = new DirectoryInfo(PluginPath);
+            foreach (var directory in Directory.GetDirectories(pluginFolderPath))
+            {
+                var pluginPath = directory + "/Debug/net7.0/";
+                var source = new DirectoryInfo(pluginPath);
+                var target = new DirectoryInfo(PluginPath + "/" + directory);
+
+                CopyAll(source, target);
+            }
             
-            CopyAll(source, target, "SWLOR.Core.dll", "SWLOR.Core.pdb");
         }
         
         private void BuildHaks()

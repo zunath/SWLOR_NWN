@@ -7,6 +7,7 @@ namespace SWLOR.Core
         public string LogDirectory { get; }
         public string PluginDirectory { get; }
         public string RedisIPAddress { get; }
+        public bool IsHotReloadEnabled { get; }
         public ServerEnvironmentType ServerEnvironment { get; }
 
         private static ApplicationSettings _settings;
@@ -23,6 +24,7 @@ namespace SWLOR.Core
             LogDirectory = Environment.GetEnvironmentVariable("SWLOR_APP_LOG_DIRECTORY");
             PluginDirectory = Environment.GetEnvironmentVariable("SWLOR_PLUGIN_DIRECTORY");
             RedisIPAddress = Environment.GetEnvironmentVariable("NWNX_REDIS_HOST");
+            IsHotReloadEnabled = Environment.GetEnvironmentVariable("SWLOR_ENABLE_HOT_RELOAD") == "true";
 
             var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT");
             if (!string.IsNullOrWhiteSpace(environment) && 

@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageOutputPath>$(OutputPath)</PackageOutputPath>
-    <BaseOutputPath>../plugins/</BaseOutputPath>
+    <BaseOutputPath>../plugins/SWLOR.Plugin.Test</BaseOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

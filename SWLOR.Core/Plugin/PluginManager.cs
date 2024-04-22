@@ -6,18 +6,18 @@ namespace SWLOR.Core.Plugin
     /// <summary>
     /// Loads all available plugins and their types for service initialisation.
     /// </summary>
-    public sealed class PluginManager
+    public static class PluginManager
     {
         private const int PluginUnloadAttempts = 10;
         private const int PluginUnloadSleepMs = 5000;
 
-        private readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
-        private readonly HashSet<Assembly> _loadedAssemblies = new();
-        private readonly List<Plugin> _plugins = new();
+        private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
+        private static readonly HashSet<Assembly> _loadedAssemblies = new();
+        private static readonly List<Plugin> _plugins = new();
 
-        internal IReadOnlyCollection<Type> LoadedTypes { get; private set; } = null!;
+        internal static IReadOnlyCollection<Type> LoadedTypes { get; private set; } = null!;
 
-        internal IReadOnlyCollection<string> ResourcePaths { get; private set; } = null!;
+        internal static IReadOnlyCollection<string> ResourcePaths { get; private set; } = null!;
 
         /// <summary>
         /// Gets the install directory of the specified plugin.
@@ -25,7 +25,7 @@ namespace SWLOR.Core.Plugin
         /// <param name="pluginAssembly">The assembly of the plugin, e.g. typeof(MyService).Assembly</param>
         /// <returns>The install directory for the specified plugin.</returns>
         /// <exception cref="ArgumentException">Thrown if the specified assembly is not a plugin.</exception>
-        public string? GetPluginDirectory(Assembly pluginAssembly)
+        public static string? GetPluginDirectory(Assembly pluginAssembly)
         {
             if (IsPluginAssembly(pluginAssembly))
             {
@@ -40,17 +40,17 @@ namespace SWLOR.Core.Plugin
         /// </summary>
         /// <param name="assembly">The assembly to query.</param>
         /// <returns>True if the assembly is a plugin, otherwise false.</returns>
-        public bool IsPluginAssembly(Assembly assembly)
+        public static bool IsPluginAssembly(Assembly assembly)
         {
             return _plugins.Any(plugin => plugin.Assembly == assembly);
         }
 
-        public bool IsPluginLoaded(string pluginName)
+        public static bool IsPluginLoaded(string pluginName)
         {
             return _plugins.Any(plugin => plugin.Name.Name == pluginName);
         }
 
-        public Assembly? ResolveDependency(string pluginName, AssemblyName dependencyName)
+        public static Assembly? ResolveDependency(string pluginName, AssemblyName dependencyName)
         {
             var assembly = ResolveDependencyFromSwlor(pluginName, dependencyName);
             if (assembly == null)
@@ -62,7 +62,7 @@ namespace SWLOR.Core.Plugin
         }
 
 
-        public void Load()
+        public static void Load()
         {
             LoadCore();
             BootstrapPlugins();
@@ -72,7 +72,7 @@ namespace SWLOR.Core.Plugin
             ResourcePaths = GetResourcePaths();
         }
 
-        public void Unload()
+        public static void Unload()
         {
             _loadedAssemblies.Clear();
             LoadedTypes = null!;
@@ -104,12 +104,12 @@ namespace SWLOR.Core.Plugin
             }
         }
 
-        private void BootstrapPlugins()
+        private static void BootstrapPlugins()
         {
             var pluginSources = new List<IPluginSource> 
             {
-                new PaketPluginSource(this),
-                new LocalPluginSource(this, _appSettings.PluginDirectory),
+                new PaketPluginSource(),
+                new LocalPluginSource(_appSettings.PluginDirectory),
             };
 
             foreach (var pluginSource in pluginSources)
@@ -118,7 +118,7 @@ namespace SWLOR.Core.Plugin
             }
         }
 
-        private IReadOnlyCollection<Type> GetLoadedTypes()
+        private static IReadOnlyCollection<Type> GetLoadedTypes()
         {
             var loadedTypes = new List<Type>();
             foreach (var assembly in _loadedAssemblies)
@@ -129,7 +129,7 @@ namespace SWLOR.Core.Plugin
             return loadedTypes;
         }
 
-        private IReadOnlyCollection<string> GetResourcePaths()
+        private static IReadOnlyCollection<string> GetResourcePaths()
         {
             var resourcePaths = new List<string>();
             foreach (var plugin in _plugins)
@@ -143,7 +143,7 @@ namespace SWLOR.Core.Plugin
             return resourcePaths;
         }
 
-        private IEnumerable<Type> GetTypesFromAssembly(Assembly assembly)
+        private static IEnumerable<Type> GetTypesFromAssembly(Assembly assembly)
         {
             IEnumerable<Type> assemblyTypes;
             try
@@ -178,7 +178,7 @@ namespace SWLOR.Core.Plugin
             return assemblyTypes;
         }
 
-        private bool IsUnloadComplete(Dictionary<WeakReference, string> pendingUnloads, int attempt)
+        private static bool IsUnloadComplete(Dictionary<WeakReference, string> pendingUnloads, int attempt)
         {
             var retVal = true;
             foreach ((var assemblyReference, var pluginName) in pendingUnloads)
@@ -197,7 +197,7 @@ namespace SWLOR.Core.Plugin
             return retVal;
         }
 
-        private bool IsValidDependency(string plugin, AssemblyName requested, AssemblyName resolved)
+        private static bool IsValidDependency(string plugin, AssemblyName requested, AssemblyName resolved)
         {
             if (requested.Name != resolved.Name)
             {
@@ -212,7 +212,7 @@ namespace SWLOR.Core.Plugin
             return true;
         }
 
-        private void LoadCore()
+        private static void LoadCore()
         {
             foreach (var assembly in Assemblies.AllAssemblies)
             {
@@ -220,7 +220,7 @@ namespace SWLOR.Core.Plugin
             }
         }
 
-        private void LoadPlugin(Plugin plugin)
+        private static void LoadPlugin(Plugin plugin)
         {
             Console.WriteLine($"Loading DotNET plugin {plugin.Name.Name} - {plugin.Path}");
             plugin.Load();
@@ -232,10 +232,17 @@ namespace SWLOR.Core.Plugin
             }
 
             _loadedAssemblies.Add(plugin.Assembly);
+
+            var pluginEntryType = plugin.Assembly.GetTypes()
+                .Single(x => typeof(IPluginEntry).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract);
+            var pluginEntry = (IPluginEntry)Activator.CreateInstance(pluginEntryType);
+            pluginEntry.OnLoaded();
+            
+            
             Console.WriteLine($"Loaded DotNET plugin {plugin.Name.Name} - {plugin.Path}");
         }
 
-        private void LoadPlugins()
+        private static void LoadPlugins()
         {
             foreach (var plugin in _plugins)
             {
@@ -248,7 +255,7 @@ namespace SWLOR.Core.Plugin
             }
         }
 
-        private Assembly? ResolveDependencyFromSwlor(string pluginName, AssemblyName dependencyName)
+        private static Assembly? ResolveDependencyFromSwlor(string pluginName, AssemblyName dependencyName)
         {
             foreach (var assembly in Assemblies.AllAssemblies)
             {
@@ -261,7 +268,7 @@ namespace SWLOR.Core.Plugin
             return null;
         }
 
-        private Assembly? ResolveDependencyFromPlugins(string pluginName, AssemblyName dependencyName)
+        private static Assembly? ResolveDependencyFromPlugins(string pluginName, AssemblyName dependencyName)
         {
             foreach (var plugin in _plugins)
             {

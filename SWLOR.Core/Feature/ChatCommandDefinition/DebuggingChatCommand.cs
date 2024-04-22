@@ -1,6 +1,7 @@
 ﻿using SWLOR.Core.Entity;
 using SWLOR.Core.Enumeration;
 using SWLOR.Core.NWScript.Enum;
+using SWLOR.Core.Plugin;
 using SWLOR.Core.Service;
 using SWLOR.Core.Service.ChatCommandService;
 using SWLOR.Core.Service.GuiService;
@@ -16,6 +17,7 @@ namespace SWLOR.Core.Feature.ChatCommandDefinition
             EnmityDebugger();
             GetObjectId();
             ResetBeast();
+            ReloadPlugins();
 
             return _builder.Build();
         }
@@ -112,6 +114,20 @@ namespace SWLOR.Core.Feature.ChatCommandDefinition
 
                     DB.Delete<Beast>(dbPlayer.ActiveBeastId);
 
+                });
+        }
+
+        private void ReloadPlugins()
+        {
+            _builder.Create("reloadplugins")
+                .Description("")
+                .Permissions(AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    Console.WriteLine($"Reloading plugins");
+                    PluginManager.Unload();
+                    PluginManager.Load();
+                    Console.WriteLine($"Reloading plugins completed!");
                 });
         }
     }

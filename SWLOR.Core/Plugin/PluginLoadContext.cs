@@ -10,12 +10,10 @@ namespace SWLOR.Core.Plugin
 
         private Plugin? plugin;
 
-        private PluginManager pluginManager;
         private AssemblyDependencyResolver resolver;
 
-        public PluginLoadContext(PluginManager pluginManager, Plugin plugin) : base(true)
+        public PluginLoadContext(Plugin plugin) : base(true)
         {
-            this.pluginManager = pluginManager;
             this.plugin = plugin;
 
             resolver = new AssemblyDependencyResolver(plugin.Path);
@@ -23,7 +21,6 @@ namespace SWLOR.Core.Plugin
 
         public void Dispose()
         {
-            pluginManager = null!;
             resolver = null!;
             plugin = null;
             assemblyCache.Clear();
@@ -83,7 +80,7 @@ namespace SWLOR.Core.Plugin
             }
 
             // Resolve the dependency with the bundled assemblies (NWN.Core/Anvil), then check if other plugins can provide the dependency.
-            Assembly? assembly = pluginManager.ResolveDependency(plugin.Name.Name, assemblyName);
+            Assembly? assembly = PluginManager.ResolveDependency(plugin.Name.Name, assemblyName);
             if (assembly != null)
             {
                 return assembly;

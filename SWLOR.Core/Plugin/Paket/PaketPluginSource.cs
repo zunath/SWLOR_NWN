@@ -22,13 +22,7 @@ namespace SWLOR.Core.Plugin.Paket
 
         private readonly string paketFilePath = Path.Combine(_appSettings.PluginDirectory, "paket.dependencies");
 
-        private readonly PluginManager pluginManager;
         private readonly FSharpList<string> scriptTypes = ListModule.OfArray(new[] { "csx" });
-
-        public PaketPluginSource(PluginManager pluginManager)
-        {
-            this.pluginManager = pluginManager;
-        }
 
         public IEnumerable<Plugin> Bootstrap()
         {
@@ -90,7 +84,7 @@ namespace SWLOR.Core.Plugin.Paket
                     continue;
                 }
 
-                Plugin plugin = new Plugin(pluginManager, pluginPath)
+                Plugin plugin = new Plugin(pluginPath)
                 {
                     AdditionalAssemblyPaths = loadFile.AssemblyPaths,
                     UnmanagedAssemblyPaths = nativeAssemblyPaths,

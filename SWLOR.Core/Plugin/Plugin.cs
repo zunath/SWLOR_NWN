@@ -4,13 +4,10 @@ namespace SWLOR.Core.Plugin
 {
     internal sealed class Plugin
     {
-        private readonly PluginManager _pluginManager;
-
         private PluginLoadContext? _pluginLoadContext;
 
-        public Plugin(PluginManager pluginManager, string path)
+        public Plugin(string path)
         {
-            this._pluginManager = pluginManager;
             Path = path;
             Name = AssemblyName.GetAssemblyName(path);
         }
@@ -35,7 +32,7 @@ namespace SWLOR.Core.Plugin
 
         public void Load()
         {
-            _pluginLoadContext = new PluginLoadContext(_pluginManager, this);
+            _pluginLoadContext = new PluginLoadContext( this);
             Loading = true;
 
             try

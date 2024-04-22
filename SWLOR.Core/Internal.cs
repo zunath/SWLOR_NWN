@@ -12,8 +12,6 @@ namespace SWLOR.Core
         private const int ScriptNotHandled = -1;
 
         private static readonly EventManager _eventManager = new();
-        private static readonly PluginManager _pluginManager = new();
-
 
         public static event Action OnScriptContextBegin;
         public static event Action OnScriptContextEnd;
@@ -25,7 +23,7 @@ namespace SWLOR.Core
             Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "true");
 
             Console.WriteLine("Registering plugins...");
-            _pluginManager.Load();
+            PluginManager.Load();
             Console.WriteLine($"Plugins registered successfully.");
             
             var retVal = NWNCore.Init(nativeHandlesPtr, nativeHandlesLength, out CoreGameManager coreGameManager);

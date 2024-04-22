@@ -3,27 +3,25 @@ using SWLOR.Core.Plugin;
 
 namespace SWLOR.Plugin.Test
 {
-    public class TestPlugin
+    public class TestPlugin: IPluginEntry
     {
-        public TestPlugin()
-        {
-            Console.WriteLine($"Starting up TestPlugin");
-        }
-        
-        public void OnLoad()
-        {
-            Console.WriteLine("TestPlugin starting up...");
-        }
-
-        [NWNEventHandler("mod_heartbeat")]
         public static void HeartbeatTest()
         {
-            Console.WriteLine("TestPlugin heartbeat2");
+            Console.WriteLine("TestPlugin heartbeat222");
         }
         
-        public void OnUnload()
+        public void OnLoaded()
+        {
+            Console.WriteLine("TestPlugin starting up...");
+
+            Scheduler.ScheduleRepeating(HeartbeatTest, TimeSpan.FromSeconds(6));
+
+        }
+
+        public void OnUnloaded()
         {
             Console.WriteLine($"TestPlugin shutting down...");
+
         }
     }
 }

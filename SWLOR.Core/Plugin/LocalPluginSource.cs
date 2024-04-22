@@ -4,12 +4,10 @@
     {
         private const string PluginResourceDir = "resources";
 
-        private readonly PluginManager _pluginManager;
         private readonly string _rootPath;
 
-        public LocalPluginSource(PluginManager pluginManager, string rootPath)
+        public LocalPluginSource(string rootPath)
         {
-            this._pluginManager = pluginManager;
             this._rootPath = rootPath;
         }
 
@@ -41,7 +39,7 @@
                     continue;
                 }
 
-                var plugin = new Plugin(_pluginManager, pluginPath)
+                var plugin = new Plugin(pluginPath)
                 {
                     ResourcePath = Path.Combine(pluginRoot, Path.Combine(pluginRoot, PluginResourceDir)),
                 };

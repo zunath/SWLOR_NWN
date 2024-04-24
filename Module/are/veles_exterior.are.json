@@ -31813,7 +31813,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 77
+    "value": 83
   },
   "Width": {
     "type": "int",

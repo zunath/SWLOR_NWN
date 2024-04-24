@@ -31803,13 +31803,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "dgt04"
   },
   "Version": {
     "type": "dword",
-    "value": 60
+    "value": 77
   },
   "Width": {
     "type": "int",

@@ -110,6 +110,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     CreateItemOnObject(loot.Resref, user);
 
+                    // Additional loot tables - these adhere to standard loot table rules.
+                    Loot.SpawnLoot(target, user, "LOOT_TABLE_");
+
                     // Check against the user's Might; create a second item if they are 
                     // strong.  This is 'free' and does not count towards the limit in the resource point.
                     if (d100() <= 5 * GetAbilityModifier(AbilityType.Might, user) * 5)

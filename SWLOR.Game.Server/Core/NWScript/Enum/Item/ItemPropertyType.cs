@@ -125,5 +125,8 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         DroidPersonality = 124,
         NPCSkill = 125,
         IncreasedPrice = 126,
+        Incubation = 127,
+        DNAType = 128,
+        EnzymeColor = 129,
     }
 }

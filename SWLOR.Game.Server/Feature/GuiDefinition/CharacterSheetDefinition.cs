@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddSpacer();
                         row.AddButton()
-                            .SetText("Change Portrait")
+                            .SetText("Customize")
                             .SetHeight(32f)
                             .BindOnClicked(model => model.OnClickChangePortrait());
                         row.AddSpacer();

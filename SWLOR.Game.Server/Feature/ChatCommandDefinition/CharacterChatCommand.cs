@@ -463,7 +463,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var associate = GetHenchman(user);
                     if (target == associate)
                     {
-                        Enmity.ClearEnmityTables(associate);
                         AssignCommand(associate, () =>
                         {
                             ClearAllActions(true);

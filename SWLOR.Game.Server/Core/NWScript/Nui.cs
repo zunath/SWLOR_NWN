@@ -11,13 +11,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// * The token is a integer for ease of handling only. You are not supposed to do anything with it, except store/pass it.
         /// * The window ID needs to be alphanumeric and short. Only one window (per client) with the same ID can exist at a time.
         ///   Re-creating a window with the same id of one already open will immediately close the old one.
-        /// * sEventScript is optional and overrides the NUI module event for this window only.
         /// * See nw_inc_nui.nss for full documentation.
         /// Returns the window token on success (>0), or 0 on error.
         /// </summary>
-        public static int NuiCreateFromResRef(uint oPlayer, string sResRef, string sWindowId = "", string sEventScript = "")
+        public static int NuiCreateFromResRef(uint oPlayer, string sResRef, string sWindowId = "")
         {
-            VM.StackPush(sEventScript);
             VM.StackPush(sWindowId);
             VM.StackPush(sResRef);
             VM.StackPush(oPlayer);
@@ -31,13 +29,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// * The token is a integer for ease of handling only. You are not supposed to do anything with it, except store/pass it.
         /// * The window ID needs to be alphanumeric and short. Only one window (per client) with the same ID can exist at a time.
         ///   Re-creating a window with the same id of one already open will immediately close the old one.
-        /// * sEventScript is optional and overrides the NUI module event for this window only.
         /// * See nw_inc_nui.nss for full documentation.
         /// Returns the window token on success (>0), or 0 on error.
         /// </summary>
-        public static int NuiCreate(uint oPlayer, Json jNui, string sWindowId = "", string sEventScript = "")
+        public static int NuiCreate(uint oPlayer, Json jNui, string sWindowId = "")
         {
-            VM.StackPush(sEventScript);
             VM.StackPush(sWindowId);
             VM.StackPush((int)EngineStructure.Json, jNui);
             VM.StackPush(oPlayer);

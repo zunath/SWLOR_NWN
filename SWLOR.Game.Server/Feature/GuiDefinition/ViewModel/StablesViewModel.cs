@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -292,6 +296,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string XPPenalty
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> PerkNames
         {
             get => Get<GuiBindingList<string>>();
@@ -422,6 +432,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WillPurity = string.Empty;
 
             LearningPurity = string.Empty;
+            XPPenalty = string.Empty;
 
             XPTooltip = $"XP: 0 / 0";
         }
@@ -450,9 +461,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Details Page
             Name = dbBeast.Name;
-            XPTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level)}";
+            XPTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
 
-            var hp = level.HP + 40 * ((level.Stats[AbilityType.Vitality] - 10) / 2);
+            var hp = level.HP + 1 * ((level.Stats[AbilityType.Vitality] - 10) / 2);
             var fp = Stat.GetMaxFP(level.FP, (level.Stats[AbilityType.Willpower] - 10) / 2, 0);
             if (fp < 0)
                 fp = 0;
@@ -529,6 +540,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WillPurity = $"{dbBeast.SavingThrowPurities[SavingThrow.Will]}%";
 
             LearningPurity = $"{dbBeast.LearningPurity}%";
+            XPPenalty = $"{dbBeast.XPPenaltyPercent}%";
 
             IsBeastSelected = true;
         }
@@ -605,15 +617,69 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DB.Set(dbPlayer);
         };
 
+        private void CreateDNAItem(Beast dbBeast)
+        {
+            const int PurityMaxId = 1000;
+            var beastDetail = BeastMastery.GetBeastDetail(dbBeast.Type);
+            var dna = CreateItemOnObject(BeastMastery.DNAResref, Player);
+            var percentage = (float)dbBeast.Level / (float)BeastMastery.MaxLevel;
+
+            var attackPurity = (int)(dbBeast.AttackPurity * percentage) * 10;
+            var accuracyPurity = (int)(dbBeast.AccuracyPurity * percentage) * 10;
+            var evasionPurity = (int)(dbBeast.EvasionPurity * percentage) * 10;
+            var learningPurity = (int)(dbBeast.LearningPurity * percentage) * 10;
+
+            var physicalPurity = (int)(dbBeast.DefensePurities[CombatDamageType.Physical] * percentage) * 10;
+            var forcePurity = (int)(dbBeast.DefensePurities[CombatDamageType.Force] * percentage) * 10;
+            var firePurity = (int)(dbBeast.DefensePurities[CombatDamageType.Fire] * percentage) * 10;
+            var icePurity = (int)(dbBeast.DefensePurities[CombatDamageType.Ice] * percentage) * 10;
+            var electricalPurity = (int)(dbBeast.DefensePurities[CombatDamageType.Electrical] * percentage) * 10;
+            var poisonPurity = (int)(dbBeast.DefensePurities[CombatDamageType.Poison] * percentage) * 10;
+
+            var fortitudePurity = (int)(dbBeast.SavingThrowPurities[SavingThrow.Fortitude] * percentage) * 10;
+            var reflexPurity = (int)(dbBeast.SavingThrowPurities[SavingThrow.Reflex] * percentage) * 10;
+            var willPurity = (int)(dbBeast.SavingThrowPurities[SavingThrow.Will] * percentage) * 10;
+
+            var xpPenalty = (int)(dbBeast.XPPenaltyPercent * percentage) * 10;
+
+            var itemProperties = new List<ItemProperty>
+            {
+                ItemPropertyCustom(ItemPropertyType.DNAType, (int)dbBeast.Type),
+
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AttackPurity, attackPurity > PurityMaxId ? PurityMaxId : attackPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AccuracyPurity, accuracyPurity> PurityMaxId ? PurityMaxId : accuracyPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.EvasionPurity, evasionPurity> PurityMaxId ? PurityMaxId : evasionPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.LearningPurity, learningPurity> PurityMaxId ? PurityMaxId : learningPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.PhysicalDefensePurity, physicalPurity > PurityMaxId ? PurityMaxId : physicalPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ForceDefensePurity, forcePurity > PurityMaxId ? PurityMaxId : forcePurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FireDefensePurity, firePurity > PurityMaxId ? PurityMaxId : firePurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.PoisonDefensePurity, poisonPurity > PurityMaxId ? PurityMaxId : poisonPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ElectricalDefensePurity, electricalPurity > PurityMaxId ? PurityMaxId : electricalPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.IceDefensePurity, icePurity > PurityMaxId ? PurityMaxId : icePurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.FortitudePurity, fortitudePurity > PurityMaxId ? PurityMaxId : fortitudePurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.ReflexPurity, reflexPurity > PurityMaxId ? PurityMaxId : reflexPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.WillPurity, willPurity > PurityMaxId ? PurityMaxId : willPurity),
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.XPPenalty, xpPenalty > PurityMaxId ? PurityMaxId : xpPenalty),
+            };
+
+            foreach (var ip in itemProperties)
+            {
+                BiowareXP2.IPSafeAddItemProperty(dna, ip, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            }
+
+            SetName(dna, $"Beast DNA: {beastDetail.Name}");
+        }
+
         public Action OnClickReleaseBeast() => () =>
         {
-            ShowModal($"WARNING: Releasing a beast will permanently remove it forever. This action is irreversible. Are you sure you want to release this beast?",
+            ShowModal($"WARNING: Releasing a beast will permanently remove it forever. A sample of the beast's DNA will be added to your inventory. Its purities will be based upon its level. This action is irreversible. Are you sure you want to release this beast?",
                 () =>
                 {
                     if (_selectedBeastIndex <= -1)
                         return;
 
                     var beastId = _beastIds[_selectedBeastIndex];
+                    var dbBeast = DB.Get<Beast>(beastId);
                     var playerId = GetObjectUUID(Player);
                     var dbPlayer = DB.Get<Player>(playerId);
                     var beast = GetAssociate(AssociateType.Henchman, Player);
@@ -627,6 +693,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         dbPlayer.ActiveBeastId = string.Empty;
                         DB.Set(dbPlayer);
                     }
+
+                    CreateDNAItem(dbBeast);
 
                     DB.Delete<Beast>(beastId);
 

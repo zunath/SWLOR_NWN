@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 {
     public class MonCalaLootTableDefinition: ILootTableDefinition
     {
-        private readonly LootTableBuilder _builder = new LootTableBuilder();
+        private readonly LootTableBuilder _builder = new();
 
         public Dictionary<string, LootTable> BuildLootTables()
         {

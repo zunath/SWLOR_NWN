@@ -249,6 +249,14 @@ namespace SWLOR.Game.Server.Service
             if (Fishing.IsItemFishingRod(item) || Fishing.IsItemBait(item))
                 return MarketCategoryType.Fishing;
 
+            // Incubation
+            if (BeastMastery.IsIncubationCraftingItem(item))
+                return MarketCategoryType.Incubation;
+
+            // Beast Egg
+            if (BeastMastery.IsBeastEgg(item))
+                return MarketCategoryType.BeastEgg;
+
             return MarketCategoryType.Miscellaneous;
         }
     }

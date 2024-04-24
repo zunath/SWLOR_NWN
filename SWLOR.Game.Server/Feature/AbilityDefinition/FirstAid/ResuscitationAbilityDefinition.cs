@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
@@ -61,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+            Ability.ReapplyPlayerAuraAOE(target);
 
             if (hp > 0)
             {

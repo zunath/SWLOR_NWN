@@ -301,7 +301,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
         private void ChangeDescription()
         {
-            _builder.Create("changemdescription", "changedesc")
+            _builder.Create("changedescription", "changedesc")
                 .Description("Brings up an NUI window to change the description of a target. Players may only target items in their own inventory.")
                 .Permissions(AuthorizationLevel.All)
                 .RequiresTarget()

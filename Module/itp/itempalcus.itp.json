@@ -26037,17 +26037,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Gizka Posion"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gizka_poison"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Good Quality Electronics"
                     },
                     "RESREF": {

@@ -54,9 +54,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 }
             }
 
-            AssignCommand(activator, () =>
+            DelayCommand(0f, () =>
             {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
+                AssignCommand(activator, () =>
+                {
+                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
+                });
             });
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
@@ -109,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     {
                         var perBonus = GetAbilityScore(activator, AbilityType.Perception);
                         var perDMG = perBonus + 15;
-                        Impact(activator, target, 10, 8);
+                        Impact(activator, target, perDMG, 8);
                     });
                 });
         }

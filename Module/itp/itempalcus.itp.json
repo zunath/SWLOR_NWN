@@ -11597,6 +11597,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Incubator"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0271"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Instrument Panel, Large Monitor (Technical Data)"
               },
               "RESREF": {
@@ -11646,6 +11657,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0169"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Lab - Style 1"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5017"
               }
             },
             {
@@ -18678,6 +18700,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Beast DNA"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beast_dna"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Beast Egg"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beast_egg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Beetle Chitin"
                     },
                     "RESREF": {
@@ -20993,6 +21037,380 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "distilled_water"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA Extractor I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA Extractor II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA Extractor III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA Extractor IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA Extractor V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_extractor_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Aradile"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Crystal Spider"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Gimpassa"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Jungle Bug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Kath Hound"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: K'lor'slug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Microtench"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0007"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Moraband Serpent"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0008"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Octotench"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0009"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Purbole"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0010"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Qion Slug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0011"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Qion Tiger"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0012"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Raivor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0013"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Sand Beetle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0014"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Sand Demon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0015"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Sandswimmer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0016"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Scorchellus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0017"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Shear Mite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0018"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Shyrack"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0019"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Sprantal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0020"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Squellbug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0021"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Ssurian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0022"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Valley Cairnmog"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0023"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Valley Cairnmog Alpha"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0024"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Valley Nashtah"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0025"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Viper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0026"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Warocas"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0027"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Wildwoods Kinrath"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0028"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "DNA: Womprat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dna_0029"
                     }
                   },
                   {
@@ -26301,6 +26719,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hydrolase Enzyme - Blue"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_blue"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hydrolase Enzyme - Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_orange"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hydrolase Enzyme - Purple"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_purple"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hydrolase Enzyme - Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_red"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hydrolase Enzyme - White"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hydrolase_white"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hyperdrive"
                     },
                     "RESREF": {
@@ -29018,6 +29491,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Isomerase Enzyme - Blue"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_blue"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Isomerase Enzyme - Green"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_green"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Isomerase Enzyme - Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_orange"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Isomerase Enzyme - Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_red"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Isomerase Enzyme - Yellow"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "isomerase_yellow"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Istavrit"
                     },
                     "RESREF": {
@@ -30233,6 +30761,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "luusntan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lyase Enzyme - Black"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_black"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lyase Enzyme - Blue"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_blue"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lyase Enzyme - Green"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_green"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lyase Enzyme - Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_orange"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lyase Enzyme - Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lyase_red"
                     }
                   },
                   {

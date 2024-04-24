@@ -149,6 +149,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .StructureLimit(80)
                 .ItemStorageLimit(0)
                 .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("starport")

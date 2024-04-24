@@ -124,7 +124,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Voritor lizard"
+      "0": "Voritor Lizard"
     }
   },
   "fortbonus": {
@@ -563,6 +563,21 @@
         "Value": {
           "type": "int",
           "value": 53
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_4"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "ISOMERASE_TYPE_1,11,1"
         }
       }
     ]

@@ -380,7 +380,7 @@ namespace SWLOR.Game.Server.Service
         /// On each module heartbeat, process queued spawns and
         /// process dequeue area event requests.
         /// </summary>
-        [NWNEventHandler("mod_heartbeat")]
+        [NWNEventHandler("swlor_heartbeat")]
         public static void ProcessSpawnSystem()
         {
             ProcessQueuedSpawns();

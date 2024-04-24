@@ -4,7 +4,7 @@
     {
         Invalid = 0,
         CharacterSheet = 1,
-        ChangePortrait = 2,
+        CustomizeCharacter = 2,
         Quests = 3,
         Recipes = 4,
         KeyItems = 5,
@@ -57,5 +57,6 @@
         Incubator = 52,
 
         DebugEnmity = 900,
+        ChangePortrait = 9999
     }
 }

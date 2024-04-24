@@ -52,9 +52,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 }
             }
 
-            AssignCommand(activator, () =>
+            DelayCommand(0f, () =>
             {
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), target);
+                AssignCommand(activator, () =>
+                {
+                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), target);
+                });
             });
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);

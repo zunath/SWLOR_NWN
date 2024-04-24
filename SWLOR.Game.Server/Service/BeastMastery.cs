@@ -737,9 +737,18 @@ namespace SWLOR.Game.Server.Service
 
             if (incubatorJob != null && incubatorJob.PlayerId != playerId)
             {
-                var delta = incubatorJob.DateCompleted - DateTime.UtcNow;
-                var completionTime = Time.GetTimeLongIntervals(delta, false);
-                SendMessageToPC(player, $"Another player's incubation job is active. This job will complete in: {completionTime}.");
+                var now = DateTime.UtcNow;
+                if (incubatorJob.DateCompleted > now)
+                {
+                    var delta = incubatorJob.DateCompleted - now;
+                    var completionTime = Time.GetTimeLongIntervals(delta, false);
+                    SendMessageToPC(player, $"Another player's incubation job is active. This job will complete in: {completionTime}.");
+                }
+                else
+                {
+                    SendMessageToPC(player, $"Another player's incubation job is active. This job has completed.");
+                }
+                
                 return;
             }
 

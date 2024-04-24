@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
 
                 .CanMutateInto(BeastType.JuvenileChirodactyl)
 				.MutationWeight(10)
-				.MutationRequiresLyaseColor(EnzymeColorType.Red, 1)
+				.MutationRequiresLyaseColor(EnzymeColorType.Black, 1)
 				.MutationRequiresIsomeraseColor(EnzymeColorType.Blue, 1)
 				.MutationRequiresHydrolaseColor(EnzymeColorType.White, 1)
 				.MutationRequiresDayOfWeek(DayOfWeek.Monday, DayOfWeek.Friday)

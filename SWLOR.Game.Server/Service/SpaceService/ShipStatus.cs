@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int ThermalDefense { get; set; }
         public int ExplosiveDefense { get; set; }
         public int EMDefense { get; set; }
+        public DateTime GlobalRecast { get; set; }
 
         /// <summary>
         /// Equipped high-powered modules

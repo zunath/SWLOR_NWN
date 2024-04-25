@@ -16,9 +16,9 @@ using SWLOR.Game.Server.Core.NWNX;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.SpaceService;
-using SWLOR.Game.Server.Feature.ShipDefinition;
+using SWLOR.Game.Server.Service.StatService;
+using System.Reflection.Emit;
+using System.Numerics;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -1035,6 +1035,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     if (Space.GetShipStatus(target) != null)
                     {
+                        var npcStats = Stat.GetNPCStats(target);
+                        var level = npcStats.Level;
+                        if (GetIsPC(target) == true)
+                        {
+                            var playerId = GetObjectUUID(target);
+                            var dbPlayer = DB.Get<Player>(playerId);
+                            level = dbPlayer.Skills[Service.SkillService.SkillType.Piloting].Rank;
+                        }
                         var targetName = GetName(target);
                         var targetStatus = Space.GetShipStatus(target);
                         SendMessageToPC(user, $"{targetName} stats: \n" +
@@ -1049,7 +1057,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             $"Evasion: {targetStatus.Evasion} \n" +
                             $"Thermal Defense: {targetStatus.ThermalDefense} \n" +
                             $"EM Defense: {targetStatus.EMDefense} \n" +
-                            $"Explosive Defense: {targetStatus.ExplosiveDefense}");
+                            $"Explosive Defense: {targetStatus.ExplosiveDefense} \n" +
+                            $"Skill Level: {level}");
                     }
                 });
         }

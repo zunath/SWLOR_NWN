@@ -1086,6 +1086,14 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // Check global recast requirements
+            var nowGCD = DateTime.UtcNow;
+            if (GetShipStatus(activator).GlobalRecast > now)
+            {
+                SendMessageToPC(activator, "Global Cooldown Activation Attempted.");
+                return;
+            }
+
             var (target, targetShipStatus) = GetCurrentTarget(activator);
             // Check for valid object type if the ship module requires it.
             if (shipModuleDetails.ValidTargetTypes.Count > 0 &&
@@ -1125,12 +1133,13 @@ namespace SWLOR.Game.Server.Service
             // Validation succeeded, run the module-specific code now.
             shipModuleDetails.ModuleActivatedAction?.Invoke(activator, activatorShipStatus, target, targetShipStatus, shipModule.ModuleBonus);
             
-            // Update the recast timer.
+            // Update the recast and global recast timer.
             if (shipModuleDetails.CalculateRecastAction != null)
             {
                 var recastSeconds = shipModuleDetails.CalculateRecastAction(activator, activatorShipStatus, shipModule.ModuleBonus);
                 var recastTimer = now.AddSeconds(recastSeconds);
                 shipModule.RecastTime = recastTimer;
+                activatorShipStatus.GlobalRecast = nowGCD.AddSeconds(2f);
             }
 
             // Reduce capacitor
@@ -1638,7 +1647,8 @@ namespace SWLOR.Game.Server.Service
                     var requiredCapacitor = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus, 0) ?? 0;
 
                     return x.Value.RecastTime <= now &&
-                           shipStatus.Capacitor >= requiredCapacitor;
+                           shipStatus.Capacitor >= requiredCapacitor &&
+                           shipStatus.GlobalRecast <= now;
                 })
                     .Select(s => new Tuple<FeatType, ShipStatus.ShipStatusModule>(HighSlotToFeat(s.Key), s.Value));
 
@@ -1648,7 +1658,8 @@ namespace SWLOR.Game.Server.Service
                     var requiredCapacitor = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus, 0) ?? 0;
 
                     return x.Value.RecastTime <= now &&
-                           shipStatus.Capacitor >= requiredCapacitor;
+                           shipStatus.Capacitor >= requiredCapacitor &&
+                           shipStatus.GlobalRecast <= now;
                 })
                     .Select(s => new Tuple<FeatType, ShipStatus.ShipStatusModule>(LowSlotToFeat(s.Key), s.Value));
 

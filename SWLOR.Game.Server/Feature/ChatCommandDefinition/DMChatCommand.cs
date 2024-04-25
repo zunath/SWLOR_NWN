@@ -16,9 +16,6 @@ using SWLOR.Game.Server.Core.NWNX;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
-using SWLOR.Game.Server.Service.StatService;
-using System.Reflection.Emit;
-using System.Numerics;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {

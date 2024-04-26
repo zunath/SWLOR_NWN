@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -14,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             Dash();
+            ZenMarksmanship();
 
             return _builder.Build();
         }
@@ -50,6 +53,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 })
                 .TriggerPurchase(ToggleDash)
                 .TriggerRefund(ToggleDash);
+        }
+
+        private void ZenMarksmanship()
+        {
+            _builder.Create(PerkCategoryType.General, PerkType.ZenMarksmanship)
+                .Name("Zen Marksmanship")
+
+                .AddPerkLevel()
+                .Description("Your ranged attacks now use Willpower for damage if your Willpower is higher than your weapon's damage stat.")
+                .Price(3)
+                .RequirementCharacterType(CharacterType.Standard)
+                .GrantsFeat(FeatType.ZenMarksmanship);
         }
     }
 }

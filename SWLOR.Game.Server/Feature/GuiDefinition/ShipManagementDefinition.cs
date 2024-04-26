@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.ShipManagement)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 545f, 295.5f)
+                .SetInitialGeometry(0, 0, 545f, 350f)
                 .SetTitle("Ship Management")
 
                 .AddColumn(col =>
@@ -308,6 +308,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindTooltip(model => model.LowPower8Tooltip)
                             .SetHeight(32f)
                             .SetWidth(32f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("Configuration Slot")
+                            .SetHeight(20f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButtonImage()
+                         .BindImageResref(model => model.ConfigurationResref)
+                         .BindIsVisible(model => model.ConfigurationVisible)
+                         .BindIsEnabled(model => model.IsRefitEnabled)
+                         .BindOnClicked(model => model.OnClickConfiguration())
+                         .BindTooltip(model => model.ConfigurationTooltip)
+                         .SetHeight(32f)
+                         .SetWidth(32f);
                     });
 
                     col.AddRow(row =>

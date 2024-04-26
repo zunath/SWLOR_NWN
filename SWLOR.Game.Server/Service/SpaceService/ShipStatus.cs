@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int ThermalDefense { get; set; }
         public int ExplosiveDefense { get; set; }
         public int EMDefense { get; set; }
+        public int Industrial { get; set; }
         public DateTime GlobalRecast { get; set; }
 
         /// <summary>
@@ -44,6 +45,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public Dictionary<int, ShipStatusModule> LowPowerModules { get; set; }
 
         /// <summary>
+        /// Equipped configuration module
+        /// </summary>
+        public Dictionary<int, ShipStatusModule> ConfigurationModules { get; set; }
+
+        /// <summary>
         /// A collection of ship modules, by feat, which can be activated.
         /// This is primarily used by ship AI but is also available for player ships.
         /// </summary>
@@ -53,6 +59,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             HighPowerModules = new Dictionary<int, ShipStatusModule>();
             LowPowerModules = new Dictionary<int, ShipStatusModule>();
+            ConfigurationModules = new Dictionary<int, ShipStatusModule>();
             ActiveModules = new HashSet<int>();
         }
     }

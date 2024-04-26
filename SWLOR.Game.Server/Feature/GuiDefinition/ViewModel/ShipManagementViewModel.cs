@@ -296,6 +296,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool ConfigurationVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public string LowPower1Tooltip
         {
             get => Get<string>();
@@ -344,6 +350,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string ConfigurationTooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public string LowPower1Resref
         {
             get => Get<string>();
@@ -380,6 +392,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
         public string LowPower8Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string ConfigurationResref
         {
             get => Get<string>();
             set => Set(value);
@@ -609,6 +627,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LowPower7Visible = false;
                 LowPower8Visible = false;
 
+                ConfigurationVisible = false;
+
                 LowPower1Tooltip = string.Empty;
                 LowPower2Tooltip = string.Empty;
                 LowPower3Tooltip = string.Empty;
@@ -626,6 +646,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LowPower6Resref = _blank;
                 LowPower7Resref = _blank;
                 LowPower8Resref = _blank;
+
+                ConfigurationResref = _blank;
 
                 IsRefitEnabled = false;
                 IsBoardShipEnabled = false;
@@ -921,6 +943,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     LowPower8Resref = _blank;
                     LowPower8Tooltip = string.Empty;
+                }
+
+                ConfigurationVisible = shipDetail.ConfigurationNodes >= 1;
+
+                module = ship.Status.ConfigurationModules.ContainsKey(1)
+                    ? ship.Status.ConfigurationModules[1]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    ConfigurationResref = detail.Texture;
+                    ConfigurationTooltip = detail.Name;
+                }
+                else
+                {
+                    ConfigurationResref = _blank;
+                    ConfigurationTooltip = string.Empty;
                 }
 
                 IsBoardShipEnabled = isAtCurrentLocation;
@@ -1329,6 +1368,75 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
+        private void ProcessConfiguration(int slot)
+        {
+            var shipId = _shipIds[SelectedShipIndex];
+            var dbShip = DB.Get<PlayerShip>(shipId);
+            var module = dbShip.Status.ConfigurationModules.ContainsKey(slot)
+                ? dbShip.Status.ConfigurationModules[slot]
+                : null;
+
+            // No module is equipped in this slot. 
+            // Put player into targeting mode to select a module.
+            if (module == null)
+            {
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship configuration module within your inventory",
+                    item =>
+                    {
+                        var itemTag = GetTag(item);
+                        if (!Space.IsRegisteredShipModule(itemTag))
+                        {
+                            SendMessageToPC(Player, "Only ship configuration modules may be installed to this slot.");
+                            return;
+                        }
+
+                        var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
+                        var moduleBonus = Space.GetModuleBonus(item);
+
+                        if (!ValidateModuleEquip(dbShip, item))
+                            return;
+
+                        if (moduleDetails.PowerType != ShipModulePowerType.Config)
+                        {
+                            SendMessageToPC(Player, "Only ship configuration modules may be installed to this slot.");
+                            return;
+                        }
+                        dbShip.Status.ConfigurationModules[slot] = new ShipStatus.ShipStatusModule
+                        {
+                            ItemInstanceId = GetObjectUUID(item),
+                            SerializedItem = ObjectPlugin.Serialize(item),
+                            ItemTag = itemTag,
+                            RecastTime = DateTime.MinValue,
+                            ModuleBonus = moduleBonus
+                        };
+
+                        moduleDetails.ModuleEquippedAction?.Invoke(Player, dbShip.Status, moduleBonus);
+
+                        DB.Set(dbShip);
+
+                        DestroyObject(item);
+                        LoadShip();
+                    });
+            }
+            // A module exists. Prompt user whether they'd like to uninstall it.
+            else
+            {
+                var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                ShowModal($"{moduleDetail.Name} is equipped to ship configuration slot #{slot}. Would you like to uninstall it?", () =>
+                {
+                    var item = ObjectPlugin.Deserialize(module.SerializedItem);
+                    var moduleBonus = Space.GetModuleBonus(item);
+                    ObjectPlugin.AcquireItem(Player, item);
+
+                    moduleDetail.ModuleUnequippedAction?.Invoke(Player, dbShip.Status, moduleBonus);
+                    dbShip.Status.ConfigurationModules.Remove(slot);
+                    DB.Set(dbShip);
+                    LoadShip();
+                });
+            }
+
+        }
+
         public Action OnClickHighPower1() => () =>
         {
             ProcessHighPower(1);
@@ -1394,6 +1502,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickLowPower8() => () =>
         {
             ProcessLowPower(8);
+        };
+
+        public Action OnClickConfiguration() => () =>
+        {
+            ProcessConfiguration(8);
         };
 
         public Action OnClickBoardShip() => () =>

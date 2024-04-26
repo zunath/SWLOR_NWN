@@ -1087,10 +1087,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Check global recast requirements
-            var nowGCD = DateTime.UtcNow;
             if (GetShipStatus(activator).GlobalRecast > now)
             {
-                SendMessageToPC(activator, "Global Cooldown Activation Attempted.");
                 return;
             }
 
@@ -1139,7 +1137,7 @@ namespace SWLOR.Game.Server.Service
                 var recastSeconds = shipModuleDetails.CalculateRecastAction(activator, activatorShipStatus, shipModule.ModuleBonus);
                 var recastTimer = now.AddSeconds(recastSeconds);
                 shipModule.RecastTime = recastTimer;
-                activatorShipStatus.GlobalRecast = nowGCD.AddSeconds(2f);
+                activatorShipStatus.GlobalRecast = now.AddSeconds(2f);
             }
 
             // Reduce capacitor

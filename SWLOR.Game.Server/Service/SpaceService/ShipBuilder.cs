@@ -136,6 +136,19 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Sets the number of ship configuration nodes on this ship.
+        /// By default ships should have 1 configuration node.
+        /// </summary>
+        /// <param name="shipConfigurationNodes">The number of low power nodes to set.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder ShipConfigurationNodes(int shipConfigurationNodes)
+        {
+            _activeShip.ConfigurationNodes = shipConfigurationNodes;
+
+            return this;
+        }
+
+        /// <summary>
         /// Indicates a player must have the perk at a specific level in order to use the ship.
         /// </summary>
         /// <param name="perkType">The type of perk to require</param>

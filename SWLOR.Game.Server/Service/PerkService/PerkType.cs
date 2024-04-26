@@ -259,9 +259,8 @@
         Rejuvenation = 252,
         FrenziedShout = 253,
         IncubationManagement = 254,
-
-        // 255-256 are free
-
+        Research = 255,
+        ScientificNetworking = 256,
         FishingRods = 257,
         ShoutRange = 258,
         ShieldResistance = 259,
@@ -280,7 +279,6 @@
         DNAManipulation = 272,
         IncubationProcessing = 273,
         ErraticGenius = 274,
-
         DiseasedTouch = 275,
         Clip = 276,
         SpinningClaw = 277,

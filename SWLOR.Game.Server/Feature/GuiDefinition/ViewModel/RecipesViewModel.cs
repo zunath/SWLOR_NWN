@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -20,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const int RecordsPerPage = 20;
         private bool _skipPaginationSearch;
         private SkillType _craftingFilter;
+        private uint _selectedBlueprintItem;
 
         public string SearchText
         {
@@ -163,6 +165,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _skipPaginationSearch = true;
 
+            _selectedBlueprintItem = OBJECT_INVALID;
             _craftingFilter = initialPayload?.Skill ?? SkillType.Invalid;
             IsInCraftingMode = _craftingFilter != SkillType.Invalid;
             IsSkillEnabled = _craftingFilter == SkillType.Invalid;
@@ -366,47 +369,109 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (Gui.IsWindowOpen(Player, GuiWindowType.Craft))
                 return;
 
-            var recipe = _recipeTypes[_currentRecipeIndex];
-            var payload = new CraftPayload(recipe);
+            var blueprint = Craft.GetBlueprintDetails(_selectedBlueprintItem);
+            var recipe = blueprint.Recipe != RecipeType.Invalid 
+                ? blueprint.Recipe 
+                : _recipeTypes[_currentRecipeIndex];
+            var payload = new CraftPayload(recipe, _selectedBlueprintItem);
             Gui.TogglePlayerWindow(Player, GuiWindowType.Craft, payload, TetherObject);
         };
 
+        private bool ValidateBlueprint(uint item)
+        {
+            if (GetItemPossessor(item) != Player)
+            {
+                FloatingTextStringOnCreature("The blueprint must be in your inventory.", Player, false);
+                return false;
+            }
+
+            var blueprint = Craft.GetBlueprintDetails(item);
+            if (blueprint.Recipe == RecipeType.Invalid)
+            {
+                FloatingTextStringOnCreature("Only blueprints may be selected.", Player, false);
+                return false;
+            }
+
+            if (blueprint.LicensedRuns <= 0)
+            {
+                FloatingTextStringOnCreature("No licensed runs remaining on this blueprint.", Player, false);
+                return false;
+            }
+
+            var recipe = Craft.GetRecipe(blueprint.Recipe);
+            if (recipe.Skill != _craftingFilter)
+            {
+                FloatingTextStringOnCreature("Blueprint cannot be crafted with this device.", Player, false);
+                return false;
+            }
+
+            return true;
+        }
+        
+        public Action OnClickSelectBlueprint() => () =>
+        {
+            Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select the blueprint item you wish to create.", item =>
+            {
+                if (!ValidateBlueprint(item))
+                    return;
+
+                var blueprint = Craft.GetBlueprintDetails(item);
+                _selectedBlueprintItem = item;
+                
+                if(_currentRecipeIndex > -1)
+                    RecipeToggles[_currentRecipeIndex] = false;
+                DisplayRecipeDetail(blueprint.Recipe, blueprint);
+
+                CanCraftRecipe = Craft.CanPlayerCraftRecipe(Player, blueprint.Recipe);
+            });
+        };
+
+        private void DisplayRecipeDetail(RecipeType recipe, BlueprintDetail blueprint)
+        {
+            var detail = Craft.GetRecipe(recipe);
+            var itemName = Cache.GetItemNameByResref(detail.Resref);
+            var enhancementSlotType = "N/A";
+
+            if (detail.EnhancementType == RecipeEnhancementType.Weapon)
+                enhancementSlotType = "Weapon";
+            else if (detail.EnhancementType == RecipeEnhancementType.Armor)
+                enhancementSlotType = "Armor";
+            else if (detail.EnhancementType == RecipeEnhancementType.Structure)
+                enhancementSlotType = "Structure";
+            else if (detail.EnhancementType == RecipeEnhancementType.Food)
+                enhancementSlotType = "Food";
+            
+            RecipeName = $"Recipe: {detail.Quantity}x {itemName}";
+            RecipeLevel = $"Level: {detail.Level}";
+            RecipeEnhancementSlots = $"Enhancement Slots: {detail.EnhancementSlots}x {enhancementSlotType}";
+            var (recipeDetails, recipeDetailColors) = Craft.BuildRecipeDetail(Player, recipe, blueprint);
+
+            RecipeDetails = recipeDetails;
+            RecipeDetailColors = recipeDetailColors;
+            CanCraftRecipe = Craft.CanPlayerCraftRecipe(Player, recipe);
+        }
+
+        private void ClearRecipeDetail()
+        {
+            RecipeName = string.Empty;
+            RecipeLevel = string.Empty;
+            RecipeEnhancementSlots = string.Empty;
+            RecipeDetails = new GuiBindingList<string>();
+            RecipeDetailColors = new GuiBindingList<GuiColor>();
+            _currentRecipeIndex = -1;
+            CanCraftRecipe = false;
+        }
+        
         private void LoadRecipeDetail()
         {
             if (_currentRecipeIndex > -1)
             {
                 var selectedRecipe = _recipeTypes[_currentRecipeIndex];
-                var detail = Craft.GetRecipe(selectedRecipe);
-                var itemName = Cache.GetItemNameByResref(detail.Resref);
-                var enhancementSlotType = "N/A";
-
-                if (detail.EnhancementType == RecipeEnhancementType.Weapon)
-                    enhancementSlotType = "Weapon";
-                else if (detail.EnhancementType == RecipeEnhancementType.Armor)
-                    enhancementSlotType = "Armor";
-                else if (detail.EnhancementType == RecipeEnhancementType.Structure)
-                    enhancementSlotType = "Structure";
-                else if (detail.EnhancementType == RecipeEnhancementType.Food)
-                    enhancementSlotType = "Food";
-
-                RecipeName = $"Recipe: {detail.Quantity}x {itemName}";
-                RecipeLevel = $"Level: {detail.Level}";
-                RecipeEnhancementSlots = $"Enhancement Slots: {detail.EnhancementSlots}x {enhancementSlotType}";
-                var (recipeDetails, recipeDetailColors) = Craft.BuildRecipeDetail(Player, selectedRecipe);
-
-                RecipeDetails = recipeDetails;
-                RecipeDetailColors = recipeDetailColors;
-                CanCraftRecipe = Craft.CanPlayerCraftRecipe(Player, selectedRecipe);
+                DisplayRecipeDetail(selectedRecipe, null);
             }
             else
             {
-                RecipeName = string.Empty;
-                RecipeLevel = string.Empty;
-                RecipeEnhancementSlots = string.Empty;
-                RecipeDetails = new GuiBindingList<string>();
-                RecipeDetailColors = new GuiBindingList<GuiColor>();
-                _currentRecipeIndex = -1;
-                CanCraftRecipe = false;
+                ClearRecipeDetail();
             }
         }
 

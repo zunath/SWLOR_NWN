@@ -249,13 +249,14 @@ namespace SWLOR.Game.Server.Service
             var payload = new RecipesPayload(skillType);
             Gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
         }
-        
+
         /// <summary>
         /// Builds a recipe's detail for use within the NUI window.
         /// </summary>
         /// <param name="player">The player to build for.</param>
         /// <param name="recipe">The recipe to build.</param>
-        public static (GuiBindingList<string>, GuiBindingList<GuiColor>) BuildRecipeDetail(uint player, RecipeType recipe)
+        /// <param name="blueprint">The blueprint details. null if not a blueprint</param>
+        public static (GuiBindingList<string>, GuiBindingList<GuiColor>) BuildRecipeDetail(uint player, RecipeType recipe, BlueprintDetail blueprint)
         {
             var detail = GetRecipe(recipe);
             var recipeDetails = new GuiBindingList<string>();
@@ -299,6 +300,42 @@ namespace SWLOR.Game.Server.Service
             
             DestroyObject(item);
 
+            recipeDetails.Add(string.Empty);
+            recipeDetailColors.Add(_white);
+            
+            if (blueprint != null && blueprint.Recipe != RecipeType.Invalid)
+            {
+                recipeDetails.Add("[BLUEPRINT]");
+                recipeDetailColors.Add(_cyan);
+
+                if (blueprint.Level == 0)
+                {
+                    recipeDetails.Add("No Bonuses");
+                    recipeDetailColors.Add(_white);
+                }
+                else
+                {
+                    if (blueprint.BonusRandomStats > 0)
+                    {
+                        recipeDetails.Add($"Random Stat Bonus x{blueprint.BonusRandomStats}");
+                        recipeDetailColors.Add(_white);
+                    }
+
+                    if (blueprint.BonusCreditReduction > 0)
+                    {
+                        recipeDetails.Add($"Credit Cost -{blueprint.BonusCreditReduction * 10}%");
+                        recipeDetailColors.Add(_white);
+                    }
+
+                    if (blueprint.BonusEnhancementSlots > 0)
+                    {
+                        recipeDetails.Add($"Bonus Enhancements x{blueprint.BonusEnhancementSlots}");
+                        recipeDetailColors.Add(_white);
+                    }
+                }
+                
+            }
+            
             return (recipeDetails, recipeDetailColors);
         }
 
@@ -578,6 +615,47 @@ namespace SWLOR.Game.Server.Service
                 {
                     blueprintDetail.LicensedRuns = GetItemPropertyCostTableValue(ip);
                 }
+            }
+
+            if (blueprintDetail.Level >= 1)
+            {
+                blueprintDetail.BonusRandomStats++;
+            }
+            if (blueprintDetail.Level >= 2)
+            {
+                blueprintDetail.BonusLicensedRuns++;
+            }
+            if (blueprintDetail.Level >= 3)
+            {
+                blueprintDetail.BonusCreditReduction++;
+            }
+            if (blueprintDetail.Level >= 4)
+            {
+                blueprintDetail.BonusEnhancementSlots++;
+            }
+            if (blueprintDetail.Level >= 5)
+            {
+                blueprintDetail.BonusLicensedRuns++;
+            }
+            if (blueprintDetail.Level >= 6)
+            {
+                blueprintDetail.BonusRandomStats++;
+            }
+            if (blueprintDetail.Level >= 7)
+            {
+                blueprintDetail.BonusCreditReduction++;
+            }
+            if (blueprintDetail.Level >= 8)
+            {
+                blueprintDetail.BonusLicensedRuns++;
+            }
+            if (blueprintDetail.Level >= 9)
+            {
+                blueprintDetail.BonusRandomStats++;
+            }
+            if (blueprintDetail.Level >= 10)
+            {
+                blueprintDetail.BonusEnhancementSlots++;
             }
 
             return blueprintDetail;

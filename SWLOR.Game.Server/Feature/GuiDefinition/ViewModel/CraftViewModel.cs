@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const string BlankTexture = "Blank";
 
         private RecipeType _recipe;
+        private uint _blueprintItem;
         
         private PerkType _rapidSynthesisPerk;
         private PerkType _carefulSynthesisPerk;
@@ -374,26 +375,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _components.Clear();
 
             _recipe = initialPayload.Recipe;
-            var detail = Craft.GetRecipe(_recipe);
-            var itemName = Cache.GetItemNameByResref(detail.Resref);
+            _blueprintItem = initialPayload.BlueprintItem;
+            var recipe = Craft.GetRecipe(_recipe);
+            var blueprint = Craft.GetBlueprintDetails(_blueprintItem);
+            var itemName = Cache.GetItemNameByResref(recipe.Resref);
             
             SwitchToSetUpMode();
             StatusColor = GuiColor.Green;
             StatusText = string.Empty;
 
-            IsEnhancement1Visible = detail.EnhancementSlots >= 1;
-            IsEnhancement2Visible = detail.EnhancementSlots >= 2;
-            IsEnhancement3Visible = detail.EnhancementSlots >= 3;
-            IsEnhancement4Visible = detail.EnhancementSlots >= 4;
-            IsEnhancement5Visible = detail.EnhancementSlots >= 5;
-            IsEnhancement6Visible = detail.EnhancementSlots >= 6;
-            IsEnhancement7Visible = detail.EnhancementSlots >= 7;
-            IsEnhancement8Visible = detail.EnhancementSlots >= 8;
-
-            RecipeName = $"Recipe: {detail.Quantity}x {itemName}";
-            RecipeLevel = $"Level: {detail.Level}";
+            var enhancementSlots = recipe.EnhancementSlots + blueprint.BonusEnhancementSlots;
             
-            var (recipeDescription, recipeColors) = Craft.BuildRecipeDetail(Player, _recipe);
+            IsEnhancement1Visible = enhancementSlots >= 1;
+            IsEnhancement2Visible = enhancementSlots >= 2;
+            IsEnhancement3Visible = enhancementSlots >= 3;
+            IsEnhancement4Visible = enhancementSlots >= 4;
+            IsEnhancement5Visible = enhancementSlots >= 5;
+            IsEnhancement6Visible = enhancementSlots >= 6;
+            IsEnhancement7Visible = enhancementSlots >= 7;
+            IsEnhancement8Visible = enhancementSlots >= 8;
+
+            RecipeName = $"Recipe: {recipe.Quantity}x {itemName}";
+            RecipeLevel = $"Level: {recipe.Level}";
+            
+            var (recipeDescription, recipeColors) = Craft.BuildRecipeDetail(Player, _recipe, blueprint);
             RecipeDescription = recipeDescription;
             RecipeColors = recipeColors;
 

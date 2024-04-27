@@ -48,7 +48,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindSelectedIndex(model => model.SelectedCategoryId)
                             .BindOptions(model => model.Categories)
                             .BindIsEnabled(model => model.IsSkillSelected)
-                            .SetWidth(200f);
+                        .SetWidth(200f);
+                        
+                        row.AddButton()
+                            .SetText("Select Blueprint")
+                            .BindIsVisible(model => model.IsInCraftingMode)
+                            .SetHeight(35f)
+                            .BindOnClicked(model => model.OnClickSelectBlueprint());
 
                         row.AddSpacer();
                     });

@@ -5,6 +5,10 @@
         public RecipeType Recipe { get; set; }
         public int Level { get; set; }
         public int LicensedRuns { get; set; }
+        public int BonusRandomStats { get; set; }
+        public int BonusCreditReduction { get; set; }
+        public int BonusEnhancementSlots { get; set; }
+        public int BonusLicensedRuns { get; set; }
 
         public BlueprintDetail()
         {

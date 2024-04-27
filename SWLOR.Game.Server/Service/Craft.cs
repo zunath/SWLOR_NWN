@@ -554,5 +554,34 @@ namespace SWLOR.Game.Server.Service
             Gui.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
         }
 
+        /// <summary>
+        /// Retrieves a blueprint detail object about an item.
+        /// If item is not a blueprint, resulting recipe type will be Invalid.
+        /// </summary>
+        /// <param name="blueprint">The blueprint item</param>
+        /// <returns>A blueprint detail object</returns>
+        public static BlueprintDetail GetBlueprintDetails(uint blueprint)
+        {
+            var blueprintDetail = new BlueprintDetail();
+            var recipeId = GetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID");
+            blueprintDetail.Recipe = (RecipeType)recipeId;
+
+            for (var ip = GetFirstItemProperty(blueprint); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(blueprint))
+            {
+                var type = GetItemPropertyType(ip);
+
+                if (type == ItemPropertyType.BlueprintLevel)
+                {
+                    blueprintDetail.Level = GetItemPropertyCostTableValue(ip);
+                }
+                else if (type == ItemPropertyType.BlueprintLicensedRuns)
+                {
+                    blueprintDetail.LicensedRuns = GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            return blueprintDetail;
+        }
+        
     }
 }

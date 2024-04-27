@@ -19129,6 +19129,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blueprint"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bluetail"
                     },
                     "RESREF": {

@@ -128,7 +128,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         Incubation = 127,
         DNAType = 128,
         EnzymeColor = 129,
-        BlueprintLevel = 130,
-        BlueprintLicensedRuns = 131,
+        Blueprint = 130,
     }
 }

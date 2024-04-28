@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private RecipeType _recipe;
         private uint _blueprintItem;
+        private BlueprintDetail _activeBlueprint;
         
         private PerkType _rapidSynthesisPerk;
         private PerkType _carefulSynthesisPerk;
@@ -71,6 +72,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string CraftText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        
         public GuiBindingList<string> RecipeDescription
         {
             get => Get<GuiBindingList<string>>();
@@ -384,7 +391,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusColor = GuiColor.Green;
             StatusText = string.Empty;
 
-            var enhancementSlots = recipe.EnhancementSlots + blueprint.BonusEnhancementSlots;
+            var enhancementSlots = recipe.EnhancementSlots + blueprint.EnhancementSlots;
             
             IsEnhancement1Visible = enhancementSlots >= 1;
             IsEnhancement2Visible = enhancementSlots >= 2;
@@ -395,6 +402,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsEnhancement7Visible = enhancementSlots >= 7;
             IsEnhancement8Visible = enhancementSlots >= 8;
 
+            CraftText = blueprint.Recipe == RecipeType.Invalid 
+                ? "Craft"
+                : $"Craft [{Craft.CalculateBlueprintCraftCreditCost(_blueprintItem):N0}cr]";
             RecipeName = $"Recipe: {recipe.Quantity}x {itemName}";
             RecipeLevel = $"Level: {recipe.Level}";
             
@@ -1262,6 +1272,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void SwitchToCraftMode()
         {
+            _activeBlueprint = Craft.GetBlueprintDetails(_blueprintItem);
+
+            if (_activeBlueprint.Recipe != RecipeType.Invalid)
+            {
+                var cost = Craft.CalculateBlueprintCraftCreditCost(_blueprintItem);
+                AssignCommand(Player, () => TakeGoldFromCreature(cost, Player, true));
+                
+                _activeBlueprint.LicensedRuns--;
+                Craft.SetBlueprintDetails(_blueprintItem, _activeBlueprint);
+            }
+            
             StatusText = string.Empty;
             StatusColor = GuiColor.Green;
 
@@ -1301,9 +1322,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return true;
         }
 
+        private bool ProcessBlueprintRequirements()
+        {
+            var blueprintDetails = Craft.GetBlueprintDetails(_blueprintItem);
+
+            if (blueprintDetails.Recipe == RecipeType.Invalid)
+                return true;
+
+            var cost = Craft.CalculateBlueprintCraftCreditCost(_blueprintItem);
+            if (GetGold(Player) < cost)
+            {
+                StatusText = $"Insufficient credits!";
+                StatusColor = GuiColor.Red;
+                
+                return false;
+            }
+
+            return true;
+        }
+
         public Action OnClickManualCraft() => () =>
         {
-            if (ProcessComponents())
+            if (ProcessBlueprintRequirements() && ProcessComponents())
             {
                 SwitchToCraftMode();
             }

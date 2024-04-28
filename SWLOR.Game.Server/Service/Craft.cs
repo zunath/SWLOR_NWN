@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
@@ -315,21 +316,26 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
-                    if (blueprint.BonusRandomStats > 0)
+                    if (blueprint.LicensedRuns > 0)
                     {
-                        recipeDetails.Add($"Random Stat Bonus x{blueprint.BonusRandomStats}");
+                        recipeDetails.Add($"Licensed Runs x{blueprint.LicensedRuns}");
+                        recipeDetailColors.Add(_white);
+                    }
+                    if (blueprint.ItemBonuses > 0)
+                    {
+                        recipeDetails.Add($"Stat Bonus x{blueprint.ItemBonuses}");
                         recipeDetailColors.Add(_white);
                     }
 
-                    if (blueprint.BonusCreditReduction > 0)
+                    if (blueprint.CreditReduction > 0)
                     {
-                        recipeDetails.Add($"Credit Cost -{blueprint.BonusCreditReduction * 10}%");
+                        recipeDetails.Add($"Price Reduced -{blueprint.CreditReduction}%");
                         recipeDetailColors.Add(_white);
                     }
 
-                    if (blueprint.BonusEnhancementSlots > 0)
+                    if (blueprint.EnhancementSlots > 0)
                     {
-                        recipeDetails.Add($"Bonus Enhancements x{blueprint.BonusEnhancementSlots}");
+                        recipeDetails.Add($"Bonus Enhancements x{blueprint.EnhancementSlots}");
                         recipeDetailColors.Add(_white);
                     }
                 }
@@ -602,63 +608,83 @@ namespace SWLOR.Game.Server.Service
             var blueprintDetail = new BlueprintDetail();
             var recipeId = GetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID");
             blueprintDetail.Recipe = (RecipeType)recipeId;
+            blueprintDetail.RandomEnhancementSlotGranted = GetLocalBool(blueprint, "BLUEPRINT_RANDOM_ENHANCEMENT_SLOT_GRANTED");
 
             for (var ip = GetFirstItemProperty(blueprint); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(blueprint))
             {
                 var type = GetItemPropertyType(ip);
 
-                if (type == ItemPropertyType.BlueprintLevel)
+                if (type == ItemPropertyType.Blueprint)
                 {
-                    blueprintDetail.Level = GetItemPropertyCostTableValue(ip);
+                    var subType = GetItemPropertySubType(ip);
+                    var costValue = GetItemPropertyCostTableValue(ip);
+                    
+                    if (subType == (int)BlueprintSubType.Level)
+                    {
+                        blueprintDetail.Level = costValue;
+                    }
+                    else if (subType == (int)BlueprintSubType.LicensedRuns)
+                    {
+                        blueprintDetail.LicensedRuns = costValue;
+                    }
+                    else if (subType == (int)BlueprintSubType.ItemBonuses)
+                    {
+                        blueprintDetail.ItemBonuses = costValue;
+                    }
+                    else if (subType == (int)BlueprintSubType.CreditReduction)
+                    {
+                        blueprintDetail.CreditReduction = costValue;
+                    }
+                    else if (subType == (int)BlueprintSubType.TimeReduction)
+                    {
+                        blueprintDetail.TimeReduction = costValue;
+                    }
+                    else if (subType == (int)BlueprintSubType.EnhancementSlots)
+                    {
+                        blueprintDetail.EnhancementSlots = costValue;
+                    }
                 }
-                else if (type == ItemPropertyType.BlueprintLicensedRuns)
-                {
-                    blueprintDetail.LicensedRuns = GetItemPropertyCostTableValue(ip);
-                }
-            }
-
-            if (blueprintDetail.Level >= 1)
-            {
-                blueprintDetail.BonusRandomStats++;
-            }
-            if (blueprintDetail.Level >= 2)
-            {
-                blueprintDetail.BonusLicensedRuns++;
-            }
-            if (blueprintDetail.Level >= 3)
-            {
-                blueprintDetail.BonusCreditReduction++;
-            }
-            if (blueprintDetail.Level >= 4)
-            {
-                blueprintDetail.BonusEnhancementSlots++;
-            }
-            if (blueprintDetail.Level >= 5)
-            {
-                blueprintDetail.BonusLicensedRuns++;
-            }
-            if (blueprintDetail.Level >= 6)
-            {
-                blueprintDetail.BonusRandomStats++;
-            }
-            if (blueprintDetail.Level >= 7)
-            {
-                blueprintDetail.BonusCreditReduction++;
-            }
-            if (blueprintDetail.Level >= 8)
-            {
-                blueprintDetail.BonusLicensedRuns++;
-            }
-            if (blueprintDetail.Level >= 9)
-            {
-                blueprintDetail.BonusRandomStats++;
-            }
-            if (blueprintDetail.Level >= 10)
-            {
-                blueprintDetail.BonusEnhancementSlots++;
             }
 
             return blueprintDetail;
+        }
+
+        public static void SetBlueprintDetails(uint blueprint, BlueprintDetail blueprintDetail)
+        {
+            if (blueprintDetail.LicensedRuns <= 0)
+            {
+                DestroyObject(blueprint);
+                return;
+            }
+            
+            SetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID", (int)blueprintDetail.Recipe);
+            SetLocalBool(blueprint, "BLUEPRINT_RANDOM_ENHANCEMENT_SLOT_GRANTED", blueprintDetail.RandomEnhancementSlotGranted);
+            
+            BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, blueprintDetail.Level), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.LicensedRuns, blueprintDetail.LicensedRuns), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.ItemBonuses, blueprintDetail.ItemBonuses), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.CreditReduction, blueprintDetail.CreditReduction), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.TimeReduction, blueprintDetail.TimeReduction), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.EnhancementSlots, blueprintDetail.EnhancementSlots), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            
+        }
+        
+        public static int CalculateBlueprintCraftCreditCost(uint blueprint)
+        {
+            var blueprintDetail = GetBlueprintDetails(blueprint);
+            var recipeDetail = GetRecipe(blueprintDetail.Recipe);
+            var creditReduction = blueprintDetail.CreditReduction * 0.01f;
+            var perkLevel = recipeDetail.Level / 10;
+            if (perkLevel <= 0)
+                perkLevel = 1;
+            
+            var blueprintLevel = blueprintDetail.Level;
+            
+            const int BaseConstant = 150;
+            var price = BaseConstant * (Math.Pow(perkLevel, 2.2f) * Math.Pow(blueprintLevel, 2f));
+            price -= creditReduction * price;
+            
+            return (int)price;  
         }
         
     }

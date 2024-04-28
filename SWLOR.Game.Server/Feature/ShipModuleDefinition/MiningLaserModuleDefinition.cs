@@ -55,10 +55,16 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         return "This mining laser is not powerful enough to harvest that asteroid.";
                     }
 
+                    if (GetLocalBool(target, "BEING_MINED") == true)
+                    {
+                        return "This asteroid is already being mined.";
+                    }
+
                     return string.Empty;
                 })
                 .ActivatedAction((activator, status, target, shipStatus, moduleBonus) =>
                 {
+                    SetLocalBool(target, "BEING_MINED", true);
                     // Remaining units aren't set - pick a random number to assign.
                     var remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
                     if (remainingUnits <= 0)
@@ -87,12 +93,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         }
 
                         // Perk & module bonuses
-                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(moduleBonus * 0.4f);
+                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining);
                         if (amountToMine > remainingUnits)
                             amountToMine = remainingUnits;
 
                         remainingUnits -= amountToMine;
-
+                        amountToMine += (int)((shipStatus.Industrial + moduleBonus) * 0.4f);
 
                         // Fully deplete the rock - destroy it.
                         if (remainingUnits <= 0)
@@ -132,6 +138,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var xp = Skill.GetDeltaXP(delta);
 
                             Skill.GiveSkillXP(activator, SkillType.Piloting, xp);
+                            SetLocalBool(target, "BEING_MINED", false);
                         }
                     });
                 });

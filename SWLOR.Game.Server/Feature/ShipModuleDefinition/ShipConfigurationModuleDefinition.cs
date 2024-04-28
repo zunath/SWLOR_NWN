@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     shipStatus.Evasion += evasion + moduleBonus * 2;
                     if (industrial > 0)
                     {
-                        shipStatus.Industrial += industrial + moduleBonus * 2;
+                        shipStatus.Industrial += industrial + moduleBonus / 2;
                     }
                 })
                 .UnequippedAction((creature, shipStatus, moduleBonus) =>
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     shipStatus.Evasion -= evasion + moduleBonus * 2;
                     if (industrial > 0)
                     {
-                        shipStatus.Industrial -= industrial + moduleBonus * 2;
+                        shipStatus.Industrial -= industrial + moduleBonus / 2;
                     }
 
                     if (shipStatus.Hull > shipStatus.MaxHull)

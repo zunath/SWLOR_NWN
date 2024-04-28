@@ -20,183 +20,428 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
         private void Tier1()
         {
-            _builder.Create("pirate_sybil")
-                .ItemTag("NPC_Sybil")
+            _builder.Create("t1bomber")
+                .ItemTag("NPC_Bomber1")
+                .ShipModule("config_bmb1")
+                .ShipModule("msl_launch_b")
+                .ShipModule("com_laser_b")
                 .ShipModule("com_laser_b");
 
-            _builder.Create("pirate_terror")
-                .ItemTag("NPC_Terror")
+            _builder.Create("t1fighter")
+                .ItemTag("NPC_Fighter1")
+                .ShipModule("config_fig1")
+                .ShipModule("ion_cann_b")
                 .ShipModule("com_laser_b")
-                .ShipModule("msl_launch_b");
+                .ShipModule("com_laser_b");
 
-            _builder.Create("npc_courier")
-                .ItemTag("npc_courier")
-                .ShipModule("blast_can_1")
-                .ShipModule("blast_can_1");
+            _builder.Create("t1interceptor")
+                .ItemTag("NPC_Interceptor1")
+                .ShipModule("config_int1")
+                .ShipModule("com_laser_b")
+                .ShipModule("com_laser_b")
+                .ShipModule("com_laser_b")
+                .ShipModule("com_laser_b");
 
-            _builder.Create("npc_turret1")
-                .ItemTag("npc_turret1")
-                .ShipModule("blast_can_1")
-                .ShipModule("blast_can_1");
+            _builder.Create("t1gunship")
+                .ItemTag("NPC_Gunship1")
+                .ShipModule("config_fig1")
+                .ShipModule("ion_cann_b")
+                .ShipModule("msl_launch_b")
+                .ShipModule("com_laser_b")
+                .ShipModule("com_laser_b");
+
+            _builder.Create("NPC_Platform1")
+                .ItemTag("t1platform")
+                .ShipModule("config_bmb1")
+                .ShipModule("com_laser_b")
+                .ShipModule("com_laser_b")
+                .ShipModule("com_laser_b")
+                .ShipModule("com_laser_b");
+
+            _builder.Create("NPC_Cargo1")
+                .ItemTag("t1cargo")
+                .ShipModule("config_ind1")
+                .ShipModule("ion_cann_b")
+                .ShipModule("ion_cann_b")
+                .ShipModule("com_laser_b")
+                .ShipModule("com_laser_b");
+
+            _builder.Create("NPC_Capital1")
+                .ItemTag("t1capital")
+                .ShipModule("npc_cap1")
+                .ShipModule("ion_cann_b")
+                .ShipModule("msl_launch_b")
+                .ShipModule("msl_launch_b")
+                .ShipModule("com_laser_b")
+                .ShipModule("com_laser_b");
         }
 
         private void Tier2()
         {
-            _builder.Create("pirate_nightmare")
-                .ItemTag("NPC_Nightmare")
+            _builder.Create("t2bomber")
+                .ItemTag("NPC_Bomber2")
+                .ShipModule("config_bmb2")
+                .ShipModule("msl_launch_1")
+                .ShipModule("com_laser_1")
+                .ShipModule("com_laser_1");
+
+            _builder.Create("t2fighter")
+                .ItemTag("NPC_Fighter2")
+                .ShipModule("config_fig2")
                 .ShipModule("ion_cann_1")
                 .ShipModule("com_laser_1")
-                .ShipModule("shld_boost_1");
+                .ShipModule("com_laser_1");
 
-            _builder.Create("pirate_ferron")
-                .ItemTag("NPC_Ferron")
+            _builder.Create("t2interceptor")
+                .ItemTag("NPC_Interceptor2")
+                .ShipModule("config_int2")
                 .ShipModule("com_laser_1")
+                .ShipModule("com_laser_1")
+                .ShipModule("com_laser_1")
+                .ShipModule("com_laser_1");
+
+            _builder.Create("t2gunship")
+                .ItemTag("NPC_Gunship2")
+                .ShipModule("config_fig2")
+                .ShipModule("ion_cann_1")
                 .ShipModule("msl_launch_1")
-                .ShipModule("msl_launch_1");
+                .ShipModule("com_laser_1")
+                .ShipModule("com_laser_1");
 
-            _builder.Create("npc_shuttle")
-                .ItemTag("NPC_Shuttle")
-                .ShipModule("blast_can_2")
-                .ShipModule("blast_can_2");
+            _builder.Create("NPC_Platform2")
+                .ItemTag("t2platform")
+                .ShipModule("config_bmb2")
+                .ShipModule("com_laser_1")
+                .ShipModule("com_laser_1")
+                .ShipModule("com_laser_1")
+                .ShipModule("com_laser_1");
 
-            _builder.Create("npc_turret2")
-                .ItemTag("npc_turret2")
-                .ShipModule("blast_can_2")
-                .ShipModule("blast_can_2");
+            _builder.Create("NPC_Cargo2")
+                .ItemTag("t2cargo")
+                .ShipModule("config_ind2")
+                .ShipModule("ion_cann_1")
+                .ShipModule("ion_cann_1")
+                .ShipModule("com_laser_1")
+                .ShipModule("com_laser_1");
+
+            _builder.Create("NPC_Capital2")
+                .ItemTag("t2capital")
+                .ShipModule("npc_cap1")
+                .ShipModule("ion_cann_2")
+                .ShipModule("msl_launch_2")
+                .ShipModule("msl_launch_2")
+                .ShipModule("com_laser_1")
+                .ShipModule("com_laser_1");
         }
 
         private void Tier3()
         {
-            _builder.Create("pirate_storm")
-                .ItemTag("NPC_Storm")
+            _builder.Create("t3bomber")
+                .ItemTag("NPC_Bomber3")
+                .ShipModule("config_bmb3")
                 .ShipModule("msl_launch_2")
-                .ShipModule("msl_launch_2")
-                .ShipModule("msl_launch_2");
+                .ShipModule("com_laser_2")
+                .ShipModule("com_laser_2");
 
-            _builder.Create("pirate_ranger")
-                .ItemTag("NPC_Ranger")
+            _builder.Create("t3fighter")
+                .ItemTag("NPC_Fighter3")
+                .ShipModule("config_fig3")
+                .ShipModule("ion_cann_2")
+                .ShipModule("com_laser_2")
+                .ShipModule("com_laser_2");
+
+            _builder.Create("t3interceptor")
+                .ItemTag("NPC_Interceptor3")
+                .ShipModule("config_int3")
+                .ShipModule("com_laser_2")
+                .ShipModule("com_laser_2")
+                .ShipModule("com_laser_2")
+                .ShipModule("com_laser_2");
+
+            _builder.Create("t3gunship")
+                .ItemTag("NPC_Gunship3")
+                .ShipModule("config_fig3")
+                .ShipModule("ion_cann_2")
+                .ShipModule("msl_launch_2")
+                .ShipModule("com_laser_2")
+                .ShipModule("com_laser_2");
+
+            _builder.Create("NPC_Platform3")
+                .ItemTag("t3platform")
+                .ShipModule("config_bmb3")
+                .ShipModule("com_laser_2")
+                .ShipModule("com_laser_2")
+                .ShipModule("com_laser_2")
+                .ShipModule("com_laser_2");
+
+            _builder.Create("NPC_Cargo3")
+                .ItemTag("t3cargo")
+                .ShipModule("config_ind3")
                 .ShipModule("ion_cann_2")
                 .ShipModule("ion_cann_2")
-                .ShipModule("msl_launch_2");
+                .ShipModule("com_laser_2")
+                .ShipModule("com_laser_2");
 
-            _builder.Create("npc_freighter")
-                .ItemTag("NPC_Freighter")
-                .ShipModule("blast_can_3")
-                .ShipModule("blast_can_3");
-
-            _builder.Create("npc_turret3")
-                .ItemTag("npc_turret3")
-                .ShipModule("blast_can_3")
-                .ShipModule("blast_can_3");
-
-            _builder.Create("npc_aurek")
-                .ItemTag("npc_aurek")
-                .ShipModule("blast_can_3");
-
-            _builder.Create("npc_sithfig")
-                .ItemTag("npc_sithfig")
-                .ShipModule("blast_can_3");
+            _builder.Create("NPC_Capital3")
+                .ItemTag("t3capital")
+                .ShipModule("npc_cap3")
+                .ShipModule("ion_cann_2")
+                .ShipModule("msl_launch_2")
+                .ShipModule("msl_launch_2")
+                .ShipModule("com_laser_2")
+                .ShipModule("com_laser_2");
         }
 
         private void Tier4()
         {
-            _builder.Create("pirate_hammer")
-                .ItemTag("NPC_Hammer")
+            _builder.Create("t4bomber")
+                .ItemTag("NPC_Bomber4")
+                .ShipModule("config_bmb4")
+                .ShipModule("msl_launch_3")
+                .ShipModule("com_laser_3")
+                .ShipModule("com_laser_3");
+
+            _builder.Create("t4fighter")
+                .ItemTag("NPC_Fighter4")
+                .ShipModule("config_fig4")
+                .ShipModule("ion_cann_3")
+                .ShipModule("com_laser_3")
+                .ShipModule("com_laser_3");
+
+            _builder.Create("t4interceptor")
+                .ItemTag("NPC_Interceptor4")
+                .ShipModule("config_int4")
+                .ShipModule("com_laser_3")
                 .ShipModule("com_laser_3")
                 .ShipModule("com_laser_3")
                 .ShipModule("com_laser_3");
 
-            _builder.Create("pirate_drake")
-                .ItemTag("NPC_Drake")
+            _builder.Create("t4gunship")
+                .ItemTag("NPC_Gunship4")
+                .ShipModule("config_fig4")
+                .ShipModule("ion_cann_3")
+                .ShipModule("msl_launch_3")
+                .ShipModule("com_laser_3")
+                .ShipModule("com_laser_3");
+
+            _builder.Create("NPC_Platform4")
+                .ItemTag("t4platform")
+                .ShipModule("config_bmb4")
+                .ShipModule("com_laser_3")
+                .ShipModule("com_laser_3")
+                .ShipModule("com_laser_3")
+                .ShipModule("com_laser_3");
+
+            _builder.Create("NPC_Cargo4")
+                .ItemTag("t4cargo")
+                .ShipModule("config_ind4")
+                .ShipModule("ion_cann_3")
+                .ShipModule("ion_cann_3")
+                .ShipModule("com_laser_3")
+                .ShipModule("com_laser_3");
+
+            _builder.Create("NPC_Capital4")
+                .ItemTag("t4capital")
+                .ShipModule("npc_cap4")
                 .ShipModule("ion_cann_3")
                 .ShipModule("msl_launch_3")
                 .ShipModule("msl_launch_3")
-                .ShipModule("shld_boost_3");
-
-            _builder.Create("npc_bulkf")
-                .ItemTag("npc_bulkf")
-                .ShipModule("blast_can_4")
-                .ShipModule("blast_can_4")
-                .ShipModule("blast_can_4");
-
-            _builder.Create("npc_turret4")
-                .ItemTag("npc_turret4")
-                .ShipModule("blast_can_4")
-                .ShipModule("blast_can_4")
-                .ShipModule("blast_can_4");
+                .ShipModule("com_laser_3")
+                .ShipModule("com_laser_3");
         }
 
         private void Tier5()
         {
-            _builder.Create("pirate_borealis")
-                .ItemTag("NPC_Borealis")
-                .ShipModule("ion_cann_4")
-                .ShipModule("ion_cann_4")
-                .ShipModule("ion_cann_4")
-                .ShipModule("tgt_sys_4")
-                .ShipModule("shld_boost_4");
-
-            _builder.Create("pirate_eleyna")
-                .ItemTag("NPC_Eleyna")
+            _builder.Create("t5bomber")
+                .ItemTag("NPC_Bomber5")
+                .ShipModule("config_bmb5")
+                .ShipModule("msl_launch_4")
                 .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
+
+            _builder.Create("t5fighter")
+                .ItemTag("NPC_Fighter5")
+                .ShipModule("config_fig5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
+
+            _builder.Create("t5interceptor")
+                .ItemTag("NPC_Interceptor5")
+                .ShipModule("config_int5")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
+
+            _builder.Create("t5gunship")
+                .ItemTag("NPC_Gunship5")
+                .ShipModule("config_fig5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
+
+            _builder.Create("NPC_Platform5")
+                .ItemTag("t5platform")
+                .ShipModule("config_bmb5")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
+
+            _builder.Create("NPC_Cargo5")
+                .ItemTag("t5cargo")
+                .ShipModule("config_ind5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("ion_cann_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
+
+            _builder.Create("NPC_Capital5")
+                .ItemTag("t5capital")
+                .ShipModule("npc_cap5")
+                .ShipModule("ion_cann_4")
                 .ShipModule("msl_launch_4")
                 .ShipModule("msl_launch_4")
-                .ShipModule("tgt_sys_4")
-                .ShipModule("shld_boost_4");
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
 
-            _builder.Create("npc_merchant")
-                .ItemTag("npc_merchant")
-                .ShipModule("blast_can_5")
-                .ShipModule("blast_can_5")
-                .ShipModule("blast_can_5");
+            _builder.Create("t6bomber")
+                .ItemTag("NPC_Bomber6")
+                .ShipModule("config_bmb5")
+                .ShipModule("msl_launch_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
 
-            _builder.Create("npc_turret5")
-                .ItemTag("npc_turret5")
-                .ShipModule("blast_can_5")
-                .ShipModule("blast_can_5")
-                .ShipModule("blast_can_5");
+            _builder.Create("t6fighter")
+                .ItemTag("NPC_Fighter6")
+                .ShipModule("config_fig5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
 
-            _builder.Create("cap_corvette")
-                .ItemTag("cap_corvette")
-                .ShipModule("cap_turbo_1")
-                .ShipModule("cap_missile_1")
-                .ShipModule("cap_pdl_1");
+            _builder.Create("t6interceptor")
+                .ItemTag("NPC_Interceptor6")
+                .ShipModule("config_int5")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
 
-            _builder.Create("cap_frigate")
-                .ItemTag("cap_frigate")
-                .ShipModule("cap_turbo_2")
-                .ShipModule("cap_missile_2")
-                .ShipModule("cap_pdl_2");
+            _builder.Create("t6gunship")
+                .ItemTag("NPC_Gunship6")
+                .ShipModule("config_fig5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
 
-            _builder.Create("cap_cruiser")
-                .ItemTag("cap_cruiser")
-                .ShipModule("cap_turbo_3")
-                .ShipModule("cap_missile_3")
-                .ShipModule("cap_pdl_3");
+            _builder.Create("NPC_Platform6")
+                .ItemTag("t6platform")
+                .ShipModule("config_bmb5")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
 
-            _builder.Create("cap_hvycrui")
-                .ItemTag("cap_hvycrui")
-                .ShipModule("cap_turbo_4")
-                .ShipModule("cap_missile_4")
-                .ShipModule("cap_pdl_4");
+            _builder.Create("NPC_Cargo6")
+                .ItemTag("t6cargo")
+                .ShipModule("config_ind5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("ion_cann_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
 
-            _builder.Create("cap_btlcrui")
-                .ItemTag("cap_btlcrui")
-                .ShipModule("cap_turbo_5")
-                .ShipModule("cap_missile_5")
-                .ShipModule("cap_pdl_5");
+            _builder.Create("NPC_MandoCap1")
+                .ItemTag("mandocap1")
+                .ShipModule("npc_cap5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
 
-            _builder.Create("cap_btlship")
-                .ItemTag("cap_btlship")
-                .ShipModule("cap_turbo_6")
-                .ShipModule("cap_missile_6")
-                .ShipModule("cap_pdl_6");
+            _builder.Create("NPC_MandoCap2")
+                .ItemTag("mandocap2")
+                .ShipModule("npc_cap5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
 
-            _builder.Create("cap_dread")
-                .ItemTag("cap_dread")
-                .ShipModule("cap_turbo_7")
-                .ShipModule("cap_missile_7")
-                .ShipModule("cap_pdl_7");
+            _builder.Create("NPC_MandoCap3")
+                .ItemTag("mandocap3")
+                .ShipModule("npc_cap5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
+
+            _builder.Create("NPC_SithCap1")
+                .ItemTag("sithcap1")
+                .ShipModule("npc_cap5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
+
+            _builder.Create("NPC_SithCap2")
+                .ItemTag("sithcap2")
+                .ShipModule("npc_cap5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
+
+            _builder.Create("NPC_SithCap3")
+                .ItemTag("sithcap3")
+                .ShipModule("npc_cap5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
+
+            _builder.Create("NPC_SithCap4")
+                .ItemTag("sithcap4")
+                .ShipModule("npc_cap5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
+
+            _builder.Create("NPC_SithCap5")
+                .ItemTag("sithcap5")
+                .ShipModule("npc_cap5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
+
+            _builder.Create("NPC_SithCap6")
+                .ItemTag("sithcap6")
+                .ShipModule("npc_cap5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
+
+            _builder.Create("NPC_SithCap7")
+                .ItemTag("sithcap7")
+                .ShipModule("npc_cap5")
+                .ShipModule("ion_cann_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("com_laser_4")
+                .ShipModule("com_laser_4");
         }
     }
 }

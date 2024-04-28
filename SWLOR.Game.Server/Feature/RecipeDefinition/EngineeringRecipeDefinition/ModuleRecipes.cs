@@ -176,7 +176,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 3);
 
-		}
+            // Hypermatter Injector 1
+            _builder.Create(RecipeType.FuelInjector1, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_inject1")
+                .Level(9)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Module, 1)
+                .Component("ref_tilarium", 5)
+                .Component("elec_ruined", 3);
+        }
 
 		private void Tier2()
         {
@@ -335,6 +345,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 3);
 
+			// Hypermatter Injector II
+			_builder.Create(RecipeType.FuelInjector2, SkillType.Engineering)
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("cap_inject2")
+				.Level(19)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 2)
+				.EnhancementSlots(RecipeEnhancementType.Module, 1)
+				.Component("ref_currian", 5)
+				.Component("elec_flawed", 3);
 		}
 
 		private void Tier3()
@@ -494,6 +514,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 3);
 
+			// Hypermatter Injector III
+			_builder.Create(RecipeType.FuelInjector3, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_inject3")
+                .Level(29)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_idailia", 5)
+                .Component("elec_good", 3);
 		}
 
 		private void Tier4()
@@ -653,6 +683,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 3);
 
+			// Hypermatter Injector IV
+			_builder.Create(RecipeType.FuelInjector4, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_inject4")
+                .Level(39)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_barinium", 5)
+                .Component("elec_imperfect", 3);
 		}
 
 		private void Tier5()
@@ -812,7 +852,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 3);
 
-
+			// Hypermatter Injector V
+			_builder.Create(RecipeType.FuelInjector5, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_inject5")
+                .Level(49)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_gostian", 5)
+                .Component("elec_high", 3);
 		}
 	}
 }

@@ -10,24 +10,17 @@ using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
-    public class MissileLauncherModuleDefinition : IShipModuleListDefinition
+    public class MissileLauncherModuleDefinition : IShipModuleListDefinition    
     {
         private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            MissileLauncher("msl_launch_b", "Basic Missile Launcher", "B. Msl Launch", "Deals 6 explosive DMG to your target and nearby ships.", 1, 8f, 10, 6);
-            MissileLauncher("msl_launch_1", "Missile Launcher I", "Msl Launch I", "Deals 10 explosive DMG to your target and nearby ships.", 2, 11f, 14, 10);
-            MissileLauncher("msl_launch_2", "Missile Launcher II", "Msl Launch II", "Deals 15 explosive DMG to your target and nearby ships.", 3, 14f, 18, 15);
-            MissileLauncher("msl_launch_3", "Missile Launcher III", "Msl Launch III", "Deals 19 explosive DMG  to your target and nearby ships.", 4, 17f, 22, 19);
-            MissileLauncher("msl_launch_4", "Missile Launcher IV", "Msl Launch IV", "Deals 24 explosive DMG to your target and nearby ships.", 5, 20f, 26, 24);
-            MissileLauncher("cap_missile_1", "Concussion Missile I", "CapMissile1", "A 25 damage missile, firing every 2 rounds.", 5, 12f, 30, 25);
-            MissileLauncher("cap_missile_2", "Concussion Missile II", "CapMissile2", "A 25 damage missile, firing every 3 rounds.", 5, 18f, 30, 25);
-            MissileLauncher("cap_missile_3", "Concussion Missile III", "CapMissile3", "A 35 damage missile, firing every 2 rounds.", 5, 12f, 30, 35);
-            MissileLauncher("cap_missile_4", "Concussion Missile IV", "CapMissile4", "A 35 damage missile, firing every 3 rounds.", 5, 18f, 30, 35);
-            MissileLauncher("cap_missile_5", "Concussion Missile V", "CapMissile5", "A 45 damage missile, firing every 2 rounds.", 5, 12f, 30, 45);
-            MissileLauncher("cap_missile_6", "Concussion Missile VI", "CapMissile6", "A 45 damage missile, firing every 3 rounds.", 5, 18f, 30, 45);
-            MissileLauncher("cap_missile_7", "Concussion Missile VII", "CapMissile7", "A 60 damage missile, firing every 3 rounds.", 5, 18f, 30, 60);
+            MissileLauncher("msl_launch_b", "Basic Missile Launcher", "B. Msl Launch", "Requires a missile. Deals 10 explosive DMG to your target.", 1, 10);
+            MissileLauncher("msl_launch_1", "Missile Launcher I", "Msl Launch I", "Requires a missile. Deals 16 explosive DMG to your target.", 2, 16);
+            MissileLauncher("msl_launch_2", "Missile Launcher II", "Msl Launch II", "Requires a missile. Deals 22 explosive DMG to your target.", 3, 22);
+            MissileLauncher("msl_launch_3", "Missile Launcher III", "Msl Launch III", "Requires a missile. Deals 28 explosive DMG  to your target.", 4, 28);
+            MissileLauncher("msl_launch_4", "Missile Launcher IV", "Msl Launch IV", "Requires a missile. Deals 34 explosive DMG to your target.", 5, 34);
 
             return _builder.Build();
         }
@@ -74,8 +67,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             string shortName,
             string description,
             int requiredLevel,
-            float recast,
-            int capacitor,
             int dmg)
         {
             _builder.Create(itemTag)
@@ -88,10 +79,31 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
-                .Recast(recast)
-                .Capacitor(capacitor)
+                .Recast(10f)
+                .ValidationAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
+                {
+                    var item = GetItemPossessedBy(activator, "ship_missile");
+                    var stackSize = GetItemStackSize(item);
+                    if(stackSize <= 0 && GetIsPC(activator) == true)
+                    {
+                        return "You need a missile to fire this weapon.";
+                    }
+
+                    return string.Empty;
+                })
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
+                    var item = GetItemPossessedBy(activator, "ship_missile");
+                    var stackSize = GetItemStackSize(item);
+                    if (stackSize <= 1)
+                    {
+                        DestroyObject(item);
+                    }
+                    else
+                    {
+                        SetItemStackSize(item, stackSize - 1);
+                    }
+
                     var targetDistance = GetDistanceBetween(activator, target);
                     var targetLocation = GetLocation(target);
                     var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
@@ -101,6 +113,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var isHit = roll <= chanceToHit;
 
                     var attackBonus = moduleBonus * 2 + activatorShipStatus.ExplosiveDamage;
+
+                    // Missiles do 25% more damage to unshielded targets. Due to shield recharge starting instantly, allow for up to 4 shield points to be considered "unshielded".
+                    if (targetShipStatus.Shield <= 4)
+                    {
+                        dmg += dmg/4;
+                    }
 
                     // Shoot some missiles out to the target.
                     AssignCommand(activator, () =>
@@ -115,41 +133,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball, !isHit, 0.5f), target);
                         PerformAttack(activator, target, dmg, attackBonus, isHit);
-
-                        // Iterate over nearby targets, rolling to apply damage to each.
-                        var nearby = GetFirstObjectInShape(Shape.Sphere, 3f, targetLocation);
-                        while (GetIsObjectValid(nearby))
-                        {
-                            // Picked up the same creature as our initial target. Move to the next one since we've already processed it.
-                            if (nearby == target)
-                            {
-                                nearby = GetNextObjectInShape(Shape.Sphere, 3f, targetLocation);
-                                continue;
-                            }
-
-                            // Only targets within 5 meters may be hit by this missile.
-                            var nearbyLocation = GetLocation(nearby);
-                            if (GetDistanceBetweenLocations(targetLocation, nearbyLocation) > 5f) break;
-
-                            var shipTarget = Space.GetShipStatus(nearby);
-                            if (!GetIsObjectValid(nearby))
-                            {
-                                nearby = GetNextObjectInShape(Shape.Sphere, 3f, targetLocation);
-                                continue;
-                            }
-
-                            if (shipTarget.Shield <= 0 && shipTarget.Hull <= 0)
-                            {
-                                nearby = GetNextObjectInShape(Shape.Sphere, 3f, targetLocation);
-                                continue;
-                            }
-
-                            PerformAttack(activator, nearby, dmg, attackBonus, null);
-
-                            nearby = GetNextObjectInShape(Shape.Sphere, 3f, targetLocation);
-                        }
                     });
-
                 });
         }
     }

@@ -10,5 +10,6 @@
         HullRepairer = 5,
         ShieldRepairer = 6,
         MiningLaser = 7,
+        HypermatterInjector = 8,
     }
 }

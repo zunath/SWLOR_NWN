@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var attackBonus = activatorShipStatus.ThermalDamage;
                     var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
                     var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Piloting, attackBonus);
-                    if (GetHasFeat(FeatType.ZenMarksmanship, activator) && GetAbilityScore(activator, AbilityType.Willpower) > GetAbilityScore(activator, AbilityType.Perception))
+                    if (GetHasFeat(FeatType.IntuitivePiloting, activator) && GetAbilityScore(activator, AbilityType.Willpower) > GetAbilityScore(activator, AbilityType.Perception))
                     {
                         attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
                         attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);

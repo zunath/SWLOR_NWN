@@ -69002,6 +69002,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Research Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "research_term"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Resource Bay"
                     },
                     "RESREF": {

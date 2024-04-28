@@ -699,6 +699,7 @@
         DNAExtractor3 = 1253,
         DNAExtractor4 = 1254,
         DNAExtractor5 = 1255,
+        ResearchTerminal = 1256,
 
         ReinforcedConstructionParts = 1496,
         ReinforcedPowerSupplyUnit = 1497,

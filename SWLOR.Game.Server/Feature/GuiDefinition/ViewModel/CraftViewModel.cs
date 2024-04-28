@@ -31,8 +31,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const string BlankTexture = "Blank";
 
         private RecipeType _recipe;
+        
         private uint _blueprintItem;
         private BlueprintDetail _activeBlueprint;
+        private bool _hasBlueprint;
         
         private PerkType _rapidSynthesisPerk;
         private PerkType _carefulSynthesisPerk;
@@ -385,6 +387,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _blueprintItem = initialPayload.BlueprintItem;
             var recipe = Craft.GetRecipe(_recipe);
             var blueprint = Craft.GetBlueprintDetails(_blueprintItem);
+            _hasBlueprint = blueprint.Recipe != RecipeType.Invalid;
+            
             var itemName = Cache.GetItemNameByResref(recipe.Resref);
             
             SwitchToSetUpMode();
@@ -402,7 +406,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsEnhancement7Visible = enhancementSlots >= 7;
             IsEnhancement8Visible = enhancementSlots >= 8;
 
-            CraftText = blueprint.Recipe == RecipeType.Invalid 
+            CraftText = _hasBlueprint 
                 ? "Craft"
                 : $"Craft [{Craft.CalculateBlueprintCraftCreditCost(_blueprintItem):N0}cr]";
             RecipeName = $"Recipe: {recipe.Quantity}x {itemName}";
@@ -1272,15 +1276,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void SwitchToCraftMode()
         {
-            _activeBlueprint = Craft.GetBlueprintDetails(_blueprintItem);
-
-            if (_activeBlueprint.Recipe != RecipeType.Invalid)
+            if (_hasBlueprint)
             {
+                _activeBlueprint = Craft.GetBlueprintDetails(_blueprintItem);
                 var cost = Craft.CalculateBlueprintCraftCreditCost(_blueprintItem);
                 AssignCommand(Player, () => TakeGoldFromCreature(cost, Player, true));
                 
                 _activeBlueprint.LicensedRuns--;
                 Craft.SetBlueprintDetails(_blueprintItem, _activeBlueprint);
+                
+                SendMessageToPC(Player, $"Remaining licensed runs: {_activeBlueprint.LicensedRuns}");
             }
             
             StatusText = string.Empty;
@@ -1324,11 +1329,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private bool ProcessBlueprintRequirements()
         {
-            var blueprintDetails = Craft.GetBlueprintDetails(_blueprintItem);
-
-            if (blueprintDetails.Recipe == RecipeType.Invalid)
+            if (!_hasBlueprint)
                 return true;
 
+            var blueprintDetails = Craft.GetBlueprintDetails(_blueprintItem);
+
+            if (blueprintDetails.LicensedRuns <= 0)
+            {
+                StatusText = $"No licensed runs remaining!";
+                StatusColor = GuiColor.Red;
+                
+                return false;
+            }
+            
             var cost = Craft.CalculateBlueprintCraftCreditCost(_blueprintItem);
             if (GetGold(Player) < cost)
             {
@@ -1429,8 +1442,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);
             var qualityPercent = (float)_quality / (float)_maxQuality; 
 
-            // We override the additional gold price field so that players are encouraged to sell their goods to other players rather than selling to an NPC.
-            ItemPlugin.SetAddGoldPieceValue(item, (int) (30 * ((recipe.Level / 10) + 1) + 3.5f * recipe.Level));
+            ItemPlugin.SetAddGoldPieceValue(item, (int) (30 * ((recipe.Level / 10f) + 1) + 3.5f * recipe.Level));
 
             // Apply item properties provided by enhancements, provided the transfer check passes.
             var allProperties = _itemPropertiesEnhancement1
@@ -1462,6 +1474,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
 
+            ProcessBlueprintBonuses(item);
+            
             // Add the recipe to the completed list (unlocks auto-crafting)
             if (firstTime)
             {
@@ -1496,10 +1510,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshRecipeStats();
             StatusText = "Successfully created the item!";
             StatusColor = GuiColor.Green;
-
+            
             Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{GetName(item)}'.");
         }
 
+        private void ProcessBlueprintBonuses(uint item)
+        {
+            if (!_hasBlueprint)
+                return;
+
+            for (var bonus = 1; bonus <= _activeBlueprint.ItemBonuses; bonus++)
+            {
+                
+            }
+        }
+        
         private void ProcessFailure()
         {
             // Guard against the client queuing up numerous craft requests which results in duplicate items being spawned.

@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         public int Level { get; set; }
         public RecipeEnhancementType EnhancementType { get; set; }
         public int EnhancementSlots { get; set; }
+        public float ResearchCostModifier { get; set; }
 
         public RecipeDetail()
         {

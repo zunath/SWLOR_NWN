@@ -680,8 +680,9 @@ namespace SWLOR.Game.Server.Service
             
             var blueprintLevel = blueprintDetail.Level;
             
-            const int BaseConstant = 150;
+            const int BaseConstant = 120;
             var price = BaseConstant * (Math.Pow(perkLevel, 2.2f) * Math.Pow(blueprintLevel, 2f));
+            price += price * recipeDetail.ResearchCostModifier;
             price -= creditReduction * price;
             
             return (int)price;  

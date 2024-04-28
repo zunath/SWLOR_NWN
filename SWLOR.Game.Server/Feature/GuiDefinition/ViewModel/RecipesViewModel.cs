@@ -370,6 +370,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var blueprint = Craft.GetBlueprintDetails(_selectedBlueprintItem);
+            if (blueprint.Recipe == RecipeType.Invalid && _currentRecipeIndex < 0)
+                return;
+            
             var recipe = blueprint.Recipe != RecipeType.Invalid 
                 ? blueprint.Recipe 
                 : _recipeTypes[_currentRecipeIndex];

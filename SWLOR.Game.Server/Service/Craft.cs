@@ -67,6 +67,23 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void CacheRecipes()
         {
+            void UpdateCraftingStatus(RecipeDetail recipe)
+            {
+                var tempContainer = GetObjectByTag("TEMP_ITEM_STORAGE");
+                var item = CreateItemOnObject(recipe.Resref, tempContainer);
+
+                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                {
+                    var type = GetItemPropertyType(ip);
+                    if (type == ItemPropertyType.Craftsmanship || type == ItemPropertyType.Control)
+                    {
+                        recipe.IsItemIntendedForCrafting = true;
+                    }
+                }
+                
+                DestroyObject(item);
+            }
+            
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IRecipeListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
@@ -85,6 +102,7 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     _recipes[recipeType] = recipe;
+                    UpdateCraftingStatus(recipe);
 
                     // Organize recipes by skill.
                     if (!_recipesBySkill.ContainsKey(recipe.Skill))
@@ -667,6 +685,17 @@ namespace SWLOR.Game.Server.Service
                         blueprintDetail.EnhancementSlots = costValue;
                     }
                 }
+                else if (type == ItemPropertyType.ArmorEnhancement ||
+                         type == ItemPropertyType.WeaponEnhancement ||
+                         type == ItemPropertyType.StructureEnhancement ||
+                         type == ItemPropertyType.FoodEnhancement ||
+                         type == ItemPropertyType.StarshipEnhancement ||
+                         type == ItemPropertyType.ModuleEnhancement ||
+                         type == ItemPropertyType.DroidEnhancement)
+                {
+                    blueprintDetail.GuaranteedBonuses.Add(ip);
+                }
+                
             }
 
             return blueprintDetail;

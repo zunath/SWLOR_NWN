@@ -1,4 +1,7 @@
-﻿namespace SWLOR.Game.Server.Service.CraftService
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
+
+namespace SWLOR.Game.Server.Service.CraftService
 {
     public class BlueprintDetail
     {
@@ -10,12 +13,14 @@
         public int TimeReduction { get; set; }
         public int EnhancementSlots { get; set; }
         public bool RandomEnhancementSlotGranted { get; set; }
+        public List<ItemProperty> GuaranteedBonuses { get; set; }
 
         public BlueprintDetail()
         {
             Recipe = RecipeType.Invalid;
             Level = -1;
             LicensedRuns = -1;
+            GuaranteedBonuses = new List<ItemProperty>();
         }
     }
 }

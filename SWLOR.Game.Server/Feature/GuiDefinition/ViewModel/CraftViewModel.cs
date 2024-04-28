@@ -1524,10 +1524,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!_hasBlueprint)
                 return;
 
+            // Random bonuses
             var recipe = Craft.GetRecipe(_recipe);
             for (var currentBonus = 1; currentBonus <= _activeBlueprint.ItemBonuses; currentBonus++)
             {
-                var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, currentBonus);
+                var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, currentBonus, recipe.IsItemIntendedForCrafting);
                 if (bonus == null)
                     continue;
 
@@ -1536,6 +1537,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var subTypeDetail = Craft.GetEnhancementSubType(bonus.Type);
                 SendMessageToPC(Player, ColorToken.Green($"Blueprint Bonus applied: {subTypeDetail.Name} +{bonus.Amount}"));
+            }
+            
+            // Guaranteed bonuses
+            foreach (var ip in _activeBlueprint.GuaranteedBonuses)
+            {
+                ApplyProperty(item, ip);
             }
         }
         

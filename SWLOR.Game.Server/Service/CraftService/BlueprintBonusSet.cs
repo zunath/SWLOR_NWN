@@ -5,40 +5,59 @@ namespace SWLOR.Game.Server.Service.CraftService
 {
     internal class BlueprintBonusSet
     {
-        private readonly Dictionary<RecipeEnhancementType, Dictionary<int, List<BlueprintBonus>>> _bonusesByEnhancementType = new();
+        private readonly Dictionary<RecipeEnhancementType, Dictionary<bool, Dictionary<int, List<BlueprintBonus>>>> _bonusesByEnhancementType = new();
         
         public BlueprintBonusSet()
         {
-            _bonusesByEnhancementType[RecipeEnhancementType.Weapon] = new Dictionary<int, List<BlueprintBonus>>();
-            _bonusesByEnhancementType[RecipeEnhancementType.Weapon][1] = Tier1WeaponBonuses();
-            _bonusesByEnhancementType[RecipeEnhancementType.Weapon][2] = Tier2WeaponBonuses();
-            _bonusesByEnhancementType[RecipeEnhancementType.Weapon][3] = Tier3WeaponBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Weapon] = new Dictionary<bool, Dictionary<int, List<BlueprintBonus>>>();
+            _bonusesByEnhancementType[RecipeEnhancementType.Weapon][false] = new Dictionary<int, List<BlueprintBonus>>();
+            _bonusesByEnhancementType[RecipeEnhancementType.Weapon][false][1] = Tier1WeaponCombatBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Weapon][false][2] = Tier2WeaponCombatBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Weapon][false][3] = Tier3WeaponCombatBonuses();
 
-            _bonusesByEnhancementType[RecipeEnhancementType.Armor] = new Dictionary<int, List<BlueprintBonus>>();
-            _bonusesByEnhancementType[RecipeEnhancementType.Armor][1] = Tier1ArmorBonuses();
-            _bonusesByEnhancementType[RecipeEnhancementType.Armor][2] = Tier2ArmorBonuses();
-            _bonusesByEnhancementType[RecipeEnhancementType.Armor][3] = Tier3ArmorBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Weapon][true] = new Dictionary<int, List<BlueprintBonus>>();
+            _bonusesByEnhancementType[RecipeEnhancementType.Weapon][true][1] = Tier1WeaponCraftingBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Weapon][true][2] = Tier2WeaponCraftingBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Weapon][true][3] = Tier3WeaponCraftingBonuses();
 
-            _bonusesByEnhancementType[RecipeEnhancementType.Food] = new Dictionary<int, List<BlueprintBonus>>();
-            _bonusesByEnhancementType[RecipeEnhancementType.Food][1] = Tier1FoodBonuses();
-            _bonusesByEnhancementType[RecipeEnhancementType.Food][2] = Tier2FoodBonuses();
-            _bonusesByEnhancementType[RecipeEnhancementType.Food][3] = Tier3FoodBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Armor] = new Dictionary<bool, Dictionary<int, List<BlueprintBonus>>>();
+            _bonusesByEnhancementType[RecipeEnhancementType.Armor][false] = new Dictionary<int, List<BlueprintBonus>>();
+            _bonusesByEnhancementType[RecipeEnhancementType.Armor][false][1] = Tier1ArmorCombatBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Armor][false][2] = Tier2ArmorCombatBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Armor][false][3] = Tier3ArmorCombatBonuses();
+
+            _bonusesByEnhancementType[RecipeEnhancementType.Armor][true] = new Dictionary<int, List<BlueprintBonus>>();
+            _bonusesByEnhancementType[RecipeEnhancementType.Armor][true][1] = Tier1ArmorCraftingBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Armor][true][2] = Tier2ArmorCraftingBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Armor][true][3] = Tier3ArmorCraftingBonuses();
+
+            _bonusesByEnhancementType[RecipeEnhancementType.Food] = new Dictionary<bool, Dictionary<int, List<BlueprintBonus>>>();
+            _bonusesByEnhancementType[RecipeEnhancementType.Food][false] = new Dictionary<int, List<BlueprintBonus>>();
+            _bonusesByEnhancementType[RecipeEnhancementType.Food][false][1] = Tier1FoodBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Food][false][2] = Tier2FoodBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Food][false][3] = Tier3FoodBonuses();
+
+            _bonusesByEnhancementType[RecipeEnhancementType.Food][true] = new Dictionary<int, List<BlueprintBonus>>();
+            _bonusesByEnhancementType[RecipeEnhancementType.Food][true][1] = Tier1FoodBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Food][true][2] = Tier2FoodBonuses();
+            _bonusesByEnhancementType[RecipeEnhancementType.Food][true][3] = Tier3FoodBonuses();
         }
 
-        public BlueprintBonus PickBonus(RecipeEnhancementType enhancementType, int tier)
+        public BlueprintBonus PickBonus(RecipeEnhancementType enhancementType, int tier, bool isCraftingItem)
         {
             if (!_bonusesByEnhancementType.ContainsKey(enhancementType) ||
-                !_bonusesByEnhancementType[enhancementType].ContainsKey(tier))
+                !_bonusesByEnhancementType[enhancementType].ContainsKey(isCraftingItem) ||
+                !_bonusesByEnhancementType[enhancementType][isCraftingItem].ContainsKey(tier))
                 return null;
 
-            var set = _bonusesByEnhancementType[enhancementType][tier];
+            var set = _bonusesByEnhancementType[enhancementType][isCraftingItem][tier];
             var weights = set.Select(x => x.Weight).ToArray();
             var index = Random.GetRandomWeightedIndex(weights);
 
             return set[index];
         }
         
-        private List<BlueprintBonus> Tier1WeaponBonuses()
+        private List<BlueprintBonus> Tier1WeaponCombatBonuses()
         {
             var list = new List<BlueprintBonus>
             {
@@ -53,27 +72,6 @@ namespace SWLOR.Game.Server.Service.CraftService
                 // Force Attack
                 new(10, EnhancementSubType.ForceAttack, 1),
                 new(5, EnhancementSubType.ForceAttack, 2),
-
-                // Control
-                new(10, EnhancementSubType.ControlAgriculture, 1),
-                new(5, EnhancementSubType.ControlAgriculture, 2),
-                new(10, EnhancementSubType.ControlEngineering, 1),
-                new(5, EnhancementSubType.ControlEngineering, 2),
-                new(10, EnhancementSubType.ControlFabrication, 1),
-                new(5, EnhancementSubType.ControlFabrication, 2),
-                new(10, EnhancementSubType.ControlSmithery, 1),
-                new(5, EnhancementSubType.ControlSmithery, 2),
-                
-
-                // Craftsmanship
-                new(10, EnhancementSubType.CraftsmanshipAgriculture, 1),
-                new(5, EnhancementSubType.CraftsmanshipAgriculture, 2),
-                new(10, EnhancementSubType.CraftsmanshipEngineering, 1),
-                new(5, EnhancementSubType.CraftsmanshipEngineering, 2),
-                new(10, EnhancementSubType.CraftsmanshipFabrication, 1),
-                new(5, EnhancementSubType.CraftsmanshipFabrication, 2),
-                new(10, EnhancementSubType.CraftsmanshipSmithery, 1),
-                new(5, EnhancementSubType.CraftsmanshipSmithery, 2),
 
                 // DMG
                 new(3, EnhancementSubType.DMGPhysical, 1),
@@ -113,7 +111,7 @@ namespace SWLOR.Game.Server.Service.CraftService
             return list;
         }
 
-        private List<BlueprintBonus> Tier2WeaponBonuses()
+        private List<BlueprintBonus> Tier2WeaponCombatBonuses()
         {
             var list = new List<BlueprintBonus>
             {
@@ -131,35 +129,6 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(15, EnhancementSubType.ForceAttack, 1),
                 new(10, EnhancementSubType.ForceAttack, 2),
                 new(5, EnhancementSubType.ForceAttack, 3),
-
-                // Control
-                new(15, EnhancementSubType.ControlAgriculture, 1),
-                new(10, EnhancementSubType.ControlAgriculture, 2),
-                new(5, EnhancementSubType.ControlAgriculture, 3),
-                new(15, EnhancementSubType.ControlEngineering, 1),
-                new(10, EnhancementSubType.ControlEngineering, 2),
-                new(5, EnhancementSubType.ControlEngineering, 3),
-                new(15, EnhancementSubType.ControlFabrication, 1),
-                new(10, EnhancementSubType.ControlFabrication, 2),
-                new(5, EnhancementSubType.ControlFabrication, 3),
-                new(15, EnhancementSubType.ControlSmithery, 1),
-                new(10, EnhancementSubType.ControlSmithery, 2),
-                new(5, EnhancementSubType.ControlSmithery, 3),
-                
-
-                // Craftsmanship
-                new(15, EnhancementSubType.CraftsmanshipAgriculture, 1),
-                new(10, EnhancementSubType.CraftsmanshipAgriculture, 2),
-                new(5, EnhancementSubType.CraftsmanshipAgriculture, 3),
-                new(15, EnhancementSubType.CraftsmanshipEngineering, 1),
-                new(10, EnhancementSubType.CraftsmanshipEngineering, 2),
-                new(5, EnhancementSubType.CraftsmanshipEngineering, 3),
-                new(15, EnhancementSubType.CraftsmanshipFabrication, 1),
-                new(10, EnhancementSubType.CraftsmanshipFabrication, 2),
-                new(5, EnhancementSubType.CraftsmanshipFabrication, 3),
-                new(15, EnhancementSubType.CraftsmanshipSmithery, 1),
-                new(10, EnhancementSubType.CraftsmanshipSmithery, 2),
-                new(5, EnhancementSubType.CraftsmanshipSmithery, 3),
 
                 // DMG
                 new(5, EnhancementSubType.DMGPhysical, 1),
@@ -209,7 +178,7 @@ namespace SWLOR.Game.Server.Service.CraftService
             return list;
         }
 
-        private List<BlueprintBonus> Tier3WeaponBonuses()
+        private List<BlueprintBonus> Tier3WeaponCombatBonuses()
         {
             var list = new List<BlueprintBonus>
             {
@@ -227,34 +196,6 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(15, EnhancementSubType.ForceAttack, 2),
                 new(10, EnhancementSubType.ForceAttack, 3),
                 new(5, EnhancementSubType.ForceAttack, 4),
-
-                // Control
-                new(15, EnhancementSubType.ControlAgriculture, 2),
-                new(10, EnhancementSubType.ControlAgriculture, 3),
-                new(5, EnhancementSubType.ControlAgriculture, 4),
-                new(15, EnhancementSubType.ControlEngineering, 2),
-                new(10, EnhancementSubType.ControlEngineering, 3),
-                new(5, EnhancementSubType.ControlEngineering, 4),
-                new(15, EnhancementSubType.ControlFabrication, 2),
-                new(10, EnhancementSubType.ControlFabrication, 3),
-                new(5, EnhancementSubType.ControlFabrication, 4),
-                new(15, EnhancementSubType.ControlSmithery, 2),
-                new(10, EnhancementSubType.ControlSmithery, 3),
-                new(5, EnhancementSubType.ControlSmithery, 4),
-                
-                // Craftsmanship
-                new(15, EnhancementSubType.CraftsmanshipAgriculture, 2),
-                new(10, EnhancementSubType.CraftsmanshipAgriculture, 3),
-                new(5, EnhancementSubType.CraftsmanshipAgriculture, 4),
-                new(15, EnhancementSubType.CraftsmanshipEngineering, 2),
-                new(10, EnhancementSubType.CraftsmanshipEngineering, 3),
-                new(5, EnhancementSubType.CraftsmanshipEngineering, 4),
-                new(15, EnhancementSubType.CraftsmanshipFabrication, 2),
-                new(10, EnhancementSubType.CraftsmanshipFabrication, 3),
-                new(5, EnhancementSubType.CraftsmanshipFabrication, 4),
-                new(15, EnhancementSubType.CraftsmanshipSmithery, 2),
-                new(10, EnhancementSubType.CraftsmanshipSmithery, 3),
-                new(5, EnhancementSubType.CraftsmanshipSmithery, 4),
 
                 // DMG
                 new(3, EnhancementSubType.DMGPhysical, 2),
@@ -301,7 +242,7 @@ namespace SWLOR.Game.Server.Service.CraftService
             return list;
         }
 
-        private List<BlueprintBonus> Tier1ArmorBonuses()
+        private List<BlueprintBonus> Tier1WeaponCraftingBonuses()
         {
             var list = new List<BlueprintBonus>
             {
@@ -315,6 +256,7 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(10, EnhancementSubType.ControlSmithery, 1),
                 new(5, EnhancementSubType.ControlSmithery, 2),
                 
+
                 // Craftsmanship
                 new(10, EnhancementSubType.CraftsmanshipAgriculture, 1),
                 new(5, EnhancementSubType.CraftsmanshipAgriculture, 2),
@@ -324,20 +266,165 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(5, EnhancementSubType.CraftsmanshipFabrication, 2),
                 new(10, EnhancementSubType.CraftsmanshipSmithery, 1),
                 new(5, EnhancementSubType.CraftsmanshipSmithery, 2),
-            
+
+                // Evasion
+                new(5, EnhancementSubType.Evasion, 1),
+                new(1, EnhancementSubType.Evasion, 2),
+
+                // FP
+                new(10, EnhancementSubType.FP, 2),
+                new(5, EnhancementSubType.FP, 3),
+                new(2, EnhancementSubType.FP, 4),
+
+                // HP
+                new(10, EnhancementSubType.HP, 5),
+                new(5, EnhancementSubType.HP, 7),
+                new(2, EnhancementSubType.HP, 9),
+
+                // STM
+                new(10, EnhancementSubType.Stamina, 2),
+                new(5, EnhancementSubType.Stamina, 3),
+                new(2, EnhancementSubType.Stamina, 4),
+            };
+
+
+            return list;
+        }
+
+        private List<BlueprintBonus> Tier2WeaponCraftingBonuses()
+        {
+            var list = new List<BlueprintBonus>
+            {
+                // Control
+                new(15, EnhancementSubType.ControlAgriculture, 1),
+                new(10, EnhancementSubType.ControlAgriculture, 2),
+                new(5, EnhancementSubType.ControlAgriculture, 3),
+                new(15, EnhancementSubType.ControlEngineering, 1),
+                new(10, EnhancementSubType.ControlEngineering, 2),
+                new(5, EnhancementSubType.ControlEngineering, 3),
+                new(15, EnhancementSubType.ControlFabrication, 1),
+                new(10, EnhancementSubType.ControlFabrication, 2),
+                new(5, EnhancementSubType.ControlFabrication, 3),
+                new(15, EnhancementSubType.ControlSmithery, 1),
+                new(10, EnhancementSubType.ControlSmithery, 2),
+                new(5, EnhancementSubType.ControlSmithery, 3),
+                
+
+                // Craftsmanship
+                new(15, EnhancementSubType.CraftsmanshipAgriculture, 1),
+                new(10, EnhancementSubType.CraftsmanshipAgriculture, 2),
+                new(5, EnhancementSubType.CraftsmanshipAgriculture, 3),
+                new(15, EnhancementSubType.CraftsmanshipEngineering, 1),
+                new(10, EnhancementSubType.CraftsmanshipEngineering, 2),
+                new(5, EnhancementSubType.CraftsmanshipEngineering, 3),
+                new(15, EnhancementSubType.CraftsmanshipFabrication, 1),
+                new(10, EnhancementSubType.CraftsmanshipFabrication, 2),
+                new(5, EnhancementSubType.CraftsmanshipFabrication, 3),
+                new(15, EnhancementSubType.CraftsmanshipSmithery, 1),
+                new(10, EnhancementSubType.CraftsmanshipSmithery, 2),
+                new(5, EnhancementSubType.CraftsmanshipSmithery, 3),
+
+                // Evasion
+                new(3, EnhancementSubType.Evasion, 1),
+                new(2, EnhancementSubType.Evasion, 2),
+                new(1, EnhancementSubType.Evasion, 3),
+
+                // FP
+                new(15, EnhancementSubType.FP, 2),
+                new(10, EnhancementSubType.FP, 3),
+                new(5, EnhancementSubType.FP, 4),
+                new(2, EnhancementSubType.FP, 5),
+
+                // HP
+                new(15, EnhancementSubType.HP, 5),
+                new(10, EnhancementSubType.HP, 7),
+                new(5, EnhancementSubType.HP, 9),
+                new(2, EnhancementSubType.HP, 11),
+
+                // STM
+                new(15, EnhancementSubType.Stamina, 2),
+                new(10, EnhancementSubType.Stamina, 3),
+                new(5, EnhancementSubType.Stamina, 4),
+                new(2, EnhancementSubType.Stamina, 5),
+            };
+
+
+            return list;
+        }
+
+        private List<BlueprintBonus> Tier3WeaponCraftingBonuses()
+        {
+            var list = new List<BlueprintBonus>
+            {
+                // Control
+                new(15, EnhancementSubType.ControlAgriculture, 2),
+                new(10, EnhancementSubType.ControlAgriculture, 3),
+                new(5, EnhancementSubType.ControlAgriculture, 4),
+                new(15, EnhancementSubType.ControlEngineering, 2),
+                new(10, EnhancementSubType.ControlEngineering, 3),
+                new(5, EnhancementSubType.ControlEngineering, 4),
+                new(15, EnhancementSubType.ControlFabrication, 2),
+                new(10, EnhancementSubType.ControlFabrication, 3),
+                new(5, EnhancementSubType.ControlFabrication, 4),
+                new(15, EnhancementSubType.ControlSmithery, 2),
+                new(10, EnhancementSubType.ControlSmithery, 3),
+                new(5, EnhancementSubType.ControlSmithery, 4),
+                
+                // Craftsmanship
+                new(15, EnhancementSubType.CraftsmanshipAgriculture, 2),
+                new(10, EnhancementSubType.CraftsmanshipAgriculture, 3),
+                new(5, EnhancementSubType.CraftsmanshipAgriculture, 4),
+                new(15, EnhancementSubType.CraftsmanshipEngineering, 2),
+                new(10, EnhancementSubType.CraftsmanshipEngineering, 3),
+                new(5, EnhancementSubType.CraftsmanshipEngineering, 4),
+                new(15, EnhancementSubType.CraftsmanshipFabrication, 2),
+                new(10, EnhancementSubType.CraftsmanshipFabrication, 3),
+                new(5, EnhancementSubType.CraftsmanshipFabrication, 4),
+                new(15, EnhancementSubType.CraftsmanshipSmithery, 2),
+                new(10, EnhancementSubType.CraftsmanshipSmithery, 3),
+                new(5, EnhancementSubType.CraftsmanshipSmithery, 4),
+
+                // Evasion
+                new(3, EnhancementSubType.Evasion, 2),
+                new(2, EnhancementSubType.Evasion, 3),
+                new(1, EnhancementSubType.Evasion, 4),
+
+                // FP
+                new(10, EnhancementSubType.FP, 4),
+                new(5, EnhancementSubType.FP, 5),
+                new(2, EnhancementSubType.FP, 6),
+
+                // HP
+                new(10, EnhancementSubType.HP, 9),
+                new(5, EnhancementSubType.HP, 11),
+                new(2, EnhancementSubType.HP, 13),
+
+                // STM
+                new(10, EnhancementSubType.Stamina, 4),
+                new(5, EnhancementSubType.Stamina, 5),
+                new(2, EnhancementSubType.Stamina, 6),
+            };
+
+
+            return list;
+        }
+        private List<BlueprintBonus> Tier1ArmorCombatBonuses()
+        {
+            var list = new List<BlueprintBonus>
+            {
                 // Defense
-                new(10, EnhancementSubType.DefensePhysical, 1),
-                new(5, EnhancementSubType.DefensePhysical, 2),
-                new(10, EnhancementSubType.DefenseForce, 1),
-                new(5, EnhancementSubType.DefenseForce, 2),
-                new(10, EnhancementSubType.DefenseElectrical, 2),
-                new(5, EnhancementSubType.DefenseElectrical, 3),
-                new(10, EnhancementSubType.DefenseFire, 2),
-                new(5, EnhancementSubType.DefenseFire, 3),
-                new(10, EnhancementSubType.DefenseIce, 2),
-                new(5, EnhancementSubType.DefenseIce, 3),
-                new(10, EnhancementSubType.DefensePoison, 2),
-                new(5, EnhancementSubType.DefensePoison, 3),
+                new(20, EnhancementSubType.DefensePhysical, 1),
+                new(10, EnhancementSubType.DefensePhysical, 2),
+                new(20, EnhancementSubType.DefenseForce, 1),
+                new(10, EnhancementSubType.DefenseForce, 2),
+                new(20, EnhancementSubType.DefenseElectrical, 2),
+                new(10, EnhancementSubType.DefenseElectrical, 3),
+                new(20, EnhancementSubType.DefenseFire, 2),
+                new(10, EnhancementSubType.DefenseFire, 3),
+                new(20, EnhancementSubType.DefenseIce, 2),
+                new(10, EnhancementSubType.DefenseIce, 3),
+                new(20, EnhancementSubType.DefensePoison, 2),
+                new(10, EnhancementSubType.DefensePoison, 3),
             
                 // Evasion
                 new(5, EnhancementSubType.Evasion, 1),
@@ -366,62 +453,31 @@ namespace SWLOR.Game.Server.Service.CraftService
                 new(2, EnhancementSubType.Stamina, 4),
             };
 
-            
-            
-
             return list;
         }
 
-        private List<BlueprintBonus> Tier2ArmorBonuses()
+        private List<BlueprintBonus> Tier2ArmorCombatBonuses()
         {
             var list = new List<BlueprintBonus>
             {
-                // Control
-                new(15, EnhancementSubType.ControlAgriculture, 1),
-                new(10, EnhancementSubType.ControlAgriculture, 2),
-                new(5, EnhancementSubType.ControlAgriculture, 3),
-                new(15, EnhancementSubType.ControlEngineering, 1),
-                new(10, EnhancementSubType.ControlEngineering, 2),
-                new(5, EnhancementSubType.ControlEngineering, 3),
-                new(15, EnhancementSubType.ControlFabrication, 1),
-                new(10, EnhancementSubType.ControlFabrication, 2),
-                new(5, EnhancementSubType.ControlFabrication, 3),
-                new(15, EnhancementSubType.ControlSmithery, 1),
-                new(10, EnhancementSubType.ControlSmithery, 2),
-                new(5, EnhancementSubType.ControlSmithery, 3),
-                
-                // Craftsmanship
-                new(15, EnhancementSubType.CraftsmanshipAgriculture, 1),
-                new(10, EnhancementSubType.CraftsmanshipAgriculture, 2),
-                new(5, EnhancementSubType.CraftsmanshipAgriculture, 3),
-                new(15, EnhancementSubType.CraftsmanshipEngineering, 1),
-                new(10, EnhancementSubType.CraftsmanshipEngineering, 2),
-                new(5, EnhancementSubType.CraftsmanshipEngineering, 3),
-                new(15, EnhancementSubType.CraftsmanshipFabrication, 1),
-                new(10, EnhancementSubType.CraftsmanshipFabrication, 2),
-                new(5, EnhancementSubType.CraftsmanshipFabrication, 3),
-                new(15, EnhancementSubType.CraftsmanshipSmithery, 1),
-                new(10, EnhancementSubType.CraftsmanshipSmithery, 2),
-                new(5, EnhancementSubType.CraftsmanshipSmithery, 3),
-            
                 // Defense
-                new(15, EnhancementSubType.DefensePhysical, 1),
-                new(10, EnhancementSubType.DefensePhysical, 2),
+                new(25, EnhancementSubType.DefensePhysical, 1),
+                new(20, EnhancementSubType.DefensePhysical, 2),
                 new(5, EnhancementSubType.DefensePhysical, 3),
-                new(15, EnhancementSubType.DefenseForce, 1),
-                new(10, EnhancementSubType.DefenseForce, 2),
+                new(25, EnhancementSubType.DefenseForce, 1),
+                new(20, EnhancementSubType.DefenseForce, 2),
                 new(5, EnhancementSubType.DefenseForce, 3),
-                new(15, EnhancementSubType.DefenseElectrical, 2),
-                new(10, EnhancementSubType.DefenseElectrical, 3),
+                new(25, EnhancementSubType.DefenseElectrical, 2),
+                new(20, EnhancementSubType.DefenseElectrical, 3),
                 new(5, EnhancementSubType.DefenseElectrical, 4),
-                new(15, EnhancementSubType.DefenseFire, 2),
-                new(10, EnhancementSubType.DefenseFire, 3),
+                new(25, EnhancementSubType.DefenseFire, 2),
+                new(20, EnhancementSubType.DefenseFire, 3),
                 new(5, EnhancementSubType.DefenseFire, 4),
-                new(15, EnhancementSubType.DefenseIce, 2),
-                new(10, EnhancementSubType.DefenseIce, 3),
+                new(25, EnhancementSubType.DefenseIce, 2),
+                new(20, EnhancementSubType.DefenseIce, 3),
                 new(5, EnhancementSubType.DefenseIce, 4),
-                new(15, EnhancementSubType.DefensePoison, 2),
-                new(10, EnhancementSubType.DefensePoison, 3),
+                new(25, EnhancementSubType.DefensePoison, 2),
+                new(20, EnhancementSubType.DefensePoison, 3),
                 new(5, EnhancementSubType.DefensePoison, 4),
             
                 // Evasion
@@ -456,56 +512,28 @@ namespace SWLOR.Game.Server.Service.CraftService
             return list;
         }
 
-        private List<BlueprintBonus> Tier3ArmorBonuses()
+        private List<BlueprintBonus> Tier3ArmorCombatBonuses()
         {
             var list = new List<BlueprintBonus>
             {
-                // Control
-                new(15, EnhancementSubType.ControlAgriculture, 2),
-                new(10, EnhancementSubType.ControlAgriculture, 3),
-                new(5, EnhancementSubType.ControlAgriculture, 4),
-                new(15, EnhancementSubType.ControlEngineering, 2),
-                new(10, EnhancementSubType.ControlEngineering, 3),
-                new(5, EnhancementSubType.ControlEngineering, 4),
-                new(15, EnhancementSubType.ControlFabrication, 2),
-                new(10, EnhancementSubType.ControlFabrication, 3),
-                new(5, EnhancementSubType.ControlFabrication, 4),
-                new(15, EnhancementSubType.ControlSmithery, 2),
-                new(10, EnhancementSubType.ControlSmithery, 3),
-                new(5, EnhancementSubType.ControlSmithery, 4),
-                
-                // Craftsmanship
-                new(15, EnhancementSubType.CraftsmanshipAgriculture, 2),
-                new(10, EnhancementSubType.CraftsmanshipAgriculture, 3),
-                new(5, EnhancementSubType.CraftsmanshipAgriculture, 4),
-                new(15, EnhancementSubType.CraftsmanshipEngineering, 2),
-                new(10, EnhancementSubType.CraftsmanshipEngineering, 3),
-                new(5, EnhancementSubType.CraftsmanshipEngineering, 4),
-                new(15, EnhancementSubType.CraftsmanshipFabrication, 2),
-                new(10, EnhancementSubType.CraftsmanshipFabrication, 3),
-                new(5, EnhancementSubType.CraftsmanshipFabrication, 4),
-                new(15, EnhancementSubType.CraftsmanshipSmithery, 2),
-                new(10, EnhancementSubType.CraftsmanshipSmithery, 3),
-                new(5, EnhancementSubType.CraftsmanshipSmithery, 4),
-            
                 // Defense
-                new(15, EnhancementSubType.DefensePhysical, 2),
-                new(10, EnhancementSubType.DefensePhysical, 3),
+                new(25, EnhancementSubType.DefensePhysical, 2),
+                new(20, EnhancementSubType.DefensePhysical, 3),
                 new(5, EnhancementSubType.DefensePhysical, 4),
-                new(15, EnhancementSubType.DefenseForce, 2),
-                new(10, EnhancementSubType.DefenseForce, 3),
+                new(25, EnhancementSubType.DefenseForce, 2),
+                new(20, EnhancementSubType.DefenseForce, 3),
                 new(5, EnhancementSubType.DefenseForce, 4),
-                new(15, EnhancementSubType.DefenseElectrical, 3),
-                new(10, EnhancementSubType.DefenseElectrical, 4),
+                new(25, EnhancementSubType.DefenseElectrical, 3),
+                new(20, EnhancementSubType.DefenseElectrical, 4),
                 new(5, EnhancementSubType.DefenseElectrical, 5),
-                new(15, EnhancementSubType.DefenseFire, 3),
-                new(10, EnhancementSubType.DefenseFire, 4),
+                new(25, EnhancementSubType.DefenseFire, 3),
+                new(20, EnhancementSubType.DefenseFire, 4),
                 new(5, EnhancementSubType.DefenseFire, 5),
-                new(15, EnhancementSubType.DefenseIce, 3),
-                new(10, EnhancementSubType.DefenseIce, 4),
+                new(25, EnhancementSubType.DefenseIce, 3),
+                new(20, EnhancementSubType.DefenseIce, 4),
                 new(5, EnhancementSubType.DefenseIce, 5),
-                new(15, EnhancementSubType.DefensePoison, 3),
-                new(10, EnhancementSubType.DefensePoison, 4),
+                new(25, EnhancementSubType.DefensePoison, 3),
+                new(20, EnhancementSubType.DefensePoison, 4),
                 new(5, EnhancementSubType.DefensePoison, 5),
             
                 // Evasion
@@ -539,6 +567,178 @@ namespace SWLOR.Game.Server.Service.CraftService
             return list;
         }
 
+        private List<BlueprintBonus> Tier1ArmorCraftingBonuses()
+        {
+            var list = new List<BlueprintBonus>
+            {
+                // Control
+                new(10, EnhancementSubType.ControlAgriculture, 1),
+                new(5, EnhancementSubType.ControlAgriculture, 2),
+                new(10, EnhancementSubType.ControlEngineering, 1),
+                new(5, EnhancementSubType.ControlEngineering, 2),
+                new(10, EnhancementSubType.ControlFabrication, 1),
+                new(5, EnhancementSubType.ControlFabrication, 2),
+                new(10, EnhancementSubType.ControlSmithery, 1),
+                new(5, EnhancementSubType.ControlSmithery, 2),
+                
+                // Craftsmanship
+                new(10, EnhancementSubType.CraftsmanshipAgriculture, 1),
+                new(5, EnhancementSubType.CraftsmanshipAgriculture, 2),
+                new(10, EnhancementSubType.CraftsmanshipEngineering, 1),
+                new(5, EnhancementSubType.CraftsmanshipEngineering, 2),
+                new(10, EnhancementSubType.CraftsmanshipFabrication, 1),
+                new(5, EnhancementSubType.CraftsmanshipFabrication, 2),
+                new(10, EnhancementSubType.CraftsmanshipSmithery, 1),
+                new(5, EnhancementSubType.CraftsmanshipSmithery, 2),
+            
+                // Evasion
+                new(5, EnhancementSubType.Evasion, 1),
+                new(1, EnhancementSubType.Evasion, 2),
+            
+                // FP
+                new(15, EnhancementSubType.FP, 1),
+                new(10, EnhancementSubType.FP, 2),
+                new(5, EnhancementSubType.FP, 3),
+                new(2, EnhancementSubType.FP, 4),
+            
+                // HP
+                new(15, EnhancementSubType.HP, 5),
+                new(10, EnhancementSubType.HP, 7),
+                new(5, EnhancementSubType.HP, 9),
+                new(2, EnhancementSubType.HP, 11),
+            
+                // STM
+                new(15, EnhancementSubType.Stamina, 1),
+                new(10, EnhancementSubType.Stamina, 2),
+                new(5, EnhancementSubType.Stamina, 3),
+                new(2, EnhancementSubType.Stamina, 4),
+            };
+
+
+
+
+            return list;
+        }
+
+        private List<BlueprintBonus> Tier2ArmorCraftingBonuses()
+        {
+            var list = new List<BlueprintBonus>
+            {
+                // Control
+                new(15, EnhancementSubType.ControlAgriculture, 1),
+                new(10, EnhancementSubType.ControlAgriculture, 2),
+                new(5, EnhancementSubType.ControlAgriculture, 3),
+                new(15, EnhancementSubType.ControlEngineering, 1),
+                new(10, EnhancementSubType.ControlEngineering, 2),
+                new(5, EnhancementSubType.ControlEngineering, 3),
+                new(15, EnhancementSubType.ControlFabrication, 1),
+                new(10, EnhancementSubType.ControlFabrication, 2),
+                new(5, EnhancementSubType.ControlFabrication, 3),
+                new(15, EnhancementSubType.ControlSmithery, 1),
+                new(10, EnhancementSubType.ControlSmithery, 2),
+                new(5, EnhancementSubType.ControlSmithery, 3),
+                
+                // Craftsmanship
+                new(15, EnhancementSubType.CraftsmanshipAgriculture, 1),
+                new(10, EnhancementSubType.CraftsmanshipAgriculture, 2),
+                new(5, EnhancementSubType.CraftsmanshipAgriculture, 3),
+                new(15, EnhancementSubType.CraftsmanshipEngineering, 1),
+                new(10, EnhancementSubType.CraftsmanshipEngineering, 2),
+                new(5, EnhancementSubType.CraftsmanshipEngineering, 3),
+                new(15, EnhancementSubType.CraftsmanshipFabrication, 1),
+                new(10, EnhancementSubType.CraftsmanshipFabrication, 2),
+                new(5, EnhancementSubType.CraftsmanshipFabrication, 3),
+                new(15, EnhancementSubType.CraftsmanshipSmithery, 1),
+                new(10, EnhancementSubType.CraftsmanshipSmithery, 2),
+                new(5, EnhancementSubType.CraftsmanshipSmithery, 3),
+            
+                // Evasion
+                new(10, EnhancementSubType.Evasion, 1),
+                new(5, EnhancementSubType.Evasion, 2),
+                new(1, EnhancementSubType.Evasion, 3),
+            
+                // FP
+                new(15, EnhancementSubType.FP, 2),
+                new(10, EnhancementSubType.FP, 3),
+                new(5, EnhancementSubType.FP, 4),
+                new(2, EnhancementSubType.FP, 5),
+            
+                // HP
+                new(15, EnhancementSubType.HP, 7),
+                new(10, EnhancementSubType.HP, 9),
+                new(5, EnhancementSubType.HP, 11),
+                new(2, EnhancementSubType.HP, 13),
+            
+                // STM
+                new(15, EnhancementSubType.Stamina, 2),
+                new(10, EnhancementSubType.Stamina, 3),
+                new(5, EnhancementSubType.Stamina, 4),
+                new(2, EnhancementSubType.Stamina, 5),
+            };
+
+
+            return list;
+        }
+
+        private List<BlueprintBonus> Tier3ArmorCraftingBonuses()
+        {
+            var list = new List<BlueprintBonus>
+            {
+                // Control
+                new(15, EnhancementSubType.ControlAgriculture, 2),
+                new(10, EnhancementSubType.ControlAgriculture, 3),
+                new(5, EnhancementSubType.ControlAgriculture, 4),
+                new(15, EnhancementSubType.ControlEngineering, 2),
+                new(10, EnhancementSubType.ControlEngineering, 3),
+                new(5, EnhancementSubType.ControlEngineering, 4),
+                new(15, EnhancementSubType.ControlFabrication, 2),
+                new(10, EnhancementSubType.ControlFabrication, 3),
+                new(5, EnhancementSubType.ControlFabrication, 4),
+                new(15, EnhancementSubType.ControlSmithery, 2),
+                new(10, EnhancementSubType.ControlSmithery, 3),
+                new(5, EnhancementSubType.ControlSmithery, 4),
+                
+                // Craftsmanship
+                new(15, EnhancementSubType.CraftsmanshipAgriculture, 2),
+                new(10, EnhancementSubType.CraftsmanshipAgriculture, 3),
+                new(5, EnhancementSubType.CraftsmanshipAgriculture, 4),
+                new(15, EnhancementSubType.CraftsmanshipEngineering, 2),
+                new(10, EnhancementSubType.CraftsmanshipEngineering, 3),
+                new(5, EnhancementSubType.CraftsmanshipEngineering, 4),
+                new(15, EnhancementSubType.CraftsmanshipFabrication, 2),
+                new(10, EnhancementSubType.CraftsmanshipFabrication, 3),
+                new(5, EnhancementSubType.CraftsmanshipFabrication, 4),
+                new(15, EnhancementSubType.CraftsmanshipSmithery, 2),
+                new(10, EnhancementSubType.CraftsmanshipSmithery, 3),
+                new(5, EnhancementSubType.CraftsmanshipSmithery, 4),
+            
+                // Evasion
+                new(10, EnhancementSubType.Evasion, 2),
+                new(5, EnhancementSubType.Evasion, 3),
+                new(1, EnhancementSubType.Evasion, 4),
+            
+                // FP
+                new(15, EnhancementSubType.FP, 3),
+                new(10, EnhancementSubType.FP, 4),
+                new(5, EnhancementSubType.FP, 5),
+                new(2, EnhancementSubType.FP, 6),
+            
+                // HP
+                new(15, EnhancementSubType.HP, 9),
+                new(10, EnhancementSubType.HP, 11),
+                new(5, EnhancementSubType.HP, 13),
+                new(2, EnhancementSubType.HP, 15),
+            
+                // STM
+                new(15, EnhancementSubType.Stamina, 3),
+                new(10, EnhancementSubType.Stamina, 4),
+                new(5, EnhancementSubType.Stamina, 5),
+                new(2, EnhancementSubType.Stamina, 6),
+            };
+
+            return list;
+        }
+        
         private List<BlueprintBonus> Tier1FoodBonuses()
         {
             var list = new List<BlueprintBonus>

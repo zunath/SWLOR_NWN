@@ -13,24 +13,21 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Craft
     {
-        private static readonly GuiColor _white = new GuiColor(255, 255, 255);
-        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
-        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
-        private static readonly GuiColor _cyan = new GuiColor(0, 255, 255);
-
         private static readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
         private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _allCategories = new();
         private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _activeCategories = new();
         private static readonly Dictionary<SkillType, Dictionary<RecipeType, RecipeDetail>> _recipesBySkill = new();
         private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>> _recipesBySkillAndCategory = new();
         private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, RecipeCategoryAttribute>> _categoriesBySkill = new();
-
+        private static readonly Dictionary<EnhancementSubType, EnhancementSubTypeAttribute> _enhancementSubTypes = new();
+        
         private static readonly RecipeLevelChart _levelChart = new();
         private static readonly HashSet<string> _componentResrefs = new();
 
@@ -42,8 +39,7 @@ namespace SWLOR.Game.Server.Service
         {
             CacheCategories();
             CacheRecipes();
-
-            Console.WriteLine($"Loaded {_recipes.Count} recipes.");
+            CacheEnhancementSubTypes();
         }
 
         /// <summary>
@@ -62,6 +58,8 @@ namespace SWLOR.Game.Server.Service
                     _activeCategories[category] = categoryDetail;
                 }
             }
+            
+            Console.WriteLine($"Loaded {_allCategories.Count} recipe category types.");
         }
 
         /// <summary>
@@ -120,8 +118,22 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
+            
+            Console.WriteLine($"Loaded {_recipes.Count} recipes.");
         }
 
+        private static void CacheEnhancementSubTypes()
+        {
+            var subTypes = Enum.GetValues(typeof(EnhancementSubType)).Cast<EnhancementSubType>();
+            foreach (var type in subTypes)
+            {
+                var detail = type.GetAttribute<EnhancementSubType, EnhancementSubTypeAttribute>();
+                _enhancementSubTypes[type] = detail;
+            }
+            
+            Console.WriteLine($"Loaded {_enhancementSubTypes.Count} enhancement sub types.");
+        }
+        
         /// <summary>
         /// Retrieves the details about a recipe.
         /// If recipe type has not been registered, an exception will be raised.
@@ -141,6 +153,17 @@ namespace SWLOR.Game.Server.Service
         public static bool RecipeExists(RecipeType recipeType)
         {
             return _recipes.ContainsKey(recipeType);
+        }
+
+        /// <summary>
+        /// Retrieves the details about an enhancement subtype.
+        /// If the enhancement subtype has not been registered, an exception will be raised.
+        /// </summary>
+        /// <param name="subType">The subtype of the enhancement.</param>
+        /// <returns>The enhancement subtype detail.</returns>
+        public static EnhancementSubTypeAttribute GetEnhancementSubType(EnhancementSubType subType)
+        {
+            return _enhancementSubTypes[subType];
         }
 
         /// <summary>
@@ -264,79 +287,79 @@ namespace SWLOR.Game.Server.Service
             var recipeDetailColors = new GuiBindingList<GuiColor>();
 
             recipeDetails.Add("[COMPONENTS]");
-            recipeDetailColors.Add(_cyan);
+            recipeDetailColors.Add(GuiColor.Cyan);
             foreach (var (resref, quantity) in detail.Components)
             {
                 var componentName = Cache.GetItemNameByResref(resref);
                 recipeDetails.Add($"{quantity}x {componentName}");
-                recipeDetailColors.Add(_white);
+                recipeDetailColors.Add(GuiColor.White);
             }
 
             recipeDetails.Add(string.Empty);
-            recipeDetailColors.Add(_green);
+            recipeDetailColors.Add(GuiColor.Green);
 
             recipeDetails.Add("[REQUIREMENTS]");
-            recipeDetailColors.Add(_cyan);
+            recipeDetailColors.Add(GuiColor.Cyan);
             foreach (var req in detail.Requirements)
             {
                 recipeDetails.Add(req.RequirementText);
                 recipeDetailColors.Add(string.IsNullOrWhiteSpace(req.CheckRequirements(player))
-                    ? _green
-                    : _red);
+                    ? GuiColor.Green
+                    : GuiColor.Red);
             }
 
             recipeDetails.Add(string.Empty);
-            recipeDetailColors.Add(_green);
+            recipeDetailColors.Add(GuiColor.Green);
 
             recipeDetails.Add("[PROPERTIES]");
-            recipeDetailColors.Add(_cyan);
+            recipeDetailColors.Add(GuiColor.Cyan);
             var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = CreateItemOnObject(detail.Resref, tempStorage);
             
             foreach (var ip in Item.BuildItemPropertyList(item))
             {
                 recipeDetails.Add(ip);
-                recipeDetailColors.Add(_white);
+                recipeDetailColors.Add(GuiColor.White);
             }
             
             DestroyObject(item);
 
             recipeDetails.Add(string.Empty);
-            recipeDetailColors.Add(_white);
+            recipeDetailColors.Add(GuiColor.White);
             
             if (blueprint != null && blueprint.Recipe != RecipeType.Invalid)
             {
                 recipeDetails.Add("[BLUEPRINT]");
-                recipeDetailColors.Add(_cyan);
+                recipeDetailColors.Add(GuiColor.Cyan);
 
                 if (blueprint.Level == 0)
                 {
                     recipeDetails.Add("No Bonuses");
-                    recipeDetailColors.Add(_white);
+                    recipeDetailColors.Add(GuiColor.White);
                 }
                 else
                 {
                     if (blueprint.LicensedRuns > 0)
                     {
                         recipeDetails.Add($"Licensed Runs x{blueprint.LicensedRuns}");
-                        recipeDetailColors.Add(_white);
+                        recipeDetailColors.Add(GuiColor.White);
                     }
                     if (blueprint.ItemBonuses > 0)
                     {
                         recipeDetails.Add($"Stat Bonus x{blueprint.ItemBonuses}");
-                        recipeDetailColors.Add(_white);
+                        recipeDetailColors.Add(GuiColor.White);
                     }
 
                     if (blueprint.CreditReduction > 0)
                     {
                         recipeDetails.Add($"Price Reduced -{blueprint.CreditReduction}%");
-                        recipeDetailColors.Add(_white);
+                        recipeDetailColors.Add(GuiColor.White);
                     }
 
                     if (blueprint.EnhancementSlots > 0)
                     {
                         recipeDetails.Add($"Bonus Enhancements x{blueprint.EnhancementSlots}");
-                        recipeDetailColors.Add(_white);
+                        recipeDetailColors.Add(GuiColor.White);
                     }
                 }
                 
@@ -384,9 +407,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="subTypeId">The sub type of the enhancement</param>
         /// <param name="amount">The amount to apply.</param>
         /// <returns></returns>
-        public static ItemProperty BuildItemPropertyForEnhancement(int subTypeId, int amount)
+        public static ItemProperty BuildItemPropertyForEnhancement(EnhancementSubType subTypeId, int amount)
         {
-            switch ((EnhancementSubType)subTypeId)
+            switch (subTypeId)
             {
                 case EnhancementSubType.DefensePhysical: // Defense - Physical
                     return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Physical, amount);
@@ -687,6 +710,5 @@ namespace SWLOR.Game.Server.Service
             
             return (int)price;  
         }
-        
     }
 }

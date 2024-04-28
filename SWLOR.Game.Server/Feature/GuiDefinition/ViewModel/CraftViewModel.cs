@@ -35,7 +35,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private uint _blueprintItem;
         private BlueprintDetail _activeBlueprint;
         private bool _hasBlueprint;
-        
+        private static readonly BlueprintBonusSet _blueprintBonuses = new();
+
         private PerkType _rapidSynthesisPerk;
         private PerkType _carefulSynthesisPerk;
         
@@ -407,8 +408,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsEnhancement8Visible = enhancementSlots >= 8;
 
             CraftText = _hasBlueprint 
-                ? "Craft"
-                : $"Craft [{Craft.CalculateBlueprintCraftCreditCost(_blueprintItem):N0}cr]";
+                ? $"Craft [{Craft.CalculateBlueprintCraftCreditCost(_blueprintItem):N0}cr]"
+                : "Craft";
             RecipeName = $"Recipe: {recipe.Quantity}x {itemName}";
             RecipeLevel = $"Level: {recipe.Level}";
             
@@ -756,7 +757,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 var type = GetItemPropertyType(ip);
-                var subType = GetItemPropertySubType(ip);
+                var subType = (EnhancementSubType)GetItemPropertySubType(ip);
                 var amount = GetItemPropertyCostTableValue(ip);
 
                 // Progress Penalty - Add to total
@@ -1286,6 +1287,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Craft.SetBlueprintDetails(_blueprintItem, _activeBlueprint);
                 
                 SendMessageToPC(Player, $"Remaining licensed runs: {_activeBlueprint.LicensedRuns}");
+
+                var (recipeDescription, recipeColors) = Craft.BuildRecipeDetail(Player, _recipe, _activeBlueprint);
+                RecipeDescription = recipeDescription;
+                RecipeColors = recipeColors;
             }
             
             StatusText = string.Empty;
@@ -1519,9 +1524,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!_hasBlueprint)
                 return;
 
-            for (var bonus = 1; bonus <= _activeBlueprint.ItemBonuses; bonus++)
+            var recipe = Craft.GetRecipe(_recipe);
+            for (var currentBonus = 1; currentBonus <= _activeBlueprint.ItemBonuses; currentBonus++)
             {
-                
+                var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, currentBonus);
+                if (bonus == null)
+                    continue;
+
+                var ip = Craft.BuildItemPropertyForEnhancement(bonus.Type, bonus.Amount);
+                ApplyProperty(item, ip);
+
+                var subTypeDetail = Craft.GetEnhancementSubType(bonus.Type);
+                SendMessageToPC(Player, ColorToken.Green($"Blueprint Bonus applied: {subTypeDetail.Name} +{bonus.Amount}"));
             }
         }
         

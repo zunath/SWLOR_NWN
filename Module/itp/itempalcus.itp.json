@@ -7010,6 +7010,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Vemon Spider Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vemonspiderclaw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Warocas Bite"
                     },
                     "RESREF": {
@@ -9445,6 +9456,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Vemon Spider"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vemonspider"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viper Hide"
                     },
                     "RESREF": {
@@ -10453,6 +10475,28 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Bed, Low (Blue)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0109"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Bed, Low (Red)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0110"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Bed, Medical/Exam"
               },
               "RESREF": {
@@ -10684,11 +10728,33 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Cabinet, Liquor (Mixed)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0274"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Cage"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0037"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Campfire"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0011"
               }
             },
             {
@@ -10761,11 +10827,33 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Carpet, Medallion"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0232"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Carpet, Round, Blue"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0054"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chair, Brown Wingback"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0277"
               }
             },
             {
@@ -10816,11 +10904,44 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Chair, Dining (Arms)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0063"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chair, Dining, Gothic"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0105"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Chair, Large (Grey/Red)"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0237"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chair, Mahogany Padded"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0066"
               }
             },
             {
@@ -10937,6 +11058,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Chair, Wooden Padded"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0053"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Chaise Lounge - Orange"
               },
               "RESREF": {
@@ -10964,6 +11096,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0065"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chest, Lengthwise"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0282"
               }
             },
             {
@@ -11003,6 +11146,39 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Console, Central Control"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0283"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Console, Circular Command"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0284"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Console, Corner, Large"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0286"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Console, Floor Mounted (Blue Screens)"
               },
               "RESREF": {
@@ -11019,6 +11195,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0149"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Console, Tall w/ Screen (Blue Spiral)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0279"
               }
             },
             {
@@ -11107,6 +11294,28 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0125"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Counter, Lab (Sink)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0276"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Counter, Lab (Straight)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0275"
               }
             },
             {
@@ -11388,6 +11597,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Footlocker, Black"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0071"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Footlocker, Modern (Keyed Entry)"
               },
               "RESREF": {
@@ -11426,6 +11646,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0161"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Fountain, Stone, 4 Spouts"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0246"
               }
             },
             {
@@ -11707,6 +11938,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Lamp, Bars"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0034"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Lamp, Eggs (Pink)"
               },
               "RESREF": {
@@ -11795,11 +12037,33 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Locker, Open Shelves"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0273"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Map"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0099"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Mat, Small Tatami"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0046"
               }
             },
             {
@@ -12037,6 +12301,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Monitor, Overhead"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0094"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Monitor, Wall, Logo Display (Blue)"
               },
               "RESREF": {
@@ -12213,11 +12488,33 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Pillar, Dish Tower"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0278"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Pillar, Flame"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0036"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Pillar, Power Control"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0231"
               }
             },
             {
@@ -12587,6 +12884,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Speaker, Standing"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0272"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Specimen Tube (Alien)"
               },
               "RESREF": {
@@ -12785,11 +13093,33 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Storage Tank, Cylinder"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0280"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Storage Tank, Hemisphere /w Monitor"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0200"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Storage, Cargo Container"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0285"
               }
             },
             {
@@ -12829,6 +13159,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Table, Coffee, Shelf"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0016"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Table, Conference, Centre Cloth"
               },
               "RESREF": {
@@ -12845,6 +13186,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0267"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Table, Darkwood"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0015"
               }
             },
             {
@@ -12922,6 +13274,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0234"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Table, Steel, Stained"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0087"
               }
             },
             {
@@ -13093,6 +13456,28 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Umbrella, Blue"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0049"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Umbrella, Red"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0050"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Urn"
               },
               "RESREF": {
@@ -13208,6 +13593,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0159"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Work Station, Monitors"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0281"
               }
             }
           ]
@@ -34144,6 +34540,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Spider Guts"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "spider_guts"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spider Leg"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "spider_leg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spider Thread"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "spider_thread"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Staffrylia"
                     },
                     "RESREF": {
@@ -39978,6 +40407,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dathomir Pie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dathomir_pie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dead Stew"
                     },
                     "RESREF": {
@@ -45292,11 +45732,374 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Briefcase"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_briefcase1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Candle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_candle001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Candle Holder"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_candlehold"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Candleabra"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_candleabra"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Datapad A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_datapada"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Datapad B"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_datapadb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Drink Tray"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_drinktray"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Enrichment Glass"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_enrichglas"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Figure, Bronze"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_figurebron"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Figure, Gold"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_figuregold"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Figure, Jade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_figurejade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Figure, Ruby"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_figureruby"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Figure, Silver"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_figuresilv"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Figure, Stone"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_figureston"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flaming Skull"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flamskull1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Flanged Jessoon"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "jessoon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flower, Blue Rose"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flowbluero"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flower, Delphinium"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flowerdelp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flower, Gerbera"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flowergerb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flower, Lily"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flowerlily"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flower, Peony"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flowerpeon"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flower, Purple Rose"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flowpurros"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flower, Rose"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flowerrose"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flower, Tulip"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flowertuli"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flowers, Blue Roses"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flwrsbluer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flowers, Bundle A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flwrsbunda"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flowers, Delphiniums"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flwrsdelps"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flowers, Gerberas"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flwrsgerbe"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flowers, Lilies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flwrslilie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flowers, Peonies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flwrspeoni"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flowers, Purple Roses"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flwrpurprs"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flowers, Red Roses"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flwrsredro"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flowers, Rose Bundle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flowrsebun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Flowers, Tulips"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_flwrstulip"
                     }
                   },
                   {
@@ -45358,6 +46161,83 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Goblet, Glass"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_gobglass01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Goblet, Glass, Amethsyt"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_gobglsamet"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Goblet, Glass, Sapphires"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_gobglssaph"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Goblet, Gold"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_gobletgold"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Goblet, Gold, Emeralds"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_gobgldemrl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Goblet, Gold, Rubies"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_gobgldruby"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Goblet, Skull"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_gobskull"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Golden Orb"
                     },
                     "RESREF": {
@@ -45391,11 +46271,77 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Jack 'O Lantern"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_jackolante"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Kloo Horn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "kloo_horn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lantern A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_lantern001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lantern B"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_lantern002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lantern C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_lantern003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lantern D"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_lantern004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lantern E"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_lantern005"
                     }
                   },
                   {
@@ -45413,6 +46359,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Microphone, Branded"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_microbrand"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Microphone, Plain"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_microplain"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Pan(toran) Pipes"
                     },
                     "RESREF": {
@@ -45424,11 +46392,165 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Pendant A"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_pendant001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pendant B"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_pendant002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pendant C"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_pendant003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pendant D"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_pendant004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pendant E"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_pendant005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pendant F"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_pendant006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pendant G"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_pendant007"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scanner"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_scanner001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Skull Candle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_skullcandl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Skull, Down"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_skulldown"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Skull, Up"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_skullup"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Slitherhorn"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "slitherhorn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spine"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_spine001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Spine, Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_spinered"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Syringe"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_syringe001"
                     }
                   },
                   {
@@ -45495,6 +46617,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "violin_bow"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Walking Stick"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "night_walkstick1"
                     }
                   }
                 ]

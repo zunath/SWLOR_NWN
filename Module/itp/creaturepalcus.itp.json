@@ -10555,6 +10555,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 23.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gaping Spider"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vgapingspider"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 58.0
                     },
                     "FACTION": {

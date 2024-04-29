@@ -74854,6 +74854,50 @@
                       "type": "resref",
                       "value": "_mdrn_pl_flrh001"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chair, Desk (Light Gray)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nwsit_pl_chrdskg"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chair, Dining (Wood with Arms)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nwsit_pl_lk_chpl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chair, Wood Side (Mahogany/Grey)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nwsit_pl_chrgrwr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cushion Pile, White"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nwplc_cushpilwh"
+                    }
                   }
                 ]
               },

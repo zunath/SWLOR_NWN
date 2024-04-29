@@ -3926,7 +3926,7 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 2
+          "value": 0
         },
         "Tile_SrcLight1": {
           "type": "byte",
@@ -3969,7 +3969,7 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 0
+          "value": 1
         },
         "Tile_SrcLight1": {
           "type": "byte",
@@ -5302,7 +5302,7 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 0
+          "value": 3
         },
         "Tile_SrcLight1": {
           "type": "byte",
@@ -5345,7 +5345,7 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 2
+          "value": 0
         },
         "Tile_SrcLight1": {
           "type": "byte",
@@ -10708,7 +10708,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 147
+          "value": 62
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -10751,7 +10751,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 63
+          "value": 62
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -10763,7 +10763,7 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 1
+          "value": 3
         },
         "Tile_SrcLight1": {
           "type": "byte",
@@ -12084,7 +12084,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 149
+          "value": 60
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -12127,7 +12127,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 94
+          "value": 60
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -12139,7 +12139,7 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 2
+          "value": 3
         },
         "Tile_SrcLight1": {
           "type": "byte",
@@ -14965,7 +14965,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 86
+          "value": 63
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -14977,7 +14977,7 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 2
+          "value": 3
         },
         "Tile_SrcLight1": {
           "type": "byte",
@@ -15008,7 +15008,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 87
+          "value": 92
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -15051,7 +15051,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 61
+          "value": 175
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -16341,7 +16341,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 86
+          "value": 92
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -16353,7 +16353,7 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 0
+          "value": 1
         },
         "Tile_SrcLight1": {
           "type": "byte",
@@ -16384,7 +16384,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 86
+          "value": 87
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -17674,7 +17674,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 94
+          "value": 175
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -17803,7 +17803,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 94
+          "value": 175
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -44187,13 +44187,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "twl01"
   },
   "Version": {
     "type": "dword",
-    "value": 63
+    "value": 65
   },
   "Width": {
     "type": "int",

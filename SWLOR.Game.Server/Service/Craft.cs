@@ -701,6 +701,12 @@ namespace SWLOR.Game.Server.Service
             return blueprintDetail;
         }
 
+        /// <summary>
+        /// Sets details about a blueprint onto the item.
+        /// These are a combination of item properties and local variables set onto the item.
+        /// </summary>
+        /// <param name="blueprint">The blueprint to modify.</param>
+        /// <param name="blueprintDetail">The details about the blueprint.</param>
         public static void SetBlueprintDetails(uint blueprint, BlueprintDetail blueprintDetail)
         {
             if (blueprintDetail.LicensedRuns <= 0)
@@ -720,8 +726,8 @@ namespace SWLOR.Game.Server.Service
             BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.EnhancementSlots, blueprintDetail.EnhancementSlots), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             
         }
-        
-        public static int CalculateBlueprintCraftCreditCost(uint blueprint)
+
+        private static int CalculateCreditCost(uint blueprint, int baseConstant)
         {
             var blueprintDetail = GetBlueprintDetails(blueprint);
             var recipeDetail = GetRecipe(blueprintDetail.Recipe);
@@ -729,15 +735,44 @@ namespace SWLOR.Game.Server.Service
             var perkLevel = recipeDetail.Level / 10;
             if (perkLevel <= 0)
                 perkLevel = 1;
-            
+
             var blueprintLevel = blueprintDetail.Level;
-            
-            const int BaseConstant = 120;
-            var price = BaseConstant * (Math.Pow(perkLevel, 2.2f) * Math.Pow(blueprintLevel, 2f));
+
+            var price = baseConstant * (Math.Pow(perkLevel, 2.2f) * Math.Pow(blueprintLevel, 2f));
             price += price * recipeDetail.ResearchCostModifier;
             price -= creditReduction * price;
-            
-            return (int)price;  
+
+            return (int)price;
+        }
+        
+        /// <summary>
+        /// Calculates the credit cost to craft a blueprint.
+        /// </summary>
+        /// <param name="blueprint">The blueprint to craft.</param>
+        /// <returns>The number of credits to charge the player to craft the item.</returns>
+        public static int CalculateBlueprintCraftCreditCost(uint blueprint)
+        {
+            return CalculateCreditCost(blueprint, 80);
+        }
+
+        /// <summary>
+        /// Calculates the credit cost to research a blueprint.
+        /// </summary>
+        /// <param name="blueprint">The blueprint to research.</param>
+        /// <returns>The number of credits to charge the player to research the blueprint.</returns>
+        public static int CalculateBlueprintResearchCreditCost(uint blueprint)
+        {
+            return CalculateCreditCost(blueprint, 200);
+        }
+
+        /// <summary>
+        /// Calculates the number of seconds it takes to research a blueprint.
+        /// </summary>
+        /// <param name="blueprint">The blueprint to research.</param>
+        /// <returns>The number of seconds to wait before the blueprint is researched to the next level.</returns>
+        public static int CalculateBlueprintResearchSeconds(uint blueprint)
+        {
+            return CalculateCreditCost(blueprint, 400);
         }
     }
 }

@@ -259,7 +259,7 @@
         Rejuvenation = 252,
         FrenziedShout = 253,
         IncubationManagement = 254,
-        Research = 255,
+        // 255 claimed by space update (Valo)
         ScientificNetworking = 256,
         FishingRods = 257,
         ShoutRange = 258,
@@ -300,5 +300,7 @@
         ForceTouch = 293,
         Innervate = 294,
         ForceLink = 295,
+        Innovate = 296,
+        Research = 297,
     }
 }

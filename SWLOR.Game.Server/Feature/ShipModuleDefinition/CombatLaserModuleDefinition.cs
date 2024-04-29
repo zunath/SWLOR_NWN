@@ -16,11 +16,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            CombatLaser("com_laser_b", "Basic Combat Laser", "B. Cmbt Laser", "Deals 8 thermal DMG to your target.", 1, 8);
-            CombatLaser("com_laser_1", "Combat Laser I", "Cmbt Laser I", "Deals 12 thermal DMG to your target.", 2, 12);
-            CombatLaser("com_laser_2", "Combat Laser II", "Cmbt Laser II", "Deals 17 thermal DMG to your target.", 3, 17);
-            CombatLaser("com_laser_3", "Combat Laser III", "Cmbt Laser III", "Deals 21 thermal DMG to your target.", 4, 21);
-            CombatLaser("com_laser_4", "Combat Laser IV", "Cmbt Laser IV", "Deals 26 thermal DMG to your target.", 5, 26);
+            CombatLaser("com_laser_b", "Basic Combat Laser", "B. Cmbt Laser", "Deals 12 thermal DMG to your target.", 1, 12);
+            CombatLaser("com_laser_1", "Combat Laser I", "Cmbt Laser I", "Deals 18 thermal DMG to your target.", 2, 18);
+            CombatLaser("com_laser_2", "Combat Laser II", "Cmbt Laser II", "Deals 24 thermal DMG to your target.", 3, 24);
+            CombatLaser("com_laser_3", "Combat Laser III", "Cmbt Laser III", "Deals 30 thermal DMG to your target.", 4, 30);
+            CombatLaser("com_laser_4", "Combat Laser IV", "Cmbt Laser IV", "Deals 36 thermal DMG to your target.", 5, 36);
 
             return _builder.Build();
         }

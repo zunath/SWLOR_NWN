@@ -16,11 +16,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            MissileLauncher("msl_launch_b", "Basic Missile Launcher", "B. Msl Launch", "Requires a missile. Deals 10 explosive DMG to your target.", 1, 10);
-            MissileLauncher("msl_launch_1", "Missile Launcher I", "Msl Launch I", "Requires a missile. Deals 16 explosive DMG to your target.", 2, 16);
-            MissileLauncher("msl_launch_2", "Missile Launcher II", "Msl Launch II", "Requires a missile. Deals 22 explosive DMG to your target.", 3, 22);
-            MissileLauncher("msl_launch_3", "Missile Launcher III", "Msl Launch III", "Requires a missile. Deals 28 explosive DMG  to your target.", 4, 28);
-            MissileLauncher("msl_launch_4", "Missile Launcher IV", "Msl Launch IV", "Requires a missile. Deals 34 explosive DMG to your target.", 5, 34);
+            MissileLauncher("msl_launch_b", "Basic Missile Launcher", "B. Msl Launch", "Requires a missile. Deals 16 explosive DMG to your target. Bonus damage on unshielded targets.", 1, 16);
+            MissileLauncher("msl_launch_1", "Missile Launcher I", "Msl Launch I", "Requires a missile. Deals 23 explosive DMG to your target. Bonus damage on unshielded targets.", 2, 23);
+            MissileLauncher("msl_launch_2", "Missile Launcher II", "Msl Launch II", "Requires a missile. Deals 30 explosive DMG to your target. Bonus damage on unshielded targets.", 3, 30);
+            MissileLauncher("msl_launch_3", "Missile Launcher III", "Msl Launch III", "Requires a missile. Deals 37 explosive DMG  to your target. Bonus damage on unshielded targets.", 4, 37);
+            MissileLauncher("msl_launch_4", "Missile Launcher IV", "Msl Launch IV", "Requires a missile. Deals 45 explosive DMG to your target. Bonus damage on unshielded targets.", 5, 45);
 
             return _builder.Build();
         }
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
-                .Recast(10f)
+                .Recast(12f)
                 .ValidationAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     var item = GetItemPossessedBy(activator, "ship_missile");

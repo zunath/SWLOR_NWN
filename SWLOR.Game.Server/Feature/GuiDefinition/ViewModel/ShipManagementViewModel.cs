@@ -296,7 +296,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool ConfigurationVisible
+        public bool Configuration1Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool Configuration2Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool Configuration3Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool Configuration4Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool Configuration5Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool Configuration6Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool Configuration7Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool Configuration8Visible
         {
             get => Get<bool>();
             set => Set(value);
@@ -350,7 +392,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string ConfigurationTooltip
+        public string Configuration1Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration2Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration3Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration4Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration5Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration6Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration7Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration8Tooltip
         {
             get => Get<string>();
             set => Set(value);
@@ -397,7 +481,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string ConfigurationResref
+        public string Configuration1Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration2Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration3Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration4Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration5Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration6Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration7Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration8Resref
         {
             get => Get<string>();
             set => Set(value);
@@ -627,7 +753,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LowPower7Visible = false;
                 LowPower8Visible = false;
 
-                ConfigurationVisible = false;
+                Configuration1Visible = false;
+                Configuration2Visible = false;
+                Configuration3Visible = false;
+                Configuration4Visible = false;
+                Configuration5Visible = false;
+                Configuration6Visible = false;
+                Configuration7Visible = false;
+                Configuration8Visible = false;
 
                 LowPower1Tooltip = string.Empty;
                 LowPower2Tooltip = string.Empty;
@@ -647,7 +780,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LowPower7Resref = _blank;
                 LowPower8Resref = _blank;
 
-                ConfigurationResref = _blank;
+                Configuration1Resref = _blank;
+                Configuration2Resref = _blank;
+                Configuration3Resref = _blank;
+                Configuration4Resref = _blank;
+                Configuration5Resref = _blank;
+                Configuration6Resref = _blank;
+                Configuration7Resref = _blank;
+                Configuration8Resref = _blank;
 
                 IsRefitEnabled = false;
                 IsBoardShipEnabled = false;
@@ -945,7 +1085,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LowPower8Tooltip = string.Empty;
                 }
 
-                ConfigurationVisible = shipDetail.ConfigurationNodes >= 1;
+                Configuration1Visible = shipDetail.ConfigurationNodes >= 1;
+                Configuration2Visible = shipDetail.ConfigurationNodes >= 2;
+                Configuration3Visible = shipDetail.ConfigurationNodes >= 3;
+                Configuration4Visible = shipDetail.ConfigurationNodes >= 4;
+                Configuration5Visible = shipDetail.ConfigurationNodes >= 5;
+                Configuration6Visible = shipDetail.ConfigurationNodes >= 6;
+                Configuration7Visible = shipDetail.ConfigurationNodes >= 7;
+                Configuration8Visible = shipDetail.ConfigurationNodes >= 8;
 
                 module = ship.Status.ConfigurationModules.ContainsKey(1)
                     ? ship.Status.ConfigurationModules[1]
@@ -953,13 +1100,118 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (module != null)
                 {
                     var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
-                    ConfigurationResref = detail.Texture;
-                    ConfigurationTooltip = detail.Name;
+                    Configuration1Resref = detail.Texture;
+                    Configuration1Tooltip = detail.Name;
                 }
                 else
                 {
-                    ConfigurationResref = _blank;
-                    ConfigurationTooltip = string.Empty;
+                    Configuration1Resref = _blank;
+                    Configuration1Tooltip = string.Empty;
+                }
+
+                module = ship.Status.ConfigurationModules.ContainsKey(2)
+                    ? ship.Status.ConfigurationModules[2]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration2Resref = detail.Texture;
+                    Configuration2Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration2Resref = _blank;
+                    Configuration2Tooltip = string.Empty;
+                }
+
+                module = ship.Status.ConfigurationModules.ContainsKey(3)
+                    ? ship.Status.ConfigurationModules[3]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration3Resref = detail.Texture;
+                    Configuration3Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration3Resref = _blank;
+                    Configuration3Tooltip = string.Empty;
+                }
+
+                module = ship.Status.ConfigurationModules.ContainsKey(4)
+                    ? ship.Status.ConfigurationModules[4]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration4Resref = detail.Texture;
+                    Configuration4Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration4Resref = _blank;
+                    Configuration4Tooltip = string.Empty;
+                }
+
+                module = ship.Status.ConfigurationModules.ContainsKey(5)
+                    ? ship.Status.ConfigurationModules[5]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration5Resref = detail.Texture;
+                    Configuration5Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration5Resref = _blank;
+                    Configuration5Tooltip = string.Empty;
+                }
+
+                module = ship.Status.ConfigurationModules.ContainsKey(6)
+                    ? ship.Status.ConfigurationModules[6]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration6Resref = detail.Texture;
+                    Configuration6Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration6Resref = _blank;
+                    Configuration6Tooltip = string.Empty;
+                }
+
+                module = ship.Status.ConfigurationModules.ContainsKey(7)
+                    ? ship.Status.ConfigurationModules[7]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration7Resref = detail.Texture;
+                    Configuration7Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration7Resref = _blank;
+                    Configuration7Tooltip = string.Empty;
+                }
+
+                module = ship.Status.ConfigurationModules.ContainsKey(8)
+                    ? ship.Status.ConfigurationModules[8]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration8Resref = detail.Texture;
+                    Configuration8Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration8Resref = _blank;
+                    Configuration8Tooltip = string.Empty;
                 }
 
                 IsBoardShipEnabled = isAtCurrentLocation;
@@ -1504,7 +1756,42 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ProcessLowPower(8);
         };
 
-        public Action OnClickConfiguration() => () =>
+        public Action OnClickConfiguration1() => () =>
+        {
+            ProcessConfiguration(1);
+        };
+
+        public Action OnClickConfiguration2() => () =>
+        {
+            ProcessConfiguration(2);
+        };
+
+        public Action OnClickConfiguration3() => () =>
+        {
+            ProcessConfiguration(3);
+        };
+
+        public Action OnClickConfiguration4() => () =>
+        {
+            ProcessConfiguration(4);
+        };
+
+        public Action OnClickConfiguration5() => () =>
+        {
+            ProcessConfiguration(5);
+        };
+
+        public Action OnClickConfiguration6() => () =>
+        {
+            ProcessConfiguration(6);
+        };
+
+        public Action OnClickConfiguration7() => () =>
+        {
+            ProcessConfiguration(7);
+        };
+
+        public Action OnClickConfiguration8() => () =>
         {
             ProcessConfiguration(8);
         };

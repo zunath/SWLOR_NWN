@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SpaceService;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.PerkService;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -28,11 +29,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Description(description)
+                .Type(ShipModuleType.HypermatterInjector)
+                .CanTargetSelf()
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .Texture("iit_ess_032")
-                .Type(ShipModuleType.HypermatterInjector)
-                .RequirePerk(Service.PerkService.PerkType.DefensiveModules, requiredLevel)
+                .RequirePerk(PerkType.DefensiveModules, requiredLevel)
                 .Recast(60f)
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {

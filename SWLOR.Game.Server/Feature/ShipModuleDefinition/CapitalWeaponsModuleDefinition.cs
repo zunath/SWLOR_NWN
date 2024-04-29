@@ -16,18 +16,18 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            CapitalWeapons("cap_weps1", "Tier 1 Capship Weapons", "T1CapWeapons", "Weapons assigned to Tier 1 Capital Ships.", 10);
-            CapitalWeapons("cap_weps2", "Tier 2 Capship Weapons", "T2CapWeapons", "Weapons assigned to Tier 2 Capital Ships.", 15);
-            CapitalWeapons("cap_weps3", "Tier 3 Capship Weapons", "T3CapWeapons", "Weapons assigned to Tier 3 Capital Ships.", 20);
-            CapitalWeapons("cap_weps4", "Tier 4 Capship Weapons", "T4CapWeapons", "Weapons assigned to Tier 4 Capital Ships.", 25);
-            CapitalWeapons("cap_weps5", "Tier 5 Capship Weapons", "T5CapWeapons", "Weapons assigned to Tier 5 Capital Ships.", 28);
-            CapitalWeapons("cap_weps6", "Tier 6 Capship Weapons", "T6CapWeapons", "Weapons assigned to Corvettes.", 31);
-            CapitalWeapons("cap_weps7", "Tier 7 Capship Weapons", "T7CapWeapons", "Weapons assigned to Frigates.", 32);
-            CapitalWeapons("cap_weps8", "Tier 8 Capship Weapons", "T8CapWeapons", "Weapons assigned to Cruisers.", 32);
-            CapitalWeapons("cap_weps9", "Tier 9 Capship Weapons", "T9CapWeapons", "Weapons assigned to Heavy Cruisers.", 32);
-            CapitalWeapons("cap_weps10", "Tier 10 Capship Weapons", "T10CapWeapons", "Weapons assigned to Battlecruisers.", 32);
-            CapitalWeapons("cap_weps11", "Tier 11 Capship Weapons", "T11CapWeapons", "Weapons assigned to Battleships.", 34);
-            CapitalWeapons("cap_weps12", "Tier 12 Capship Weapons", "T12CapWeapons", "Weapons assigned to Dreadnoughts.", 40);
+            CapitalWeapons("cap_weps1", "Tier 1 Capship Weapons", "T1CapWeapons", "Weapons assigned to Tier 1 Capital Ships.", 20);
+            CapitalWeapons("cap_weps2", "Tier 2 Capship Weapons", "T2CapWeapons", "Weapons assigned to Tier 2 Capital Ships.", 26);
+            CapitalWeapons("cap_weps3", "Tier 3 Capship Weapons", "T3CapWeapons", "Weapons assigned to Tier 3 Capital Ships.", 32);
+            CapitalWeapons("cap_weps4", "Tier 4 Capship Weapons", "T4CapWeapons", "Weapons assigned to Tier 4 Capital Ships.", 38);
+            CapitalWeapons("cap_weps5", "Tier 5 Capship Weapons", "T5CapWeapons", "Weapons assigned to Tier 5 Capital Ships.", 44);
+            CapitalWeapons("cap_weps6", "Tier 6 Capship Weapons", "T6CapWeapons", "Weapons assigned to Corvettes.", 50);
+            CapitalWeapons("cap_weps7", "Tier 7 Capship Weapons", "T7CapWeapons", "Weapons assigned to Frigates.", 56);
+            CapitalWeapons("cap_weps8", "Tier 8 Capship Weapons", "T8CapWeapons", "Weapons assigned to Cruisers.", 60);
+            CapitalWeapons("cap_weps9", "Tier 9 Capship Weapons", "T9CapWeapons", "Weapons assigned to Heavy Cruisers.", 64);
+            CapitalWeapons("cap_weps10", "Tier 10 Capship Weapons", "T10CapWeapons", "Weapons assigned to Battlecruisers.", 67);
+            CapitalWeapons("cap_weps11", "Tier 11 Capship Weapons", "T11CapWeapons", "Weapons assigned to Battleships.", 70);
+            CapitalWeapons("cap_weps12", "Tier 12 Capship Weapons", "T12CapWeapons", "Weapons assigned to Dreadnoughts.", 75);
 
             return _builder.Build();
         }

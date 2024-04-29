@@ -22,7 +22,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _skipPaginationSearch;
         private SkillType _craftingFilter;
         private uint _selectedBlueprintItem;
+        private RecipesUIMode _mode;
 
+        public string Title
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        
         public string SearchText
         {
             get => Get<string>();
@@ -131,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool CanCraftRecipe
+        public bool CanCraftOrResearchRecipe
         {
             get => Get<bool>();
             set => Set(value);
@@ -155,20 +162,44 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool ShowSelectBlueprint
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        
         public bool IsInCraftingMode
         {
             get => Get<bool>();
             set => Set(value);
         }
 
+        public bool IsInResearchMode
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string ActionButtonText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
         protected override void Initialize(RecipesPayload initialPayload)
         {
+            _mode = initialPayload?.Mode ?? RecipesUIMode.Recipes;
             _skipPaginationSearch = true;
 
             _selectedBlueprintItem = OBJECT_INVALID;
             _craftingFilter = initialPayload?.Skill ?? SkillType.Invalid;
-            IsInCraftingMode = _craftingFilter != SkillType.Invalid;
+            IsInCraftingMode = _mode == RecipesUIMode.Crafting && _craftingFilter != SkillType.Invalid;
+            ShowSelectBlueprint = _mode == RecipesUIMode.Crafting || _mode == RecipesUIMode.Research;
             IsSkillEnabled = _craftingFilter == SkillType.Invalid;
+
+            if (_mode == RecipesUIMode.Crafting)
+                ActionButtonText = "Craft Item";
+            else if (_mode == RecipesUIMode.Research)
+                ActionButtonText = "Research";
 
             RecipeName = string.Empty;
             RecipeLevel = string.Empty;
@@ -364,20 +395,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadRecipeDetail();
         };
 
-        public Action OnClickCraftItem() => () =>
+        public Action OnClickCraftOrResearch() => () =>
         {
-            if (Gui.IsWindowOpen(Player, GuiWindowType.Craft))
-                return;
+            if (_mode == RecipesUIMode.Crafting)
+            {
+                if (Gui.IsWindowOpen(Player, GuiWindowType.Craft))
+                    return;
 
-            var blueprint = Craft.GetBlueprintDetails(_selectedBlueprintItem);
-            if (blueprint.Recipe == RecipeType.Invalid && _currentRecipeIndex < 0)
-                return;
-            
-            var recipe = blueprint.Recipe != RecipeType.Invalid 
-                ? blueprint.Recipe 
-                : _recipeTypes[_currentRecipeIndex];
-            var payload = new CraftPayload(recipe, _selectedBlueprintItem);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Craft, payload, TetherObject);
+                var blueprint = Craft.GetBlueprintDetails(_selectedBlueprintItem);
+                if (blueprint.Recipe == RecipeType.Invalid && _currentRecipeIndex < 0)
+                    return;
+
+                var recipe = blueprint.Recipe != RecipeType.Invalid
+                    ? blueprint.Recipe
+                    : _recipeTypes[_currentRecipeIndex];
+                var payload = new CraftPayload(recipe, _selectedBlueprintItem);
+                Gui.TogglePlayerWindow(Player, GuiWindowType.Craft, payload, TetherObject);
+            }
+            else if (_mode == RecipesUIMode.Research)
+            {
+                if (_currentRecipeIndex <= -1)
+                    return;
+                
+                var payload = new ResearchPayload(OBJECT_INVALID, _recipeTypes[_currentRecipeIndex]);
+                Gui.TogglePlayerWindow(Player, GuiWindowType.Research, payload, TetherObject);
+            }
         };
 
         private bool ValidateBlueprint(uint item)
@@ -413,20 +455,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         
         public Action OnClickSelectBlueprint() => () =>
         {
-            Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select the blueprint item you wish to create.", item =>
+            if (_mode == RecipesUIMode.Crafting)
             {
-                if (!ValidateBlueprint(item))
-                    return;
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select the blueprint item you wish to create.", item =>
+                {
+                    if (!ValidateBlueprint(item))
+                        return;
 
-                var blueprint = Craft.GetBlueprintDetails(item);
-                _selectedBlueprintItem = item;
-                
-                if(_currentRecipeIndex > -1)
-                    RecipeToggles[_currentRecipeIndex] = false;
-                DisplayRecipeDetail(blueprint.Recipe, blueprint);
+                    var blueprint = Craft.GetBlueprintDetails(item);
+                    _selectedBlueprintItem = item;
 
-                CanCraftRecipe = Craft.CanPlayerCraftRecipe(Player, blueprint.Recipe);
-            });
+                    if (_currentRecipeIndex > -1)
+                        RecipeToggles[_currentRecipeIndex] = false;
+                    DisplayRecipeDetail(blueprint.Recipe, blueprint);
+
+                    CanCraftOrResearchRecipe = Craft.CanPlayerCraftRecipe(Player, blueprint.Recipe);
+                });
+            }
+            else if (_mode == RecipesUIMode.Research)
+            {
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select the blueprint you wish to research.", item =>
+                {
+                    if (!ValidateBlueprint(item))
+                        return;
+                    
+                    Gui.CloseWindow(Player, GuiWindowType.Recipes, Player);
+
+                    var payload = new ResearchPayload(item, RecipeType.Invalid);
+                    Gui.TogglePlayerWindow(Player, GuiWindowType.Research, payload, TetherObject);
+                });
+            }
         };
 
         private void DisplayRecipeDetail(RecipeType recipe, BlueprintDetail blueprint)
@@ -451,7 +509,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             RecipeDetails = recipeDetails;
             RecipeDetailColors = recipeDetailColors;
-            CanCraftRecipe = Craft.CanPlayerCraftRecipe(Player, recipe);
+            
+            if(_mode == RecipesUIMode.Crafting)
+                CanCraftOrResearchRecipe = Craft.CanPlayerCraftRecipe(Player, recipe);
+            else if (_mode == RecipesUIMode.Research)
+                CanCraftOrResearchRecipe = Craft.CanPlayerResearchRecipe(Player, recipe);
         }
 
         private void ClearRecipeDetail()
@@ -462,7 +524,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RecipeDetails = new GuiBindingList<string>();
             RecipeDetailColors = new GuiBindingList<GuiColor>();
             _currentRecipeIndex = -1;
-            CanCraftRecipe = false;
+            CanCraftOrResearchRecipe = false;
         }
         
         private void LoadRecipeDetail()

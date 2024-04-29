@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -288,7 +289,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetLastUsedBy();
             var skillType = (SkillType)GetLocalInt(OBJECT_SELF, "CRAFTING_SKILL_TYPE_ID");
-            var payload = new RecipesPayload(skillType);
+            var payload = new RecipesPayload(RecipesUIMode.Crafting, skillType);
             Gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
         }
 
@@ -409,6 +410,22 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        /// <summary>
+        /// Determines whether a player can research a specific recipe.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <param name="recipeType">The recipe to check</param>
+        /// <returns>true if the player can research the recipe, false otherwise</returns>
+        public static bool CanPlayerResearchRecipe(uint player, RecipeType recipeType)
+        {
+            var recipe = GetRecipe(recipeType);
+            var tier = recipe.Level / 10 + 1;
+            if (tier > 5)
+                tier = 5;
+
+            return Perk.GetPerkLevel(player, PerkType.Research) >= tier;
+        }
+        
         /// <summary>
         /// Retrieves a recipe's level detail by the given level number.
         /// </summary>
@@ -638,6 +655,14 @@ namespace SWLOR.Game.Server.Service
             Gui.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
         }
 
+        [NWNEventHandler("research_term")]
+        public static void UseResearchTerminal()
+        {
+            var player = GetLastUsedBy();
+            var payload = new RecipesPayload(RecipesUIMode.Research, SkillType.Invalid);
+            Gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
+        }
+        
         /// <summary>
         /// Retrieves a blueprint detail object about an item.
         /// If item is not a blueprint, resulting recipe type will be Invalid.
@@ -732,9 +757,9 @@ namespace SWLOR.Game.Server.Service
             var blueprintDetail = GetBlueprintDetails(blueprint);
             var recipeDetail = GetRecipe(blueprintDetail.Recipe);
             var creditReduction = blueprintDetail.CreditReduction * 0.01f;
-            var perkLevel = recipeDetail.Level / 10;
-            if (perkLevel <= 0)
-                perkLevel = 1;
+            var perkLevel = recipeDetail.Level / 10 + 1;
+            if (perkLevel > 5)
+                perkLevel = 5;
 
             var blueprintLevel = blueprintDetail.Level;
 

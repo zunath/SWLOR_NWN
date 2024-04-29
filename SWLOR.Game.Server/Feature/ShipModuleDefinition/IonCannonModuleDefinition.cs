@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                 {
                                     armorDamage = 0;
                                 }
-                                var effect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion,false, 0.5f);
+                                var effect = EffectVisualEffect(VisualEffect.Vfx_Imp_Dispel, false, 0.5f);
                                 ApplyEffectToObject(DurationType.Instant, effect, target);
                                 Space.ApplyShipDamage(activator, target, shieldDamage);
                                 Space.ApplyShipDamage(activator, target, armorDamage);
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         AssignCommand(activator, () =>
                         {
-                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator, BodyNode.Chest, true);
+                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest, true);
                             ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
                         });
 

@@ -1030,32 +1030,35 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .RequiresTarget()
                 .Action((user, target, location, args) =>
                 {
-                    if (Space.GetShipStatus(target) != null)
+                    if (GetIsDM(target) != true && GetIsDMPossessed(target) != true)
                     {
-                        var npcStats = Stat.GetNPCStats(target);
-                        var level = npcStats.Level;
-                        if (GetIsPC(target) == true)
+                        if (Space.GetShipStatus(target) != null)
                         {
-                            var playerId = GetObjectUUID(target);
-                            var dbPlayer = DB.Get<Player>(playerId);
-                            level = dbPlayer.Skills[Service.SkillService.SkillType.Piloting].Rank;
+                            var npcStats = Stat.GetNPCStats(target);
+                            var level = npcStats.Level;
+                            if (GetIsPC(target) == true)
+                            {
+                                var playerId = GetObjectUUID(target);
+                                var dbPlayer = DB.Get<Player>(playerId);
+                                level = dbPlayer.Skills[Service.SkillService.SkillType.Piloting].Rank;
+                            }
+                            var targetName = GetName(target);
+                            var targetStatus = Space.GetShipStatus(target);
+                            SendMessageToPC(user, $"{targetName} stats: \n" +
+                                $"Armor: {targetStatus.Hull} Max: {targetStatus.MaxHull} \n" +
+                                $"Shields: {targetStatus.Shield} Max: {targetStatus.MaxShield} \n" +
+                                $"Capacitor: {targetStatus.Capacitor} Max: {targetStatus.MaxCapacitor} \n" +
+                                $"Shield Regen: {targetStatus.ShieldRechargeRate} \n" +
+                                $"EM Damage Bonus: {targetStatus.EMDamage} \n" +
+                                $"Thermal Damage Bonus: {targetStatus.ThermalDamage} \n" +
+                                $"Explosive Damage Bonus: {targetStatus.ExplosiveDamage} \n" +
+                                $"Accuracy: {targetStatus.Accuracy} \n" +
+                                $"Evasion: {targetStatus.Evasion} \n" +
+                                $"Thermal Defense: {targetStatus.ThermalDefense} \n" +
+                                $"EM Defense: {targetStatus.EMDefense} \n" +
+                                $"Explosive Defense: {targetStatus.ExplosiveDefense} \n" +
+                                $"Skill Level: {level}");
                         }
-                        var targetName = GetName(target);
-                        var targetStatus = Space.GetShipStatus(target);
-                        SendMessageToPC(user, $"{targetName} stats: \n" +
-                            $"Armor: {targetStatus.Hull} Max: {targetStatus.MaxHull} \n" +
-                            $"Shields: {targetStatus.Shield} Max: {targetStatus.MaxShield} \n" +
-                            $"Capacitor: {targetStatus.Capacitor} Max: {targetStatus.MaxCapacitor} \n" +
-                            $"Shield Regen: {targetStatus.ShieldRechargeRate} \n" +
-                            $"EM Damage Bonus: {targetStatus.EMDamage} \n" +
-                            $"Thermal Damage Bonus: {targetStatus.ThermalDamage} \n" +
-                            $"Explosive Damage Bonus: {targetStatus.ExplosiveDamage} \n" +
-                            $"Accuracy: {targetStatus.Accuracy} \n" +
-                            $"Evasion: {targetStatus.Evasion} \n" +
-                            $"Thermal Defense: {targetStatus.ThermalDefense} \n" +
-                            $"EM Defense: {targetStatus.EMDefense} \n" +
-                            $"Explosive Defense: {targetStatus.ExplosiveDefense} \n" +
-                            $"Skill Level: {level}");
                     }
                 });
         }
@@ -1069,11 +1072,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .RequiresTarget()
                 .Action((user, target, location, args) =>
                 {
-                    if (Space.GetShipStatus(target) != null && int.TryParse(args[0], out var amount))
+                    if (GetIsDM(target) != true && GetIsDMPossessed(target) != true)
                     {
-                        Space.RestoreHull(target, Space.GetShipStatus(target), amount);
-                        Space.RestoreShield(target, Space.GetShipStatus(target), amount);
-                        Space.RestoreCapacitor(target, Space.GetShipStatus(target), amount);
+                        if (Space.GetShipStatus(target) != null && int.TryParse(args[0], out var amount))
+                        {
+                            Space.RestoreHull(target, Space.GetShipStatus(target), amount);
+                            Space.RestoreShield(target, Space.GetShipStatus(target), amount);
+                            Space.RestoreCapacitor(target, Space.GetShipStatus(target), amount);
+                        }
                     }
                 });
         }

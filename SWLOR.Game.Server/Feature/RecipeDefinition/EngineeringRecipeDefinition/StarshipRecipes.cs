@@ -241,7 +241,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("elec_good", 2);
 
             // Hypermatter Capsule x3
-            _builder.Create(RecipeType.FuelCapsule5, SkillType.Engineering)
+            _builder.Create(RecipeType.FuelCapsule3, SkillType.Engineering)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("ship_fuelcapsule")
                 .Level(28)

@@ -11,5 +11,6 @@
         ShieldRepairer = 6,
         MiningLaser = 7,
         HypermatterInjector = 8,
+        CapitalWeapons = 9,
     }
 }

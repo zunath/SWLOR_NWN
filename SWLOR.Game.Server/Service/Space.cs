@@ -1693,7 +1693,8 @@ namespace SWLOR.Game.Server.Service
                     }
                     else if (shipModuleDetail.Type == ShipModuleType.CombatLaser ||
                              shipModuleDetail.Type == ShipModuleType.IonCannon ||
-                             shipModuleDetail.Type == ShipModuleType.Missile)
+                             shipModuleDetail.Type == ShipModuleType.Missile ||
+                             shipModuleDetail.Type == ShipModuleType.CapitalWeapons)
                     {
                         useModule = true;
                     }

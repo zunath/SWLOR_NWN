@@ -100,7 +100,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "T1Capital"
+    "value": "t1capskin"
   },
   "TemplateResRef": {
     "type": "resref",

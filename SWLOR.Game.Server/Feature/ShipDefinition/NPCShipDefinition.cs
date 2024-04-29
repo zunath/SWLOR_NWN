@@ -106,7 +106,6 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShipConfigurationNodes(1);
         }
 
-
         private void Tier2()
         {
             _builder.Create("NPC_Bomber2")

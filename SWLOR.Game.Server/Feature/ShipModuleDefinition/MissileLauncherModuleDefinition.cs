@@ -93,6 +93,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 })
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
+                    // Missiles do 25% more damage to unshielded targets. Due to shield recharge starting instantly, allow for up to 4 shield points to be considered "unshielded".
+                    if (targetShipStatus.Shield <= 4)
+                    {
+                        dmg += dmg / 4;
+                    }
                     var item = GetItemPossessedBy(activator, "ship_missile");
                     var stackSize = GetItemStackSize(item);
                     if (stackSize <= 1)
@@ -113,12 +118,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var isHit = roll <= chanceToHit;
 
                     var attackBonus = moduleBonus * 2 + activatorShipStatus.ExplosiveDamage;
-
-                    // Missiles do 25% more damage to unshielded targets. Due to shield recharge starting instantly, allow for up to 4 shield points to be considered "unshielded".
-                    if (targetShipStatus.Shield <= 4)
-                    {
-                        dmg += dmg/4;
-                    }
 
                     // Shoot some missiles out to the target.
                     AssignCommand(activator, () =>

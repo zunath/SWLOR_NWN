@@ -100,7 +100,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "T3Heavy"
+    "value": "t3hvyskin"
   },
   "TemplateResRef": {
     "type": "resref",

@@ -47200,6 +47200,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Durasteel Plating 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hvy_armor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Durasteel Plating 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hvy_armor_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Durasteel Plating 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hvy_armor_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Durasteel Plating 4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hvy_armor_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Durasteel Plating 5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hvy_armor_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "EM Amplifier I"
                     },
                     "RESREF": {
@@ -47750,6 +47805,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mirrored Plating 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "las_armor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mirrored Plating 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "las_armor_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mirrored Plating 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "las_armor_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mirrored Plating 4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "las_armor_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mirrored Plating 5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "las_armor_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Missile"
                     },
                     "RESREF": {
@@ -47810,6 +47920,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "personablade001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reactive Armor 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exp_armor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reactive Armor 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exp_armor_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reactive Armor 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exp_armor_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reactive Armor 4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exp_armor_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reactive Armor 5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exp_armor_5"
                     }
                   },
                   {
@@ -48058,6 +48223,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Supplemental Ion Shielding 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ion_armor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Supplemental Ion Shielding 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ion_armor_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Supplemental Ion Shielding 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ion_armor_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Supplemental Ion Shielding 4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ion_armor_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Supplemental Ion Shielding 5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ion_armor_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Targeting System I"
                     },
                     "RESREF": {
@@ -48140,6 +48360,138 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "therm_amp_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tier 1 Capship Weapons"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_weps1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tier 10 Capship Weapons"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_weps10"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tier 11 Capship Weapons"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_weps11"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tier 12 Capship Weapons"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_weps12"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tier 2 Capship Weapons"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_weps2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tier 3 Capship Weapons"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_weps3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tier 4 Capship Weapons"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_weps4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tier 5 Capship Weapons"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_weps5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tier 6 Capship Weapons"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_weps6"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tier 7 Capship Weapons"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_weps7"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tier 8 Capship Weapons"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_weps8"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tier 9 Capship Weapons"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_weps9"
                     }
                   },
                   {

@@ -64,8 +64,8 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxCapacitor(40)
                 .MaxShield(50)
                 .ShieldRechargeRate(4)
-                .HighPowerNodes(2)
-                .LowPowerNodes(3)
+                .HighPowerNodes(3)
+                .LowPowerNodes(4)
                 .ShipConfigurationNodes(1)
                 .InteriorLayout(PropertyLayoutType.Striker);
 
@@ -78,8 +78,8 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxCapacitor(60)
                 .MaxShield(40)
                 .ShieldRechargeRate(4)
-                .HighPowerNodes(3)
-                .LowPowerNodes(2)
+                .HighPowerNodes(4)
+                .LowPowerNodes(3)
                 .ShipConfigurationNodes(1)
                 .InteriorLayout(PropertyLayoutType.Condor);
         }
@@ -95,8 +95,8 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxCapacitor(80)
                 .MaxShield(100)
                 .ShieldRechargeRate(6)
-                .HighPowerNodes(3)
-                .LowPowerNodes(4)
+                .HighPowerNodes(4)
+                .LowPowerNodes(5)
                 .ShipConfigurationNodes(1)
                 .InteriorLayout(PropertyLayoutType.Hound);
 
@@ -109,8 +109,8 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxCapacitor(120)
                 .MaxShield(80)
                 .ShieldRechargeRate(6)
-                .HighPowerNodes(4)
-                .LowPowerNodes(3)
+                .HighPowerNodes(5)
+                .LowPowerNodes(4)
                 .ShipConfigurationNodes(1)
                 .InteriorLayout(PropertyLayoutType.Panther);
         }
@@ -126,8 +126,8 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxCapacitor(120)
                 .MaxShield(150)
                 .ShieldRechargeRate(8)
-                .HighPowerNodes(4)
-                .LowPowerNodes(5)
+                .HighPowerNodes(5)
+                .LowPowerNodes(6)
                 .ShipConfigurationNodes(1)
                 .InteriorLayout(PropertyLayoutType.Saber);
 
@@ -140,8 +140,8 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxCapacitor(180)
                 .MaxShield(120)
                 .ShieldRechargeRate(8)
-                .HighPowerNodes(5)
-                .LowPowerNodes(4)
+                .HighPowerNodes(6)
+                .LowPowerNodes(5)
                 .ShipConfigurationNodes(1)
                 .InteriorLayout(PropertyLayoutType.Falchion);
         }

@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 73
+    "value": 513
   },
   "Charges": {
     "type": "byte",
@@ -30,65 +30,35 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "T4 Capital"
+      "0": "Tier 4 Capship Weapons"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 79
   },
   "PaletteID": {
     "type": "byte",
-    "value": 14
+    "value": 0
   },
   "Plot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PropertiesList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 43
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 45
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 99
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      }
-    ]
+    "value": []
   },
   "StackSize": {
     "type": "word",
@@ -96,18 +66,18 @@
   },
   "Stolen": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Tag": {
     "type": "cexostring",
-    "value": "t4capskin"
+    "value": "cap_weps4"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "t4capskin"
+    "value": "cap_weps4"
   },
   "xModelPart1": {
     "type": "word",
-    "value": 1
+    "value": 79
   }
 }

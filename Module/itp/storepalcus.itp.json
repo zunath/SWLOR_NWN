@@ -16,6 +16,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Accessories Shop"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "night_accessory"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Cooking Ingredients"
               },
               "RESREF": {
@@ -65,6 +76,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "fishing_store"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Flower Shop"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "flower_store"
               }
             },
             {

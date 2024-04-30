@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
   
 
 
-        private void CullVoritorlizardThreat()
+        private void CullVoritorLizardThreat()
         {
             _builder.Create("voritor_lizard_threat", "Cull the Voritor Lizard Threat")
 

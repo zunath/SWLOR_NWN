@@ -28,13 +28,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var targetBonus = willBonus;
             if (target != activator && Stat.GetCurrentFP(activator) >= 16)
             {
-                var willRestore = (willBonus / 2);
+                var willRestore = (willBonus / 2) * 4;
+                var duration = (willBonus * 60f);
+                var effect = EffectRegenerate(willRestore, 6f);
                 Stat.ReduceFP(activator, 10);
                 Stat.ReduceStamina(activator, willRestore);
                 Stat.RestoreFP(target, willRestore);
                 Stat.RestoreStamina(target, willRestore);
-                ApplyEffectToObject(DurationType.Instant, EffectRegenerate(willRestore * 4, 24f), target);
                 targetBonus = willBonus * 4;
+
+
+                for (var e = GetFirstEffect(target); GetIsEffectValid(e); e = GetNextEffect(target))
+                {
+                    if (GetEffectTag(e) == "FORCE_BENEVOLENCE")
+                    {
+                        RemoveEffect(target, e);
+                    }
+                }
+
+                effect = TagEffect(effect, "FORCE_BENEVOLENCE");
+
+                ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
             }
             var willHeal = baseAmount + targetBonus * 4 + Random.D10(targetBonus * 3);
 

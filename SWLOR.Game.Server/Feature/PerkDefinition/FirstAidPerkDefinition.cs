@@ -334,7 +334,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Restores STM at the cost of one's Willpower. Consumes stim pack on use.")
                 .Price(2)
-                .DroidAISlots(2)
                 .RequirementSkill(SkillType.FirstAid, 10)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.AdrenalStim1)
@@ -342,7 +341,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Restores STM at the cost of one's Willpower. Consumes stim pack on use.")
                 .Price(2)
-                .DroidAISlots(3)
                 .RequirementSkill(SkillType.FirstAid, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.AdrenalStim2)
@@ -350,7 +348,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Restores STM at the cost of one's Willpower. Consumes stim pack on use.")
                 .Price(3)
-                .DroidAISlots(4)
                 .RequirementSkill(SkillType.FirstAid, 50)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.AdrenalStim3);

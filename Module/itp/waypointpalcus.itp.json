@@ -653,6 +653,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantooine Hay Bales"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_hay"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dantooine Junk Pile"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_junkpile"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Fishing Point - Dantooine - Canyon"
                     },
                     "RESREF": {

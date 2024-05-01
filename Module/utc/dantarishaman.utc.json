@@ -670,21 +670,6 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_4"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "DANTOOINE_DANTARI_SHAMAN_GEAR_RARES_RARES,10,1"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "LOOT_TABLE_5"
         },
         "Type": {

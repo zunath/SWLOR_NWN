@@ -1073,7 +1073,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .RequiresTarget()
                 .Action((user, target, location, args) =>
                 {
-                    if (GetIsDM(target) != true && GetIsDMPossessed(target) != true)
+                    if (!GetIsDM(target) && !GetIsDMPossessed(target))
                     {
                         if (Space.GetShipStatus(target) != null && int.TryParse(args[0], out var amount))
                         {

@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (duration > 0)
             {
-                var durMessage = TimeSpan.FromSeconds(duration).ToString(@"mm\:ss");
+                var durMessage = TimeSpan.FromSeconds(duration).ToString(@"hh\:mm\:ss");
                 SendMessageToPC(player, $"    {ColorToken.White(statusName)}: {durMessage}");
             }
             else

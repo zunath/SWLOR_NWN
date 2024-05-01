@@ -176,60 +176,60 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 3);
 
-            // Hypermatter Injector 1
-            _builder.Create(RecipeType.FuelInjector1, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("cap_inject1")
-                .Level(9)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
-                .EnhancementSlots(RecipeEnhancementType.Module, 1)
-                .Component("ref_tilarium", 5)
-                .Component("elec_ruined", 3);
-
-            // Mirrored Plating 1
-            _builder.Create(RecipeType.ThermalArmor1, SkillType.Engineering)
+			// Hypermatter Injector 1
+			_builder.Create(RecipeType.FuelInjector1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_1")
-                .Level(5)
-                .Quantity(1)
+				.Resref("cap_inject1")
+				.Level(9)
+				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 1)
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
-                .Component("ref_tilarium", 5)
-                .Component("elec_ruined", 1);
+				.Component("ref_tilarium", 5)
+				.Component("elec_ruined", 3);
 
-            // Supplemental Ion Shielding 1
-            _builder.Create(RecipeType.IonArmor1, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_1")
-                .Level(5)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
-                .EnhancementSlots(RecipeEnhancementType.Module, 1)
-                .Component("ref_tilarium", 5)
-                .Component("elec_ruined", 1);
-
-            // Reactive Armor 1
-            _builder.Create(RecipeType.ExplosiveArmor1, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_1")
-                .Level(5)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
-                .EnhancementSlots(RecipeEnhancementType.Module, 1)
-                .Component("ref_tilarium", 5)
-                .Component("elec_ruined", 1);
-
-            // Durasteel Plating 1
-            _builder.Create(RecipeType.HeavyArmor1, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_1")
+			// Mirrored Plating 1
+			_builder.Create(RecipeType.ThermalArmor1, SkillType.Engineering)
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_1")
 				.Level(5)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
-                .EnhancementSlots(RecipeEnhancementType.Module, 1)
-                .Component("ref_tilarium", 5)
-                .Component("elec_ruined", 1);
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 1)
+				.EnhancementSlots(RecipeEnhancementType.Module, 1)
+				.Component("ref_tilarium", 5)
+				.Component("elec_ruined", 1);
+
+			// Supplemental Ion Shielding 1
+			_builder.Create(RecipeType.IonArmor1, SkillType.Engineering)
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_1")
+				.Level(5)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 1)
+				.EnhancementSlots(RecipeEnhancementType.Module, 1)
+				.Component("ref_tilarium", 5)
+				.Component("elec_ruined", 1);
+
+			// Reactive Armor 1
+			_builder.Create(RecipeType.ExplosiveArmor1, SkillType.Engineering)
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_1")
+				.Level(5)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 1)
+				.EnhancementSlots(RecipeEnhancementType.Module, 1)
+				.Component("ref_tilarium", 5)
+				.Component("elec_ruined", 1);
+
+			// Durasteel Plating 1
+			_builder.Create(RecipeType.HeavyArmor1, SkillType.Engineering)
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_1")
+				.Level(5)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 1)
+				.EnhancementSlots(RecipeEnhancementType.Module, 1)
+				.Component("ref_tilarium", 5)
+				.Component("elec_ruined", 1);
         }
 
 		private void Tier2()
@@ -388,7 +388,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 3);
-
+			
 			// Hypermatter Injector II
 			_builder.Create(RecipeType.FuelInjector2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
@@ -399,50 +399,50 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 3);
-
+			
 			// Mirror Plating II
 			_builder.Create(RecipeType.ThermalArmor2, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_2")
-                .Level(15)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Module, 1)
-                .Component("ref_currian", 5)
-                .Component("elec_flawed", 1);
-
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_2")
+				.Level(15)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 2)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_currian", 5)
+				.Component("elec_flawed", 1);
+			
 			// Supplemental Ion Shielding II
 			_builder.Create(RecipeType.IonArmor2, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_2")
-                .Level(15)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_currian", 5)
-                .Component("elec_flawed", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_2")
+				.Level(15)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 2)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_currian", 5)
+				.Component("elec_flawed", 1);
 
 			// Reactive Armor II
 			_builder.Create(RecipeType.ExplosiveArmor2, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_2")
-                .Level(15)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_currian", 5)
-                .Component("elec_flawed", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_2")
+				.Level(15)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 2)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_currian", 5)
+				.Component("elec_flawed", 1);
 
 			// Durasteel Plating II
 			_builder.Create(RecipeType.HeavyArmor2, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_2")
-                .Level(15)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_currian", 5)
-                .Component("elec_flawed", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_2")
+				.Level(15)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 2)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_currian", 5)
+				.Component("elec_flawed", 1);
 		}
 
 		private void Tier3()
@@ -604,58 +604,58 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Hypermatter Injector III
 			_builder.Create(RecipeType.FuelInjector3, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("cap_inject3")
-                .Level(29)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_idailia", 5)
-                .Component("elec_good", 3);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("cap_inject3")
+				.Level(29)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 3)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_idailia", 5)
+				.Component("elec_good", 3);
 
 			// Mirrored Plating III
 			_builder.Create(RecipeType.ThermalArmor3, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_3")
-                .Level(25)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_idailia", 5)
-                .Component("elec_good", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_3")
+				.Level(25)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 3)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_idailia", 5)
+				.Component("elec_good", 1);
 
 			// Supplemental Ion Shielding III
 			_builder.Create(RecipeType.IonArmor3, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_3")
-                .Level(25)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_idailia", 5)
-                .Component("elec_good", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_3")
+				.Level(25)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 3)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_idailia", 5)
+				.Component("elec_good", 1);
 
 			// Reactive Armor III
 			_builder.Create(RecipeType.ExplosiveArmor3, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_3")
-                .Level(25)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_idailia", 5)
-                .Component("elec_good", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_3")
+				.Level(25)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 3)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_idailia", 5)
+				.Component("elec_good", 1);
 
 			// Durasteel Plating III
 			_builder.Create(RecipeType.HeavyArmor3, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_3")
-                .Level(25)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_idailia", 5)
-                .Component("elec_good", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_3")
+				.Level(25)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 3)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_idailia", 5)
+				.Component("elec_good", 1);
 		}
 
 		private void Tier4()
@@ -817,58 +817,58 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Hypermatter Injector IV
 			_builder.Create(RecipeType.FuelInjector4, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("cap_inject4")
-                .Level(39)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_barinium", 5)
-                .Component("elec_imperfect", 3);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("cap_inject4")
+				.Level(39)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 4)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_barinium", 5)
+				.Component("elec_imperfect", 3);
 
 			// Mirrored Plating IV
 			_builder.Create(RecipeType.ThermalArmor4, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_4")
-                .Level(35)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_barinium", 5)
-                .Component("elec_imperfect", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_4")
+				.Level(35)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 4)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_barinium", 5)
+				.Component("elec_imperfect", 1);
 
 			// Supplemental Ion Shielding IV
 			_builder.Create(RecipeType.IonArmor4, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_4")
-                .Level(35)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_barinium", 5)
-                .Component("elec_imperfect", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_4")
+				.Level(35)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 4)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_barinium", 5)
+				.Component("elec_imperfect", 1);
 
 			// Reactive Armor IV
 			_builder.Create(RecipeType.ExplosiveArmor4, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_4")
-                .Level(35)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_barinium", 5)
-                .Component("elec_imperfect", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_4")
+				.Level(35)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 4)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_barinium", 5)
+				.Component("elec_imperfect", 1);
 
 			// Durasteel Plating IV
 			_builder.Create(RecipeType.HeavyArmor4, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_4")
-                .Level(35)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_barinium", 5)
-                .Component("elec_imperfect", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_4")
+				.Level(35)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 4)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_barinium", 5)
+				.Component("elec_imperfect", 1);
 		}
 
 		private void Tier5()
@@ -1030,58 +1030,58 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
 			// Hypermatter Injector V
 			_builder.Create(RecipeType.FuelInjector5, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("cap_inject5")
-                .Level(49)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_gostian", 5)
-                .Component("elec_high", 3);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("cap_inject5")
+				.Level(49)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 5)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_gostian", 5)
+				.Component("elec_high", 3);
 
 			// Mirrored Plating V
 			_builder.Create(RecipeType.ThermalArmor5, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_5")
-                .Level(45)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_gostian", 5)
-                .Component("elec_high", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_5")
+				.Level(45)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 5)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_gostian", 5)
+				.Component("elec_high", 1);
 
 			// Supplemental Ion Shielding V
 			_builder.Create(RecipeType.IonArmor5, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_5")
-                .Level(45)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_gostian", 5)
-                .Component("elec_high", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_5")
+				.Level(45)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 5)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_gostian", 5)
+				.Component("elec_high", 1);
 
 			// Reactive Armor V
 			_builder.Create(RecipeType.ExplosiveArmor5, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_5")
-                .Level(45)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_gostian", 5)
-                .Component("elec_high", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_5")
+				.Level(45)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 5)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_gostian", 5)
+				.Component("elec_high", 1);
 
 			// Durasteel Plating V
 			_builder.Create(RecipeType.HeavyArmor5, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("las_armor_5")
-                .Level(45)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Module, 2)
-                .Component("ref_gostian", 5)
-                .Component("elec_high", 1);
+				.Category(RecipeCategoryType.ShipModule)
+				.Resref("las_armor_5")
+				.Level(45)
+				.Quantity(1)
+				.RequirementPerk(PerkType.StarshipBlueprints, 5)
+				.EnhancementSlots(RecipeEnhancementType.Module, 2)
+				.Component("ref_gostian", 5)
+				.Component("elec_high", 1);
 		}
 	}
 }

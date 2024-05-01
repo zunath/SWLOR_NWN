@@ -5739,7 +5739,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Revêtement de droïde éboueur"
+                      "value": "Revï¿½tement de droï¿½de ï¿½boueur"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -18645,6 +18645,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bantha Milk"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bantha_milk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Barinium Ore"
                     },
                     "RESREF": {
@@ -26268,6 +26279,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hay Bundle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "haybundle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Heavy Armor Core"
                     },
                     "RESREF": {
@@ -30107,6 +30129,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Kolto Injection"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "kolto_injection"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Korriban Wraid Claw"
                     },
                     "RESREF": {
@@ -31102,6 +31135,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "medcina"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Medi Syringes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "medisyringes"
                     }
                   },
                   {
@@ -37195,7 +37239,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "yot_bean"
+                      "value": "yotbean"
                     }
                   },
                   {
@@ -41838,6 +41882,17 @@
               "LIST": {
                 "type": "list",
                 "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Czerka Soda"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "czerkasoda"
+                    }
+                  },
                   {
                     "__struct_id": 0,
                     "NAME": {

@@ -302,5 +302,6 @@
         ForceLink = 295,
         Innovate = 296,
         Research = 297,
+        AdrenalStim = 298,
     }
 }

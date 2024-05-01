@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             CombatEnhancement();
             Shielding();
             Infusion();
+            AdrenalStim();
 
             return _builder.Build();
         }
@@ -322,6 +324,33 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.FirstAid, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Infusion2);
+        }
+
+        private void AdrenalStim()
+        { 
+            _builder.Create(PerkCategoryType.FirstAid, PerkType.AdrenalStim)
+                .Name("Adrenal Stim")
+
+                .AddPerkLevel()
+                .Description("Restores STM at the cost of one's Willpower. Consumes stim pack on use.")
+                .Price(2)
+                .RequirementSkill(SkillType.FirstAid, 10)
+                .RequirementCharacterType(CharacterType.Standard)
+                .GrantsFeat(FeatType.AdrenalStim1)
+
+                .AddPerkLevel()
+                .Description("Restores STM at the cost of one's Willpower. Consumes stim pack on use.")
+                .Price(2)
+                .RequirementSkill(SkillType.FirstAid, 25)
+                .RequirementCharacterType(CharacterType.Standard)
+                .GrantsFeat(FeatType.AdrenalStim2)
+
+                .AddPerkLevel()
+                .Description("Restores STM at the cost of one's Willpower. Consumes stim pack on use.")
+                .Price(3)
+                .RequirementSkill(SkillType.FirstAid, 50)
+                .RequirementCharacterType(CharacterType.Standard)
+                .GrantsFeat(FeatType.AdrenalStim3);
         }
     }
 }

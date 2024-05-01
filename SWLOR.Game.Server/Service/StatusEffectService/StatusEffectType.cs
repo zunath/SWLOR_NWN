@@ -79,5 +79,8 @@
         ForceBody2 = 74,
         ForceMind1 = 75,
         ForceMind2 = 76,
+        AdrenalStim1 = 77,
+        AdrenalStim2 = 78,
+        AdrenalStim3 = 79,
     }
 }

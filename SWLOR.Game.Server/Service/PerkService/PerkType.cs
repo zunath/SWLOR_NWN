@@ -303,5 +303,6 @@
         ForceTouch = 293,
         Innervate = 294,
         ForceLink = 295,
+        AdrenalStim = 298,
     }
 }

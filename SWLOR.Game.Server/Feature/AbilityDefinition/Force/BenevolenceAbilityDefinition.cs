@@ -31,9 +31,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 RemoveEffectByTag(target, BeneRegen);
 
-                var basevalue = 90f;
                 var willRestore = (willBonus / 2) * 4;
-                var duration = basevalue + (willBonus * 60f);
+                var duration = 90f + (willBonus * 60f);
                 var effect = EffectRegenerate(willRestore, 24f);
                 Stat.ReduceFP(activator, 10);
                 Stat.ReduceStamina(activator, willRestore);

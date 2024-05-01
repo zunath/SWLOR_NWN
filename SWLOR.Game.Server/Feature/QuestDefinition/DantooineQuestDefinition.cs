@@ -6,13 +6,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class DantooineQuestDefinition : IQuestListDefinition
     {
-            private readonly QuestBuilder _builder = new QuestBuilder();
-            public Dictionary<string, QuestDetail> BuildQuests()
+        private readonly QuestBuilder _builder = new();
+        public Dictionary<string, QuestDetail> BuildQuests()
         {
             DanBundle();
             DanMedicalSupplies();
             BlueMilkQuest();
-            CullVoritorlizardThreat();
+            CullVoritorLizardThreat();
             return _builder.Build();
         }
 
@@ -20,16 +20,15 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             _builder.Create("bantha_milk_quest", "Bantha Milk Quest")
                .AddState()
-                   .SetStateJournalText("The farmer from Dantooine requires milk that has been taken from the Dantari. Find it and bring back the milk.")
-                   .AddCollectItemObjective("bantha_milk", 20)
-               .AddState()
-                   .SetStateJournalText("Return to the farmer and deliver the stolen blue milk.")
-                   .AddXPReward(4000)
-                   .AddGoldReward(2500);
+               .SetStateJournalText("The farmer from Dantooine requires milk that has been taken from the Dantari. Find it and bring back the milk.")
+               .AddCollectItemObjective("bantha_milk", 20)
 
-           
+               .AddState()
+               .SetStateJournalText("Return to the farmer and deliver the stolen blue milk.")
+               .AddXPReward(4000)
+               .AddGoldReward(2500);
         }
-  
+
 
 
         private void CullVoritorLizardThreat()
@@ -45,8 +44,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddGoldReward(4000)
                 .AddXPReward(5000);
-
-
         }
 
         private void DanMedicalSupplies()
@@ -71,19 +68,16 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void DanBundle()
         {
             _builder.Create("hay_bundles", "Hay bales for Wrrl")
-              
 
                 .AddState()
                 .SetStateJournalText("The farmer needs help with his herd. Collect 20 bags of hay bales from the Ruin Farmlands and return them to the farmer.")
                 .AddCollectItemObjective("haybundle", 20)
 
-
                 .AddState()
                 .SetStateJournalText("You delivered the hay bundles to the farmer. Talk to the farmer for your reward.")
-        
+
                 .AddXPReward(2000)
                 .AddGoldReward(1000);
-
         }
 
     }

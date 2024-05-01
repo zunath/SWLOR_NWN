@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .EquippedAction((creature, shipStatus, moduleBonus) =>
                 {
                     shipStatus.ThermalDefense += armorBoost + moduleBonus;
-                    shipStatus.EMDefense+= armorBoost + moduleBonus;
+                    shipStatus.EMDefense += armorBoost + moduleBonus;
                     shipStatus.ExplosiveDefense += armorBoost + moduleBonus;
                     shipStatus.Evasion -= armorBoost;
                 })

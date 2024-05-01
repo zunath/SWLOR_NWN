@@ -25,6 +25,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             return _builder.Build();
         }
 
+        private const string Mined = "BEING_MINED";
+
         private void MiningLaser(string itemTag, string name, string shortName, int requiredLevel, int capacitor, float recast)
         {
             _builder.Create(itemTag)
@@ -55,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         return "This mining laser is not powerful enough to harvest that asteroid.";
                     }
 
-                    if (GetLocalBool(target, "BEING_MINED") == true)
+                    if (GetLocalBool(target, Mined))
                     {
                         return "This asteroid is already being mined.";
                     }
@@ -64,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 })
                 .ActivatedAction((activator, status, target, shipStatus, moduleBonus) =>
                 {
-                    SetLocalBool(target, "BEING_MINED", true);
+                    SetLocalBool(target, Mined, true);
                     // Remaining units aren't set - pick a random number to assign.
                     var remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
                     if (remainingUnits <= 0)
@@ -138,9 +140,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var xp = Skill.GetDeltaXP(delta);
 
                             Skill.GiveSkillXP(activator, SkillType.Piloting, xp);
-                            SetLocalBool(target, "BEING_MINED", false);
                         }
                     });
+                    SetLocalBool(target, Mined, false);
                 });
         }
     }

@@ -84,17 +84,17 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ShortName(name)
                 .Texture(texture)
                 .Description($"Provides several base stats to a ship to allow it to fulfill a role and operate at full capacity: \n" +
-                $"Armor: +{armor} + Module Bonus * 4 \n" +
+                $"Armor: +{armor} + Module Bonus x 4 \n" +
                 $"Shield: +{shield} + Module Bonus * 4 \n" +
-                $"Thermal Attack: +{thermalAttack} + Module Bonus * 2 +  \n" +
-                $"Thermal Defense: +{thermalDefense} + Module Bonus * 2 \n" +
-                $"EM Attack: +{ionAttack} + Module Bonus * 2 \n" +
-                $"EM Defense: +{ionDefense} + Module Bonus * 2 \n" +
-                $"Explosive Attack: +{explosiveAttack} + Module Bonus * 2 \n" +
-                $"Explosive Defense: +{explosiveDefense} + Module Bonus * 2 \n" +
-                $"Accuracy: +{accuracy} + Module Bonus * 2 \n" +
-                $"Evasion: +{evasion} + Module Bonus * 2 \n" +
-                $"Industrial Level: +{industrial} + Module Bonus * 2 (Industrial frames only)")
+                $"Thermal Attack: +{thermalAttack} + Module Bonus x 2 +  \n" +
+                $"Thermal Defense: +{thermalDefense} + Module Bonus x 2 \n" +
+                $"EM Attack: +{ionAttack} + Module Bonus x 2 \n" +
+                $"EM Defense: +{ionDefense} + Module Bonus x 2 \n" +
+                $"Explosive Attack: +{explosiveAttack} + Module Bonus x 2 \n" +
+                $"Explosive Defense: +{explosiveDefense} + Module Bonus x 2 \n" +
+                $"Accuracy: +{accuracy} + Module Bonus x 2 \n" +
+                $"Evasion: +{evasion} + Module Bonus x 2 \n" +
+                $"Industrial Level: +{industrial} + Module Bonus x 2 (Industrial frames only)")
                 .PowerType(ShipModulePowerType.Config)
                 .RequirePerk(PerkType.Starships, requiredLevel)
                 .EquippedAction((creature, shipStatus, moduleBonus) =>

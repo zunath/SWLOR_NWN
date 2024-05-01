@@ -25,6 +25,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             return _builder.Build();
         }
 
+        private const string MissileItemResref = "ship_missile";
+
         private void PerformAttack(uint activator, uint target, int dmg, int attackBonus, bool? hitOverride)
         {
             var targetShipStatus = Space.GetShipStatus(target);
@@ -82,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Recast(12f)
                 .ValidationAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    var item = GetItemPossessedBy(activator, "ship_missile");
+                    var item = GetItemPossessedBy(activator, MissileItemResref);
                     var stackSize = GetItemStackSize(item);
                     if(stackSize <= 0 && GetIsPC(activator) == true)
                     {
@@ -98,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         dmg += dmg / 4;
                     }
-                    var item = GetItemPossessedBy(activator, "ship_missile");
+                    var item = GetItemPossessedBy(activator, MissileItemResref);
                     var stackSize = GetItemStackSize(item);
                     if (stackSize <= 1)
                     {

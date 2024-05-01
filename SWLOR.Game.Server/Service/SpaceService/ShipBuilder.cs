@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// Sets the number of low power nodes on this ship.
         /// Low power nodes are typically used for shield boosters, armor reinforcement, etc.
         /// </summary>
-        /// <param name="lowPowerNodes">The number of low power nodes to set.</param>
+        /// <param name="lowPowerNodes">The number of configuration nodes to set.</param>
         /// <returns>A ship builder with the configured options.</returns>
         public ShipBuilder LowPowerNodes(int lowPowerNodes)
         {

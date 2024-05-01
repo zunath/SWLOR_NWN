@@ -739,6 +739,7 @@ namespace SWLOR.Game.Server.Service
         public static void WarpPlayerInsideShip(uint player)
         {
             ExitSpaceMode(player);
+            Ability.ReapplyPlayerAuraAOE(player);
 
             if (!GetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET"))
                 return;

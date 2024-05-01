@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         public Dictionary<string, SpawnTable> BuildSpawnTables()
         {
             DantooineLake();
+            DanPiles();
+            DanHay();
             DantooineWildPlains();
             DantooineWareHouse();
             DanTribeVillage();
@@ -41,7 +43,18 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_5")
                 .WithFrequency(10);
         }
-
+        private void DanPiles()
+        {
+            _builder.Create("DANTOOINE_JUNKPILES")
+                .AddSpawn(ObjectType.Placeable, "dan_junk")
+                .WithFrequency(50);
+        }
+        private void DanHay()
+        {
+            _builder.Create("DANTOOINE_HAY")
+                .AddSpawn(ObjectType.Placeable, "dan_hay")
+                .WithFrequency(50);
+        }
         private void DantooineWildPlains()
         {
             _builder.Create("DANTOOINE_WILD_PLAINS_RESOURCES")

@@ -38,6 +38,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "czerkasodas"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "czerkasodas"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Dathomir General Store"
               },
               "RESREF": {

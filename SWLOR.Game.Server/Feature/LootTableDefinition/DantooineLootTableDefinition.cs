@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
         public Dictionary<string, LootTable> BuildLootTables()
         {
+            DantooineHay();
+            MedicalCache();
             QueenKinrath();
             ThuneLeader();
             DantariHunter();
@@ -27,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("DANTOOINE_KINRATH_QUEEN")
                 .AddItem("fiberp_high", 20)
-                .AddItem("yot_bean", 100);
+                .AddItem("yotbean", 100);
       
             _builder.Create("DANTOOINE_KINRATH_QUEEN_RARES")
                 .IsRare()
@@ -79,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void DantariHunter()
         {
             _builder.Create("DANTOOINE_DANTARI_HUNTER")
-                .AddItem("fiberp_imperfect", 5)
+                .AddItem("bantha_milk", 70)
                 .AddItem("carrot", 10)
                 .AddItem("culture_butter", 5);
 
@@ -94,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("DANTOOINE_DANTARI_HUNTER_RARES")
                 .IsRare()
-                .AddItem("ruby", 99, 1, true)
+                .AddItem("bantha_milk", 99, 1, true)
                 .AddItem("map_70", 2, 1, true)
                 .AddItem("map_71", 2, 1, true)
                 .AddItem("map_73", 2, 1, true)
@@ -108,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("fiberp_high", 10)
                 .AddItem("lth_imperfect", 5)
                 .AddItem("lth_high", 10)
-                .AddItem("cultured_butter", 1);
+                .AddItem("bantha_milk", 1);
 
             _builder.Create("DANTOOINE_DANTARI_SHAMAN_GEAR_RARES")
                     .AddItem("dan_h_cloak", 10)
@@ -144,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void Gizka()
         {
             _builder.Create("DANTOOINE_GIZKA")
-                .AddItem("lth_good", 5)
+                .AddItem("yotbean", 5)
                 .AddItem("lth_high", 10)
                 .AddItem("wild_innards", 10);
 
@@ -169,7 +171,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("DANTOOINE_VORITOR_LIZARD")
                 .AddItem("wild_leg", 5)
                 .AddItem("tomato", 20)
-                .AddItem("cultured_butter", 10);
+                .AddItem("yotbean", 10);
 
             _builder.Create("DANTOOINE_VORITOR_LIZARD_RARES")
                 .IsRare()
@@ -204,13 +206,27 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("DANTOOINE_IRIAZ")
                 .AddItem("wild_meat", 10)
-                .AddItem("yot_bean", 5)
+                .AddItem("yotbean", 50)
                 .AddItem("wild_leg", 2);
 
             _builder.Create("DANTOOINE_IRIAZ_RARES")
                 .IsRare()
                 .AddItem("ruby", 99, 1, true)
                 .AddItem("emerald", 1, 1, true);
+        }
+        private void MedicalCache()
+        {
+            _builder.Create("DANTOOINE_JUNKPILES")
+                .AddItem("kolto_injection", 20)
+                .AddItem("medisyringes", 20)
+                .AddGold(10, 15);
+        }
+        
+        private void DantooineHay()
+        {
+            _builder.Create("DANTOOINE_HAY")
+                .AddItem("haybundle", 50);
+
         }
     }
 }

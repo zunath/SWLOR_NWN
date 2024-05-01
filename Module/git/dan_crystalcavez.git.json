@@ -81181,67 +81181,6 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Dantooine World Boss"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "DANTOOINE_WORLD_BOSS"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "dantooine_world_"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 1.541428310757299e-043
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 143.6607055664063
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 24.45129776000977
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -9.5367431640625e-007
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
           "value": {
             "0": ""
           }
@@ -81408,7 +81347,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 19.49241256713867
+          "value": 151.9457244873047
         },
         "YOrientation": {
           "type": "float",
@@ -81416,11 +81355,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 104.7441940307617
+          "value": 29.51273727416992
         },
         "ZPosition": {
           "type": "float",
-          "value": -1.7508864402771e-007
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -81660,7 +81599,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 109.0433349609375
+          "value": 130.7690277099609
         },
         "YOrientation": {
           "type": "float",
@@ -81668,7 +81607,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 76.61691284179688
+          "value": 131.1524505615234
         },
         "ZPosition": {
           "type": "float",
@@ -81723,7 +81662,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 130.7690277099609
+          "value": 109.0433349609375
         },
         "YOrientation": {
           "type": "float",
@@ -81731,11 +81670,133 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 131.1524505615234
+          "value": 76.61691284179688
         },
         "ZPosition": {
           "type": "float",
           "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dantooine World Boss"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DANTOOINE_WORLD_BOSS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dantooine_world_"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.541428310757299e-043
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 143.6607055664063
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 24.45129776000977
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -9.5367431640625e-007
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 2
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dantooine World Boss"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DANTOOINE_WORLD_BOSS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dantooine_world_"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-039
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 56.03936767578125
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 11.77439117431641
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
         }
       }
     ]

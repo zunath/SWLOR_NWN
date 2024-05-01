@@ -1080,6 +1080,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             Space.RestoreHull(target, Space.GetShipStatus(target), amount);
                             Space.RestoreShield(target, Space.GetShipStatus(target), amount);
                             Space.RestoreCapacitor(target, Space.GetShipStatus(target), amount);
+                        } 
+                        else if (Space.GetShipStatus(target) != null && args[0] == null)
+                        {
+                            var targetStatus = Space.GetShipStatus(target);
+                            targetStatus.Capacitor = targetStatus.MaxCapacitor;
+                            targetStatus.Hull = targetStatus.MaxHull;
+                            targetStatus.Shield = targetStatus.MaxShield;
                         }
                     }
                 });

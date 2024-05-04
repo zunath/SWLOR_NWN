@@ -236,7 +236,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var skills = new GuiBindingList<GuiComboEntry>();
             skills.Add(new GuiComboEntry("<All Skills>", 0));
-            foreach (var (type, detail) in Skill.GetActiveCraftingSkills())
+
+            var set = _mode == RecipesUIMode.Research 
+                ? Skill.GetActiveResearchableCraftingSkills() 
+                : Skill.GetActiveCraftingSkills();
+
+            foreach (var (type, detail) in set)
             {
                 skills.Add(new GuiComboEntry(detail.Name, (int)type));
             }
@@ -274,18 +279,40 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var skill = (SkillType)SelectedSkillId;
                 var category = (RecipeCategoryType)SelectedCategoryId;
-                recipes = Craft.GetRecipesBySkillAndCategory(skill, category);
+                if (_mode == RecipesUIMode.Research)
+                {
+                    recipes = Craft.GetResearchableRecipesBySkillAndCategory(skill, category);
+                }
+                else
+                {
+                    recipes = Craft.GetRecipesBySkillAndCategory(skill, category);
+                }
             }
             // Only skill selected
             else if (SelectedSkillId > 0)
             {
                 var skill = (SkillType)SelectedSkillId;
-                recipes = Craft.GetAllRecipesBySkill(skill);
+
+                if (_mode == RecipesUIMode.Research)
+                {
+                    recipes = Craft.GetAllResearchableRecipesBySkill(skill);
+                }
+                else
+                {
+                    recipes = Craft.GetAllRecipesBySkill(skill);
+                }
             }
             // Neither filters selected
             else
             {
-                recipes = Craft.GetAllRecipes();
+                if (_mode == RecipesUIMode.Research)
+                {
+                    recipes = Craft.GetAllResearchableRecipes();
+                }
+                else
+                {
+                    recipes = Craft.GetAllRecipes();
+                }
             }
 
             // Search text filter
@@ -430,8 +457,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (_currentRecipeIndex <= -1)
                     return;
 
+                var recipeType = _recipeTypes[_currentRecipeIndex];
+                var recipe = Craft.GetRecipe(recipeType);
+
+                if (recipe.EnhancementType != RecipeEnhancementType.Weapon &&
+                    recipe.EnhancementType != RecipeEnhancementType.Armor &&
+                    recipe.EnhancementType != RecipeEnhancementType.Food)
+                {
+                    SendMessageToPC(Player, $"Cannot research that recipe type.");
+                    return;
+                }
+
                 var propertyId = Property.GetPropertyId(TetherObject);
-                var payload = new ResearchPayload(propertyId, OBJECT_INVALID, _recipeTypes[_currentRecipeIndex]);
+                var payload = new ResearchPayload(propertyId, OBJECT_INVALID, recipeType);
                 Gui.TogglePlayerWindow(Player, GuiWindowType.Research, payload, TetherObject);
             }
         };

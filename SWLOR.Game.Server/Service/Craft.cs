@@ -33,7 +33,11 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>> _recipesBySkillAndCategory = new();
         private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, RecipeCategoryAttribute>> _categoriesBySkill = new();
         private static readonly Dictionary<EnhancementSubType, EnhancementSubTypeAttribute> _enhancementSubTypes = new();
-        
+
+        private static readonly Dictionary<RecipeType, RecipeDetail> _researchableRecipes = new();
+        private static readonly Dictionary<SkillType, Dictionary<RecipeType, RecipeDetail>> _researchableRecipesBySkill = new();
+        private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>> _researchableRecipesBySkillAndCategory = new();
+
         private static readonly RecipeLevelChart _levelChart = new();
         private static readonly HashSet<string> _componentResrefs = new();
 
@@ -107,13 +111,25 @@ namespace SWLOR.Game.Server.Service
                         continue;
                     }
 
+                    var isResearchable = IsResearchableRecipe(recipe);
+
                     _recipes[recipeType] = recipe;
+                    if (isResearchable)
+                        _researchableRecipes[recipeType] = recipe;
+
                     UpdateCraftingStatus(recipe);
 
                     // Organize recipes by skill.
                     if (!_recipesBySkill.ContainsKey(recipe.Skill))
                         _recipesBySkill[recipe.Skill] = new Dictionary<RecipeType, RecipeDetail>();
                     _recipesBySkill[recipe.Skill][recipeType] = recipe;
+
+                    if (isResearchable)
+                    {
+                        if (!_researchableRecipesBySkill.ContainsKey(recipe.Skill))
+                            _researchableRecipesBySkill[recipe.Skill] = new Dictionary<RecipeType, RecipeDetail>();
+                        _researchableRecipesBySkill[recipe.Skill][recipeType] = recipe;
+                    }
 
                     // Organize recipe by skill and category.
                     if(!_recipesBySkillAndCategory.ContainsKey(recipe.Skill))
@@ -123,6 +139,18 @@ namespace SWLOR.Game.Server.Service
                         _recipesBySkillAndCategory[recipe.Skill][recipe.Category] = new Dictionary<RecipeType, RecipeDetail>();
 
                     _recipesBySkillAndCategory[recipe.Skill][recipe.Category][recipeType] = recipe;
+
+                    if (isResearchable)
+                    {
+                        if(!_researchableRecipesBySkillAndCategory.ContainsKey(recipe.Skill))
+                            _researchableRecipesBySkillAndCategory[recipe.Skill] = new Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>();
+
+                        if (!_researchableRecipesBySkillAndCategory[recipe.Skill].ContainsKey(recipe.Category))
+                            _researchableRecipesBySkillAndCategory[recipe.Skill][recipe.Category] = new Dictionary<RecipeType, RecipeDetail>();
+
+                        _researchableRecipesBySkillAndCategory[recipe.Skill][recipe.Category][recipeType] = recipe;
+                    }
+
 
                     // Organize categories by skill based on whether there are any recipes under that category.
                     if (recipe.IsActive)
@@ -144,6 +172,13 @@ namespace SWLOR.Game.Server.Service
             }
             
             Console.WriteLine($"Loaded {_recipes.Count} recipes.");
+        }
+
+        private static bool IsResearchableRecipe(RecipeDetail recipe)
+        {
+            return recipe.EnhancementType == RecipeEnhancementType.Weapon ||
+                   recipe.EnhancementType == RecipeEnhancementType.Armor ||
+                   recipe.EnhancementType == RecipeEnhancementType.Food;
         }
 
         private static void CacheEnhancementSubTypes()
@@ -251,9 +286,19 @@ namespace SWLOR.Game.Server.Service
             return _recipes;
         }
 
+        public static Dictionary<RecipeType, RecipeDetail> GetAllResearchableRecipes()
+        {
+            return _researchableRecipes;
+        }
+
         public static Dictionary<RecipeType, RecipeDetail> GetAllRecipesBySkill(SkillType skill)
         {
             return _recipesBySkill[skill];
+        }
+
+        public static Dictionary<RecipeType, RecipeDetail> GetAllResearchableRecipesBySkill(SkillType skill)
+        {
+            return _researchableRecipesBySkill[skill];
         }
 
         /// <summary>
@@ -271,6 +316,23 @@ namespace SWLOR.Game.Server.Service
                 return new Dictionary<RecipeType, RecipeDetail>();
 
             return _recipesBySkillAndCategory[skill][category].ToDictionary(x => x.Key, y => y.Value);
+        }
+
+        /// <summary>
+        /// Retrieves all of the researchable recipes associated with a skill and category.
+        /// </summary>
+        /// <param name="skill">The skill to search by.</param>
+        /// <param name="category">The category to search by.</param>
+        /// <returns></returns>
+        public static Dictionary<RecipeType, RecipeDetail> GetResearchableRecipesBySkillAndCategory(SkillType skill, RecipeCategoryType category)
+        {
+            if (!_researchableRecipesBySkillAndCategory.ContainsKey(skill))
+                return new Dictionary<RecipeType, RecipeDetail>();
+
+            if (!_researchableRecipesBySkillAndCategory[skill].ContainsKey(category))
+                return new Dictionary<RecipeType, RecipeDetail>();
+
+            return _researchableRecipesBySkillAndCategory[skill][category].ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>

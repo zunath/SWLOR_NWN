@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             public int EnhancementSlots { get; set; }
             public int LicensedRunsMinimum { get; set; }
             public int LicensedRunsMaximum { get; set; }
+            public int CurrentLicensedRuns { get; set; }
             public int TimeReduction { get; set; }
             public int ItemBonuses { get; set; }
             public List<ItemProperty> GuaranteedBonuses { get; set; }
@@ -161,6 +162,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 EnhancementSlots = blueprint.EnhancementSlots,
                 LicensedRunsMinimum = licensedRunsMinimum,
                 LicensedRunsMaximum = licensedRunsMaximum,
+                CurrentLicensedRuns = blueprint.LicensedRuns,
                 TimeReduction = blueprint.TimeReduction,
                 ItemBonuses = blueprint.ItemBonuses,
                 GuaranteedBonuses = blueprint.GuaranteedBonuses,
@@ -189,7 +191,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Level = $"Level: {researchJob.CurrentLevel}";
                 CreditReduction = $"Credit Reduction: -{researchJob.CreditReduction}%";
                 EnhancementSlots = $"Enhancement Slots: {researchJob.EnhancementSlots}";
-                LicensedRuns = $"Licensed Runs: {researchJob.LicensedRunsMinimum}-{researchJob.LicensedRunsMaximum}";
+                LicensedRuns = researchJob.CurrentLicensedRuns == 0
+                    ? $"Licensed Runs: {researchJob.LicensedRunsMinimum}-{researchJob.LicensedRunsMaximum}"
+                    : $"Licensed Runs: {researchJob.CurrentLicensedRuns}";
                 TimeReduction = $"Time Reduction: -{researchJob.TimeReduction}%";
                 ItemBonuses = $"Item Bonuses: {researchJob.ItemBonuses}";
                 GuaranteedBonuses = Item.BuildItemPropertyList(researchJob.GuaranteedBonuses);
@@ -287,6 +291,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return $"Blueprint cannot be researched any further.";
             }
 
+            var playerId = GetObjectUUID(Player);
+            var maxConcurrentJobs = Perk.GetPerkLevel(Player, PerkType.ResearchProjects) + 1;
+            var dbQuery = new DBQuery<ResearchJob>()
+                .AddFieldSearch(nameof(ResearchJob.PlayerId), playerId, false);
+            var currentJobs = DB.Search(dbQuery).ToList();
+            var currentJobCount = currentJobs.Count(x => x.ParentPropertyId != _researchTerminalPropertyId);
+
+            if (currentJobCount >= maxConcurrentJobs)
+            {
+                return $"You may only have {maxConcurrentJobs} research job(s) active at one time.";
+            }
+
             return string.Empty;
         }
 
@@ -300,6 +316,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!string.IsNullOrWhiteSpace(jobValidation))
                     {
                         FloatingTextStringOnCreature(jobValidation, Player, false);
+                        ChangePartialView(PartialView, StartStageView);
                         return;
                     }
 

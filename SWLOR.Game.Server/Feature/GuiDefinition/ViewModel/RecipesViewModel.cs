@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -457,10 +458,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var recipe = Craft.GetRecipe(blueprint.Recipe);
-            if (recipe.Skill != _craftingFilter)
+
+            if (_mode == RecipesUIMode.Crafting)
             {
-                FloatingTextStringOnCreature("Blueprint cannot be crafted with this device.", Player, false);
-                return false;
+                if (recipe.Skill != _craftingFilter)
+                {
+                    FloatingTextStringOnCreature("Blueprint cannot be crafted with this device.", Player, false);
+                    return false;
+                }
+            }
+            else if (_mode == RecipesUIMode.Research)
+            {
+                var researchLevel = Perk.GetPerkLevel(Player, PerkType.Research);
+                var requiredLevel = recipe.Level / 10 + 1;
+                if (requiredLevel > 5)
+                    requiredLevel = 5;
+
+                if (researchLevel < requiredLevel)
+                {
+                    FloatingTextStringOnCreature($"Research level {requiredLevel} required.", Player, false);
+                    return false;
+                }
+
+                if (blueprint.Level >= Craft.MaxResearchLevel)
+                {
+                    FloatingTextStringOnCreature($"Blueprint cannot be researched any more.", Player, false);
+                    return false;
+                }
             }
 
             return true;
@@ -494,8 +518,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     
                     Gui.CloseWindow(Player, GuiWindowType.Recipes, Player);
 
+                    var blueprint = Craft.GetBlueprintDetails(item);
                     var propertyId = Property.GetPropertyId(TetherObject);
-                    var payload = new ResearchPayload(propertyId, item, RecipeType.Invalid);
+                    var payload = new ResearchPayload(propertyId, item, blueprint.Recipe);
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Research, payload, TetherObject);
                 });
             }

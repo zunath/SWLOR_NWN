@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
+using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -195,7 +196,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 CreditCost = $"Price: {researchJob.CreditCost}cr";
                 TimeCost = $"Time: {researchJob.TimeString}";
                 NextLevelBonus = $"Next Level: {GetUpgradeLevelBonus(researchJob.CurrentLevel + 1)}";
-
             }
             // In Progress
             else if (now < dbJob.DateCompleted)
@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var timeString = Time.GetTimeShortIntervals(deltaTime, false);
 
                 RecipeName = $"Recipe: {recipe.Quantity}x {Cache.GetItemNameByResref(recipe.Resref)}";
-                Level = $"Level: {recipe.Level}";
+                Level = $"Level: {dbJob.Level}";
                 JobProgress = progressPercentage > 1f ? 1f : progressPercentage;
                 JobProgressTime = $"Remaining: {timeString}";
             }
@@ -218,6 +218,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (now >= dbJob.DateCompleted)
             {
                 ChangePartialView(PartialView, StageCompleteView);
+
+                var recipe = Craft.GetRecipe(dbJob.Recipe);
+
+                RecipeName = $"Recipe: {recipe.Quantity}x {Cache.GetItemNameByResref(recipe.Resref)}";
+                Level = $"Level: {dbJob.Level}";
+                JobProgress = 1f;
+                JobProgressTime = "COMPLETE";
             }
         }
 
@@ -275,6 +282,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return $"Research level {researchJob.RequiredPerkLevel} required.";
             }
 
+            if (researchJob.CurrentLevel >= Craft.MaxResearchLevel)
+            {
+                return $"Blueprint cannot be researched any further.";
+            }
+
             return string.Empty;
         }
 
@@ -328,12 +340,146 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     DB.Delete<ResearchJob>(dbJob.Id);
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
-                    FloatingTextStringOnCreature("Research job canceled!", Player, false);
+                    FloatingTextStringOnCreature("Research job cancelled!", Player, false);
                 },
                 () =>
                 {
                     ChangePartialView(PartialView, InProgressView);
                 });
+        };
+
+        public Action ClickCompleteJob() => () =>
+        {
+            var dbJob = GetJob();
+            var recipe = Craft.GetRecipe(dbJob.Recipe);
+
+            bool isNewBlueprint;
+            uint item;
+            if (string.IsNullOrWhiteSpace(dbJob.SerializedItem))
+            {
+                item = CreateItemOnObject("blueprint", Player);
+                SetName(item, $"Blueprint: {Cache.GetItemNameByResref(recipe.Resref)}");
+                isNewBlueprint = true;
+            }
+            else
+            {
+                item = ObjectPlugin.Deserialize(dbJob.SerializedItem);
+                ObjectPlugin.AcquireItem(Player, item);
+                isNewBlueprint = false;
+            }
+
+            var blueprintDetails = Craft.GetBlueprintDetails(item);
+
+            void AddBlueprintBonus()
+            {
+                var innovateLevel = Perk.GetPerkLevel(Player, PerkType.Innovate);
+                var enhancementBonus = 0;
+                if (innovateLevel >= 1)
+                    enhancementBonus += 5;
+                if (innovateLevel >= 2)
+                    enhancementBonus += 10;
+                if (innovateLevel >= 3)
+                    enhancementBonus += 15;
+
+                var hasEnhancementBonus = blueprintDetails.EnhancementSlots > 0 && 
+                                          blueprintDetails.Level < Craft.MaxResearchLevel;
+
+                int[] weights;
+
+                if (hasEnhancementBonus)
+                {
+                    weights = new[]
+                    {
+                        310,
+                        420,
+                        420
+                    };
+                }
+                else
+                {
+                    weights = new[]
+                    {
+                        300,
+                        400,
+                        400,
+                        50 + enhancementBonus
+                    };
+                }
+                
+                var index = Random.GetRandomWeightedIndex(weights);
+
+                if (index == 0) // 0 = Licensed Runs
+                {
+                    blueprintDetails.LicensedRuns += Random.D3(1);
+                }
+                else if (index == 1) // 1 = Credit Reduction
+                {
+                    blueprintDetails.CreditReduction += Random.D10(1);
+                }
+                else if (index == 2) // 2 = Time Reduction
+                {
+                    blueprintDetails.TimeReduction += Random.D10(1);
+                }
+                else if (index == 3) // 3 = Enhancement Slot
+                {
+                    blueprintDetails.EnhancementSlots++;
+                }
+            }
+
+            void AddGuaranteedBonus()
+            {
+
+            }
+
+            blueprintDetails.Level++;
+            if (blueprintDetails.Level > Craft.MaxResearchLevel)
+                blueprintDetails.Level = Craft.MaxResearchLevel;
+
+            switch (blueprintDetails.Level)
+            {
+                case 1:
+                    blueprintDetails.ItemBonuses++;
+                    break;
+                case 2:
+                    blueprintDetails.LicensedRuns++;
+                    break;
+                case 3:
+                    AddBlueprintBonus();
+                    break;
+                case 4:
+                    blueprintDetails.LicensedRuns++;
+                    break;
+                case 5:
+                    AddBlueprintBonus();
+                    break;
+                case 6:
+                    blueprintDetails.ItemBonuses++;
+                    break;
+                case 7:
+                    AddGuaranteedBonus();
+                    break;
+                case 8:
+                    AddBlueprintBonus();
+                    break;
+                case 9:
+                    blueprintDetails.ItemBonuses++;
+                    break;
+                case 10:
+                    blueprintDetails.EnhancementSlots++;
+                    break;
+            }
+
+            if (isNewBlueprint)
+            {
+                var scientificNetworking = Perk.GetPerkLevel(Player, PerkType.ScientificNetworking);
+                blueprintDetails.LicensedRuns = Random.D3(1) + scientificNetworking;
+                blueprintDetails.Recipe = dbJob.Recipe;
+            }
+
+            Craft.SetBlueprintDetails(item, blueprintDetails);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
+
+            DB.Delete<ResearchJob>(dbJob.Id);
         };
     }
 }

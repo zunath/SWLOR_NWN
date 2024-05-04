@@ -18,8 +18,6 @@ namespace SWLOR.Game.Server.Service.CraftService
         public BlueprintDetail()
         {
             Recipe = RecipeType.Invalid;
-            Level = -1;
-            LicensedRuns = -1;
             GuaranteedBonuses = new List<ItemProperty>();
         }
     }

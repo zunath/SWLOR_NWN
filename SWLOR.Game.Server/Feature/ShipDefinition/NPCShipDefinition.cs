@@ -55,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_Fighter1")
@@ -103,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
         }
 
@@ -142,6 +144,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_Fighter2")
@@ -190,6 +193,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
         }
 
@@ -229,6 +233,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_Fighter3")
@@ -277,6 +282,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
         }
 
@@ -316,6 +322,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_Fighter4")
@@ -364,6 +371,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
         }
 
@@ -403,6 +411,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_Fighter5")
@@ -451,6 +460,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_Bomber6")
@@ -487,6 +497,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_Fighter6")
@@ -535,6 +546,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_SithCap2")
@@ -547,6 +559,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_SithCap3")
@@ -559,6 +572,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_SithCap4")
@@ -571,6 +585,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_SithCap5")
@@ -583,6 +598,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_SithCap6")
@@ -595,6 +611,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_SithCap7")
@@ -607,6 +624,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_MandoCap1")
@@ -619,6 +637,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_MandoCap2")
@@ -631,6 +650,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
 
             _builder.Create("NPC_MandoCap3")
@@ -643,6 +663,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)
                 .LowPowerNodes(8)
+                .CapitalShip()
                 .ShipConfigurationNodes(1);
         }
     }

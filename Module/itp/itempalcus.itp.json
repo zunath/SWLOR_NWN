@@ -19789,6 +19789,105 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Capital Class Engines: Corvette"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capc_eng"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Class Hull: Corvette"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capc_corhull"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Class Power Relay"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capc_power"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Class Power System: Corvette"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capc_powsys"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Class Reactor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capc_react"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Class Reactor Bay: Corvette"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capc_rebay"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Class Shield Generator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capc_shgen"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Class Structural Components"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capc_struc"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Class Thrusters"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capc_thrust"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Carnuinch"
                     },
                     "RESREF": {
@@ -33352,6 +33451,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Raw Ardanium"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ore_arda"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Raw Arkoxit"
                     },
                     "RESREF": {
@@ -33489,6 +33599,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "red_shell_shard"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Refined Ardanium"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ref_arda"
                     }
                   },
                   {
@@ -35601,6 +35722,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mtench_tentacle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thorilide Crystal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "thor_crys"
                     }
                   },
                   {
@@ -42309,11 +42441,154 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Assault Concussion Missile"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_modacmiss"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Assault Concussion Missile Launcher"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_modacml"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Aurek"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_aurek"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Basilisk"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_basilisk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Bol Rifle"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_bolrifle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Bulwark Shield Generator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_modbulwar"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Capital Class Dedicated System Computer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_capmodcpu"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Capital Class Reactor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_capreact"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Capital Class Thruster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_capthrust"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Capital Construction Components"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_capconst"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Capital Power Relay"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_cappwrlay"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Capital Shield Generator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_capshgen"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Capital Ship Advanced Thrusters"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_modadvthr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Capital Ship Technical Components"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_capmodtec"
                     }
                   },
                   {
@@ -42545,6 +42820,61 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_chitelec"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Corvette"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_corv"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Corvette Engines"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_corveng"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Corvette Hull"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_corvhull"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Corvette Power System"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_corvpsys"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Corvette Reactor Bay"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_corvrebay"
                     }
                   },
                   {
@@ -42815,6 +43145,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Laser Cannon Battery"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_modlasbat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Lightsaber Upgrade I"
                     },
                     "RESREF": {
@@ -43079,6 +43420,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Quad Laser Cannon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_modquadlz"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Ranged Boost I"
                     },
                     "RESREF": {
@@ -43101,6 +43453,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Redundant Shield Generator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_modredsgn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Reinforced Plating"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_modreplat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Repair Field Generator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_modrepfld"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Saberstaff Upgrade I"
                     },
                     "RESREF": {
@@ -43117,6 +43502,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_sithelec"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Sith Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_sfight"
                     }
                   },
                   {
@@ -43255,6 +43651,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Storm Cannon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_modstmcan"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Sturdiness I"
                     },
                     "RESREF": {
@@ -43277,6 +43684,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Blueprint: Targetting Array"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_modtarget"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blueprint: Training Sabers"
                     },
                     "RESREF": {
@@ -43293,6 +43711,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_trnsabstf"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint: Turbolasers"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_modturbo"
                     }
                   },
                   {
@@ -46947,6 +47376,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Advanced Thrusters"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_thrust1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault Concussion Missile"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "acm_ammo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Assault Concussion Missile Launcher I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "acm_launch_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Capacitor Booster"
                     },
                     "RESREF": {
@@ -47101,6 +47563,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Beam Cannon 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beamcannon1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Beam Cannon 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beamcannon2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Beam Cannon 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beamcannon3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Beam Cannon 4"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beamcannon4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Beam Cannon 5"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beamcannon5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bomber Configuration I"
                     },
                     "RESREF": {
@@ -47156,6 +47673,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bulwark Shield Generator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bulwarkgen"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Capacitor Booster I"
                     },
                     "RESREF": {
@@ -47194,6 +47722,94 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cap_boost_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Ship Deed: Chiss Trireme"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capdeed_chisst"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Ship Deed: Corellian Gunboat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capdeed_cgunb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Ship Deed: CZC Armored Transport"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capdeed_hvycor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Ship Deed: Hutt Corvette"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capdeed_huttco"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Ship Deed: Republic Thranta Corvette"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capdeed_rthran"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Ship Deed: Sith Thranta Corvette"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capdeed_sthran"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Ship Deed: Terminus Class Corsair"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capdeed_corsa"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Ship Deed: Thranta Corvette"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capdeed_nthran"
                     }
                   },
                   {
@@ -47249,6 +47865,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "item005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dedicated Targetting Sensor Array"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_target1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dual Turbolaser Cannon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "turbolas2"
                     }
                   },
                   {
@@ -47502,6 +48140,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hastejedi2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heavy Turbolaser Cannon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "turbolas1"
                     }
                   },
                   {
@@ -47816,6 +48465,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Laser Cannon Battery I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lasbattery1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mining Laser I"
                     },
                     "RESREF": {
@@ -47981,6 +48641,72 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Proton Bomb"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "proton_bomb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Proton Bomb Launcher"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "protbomblnch"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quad Laser Cannon Array"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_quadlas2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quad Laser Cannon Battery"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_quadlas3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quad Laser Cannons"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_quadlas1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Quad Turbolaser Cannon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "turbolas3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Reactive Armor 1"
                     },
                     "RESREF": {
@@ -48030,6 +48756,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "exp_armor_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Redundant Shield Generator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_shields1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Reinforced Plating"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_armor1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Repair Field Generator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "repairfield"
                     }
                   },
                   {
@@ -48146,6 +48905,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ship Deed: Aurek"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_aurek"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ship Deed: Basilisk"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_basi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ship Deed: Condor"
                     },
                     "RESREF": {
@@ -48162,6 +48943,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sdeed_consular"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ship Deed: Cutlass"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_cutla"
                     }
                   },
                   {
@@ -48256,6 +49048,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ship Deed: Sith Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_sfight"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ship Deed: Striker"
                     },
                     "RESREF": {
@@ -48272,6 +49075,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sdeed_throne"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Storm Cannon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "storm_cann"
                     }
                   },
                   {
@@ -48415,138 +49229,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "therm_amp_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tier 1 Capship Weapons"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cap_weps1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tier 10 Capship Weapons"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cap_weps10"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tier 11 Capship Weapons"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cap_weps11"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tier 12 Capship Weapons"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cap_weps12"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tier 2 Capship Weapons"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cap_weps2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tier 3 Capship Weapons"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cap_weps3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tier 4 Capship Weapons"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cap_weps4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tier 5 Capship Weapons"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cap_weps5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tier 6 Capship Weapons"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cap_weps6"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tier 7 Capship Weapons"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cap_weps7"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tier 8 Capship Weapons"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cap_weps8"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tier 9 Capship Weapons"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cap_weps9"
                     }
                   },
                   {

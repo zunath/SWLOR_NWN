@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int ExplosiveDefense { get; set; }
         public int EMDefense { get; set; }
         public int Industrial { get; set; }
+        public bool CapitalShip { get; set; }
         public DateTime GlobalRecast { get; set; }
 
         /// <summary>

@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int EMDefense { get; set; }
         public int IndustryBonus { get; set; }
         public bool HasDroidBay { get; set; }
+        public bool CapitalShip { get; set; }
 
         public Dictionary<PerkType, int> RequiredPerks { get; set; }
 

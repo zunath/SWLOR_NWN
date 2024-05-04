@@ -646,6 +646,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 bonuses = 0.90f;
 
             price -= (int)(price * bonuses);
+            if (ship.Status.CapitalShip)
+            {
+                price *= 100;
+            }
 
             return price;
         }
@@ -1516,6 +1520,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
+                    if (moduleDetails.CapitalClassModule && !dbShip.Status.CapitalShip)
+                    {
+                        SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
+                        return;
+                    }
+
+                    if (!moduleDetails.CapitalClassModule && dbShip.Status.CapitalShip)
+                    {
+                        SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
+                        return;
+                    }
+
                     var moduleBonus = Space.GetModuleBonus(item);
                     dbShip.Status.HighPowerModules[slot] = new ShipStatus.ShipStatusModule
                     {
@@ -1585,6 +1601,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         SendMessageToPC(Player, "Only low-powered ship modules may be installed to this slot.");
                         return;
                     }
+
+                    if (moduleDetails.CapitalClassModule && !dbShip.Status.CapitalShip)
+                    {
+                        SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
+                        return;
+                    }
+
+                    if (!moduleDetails.CapitalClassModule && dbShip.Status.CapitalShip)
+                    {
+                        SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
+                        return;
+                    }
+
                     dbShip.Status.LowPowerModules[slot] = new ShipStatus.ShipStatusModule
                     {
                         ItemInstanceId = GetObjectUUID(item),
@@ -1653,6 +1682,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             SendMessageToPC(Player, "Only ship configuration modules may be installed to this slot.");
                             return;
                         }
+
+                        if (moduleDetails.CapitalClassModule && !dbShip.Status.CapitalShip)
+                        {
+                            SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
+                            return;
+                        }
+
+                        if (!moduleDetails.CapitalClassModule && dbShip.Status.CapitalShip)
+                        {
+                            SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
+                            return;
+                        }
+
                         dbShip.Status.ConfigurationModules[slot] = new ShipStatus.ShipStatusModule
                         {
                             ItemInstanceId = GetObjectUUID(item),

@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("t1platform")
                 .ItemTag("NPC_Platform1")
                 .ShipModule("config_bmb1")
-                .ShipModule("cap_weps1");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("t1cargo")
                 .ItemTag("NPC_Cargo1")
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("t1capital")
                 .ItemTag("NPC_Capital1")
                 .ShipModule("npc_cap1")
-                .ShipModule("cap_weps1");
+                .ShipModule("npc_quadlas1");
         }
 
         private void Tier2()
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t2platform")
                 .ItemTag("NPC_Platform2")
-                .ShipModule("cap_weps2");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("t2cargo")
                 .ItemTag("NPC_Cargo2")
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("t2capital")
                 .ItemTag("NPC_Capital2")
                 .ShipModule("npc_cap2")
-                .ShipModule("cap_weps2");
+                .ShipModule("npc_quadlas1");
         }
 
         private void Tier3()
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t3platform")
                 .ItemTag("NPC_Platform3")
-                .ShipModule("cap_weps3");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("t3cargo")
                 .ItemTag("NPC_Cargo3")
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t3capital")
                 .ItemTag("NPC_Capital3")
-                .ShipModule("cap_weps3");
+                .ShipModule("npc_quadlas1");
         }
 
         private void Tier4()
@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("NPC_Platform4")
                 .ItemTag("t4platform")
                 .ShipModule("con_hvy4")
-                .ShipModule("cap_weps4");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("t4cargo")
                 .ItemTag("NPC_Cargo4")
@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("t4capital")
                 .ItemTag("NPC_Capital4")
                 .ShipModule("npc_cap4")
-                .ShipModule("cap_weps4");
+                .ShipModule("npc_quadlas1");
         }
 
         private void Tier5()
@@ -255,7 +255,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("t5platform")
                 .ItemTag("NPC_Platform5")
                 .ShipModule("con_hvy5")
-                .ShipModule("cap_weps5");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("t5cargo")
                 .ItemTag("NPC_Cargo5")
@@ -267,7 +267,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t5capital")
                 .ItemTag("NPC_Capital5")
-                .ShipModule("cap_weps5");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("t6bomber")
                 .ItemTag("NPC_Bomber6")
@@ -302,7 +302,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("t6platform")
                 .ItemTag("NPC_Platform6")
                 .ShipModule("con_hvy6")
-                .ShipModule("cap_weps5");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("t6cargo")
                 .ItemTag("NPC_Cargo6")
@@ -315,52 +315,52 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("mandocap1")
                 .ItemTag("NPC_MandoCap1")
                 .ShipModule("con_cap3")
-                .ShipModule("cap_weps8");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("mandocap2")
                 .ItemTag("NPC_MandoCap2")
                 .ShipModule("con_cap6")
-                .ShipModule("cap_weps11");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("mandocap3")
                 .ItemTag("NPC_MandoCap3")
                 .ShipModule("con_cap7")
-                .ShipModule("cap_weps12");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("sithcap1")
                 .ItemTag("NPC_SithCap1")
                 .ShipModule("con_cap1")
-                .ShipModule("cap_weps6");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("sithcap2")
                 .ItemTag("NPC_SithCap2")
                 .ShipModule("con_cap2")
-                .ShipModule("cap_weps7");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("sithcap3")
                 .ItemTag("NPC_SithCap3")
                 .ShipModule("con_cap3")
-                .ShipModule("cap_weps8");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("sithcap4")
                 .ItemTag("NPC_SithCap4")
                 .ShipModule("con_cap4")
-                .ShipModule("cap_weps9");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("sithcap5")
                 .ItemTag("NPC_SithCap5")
                 .ShipModule("con_cap5")
-                .ShipModule("cap_weps10");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("sithcap6")
                 .ItemTag("NPC_SithCap6")
                 .ShipModule("con_cap6")
-                .ShipModule("cap_weps11");
+                .ShipModule("npc_quadlas1");
 
             _builder.Create("sithcap7")
                 .ItemTag("NPC_SithCap7")
                 .ShipModule("con_cap7")
-                .ShipModule("cap_weps12");
+                .ShipModule("pdlaser1");
         }
     }
 }

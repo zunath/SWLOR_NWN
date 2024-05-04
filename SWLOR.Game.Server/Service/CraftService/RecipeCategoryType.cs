@@ -124,6 +124,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         PetFood = 57,
         [RecipeCategory("Tool", true)]
         Tool = 58,
+        [RecipeCategory("Ship Component", true)]
+        ShipComponent = 59,
     }
 
     public class RecipeCategoryAttribute : Attribute

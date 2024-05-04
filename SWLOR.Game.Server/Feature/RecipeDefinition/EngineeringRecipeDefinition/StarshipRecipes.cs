@@ -412,6 +412,61 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("fiberp_high", 3)
                 .Component("elec_high", 3);
 
+            // Cutlass
+            _builder.Create(RecipeType.Cutlass, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("sdeed_cutla")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
+                .Component("ref_gostian", 5)
+                .Component("diamond", 3)
+                .Component("fiberp_high", 3)
+                .Component("elec_high", 3);
+
+            // Basilisk
+            _builder.Create(RecipeType.BasiliskWarDroid, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("sdeed_basi")
+                .Level(50)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
+                .Component("ref_gostian", 5)
+                .Component("diamond", 3)
+                .Component("fiberp_high", 3)
+                .Component("elec_high", 3);
+
+            // Aurek Strikefighter
+            _builder.Create(RecipeType.AurekStrikefighter, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("sdeed_aurek")
+                .Level(50)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
+                .Component("ref_gostian", 5)
+                .Component("diamond", 3)
+                .Component("fiberp_high", 3)
+                .Component("elec_high", 3);
+
+            // Sith Fighter
+            _builder.Create(RecipeType.SithFighter, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("sdeed_sfight")
+                .Level(50)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
+                .Component("ref_gostian", 5)
+                .Component("diamond", 3)
+                .Component("fiberp_high", 3)
+                .Component("elec_high", 3);
+
             // Ship Missiles x25
             _builder.Create(RecipeType.Missile25, SkillType.Engineering)
                 .Category(RecipeCategoryType.Starship)
@@ -483,6 +538,86 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("diamond", 1)
                 .Component("fiberp_high", 1)
                 .Component("elec_high", 1);
+
+            // Republic Thranta
+            _builder.Create(RecipeType.CorvetteRepThranta, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("capdeed_nthran")
+                .Level(53)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+
+            // Sith Thranta
+            _builder.Create(RecipeType.CorvetteSithThranta, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("capdeed_nthran")
+                .Level(53)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+
+            // Neutral Thranta
+            _builder.Create(RecipeType.CorvetteNeutThranta, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("capdeed_nthran")
+                .Level(53)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+
+            // Terminus Corsair
+            _builder.Create(RecipeType.CorvetteTerminus, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("capdeed_nthran")
+                .Level(53)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+
+            // Hutt Corvette
+            _builder.Create(RecipeType.CorvetteHutt, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("capdeed_nthran")
+                .Level(53)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+
+            // CZC Armored Transport
+            _builder.Create(RecipeType.CorvetteArmoredTransport, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("capdeed_nthran")
+                .Level(53)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+
+            // Chiss Trireme
+            _builder.Create(RecipeType.CorvetteChissTrireme, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("capdeed_nthran")
+                .Level(53)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+
+            // Corellian Gunboat
+            _builder.Create(RecipeType.CorvetteCorellian, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("capdeed_nthran")
+                .Level(53)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
         }
     }
 }

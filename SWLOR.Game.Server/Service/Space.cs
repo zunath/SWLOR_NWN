@@ -1507,6 +1507,74 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Applies damage to a ship target's armor only. This bypasses shields.
+        /// When hull reaches zero, the ship will explode.
+        /// </summary>
+        /// <param name="attacker">The attacking ship</param>
+        /// <param name="target">The defending, targeted ship</param>
+        /// <param name="amount">The amount of damage to apply to the target.</param>
+        public static void ApplyHullDamage(uint attacker, uint target, int amount)
+        {
+            if (amount < 0) return;
+
+            var targetShipStatus = GetShipStatus(target);
+
+            if (targetShipStatus == null)
+                return;
+
+            if (targetShipStatus.Hull <= 0)
+            {
+                targetShipStatus.Hull -= amount;
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);
+            }
+
+            // Safety clamping
+            if (targetShipStatus.Hull < 0)
+            targetShipStatus.Hull = 0;
+
+            // Apply death if hull has reached zero. Shields are reduced to 0 in this instance as well.
+            if (targetShipStatus.Hull <= 0)
+            {
+                targetShipStatus.Shield = 0;
+                AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target));
+                ClearCurrentTarget(attacker);
+            }
+            else
+            {
+                if (GetIsPC(target))
+                {
+                    var targetPlayerId = GetObjectUUID(target);
+                    var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
+                    var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
+                    var instance = Property.GetRegisteredInstance(dbPlayerShip.PropertyId);
+                    var location = Location(instance.Area, Vector3.Zero, 0.0f);
+
+                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
+
+                    dbPlayerShip.Status.Shield = targetShipStatus.Shield;
+                    dbPlayerShip.Status.Hull = targetShipStatus.Hull;
+
+                    DB.Set(dbPlayerShip);
+                    ExecuteScript("pc_shld_adjusted", target);
+                    ExecuteScript("pc_hull_adjusted", target);
+                }
+                else
+                {
+                    // Update NPC cache.
+                    _shipNPCs[target] = targetShipStatus;
+                }
+            }
+
+            // Notify nearby players of damage taken by target.
+            Messaging.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage directly to hull of {GetName(target)}.");
+
+            if (GetIsPC(attacker))
+                ExecuteScript("pc_target_upd", attacker);
+
+        }
+
+
+        /// <summary>
         /// Applies death to a creature.
         /// If this is a PC:
         ///     - The ship modules will either drop or be destroyed.
@@ -1667,7 +1735,7 @@ namespace SWLOR.Game.Server.Service
                 AssignCommand(creature, () =>
                 {
                     ClearAllActions();
-                    ActionMoveAwayFromObject(target, true, 10f);
+                    ActionMoveAwayFromObject(target, true, 15f);
                 });
 
                 // Determine which module(s) to activate
@@ -1676,7 +1744,8 @@ namespace SWLOR.Game.Server.Service
                 {
                     var shipModuleDetail = _shipModules[shipModule.ItemTag];
                     var useModule = false;
-                    if (shipModuleDetail.Type == ShipModuleType.ShieldRepairer)
+                    if (shipModuleDetail.Type == ShipModuleType.ShieldRepairer ||
+                             shipModuleDetail.Type == ShipModuleType.BulwarkShieldGenerator)
                     {
                         var shieldPointsLost = shipStatus.MaxShield - shipStatus.Shield;
                         if (shieldPointsLost >= 8)
@@ -1684,7 +1753,8 @@ namespace SWLOR.Game.Server.Service
                             useModule = true;
                         }
                     }
-                    else if(shipModuleDetail.Type == ShipModuleType.HullRepairer)
+                    else if(shipModuleDetail.Type == ShipModuleType.HullRepairer ||
+                             shipModuleDetail.Type == ShipModuleType.RepairFieldGenerator)
                     {
                         var hullPointsLost = shipStatus.MaxHull - shipStatus.Hull;
                         if (hullPointsLost >= 6)
@@ -1692,10 +1762,14 @@ namespace SWLOR.Game.Server.Service
                             useModule = true;
                         }
                     }
-                    else if (shipModuleDetail.Type == ShipModuleType.CombatLaser ||
-                             shipModuleDetail.Type == ShipModuleType.IonCannon ||
+                    else if (shipModuleDetail.Type == ShipModuleType.LaserBattery ||
+                             shipModuleDetail.Type == ShipModuleType.AssaultConcussionMissile ||
+                             shipModuleDetail.Type == ShipModuleType.StormCannon ||
+                             shipModuleDetail.Type == ShipModuleType.QuadLaser ||
+                             shipModuleDetail.Type == ShipModuleType.ProtonBomb ||
                              shipModuleDetail.Type == ShipModuleType.Missile ||
-                             shipModuleDetail.Type == ShipModuleType.CapitalWeapons)
+                             shipModuleDetail.Type == ShipModuleType.IonCannon ||
+                             shipModuleDetail.Type == ShipModuleType.CombatLaser)
                     {
                         useModule = true;
                     }

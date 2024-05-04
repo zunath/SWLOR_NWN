@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -12,6 +15,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal class ResearchViewModel: GuiViewModelBase<ResearchViewModel, ResearchPayload>
     {
+        private class ResearchJobDetails
+        {
+            public int Quantity { get; set; }
+            public string RecipeName { get; set; }
+            public int CurrentLevel { get; set; }
+            public int CreditReduction { get; set; }
+            public int EnhancementSlots { get; set; }
+            public int LicensedRunsMinimum { get; set; }
+            public int LicensedRunsMaximum { get; set; }
+            public int TimeReduction { get; set; }
+            public int ItemBonuses { get; set; }
+            public List<ItemProperty> GuaranteedBonuses { get; set; }
+            public int CreditCost { get; set; }
+            public int TimeCost { get; set; }
+            public int RequiredPerkLevel { get; set; }
+
+            public string TimeString
+            {
+                get
+                {
+                    var timeSpan = TimeSpan.FromSeconds(TimeCost);
+                    return Time.GetTimeShortIntervals(timeSpan, false);
+                }
+            }
+        }
+
         public const string PartialView = "PARTIAL_VIEW";
         public const string StartStageView = "START_STAGE_VIEW";
         public const string InProgressView = "IN_PROGRESS_VIEW";
@@ -87,6 +116,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public float JobProgress
+        {
+            get => Get<float>();
+            set => Set(value);
+        }
+
+        public string JobProgressTime
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         private ResearchJob GetJob()
         {
             var query = new DBQuery<ResearchJob>()
@@ -97,6 +138,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return dbJob;
         }
 
+        private ResearchJobDetails BuildResearchJobDetails(RecipeType recipeType, uint blueprintItem)
+        {
+            var recipe = Craft.GetRecipe(recipeType);
+            var blueprint = Craft.GetBlueprintDetails(blueprintItem);
+            var currentLevel = blueprint.Level <= 0 ? 0 : blueprint.Level;
+            var licensedRunsMinimum = 1 + Perk.GetPerkLevel(Player, PerkType.ScientificNetworking);
+            var licensedRunsMaximum = licensedRunsMinimum + 2;
+            var creditCost = Craft.CalculateBlueprintResearchCreditCost(_recipeType, currentLevel + 1, blueprint.CreditReduction);
+            var timeCost = Craft.CalculateBlueprintResearchSeconds(_recipeType, currentLevel + 1, blueprint.TimeReduction);
+            var perkLevel = recipe.Level / 10 + 1;
+            if (perkLevel > 5)
+                perkLevel = 5;
+
+            return new ResearchJobDetails
+            {
+                Quantity = recipe.Quantity,
+                RecipeName = Cache.GetItemNameByResref(recipe.Resref),
+                CurrentLevel = currentLevel,
+                CreditReduction = blueprint.CreditReduction,
+                EnhancementSlots = blueprint.EnhancementSlots,
+                LicensedRunsMinimum = licensedRunsMinimum,
+                LicensedRunsMaximum = licensedRunsMaximum,
+                TimeReduction = blueprint.TimeReduction,
+                ItemBonuses = blueprint.ItemBonuses,
+                GuaranteedBonuses = blueprint.GuaranteedBonuses,
+                CreditCost = creditCost,
+                TimeCost = timeCost,
+                RequiredPerkLevel = perkLevel
+            };
+        }
+
         protected override void Initialize(ResearchPayload initialPayload)
         {
             _researchTerminalPropertyId = initialPayload.PropertyId;
@@ -104,42 +176,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _recipeType = initialPayload.SelectedRecipe;
 
             var now = DateTime.UtcNow;
-            var job = GetJob();
+            var dbJob = GetJob();
 
             // New Job
-            if (job == null)
+            if (dbJob == null)
             {
-                var recipe = Craft.GetRecipe(_recipeType);
-                var blueprint = Craft.GetBlueprintDetails(_blueprintItem);
-                const int CurrentLevel = 0;
-                var licensedRunsMinimum = 1 + Perk.GetPerkLevel(Player, PerkType.ScientificNetworking);
-                var licensedRunsMaximum = licensedRunsMinimum + 2;
-                var creditCost = Craft.CalculateBlueprintResearchCreditCost(_recipeType, CurrentLevel+1, blueprint.CreditReduction);
-                var timeCost = Craft.CalculateBlueprintResearchSeconds(_recipeType, CurrentLevel+1, blueprint.TimeReduction);
-                var timeSpan = TimeSpan.FromSeconds(timeCost);
-                var timeString = Time.GetTimeShortIntervals(timeSpan, false);
-
-                RecipeName = $"Recipe: {Cache.GetItemNameByResref(recipe.Resref)}";
-                Level = $"Level: {CurrentLevel}";
-                CreditReduction = $"Credit Reduction: -{blueprint.CreditReduction}%";
-                EnhancementSlots = $"Enhancement Slots: {blueprint.EnhancementSlots}";
-                LicensedRuns = $"Licensed Runs: {licensedRunsMinimum}-{licensedRunsMaximum}";
-                TimeReduction = $"Time Reduction: -{blueprint.TimeReduction}%";
-                ItemBonuses = $"Item Bonuses: {blueprint.ItemBonuses}";
-                GuaranteedBonuses = Item.BuildItemPropertyList(blueprint.GuaranteedBonuses);
-                CreditCost = $"Price: {creditCost}cr";
-                TimeCost = $"Time: {timeString}";
-                NextLevelBonus = $"Next Level: {GetUpgradeLevelBonus(CurrentLevel + 1)}";
-
                 ChangePartialView(PartialView, StartStageView);
+
+                var researchJob = BuildResearchJobDetails(_recipeType, _blueprintItem);
+                RecipeName = $"Recipe: {researchJob.Quantity}x {researchJob.RecipeName}";
+                Level = $"Level: {researchJob.CurrentLevel}";
+                CreditReduction = $"Credit Reduction: -{researchJob.CreditReduction}%";
+                EnhancementSlots = $"Enhancement Slots: {researchJob.EnhancementSlots}";
+                LicensedRuns = $"Licensed Runs: {researchJob.LicensedRunsMinimum}-{researchJob.LicensedRunsMaximum}";
+                TimeReduction = $"Time Reduction: -{researchJob.TimeReduction}%";
+                ItemBonuses = $"Item Bonuses: {researchJob.ItemBonuses}";
+                GuaranteedBonuses = Item.BuildItemPropertyList(researchJob.GuaranteedBonuses);
+                CreditCost = $"Price: {researchJob.CreditCost}cr";
+                TimeCost = $"Time: {researchJob.TimeString}";
+                NextLevelBonus = $"Next Level: {GetUpgradeLevelBonus(researchJob.CurrentLevel + 1)}";
+
             }
             // In Progress
-            else if (now < job.DateCompleted)
+            else if (now < dbJob.DateCompleted)
             {
                 ChangePartialView(PartialView, InProgressView);
+
+                var recipe = Craft.GetRecipe(dbJob.Recipe);
+                var delta = dbJob.DateCompleted - dbJob.DateStarted;
+                var currentDelta = now - dbJob.DateStarted;
+                var progressPercentage = (float)currentDelta.Ticks / (float)delta.Ticks;
+                var deltaTime = dbJob.DateCompleted - now;
+                var timeString = Time.GetTimeShortIntervals(deltaTime, false);
+
+                RecipeName = $"Recipe: {recipe.Quantity}x {Cache.GetItemNameByResref(recipe.Resref)}";
+                Level = $"Level: {recipe.Level}";
+                JobProgress = progressPercentage > 1f ? 1f : progressPercentage;
+                JobProgressTime = $"Remaining: {timeString}";
             }
             // Complete
-            else if (now >= job.DateCompleted)
+            else if (now >= dbJob.DateCompleted)
             {
                 ChangePartialView(PartialView, StageCompleteView);
             }
@@ -174,5 +250,90 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return "MAX";
             }
         }
+
+        private string ValidateJob()
+        {
+            var researchJob = BuildResearchJobDetails(_recipeType, _blueprintItem);
+
+            if (researchJob.CurrentLevel > 0 && !GetIsObjectValid(_blueprintItem))
+            {
+                return "Cannot locate blueprint.";
+            }
+
+            if (researchJob.CurrentLevel > 0 && GetItemPossessor(_blueprintItem) != Player)
+            {
+                return "Blueprint must be in your inventory.";
+            }
+
+            if (GetGold(Player) < researchJob.CreditCost)
+            {
+                return "Not enough credits!";
+            }
+
+            if (Perk.GetPerkLevel(Player, PerkType.Research) < researchJob.RequiredPerkLevel)
+            {
+                return $"Research level {researchJob.RequiredPerkLevel} required.";
+            }
+
+            return string.Empty;
+        }
+
+        public Action ClickStartJob() => () =>
+        {
+            var researchJob = BuildResearchJobDetails(_recipeType, _blueprintItem);
+            ShowModal($"This job will cost {researchJob.CreditCost}cr and take {researchJob.TimeString} to complete. Are you sure you want to start the job?",
+                () =>
+                {
+                    var jobValidation = ValidateJob();
+                    if (!string.IsNullOrWhiteSpace(jobValidation))
+                    {
+                        FloatingTextStringOnCreature(jobValidation, Player, false);
+                        return;
+                    }
+
+                    var now = DateTime.UtcNow;
+                    var dbResearchJob = new ResearchJob
+                    {
+                        ParentPropertyId = _researchTerminalPropertyId,
+                        PlayerId = GetObjectUUID(Player),
+                        DateStarted = now,
+                        DateCompleted = now.AddSeconds(researchJob.TimeCost),
+                        SerializedItem = GetIsObjectValid(_blueprintItem) ? ObjectPlugin.Serialize(_blueprintItem) : string.Empty,
+                        Level = researchJob.CurrentLevel,
+                        Recipe = _recipeType
+                    };
+                    DB.Set(dbResearchJob);
+
+                    AssignCommand(Player, () => TakeGoldFromCreature(researchJob.CreditCost, Player, true));
+                    DestroyObject(_blueprintItem);
+                    Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
+                }, () =>
+                {
+                    ChangePartialView(PartialView, StartStageView);
+                });
+        };
+
+        public Action ClickCancelJob() => () =>
+        {
+            ShowModal("Canceling the research job will forfeit all credits spent and progress made towards the next level. You will not be refunded! Are you sure you want to cancel this research job?",
+                () =>
+                {
+                    var dbJob = GetJob();
+
+                    if (!string.IsNullOrWhiteSpace(dbJob.SerializedItem))
+                    {
+                        var item = ObjectPlugin.Deserialize(dbJob.SerializedItem);
+                        ObjectPlugin.AcquireItem(Player, item);
+                    }
+
+                    DB.Delete<ResearchJob>(dbJob.Id);
+                    Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
+                    FloatingTextStringOnCreature("Research job canceled!", Player, false);
+                },
+                () =>
+                {
+                    ChangePartialView(PartialView, InProgressView);
+                });
+        };
     }
 }

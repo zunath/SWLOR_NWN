@@ -124,7 +124,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             row.AddSpacer();
                             row.AddButton()
-                                .SetText("Start Job");
+                                .SetText("Start Job")
+                                .BindOnClicked(model => model.ClickStartJob());
                             row.AddSpacer();
                         });
                     });
@@ -132,7 +133,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 .DefinePartialView(ResearchViewModel.InProgressView, group =>
                 {
+                    group.AddColumn(col =>
+                    {
+                        col.AddRow(row =>
+                        {
+                            row.AddLabel()
+                                .BindText(model => model.RecipeName)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHeight(20f);
+                        });
+                        col.AddRow(row =>
+                        {
+                            row.AddLabel()
+                                .BindText(model => model.Level)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                .SetHeight(20f);
+                        });
+                        col.AddRow(row =>
+                        {
+                            row.AddProgressBar()
+                                .BindValue(model => model.JobProgress)
+                                .SetColor(0, 120, 0)
+                                .AddDrawList(list =>
+                                {
+                                    list.AddText(text =>
+                                    {
+                                        text.SetColor(255, 255, 255);
+                                        text.SetBounds(20, 10, 400, 100);
+                                        text.BindText(model => model.JobProgressTime);
+                                    });
+                                });
+                        });
 
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer();
+
+                            row.AddButton()
+                                .SetText("Cancel Job")
+                                .BindOnClicked(model => model.ClickCancelJob());
+
+                            row.AddSpacer();
+                        });
+                    });
                 })
 
                 .DefinePartialView(ResearchViewModel.StageCompleteView, group =>

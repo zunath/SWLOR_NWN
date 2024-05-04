@@ -1,4 +1,5 @@
 ﻿using System;
+using SWLOR.Game.Server.Service.CraftService;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -15,5 +16,6 @@ namespace SWLOR.Game.Server.Entity
         
         public string SerializedItem { get; set; }
         public int Level { get; set; }
+        public RecipeType Recipe { get; set; }
     }
 }

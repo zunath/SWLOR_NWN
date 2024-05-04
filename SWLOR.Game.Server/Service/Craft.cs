@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
@@ -17,6 +18,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using ResearchJob = SWLOR.Game.Server.Entity.ResearchJob;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -662,8 +664,23 @@ namespace SWLOR.Game.Server.Service
         public static void UseResearchTerminal()
         {
             var player = GetLastUsedBy();
+            var playerId = GetObjectUUID(player);
             var terminal = OBJECT_SELF;
+            var researchLevel = Perk.GetPerkLevel(player, PerkType.Research);
+
+            if (researchLevel <= 0)
+            {
+                SendMessageToPC(player, $"Perk 'Research I' is required to use research terminals.");
+                return;
+            }
+            
             var propertyId = Property.GetPropertyId(terminal);
+
+            if (string.IsNullOrWhiteSpace(propertyId))
+            {
+                SendMessageToPC(player, $"This research terminal cannot be used.");
+                return;
+            }
 
             var query = new DBQuery<ResearchJob>()
                 .AddFieldSearch(nameof(ResearchJob.ParentPropertyId), propertyId, false);
@@ -677,8 +694,25 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                var payload = new ResearchPayload(propertyId, OBJECT_INVALID, RecipeType.Invalid);
-                Gui.TogglePlayerWindow(player, GuiWindowType.Research, payload, terminal);
+                if (dbJob.PlayerId != playerId)
+                {
+                    var now = DateTime.UtcNow;
+                    if (dbJob.DateCompleted > now)
+                    {
+                        var delta = dbJob.DateCompleted - now;
+                        var completionTime = Time.GetTimeLongIntervals(delta, false);
+                        SendMessageToPC(player, $"Another player's incubation job is active. This job will complete in: {completionTime}.");
+                    }
+                    else
+                    {
+                        SendMessageToPC(player, $"Another player's research job is active. This job has completed.");
+                    }
+                }
+                else
+                {
+                    var payload = new ResearchPayload(propertyId, OBJECT_INVALID, RecipeType.Invalid);
+                    Gui.TogglePlayerWindow(player, GuiWindowType.Research, payload, terminal);
+                }
             }
         }
         
@@ -819,6 +853,23 @@ namespace SWLOR.Game.Server.Service
         public static int CalculateBlueprintResearchSeconds(RecipeType recipe, int blueprintLevel, int reductionBonus)
         {
             return CalculateResearchCost(recipe, blueprintLevel, 400, reductionBonus * 0.01f);
+        }
+
+        /// <summary>
+        /// When a property is removed, also remove any associated research jobs.
+        /// </summary>
+        [NWNEventHandler("swlor_del_prop")]
+        public static void OnRemoveProperty()
+        {
+            var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
+            var dbQuery = new DBQuery<ResearchJob>()
+                .AddFieldSearch(nameof(ResearchJob.ParentPropertyId), propertyId, false);
+            var dbJobs = DB.Search(dbQuery).ToList();
+
+            foreach (var dbJob in dbJobs)
+            {
+                DB.Delete<ResearchJob>(dbJob.Id);
+            }
         }
     }
 }

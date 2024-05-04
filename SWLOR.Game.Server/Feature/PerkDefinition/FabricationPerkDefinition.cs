@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Research();
             ScientificNetworking();
             Innovate();
+            ResearchProjects();
 
             return _builder.Build();
         }
@@ -269,6 +270,22 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Increases the chance of adding an enhancement slot to a blueprint by 15.")
                 .Price(3)
                 .RequirementSkill(SkillType.Fabrication, 45);
+        }
+
+        private void ResearchProjects()
+        {
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.ResearchProjects)
+                .Name("Research Projects")
+
+                .AddPerkLevel()
+                .Description("Increases the maximum number of concurrent research jobs by 1, for a total of 2.")
+                .Price(2)
+                .RequirementSkill(SkillType.Fabrication, 25)
+
+                .AddPerkLevel()
+                .Description("Increases the maximum number of concurrent research jobs by 1, for a total of 3.")
+                .Price(3)
+                .RequirementSkill(SkillType.Fabrication, 50);
         }
     }
 }

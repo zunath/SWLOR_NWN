@@ -15,10 +15,5 @@ namespace SWLOR.Game.Server.Entity
         
         public string SerializedItem { get; set; }
         public int Level { get; set; }
-
-        public ResearchJob()
-        {
-            
-        }
     }
 }

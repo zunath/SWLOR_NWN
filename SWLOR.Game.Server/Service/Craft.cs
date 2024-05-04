@@ -6,21 +6,24 @@ using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Craft
     {
+        public const int MaxResearchLevel = 10;
+
         private static readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
         private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _allCategories = new();
         private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _activeCategories = new();
@@ -659,8 +662,24 @@ namespace SWLOR.Game.Server.Service
         public static void UseResearchTerminal()
         {
             var player = GetLastUsedBy();
-            var payload = new RecipesPayload(RecipesUIMode.Research, SkillType.Invalid);
-            Gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
+            var terminal = OBJECT_SELF;
+            var propertyId = Property.GetPropertyId(terminal);
+
+            var query = new DBQuery<ResearchJob>()
+                .AddFieldSearch(nameof(ResearchJob.ParentPropertyId), propertyId, false);
+            var dbJob = DB.Search(query)
+                .FirstOrDefault();
+
+            if (dbJob == null)
+            {
+                var payload = new RecipesPayload(RecipesUIMode.Research, SkillType.Invalid);
+                Gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, terminal);
+            }
+            else
+            {
+                var payload = new ResearchPayload(propertyId, OBJECT_INVALID, RecipeType.Invalid);
+                Gui.TogglePlayerWindow(player, GuiWindowType.Research, payload, terminal);
+            }
         }
         
         /// <summary>
@@ -752,24 +771,20 @@ namespace SWLOR.Game.Server.Service
             
         }
 
-        private static int CalculateCreditCost(uint blueprint, int baseConstant)
+        private static int CalculateResearchCost(RecipeType recipe, int blueprintLevel, int baseConstant, float reductionBonus)
         {
-            var blueprintDetail = GetBlueprintDetails(blueprint);
-            var recipeDetail = GetRecipe(blueprintDetail.Recipe);
-            var creditReduction = blueprintDetail.CreditReduction * 0.01f;
+            var recipeDetail = GetRecipe(recipe);
             var perkLevel = recipeDetail.Level / 10 + 1;
             if (perkLevel > 5)
                 perkLevel = 5;
 
-            var blueprintLevel = blueprintDetail.Level;
-
             var price = baseConstant * (Math.Pow(perkLevel, 2.2f) * Math.Pow(blueprintLevel, 2f));
             price += price * recipeDetail.ResearchCostModifier;
-            price -= creditReduction * price;
+            price -= reductionBonus * price;
 
             return (int)price;
         }
-        
+
         /// <summary>
         /// Calculates the credit cost to craft a blueprint.
         /// </summary>
@@ -777,27 +792,33 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The number of credits to charge the player to craft the item.</returns>
         public static int CalculateBlueprintCraftCreditCost(uint blueprint)
         {
-            return CalculateCreditCost(blueprint, 80);
+            var blueprintDetail = GetBlueprintDetails(blueprint);
+            var reductionBonus = blueprintDetail.CreditReduction * 0.01f;
+            return CalculateResearchCost(blueprintDetail.Recipe, blueprintDetail.Level, 80, reductionBonus);
         }
 
         /// <summary>
         /// Calculates the credit cost to research a blueprint.
         /// </summary>
-        /// <param name="blueprint">The blueprint to research.</param>
+        /// <param name="recipe">The recipe to research</param>
+        /// <param name="blueprintLevel">The level of the blueprint</param>
+        /// <param name="reductionBonus">The % reduction towards credit cost to research</param>
         /// <returns>The number of credits to charge the player to research the blueprint.</returns>
-        public static int CalculateBlueprintResearchCreditCost(uint blueprint)
+        public static int CalculateBlueprintResearchCreditCost(RecipeType recipe, int blueprintLevel, int reductionBonus)
         {
-            return CalculateCreditCost(blueprint, 200);
+            return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);
         }
 
         /// <summary>
         /// Calculates the number of seconds it takes to research a blueprint.
         /// </summary>
-        /// <param name="blueprint">The blueprint to research.</param>
+        /// <param name="recipe">The recipe to research</param>
+        /// <param name="blueprintLevel">The level of the blueprint</param>
+        /// <param name="reductionBonus">The % reduction towards credit cost to research</param>
         /// <returns>The number of seconds to wait before the blueprint is researched to the next level.</returns>
-        public static int CalculateBlueprintResearchSeconds(uint blueprint)
+        public static int CalculateBlueprintResearchSeconds(RecipeType recipe, int blueprintLevel, int reductionBonus)
         {
-            return CalculateCreditCost(blueprint, 400);
+            return CalculateResearchCost(recipe, blueprintLevel, 400, reductionBonus * 0.01f);
         }
     }
 }

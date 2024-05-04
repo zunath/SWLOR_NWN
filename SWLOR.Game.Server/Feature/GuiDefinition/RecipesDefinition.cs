@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row2.AddSpacer();
                                 row2.AddButton()
                                     .BindText(model => model.ActionButtonText)
-                                    .BindIsVisible(model => model.IsInCraftingMode)
+                                    .BindIsVisible(model => model.IsCraftOrResearchVisible)
                                     .BindIsEnabled(model => model.CanCraftOrResearchRecipe)
                                     .SetHeight(35f)
                                     .BindOnClicked(model => model.OnClickCraftOrResearch());

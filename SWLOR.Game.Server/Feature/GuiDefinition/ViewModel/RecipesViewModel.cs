@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
         
-        public bool IsInCraftingMode
+        public bool IsCraftOrResearchVisible
         {
             get => Get<bool>();
             set => Set(value);
@@ -192,14 +192,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _selectedBlueprintItem = OBJECT_INVALID;
             _craftingFilter = initialPayload?.Skill ?? SkillType.Invalid;
-            IsInCraftingMode = _mode == RecipesUIMode.Crafting && _craftingFilter != SkillType.Invalid;
+            
             ShowSelectBlueprint = _mode == RecipesUIMode.Crafting || _mode == RecipesUIMode.Research;
             IsSkillEnabled = _craftingFilter == SkillType.Invalid;
 
             if (_mode == RecipesUIMode.Crafting)
+            {
                 ActionButtonText = "Craft Item";
+                IsCraftOrResearchVisible = _craftingFilter != SkillType.Invalid;
+            }
             else if (_mode == RecipesUIMode.Research)
+            {
                 ActionButtonText = "Research";
+                IsCraftOrResearchVisible = true;
+            }
+            else
+            {
+                IsCraftOrResearchVisible = false;
+            }
 
             RecipeName = string.Empty;
             RecipeLevel = string.Empty;
@@ -302,7 +312,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var (type, detail) in recipes)
             {
-                var canCraft = Craft.CanPlayerCraftRecipe(Player, type);
+                var canCraft = _mode == RecipesUIMode.Research
+                    ? Craft.CanPlayerResearchRecipe(Player, type)
+                    : Craft.CanPlayerCraftRecipe(Player, type);
                 var name = $"{Cache.GetItemNameByResref(detail.Resref)} [Lvl. {detail.Level}]";
 
                 recipeNames.Add(name);
@@ -416,8 +428,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (_currentRecipeIndex <= -1)
                     return;
-                
-                var payload = new ResearchPayload(OBJECT_INVALID, _recipeTypes[_currentRecipeIndex]);
+
+                var propertyId = Property.GetPropertyId(TetherObject);
+                var payload = new ResearchPayload(propertyId, OBJECT_INVALID, _recipeTypes[_currentRecipeIndex]);
                 Gui.TogglePlayerWindow(Player, GuiWindowType.Research, payload, TetherObject);
             }
         };
@@ -481,7 +494,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     
                     Gui.CloseWindow(Player, GuiWindowType.Recipes, Player);
 
-                    var payload = new ResearchPayload(item, RecipeType.Invalid);
+                    var propertyId = Property.GetPropertyId(TetherObject);
+                    var payload = new ResearchPayload(propertyId, item, RecipeType.Invalid);
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Research, payload, TetherObject);
                 });
             }

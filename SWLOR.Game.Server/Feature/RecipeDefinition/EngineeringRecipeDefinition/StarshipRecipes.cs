@@ -298,7 +298,11 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
+                .Component("capc_corhull", 1)
+                .Component("cap_shgen", 2)
+                .Component("capc_powsys", 1)
+                .Component("capc_eng", 1);
 
             // Sith Thranta
             _builder.Create(RecipeType.CorvetteSithThranta, SkillType.Engineering)
@@ -308,7 +312,11 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
+                .Component("capc_corhull", 1)
+                .Component("cap_shgen", 2)
+                .Component("capc_powsys", 1)
+                .Component("capc_eng", 1);
 
             // Neutral Thranta
             _builder.Create(RecipeType.CorvetteNeutThranta, SkillType.Engineering)
@@ -318,7 +326,11 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
+                .Component("capc_corhull", 1)
+                .Component("cap_shgen", 2)
+                .Component("capc_powsys", 1)
+                .Component("capc_eng", 1);
 
             // Terminus Corsair
             _builder.Create(RecipeType.CorvetteTerminus, SkillType.Engineering)
@@ -328,7 +340,11 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
+                .Component("capc_corhull", 1)
+                .Component("cap_shgen", 2)
+                .Component("capc_powsys", 1)
+                .Component("capc_eng", 1);
 
             // Hutt Corvette
             _builder.Create(RecipeType.CorvetteHutt, SkillType.Engineering)
@@ -338,7 +354,11 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
+                .Component("capc_corhull", 1)
+                .Component("cap_shgen", 2)
+                .Component("capc_powsys", 1)
+                .Component("capc_eng", 1);
 
             // CZC Armored Transport
             _builder.Create(RecipeType.CorvetteArmoredTransport, SkillType.Engineering)
@@ -348,7 +368,11 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
+                .Component("capc_corhull", 1)
+                .Component("cap_shgen", 2)
+                .Component("capc_powsys", 1)
+                .Component("capc_eng", 1);
 
             // Chiss Trireme
             _builder.Create(RecipeType.CorvetteChissTrireme, SkillType.Engineering)
@@ -358,7 +382,11 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
+                .Component("capc_corhull", 1)
+                .Component("cap_shgen", 2)
+                .Component("capc_powsys", 1)
+                .Component("capc_eng", 1);
 
             // Corellian Gunboat
             _builder.Create(RecipeType.CorvetteCorellian, SkillType.Engineering)
@@ -368,7 +396,11 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(1)
                 .RequirementUnlocked()
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
+                .Component("capc_corhull", 1)
+                .Component("cap_shgen", 2)
+                .Component("capc_powsys", 1)
+                .Component("capc_eng", 1);
         }
     }
 }

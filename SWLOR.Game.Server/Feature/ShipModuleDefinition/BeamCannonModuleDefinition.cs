@@ -17,10 +17,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
             BeamCannon("beamcannon1", "Beam Cannon 1", "A stream of energy deals increasing damage with each successive hit. Starts at 3 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 3, 1, 1);
-            BeamCannon("beamcannon1", "Beam Cannon 2", "A stream of energy deals increasing damage with each successive hit. Starts at 6 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 6, 2, 1);
-            BeamCannon("beamcannon1", "Beam Cannon 3", "A stream of energy deals increasing damage with each successive hit. Starts at 9 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 9, 3, 1);
-            BeamCannon("beamcannon1", "Beam Cannon 4", "A stream of energy deals increasing damage with each successive hit. Starts at 12 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 12, 4, 2);
-            BeamCannon("beamcannon1", "Beam Cannon 5", "A stream of energy deals increasing damage with each successive hit. Starts at 15 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 15, 5, 2);
+            BeamCannon("beamcannon2", "Beam Cannon 2", "A stream of energy deals increasing damage with each successive hit. Starts at 6 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 6, 2, 1);
+            BeamCannon("beamcannon3", "Beam Cannon 3", "A stream of energy deals increasing damage with each successive hit. Starts at 9 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 9, 3, 1);
+            BeamCannon("beamcannon4", "Beam Cannon 4", "A stream of energy deals increasing damage with each successive hit. Starts at 12 DMG per tick and increases by 2 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 12, 4, 2);
+            BeamCannon("beamcannon5", "Beam Cannon 5", "A stream of energy deals increasing damage with each successive hit. Starts at 15 DMG per tick and increases by 2 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 15, 5, 2);
 
             return _builder.Build();
         }
@@ -45,7 +45,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
                 .Recast(12f)
                 .Capacitor(12)
-                .CapitalClassModule()
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     var attackBonus = activatorShipStatus.ThermalDamage;
@@ -68,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         0);
 
                     dmg += moduleBonus / 2;
-                    var beam = EffectVisualEffect(VisualEffect.Vfx_Beam_Holy);
+                    var beam = EffectBeam(VisualEffect.Vfx_Beam_Holy, activator, BodyNode.Chest);
                     var startingDMG = dmg;
 
                     for (int i = 0; i < 5; i++)
@@ -83,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             {
                                 AssignCommand(activator, () =>
                                 {
-                                    ApplyEffectToObject(DurationType.Instant, beam, target);
+                                    ApplyEffectToObject(DurationType.Temporary, beam, target, 0.2f);
                                     Space.ApplyShipDamage(activator, target, damage);
                                     dmg += tickIncrease;
                                 });
@@ -92,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             {
                                 AssignCommand(activator, () =>
                                 {
-                                    ApplyEffectToObject(DurationType.Instant, beam, target);
+                                    ApplyEffectToObject(DurationType.Temporary, beam, target, 0.2f);
                                     dmg = startingDMG;
                                 });
                             }

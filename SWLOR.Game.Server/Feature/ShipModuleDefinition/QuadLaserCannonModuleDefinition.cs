@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
             QuadLaserCannon("cap_quadlas1", "Quad Laser Cannons", "Quad Lasers", "Fires a series of four shots at a target doing 20 DMG each.", 20, 4);
-            QuadLaserCannon("cap_quadlas2", "Quad-Laser Cannon Array", "Quad Las. Array.", "Fires a series of five shots at a target doing 20 DMG each.", 20, 5);
-            QuadLaserCannon("cap_quadlas3", "Quad-Laser Cannon Battery", "Quad Las. Batt.", "Fires a series of six shots at a target doing 20 DMG each.", 20, 6);
+            QuadLaserCannon("cap_quadlas2", "Quad-Laser Cannon Array", "QLas Array", "Fires a series of five shots at a target doing 20 DMG each.", 20, 5);
+            QuadLaserCannon("cap_quadlas3", "Quad-Laser Cannon Battery", "QLas Battery", "Fires a series of six shots at a target doing 20 DMG each.", 20, 6);
 
             QuadLaserCannon("npc_quadlas1", "Tier 1 Quad Laser", "T1 Quad Lasers", "NPC Quad Lasers.", 5, 4);
             QuadLaserCannon("npc_quadlas2", "Tier 2 Quad Laser", "T2 Quad Lasers", "NPC Quad Lasers.", 7, 4);

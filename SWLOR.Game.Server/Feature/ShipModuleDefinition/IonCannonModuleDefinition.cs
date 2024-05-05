@@ -16,11 +16,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            IonCannon("ion_cann_b", "Basic Ion Cannon", "B. Ion Cann.", "Deals 12 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 1, 4, 18);
-            IonCannon("ion_cann_1", "Ion Cannon I", "Ion Cann. I", "Deals 20 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 2, 8, 26);
-            IonCannon("ion_cann_2", "Ion Cannon II", "Ion Cann. II", "Deals 28 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 3, 12, 34);
-            IonCannon("ion_cann_3", "Ion Cannon III", "Ion Cann. III", "Deals 36 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 4, 16, 42);
-            IonCannon("ion_cann_4", "Ion Cannon IV", "Ion Cann. IV", "Deals 44 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 5, 20, 50);
+            IonCannon("ion_cann_b", "Basic Ion Cannon", "B. Ion Cann.", "Deals 12 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 1, 4, 22);
+            IonCannon("ion_cann_1", "Ion Cannon I", "Ion Cann. I", "Deals 20 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 2, 8, 36);
+            IonCannon("ion_cann_2", "Ion Cannon II", "Ion Cann. II", "Deals 28 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 3, 12, 48);
+            IonCannon("ion_cann_3", "Ion Cannon III", "Ion Cann. III", "Deals 36 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 4, 16, 62);
+            IonCannon("ion_cann_4", "Ion Cannon IV", "Ion Cann. IV", "Deals 44 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 5, 20, 75);
 
             return _builder.Build();
         }

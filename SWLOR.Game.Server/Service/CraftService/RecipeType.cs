@@ -2475,5 +2475,8 @@
         AurekStrikefighter = 4783,
         SithFighter = 4784,
         Cutlass = 4785,
+        IndustryNexusConfig = 4786,
+        SkirmisherConfig = 4787,
+        WarshipConfig1 = 4788,
         }
 }

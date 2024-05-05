@@ -694,56 +694,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("elec_high", 2)
                 .Component("emerald", 4)
                 .Component("zinsiam", 4);
-
-            // Capital Class Hull: Corvette
-            _builder.Create(RecipeType.CorvetteHull, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
-                .Resref("capc_corhull")
-                .Level(52)
-                .Quantity(1)
-                .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
-
-            // Capital Class Power Relay
-            _builder.Create(RecipeType.CapitalPowerRelay, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
-                .Resref("capc_corhull")
-                .Level(52)
-                .Quantity(1)
-                .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
-
-            // Capital Class Power System: Corvette
-            _builder.Create(RecipeType.CapitalPowerRelay, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
-                .Resref("capc_powsys")
-                .Level(52)
-                .Quantity(1)
-                .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
-
-            // Capital Class Reactor Bay: Corvette
-            _builder.Create(RecipeType.CorvetteReactorBay, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
-                .Resref("Capital Class Reactor Bay: Corvette")
-                .Level(52)
-                .Quantity(1)
-                .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
-
-            // Capital Class Reactor
-            _builder.Create(RecipeType.CapitalReactor, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
-                .Resref("Capital Class Reactor Bay: Corvette")
-                .Level(52)
-                .Quantity(1)
-                .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2);
         }
     }
 }

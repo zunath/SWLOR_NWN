@@ -44,8 +44,19 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 2)
 				.Component("elec_ruined", 1);
 
-			// Basic EM Amplifier
-			_builder.Create(RecipeType.BasicEMAmplifier, SkillType.Engineering)
+            // Beam Cannon 1
+            _builder.Create(RecipeType.BeamCannon1, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("beamcannon1")
+                .Level(2)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Module, 1)
+                .Component("ref_tilarium", 2)
+                .Component("elec_ruined", 1);
+
+            // Basic EM Amplifier
+            _builder.Create(RecipeType.BasicEMAmplifier, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("em_amp_b")
 				.Level(7)
@@ -230,6 +241,50 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Module, 1)
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 1);
+
+            // Fighter Config 1
+            _builder.Create(RecipeType.FighterConfig1, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_fig1")
+                .Level(5)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Module, 1)
+                .Component("ref_tilarium", 3)
+                .Component("elec_ruined", 2);
+
+            // Bomber Config 1
+            _builder.Create(RecipeType.BomberConfig1, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_bmb1")
+                .Level(5)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Module, 1)
+                .Component("ref_tilarium", 3)
+                .Component("elec_ruined", 2);
+
+            // Interceptor Config 1
+            _builder.Create(RecipeType.InterceptorConfig1, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_int1")
+                .Level(5)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Module, 1)
+                .Component("ref_tilarium", 3)
+                .Component("elec_ruined", 2);
+
+            // Industrial Config 1
+            _builder.Create(RecipeType.IndustrialConfig1, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_ind1")
+                .Level(5)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Module, 1)
+                .Component("ref_tilarium", 3)
+                .Component("elec_ruined", 2);
         }
 
 		private void Tier2()
@@ -257,8 +312,19 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 2)
 				.Component("elec_flawed", 1);
 
-			//  EM Amplifier I
-			_builder.Create(RecipeType.EMAmplifier1, SkillType.Engineering)
+            // Beam Cannon 2
+            _builder.Create(RecipeType.BeamCannon2, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("beamcannon2")
+                .Level(12)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_currian", 2)
+                .Component("elec_flawed", 1);
+
+            //  EM Amplifier I
+            _builder.Create(RecipeType.EMAmplifier1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("em_amp_1")
 				.Level(17)
@@ -443,7 +509,51 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 1);
-		}
+
+            // Fighter Config 2
+            _builder.Create(RecipeType.FighterConfig2, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_fig2")
+                .Level(15)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_currian", 3)
+                .Component("elec_flawed", 2);
+
+            // Bomber Config 2
+            _builder.Create(RecipeType.BomberConfig2, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_bmb2")
+                .Level(15)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_currian", 3)
+                .Component("elec_flawed", 2);
+
+            // Interceptor Config 2
+            _builder.Create(RecipeType.InterceptorConfig2, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_int2")
+                .Level(15)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_currian", 3)
+                .Component("elec_flawed", 2);
+
+            // Industrial Config 2
+            _builder.Create(RecipeType.IndustrialConfig2, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_ind2")
+                .Level(15)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_currian", 3)
+                .Component("elec_flawed", 2);
+        }
 
 		private void Tier3()
         {
@@ -470,8 +580,19 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 2)
 				.Component("elec_good", 1);
 
-			//  EM Amplifier II
-			_builder.Create(RecipeType.EMAmplifier2, SkillType.Engineering)
+            // Beam Cannon 3
+            _builder.Create(RecipeType.BeamCannon3, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("beamcannon3")
+                .Level(22)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_idailia", 2)
+                .Component("elec_good", 1);
+
+            //  EM Amplifier II
+            _builder.Create(RecipeType.EMAmplifier2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("em_amp_2")
 				.Level(27)
@@ -656,7 +777,51 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 1);
-		}
+
+            // Fighter Config 3
+            _builder.Create(RecipeType.FighterConfig3, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_fig3")
+                .Level(25)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_idailia", 3)
+                .Component("elec_good", 2);
+
+            // Bomber Config 3
+            _builder.Create(RecipeType.BomberConfig3, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_bmb3")
+                .Level(25)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_idailia", 3)
+                .Component("elec_good", 2);
+
+            // Interceptor Config 3
+            _builder.Create(RecipeType.InterceptorConfig3, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_int3")
+                .Level(25)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_idailia", 3)
+                .Component("elec_good", 2);
+
+            // Industrial Config 3
+            _builder.Create(RecipeType.IndustrialConfig3, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_ind3")
+                .Level(25)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_idailia", 3)
+                .Component("elec_good", 2);
+        }
 
 		private void Tier4()
         {
@@ -683,8 +848,19 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 2)
 				.Component("elec_imperfect", 1);
 
-			//  EM Amplifier III
-			_builder.Create(RecipeType.EMAmplifier3, SkillType.Engineering)
+            //  Beam Cannon 4
+            _builder.Create(RecipeType.BeamCannon4, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("beamcannon4")
+                .Level(32)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_barinium", 2)
+                .Component("elec_imperfect", 1);
+
+            //  EM Amplifier III
+            _builder.Create(RecipeType.EMAmplifier3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("em_amp_3")
 				.Level(37)
@@ -869,7 +1045,51 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 1);
-		}
+
+            // Fighter Config 4
+            _builder.Create(RecipeType.FighterConfig4, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_fig4")
+                .Level(35)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_barinium", 3)
+                .Component("elec_imperfect", 2);
+
+            // Bomber Config 4
+            _builder.Create(RecipeType.BomberConfig4, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_bmb4")
+                .Level(35)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_barinium", 3)
+                .Component("elec_imperfect", 2);
+
+            // Interceptor Config 4
+            _builder.Create(RecipeType.InterceptorConfig4, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_int4")
+                .Level(35)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_barinium", 3)
+                .Component("elec_imperfect", 2);
+
+            // Industrial Config 4
+            _builder.Create(RecipeType.IndustrialConfig4, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_ind4")
+                .Level(35)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_barinium", 3)
+                .Component("elec_imperfect", 2);
+        }
 
 		private void Tier5()
         {
@@ -896,8 +1116,19 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 2)
 				.Component("elec_high", 1);
 
-			//  EM Amplifier IV
-			_builder.Create(RecipeType.EMAmplifier4, SkillType.Engineering)
+            //  Beam Cannon 5
+            _builder.Create(RecipeType.BeamCannon5, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("beamcannon5")
+                .Level(42)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_gostian", 2)
+                .Component("elec_high", 1);
+
+            //  EM Amplifier IV
+            _builder.Create(RecipeType.EMAmplifier4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("em_amp_4")
 				.Level(47)
@@ -995,8 +1226,19 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 3)
 				.Component("elec_high", 2);
 
-			//  Shield Booster IV
-			_builder.Create(RecipeType.ShieldBooster4, SkillType.Engineering)
+            //  Proton Bomb Launcher
+            _builder.Create(RecipeType.MissileLauncher4, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("protbomblnch")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_gostian", 3)
+                .Component("elec_high", 2);
+
+            //  Shield Booster IV
+            _builder.Create(RecipeType.ShieldBooster4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("shld_boost_4")
 				.Level(43)
@@ -1082,6 +1324,296 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.EnhancementSlots(RecipeEnhancementType.Module, 2)
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 1);
-		}
+
+            // Fighter Config 5
+            _builder.Create(RecipeType.FighterConfig5, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_fig5")
+                .Level(45)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_gostian", 3)
+                .Component("elec_high", 2);
+
+            // Bomber Config 5
+            _builder.Create(RecipeType.BomberConfig5, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_bmb5")
+                .Level(45)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_gostian", 3)
+                .Component("elec_high", 2);
+
+            // Interceptor Config 5
+            _builder.Create(RecipeType.InterceptorConfig5, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_int5")
+                .Level(45)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_gostian", 3)
+                .Component("elec_high", 2);
+
+            // Industrial Config 5
+            _builder.Create(RecipeType.IndustrialConfig5, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("config_ind5")
+                .Level(45)
+                .Quantity(1)
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("ref_gostian", 3)
+                .Component("elec_high", 2);
+
+            // Assault Concussion Missile Launcher I
+            _builder.Create(RecipeType.AssaultConcMissileLauncher, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("acm_launch_1")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+				.Component("capc_power", 3);
+
+            // Assault Concussion Missile
+            _builder.Create(RecipeType.AssaultConcMissile, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("acm_ammo")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .Component("elec_high", 3)
+                .Component("ref_arda", 3)
+                .Component("ref_gostian", 5);
+
+            // Advanced Thrusters
+            _builder.Create(RecipeType.AdvancedThrusters, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_thrust1")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Bulwark Shield Generator
+            _builder.Create(RecipeType.BulwarkShieldGenerator, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("bulwarkgen")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Dedicated Targetting Sensor Array
+            _builder.Create(RecipeType.TargettingArray, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_target1")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Heavy Turbolaser Cannon
+            _builder.Create(RecipeType.Turbolaser1, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("turbolas1")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Dual Turbolaser Cannon
+            _builder.Create(RecipeType.Turbolaser2, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("turbolas2")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Quad Turbolaser Cannon
+            _builder.Create(RecipeType.Turbolaser3, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("turbolas3")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Laser Cannon Battery I
+            _builder.Create(RecipeType.LaserCannonBattery1, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("lasbattery1")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Quad Laser Cannons
+            _builder.Create(RecipeType.QuadLaserCannon1, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_quadlas1")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Quad Laser Cannon Array
+            _builder.Create(RecipeType.QuadLaserCannon2, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_quadlas2")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Quad Laser Cannon Battery
+            _builder.Create(RecipeType.QuadLaserCannon3, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_quadlas3")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Redundant Shield Generator
+            _builder.Create(RecipeType.RedundantShieldGenerator, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_shields1")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Reinforced Plating
+            _builder.Create(RecipeType.ReinforcedPlating, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_armor1")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Repair Field Generator
+            _builder.Create(RecipeType.RepairFieldGenerator, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("repairfield")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Storm Cannon
+            _builder.Create(RecipeType.StormCannon, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("storm_cann")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Industrial Nexus Configuration
+            _builder.Create(RecipeType.IndustryNexusConfig, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_indus")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Skirmisher Configuration
+            _builder.Create(RecipeType.StormCannon, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_skirm")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+
+            // Warship Configuration
+            _builder.Create(RecipeType.StormCannon, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_warship")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
+        }
 	}
 }

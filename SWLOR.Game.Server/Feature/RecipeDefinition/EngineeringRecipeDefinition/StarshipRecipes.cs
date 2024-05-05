@@ -477,6 +477,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 10)
                 .Component("elec_high", 2);
 
+            // Proton Bomb
+            _builder.Create(RecipeType.ProtonBomb, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("proton_bomb")
+                .Level(45)
+                .Quantity(25)
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .Component("ref_gostian", 3)
+                .Component("elec_high", 2)
+                .Component("ref_arda", 1);
+
             // Hypermatter Capsule x5
             _builder.Create(RecipeType.FuelCapsule5, SkillType.Engineering)
                 .Category(RecipeCategoryType.Starship)

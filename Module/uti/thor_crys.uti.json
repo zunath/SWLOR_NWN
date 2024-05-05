@@ -79,7 +79,7 @@
         },
         "Param1Value": {
           "type": "byte",
-          "value": 3
+          "value": 1
         },
         "PropertyName": {
           "type": "word",

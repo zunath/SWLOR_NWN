@@ -490,7 +490,22 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "SPACE_ELITE_T2, 66, 10"
+          "value": "SPACE_ELITE_T2, 100, 5"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "SPACE_BOSS_T2, 100, 1"
         }
       }
     ]

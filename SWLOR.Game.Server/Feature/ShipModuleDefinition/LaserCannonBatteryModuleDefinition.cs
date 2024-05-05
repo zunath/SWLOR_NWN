@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿ using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
@@ -16,7 +16,20 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            LaserCannonBattery("lasbattery1", "Laser Cannon Battery I", "Las Cann Bat 1", "Fires at 50% of nearby targets. Fires once every 2 seconds for 18 seconds.", 20);
+            LaserCannonBattery("lasbattery1", "Laser Cannon Battery I", "Las Cann Bat 1", "Fires at 50% of nearby targets for 20 DMG. Fires once every 2 seconds for 18 seconds.", 20);
+
+            LaserCannonBattery("npcautolas1", "NPC Laser Cannon Battery 1", "npcautolas1", "Fires at 50% of nearby targets. Fires once every 2 seconds for 18 seconds.", 4);
+            LaserCannonBattery("npcautolas2", "NPC Laser Cannon Battery 2", "npcautolas2", "Fires at 50% of nearby targets. Fires once every 2 seconds for 18 seconds.", 7);
+            LaserCannonBattery("npcautolas3", "NPC Laser Cannon Battery 3", "npcautolas3", "Fires at 50% of nearby targets. Fires once every 2 seconds for 18 seconds.", 10);
+            LaserCannonBattery("npcautolas4", "NPC Laser Cannon Battery 4", "npcautolas4", "Fires at 50% of nearby targets. Fires once every 2 seconds for 18 seconds.", 13);
+            LaserCannonBattery("npcautolas5", "NPC Laser Cannon Battery 5", "npcautolas5", "Fires at 50% of nearby targets. Fires once every 2 seconds for 18 seconds.", 17);
+            LaserCannonBattery("npcautolas6", "NPC Laser Cannon Battery 6", "npcautolas6", "Fires at 50% of nearby targets. Fires once every 2 seconds for 18 seconds.", 20);
+            LaserCannonBattery("npcautolas7", "NPC Laser Cannon Battery 7", "npcautolas7", "Fires at 50% of nearby targets. Fires once every 2 seconds for 18 seconds.", 22);
+            LaserCannonBattery("npcautolas8", "NPC Laser Cannon Battery 8", "npcautolas8", "Fires at 50% of nearby targets. Fires once every 2 seconds for 18 seconds.", 24);
+            LaserCannonBattery("npcautolas9", "NPC Laser Cannon Battery 9", "npcautolas9", "Fires at 50% of nearby targets. Fires once every 2 seconds for 18 seconds.", 26);
+            LaserCannonBattery("npcautolas10", "NPC Laser Cannon Battery 10", "npcautolas10", "Fires at 50% of nearby targets. Fires once every 2 seconds for 18 seconds.", 28);
+            LaserCannonBattery("npcautolas11", "NPC Laser Cannon Battery 11", "npcautolas11", "Fires at 50% of nearby targets. Fires once every 2 seconds for 18 seconds.", 32);
+            LaserCannonBattery("npcautolas12", "NPC Laser Cannon Battery 12", "npcautolas12", "Fires at 50% of nearby targets. Fires once every 2 seconds for 18 seconds.", 35);
 
             return _builder.Build();
         }

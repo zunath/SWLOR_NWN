@@ -95,12 +95,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         }
 
                         // Perk & module bonuses
-                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining);
+                        var amountToMine = 1;
                         if (amountToMine > remainingUnits)
                             amountToMine = remainingUnits;
 
+                        var industrialBonus = Space.GetShipStatus(activator).Industrial + moduleBonus;
+
                         remainingUnits -= amountToMine;
-                        amountToMine += (int)((shipStatus.Industrial + moduleBonus) * 0.4f);
+                        amountToMine += Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)((industrialBonus + moduleBonus) * 0.4f);
 
                         // Fully deplete the rock - destroy it.
                         if (remainingUnits <= 0)

@@ -67,58 +67,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.StarshipBlueprints, 1)
                 .Component("ref_tilarium", 3)
                 .Component("elec_ruined", 1);
-
-            // Bomber Configuration 1
-            _builder.Create(RecipeType.BomberConfig1, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_bmb1")
-                .Level(10)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_tilarium", 1)
-                .Component("aluminum", 1)
-                .Component("fiberp_ruined", 1)
-                .Component("elec_ruined", 1);
-
-            // Fighter Configuration 1
-            _builder.Create(RecipeType.FighterConfig1, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_fig1")
-                .Level(10)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_tilarium", 1)
-                .Component("aluminum", 1)
-                .Component("fiberp_ruined", 1)
-                .Component("elec_ruined", 1);
-
-            // Interceptor Configuration 1
-            _builder.Create(RecipeType.InterceptorConfig1, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_int1")
-                .Level(10)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_tilarium", 1)
-                .Component("aluminum", 1)
-                .Component("fiberp_ruined", 1)
-                .Component("elec_ruined", 1);
-
-            // Industrial Configuration 1
-            _builder.Create(RecipeType.IndustrialConfig1, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_ind1")
-                .Level(10)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 1)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_tilarium", 1)
-                .Component("aluminum", 1)
-                .Component("fiberp_ruined", 1)
-                .Component("elec_ruined", 1);
         }
 
         private void Tier2()
@@ -148,58 +96,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("steel", 3)
                 .Component("fiberp_flawed", 3)
                 .Component("elec_flawed", 3);
-
-            // Bomber Configuration 2
-            _builder.Create(RecipeType.BomberConfig2, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_bmb2")
-                .Level(20)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_currian", 1)
-                .Component("steel", 1)
-                .Component("fiberp_flawed", 1)
-                .Component("elec_flawed", 1);
-
-            // Fighter Configuration 2
-            _builder.Create(RecipeType.FighterConfig2, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_fig2")
-                .Level(20)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_currian", 1)
-                .Component("steel", 1)
-                .Component("fiberp_flawed", 1)
-                .Component("elec_flawed", 1);
-
-            // Interceptor Configuration 2
-            _builder.Create(RecipeType.InterceptorConfig2, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_int2")
-                .Level(20)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_currian", 1)
-                .Component("steel", 1)
-                .Component("fiberp_flawed", 1)
-                .Component("elec_flawed", 1);
-
-            // Industrial Configuration 2
-            _builder.Create(RecipeType.IndustrialConfig2, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_ind2")
-                .Level(20)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 2)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_currian", 1)
-                .Component("steel", 1)
-                .Component("fiberp_flawed", 1)
-                .Component("elec_flawed", 1);
         }
 
         private void Tier3()
@@ -249,58 +145,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.StarshipBlueprints, 1)
                 .Component("ref_idailia", 3)
                 .Component("elec_good", 1);
-
-            // Bomber Configuration 3
-            _builder.Create(RecipeType.BomberConfig3, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_bmb3")
-                .Level(30)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_idailia", 1)
-                .Component("obsidian", 1)
-                .Component("fiberp_good", 1)
-                .Component("elec_good", 1);
-
-            // Fighter Configuration 3
-            _builder.Create(RecipeType.FighterConfig3, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_fig3")
-                .Level(30)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_idailia", 1)
-                .Component("obsidian", 1)
-                .Component("fiberp_good", 1)
-                .Component("elec_good", 1);
-
-            // Interceptor Configuration 3
-            _builder.Create(RecipeType.InterceptorConfig3, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_int3")
-                .Level(30)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_idailia", 1)
-                .Component("obsidian", 1)
-                .Component("fiberp_good", 1)
-                .Component("elec_good", 1);
-
-            // Industrial Configuration 3
-            _builder.Create(RecipeType.IndustrialConfig3, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_ind3")
-                .Level(30)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 3)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_idailia", 1)
-                .Component("obsidian", 1)
-                .Component("fiberp_good", 1)
-                .Component("elec_good", 1);
         }
 
         private void Tier4()
@@ -330,58 +174,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 3)
                 .Component("fiberp_imperfect", 3)
                 .Component("elec_imperfect", 3);
-
-            // Bomber Configuration 4
-            _builder.Create(RecipeType.BomberConfig4, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_bmb4")
-                .Level(40)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_barinium", 1)
-                .Component("crystal", 1)
-                .Component("fiberp_good", 1)
-                .Component("fiberp_imperfect", 1);
-
-            // Fighter Configuration 4
-            _builder.Create(RecipeType.FighterConfig4, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_fig4")
-                .Level(40)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_barinium", 1)
-                .Component("crystal", 1)
-                .Component("fiberp_good", 1)
-                .Component("fiberp_imperfect", 1);
-
-            // Interceptor Configuration 4
-            _builder.Create(RecipeType.InterceptorConfig4, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_int4")
-                .Level(40)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_barinium", 1)
-                .Component("crystal", 1)
-                .Component("fiberp_good", 1)
-                .Component("fiberp_imperfect", 1);
-
-            // Industrial Configuration 4
-            _builder.Create(RecipeType.IndustrialConfig4, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_ind4")
-                .Level(40)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 4)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_barinium", 1)
-                .Component("crystal", 1)
-                .Component("fiberp_good", 1)
-                .Component("fiberp_imperfect", 1);
         }
 
         private void Tier5()
@@ -496,58 +288,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Quantity(5)
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("ref_gostian", 3)
-                .Component("elec_high", 1);
-
-            // Bomber Configuration 5
-            _builder.Create(RecipeType.BomberConfig5, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_bmb5")
-                .Level(50)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_gostian", 1)
-                .Component("diamond", 1)
-                .Component("fiberp_high", 1)
-                .Component("elec_high", 1);
-
-            // Fighter Configuration 5
-            _builder.Create(RecipeType.FighterConfig5, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_fig5")
-                .Level(50)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_gostian", 1)
-                .Component("diamond", 1)
-                .Component("fiberp_high", 1)
-                .Component("elec_high", 1);
-
-            // Interceptor Configuration 5
-            _builder.Create(RecipeType.InterceptorConfig5, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_int5")
-                .Level(50)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_gostian", 1)
-                .Component("diamond", 1)
-                .Component("fiberp_high", 1)
-                .Component("elec_high", 1);
-
-            // Industrial Configuration 5
-            _builder.Create(RecipeType.IndustrialConfig5, SkillType.Engineering)
-                .Category(RecipeCategoryType.Starship)
-                .Resref("config_ind5")
-                .Level(50)
-                .Quantity(1)
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
-                .Component("ref_gostian", 1)
-                .Component("diamond", 1)
-                .Component("fiberp_high", 1)
                 .Component("elec_high", 1);
 
             // Republic Thranta

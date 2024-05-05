@@ -32,33 +32,33 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             ShipConfig("config_ind4", "Industrial Configuration IV", "iit_ess8_124", 4, 150, 150, 0, 75, 0, 75, 0, 75, 0, 0, 8);
             ShipConfig("config_ind5", "Industrial Configuration V", "iit_ess8_124", 5, 300, 300, 0, 100, 0, 100, 0, 100, 0, 0, 10);
 
-            ShipConfig("con_fig1", "NPC Fig Conf 1", "iit_ess8_121", 1, 0, 0, 0, 35, 0, 35, 0, 35, 2, 2, 0);
-            ShipConfig("con_fig2", "NPC Fig Conf 2", "iit_ess8_121", 1, 0, 0, 0, 50, 0, 50, 0, 50, 5, 2, 0);
-            ShipConfig("con_fig3", "NPC Fig Conf 3", "iit_ess8_121", 1, 0, 0, 0, 70, 0, 70, 0, 70, 10, 2, 0);
-            ShipConfig("con_fig4", "NPC Fig Conf 4", "iit_ess8_121", 1, 0, 0, 0, 90, 0, 90, 0, 90, 20, 2, 0);
-            ShipConfig("con_fig5", "NPC Fig Conf 5", "iit_ess8_121", 1, 0, 0, 0, 120, 0, 120, 0, 120, 30, 30, 0);
-            ShipConfig("con_fig6", "NPC Fig Conf 6", "iit_ess8_121", 1, 0, 0, 0, 160, 0, 160, 0, 160, 30, 30, 0);
+            ShipConfig("con_fig1", "NPC Fig Conf 1", "iit_ess8_121", 1, 0, 0, 0, 10, 0, 10, 0, 10, 2, 2, 0);
+            ShipConfig("con_fig2", "NPC Fig Conf 2", "iit_ess8_121", 1, 0, 0, 0, 25, 0, 25, 0, 25, 5, 2, 0);
+            ShipConfig("con_fig3", "NPC Fig Conf 3", "iit_ess8_121", 1, 0, 0, 0, 40, 0, 40, 0, 40, 10, 2, 0);
+            ShipConfig("con_fig4", "NPC Fig Conf 4", "iit_ess8_121", 1, 0, 0, 0, 75, 0, 75, 0, 75, 20, 2, 0);
+            ShipConfig("con_fig5", "NPC Fig Conf 5", "iit_ess8_121", 1, 0, 0, 0, 100, 0, 100, 0, 100, 30, 30, 0);
+            ShipConfig("con_fig6", "NPC Fig Conf 6", "iit_ess8_121", 1, 0, 0, 0, 125, 0, 125, 0, 125, 30, 30, 0);
 
-            ShipConfig("con_int1", "NPC Int Conf 1", "iit_ess8_121", 1, 0, 0, 0, 25, 0, 35, 0, 50, 2, 2, 0);
-            ShipConfig("con_int2", "NPC Int Conf 2", "iit_ess8_121", 1, 0, 0, 0, 38, 0, 50, 0, 75, 5, 2, 0);
-            ShipConfig("con_int3", "NPC Int Conf 3", "iit_ess8_121", 1, 0, 0, 0, 50, 0, 70, 0, 115, 10, 2, 0);
-            ShipConfig("con_int4", "NPC Int Conf 4", "iit_ess8_121", 1, 0, 0, 0, 70, 0, 90, 0, 145, 20, 2, 0);
-            ShipConfig("con_int5", "NPC Int Conf 5", "iit_ess8_121", 1, 0, 0, 0, 90, 0, 120, 0, 180, 30, 30, 0);
-            ShipConfig("con_int6", "NPC Int Conf 6", "iit_ess8_121", 1, 0, 0, 0, 125, 0, 160, 0, 240, 30, 30, 0);
+            ShipConfig("con_int1", "NPC Int Conf 1", "iit_ess8_121", 1, 0, 0, 0, 8, 0, 10, 0, 20, 2, 2, 0);
+            ShipConfig("con_int2", "NPC Int Conf 2", "iit_ess8_121", 1, 0, 0, 0, 20, 0, 25, 0, 35, 5, 2, 0);
+            ShipConfig("con_int3", "NPC Int Conf 3", "iit_ess8_121", 1, 0, 0, 0, 35, 0, 40, 0, 65, 10, 2, 0);
+            ShipConfig("con_int4", "NPC Int Conf 4", "iit_ess8_121", 1, 0, 0, 0, 65, 0, 75, 0, 90, 20, 2, 0);
+            ShipConfig("con_int5", "NPC Int Conf 5", "iit_ess8_121", 1, 0, 0, 0, 90, 0, 100, 0, 110, 30, 30, 0);
+            ShipConfig("con_int6", "NPC Int Conf 6", "iit_ess8_121", 1, 0, 0, 0, 110, 0, 125, 0, 160, 30, 30, 0);
 
-            ShipConfig("con_bmb1", "NPC Bmb Conf 1", "iit_ess8_121", 1, 0, 0, 0, 35, 0, 35, 5, 25, 2, 2, 0);
-            ShipConfig("con_bmb2", "NPC Bmb Conf 2", "iit_ess8_121", 1, 0, 0, 0, 50, 0, 50, 10, 38, 5, 2, 0);
-            ShipConfig("con_bmb3", "NPC Bmb Conf 3", "iit_ess8_121", 1, 0, 0, 0, 70, 0, 70, 15, 50, 10, 2, 0);
-            ShipConfig("con_bmb4", "NPC Bmb Conf 4", "iit_ess8_121", 1, 0, 0, 0, 90, 0, 90, 20, 70, 20, 2, 0);
-            ShipConfig("con_bmb5", "NPC Bmb Conf 5", "iit_ess8_121", 1, 0, 0, 0, 120, 0, 120, 25, 90, 30, 30, 0);
-            ShipConfig("con_bmb6", "NPC Bmb Conf 6", "iit_ess8_121", 1, 0, 0, 0, 160, 0, 160, 30, 125, 30, 30, 0);
+            ShipConfig("con_bmb1", "NPC Bmb Conf 1", "iit_ess8_121", 1, 0, 0, 0, 20, 0, 10, 5, 8, 2, 2, 0);
+            ShipConfig("con_bmb2", "NPC Bmb Conf 2", "iit_ess8_121", 1, 0, 0, 0, 35, 0, 25, 10, 20, 5, 2, 0);
+            ShipConfig("con_bmb3", "NPC Bmb Conf 3", "iit_ess8_121", 1, 0, 0, 0, 65, 0, 40, 15, 35, 10, 2, 0);
+            ShipConfig("con_bmb4", "NPC Bmb Conf 4", "iit_ess8_121", 1, 0, 0, 0, 90, 0, 75, 20, 65, 20, 2, 0);
+            ShipConfig("con_bmb5", "NPC Bmb Conf 5", "iit_ess8_121", 1, 0, 0, 0, 110, 0, 100, 25, 90, 30, 30, 0);
+            ShipConfig("con_bmb6", "NPC Bmb Conf 6", "iit_ess8_121", 1, 0, 0, 0, 160, 0, 125, 30, 110, 30, 30, 0);
 
-            ShipConfig("con_hvy1", "NPC Hvy Conf 1", "iit_ess8_121", 1, 0, 0, 0, 50, 0, 35, 0, 25, 2, 2, 0);
-            ShipConfig("con_hvy2", "NPC Hvy Conf 2", "iit_ess8_121", 1, 0, 0, 0, 75, 0, 50, 0, 38, 5, 2, 0);
-            ShipConfig("con_hvy3", "NPC Hvy Conf 3", "iit_ess8_121", 1, 0, 0, 0, 115, 0, 70, 0, 50, 10, 2, 0);
-            ShipConfig("con_hvy4", "NPC Hvy Conf 4", "iit_ess8_121", 1, 0, 0, 0, 145, 0, 90, 0, 70, 20, 2, 0);
-            ShipConfig("con_hvy5", "NPC Hvy Conf 5", "iit_ess8_121", 1, 0, 0, 0, 180, 0, 120, 0, 90, 30, 30, 0);
-            ShipConfig("con_hvy6", "NPC Hvy Conf 6", "iit_ess8_121", 1, 0, 0, 0, 240, 0, 160, 0, 125, 30, 30, 0);
+            ShipConfig("con_hvy1", "NPC Hvy Conf 1", "iit_ess8_121", 1, 0, 0, 0, 15, 0, 15, 0, 8, 2, 2, 0);
+            ShipConfig("con_hvy2", "NPC Hvy Conf 2", "iit_ess8_121", 1, 0, 0, 0, 30, 0, 30, 0, 20, 5, 2, 0);
+            ShipConfig("con_hvy3", "NPC Hvy Conf 3", "iit_ess8_121", 1, 0, 0, 0, 45, 0, 45, 0, 35, 10, 2, 0);
+            ShipConfig("con_hvy4", "NPC Hvy Conf 4", "iit_ess8_121", 1, 0, 0, 0, 80, 0, 80, 0, 65, 20, 2, 0);
+            ShipConfig("con_hvy5", "NPC Hvy Conf 5", "iit_ess8_121", 1, 0, 0, 0, 110, 0, 110, 0, 90, 30, 30, 0);
+            ShipConfig("con_hvy6", "NPC Hvy Conf 6", "iit_ess8_121", 1, 0, 0, 0, 140, 0, 140, 0, 110, 30, 30, 0);
 
             CapShipConfig("cap_indus", "Industrial Nexus Configuration", "iit_ess8_124", 5, 500, 0, 0, 100, 0, 100, 0, 100, 0, 0, 10, 0);
             CapShipConfig("cap_skirm", "Skirmisher Configuration", "iit_ess8_121", 5, 100, 250, 0, 75, 0, 75, 0, 75, 0, 0, 0, -10);

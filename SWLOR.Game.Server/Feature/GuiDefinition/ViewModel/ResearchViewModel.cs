@@ -396,11 +396,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var innovateLevel = Perk.GetPerkLevel(Player, PerkType.Innovate);
                 var enhancementBonus = 0;
                 if (innovateLevel >= 1)
-                    enhancementBonus += 5;
+                    enhancementBonus += 20;
                 if (innovateLevel >= 2)
-                    enhancementBonus += 10;
+                    enhancementBonus += 40;
                 if (innovateLevel >= 3)
-                    enhancementBonus += 15;
+                    enhancementBonus += 70;
 
                 var hasEnhancementBonus = blueprintDetails.EnhancementSlots > 0 && 
                                           blueprintDetails.Level < Craft.MaxResearchLevel;
@@ -498,31 +498,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 case 5:
                     AddBlueprintBonus();
                     if (Random.Next(1000) <= 15)
-                        AddGuaranteedBonus(2);
+                        AddGuaranteedBonus(1);
                     break;
                 case 6:
                     blueprintDetails.ItemBonuses++;
                     if (Random.Next(1000) <= 20)
-                        AddGuaranteedBonus(2);
+                        AddGuaranteedBonus(1);
                     break;
                 case 7:
                     AddGuaranteedBonus(3);
-                    if (Random.Next(1000) <= 10)
-                        AddGuaranteedBonus(2);
+                    if (Random.Next(1000) <= 50)
+                        AddGuaranteedBonus(1);
                     break;
                 case 8:
                     AddBlueprintBonus();
-                    if (Random.Next(1000) <= 40)
-                        AddGuaranteedBonus(2);
+                    if (Random.Next(1000) <= 80)
+                        AddGuaranteedBonus(1);
                     break;
                 case 9:
                     blueprintDetails.ItemBonuses++;
-                    if (Random.Next(1000) <= 50)
-                        AddGuaranteedBonus(3);
+                    if (Random.Next(1000) <= 100)
+                        AddGuaranteedBonus(2);
                     break;
                 case 10:
                     blueprintDetails.EnhancementSlots++;
-                    if (Random.Next(1000) <= 55)
+                    if (Random.Next(1000) <= 120)
                         AddGuaranteedBonus(3);
                     break;
             }

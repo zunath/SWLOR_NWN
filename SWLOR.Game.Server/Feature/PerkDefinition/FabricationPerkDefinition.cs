@@ -257,17 +257,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Innovate")
 
                 .AddPerkLevel()
-                .Description("Increases the chance of adding an enhancement slot to a blueprint by 5.")
+                .Description("Increases the chance of adding an enhancement slot to a blueprint by 20.")
                 .Price(3)
                 .RequirementSkill(SkillType.Fabrication, 15)
 
                 .AddPerkLevel()
-                .Description("Increases the chance of adding an enhancement slot to a blueprint by 10.")
+                .Description("Increases the chance of adding an enhancement slot to a blueprint by 40.")
                 .Price(3)
                 .RequirementSkill(SkillType.Fabrication, 30)
 
                 .AddPerkLevel()
-                .Description("Increases the chance of adding an enhancement slot to a blueprint by 15.")
+                .Description("Increases the chance of adding an enhancement slot to a blueprint by 70.")
                 .Price(3)
                 .RequirementSkill(SkillType.Fabrication, 45);
         }

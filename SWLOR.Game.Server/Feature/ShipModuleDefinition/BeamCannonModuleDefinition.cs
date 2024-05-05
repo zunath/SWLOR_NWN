@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
                 .Recast(12f)
-                .Capacitor(12)
+                .Capacitor(8)
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     var attackBonus = activatorShipStatus.ThermalDamage;
@@ -70,38 +70,41 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var beam = EffectBeam(VisualEffect.Vfx_Beam_Holy, activator, BodyNode.Chest);
                     var startingDMG = dmg;
 
-                    for (int i = 0; i < 5; i++)
+                    for (int i = 0; i < 4; i++)
                     {
-                        float delay = i * 0.2f;
+                        float delay = i * 0.25f;
                         DelayCommand(delay, () =>
                         {
-                            var chanceToHit = Space.CalculateChanceToHit(activator, target);
-                            var roll = Random.D100(1);
-                            var isHit = roll <= chanceToHit;
-                            if (isHit)
+                            if (GetIsDead(activator))
                             {
-                                AssignCommand(activator, () =>
+                                var chanceToHit = Space.CalculateChanceToHit(activator, target);
+                                var roll = Random.D100(1);
+                                var isHit = roll <= chanceToHit;
+                                if (isHit)
                                 {
-                                    ApplyEffectToObject(DurationType.Temporary, beam, target, 0.2f);
-                                    Space.ApplyShipDamage(activator, target, damage);
-                                    dmg += tickIncrease;
-                                });
-                            }
-                            else
-                            {
-                                AssignCommand(activator, () =>
+                                    AssignCommand(activator, () =>
+                                    {
+                                        ApplyEffectToObject(DurationType.Temporary, beam, target, 0.2f);
+                                        Space.ApplyShipDamage(activator, target, damage);
+                                        dmg += tickIncrease;
+                                    });
+                                }
+                                else
                                 {
-                                    ApplyEffectToObject(DurationType.Temporary, beam, target, 0.2f);
-                                    dmg = startingDMG;
-                                });
+                                    AssignCommand(activator, () =>
+                                    {
+                                        ApplyEffectToObject(DurationType.Temporary, beam, target, 0.2f);
+                                        dmg = startingDMG;
+                                    });
+                                }
+
+                                var attackId = isHit ? 1 : 4;
+                                var combatLogMessage = Combat.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
+                                Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
+
+                                Enmity.ModifyEnmity(activator, target, damage);
+                                CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
                             }
-
-                            var attackId = isHit ? 1 : 4;
-                            var combatLogMessage = Combat.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
-                            Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
-
-                            Enmity.ModifyEnmity(activator, target, damage);
-                            CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
                         });
                     }
                 });

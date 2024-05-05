@@ -60449,7 +60449,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.121038771459854e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -60663,7 +60663,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.004799691750011e-027
                     },
                     "XPosition": {
                       "type": "float",
@@ -60984,7 +60984,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.938663009535574e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -61125,7 +61125,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.901668730077399e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -61373,7 +61373,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.901668730077399e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -61480,7 +61480,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.938663009535574e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -61717,113 +61717,6 @@
                     "__struct_id": 20,
                     "AddCost": {
                       "type": "dword",
-                      "value": 100
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 513
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 100
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Beam Cannon 1"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 17
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 8
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "beamcannon1"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "beamcannon1"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 17
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 3.004799691750011e-027
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 21,
-                    "AddCost": {
-                      "type": "dword",
                       "value": 200
                     },
                     "BaseItem": {
@@ -61878,7 +61771,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 2
+                      "value": 0
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -61926,7 +61819,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
+                    "__struct_id": 21,
                     "AddCost": {
                       "type": "dword",
                       "value": 200
@@ -61983,7 +61876,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 4
+                      "value": 2
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -62011,7 +61904,112 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.121038771459854e-044
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 22,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 200
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 522
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 200
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Industrial Configuration I"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 124
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 8
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "config_ind1"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "config_ind1"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 124
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -62071,12 +62069,12 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Industrial Configuration I"
+                        "0": "Interceptor Configuration I"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 124
+                      "value": 122
                     },
                     "Plot": {
                       "type": "byte",
@@ -62104,15 +62102,15 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "config_ind1"
+                      "value": "config_int1"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "config_ind1"
+                      "value": "config_int1"
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 124
+                      "value": 122
                     },
                     "XOrientation": {
                       "type": "float",
@@ -62176,12 +62174,12 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Interceptor Configuration I"
+                        "0": "Mirrored Plating 1"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 122
+                      "value": 145
                     },
                     "Plot": {
                       "type": "byte",
@@ -62209,15 +62207,15 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "config_int1"
+                      "value": "las_armor_1"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "config_int1"
+                      "value": "las_armor_1"
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 122
+                      "value": 145
                     },
                     "XOrientation": {
                       "type": "float",
@@ -62242,111 +62240,6 @@
                   },
                   {
                     "__struct_id": 25,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 200
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 522
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 200
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Mirrored Plating 1"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 145
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 10
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "las_armor_1"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "las_armor_1"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 145
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 26,
                     "AddCost": {
                       "type": "dword",
                       "value": 100
@@ -62405,7 +62298,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 2
+                      "value": 0
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -62430,6 +62323,111 @@
                     "xModelPart1": {
                       "type": "word",
                       "value": 17
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 26,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 200
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 522
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 200
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Durasteel Plating 1"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 145
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 10
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "hvy_armor_1"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "hvy_armor_1"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 145
                     },
                     "XOrientation": {
                       "type": "float",
@@ -62493,12 +62491,12 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Durasteel Plating 1"
+                        "0": "Fighter Configuration I"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 145
+                      "value": 121
                     },
                     "Plot": {
                       "type": "byte",
@@ -62526,15 +62524,15 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "hvy_armor_1"
+                      "value": "config_fig1"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "hvy_armor_1"
+                      "value": "config_fig1"
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 145
+                      "value": 121
                     },
                     "XOrientation": {
                       "type": "float",
@@ -62598,12 +62596,12 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Fighter Configuration I"
+                        "0": "Reactive Armor 1"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 121
+                      "value": 145
                     },
                     "Plot": {
                       "type": "byte",
@@ -62631,15 +62629,15 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "config_fig1"
+                      "value": "exp_armor_1"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "config_fig1"
+                      "value": "exp_armor_1"
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 121
+                      "value": 145
                     },
                     "XOrientation": {
                       "type": "float",
@@ -62703,7 +62701,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Reactive Armor 1"
+                        "0": "Supplemental Ion Shielding 1"
                       }
                     },
                     "ModelPart1": {
@@ -62725,111 +62723,6 @@
                     "Repos_Posy": {
                       "type": "word",
                       "value": 10
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "exp_armor_1"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "exp_armor_1"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 145
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 30,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 200
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 522
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 200
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Supplemental Ion Shielding 1"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 145
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 12
                     },
                     "StackSize": {
                       "type": "word",
@@ -63173,7 +63066,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.121038771459854e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -64136,7 +64029,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.121038771459854e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -64350,7 +64243,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.761391348011463e-025
                     },
                     "XPosition": {
                       "type": "float",
@@ -65060,7 +64953,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.761391348011463e-025
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -65190,113 +65083,6 @@
                     "__struct_id": 20,
                     "AddCost": {
                       "type": "dword",
-                      "value": 100
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 513
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 100
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Beam Cannon 1"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 17
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 8
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "beamcannon1"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "beamcannon1"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 17
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.121038771459854e-044
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 21,
-                    "AddCost": {
-                      "type": "dword",
                       "value": 200
                     },
                     "BaseItem": {
@@ -65351,7 +65137,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 2
+                      "value": 0
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -65399,7 +65185,7 @@
                     }
                   },
                   {
-                    "__struct_id": 22,
+                    "__struct_id": 21,
                     "AddCost": {
                       "type": "dword",
                       "value": 200
@@ -65456,7 +65242,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 4
+                      "value": 2
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -65481,6 +65267,111 @@
                     "xModelPart1": {
                       "type": "word",
                       "value": 32
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 22,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 200
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 522
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 200
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Industrial Configuration I"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 124
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 8
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "config_ind1"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "config_ind1"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 124
                     },
                     "XOrientation": {
                       "type": "float",
@@ -65544,12 +65435,12 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Industrial Configuration I"
+                        "0": "Interceptor Configuration I"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 124
+                      "value": 122
                     },
                     "Plot": {
                       "type": "byte",
@@ -65577,15 +65468,15 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "config_ind1"
+                      "value": "config_int1"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "config_ind1"
+                      "value": "config_int1"
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 124
+                      "value": 122
                     },
                     "XOrientation": {
                       "type": "float",
@@ -65649,12 +65540,12 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Interceptor Configuration I"
+                        "0": "Mirrored Plating 1"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 122
+                      "value": 145
                     },
                     "Plot": {
                       "type": "byte",
@@ -65682,15 +65573,15 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "config_int1"
+                      "value": "las_armor_1"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "config_int1"
+                      "value": "las_armor_1"
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 122
+                      "value": 145
                     },
                     "XOrientation": {
                       "type": "float",
@@ -65715,111 +65606,6 @@
                   },
                   {
                     "__struct_id": 25,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 200
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 522
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 200
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Mirrored Plating 1"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 145
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 10
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "las_armor_1"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "las_armor_1"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 145
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 26,
                     "AddCost": {
                       "type": "dword",
                       "value": 100
@@ -65878,7 +65664,7 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 2
+                      "value": 0
                     },
                     "Repos_Posy": {
                       "type": "word",
@@ -65903,6 +65689,111 @@
                     "xModelPart1": {
                       "type": "word",
                       "value": 17
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 26,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 200
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 522
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 200
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Durasteel Plating 1"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 145
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 10
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "hvy_armor_1"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "hvy_armor_1"
+                    },
+                    "xModelPart1": {
+                      "type": "word",
+                      "value": 145
                     },
                     "XOrientation": {
                       "type": "float",
@@ -65966,12 +65857,12 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Durasteel Plating 1"
+                        "0": "Fighter Configuration I"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 145
+                      "value": 121
                     },
                     "Plot": {
                       "type": "byte",
@@ -65999,15 +65890,15 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "hvy_armor_1"
+                      "value": "config_fig1"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "hvy_armor_1"
+                      "value": "config_fig1"
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 145
+                      "value": 121
                     },
                     "XOrientation": {
                       "type": "float",
@@ -66071,12 +65962,12 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Fighter Configuration I"
+                        "0": "Reactive Armor 1"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 121
+                      "value": 145
                     },
                     "Plot": {
                       "type": "byte",
@@ -66104,15 +65995,15 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "config_fig1"
+                      "value": "exp_armor_1"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "config_fig1"
+                      "value": "exp_armor_1"
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 121
+                      "value": 145
                     },
                     "XOrientation": {
                       "type": "float",
@@ -66176,7 +66067,7 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Reactive Armor 1"
+                        "0": "Supplemental Ion Shielding 1"
                       }
                     },
                     "ModelPart1": {
@@ -66198,111 +66089,6 @@
                     "Repos_Posy": {
                       "type": "word",
                       "value": 10
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "exp_armor_1"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "exp_armor_1"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 145
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.121038771459854e-044
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 30,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 200
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 522
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 200
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Supplemental Ion Shielding 1"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 145
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 12
                     },
                     "StackSize": {
                       "type": "word",

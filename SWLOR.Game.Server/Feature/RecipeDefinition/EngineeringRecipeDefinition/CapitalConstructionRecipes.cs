@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 {
-    public class ShipComponentRecipes : IRecipeListDefinition
+    public class CapitalConstructionRecipes : IRecipeListDefinition
     {
         private readonly RecipeBuilder _builder = new();
 
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
         {
             // Capital Class Hull: Corvette
             _builder.Create(RecipeType.CorvetteHull, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
+                .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_corhull")
                 .Level(52)
                 .Quantity(1)
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Structural Components
             _builder.Create(RecipeType.CapitalConstruction, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
+                .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_struc")
                 .Level(52)
                 .Quantity(1)
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Power Relay
             _builder.Create(RecipeType.CapitalPowerRelay, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
+                .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_power")
                 .Level(52)
                 .Quantity(1)
@@ -56,8 +56,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("zinsiam", 2);
 
             // Capital Class Power System: Corvette
-            _builder.Create(RecipeType.CapitalPowerRelay, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
+            _builder.Create(RecipeType.CorvettePowerSystem, SkillType.Engineering)
+                .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_powsys")
                 .Level(52)
                 .Quantity(1)
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Reactor Bay: Corvette
             _builder.Create(RecipeType.CorvetteReactorBay, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
+                .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_rebay")
                 .Level(52)
                 .Quantity(1)
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Reactor
             _builder.Create(RecipeType.CapitalReactor, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
+                .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_react")
                 .Level(52)
                 .Quantity(1)
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Engines: Corvette
             _builder.Create(RecipeType.CorvetteEngines, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
+                .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_eng")
                 .Level(52)
                 .Quantity(1)
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Thrusters
             _builder.Create(RecipeType.CapitalThruster, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
+                .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_thrust")
                 .Level(52)
                 .Quantity(1)
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class System Dedicated Computer
             _builder.Create(RecipeType.CapitalModuleComputer, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
+                .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_modcomp")
                 .Level(52)
                 .Quantity(1)
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Tech Components
             _builder.Create(RecipeType.CapitalTechComponents, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
+                .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_techcom")
                 .Level(52)
                 .Quantity(1)
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 
             // Capital Class Shield Generator
             _builder.Create(RecipeType.CapitalShieldGenerator, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipComponent)
+                .Category(RecipeCategoryType.CapitalConstruction)
                 .Resref("capc_shgen")
                 .Level(52)
                 .Quantity(1)

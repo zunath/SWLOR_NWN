@@ -10,7 +10,7 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 14
+    "value": 10
   },
   "ChallengeRating": {
     "type": "float",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 14
+    "value": 10
   },
   "Conversation": {
     "type": "resref",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 14
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
@@ -118,7 +118,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 14
+    "value": 10
   },
   "Interruptable": {
     "type": "byte",
@@ -148,7 +148,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 7
+    "value": 5
   },
   "NaturalAC": {
     "type": "byte",
@@ -453,7 +453,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 14
+    "value": 10
   },
   "Subrace": {
     "type": "cexostring",
@@ -509,6 +509,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 14
+    "value": 10
   }
 }

@@ -1227,7 +1227,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_high", 2);
 
             //  Proton Bomb Launcher
-            _builder.Create(RecipeType.MissileLauncher4, SkillType.Engineering)
+            _builder.Create(RecipeType.ProtonBombLauncher, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("protbomblnch")
                 .Level(50)
@@ -1590,7 +1590,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("capc_power", 3);
 
             // Skirmisher Configuration
-            _builder.Create(RecipeType.StormCannon, SkillType.Engineering)
+            _builder.Create(RecipeType.SkirmisherConfig, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("cap_skirm")
                 .Level(52)
@@ -1603,7 +1603,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("capc_power", 3);
 
             // Warship Configuration
-            _builder.Create(RecipeType.StormCannon, SkillType.Engineering)
+            _builder.Create(RecipeType.WarshipConfig1, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("cap_warship")
                 .Level(52)

@@ -462,7 +462,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "beamcannon1"
+                "value": "cap_inject1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -481,7 +481,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "config_bmb1"
+                "value": "las_armor_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -500,7 +500,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "cap_inject1"
+                "value": "exp_armor_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -519,7 +519,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "config_ind1"
+                "value": "ion_armor_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -538,7 +538,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "config_int1"
+                "value": "hvy_armor_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -557,7 +557,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "las_armor_1"
+                "value": "config_bmb1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -576,7 +576,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "beamcannon1"
+                "value": "config_fig1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -595,7 +595,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "hvy_armor_1"
+                "value": "config_int1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -614,7 +614,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "config_fig1"
+                "value": "config_ind1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -633,7 +633,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "exp_armor_1"
+                "value": "beamcannon1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -642,25 +642,6 @@
               "Repos_Posy": {
                 "type": "word",
                 "value": 10
-              }
-            },
-            {
-              "__struct_id": 30,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "ion_armor_1"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 12
               }
             }
           ]

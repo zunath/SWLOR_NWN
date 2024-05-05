@@ -1073,20 +1073,35 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .RequiresTarget()
                 .Action((user, target, location, args) =>
                 {
-                    if (!GetIsDM(target) && !GetIsDMPossessed(target))
+                    if (Space.GetShipStatus(target) != null && !GetIsDM(target) && !GetIsDMPossessed(target))
                     {
-                        if (Space.GetShipStatus(target) != null && int.TryParse(args[0], out var amount))
+                        var targetStatus = Space.GetShipStatus(target);
+
+                        if (args.Length <= 0)
+                        {
+                            targetStatus.Capacitor = targetStatus.MaxCapacitor;
+                            targetStatus.Hull = targetStatus.MaxHull;
+                            targetStatus.Shield = targetStatus.MaxShield;
+                        }
+                        else if (int.TryParse(args[0], out var amount))
                         {
                             Space.RestoreHull(target, Space.GetShipStatus(target), amount);
                             Space.RestoreShield(target, Space.GetShipStatus(target), amount);
                             Space.RestoreCapacitor(target, Space.GetShipStatus(target), amount);
-                        } 
-                        else if (Space.GetShipStatus(target) != null && args[0] == null)
+                        }
+
+                        if (GetIsPC(target))
                         {
-                            var targetStatus = Space.GetShipStatus(target);
-                            targetStatus.Capacitor = targetStatus.MaxCapacitor;
-                            targetStatus.Hull = targetStatus.MaxHull;
-                            targetStatus.Shield = targetStatus.MaxShield;
+                            var targetPlayerId = GetObjectUUID(target);
+                            var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
+                            var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
+
+                            dbPlayerShip.Status.Shield = targetStatus.Shield;
+                            dbPlayerShip.Status.Hull = targetStatus.Hull;
+
+                            DB.Set(dbPlayerShip);
+                            ExecuteScript("pc_shld_adjusted", target);
+                            ExecuteScript("pc_hull_adjusted", target);
                         }
                     }
                 });

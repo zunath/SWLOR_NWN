@@ -293,7 +293,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             // Republic Thranta
             _builder.Create(RecipeType.CorvetteRepThranta, SkillType.Engineering)
                 .Category(RecipeCategoryType.Starship)
-                .Resref("capdeed_nthran")
+                .Resref("capdeed_rthran")
                 .Level(53)
                 .Quantity(1)
                 .RequirementUnlocked()
@@ -303,7 +303,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             // Sith Thranta
             _builder.Create(RecipeType.CorvetteSithThranta, SkillType.Engineering)
                 .Category(RecipeCategoryType.Starship)
-                .Resref("capdeed_nthran")
+                .Resref("capdeed_sthran")
                 .Level(53)
                 .Quantity(1)
                 .RequirementUnlocked()
@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             // Terminus Corsair
             _builder.Create(RecipeType.CorvetteTerminus, SkillType.Engineering)
                 .Category(RecipeCategoryType.Starship)
-                .Resref("capdeed_nthran")
+                .Resref("capdeed_corsa")
                 .Level(53)
                 .Quantity(1)
                 .RequirementUnlocked()
@@ -333,7 +333,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             // Hutt Corvette
             _builder.Create(RecipeType.CorvetteHutt, SkillType.Engineering)
                 .Category(RecipeCategoryType.Starship)
-                .Resref("capdeed_nthran")
+                .Resref("capdeed_huttco")
                 .Level(53)
                 .Quantity(1)
                 .RequirementUnlocked()
@@ -343,7 +343,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             // CZC Armored Transport
             _builder.Create(RecipeType.CorvetteArmoredTransport, SkillType.Engineering)
                 .Category(RecipeCategoryType.Starship)
-                .Resref("capdeed_nthran")
+                .Resref("capdeed_hvycor")
                 .Level(53)
                 .Quantity(1)
                 .RequirementUnlocked()
@@ -353,7 +353,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             // Chiss Trireme
             _builder.Create(RecipeType.CorvetteChissTrireme, SkillType.Engineering)
                 .Category(RecipeCategoryType.Starship)
-                .Resref("capdeed_nthran")
+                .Resref("capdeed_chisst")
                 .Level(53)
                 .Quantity(1)
                 .RequirementUnlocked()
@@ -363,7 +363,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             // Corellian Gunboat
             _builder.Create(RecipeType.CorvetteCorellian, SkillType.Engineering)
                 .Category(RecipeCategoryType.Starship)
-                .Resref("capdeed_nthran")
+                .Resref("capdeed_cgunb")
                 .Level(53)
                 .Quantity(1)
                 .RequirementUnlocked()

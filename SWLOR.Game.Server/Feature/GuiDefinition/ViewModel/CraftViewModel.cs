@@ -1528,7 +1528,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(_recipe);
             for (var currentBonus = 1; currentBonus <= _activeBlueprint.ItemBonuses; currentBonus++)
             {
-                var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, currentBonus, recipe.IsItemIntendedForCrafting);
+                var tier = currentBonus;
+
+                // Stat pool tier is based on the recipe level.
+                // This ensures top-end stats don't get applied to a low-tier weapon, for balancing purposes.
+                if (recipe.Level >= 0 && recipe.Level <= 20 && tier > 1)
+                    tier = 1;
+                else if (recipe.Level >= 21 && recipe.Level <= 40 && tier > 2)
+                    tier = 2;
+
+                var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, tier, recipe.IsItemIntendedForCrafting);
                 if (bonus == null)
                     continue;
 

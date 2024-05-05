@@ -1769,6 +1769,7 @@ namespace SWLOR.Game.Server.Service
                              shipModuleDetail.Type == ShipModuleType.ProtonBomb ||
                              shipModuleDetail.Type == ShipModuleType.Missile ||
                              shipModuleDetail.Type == ShipModuleType.IonCannon ||
+                             shipModuleDetail.Type == ShipModuleType.BeamLaser ||
                              shipModuleDetail.Type == ShipModuleType.CombatLaser)
                     {
                         useModule = true;

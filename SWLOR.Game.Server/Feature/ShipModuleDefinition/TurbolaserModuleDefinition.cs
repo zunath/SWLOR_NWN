@@ -79,37 +79,40 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         float delay = i * 3f;
                         DelayCommand(delay, () =>
                         {
-                            var roll = Random.D100(1);
-                            var isHit = roll <= chanceToHit;
-                            if (isHit && (!Space.GetShipStatus(target).CapitalShip && Random.D2(1) != 2))
+                            if (!GetIsDead(activator))
                             {
-                                AssignCommand(activator, () =>
+                                var roll = Random.D100(1);
+                                var isHit = roll <= chanceToHit;
+                                if (isHit && (!Space.GetShipStatus(target).CapitalShip && Random.D2(1) != 2))
                                 {
-                                    ApplyEffectToObject(DurationType.Instant, sound, target);
-                                    ApplyEffectToObject(DurationType.Instant, missile, target);
-                                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Fire), target);
-
-                                    DelayCommand(0.3f, () =>
+                                    AssignCommand(activator, () =>
                                     {
-                                        Space.ApplyShipDamage(activator, target, damage);
+                                        ApplyEffectToObject(DurationType.Instant, sound, target);
+                                        ApplyEffectToObject(DurationType.Instant, missile, target);
+                                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Fire), target);
+
+                                        DelayCommand(0.3f, () =>
+                                        {
+                                            Space.ApplyShipDamage(activator, target, damage);
+                                        });
                                     });
-                                });
-                            }
-                            else
-                            {
-                                AssignCommand(activator, () =>
+                                }
+                                else
                                 {
-                                    ApplyEffectToObject(DurationType.Instant, sound, target);
-                                    ApplyEffectToObject(DurationType.Instant, missile, target);
-                                });
+                                    AssignCommand(activator, () =>
+                                    {
+                                        ApplyEffectToObject(DurationType.Instant, sound, target);
+                                        ApplyEffectToObject(DurationType.Instant, missile, target);
+                                    });
+                                }
+
+                                var attackId = isHit ? 1 : 4;
+                                var combatLogMessage = Combat.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
+                                Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
+
+                                Enmity.ModifyEnmity(activator, target, damage);
+                                CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
                             }
-
-                            var attackId = isHit ? 1 : 4;
-                            var combatLogMessage = Combat.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
-                            Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
-
-                            Enmity.ModifyEnmity(activator, target, damage);
-                            CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
                         });
                     }
                 });

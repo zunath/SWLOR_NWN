@@ -29,9 +29,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             QuadLaserCannon("npc_quadlas7", "Tier 7 Quad Laser", "T7 Quad Lasers", "NPC Quad Lasers.", 20, 6);
             QuadLaserCannon("npc_quadlas8", "Tier 8 Quad Laser", "T8 Quad Lasers", "NPC Quad Lasers.", 25, 6);
             QuadLaserCannon("npc_quadlas9", "Tier 9 Quad Laser", "T9 Quad Lasers", "NPC Quad Lasers.", 25, 6);
-            QuadLaserCannon("npc_quadlas10", "Tier 10 Quad Laser", "T10 Quad Lasers", "NPC Quad Lasers.", 30, 6);
-            QuadLaserCannon("npc_quadlas11", "Tier 11 Quad Laser", "T11 Quad Lasers", "NPC Quad Lasers.", 30, 7);
-            QuadLaserCannon("npc_quadlas12", "Tier 12 Quad Laser", "T12 Quad Lasers", "NPC Quad Lasers.", 30, 8);
+            QuadLaserCannon("npc_quadlas10", "Tier 10 Quad Laser", "T10 Quad Laser", "NPC Quad Lasers.", 30, 6);
+            QuadLaserCannon("npc_quadlas11", "Tier 11 Quad Laser", "T11 Quad Laser", "NPC Quad Lasers.", 30, 7);
+            QuadLaserCannon("npc_quadlas12", "Tier 12 Quad Laser", "T12 Quad Laser", "NPC Quad Lasers.", 30, 8);
 
             return _builder.Build();
         }

@@ -76,62 +76,65 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var roll = Random.D100(1);
                             var isHit = roll <= chanceToHit;
 
-                            if (isHit)
+                            if (!GetIsDead(activator))
                             {
-                                AssignCommand(activator, () =>
-                                {
-                                    ApplyEffectToObject(DurationType.Temporary, effectBeam, target, 1.0f);
-                                    ApplyEffectToObject(DurationType.Temporary, effectLightning, target, 1.0f);
-                                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ion_Shot), activator);
-                                });
-
-                                DelayCommand(0.1f, () =>
+                                if (isHit)
                                 {
                                     AssignCommand(activator, () =>
                                     {
-                                        var shieldDamage = int.Min(damage, targetShipStatus.Shield);
-                                        var armorDamage = (damage - shieldDamage) / 4;
-                                        if (armorDamage < 0)
-                                        {
-                                            armorDamage = 0;
-                                        }
-                                        var effect = EffectVisualEffect(VisualEffect.Vfx_Imp_Dispel, false, 0.5f);
-                                        ApplyEffectToObject(DurationType.Instant, effect, target);
-                                        Space.ApplyShipDamage(activator, target, shieldDamage);
-                                        Space.ApplyShipDamage(activator, target, armorDamage);
-                                        if (armorDamage > 0)
-                                        {
-                                            ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(75), target, 6f);
-                                            ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, 4), target, 6f);
-                                        }
+                                        ApplyEffectToObject(DurationType.Temporary, effectBeam, target, 1.0f);
+                                        ApplyEffectToObject(DurationType.Temporary, effectLightning, target, 1.0f);
+                                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ion_Shot), activator);
                                     });
-                                });
-                            }
-                            else
-                            {
-                                AssignCommand(activator, () =>
-                                {
-                                    ApplyEffectToObject(DurationType.Temporary, effectBeam, target, 1.0f);
-                                    ApplyEffectToObject(DurationType.Temporary, effectLightning, target, 1.0f);
-                                });
 
-                                DelayCommand(0.1f, () =>
+                                    DelayCommand(0.1f, () =>
+                                    {
+                                        AssignCommand(activator, () =>
+                                        {
+                                            var shieldDamage = int.Min(damage, targetShipStatus.Shield);
+                                            var armorDamage = (damage - shieldDamage) / 4;
+                                            if (armorDamage < 0)
+                                            {
+                                                armorDamage = 0;
+                                            }
+                                            var effect = EffectVisualEffect(VisualEffect.Vfx_Imp_Dispel, false, 0.5f);
+                                            ApplyEffectToObject(DurationType.Instant, effect, target);
+                                            Space.ApplyShipDamage(activator, target, shieldDamage);
+                                            Space.ApplyShipDamage(activator, target, armorDamage);
+                                            if (armorDamage > 0)
+                                            {
+                                                ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(75), target, 6f);
+                                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, 4), target, 6f);
+                                            }
+                                        });
+                                    });
+                                }
+                                else
                                 {
                                     AssignCommand(activator, () =>
                                     {
-                                        var effect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion, true);
                                         ApplyEffectToObject(DurationType.Temporary, effectBeam, target, 1.0f);
                                         ApplyEffectToObject(DurationType.Temporary, effectLightning, target, 1.0f);
                                     });
-                                });
+
+                                    DelayCommand(0.1f, () =>
+                                    {
+                                        AssignCommand(activator, () =>
+                                        {
+                                            var effect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion, true);
+                                            ApplyEffectToObject(DurationType.Temporary, effectBeam, target, 1.0f);
+                                            ApplyEffectToObject(DurationType.Temporary, effectLightning, target, 1.0f);
+                                        });
+                                    });
+                                }
+
+                                var attackId = isHit ? 1 : 4;
+                                var combatLogMessage = Combat.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
+                                Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
+
+                                Enmity.ModifyEnmity(activator, target, damage);
+                                CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
                             }
-
-                            var attackId = isHit ? 1 : 4;
-                            var combatLogMessage = Combat.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
-                            Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
-
-                            Enmity.ModifyEnmity(activator, target, damage);
-                            CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
                         });
                     }
                 });

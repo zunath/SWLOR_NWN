@@ -75,40 +75,43 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     float delay = i * 2f;
                     DelayCommand(delay, () =>
                     {
-                        target = GetFirstObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
-                        while (GetIsObjectValid(target))
+                        if (!GetIsDead(activator))
                         {
-                            if (target != activator && Random.D2(1) == 1)
+                            target = GetFirstObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
+                            while (GetIsObjectValid(target))
                             {
-                                var defenseBonus = targetShipStatus.ThermalDefense * 2;
-                                var defense = Stat.GetDefense(target, CombatDamageType.Thermal, AbilityType.Vitality, defenseBonus);
-                                var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                                var damage = Combat.CalculateDamage(
-                                    attack,
-                                    dmg,
-                                    attackerStat,
-                                    defense,
-                                    defenderStat,
-                                    0);
-                                var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
-                                var chanceToHit = Space.CalculateChanceToHit(activator, target);
-                                var roll = Random.D100(1);
-                                var isHit = roll <= chanceToHit;
-                                ApplyEffectToObject(DurationType.Instant, missile, target);
-                                if (isHit)
+                                if (target != activator && Random.D2(1) == 1)
                                 {
-                                    Space.ApplyShipDamage(activator, target, damage);
+                                    var defenseBonus = targetShipStatus.ThermalDefense * 2;
+                                    var defense = Stat.GetDefense(target, CombatDamageType.Thermal, AbilityType.Vitality, defenseBonus);
+                                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+                                    var damage = Combat.CalculateDamage(
+                                        attack,
+                                        dmg,
+                                        attackerStat,
+                                        defense,
+                                        defenderStat,
+                                        0);
+                                    var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
+                                    var chanceToHit = Space.CalculateChanceToHit(activator, target);
+                                    var roll = Random.D100(1);
+                                    var isHit = roll <= chanceToHit;
+                                    ApplyEffectToObject(DurationType.Instant, missile, target);
+                                    if (isHit)
+                                    {
+                                        Space.ApplyShipDamage(activator, target, damage);
+                                    }
+
+                                    var attackId = isHit ? 1 : 4;
+                                    var combatLogMessage = Combat.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
+                                    Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
+
+                                    Enmity.ModifyEnmity(activator, target, damage);
+                                    CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
                                 }
-
-                                var attackId = isHit ? 1 : 4;
-                                var combatLogMessage = Combat.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
-                                Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
-
-                                Enmity.ModifyEnmity(activator, target, damage);
-                                CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
+                                target = GetNextObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
                             }
-                            target = GetNextObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
-                            }
+                        }
                     });
                 }
             });

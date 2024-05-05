@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ref_tilarium", 3, 2)
                 .AddGold(300, 1)
                 .AddItem("ref_veldite", 1, 1)
+                .AddItem("ship_missile", 1, 1)
                 .AddItem("jade", 1, 2, true)
                 .AddItem("aluminum", 1, 2, true);
 
@@ -52,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ref_scordspar", 3, 2)
                 .AddGold(600, 1)
                 .AddItem("ref_currian", 1, 1)
+                .AddItem("ship_missile", 1, 3)
                 .AddItem("agate", 1, 2, true)
                 .AddItem("steel", 1, 2, true);
 
@@ -79,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ref_plagionite", 3, 2)
                 .AddGold(900, 1)
                 .AddItem("ref_idailia", 1, 1)
+                .AddItem("ship_missile", 1, 5)
                 .AddItem("citrine", 1, 2, true)
                 .AddItem("obsidian", 1, 2, true);
 
@@ -106,6 +109,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ref_keromber", 3, 2)
                 .AddGold(1500, 1)
                 .AddItem("ref_barinium", 1, 1)
+                .AddItem("ship_missile", 1, 7)
                 .AddItem("crystal", 1, 2, true)
                 .AddItem("ruby", 1, 2, true);
 
@@ -133,6 +137,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ref_gostian", 3, 1)
                 .AddGold(2000, 1)
                 .AddItem("ref_jasioclase", 1, 1)
+                .AddItem("ship_missile", 1, 9)
                 .AddItem("diamond", 1, 2, true)
                 .AddItem("emerald", 1, 2, true);
 
@@ -146,7 +151,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("emerald", 1, 2)
                 .AddItem("hyphae_wood", 1, 2)
                 .AddItem("fiberp_high", 1, 2)
-                .AddItem("zinsiam", 1, 1, true);
+                .AddItem("proton_bomb", 1, 1, true)
+                .AddItem("zinsiam", 1, 1, true)
+                .AddItem("ref_arda", 1, 1, true);
 
             _builder.Create("SPACE_BOSS_T5")
                 .AddGold(10000, 1)
@@ -157,20 +164,23 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ref_gostian", 3, 5)
                 .AddGold(3000, 1)
                 .AddItem("ref_jasioclase", 1, 3)
+                .AddItem("ship_missile", 1, 11)
                 .AddItem("diamond", 1, 4, true)
                 .AddItem("emerald", 1, 4, true);
 
             _builder.Create("SPACE_ELITE_T6")
-                .AddItem("elec_high", 1, 2)
-                .AddItem("ref_gostian", 1, 2)
+                .AddItem("elec_high", 1, 3)
+                .AddItem("ref_gostian", 1, 3)
                 .AddGold(3000, 1)
-                .AddItem("ref_jasioclase", 1, 2)
-                .AddItem("lth_high", 1, 2)
-                .AddItem("diamond", 1, 2)
-                .AddItem("emerald", 1, 2)
-                .AddItem("hyphae_wood", 1, 2)
-                .AddItem("fiberp_high", 1, 2)
-                .AddItem("zinsiam", 1, 2, true);
+                .AddItem("ref_jasioclase", 1, 3)
+                .AddItem("lth_high", 1, 3)
+                .AddItem("diamond", 1, 3)
+                .AddItem("emerald", 1, 3)
+                .AddItem("hyphae_wood", 1, 3)
+                .AddItem("fiberp_high", 1, 3)
+                .AddItem("proton_bomb", 1, 2, true)
+                .AddItem("zinsiam", 1, 3, true)
+                .AddItem("ref_arda", 1, 3, true);
 
             _builder.Create("SPACE_BOSS_T6")
                 .AddGold(15000, 1)
@@ -202,6 +212,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("recipe_modtarget", 1)
                 .AddItem("recipe_modturbo", 1)
                 .AddItem("recipe_conwar", 1);
+
+            _builder.Create("THORILIDE")
+                .AddItem("thor_crys", 1);
         }
     }
 }

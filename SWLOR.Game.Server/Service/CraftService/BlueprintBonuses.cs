@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace SWLOR.Game.Server.Service.CraftService
 {
-    internal class BlueprintBonusSet
+    internal class BlueprintBonuses
     {
         private readonly Dictionary<RecipeEnhancementType, Dictionary<bool, Dictionary<int, List<BlueprintBonus>>>> _bonusesByEnhancementType = new();
-        
-        public BlueprintBonusSet()
+
+        public BlueprintBonuses()
         {
             _bonusesByEnhancementType[RecipeEnhancementType.Weapon] = new Dictionary<bool, Dictionary<int, List<BlueprintBonus>>>();
             _bonusesByEnhancementType[RecipeEnhancementType.Weapon][false] = new Dictionary<int, List<BlueprintBonus>>();

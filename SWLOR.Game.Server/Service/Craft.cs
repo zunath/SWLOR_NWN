@@ -794,12 +794,11 @@ namespace SWLOR.Game.Server.Service
             for (var ip = GetFirstItemProperty(blueprint); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(blueprint))
             {
                 var type = GetItemPropertyType(ip);
+                var subType = GetItemPropertySubType(ip);
+                var costValue = GetItemPropertyCostTableValue(ip);
 
                 if (type == ItemPropertyType.Blueprint)
                 {
-                    var subType = GetItemPropertySubType(ip);
-                    var costValue = GetItemPropertyCostTableValue(ip);
-                    
                     if (subType == (int)BlueprintSubType.Level)
                     {
                         blueprintDetail.Level = costValue;
@@ -833,7 +832,8 @@ namespace SWLOR.Game.Server.Service
                          type == ItemPropertyType.ModuleEnhancement ||
                          type == ItemPropertyType.DroidEnhancement)
                 {
-                    blueprintDetail.GuaranteedBonuses.Add(ip);
+                    var enhancementIP = BuildItemPropertyForEnhancement((EnhancementSubType)subType, costValue);
+                    blueprintDetail.GuaranteedBonuses.Add(enhancementIP);
                 }
                 
             }
@@ -914,7 +914,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The number of seconds to wait before the blueprint is researched to the next level.</returns>
         public static int CalculateBlueprintResearchSeconds(RecipeType recipe, int blueprintLevel, int reductionBonus)
         {
-            return CalculateResearchCost(recipe, blueprintLevel, 400, reductionBonus * 0.01f);
+            return CalculateResearchCost(recipe, blueprintLevel, 1, reductionBonus * 0.01f);
         }
 
         /// <summary>

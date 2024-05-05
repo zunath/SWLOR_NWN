@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -51,6 +53,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string _researchTerminalPropertyId;
         private uint _blueprintItem;
         private RecipeType _recipeType;
+
+        private static BlueprintBonuses _blueprintBonuses = new();
 
         public string RecipeName
         {
@@ -443,9 +447,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
 
-            void AddGuaranteedBonus()
+            void AddGuaranteedBonus(int tier)
             {
+                var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, tier, recipe.IsItemIntendedForCrafting);
+                ItemProperty ip;
 
+                switch (recipe.EnhancementType)
+                {
+                    case RecipeEnhancementType.Weapon:
+                        ip = ItemPropertyCustom(ItemPropertyType.WeaponEnhancement, (int)bonus.Type, bonus.Amount);
+                        BiowareXP2.IPSafeAddItemProperty(item, ip, 0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                        break;
+                    case RecipeEnhancementType.Armor:
+                        ip = ItemPropertyCustom(ItemPropertyType.ArmorEnhancement, (int)bonus.Type, bonus.Amount);
+                        BiowareXP2.IPSafeAddItemProperty(item, ip, 0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                        break;
+                    case RecipeEnhancementType.Food:
+                        ip = ItemPropertyCustom(ItemPropertyType.FoodEnhancement, (int)bonus.Type, bonus.Amount);
+                        BiowareXP2.IPSafeAddItemProperty(item, ip, 0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                        break;
+                }
             }
 
             blueprintDetails.Level++;
@@ -456,33 +477,53 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 case 1:
                     blueprintDetails.ItemBonuses++;
+                    if(Random.Next(1000) <= 1)
+                        AddGuaranteedBonus(1);
                     break;
                 case 2:
                     blueprintDetails.LicensedRuns++;
+                    if (Random.Next(1000) <= 2)
+                        AddGuaranteedBonus(1);
                     break;
                 case 3:
                     AddBlueprintBonus();
+                    if (Random.Next(1000) <= 3)
+                        AddGuaranteedBonus(1);
                     break;
                 case 4:
                     blueprintDetails.LicensedRuns++;
+                    if (Random.Next(1000) <= 10)
+                        AddGuaranteedBonus(1);
                     break;
                 case 5:
                     AddBlueprintBonus();
+                    if (Random.Next(1000) <= 15)
+                        AddGuaranteedBonus(2);
                     break;
                 case 6:
                     blueprintDetails.ItemBonuses++;
+                    if (Random.Next(1000) <= 20)
+                        AddGuaranteedBonus(2);
                     break;
                 case 7:
-                    AddGuaranteedBonus();
+                    AddGuaranteedBonus(3);
+                    if (Random.Next(1000) <= 10)
+                        AddGuaranteedBonus(2);
                     break;
                 case 8:
                     AddBlueprintBonus();
+                    if (Random.Next(1000) <= 40)
+                        AddGuaranteedBonus(2);
                     break;
                 case 9:
                     blueprintDetails.ItemBonuses++;
+                    if (Random.Next(1000) <= 50)
+                        AddGuaranteedBonus(3);
                     break;
                 case 10:
                     blueprintDetails.EnhancementSlots++;
+                    if (Random.Next(1000) <= 55)
+                        AddGuaranteedBonus(3);
                     break;
             }
 

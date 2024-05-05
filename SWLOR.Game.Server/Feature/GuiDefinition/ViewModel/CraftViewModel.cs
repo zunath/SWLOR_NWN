@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private uint _blueprintItem;
         private BlueprintDetail _activeBlueprint;
         private bool _hasBlueprint;
-        private static readonly BlueprintBonusSet _blueprintBonuses = new();
+        private static readonly BlueprintBonuses _blueprintBonuses = new();
 
         private PerkType _rapidSynthesisPerk;
         private PerkType _carefulSynthesisPerk;

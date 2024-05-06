@@ -189,7 +189,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "dan_bo"
         },
         "CRAdjust": {
           "type": "int",

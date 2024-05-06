@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementUnlocked()
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("zinsiam", 5)
-                .Component("raw_arkoxit", 10)
+                .Component("ref_arkoxit", 10)
                 .Component("ref_arda", 5)
                 .Component("ref_gostian", 25)
                 .Component("ref_jasioclase", 25);

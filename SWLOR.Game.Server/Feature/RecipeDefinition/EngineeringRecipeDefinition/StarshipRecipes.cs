@@ -274,7 +274,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Category(RecipeCategoryType.Starship)
                 .Resref("proton_bomb")
                 .Level(45)
-                .Quantity(25)
+                .Quantity(1)
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 2)

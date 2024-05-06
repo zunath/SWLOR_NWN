@@ -300,7 +300,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
-                .Component("capc_shgen", 2)
                 .Component("capc_powsys", 1)
                 .Component("capc_eng", 1);
 
@@ -314,7 +313,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
-                .Component("capc_shgen", 2)
                 .Component("capc_powsys", 1)
                 .Component("capc_eng", 1);
 
@@ -328,7 +326,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
-                .Component("capc_shgen", 2)
                 .Component("capc_powsys", 1)
                 .Component("capc_eng", 1);
 
@@ -342,7 +339,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
-                .Component("capc_shgen", 2)
                 .Component("capc_powsys", 1)
                 .Component("capc_eng", 1);
 
@@ -356,7 +352,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
-                .Component("capc_shgen", 2)
                 .Component("capc_powsys", 1)
                 .Component("capc_eng", 1);
 
@@ -370,7 +365,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
-                .Component("capc_shgen", 2)
                 .Component("capc_powsys", 1)
                 .Component("capc_eng", 1);
 
@@ -384,7 +378,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
-                .Component("capc_shgen", 2)
                 .Component("capc_powsys", 1)
                 .Component("capc_eng", 1);
 
@@ -398,7 +391,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
-                .Component("capc_shgen", 2)
                 .Component("capc_powsys", 1)
                 .Component("capc_eng", 1);
         }

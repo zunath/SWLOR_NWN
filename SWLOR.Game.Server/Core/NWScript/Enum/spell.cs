@@ -969,5 +969,8 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Reprogram = 1011,
         ModifyAppearance = 1012,
         Tame = 1013,
+        AdrenalStim1 = 1014,
+        AdrenalStim2 = 1015,
+        AdrenalStim3 = 1016,
     }
 }

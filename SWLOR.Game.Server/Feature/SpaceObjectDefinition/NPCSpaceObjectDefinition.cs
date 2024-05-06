@@ -298,9 +298,9 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("npc_cap5")
                 .ShipModule("npcautolas5")
                 .ShipModule("npc_quadlas5")
-                .ShipModule("npc_quadlas5")
                 .ShipModule("com_laser_4")
-                .ShipModule("com_laser_4");
+                .ShipModule("com_laser_4")
+                .ShipModule("storm_cann");
 
             _builder.Create("t6bomber")
                 .ItemTag("NPC_Bomber6")
@@ -352,7 +352,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("con_cap3")
                 .ShipModule("npcautolas8")
                 .ShipModule("npc_quadlas8")
-                .ShipModule("npc_quadlas8")
+                .ShipModule("storm_cann")
                 .ShipModule("turbolas1")
                 .ShipModule("turbolas1");
 
@@ -363,9 +363,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("npc_quadlas11")
                 .ShipModule("npc_quadlas11")
                 .ShipModule("turbolas3")
-                .ShipModule("turbolas3")
-                .ShipModule("turbolas2")
-                .ShipModule("turbolas2");
+                .ShipModule("acm_launch_1");
 
             _builder.Create("mandocap3")
                 .ItemTag("NPC_MandoCap3")
@@ -374,9 +372,8 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("npc_quadlas12")
                 .ShipModule("npc_quadlas12")
                 .ShipModule("turbolas3")
-                .ShipModule("turbolas3")
-                .ShipModule("turbolas2")
-                .ShipModule("turbolas2");
+                .ShipModule("acm_launch_1")
+                .ShipModule("storm_cann");
 
             _builder.Create("sithcap1")
                 .ItemTag("NPC_SithCap1")
@@ -399,7 +396,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("con_cap3")
                 .ShipModule("npcautolas8")
                 .ShipModule("npc_quadlas8")
-                .ShipModule("npc_quadlas8")
+                .ShipModule("storm_cann")
                 .ShipModule("turbolas1")
                 .ShipModule("turbolas1");
 
@@ -421,7 +418,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("npc_quadlas10")
                 .ShipModule("turbolas3")
                 .ShipModule("turbolas2")
-                .ShipModule("turbolas1");
+                .ShipModule("acm_launch_1");
 
             _builder.Create("sithcap6")
                 .ItemTag("NPC_SithCap6")
@@ -430,9 +427,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("npc_quadlas11")
                 .ShipModule("npc_quadlas11")
                 .ShipModule("turbolas3")
-                .ShipModule("turbolas3")
-                .ShipModule("turbolas2")
-                .ShipModule("turbolas2");
+                .ShipModule("acm_launch_1");
 
             _builder.Create("sithcap7")
                 .ItemTag("NPC_SithCap7")
@@ -441,9 +436,8 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("npc_quadlas12")
                 .ShipModule("npc_quadlas12")
                 .ShipModule("turbolas3")
-                .ShipModule("turbolas3")
-                .ShipModule("turbolas2")
-                .ShipModule("turbolas2");
+                .ShipModule("acm_launch_1")
+                .ShipModule("storm_cann");
         }
     }
 }

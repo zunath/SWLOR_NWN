@@ -1350,7 +1350,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         ThermalDefense = shipDetail.ThermalDefense + bonuses.ThermalDefense,
                         Accuracy = shipDetail.Accuracy + bonuses.Accuracy,
                         Evasion = shipDetail.Evasion + bonuses.Evasion,
-                        ShieldRechargeRate = shipDetail.ShieldRechargeRate - bonuses.ShieldRechargeRate
+                        ShieldRechargeRate = shipDetail.ShieldRechargeRate - bonuses.ShieldRechargeRate,
+                        CapitalShip = shipDetail.CapitalShip
                     }
                 };
                 DB.Set(ship);
@@ -1520,13 +1521,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    if (moduleDetails.CapitalClassModule && !dbShip.Status.CapitalShip)
+                    var capShip = dbShip.Status.CapitalShip;
+                    var capMod = moduleDetails.CapitalClassModule;
+                    if (capShip)
+                    {
+                        SendMessageToPC(Player, "Recognized as capital ship.");
+                    }
+                    if (capMod)
+                    {
+                        SendMessageToPC(Player, "Recognized as capital module.");
+                    }
+
+                    if (!capShip && capMod )
                     {
                         SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
                         return;
                     }
 
-                    if (!moduleDetails.CapitalClassModule && dbShip.Status.CapitalShip)
+                    if (capShip && !capMod)
                     {
                         SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
                         return;
@@ -1602,13 +1614,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    if (moduleDetails.CapitalClassModule && !dbShip.Status.CapitalShip)
+                    var capShip = dbShip.Status.CapitalShip;
+                    var capMod = moduleDetails.CapitalClassModule;
+
+                    if (capShip != true && capMod == true)
                     {
                         SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
                         return;
                     }
 
-                    if (!moduleDetails.CapitalClassModule && dbShip.Status.CapitalShip)
+                    if (capShip == true && capMod != true)
                     {
                         SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
                         return;
@@ -1683,13 +1698,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             return;
                         }
 
-                        if (moduleDetails.CapitalClassModule && !dbShip.Status.CapitalShip)
+                        var capShip = dbShip.Status.CapitalShip;
+                        var capMod = moduleDetails.CapitalClassModule;
+
+                        if (capShip != true && capMod == true)
                         {
                             SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
                             return;
                         }
 
-                        if (!moduleDetails.CapitalClassModule && dbShip.Status.CapitalShip)
+                        if (capShip == true && capMod != true)
                         {
                             SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
                             return;

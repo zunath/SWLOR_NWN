@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
                 }
 
-                dmg += moduleBonus / 2;
+                var moduleDMG = dmg + moduleBonus / 2;
                 var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
                 var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
 
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             target = GetFirstObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
                             while (GetIsObjectValid(target))
                             {
-                                if (target != activator && Random.D2(1) == 1 && GetIsEnemy(target, activator))
+                                if (target != activator && Random.D2(1) == 1 && GetIsEnemy(target, activator) && Space.GetShipStatus(target) != null)
                                 {
                                     targetShipStatus = Space.GetShipStatus(target);
                                     var defenseBonus = targetShipStatus.ThermalDefense * 2;
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                                     var damage = Combat.CalculateDamage(
                                         attack,
-                                        dmg,
+                                        moduleDMG,
                                         attackerStat,
                                         defense,
                                         defenderStat,

@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, 5)
-                .Recast(18f)
+                .Recast(12f)
                 .Capacitor(30)
                 .CapitalClassModule()
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
@@ -53,12 +53,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
                     }
 
+                    var moduleDamage = dmg + moduleBonus;
                     var defenseBonus = targetShipStatus.EMDefense * 2;
                     var defense = Stat.GetDefense(target, CombatDamageType.EM, AbilityType.Vitality, defenseBonus);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
-                        dmg,
+                        moduleDamage,
                         attackerStat,
                         defense,
                         defenderStat,

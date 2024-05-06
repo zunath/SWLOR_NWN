@@ -112,6 +112,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         SetItemStackSize(item, stackSize - 1);
                     }
 
+                    var moduleDamage = dmg + moduleBonus;
+
                     var targetDistance = GetDistanceBetween(activator, target);
                     var targetLocation = GetLocation(target);
                     var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
@@ -135,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake, !isHit), target);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summondragon, !isHit), target);
-                        PerformAttack(activator, target, dmg, attackBonus, isHit);
+                        PerformAttack(activator, target, moduleDamage, attackBonus, isHit);
                     });
                 });
         }

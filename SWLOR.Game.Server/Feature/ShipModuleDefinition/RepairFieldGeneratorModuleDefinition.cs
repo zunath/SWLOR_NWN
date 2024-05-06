@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description(description)
                 .PowerType(ShipModulePowerType.High)
                 .Capacitor(25)
-                .Recast(30f)
+                .Recast(18f)
                 .CapitalClassModule()
                 .CanTargetSelf()
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>

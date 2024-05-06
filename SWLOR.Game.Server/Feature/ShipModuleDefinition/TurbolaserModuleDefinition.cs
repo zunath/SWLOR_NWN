@@ -57,18 +57,18 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
                         attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
                     }
+                    var moduleDamage = dmg + moduleBonus * 2;
                     var defenseBonus = targetShipStatus.ThermalDefense * 2;
                     var defense = Stat.GetDefense(target, CombatDamageType.Thermal, AbilityType.Vitality, defenseBonus);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
-                        dmg,
+                        moduleDamage,
                         attackerStat,
                         defense,
                         defenderStat,
                         0);
 
-                    dmg += moduleBonus;
                     var chanceToHit = Space.CalculateChanceToHit(activator, target);
                     var roll = Random.D100(1);
                     var isHit = roll <= chanceToHit;

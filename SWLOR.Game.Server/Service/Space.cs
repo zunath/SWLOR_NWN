@@ -1301,7 +1301,8 @@ namespace SWLOR.Game.Server.Service
                 ThermalDefense = shipDetail.ThermalDefense,
                 Accuracy = shipDetail.Accuracy,
                 Evasion = shipDetail.Evasion,
-                ShieldRechargeRate = shipDetail.ShieldRechargeRate
+                ShieldRechargeRate = shipDetail.ShieldRechargeRate,
+                CapitalShip = shipDetail.CapitalShip
             };
 
             // Attach the modules to the ship status.

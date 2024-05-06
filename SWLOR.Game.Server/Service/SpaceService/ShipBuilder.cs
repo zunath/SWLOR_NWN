@@ -150,10 +150,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
 
         /// <summary>
-        /// Sets the number of ship configuration nodes on this ship.
-        /// By default ships should have 1 configuration node.
+        /// Determines if the ship is a capital ship.
         /// </summary>
-        /// <param name="shipConfigurationNodes">The number of low power nodes to set.</param>
+        /// <param name="CapitalShip">If the ship is a capital ship.</param>
         /// <returns>A ship builder with the configured options.</returns>
         public ShipBuilder CapitalShip()
         {

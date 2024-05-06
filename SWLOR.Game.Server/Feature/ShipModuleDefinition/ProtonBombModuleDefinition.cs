@@ -95,10 +95,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 })
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
+                    var moduleDamage = dmg + moduleBonus;
                     // Bombs do 50% more damage to unshielded targets. Due to shield recharge starting instantly, allow for up to 4 shield points to be considered "unshielded".
                     if (targetShipStatus.Shield <= 4)
                     {
-                        dmg += dmg / 2;
+                        moduleDamage += moduleDamage / 5;
                     }
                     var item = GetItemPossessedBy(activator, ProtonBombItemResref);
                     var stackSize = GetItemStackSize(item);
@@ -134,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake, !isHit), target);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summondragon, !isHit), target);
-                        PerformAttack(activator, target, dmg, attackBonus, isHit);
+                        PerformAttack(activator, target, moduleDamage, attackBonus, isHit);
                     });
                 });
         }

@@ -72,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var chanceToHit = Space.CalculateChanceToHit(activator, target);
                     var roll = Random.D100(1);
                     var isHit = roll <= chanceToHit;
+                    dmg += moduleBonus / 2;
 
                     if (isHit)
                     {

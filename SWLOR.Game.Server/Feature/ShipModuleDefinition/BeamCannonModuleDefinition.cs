@@ -71,23 +71,30 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     startingDMG += moduleBonus / 2;
                     var beam = EffectBeam(VisualEffect.Vfx_Beam_Holy, activator, BodyNode.Chest);
 
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < 3; i++)
                     {
-                        float delay = i * 0.25f;
+                        float delay = i * 0.33f;
                         DelayCommand(delay, () =>
                         {
+                            var chanceToHit = Space.CalculateChanceToHit(activator, target);
+                            var roll = Random.D100(1);
+                            var isHit = roll <= chanceToHit;
+                            if (isHit)
+                            {
+                                dmg += tickIncrease;
+                            }
+                            else
+                            {
+                                dmg = startingDMG;
+                            }
                             if (!GetIsDead(activator))
                             {
-                                var chanceToHit = Space.CalculateChanceToHit(activator, target);
-                                var roll = Random.D100(1);
-                                var isHit = roll <= chanceToHit;
                                 if (isHit)
                                 {
                                     AssignCommand(activator, () =>
                                     {
                                         ApplyEffectToObject(DurationType.Temporary, beam, target, 0.2f);
                                         Space.ApplyShipDamage(activator, target, damage);
-                                        dmg += tickIncrease;
                                     });
                                 }
                                 else
@@ -95,7 +102,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                     AssignCommand(activator, () =>
                                     {
                                         ApplyEffectToObject(DurationType.Temporary, beam, target, 0.2f);
-                                        dmg = startingDMG;
                                     });
                                 }
 

@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, 5)
-                .Recast(12f)
+                .Recast(8f)
                 .Capacitor(30)
                 .CapitalClassModule()
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var effectBeam = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator, BodyNode.Chest);
                     var effectLightning = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Chest);
 
-                    for (int i = 0; i < 3; i++)
+                    for (int i = 0; i < 4; i++)
                     {
                         float delay = i * 1f;
                         DelayCommand(delay, () =>
@@ -98,14 +98,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                             {
                                                 armorDamage = 0;
                                             }
-                                            var effect = EffectVisualEffect(VisualEffect.Vfx_Imp_Dispel, false, 0.5f);
+                                            var effect = EffectVisualEffect(VisualEffect.Vfx_Imp_Dispel, false);
                                             ApplyEffectToObject(DurationType.Instant, effect, target);
                                             Space.ApplyShipDamage(activator, target, shieldDamage);
                                             Space.ApplyShipDamage(activator, target, armorDamage);
                                             if (armorDamage > 0)
                                             {
                                                 ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(75), target, 6f);
-                                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, 4), target, 6f);
+                                                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, 4), target, 12f);
                                             }
                                         });
                                     });

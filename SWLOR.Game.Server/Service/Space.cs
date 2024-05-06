@@ -1523,7 +1523,7 @@ namespace SWLOR.Game.Server.Service
             if (targetShipStatus == null)
                 return;
 
-            if (targetShipStatus.Hull <= 0)
+            if (targetShipStatus.Hull > 0)
             {
                 targetShipStatus.Hull -= amount;
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);

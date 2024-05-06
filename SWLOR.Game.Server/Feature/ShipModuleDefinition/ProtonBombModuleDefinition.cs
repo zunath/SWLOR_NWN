@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, 5)
-                .Recast(30f)
+                .Recast(18f)
                 .ValidationAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     var item = GetItemPossessedBy(activator, ProtonBombItemResref);

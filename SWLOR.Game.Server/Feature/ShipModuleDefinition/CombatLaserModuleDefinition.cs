@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
-                .Recast(8f)
+                .Recast(6f)
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     var attackBonus = activatorShipStatus.ThermalDamage;

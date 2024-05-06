@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
-                .Recast(18f)
+                .Recast(10f)
                 .Capacitor(capacitor)
                 .CapitalClassModule()
                 .CanTargetSelf()

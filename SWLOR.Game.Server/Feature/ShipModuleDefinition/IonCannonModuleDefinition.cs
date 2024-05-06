@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                 if (armorDamage > 0)
                                 {
                                     ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(50), target, 6f);
-                                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, 1), target, 6f);
+                                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, 2), target, 12f);
                                 }
                             });
                         });

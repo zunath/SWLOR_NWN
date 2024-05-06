@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
             Turbolaser("turbolas1", "Heavy Turbolaser Cannon", "Turbolaser1", "Deals 80 thermal DMG to your target. Designed to target capital ships, it struggles against subcapital ships and has a 50% miss chance against them.", 1, 80, 1, 10);
-            Turbolaser("turbolas2", "Dual Turbolaser Cannon", "Turbolaser1", "Deals 60 thermal DMG to your target, firing twice over two seconds. Designed to target capital ships, it struggles against subcapital ships and has a 50% miss chance against them.", 1, 60, 2, 15);
-            Turbolaser("turbolas3", "Quad Turbolaser Cannon", "Turbolaser1", "Deals 40 thermal DMG to your target, firing four times over four seconds. Designed to target capital ships, it struggles against subcapital ships and has a 50% miss chance against them.", 1, 40, 4, 30);
+            Turbolaser("turbolas2", "Dual Turbolaser Cannon", "Turbolaser2", "Deals 60 thermal DMG to your target, firing twice over two seconds. Designed to target capital ships, it struggles against subcapital ships and has a 50% miss chance against them.", 1, 60, 2, 15);
+            Turbolaser("turbolas3", "Quad Turbolaser Cannon", "Turbolaser3", "Deals 40 thermal DMG to your target, firing four times over four seconds. Designed to target capital ships, it struggles against subcapital ships and has a 50% miss chance against them.", 1, 40, 4, 30);
 
             return _builder.Build();
         }

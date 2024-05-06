@@ -47464,6 +47464,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Basic Beam Cannon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beamcannon1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Capacitor Booster"
                     },
                     "RESREF": {
@@ -47480,6 +47491,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "com_laser_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Durasteel Plating"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hvy_armor_1"
                     }
                   },
                   {
@@ -47519,6 +47541,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Basic Fighter Configuration"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "config_fig1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Hull Booster"
                     },
                     "RESREF": {
@@ -47535,6 +47568,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hull_rep_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Hypermatter Injector"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_inject1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Industrial Configuration"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "config_ind1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Interceptor Configuration"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "config_int1"
                     }
                   },
                   {
@@ -47563,11 +47629,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Basic Mirrored Plating"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "las_armor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Missile Launcher"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "msl_launch_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Reactive Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exp_armor_1"
                     }
                   },
                   {
@@ -47596,6 +47684,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Basic Supplemental Ion Shielding"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ion_armor_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Targeting System"
                     },
                     "RESREF": {
@@ -47618,18 +47717,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Beam Cannon 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "beamcannon1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Beam Cannon 2"
+                      "value": "Beam Cannon I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -47640,7 +47728,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Beam Cannon 3"
+                      "value": "Beam Cannon II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -47651,7 +47739,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Beam Cannon 4"
+                      "value": "Beam Cannon III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -47662,7 +47750,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Beam Cannon 5"
+                      "value": "Beam Cannon IV"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -47948,18 +48036,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Durasteel Plating 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hvy_armor_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Durasteel Plating 2"
+                      "value": "Durasteel Plating I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -47970,7 +48047,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Durasteel Plating 3"
+                      "value": "Durasteel Plating II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -47981,7 +48058,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Durasteel Plating 4"
+                      "value": "Durasteel Plating III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -47992,7 +48069,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Durasteel Plating 5"
+                      "value": "Durasteel Plating IV"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48139,7 +48216,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "config_fig1"
+                      "value": "config_fig2"
                     }
                   },
                   {
@@ -48150,7 +48227,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "config_fig2"
+                      "value": "config_fig3"
                     }
                   },
                   {
@@ -48161,17 +48238,6 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "config_fig3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Fighter Configuration IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
                       "value": "config_fig4"
                     }
                   },
@@ -48179,7 +48245,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Fighter Configuration V"
+                      "value": "Fighter Configuration IV"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48311,18 +48377,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hypermatter Injector 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cap_inject1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Hypermatter Injector 2"
+                      "value": "Hypermatter Injector I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48333,7 +48388,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hypermatter Injector 3"
+                      "value": "Hypermatter Injector II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48344,7 +48399,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hypermatter Injector 4"
+                      "value": "Hypermatter Injector III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48355,7 +48410,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hypermatter Injector 5"
+                      "value": "Hypermatter Injector IV"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48370,7 +48425,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "config_ind1"
+                      "value": "config_ind2"
                     }
                   },
                   {
@@ -48381,7 +48436,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "config_ind2"
+                      "value": "config_ind3"
                     }
                   },
                   {
@@ -48392,17 +48447,6 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "config_ind3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Industrial Configuration IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
                       "value": "config_ind4"
                     }
                   },
@@ -48410,7 +48454,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Industrial Configuration V"
+                      "value": "Industrial Configuration IV"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48436,7 +48480,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "config_int1"
+                      "value": "config_int2"
                     }
                   },
                   {
@@ -48447,7 +48491,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "config_int2"
+                      "value": "config_int3"
                     }
                   },
                   {
@@ -48458,17 +48502,6 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "config_int3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Interceptor Configuration IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
                       "value": "config_int4"
                     }
                   },
@@ -48476,7 +48509,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Interceptor Configuration V"
+                      "value": "Interceptor Configuration IV"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48586,18 +48619,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mirrored Plating 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "las_armor_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mirrored Plating 2"
+                      "value": "Mirrored Plating I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48608,7 +48630,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mirrored Plating 3"
+                      "value": "Mirrored Plating II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48619,7 +48641,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mirrored Plating 4"
+                      "value": "Mirrored Plating III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48630,7 +48652,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mirrored Plating 5"
+                      "value": "Mirrored Plating IV"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48773,18 +48795,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Reactive Armor 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "exp_armor_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Reactive Armor 2"
+                      "value": "Reactive Armor I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48795,7 +48806,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Reactive Armor 3"
+                      "value": "Reactive Armor II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48806,7 +48817,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Reactive Armor 4"
+                      "value": "Reactive Armor III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48817,7 +48828,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Reactive Armor 5"
+                      "value": "Reactive Armor IV"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -49169,18 +49180,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Supplemental Ion Shielding 1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ion_armor_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Supplemental Ion Shielding 2"
+                      "value": "Supplemental Ion Shielding I"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -49191,7 +49191,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Supplemental Ion Shielding 3"
+                      "value": "Supplemental Ion Shielding II"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -49202,7 +49202,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Supplemental Ion Shielding 4"
+                      "value": "Supplemental Ion Shielding III"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -49213,7 +49213,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Supplemental Ion Shielding 5"
+                      "value": "Supplemental Ion Shielding IV"
                     },
                     "RESREF": {
                       "type": "resref",

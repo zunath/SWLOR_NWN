@@ -77,40 +77,40 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         if (!GetIsDead(activator))
                         {
-                            target = GetFirstObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
-                            while (GetIsObjectValid(target))
+                            var nearbyTarget = GetFirstObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
+                            while (GetIsObjectValid(nearbyTarget))
                             {
-                                if (target != activator && Random.D4(1) != 1 && GetIsEnemy(target, activator) && Space.GetShipStatus(target) != null)
+                                if (nearbyTarget != activator && Random.D4(1) != 1 && GetIsEnemy(nearbyTarget, activator) && Space.GetShipStatus(nearbyTarget) != null)
                                 {
-                                    targetShipStatus = Space.GetShipStatus(target);
-                                    var defenseBonus = targetShipStatus.ThermalDefense * 2;
-                                    var defense = Stat.GetDefense(target, CombatDamageType.Thermal, AbilityType.Vitality, defenseBonus);
-                                    var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
+                                    var nearbyShipStatus = Space.GetShipStatus(nearbyTarget);
+                                    var nearbyDefenseBonus = nearbyShipStatus.ThermalDefense * 2;
+                                    var nearbyDefense = Stat.GetDefense(target, CombatDamageType.Thermal, AbilityType.Vitality, nearbyDefenseBonus);
+                                    var nearbyDefenderStat = GetAbilityScore(target, AbilityType.Vitality);
                                     var damage = Combat.CalculateDamage(
                                         attack,
                                         moduleDMG,
                                         attackerStat,
-                                        defense,
-                                        defenderStat,
+                                        nearbyDefense,
+                                        nearbyDefenderStat,
                                         0);
                                     var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
-                                    var chanceToHit = Space.CalculateChanceToHit(activator, target);
+                                    var chanceToHit = Space.CalculateChanceToHit(activator, nearbyTarget);
                                     var roll = Random.D100(1);
                                     var isHit = roll <= chanceToHit;
-                                    ApplyEffectToObject(DurationType.Instant, missile, target);
+                                    ApplyEffectToObject(DurationType.Instant, missile, nearbyTarget);
                                     if (isHit)
                                     {
-                                        Space.ApplyShipDamage(activator, target, damage);
+                                        Space.ApplyShipDamage(activator, nearbyTarget, damage);
                                     }
 
                                     var attackId = isHit ? 1 : 4;
                                     var combatLogMessage = Combat.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
-                                    Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
+                                    Messaging.SendMessageNearbyToPlayers(nearbyTarget, combatLogMessage, 60f);
 
-                                    Enmity.ModifyEnmity(activator, target, damage);
-                                    CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
+                                    Enmity.ModifyEnmity(activator, nearbyTarget, damage);
+                                    CombatPoint.AddCombatPoint(activator, nearbyTarget, SkillType.Piloting);
                                 }
-                                target = GetNextObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
+                                nearbyTarget = GetNextObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
                             }
                         }
                     });

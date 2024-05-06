@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Space - Along the Mid Rim"
+      "0": "Space - A Nebula within the Mid Rim"
     }
   },
   "NoRest": {
@@ -44197,7 +44197,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 24
+    "value": 26
   },
   "Width": {
     "type": "int",

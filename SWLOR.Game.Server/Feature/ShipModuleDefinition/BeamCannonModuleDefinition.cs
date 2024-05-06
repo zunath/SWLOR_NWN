@@ -16,11 +16,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            BeamCannon("beamcannon1", "Beam Cannon 1", "A stream of energy deals increasing damage with each successive hit. Starts at 3 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 3, 1);
-            BeamCannon("beamcannon2", "Beam Cannon 2", "A stream of energy deals increasing damage with each successive hit. Starts at 6 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 6, 2);
-            BeamCannon("beamcannon3", "Beam Cannon 3", "A stream of energy deals increasing damage with each successive hit. Starts at 9 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 9, 3);
-            BeamCannon("beamcannon4", "Beam Cannon 4", "A stream of energy deals increasing damage with each successive hit. Starts at 12 DMG per tick and increases by 2 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 12, 4);
-            BeamCannon("beamcannon5", "Beam Cannon 5", "A stream of energy deals increasing damage with each successive hit. Starts at 15 DMG per tick and increases by 2 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 15, 5);
+            BeamCannon("beamcannon1", "Basic Beam Cannon", "Basic Beam C.", "A stream of energy deals increasing damage with each successive hit. Starts at 3 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 3, 1);
+            BeamCannon("beamcannon2", "Beam Cannon I", "Beam Cann. 1", "A stream of energy deals increasing damage with each successive hit. Starts at 6 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 6, 2);
+            BeamCannon("beamcannon3", "Beam Cannon II", "Beam Cann. 2", "A stream of energy deals increasing damage with each successive hit. Starts at 9 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 9, 3);
+            BeamCannon("beamcannon4", "Beam Cannon III", "Beam Cann. 3", "A stream of energy deals increasing damage with each successive hit. Starts at 12 DMG per tick and increases by 2 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 12, 4);
+            BeamCannon("beamcannon5", "Beam Cannon IV", "Beam Cann. 4", "A stream of energy deals increasing damage with each successive hit. Starts at 15 DMG per tick and increases by 2 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 15, 5);
 
             return _builder.Build();
         }
@@ -28,13 +28,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         private void BeamCannon(
             string itemTag,
             string name,
+            string shortName,
             string description,
             int dmg,
             int requiredLevel)
         {
             _builder.Create(itemTag)
                 .Name(name)
-                .ShortName(name)
+                .ShortName(shortName)
                 .Type(ShipModuleType.BeamLaser)
                 .Texture("iit_ess_017")
                 .Description(description)

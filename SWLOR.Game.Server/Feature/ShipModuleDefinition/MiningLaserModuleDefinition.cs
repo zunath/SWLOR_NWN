@@ -94,15 +94,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             return;
                         }
 
-                        // Perk & module bonuses
-                        var amountToMine = 1;
-                        if (amountToMine > remainingUnits)
-                            amountToMine = remainingUnits;
+                        // Perk & module bonuses. These increase the overall yield of each asteroid.
+                        var industrialBonus = Space.GetShipStatus(activator).Industrial;
 
-                        var industrialBonus = Space.GetShipStatus(activator).Industrial + moduleBonus;
-
-                        remainingUnits -= amountToMine;
-                        amountToMine += Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)((industrialBonus + moduleBonus) * 0.4f);
+                        remainingUnits -= 1;
+                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)((industrialBonus + moduleBonus) * 0.2f);
 
                         // Fully deplete the rock - destroy it.
                         if (remainingUnits <= 0)

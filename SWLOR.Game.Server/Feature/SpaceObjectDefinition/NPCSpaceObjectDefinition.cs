@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("com_laser_3")
                 .ShipModule("com_laser_3");
 
-            _builder.Create("t4gunship")
+            _builder.Create("t4platform")
                 .ItemTag("NPC_Platform4")
                 .ShipModule("con_hvy4")
                 .ShipModule("npcautolas4")

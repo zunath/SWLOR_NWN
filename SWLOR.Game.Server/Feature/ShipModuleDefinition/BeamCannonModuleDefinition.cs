@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         float delay = i * 0.25f;
                         DelayCommand(delay, () =>
                         {
-                            if (GetIsDead(activator))
+                            if (!GetIsDead(activator))
                             {
                                 var chanceToHit = Space.CalculateChanceToHit(activator, target);
                                 var roll = Random.D100(1);

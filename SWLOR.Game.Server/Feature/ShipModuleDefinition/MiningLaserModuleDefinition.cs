@@ -84,6 +84,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     // At the end of the process, spawn the ore on the activator and reduce remaining units.
                     DelayCommand(recast + 0.1f, () =>
                     {
+                        // Perk & module bonuses. These increase the overall yield of each asteroid.
+                        var industrialBonus = Space.GetShipStatus(activator).Industrial;
+
+                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 4) + (int)(moduleBonus)/6f;
+
                         // Refresh remaining units (could have changed since the start)
                         remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
 
@@ -94,11 +99,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             return;
                         }
 
-                        // Perk & module bonuses. These increase the overall yield of each asteroid.
-                        var industrialBonus = Space.GetShipStatus(activator).Industrial;
-
-                        remainingUnits -= 1;
-                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)((industrialBonus + moduleBonus) * 0.2f);
+                        remainingUnits -= 1 + (int)amountToMine / 2;
 
                         // Fully deplete the rock - destroy it.
                         if (remainingUnits <= 0)

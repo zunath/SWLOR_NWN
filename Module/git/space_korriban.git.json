@@ -27,11 +27,11 @@
       },
       "MusicBattle": {
         "type": "int",
-        "value": 0
+        "value": 311
       },
       "MusicDay": {
         "type": "int",
-        "value": 0
+        "value": 290
       },
       "MusicDelay": {
         "type": "int",
@@ -39,7 +39,7 @@
       },
       "MusicNight": {
         "type": "int",
-        "value": 0
+        "value": 290
       }
     }
   },
@@ -1563,7 +1563,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "Starlane - Viscara"
+            "0": "Starlane - Toward Viscara"
           }
         },
         "OnClick": {
@@ -1716,7 +1716,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "STARLANE_LANDING_VISCARA_2"
+                "value": "STARLANE_LANDING_MIDRIM_2_2"
               }
             },
             {

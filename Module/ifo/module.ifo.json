@@ -2785,6 +2785,20 @@
           "type": "resref",
           "value": "ship_basi_v"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "space_midrim1"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "space_midrim2"
+        }
       }
     ]
   },

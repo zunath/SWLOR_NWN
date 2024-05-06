@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Space - Viscara Orbit"
+      "0": "Space - Approaching the Outer Rim"
     }
   },
   "NoRest": {
@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "viscaraorbit"
+    "value": "space_midrim2"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -124,7 +124,7 @@
   },
   "SkyBox": {
     "type": "byte",
-    "value": 0
+    "value": 14
   },
   "SunAmbientColor": {
     "type": "dword",
@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "ViscaraOrbit"
+    "value": "space_midrim2"
   },
   "Tile_List": {
     "type": "list",
@@ -8730,15 +8730,15 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 0
+          "value": 15
         },
         "Tile_MainLight1": {
           "type": "byte",
-          "value": 3
+          "value": 0
         },
         "Tile_MainLight2": {
           "type": "byte",
-          "value": 3
+          "value": 27
         },
         "Tile_Orientation": {
           "type": "int",
@@ -18878,11 +18878,11 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 0
+          "value": 1
         },
         "Tile_MainLight1": {
           "type": "byte",
-          "value": 4
+          "value": 0
         },
         "Tile_MainLight2": {
           "type": "byte",
@@ -18890,15 +18890,15 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 0
+          "value": 1
         },
         "Tile_SrcLight1": {
           "type": "byte",
-          "value": 0
+          "value": 2
         },
         "Tile_SrcLight2": {
           "type": "byte",
-          "value": 0
+          "value": 2
         }
       },
       {
@@ -31133,7 +31133,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 12
+          "value": 2
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -31145,7 +31145,7 @@
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 0
+          "value": 1
         },
         "Tile_SrcLight1": {
           "type": "byte",
@@ -39862,7 +39862,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 1
+          "value": 2
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -39870,7 +39870,7 @@
         },
         "Tile_MainLight2": {
           "type": "byte",
-          "value": 0
+          "value": 27
         },
         "Tile_Orientation": {
           "type": "int",
@@ -39878,11 +39878,11 @@
         },
         "Tile_SrcLight1": {
           "type": "byte",
-          "value": 0
+          "value": 2
         },
         "Tile_SrcLight2": {
           "type": "byte",
-          "value": 0
+          "value": 2
         }
       },
       {
@@ -44197,7 +44197,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 26
+    "value": 29
   },
   "Width": {
     "type": "int",

@@ -30,12 +30,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .CapitalClassModule()
                 .EquippedAction((creature, shipStatus, moduleBonus) =>
                 {
-                    shipStatus.MaxShield += boostAmount * 3 + moduleBonus;
+                    shipStatus.MaxShield += 3 * (boostAmount + moduleBonus);
                     shipStatus.ShieldRechargeRate += boostAmount / 5;
                 })
                 .UnequippedAction((creature, shipStatus, moduleBonus) =>
                 {
-                    shipStatus.MaxShield -= boostAmount * 3 + moduleBonus;
+                    shipStatus.MaxShield -= 3 * (boostAmount + moduleBonus);
                     shipStatus.ShieldRechargeRate -= boostAmount / 5;
                 });
         }

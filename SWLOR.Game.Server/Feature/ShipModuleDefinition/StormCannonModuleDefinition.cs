@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            StormCannon("storm_cann", "Storm Cannon", "Storm Cann.", "A stream of high energy particles deals 150 Damage over 2 seconds. Deals greatly reduced damage to unshielded targets, but imposes debuffs.", 35);
+            StormCannon("storm_cann", "Storm Cannon", "Storm Cann.", "A stream of high energy particles deals 140 Damage over 1 second. Deals reduced damage to unshielded targets, but imposes debuffs.", 35);
 
             return _builder.Build();
         }
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     for (int i = 0; i < 4; i++)
                     {
-                        float delay = i * 1f;
+                        float delay = i * 0.33f;
                         DelayCommand(delay, () =>
                         {
                             var chanceToHit = Space.CalculateChanceToHit(activator, target);

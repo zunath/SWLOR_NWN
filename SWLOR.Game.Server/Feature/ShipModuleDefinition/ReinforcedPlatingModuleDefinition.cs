@@ -30,16 +30,16 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .CapitalClassModule()
                 .EquippedAction((creature, shipStatus, moduleBonus) =>
                 {
-                    shipStatus.ThermalDefense += boostAmount * 3 + moduleBonus;
-                    shipStatus.EMDefense += boostAmount * 3 + moduleBonus;
-                    shipStatus.ExplosiveDefense += boostAmount * 3 + moduleBonus;
+                    shipStatus.ThermalDefense += 3 * (boostAmount + moduleBonus);
+                    shipStatus.EMDefense += 3 * (boostAmount + moduleBonus);
+                    shipStatus.ExplosiveDefense += 3 * (boostAmount + moduleBonus);
                     shipStatus.Evasion -= boostAmount;
                 })
                 .UnequippedAction((creature, shipStatus, moduleBonus) =>
                 {
-                    shipStatus.ThermalDefense -= boostAmount * 3 + moduleBonus;
-                    shipStatus.EMDefense -= boostAmount * 3 + moduleBonus;
-                    shipStatus.ExplosiveDefense -= boostAmount * 3 + moduleBonus;
+                    shipStatus.ThermalDefense -= 3 * (boostAmount + moduleBonus);
+                    shipStatus.EMDefense -= 3 * (boostAmount + moduleBonus);
+                    shipStatus.ExplosiveDefense -= 3 * (boostAmount + moduleBonus);
                     shipStatus.Evasion += boostAmount;
                 });
         }

@@ -24,24 +24,24 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Texture("iit_ess_247")
-                .Description($"A suite of dedicated active sensors for your ship's weapons systems. They improve your accuracy by {boostAmount} and attack by {boostAmount}, but active sensor tech leaves you more visible to enemies, reducing evasion by {boostAmount}.")
+                .Description($"A suite of dedicated active sensors for your ship's weapons systems. They improve your accuracy by {boostAmount} and attack by {boostAmount * 2}, but active sensor tech leaves you more visible to enemies, reducing evasion by {boostAmount}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, 5)
                 .CapitalClassModule()
                 .EquippedAction((creature, shipStatus, moduleBonus) =>
                 {
                     shipStatus.Accuracy += boostAmount + moduleBonus;
-                    shipStatus.ThermalDamage += boostAmount + moduleBonus;
-                    shipStatus.EMDamage += boostAmount + moduleBonus;
-                    shipStatus.ExplosiveDamage += boostAmount + moduleBonus;
+                    shipStatus.ThermalDamage += 2 * (boostAmount + moduleBonus);
+                    shipStatus.EMDamage += 2 * (boostAmount + moduleBonus);
+                    shipStatus.ExplosiveDamage += 2 * (boostAmount + moduleBonus);
                     shipStatus.Evasion -= boostAmount;
                 })
                 .UnequippedAction((creature, shipStatus, moduleBonus) =>
                 {
                     shipStatus.Accuracy -= boostAmount + moduleBonus;
-                    shipStatus.ThermalDamage -= boostAmount + moduleBonus;
-                    shipStatus.EMDamage -= boostAmount + moduleBonus;
-                    shipStatus.ExplosiveDamage -= boostAmount + moduleBonus;
+                    shipStatus.ThermalDamage -= 2 * (boostAmount + moduleBonus);
+                    shipStatus.EMDamage -= 2 * (boostAmount + moduleBonus);
+                    shipStatus.ExplosiveDamage -= 2 * (boostAmount + moduleBonus);
                     shipStatus.Evasion += boostAmount;
                 });
         }

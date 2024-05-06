@@ -31,12 +31,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .EquippedAction((creature, shipStatus, moduleBonus) =>
                 {
                     shipStatus.Evasion += boostAmount + moduleBonus;
-                    shipStatus.MaxCapacitor -= boostAmount * 3;
+                    shipStatus.MaxCapacitor -= boostAmount;
                 })
                 .UnequippedAction((creature, shipStatus, moduleBonus) =>
                 {
                     shipStatus.Evasion -= boostAmount + moduleBonus;
-                    shipStatus.MaxCapacitor += boostAmount * 3;
+                    shipStatus.MaxCapacitor += boostAmount;
                 });
         }
 

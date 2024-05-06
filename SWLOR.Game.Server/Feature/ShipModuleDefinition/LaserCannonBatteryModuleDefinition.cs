@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             target = GetFirstObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
                             while (GetIsObjectValid(target))
                             {
-                                if (target != activator && Random.D2(1) == 1)
+                                if (target != activator && Random.D2(1) == 1 && GetIsEnemy(target, activator))
                                 {
                                     var defenseBonus = targetShipStatus.ThermalDefense * 2;
                                     var defense = Stat.GetDefense(target, CombatDamageType.Thermal, AbilityType.Vitality, defenseBonus);

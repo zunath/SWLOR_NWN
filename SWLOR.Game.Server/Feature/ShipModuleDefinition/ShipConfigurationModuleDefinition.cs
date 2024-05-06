@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             ShipConfig("config_int4", "Interceptor Configuration IV", "iit_ess8_122", 4, 50, 50, 35, 100, 0, 100, 0, 120, 20, 25, 0);
             ShipConfig("config_int5", "Interceptor Configuration V", "iit_ess8_122", 5, 70, 70, 50, 130, 0, 130, 0, 150, 30, 50, 0);
             ShipConfig("config_bmb1", "Bomber Configuration I", "iit_ess8_123", 1, 10, 10, 0, 20, 0, 10, 5, 7, 4, 0 , 0);
-            ShipConfig("config_bmb2", "Bomber Configuration II", "iit_ess8_123", 2, 25, 25, 0, 40, 0, 25, 10, 15, 8, 0, 0);
+            ShipConfig("config_bmb2", "Bomber Configuration II", "Bomber 1", 2, 25, 25, 0, 40, 0, 25, 10, 15, 8, 0, 0);
             ShipConfig("config_bmb3", "Bomber Configuration III", "iit_ess8_123", 3, 40, 40, 0, 90, 0, 60, 20, 40, 12, 5, 0);
             ShipConfig("config_bmb4", "Bomber Configuration IV", "iit_ess8_123", 4, 75, 75, 0, 120, 0, 100, 35, 75, 25, 10, 0);
             ShipConfig("config_bmb5", "Bomber Configuration V", "iit_ess8_123", 5, 100, 100, 0, 150, 0, 130, 50, 100, 40, 20, 0);

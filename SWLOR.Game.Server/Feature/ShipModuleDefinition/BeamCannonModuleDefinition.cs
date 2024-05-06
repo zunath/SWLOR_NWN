@@ -107,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             }
                         });
                     }
+                    dmg = startingDMG;
                 });
         }
     }

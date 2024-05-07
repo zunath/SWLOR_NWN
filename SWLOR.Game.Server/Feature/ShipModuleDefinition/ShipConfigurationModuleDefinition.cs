@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             _builder.Create(itemTag)
                 .Name(name)
-                .ShortName(name)
+                .ShortName(shortName)
                 .Texture(texture)
                 .Description($"Provides several base stats to a ship to allow it to fulfill a role and operate at full capacity: \n" +
                 $"Armor: +{armor} + Module Bonus x 4 \n" +

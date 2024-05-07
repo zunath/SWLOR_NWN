@@ -275,8 +275,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_tilarium", 3)
                 .Component("elec_ruined", 2);
 
-            // Industrial Config 1
-            _builder.Create(RecipeType.IndustrialConfig1, SkillType.Engineering)
+            // Logistics Config 1
+            _builder.Create(RecipeType.LogisticsConfig1, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind1")
                 .Level(5)
@@ -543,8 +543,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_currian", 3)
                 .Component("elec_flawed", 2);
 
-            // Industrial Config 2
-            _builder.Create(RecipeType.IndustrialConfig2, SkillType.Engineering)
+            // Logistics Config 2
+            _builder.Create(RecipeType.LogisticsConfig2, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind2")
                 .Level(15)
@@ -811,8 +811,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_idailia", 3)
                 .Component("elec_good", 2);
 
-            // Industrial Config 3
-            _builder.Create(RecipeType.IndustrialConfig3, SkillType.Engineering)
+            // Logistics Config 3
+            _builder.Create(RecipeType.LogisticsConfig3, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind3")
                 .Level(25)
@@ -1079,8 +1079,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_barinium", 3)
                 .Component("elec_imperfect", 2);
 
-            // Industrial Config 4
-            _builder.Create(RecipeType.IndustrialConfig4, SkillType.Engineering)
+            // Logistics Config 4
+            _builder.Create(RecipeType.LogisticsConfig4, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind4")
                 .Level(35)
@@ -1358,8 +1358,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 2);
 
-            // Industrial Config 5
-            _builder.Create(RecipeType.IndustrialConfig5, SkillType.Engineering)
+            // Logistics Config 5
+            _builder.Create(RecipeType.LogisticsConfig5, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind5")
                 .Level(45)
@@ -1576,8 +1576,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("capc_modcomp", 1)
                 .Component("capc_power", 3);
 
-            // Industrial Nexus Configuration
-            _builder.Create(RecipeType.IndustryNexusConfig, SkillType.Engineering)
+            // Logistics Nexus Configuration
+            _builder.Create(RecipeType.LogisticsNexusConfig, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("cap_indus")
                 .Level(52)

@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
-                .Texture("iit_ess_084")
+                .Texture("iit_ess_087")
                 .Type(ShipModuleType.StripMiner)
                 .MaxDistance(10f)
                 .ValidTargetType(ObjectType.Placeable)

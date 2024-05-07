@@ -27,11 +27,11 @@
       },
       "MusicBattle": {
         "type": "int",
-        "value": 422
+        "value": 311
       },
       "MusicDay": {
         "type": "int",
-        "value": 354
+        "value": 320
       },
       "MusicDelay": {
         "type": "int",
@@ -39,7 +39,7 @@
       },
       "MusicNight": {
         "type": "int",
-        "value": 355
+        "value": 320
       }
     }
   },

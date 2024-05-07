@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ShortName(shortName)
                 .Texture("iit_ess_096")
                 .Type(ShipModuleType.ProtonBomb)
-                .MaxDistance(5f)
+                .MaxDistance(10f)
                 .Description(description)
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)

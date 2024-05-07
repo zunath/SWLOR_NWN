@@ -20,5 +20,6 @@
         TurboLaser = 15,
         BeamLaser = 16,
         ProtonBomb = 17,
+        StripMiner = 18,
     }
 }

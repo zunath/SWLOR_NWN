@@ -1614,6 +1614,19 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
                 .Component("capc_power", 3);
+
+            // Strip Miner Configuration
+            _builder.Create(RecipeType.StripMiner, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("cap_minlas")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
         }
 	}
 }

@@ -2478,5 +2478,6 @@
         LogisticsNexusConfig = 4786,
         SkirmisherConfig = 4787,
         WarshipConfig1 = 4788,
-        }
+        StripMiner = 4789,
+    }
 }

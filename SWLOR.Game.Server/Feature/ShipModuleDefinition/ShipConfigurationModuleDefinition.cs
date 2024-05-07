@@ -26,11 +26,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             ShipConfig("config_bmb3", "Bomber Configuration III", "Bomber 2", "iit_ess8_123", 3, 40, 40, 0, 90, 0, 60, 20, 40, 12, 5, 0);
             ShipConfig("config_bmb4", "Bomber Configuration IV", "Bomber 3", "iit_ess8_123", 4, 75, 75, 0, 120, 0, 100, 35, 75, 25, 10, 0);
             ShipConfig("config_bmb5", "Bomber Configuration V", "Bomber 4", "iit_ess8_123", 5, 100, 100, 0, 150, 0, 130, 50, 100, 40, 20, 0);
-            ShipConfig("config_ind1", "Industrial Configuration I", "Basic Ind", "iit_ess8_124", 1, 20, 20, 0, 7, 0, 7, 0, 7, 0, 0, 2);
-            ShipConfig("config_ind2", "Industrial Configuration II", "Industry 1", "iit_ess8_124", 2, 50, 50, 0, 15, 0, 15, 0, 15, 0, 0, 4);
-            ShipConfig("config_ind3", "Industrial Configuration III", "Industry 2", "iit_ess8_124", 3, 80, 80, 0, 40, 0, 40, 0, 40, 0, 0, 6);
-            ShipConfig("config_ind4", "Industrial Configuration IV", "Industry 3", "iit_ess8_124", 4, 150, 150, 0, 75, 0, 75, 0, 75, 0, 0, 8);
-            ShipConfig("config_ind5", "Industrial Configuration V", "Industry 4", "iit_ess8_124", 5, 300, 300, 0, 100, 0, 100, 0, 100, 0, 0, 10);
+            ShipConfig("config_ind1", "Logistics Configuration I", "Basic Ind", "iit_ess8_124", 1, 20, 20, 0, 7, 0, 7, 0, 7, 0, 0, 2);
+            ShipConfig("config_ind2", "Logistics Configuration II", "Industry 1", "iit_ess8_124", 2, 50, 50, 0, 15, 0, 15, 0, 15, 0, 0, 4);
+            ShipConfig("config_ind3", "Logistics Configuration III", "Industry 2", "iit_ess8_124", 3, 80, 80, 0, 40, 0, 40, 0, 40, 0, 0, 6);
+            ShipConfig("config_ind4", "Logistics Configuration IV", "Industry 3", "iit_ess8_124", 4, 150, 150, 0, 75, 0, 75, 0, 75, 0, 0, 8);
+            ShipConfig("config_ind5", "Logistics Configuration V", "Industry 4", "iit_ess8_124", 5, 300, 300, 0, 100, 0, 100, 0, 100, 0, 0, 10);
 
             ShipConfig("con_fig1", "NPC Fig Conf 1", "NPC F1", "iit_ess8_121", 1, 0, 0, 0, 10, 0, 10, 0, 10, 2, 2, 0);
             ShipConfig("con_fig2", "NPC Fig Conf 2", "NPC F2", "iit_ess8_121", 1, 0, 0, 0, 22, 0, 22, 0, 22, 5, 2, 0);
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             ShipConfig("con_hvy5", "NPC Hvy Conf 5", "NPC HVY5", "iit_ess8_121", 1, 0, 0, 0, 85, 0, 85, 0, 65, 30, 30, 0);
             ShipConfig("con_hvy6", "NPC Hvy Conf 6", "NPC HVY6", "iit_ess8_121", 1, 0, 0, 0, 100, 0, 100, 0, 80, 30, 30, 0);
 
-            CapShipConfig("cap_indus", "Industrial Nexus Configuration", "iit_ess8_124", 5, 500, 0, 0, 100, 0, 100, 0, 100, 0, 0, 10, 0);
+            CapShipConfig("cap_indus", "Logistics Nexus Configuration", "iit_ess8_124", 5, 500, 0, 0, 100, 0, 100, 0, 100, 0, 0, 20, 0);
             CapShipConfig("cap_skirm", "Skirmisher Configuration", "iit_ess8_121", 5, 100, 250, 0, 75, 0, 75, 0, 75, 0, 0, 0, -10);
             CapShipConfig("cap_warship", "Warship Configuration", "iit_ess8_123", 5, 300, 300, 0, 200, 0, 200, 0, 200, 0, 0, 0, 0);
 

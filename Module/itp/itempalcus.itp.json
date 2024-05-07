@@ -47585,17 +47585,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Industrial Configuration"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "config_ind1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Basic Interceptor Configuration"
                     },
                     "RESREF": {
@@ -47612,6 +47601,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ion_cann_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Logistics Configuration"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "config_ind1"
                     }
                   },
                   {
@@ -48421,50 +48421,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Industrial Configuration I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "config_ind2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Industrial Configuration II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "config_ind3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Industrial Configuration III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "config_ind4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Industrial Configuration IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "config_ind5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Industrial Nexus Configuration"
                     },
                     "RESREF": {
@@ -48569,6 +48525,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "lasbattery1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Logistics Configuration I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "config_ind2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Logistics Configuration II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "config_ind3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Logistics Configuration III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "config_ind4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Logistics Configuration IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "config_ind5"
                     }
                   },
                   {

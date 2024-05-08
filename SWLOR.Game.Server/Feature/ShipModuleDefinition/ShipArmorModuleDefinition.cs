@@ -16,11 +16,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             ThermalArmor("las_armor_4", "Mirrored Plating III", "Therm Armor 3", 8, 4);
             ThermalArmor("las_armor_5", "Mirrored Plating IV", "Therm Armor 4", 10, 5);
 
-            IonArmor("em_armor_1", "Basic Supplemental Ion Shielding", "EM Armor B", 2, 1);
-            IonArmor("em_armor_2", "Supplemental Ion Shielding I", "EM Armor 1", 4, 2);
-            IonArmor("em_armor_3", "Supplemental Ion Shielding II", "EM Armor 2", 6, 3);
-            IonArmor("em_armor_4", "Supplemental Ion Shielding III", "EM Armor 3", 8, 4);
-            IonArmor("em_armor_5", "Supplemental Ion Shielding IV", "EM Armor 4", 10, 5);
+            IonArmor("ion_armor_1", "Basic Supplemental Ion Shielding", "EM Armor B", 2, 1);
+            IonArmor("ion_armor_2", "Supplemental Ion Shielding I", "EM Armor 1", 4, 2);
+            IonArmor("ion_armor_3", "Supplemental Ion Shielding II", "EM Armor 2", 6, 3);
+            IonArmor("ion_armor_4", "Supplemental Ion Shielding III", "EM Armor 3", 8, 4);
+            IonArmor("ion_armor_5", "Supplemental Ion Shielding IV", "EM Armor 4", 10, 5);
 
             ExplosiveArmor("exp_armor_1", "Basic Reactive Armor", "Exp Armor B", 2, 1);
             ExplosiveArmor("exp_armor_2", "Reactive Armor I", "Exp Armor 1", 4, 2);

@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Supplemental Ion Shielding 1
 			_builder.Create(RecipeType.IonArmor1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("em_armor_1")
+				.Resref("ion_armor_1")
 				.Level(5)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 1)
@@ -480,7 +480,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Supplemental Ion Shielding II
 			_builder.Create(RecipeType.IonArmor2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("em_armor_2")
+				.Resref("ion_armor_2")
 				.Level(15)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 2)
@@ -748,7 +748,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Supplemental Ion Shielding III
 			_builder.Create(RecipeType.IonArmor3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("em_armor_3")
+				.Resref("ion_armor_3")
 				.Level(25)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 3)
@@ -1016,7 +1016,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Supplemental Ion Shielding IV
 			_builder.Create(RecipeType.IonArmor4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("em_armor_4")
+				.Resref("ion_armor_4")
 				.Level(35)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 4)
@@ -1295,7 +1295,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Supplemental Ion Shielding V
 			_builder.Create(RecipeType.IonArmor5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("em_armor_5")
+				.Resref("ion_armor_5")
 				.Level(45)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 5)

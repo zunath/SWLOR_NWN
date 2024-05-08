@@ -252,7 +252,8 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ItemTag("NPC_Bomber5")
                 .ShipModule("con_bmb5")
                 .ShipModule("msl_launch_4")
-                .ShipModule("com_laser_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("protbomblnch")
                 .ShipModule("com_laser_4");
 
             _builder.Create("t5fighter")
@@ -273,6 +274,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("t5gunship")
                 .ItemTag("NPC_Gunship5")
                 .ShipModule("con_hvy5")
+                .ShipModule("npcautolas5")
                 .ShipModule("ion_cann_4")
                 .ShipModule("msl_launch_4")
                 .ShipModule("com_laser_4")
@@ -306,7 +308,8 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ItemTag("NPC_Bomber6")
                 .ShipModule("con_bmb5")
                 .ShipModule("msl_launch_4")
-                .ShipModule("com_laser_4")
+                .ShipModule("msl_launch_4")
+                .ShipModule("protbomblnch")
                 .ShipModule("com_laser_4");
 
             _builder.Create("t6fighter")
@@ -327,6 +330,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
             _builder.Create("t6gunship")
                 .ItemTag("NPC_Gunship6")
                 .ShipModule("con_hvy6")
+                .ShipModule("npcautolas6")
                 .ShipModule("ion_cann_4")
                 .ShipModule("msl_launch_4")
                 .ShipModule("com_laser_4")
@@ -380,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("con_cap1")
                 .ShipModule("npc_quadlas1")
                 .ShipModule("npc_quadlas1")
-                .ShipModule("turbolas1");
+                .ShipModule("turbolas2");
 
             _builder.Create("sithcap2")
                 .ItemTag("NPC_SithCap2")
@@ -388,8 +392,8 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("npcautolas8")
                 .ShipModule("npc_quadlas8")
                 .ShipModule("npc_quadlas8")
-                .ShipModule("npc_quadlas8")
-                .ShipModule("turbolas1");
+                .ShipModule("acm_launch_1")
+                .ShipModule("turbolas3");
 
             _builder.Create("sithcap3")
                 .ItemTag("NPC_SithCap3")
@@ -408,7 +412,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
                 .ShipModule("npc_quadlas9")
                 .ShipModule("turbolas2")
                 .ShipModule("turbolas2")
-                .ShipModule("turbolas1");
+                .ShipModule("storm_cann");
 
             _builder.Create("sithcap5")
                 .ItemTag("NPC_SithCap5")

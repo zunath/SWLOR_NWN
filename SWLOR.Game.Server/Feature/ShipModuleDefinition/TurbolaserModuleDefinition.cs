@@ -16,9 +16,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            Turbolaser("turbolas1", "Heavy Turbolaser Cannon", "Turbolaser1", "Deals 80 thermal DMG to your target. Designed to target capital ships, it struggles against subcapital ships and has a 50% miss chance against them.", 1, 80, 1, 10);
-            Turbolaser("turbolas2", "Dual Turbolaser Cannon", "Turbolaser2", "Deals 60 thermal DMG to your target, firing twice over two seconds. Designed to target capital ships, it struggles against subcapital ships and has a 50% miss chance against them.", 1, 60, 2, 15);
-            Turbolaser("turbolas3", "Quad Turbolaser Cannon", "Turbolaser3", "Deals 40 thermal DMG to your target, firing four times over four seconds. Designed to target capital ships, it struggles against subcapital ships and has a 50% miss chance against them.", 1, 40, 4, 30);
+            Turbolaser("turbolas1", "Heavy Turbolaser Cannon", "Turbolaser1", "Deals 90 thermal DMG to your target. Designed to target capital ships, it struggles against subcapital ships and has a 50% miss chance against them.", 90, 1, 10);
+            Turbolaser("turbolas2", "Dual Turbolaser Cannon", "Turbolaser2", "Deals 75 thermal DMG to your target, firing twice over two seconds. Designed to target capital ships, it struggles against subcapital ships and has a 50% miss chance against them.", 75, 2, 15);
+            Turbolaser("turbolas3", "Quad Turbolaser Cannon", "Turbolaser3", "Deals 65 thermal DMG to your target, firing four times over four seconds. Designed to target capital ships, it struggles against subcapital ships and has a 50% miss chance against them.", 65, 4, 30);
 
             return _builder.Build();
         }
@@ -28,7 +28,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             string name,
             string shortName,
             string description,
-            int requiredLevel,
             int dmg,
             int attacks,
             int capacitor)
@@ -42,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .MaxDistance(30f)
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
-                .RequirePerk(PerkType.OffensiveModules, requiredLevel)
+                .RequirePerk(PerkType.OffensiveModules, 5)
                 .Recast(10f)
                 .Capacitor(capacitor)
                 .CapitalClassModule()
@@ -61,17 +60,18 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var defenseBonus = targetShipStatus.ThermalDefense * 2;
                     var defense = Stat.GetDefense(target, CombatDamageType.Thermal, AbilityType.Vitality, defenseBonus);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = Combat.CalculateDamage(
-                        attack,
-                        moduleDamage,
-                        attackerStat,
-                        defense,
-                        defenderStat,
-                        0);
 
                     var chanceToHit = Space.CalculateChanceToHit(activator, target);
-                    var roll = Random.D100(1);
-                    var isHit = roll <= chanceToHit;
+
+                    // Subcapital ships are harder to hit. Even with very high accuracy, the starting chance to hit is 50% and it caps out at 70% instead of 95%.
+                    if (!targetShipStatus.CapitalShip)
+                    {
+                        chanceToHit -= 25;
+                        if (chanceToHit < 20)
+                        {
+                            chanceToHit = 20;
+                        }
+                    }
                     var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
                     var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
                     for (int i = 0; i < attacks; i++)
@@ -83,7 +83,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             {
                                 var roll = Random.D100(1);
                                 var isHit = roll <= chanceToHit;
-                                if (isHit && (!Space.GetShipStatus(target).CapitalShip && Random.D2(1) != 2))
+                                var damage = Combat.CalculateDamage(
+                                    attack,
+                                    moduleDamage,
+                                    attackerStat,
+                                    defense,
+                                    defenderStat,
+                                    0);
+                                if (isHit)
                                 {
                                     AssignCommand(activator, () =>
                                     {

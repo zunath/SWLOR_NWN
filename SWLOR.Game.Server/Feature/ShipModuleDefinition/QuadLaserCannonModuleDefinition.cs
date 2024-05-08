@@ -72,13 +72,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var defenseBonus = targetShipStatus.ThermalDefense * 2;
                 var defense = Stat.GetDefense(target, CombatDamageType.Thermal, AbilityType.Vitality, defenseBonus);
                 var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                var damage = Combat.CalculateDamage(
-                    attack,
-                    moduleDamage,
-                    attackerStat,
-                    defense,
-                    defenderStat,
-                    0);
 
                 var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
                 var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
@@ -91,6 +84,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         var chanceToHit = Space.CalculateChanceToHit(activator, target);
                         var roll = Random.D100(1);
                         var isHit = roll <= chanceToHit;
+                        var damage = Combat.CalculateDamage(
+                            attack,
+                            moduleDamage,
+                            attackerStat,
+                            defense,
+                            defenderStat,
+                            0);
                         if (isHit)
                         {
                             AssignCommand(activator, () =>

@@ -47464,7 +47464,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Assault Concussion Missile Launcher I"
+                      "value": "Assault Concussion Missile Launcher"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -47480,6 +47480,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "beamcannon1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Bomber Configuration"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "config_bmb1"
                     }
                   },
                   {
@@ -47776,7 +47787,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "config_bmb1"
+                      "value": "config_bmb2"
                     }
                   },
                   {
@@ -47787,7 +47798,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "config_bmb2"
+                      "value": "config_bmb3"
                     }
                   },
                   {
@@ -47798,17 +47809,6 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "config_bmb3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bomber Configuration IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
                       "value": "config_bmb4"
                     }
                   },
@@ -47816,7 +47816,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Bomber Configuration V"
+                      "value": "Bomber Configuration IV"
                     },
                     "RESREF": {
                       "type": "resref",

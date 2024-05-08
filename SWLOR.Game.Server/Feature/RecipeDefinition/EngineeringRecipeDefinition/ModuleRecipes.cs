@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Supplemental Ion Shielding 1
 			_builder.Create(RecipeType.IonArmor1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_1")
+				.Resref("em_armor_1")
 				.Level(5)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 1)
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Reactive Armor 1
 			_builder.Create(RecipeType.ExplosiveArmor1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_1")
+				.Resref("exp_armor_1")
 				.Level(5)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 1)
@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Durasteel Plating 1
 			_builder.Create(RecipeType.HeavyArmor1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_1")
+				.Resref("hvy_armor_1")
 				.Level(5)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 1)
@@ -480,7 +480,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Supplemental Ion Shielding II
 			_builder.Create(RecipeType.IonArmor2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_2")
+				.Resref("em_armor_2")
 				.Level(15)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 2)
@@ -491,7 +491,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Reactive Armor II
 			_builder.Create(RecipeType.ExplosiveArmor2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_2")
+				.Resref("exp_armor_2")
 				.Level(15)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 2)
@@ -502,7 +502,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Durasteel Plating II
 			_builder.Create(RecipeType.HeavyArmor2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_2")
+				.Resref("hvy_armor_2")
 				.Level(15)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 2)
@@ -748,7 +748,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Supplemental Ion Shielding III
 			_builder.Create(RecipeType.IonArmor3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_3")
+				.Resref("em_armor_3")
 				.Level(25)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 3)
@@ -759,7 +759,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Reactive Armor III
 			_builder.Create(RecipeType.ExplosiveArmor3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_3")
+				.Resref("exp_armor_3")
 				.Level(25)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 3)
@@ -770,7 +770,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Durasteel Plating III
 			_builder.Create(RecipeType.HeavyArmor3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_3")
+				.Resref("hvy_armor_3")
 				.Level(25)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 3)
@@ -1016,7 +1016,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Supplemental Ion Shielding IV
 			_builder.Create(RecipeType.IonArmor4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_4")
+				.Resref("em_armor_4")
 				.Level(35)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 4)
@@ -1027,7 +1027,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Reactive Armor IV
 			_builder.Create(RecipeType.ExplosiveArmor4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_4")
+				.Resref("exp_armor_4")
 				.Level(35)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 4)
@@ -1038,7 +1038,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Durasteel Plating IV
 			_builder.Create(RecipeType.HeavyArmor4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_4")
+				.Resref("hvy_armor_4")
 				.Level(35)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 4)
@@ -1295,7 +1295,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Supplemental Ion Shielding V
 			_builder.Create(RecipeType.IonArmor5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_5")
+				.Resref("em_armor_5")
 				.Level(45)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 5)
@@ -1306,7 +1306,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Reactive Armor V
 			_builder.Create(RecipeType.ExplosiveArmor5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_5")
+				.Resref("exp_armor_5")
 				.Level(45)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 5)
@@ -1317,7 +1317,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 			// Durasteel Plating V
 			_builder.Create(RecipeType.HeavyArmor5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
-				.Resref("las_armor_5")
+				.Resref("hvy_armor_5")
 				.Level(45)
 				.Quantity(1)
 				.RequirementPerk(PerkType.StarshipBlueprints, 5)

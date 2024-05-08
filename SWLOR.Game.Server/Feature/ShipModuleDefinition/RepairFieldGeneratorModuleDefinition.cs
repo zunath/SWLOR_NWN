@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description(description)
                 .PowerType(ShipModulePowerType.High)
                 .Capacitor(25)
-                .Recast(18f)
+                .Recast(12f)
                 .CapitalClassModule()
                 .CanTargetSelf()
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
@@ -47,10 +47,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         DelayCommand(delay, () =>
                         {
                             target = GetFirstObjectInShape(Shape.Sphere, 8.0f, GetLocation(activator), true, ObjectType.Creature);
-                            if (!GetIsEnemy(target, activator) && !GetIsDead(activator))
+                            if (!GetIsEnemy(target, activator) && !GetIsDead(activator) && Space.GetShipStatus(target) != null)
                             {
                                 targetShipStatus = Space.GetShipStatus(target);
-                                ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Beam_Disintegrate), target, 1.0f);
+                                ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Disintegrate, activator, BodyNode.Chest), target, 1.0f);
                                 Space.RestoreHull(target, targetShipStatus, repairAmount);
                             }
                         });

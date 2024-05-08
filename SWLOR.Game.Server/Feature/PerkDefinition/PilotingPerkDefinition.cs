@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Allows for Willpower to be used in place of Perception for starship module effectiveness.")
                 .Price(3)
-                .RequirementSkill(SkillType.Piloting, 10)
+                .RequirementSkill(SkillType.Piloting, 0)
                 .GrantsFeat(FeatType.IntuitivePiloting);
         }
     }

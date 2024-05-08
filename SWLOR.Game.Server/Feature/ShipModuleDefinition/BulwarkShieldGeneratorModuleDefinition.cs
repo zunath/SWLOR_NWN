@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description(description)
                 .PowerType(ShipModulePowerType.High)
                 .Capacitor(25)
-                .Recast(18f)
+                .Recast(12f)
                 .CapitalClassModule()
                 .CanTargetSelf()
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
@@ -49,12 +49,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         {
                             target = GetFirstObjectInShape(Shape.Sphere, 8.0f, GetLocation(activator), true, ObjectType.Creature);
                             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, 2.0f);
-                            if (!GetIsEnemy(target, activator) && !GetIsDead(activator))
+                            if (!GetIsEnemy(target, activator) && !GetIsDead(activator) && Space.GetShipStatus(target) != null)
                             {
                                 targetShipStatus = Space.GetShipStatus(target);
                                 if (target != activator)
                                 {
-                                    ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Beam_Cold), target, 2.0f);
+                                    ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), target, 2.0f);
                                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), target, 2.0f);
                                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4), target, 2.0f);
                                 }

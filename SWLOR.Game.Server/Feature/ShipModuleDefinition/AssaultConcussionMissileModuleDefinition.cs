@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            AssaultConcussionMissile("acm_launch_1", "Assault Concussion Missile Launcher I", "ACM Launcher", "Requires an assault concussion missile. Its massive warhead deals 200 DMG to enemy capital ships, but cannot target subcapital ships.", 200);
+            AssaultConcussionMissile("acm_launch_1", "Assault Concussion Missile Launcher", "ACM Launcher", "Requires an assault concussion missile. Its massive warhead deals 200 DMG to enemy capital ships, but cannot target subcapital ships.", 200);
 
             return _builder.Build();
         }

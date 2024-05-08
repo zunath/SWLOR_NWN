@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ref_tilarium", 3, 1)
                 .AddGold(300, 1)
                 .AddItem("ref_veldite", 1, 1)
-                .AddItem("ship_missile", 1, 1)
+                .AddItem("ship_missile", 1, 4)
                 .AddItem("jade", 1, 1, true)
                 .AddItem("aluminum", 1, 1, true);
 
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ref_scordspar", 3, 1)
                 .AddGold(600, 1)
                 .AddItem("ref_currian", 1, 1)
-                .AddItem("ship_missile", 1, 3)
+                .AddItem("ship_missile", 1, 6)
                 .AddItem("agate", 1, 1, true)
                 .AddItem("steel", 1, 1, true);
 
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ref_plagionite", 3, 1)
                 .AddGold(900, 1)
                 .AddItem("ref_idailia", 1, 1)
-                .AddItem("ship_missile", 1, 5)
+                .AddItem("ship_missile", 1, 8)
                 .AddItem("citrine", 1, 1, true)
                 .AddItem("obsidian", 1, 1, true);
 
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ref_keromber", 3, 1)
                 .AddGold(1500, 1)
                 .AddItem("ref_barinium", 1, 1)
-                .AddItem("ship_missile", 1, 7)
+                .AddItem("ship_missile", 1, 10)
                 .AddItem("crystal", 1, 1, true)
                 .AddItem("ruby", 1, 1, true);
 
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ref_gostian", 3, 1)
                 .AddGold(2000, 1)
                 .AddItem("ref_jasioclase", 1, 1)
-                .AddItem("ship_missile", 1, 9)
+                .AddItem("ship_missile", 1, 12)
                 .AddItem("diamond", 1, 1, true)
                 .AddItem("emerald", 1, 1, true);
 
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ref_gostian", 3, 2)
                 .AddGold(3000, 1)
                 .AddItem("ref_jasioclase", 1, 2)
-                .AddItem("ship_missile", 1, 11)
+                .AddItem("ship_missile", 1, 15)
                 .AddItem("diamond", 1, 1, true)
                 .AddItem("emerald", 1, 1, true);
 

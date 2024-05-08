@@ -455,7 +455,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .Name("NPC - Red Hand Marauder")
                 .RequirePerk(PerkType.Starships, 0)
                 .MaxArmor(1000)
-                .MaxCapacitor(50)
+                .MaxCapacitor(1000)
                 .MaxShield(1000)
                 .ShieldRechargeRate(1)
                 .HighPowerNodes(8)

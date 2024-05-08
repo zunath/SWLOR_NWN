@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
-                .Texture("iit_ess_055")
+                .Texture("iit_ess2_242")
                 .Description($"Improves a ship's max shields by {boostAmount * 3} at the cost of {boostAmount / 5} shield recharge rate.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, 5)

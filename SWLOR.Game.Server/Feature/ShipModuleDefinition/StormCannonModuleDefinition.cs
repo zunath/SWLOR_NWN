@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var roll = Random.D100(1);
                             var isHit = roll <= chanceToHit;
 
-                            if (!GetIsDead(activator))
+                            if (!GetIsDead(activator) && !GetIsDead(target))
                             {
                                 if (isHit)
                                 {

@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 2100
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 526
+    "value": 539
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 2100
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
@@ -26,15 +26,11 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": "Yot beans were a food crop grown on Dantooine known for their flavor and nutritional value. They were used in various dishes to enhance flavor."
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",
@@ -43,12 +39,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Yot Beans"
+      "0": "Kolto Injection"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 47
+    "value": 186
   },
   "PaletteID": {
     "type": "byte",
@@ -72,14 +68,14 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "yot_bean"
+    "value": "kolto_injection"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "yot_bean"
+    "value": "kolto_injection"
   },
   "xModelPart1": {
     "type": "word",
-    "value": 47
+    "value": 186
   }
 }

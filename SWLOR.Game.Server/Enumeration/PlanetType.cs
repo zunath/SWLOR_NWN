@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Enumeration
             "Dantooine_Orbit",
             "DANTOOINE_LANDING",
             1000,
-            false)]
+            true)]
             Dantooine = 128,
     }
 

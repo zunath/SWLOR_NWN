@@ -45,11 +45,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .CannotReplace(StatusEffectType.Premonition2)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    Impact(source, 5);
+                    Impact(source, 15);
                 })
                 .TickAction((source, target, effectData) =>
                 {
-                    Impact(source, 5);
+                    Impact(source, 15);
                 });
         }
 
@@ -61,11 +61,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .Replaces(StatusEffectType.Premonition1)
                 .GrantAction((source, target, length, effectData) =>
                 {
-                    Impact(source, 10);
+                    Impact(source, 25);
                 })
                 .TickAction((source, target, effectData) =>
                 {
-                    Impact(source, 10);
+                    Impact(source, 25);
                 });
         }
     }

@@ -29,9 +29,20 @@ namespace SWLOR.Game.Server.Service.TaxiService
         VelesResidential = 9,
         [TaxiDestination(1, "Veles Apartments", "TAXI_VELES_APARTMENT", 100)]
         VelesApartments = 10,
-    }
 
-    public class TaxiDestinationAttribute: Attribute
+        // Dantooine
+
+        [TaxiDestination(2, "Dantooine Starport", "TAXI_DANTOOINE_STARPORT", 150)]
+    DantooineStarport = 11,
+        [TaxiDestination(2, "Dantooine Republic Garrison", "TAXI_DANTOOINE_GARRISON", 150)]
+        DantooineGarrison = 12,
+        [TaxiDestination(2, "Dantooine Monster Gym", "TAXI_DANTOOINE_GYM", 150)]
+        DantooineGym = 13,
+        [TaxiDestination(2, "Dantooine Medical", "TAXI_DANTOOINE_MEDICAL", 150)]
+        DantooineMedical = 14,
+
+    }
+public class TaxiDestinationAttribute: Attribute
     {
         public int RegionId { get; set; }
         public string Name { get; set; }

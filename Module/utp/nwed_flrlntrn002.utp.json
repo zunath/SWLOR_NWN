@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 1128
+    "value": 2950
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -22,7 +22,7 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "Source: Coulisfu Oriental Rural Tileset v2.3\r\nmodified by SBird for CEP"
   },
   "Conversation": {
     "type": "resref",
@@ -30,13 +30,12 @@
   },
   "CurrentHP": {
     "type": "short",
-    "value": 10
+    "value": 5
   },
   "Description": {
+    "id": 16813911,
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "DisarmDC": {
     "type": "byte",
@@ -44,7 +43,7 @@
   },
   "Faction": {
     "type": "dword",
-    "value": 3
+    "value": 1
   },
   "Fort": {
     "type": "byte",
@@ -52,7 +51,7 @@
   },
   "Hardness": {
     "type": "byte",
-    "value": 5
+    "value": 0
   },
   "HasInventory": {
     "type": "byte",
@@ -60,7 +59,7 @@
   },
   "HP": {
     "type": "short",
-    "value": 10
+    "value": 5
   },
   "Interruptable": {
     "type": "byte",
@@ -83,10 +82,9 @@
     "value": 0
   },
   "LocName": {
+    "id": 16812168,
     "type": "cexolocstring",
-    "value": {
-      "0": "Chair, Dining (Wood with Arms)"
-    }
+    "value": {}
   },
   "OnClick": {
     "type": "resref",
@@ -142,7 +140,7 @@
   },
   "OnUsed": {
     "type": "resref",
-    "value": "x0_o2_use_chair"
+    "value": ""
   },
   "OnUserDefined": {
     "type": "resref",
@@ -162,7 +160,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 0
+    "value": 507
   },
   "Ref": {
     "type": "byte",
@@ -170,15 +168,15 @@
   },
   "Static": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Tag": {
     "type": "cexostring",
-    "value": "nwsit_pl_lk_chpl"
+    "value": "ZEP_FLRLNTRN002"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "nwsit_pl_lk_chpl"
+    "value": "nwed_flrlntrn002"
   },
   "TrapDetectable": {
     "type": "byte",
@@ -210,7 +208,72 @@
   },
   "Useable": {
     "type": "byte",
-    "value": 1
+    "value": 0
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "CEP_L_AMION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "CEP_L_LIGHTCONST"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "WHITE_5"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "CEP_L_LIGHTCYCLE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "CEP_L_LIGHTSWAP"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "zep_oflrlntrn002"
+        }
+      }
+    ]
   },
   "Will": {
     "type": "byte",

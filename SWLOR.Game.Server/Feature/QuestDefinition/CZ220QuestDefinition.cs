@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             RefineryTrainee(builder);
             TheMalfunctioningDroids(builder);
             TheColicoidExperiment(builder);
+            ScrapMetalMonstrosity(builder);
 
             return builder.Build();
         }
@@ -252,6 +253,22 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 {
                     KeyItem.RemoveKeyItem(player, KeyItemType.CZ220ExperimentRoomKey);
                 });
+        }
+
+        private static void ScrapMetalMonstrosity(QuestBuilder builder)
+        {
+            builder.Create("scrapmetal_monster", "Scrap Metal Monstrosity")
+
+                .AddState()
+                .SetStateJournalText("5CR4P seems like they would like some more scrap metal. Maybe you should gather a lot for them.")
+                .AddCollectItemObjective("scrap_metal", 150)
+
+                .AddState()
+                .SetStateJournalText("That's a lot of scrap metal, hopefully it's enough. See 5CR4P has to beep.")
+
+                .AddGoldReward(2500)
+                .AddXPReward(2500)
+                .AddItemReward("recipe_fabcz220", 1);
         }
     }
 }

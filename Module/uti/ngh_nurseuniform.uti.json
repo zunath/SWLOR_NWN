@@ -1,0 +1,253 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "ArmorPart_Belt": {
+    "type": "byte",
+    "value": 6
+  },
+  "ArmorPart_LBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_LFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_LFoot": {
+    "type": "byte",
+    "value": 12
+  },
+  "ArmorPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_LShin": {
+    "type": "byte",
+    "value": 107
+  },
+  "ArmorPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_LThigh": {
+    "type": "byte",
+    "value": 105
+  },
+  "ArmorPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_Pelvis": {
+    "type": "byte",
+    "value": 105
+  },
+  "ArmorPart_RBicep": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_RFArm": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 12
+  },
+  "ArmorPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_Robe": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RShin": {
+    "type": "byte",
+    "value": 107
+  },
+  "ArmorPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RThigh": {
+    "type": "byte",
+    "value": 105
+  },
+  "ArmorPart_Torso": {
+    "type": "byte",
+    "value": 66
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 16
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 106
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 106
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 1
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "This appears to be the uniform of a Czerka Corporation employee."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 21
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Nurse Uniform (Female)"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 7
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 91
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 58
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "NurseUniformFem"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "ngh_nurseuniform"
+  },
+  "xArmorPart_Belt": {
+    "type": "word",
+    "value": 6
+  },
+  "xArmorPart_LBice": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_LFArm": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_LFoot": {
+    "type": "word",
+    "value": 12
+  },
+  "xArmorPart_LHand": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_LShin": {
+    "type": "word",
+    "value": 107
+  },
+  "xArmorPart_LShou": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_LThig": {
+    "type": "word",
+    "value": 105
+  },
+  "xArmorPart_Neck": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_Pelvi": {
+    "type": "word",
+    "value": 105
+  },
+  "xArmorPart_RBice": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_RFArm": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 12
+  },
+  "xArmorPart_RHand": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_Robe": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RShin": {
+    "type": "word",
+    "value": 107
+  },
+  "xArmorPart_RShou": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RThig": {
+    "type": "word",
+    "value": 105
+  },
+  "xArmorPart_Torso": {
+    "type": "word",
+    "value": 66
+  }
+}

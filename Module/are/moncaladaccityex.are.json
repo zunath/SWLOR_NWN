@@ -11163,13 +11163,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "net01"
   },
   "Version": {
     "type": "dword",
-    "value": 50
+    "value": 51
   },
   "Width": {
     "type": "int",

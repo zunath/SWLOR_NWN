@@ -1,0 +1,85 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 540
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "This frothy blue beverage, known for its rich and sweet flavor, is produced by the mammary glands of female banthas. It's a staple on desert planets like Tatooine and is said to be quite refreshing. While it's most commonly enjoyed cold, Bantha Milk can also be used in various culinary preparations, such as blue bantha buttermilk biscuits and blue-milk cheese."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Bantha Milk"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 140
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 64
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 99
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "bantha_milk"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "bantha_milk"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 140
+  }
+}

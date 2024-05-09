@@ -1845,9 +1845,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ShockingShout = 1876,
         Rejuvenation = 1877,
         FrenziedShout = 1878,
-
-        // 1879-1881 are open
-
+        AdrenalStim1 = 1879,
+        AdrenalStim2 = 1880,
+        AdrenalStim3 = 1881,
         Screech = 1882,
         GreaterEarthquake = 1883,
         FlameBlast = 1884,

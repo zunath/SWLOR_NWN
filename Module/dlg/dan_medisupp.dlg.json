@@ -1,0 +1,1099 @@
+{
+  "__data_type": "DLG ",
+  "DelayEntry": {
+    "type": "dword",
+    "value": 0
+  },
+  "DelayReply": {
+    "type": "dword",
+    "value": 0
+  },
+  "EndConverAbort": {
+    "type": "resref",
+    "value": "nw_walk_wp"
+  },
+  "EndConversation": {
+    "type": "resref",
+    "value": "nw_walk_wp"
+  },
+  "EntryList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 0
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Greetings, traveler. My diagnostics indicate a critical shortage of medical supplies. Without replenishment, my ability to administer aid will be severely compromised."
+          }
+        }
+      },
+      {
+        "__struct_id": 1,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 1
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "I require a variety of items to continue functioning at full capacity. This includes kolto injections and replacement surgical instruments. The well-being of numerous patients hangs in the balance."
+          }
+        }
+      },
+      {
+        "__struct_id": 2,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 3
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 2
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "These materials are typically found within the Abandoned Warehouse facilities up in the mountains."
+          }
+        }
+      },
+      {
+        "__struct_id": 3,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 5
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 4
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Welcome back, traveler. My sensors indicate your arrival. May I inquire if you have obtained the necessary medical supplies?"
+          }
+        }
+      },
+      {
+        "__struct_id": 4,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": []
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "I understand. The procurement of medical supplies can be a challenging endeavor. Please prioritize this task, as many lives depend on it."
+          }
+        }
+      },
+      {
+        "__struct_id": 5,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 6
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Initiating transfer protocol. Please place the items in the receptacle. [A compartment opens on the droid's chassis]"
+          }
+        }
+      },
+      {
+        "__struct_id": 6,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": []
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Transfer complete. I am now restocking my inventory. [The compartment closes] Your assistance has been invaluable. With these supplies, I can ensure the health and recovery of many patients. How may I assist you in return?"
+          }
+        }
+      },
+      {
+        "__struct_id": 7,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": []
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Thank you for your help."
+          }
+        }
+      }
+    ]
+  },
+  "NumWords": {
+    "type": "dword",
+    "value": 206
+  },
+  "PreventZoomIn": {
+    "type": "byte",
+    "value": 0
+  },
+  "ReplyList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 1
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "What kind of supplies do you need?"
+          }
+        }
+      },
+      {
+        "__struct_id": 1,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 2
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Where can I find these supplies?"
+          }
+        }
+      },
+      {
+        "__struct_id": 2,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": []
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "I'm too busy right now."
+          }
+        }
+      },
+      {
+        "__struct_id": 3,
+        "ActionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-accept-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "medical_supplies"
+              }
+            }
+          ]
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": []
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": "action"
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "I'll see what I can do."
+          }
+        }
+      },
+      {
+        "__struct_id": 4,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 4
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "No, I'm still working on it."
+          }
+        }
+      },
+      {
+        "__struct_id": 5,
+        "ActionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-request-quest-items"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "medical_supplies"
+              }
+            }
+          ]
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": []
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": "action"
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Yes, I have them right here"
+          }
+        }
+      },
+      {
+        "__struct_id": 6,
+        "ActionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-advance-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "medical_supplies"
+              }
+            }
+          ]
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 6
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": "action"
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "[Places the supplies into the compartment]"
+          }
+        }
+      }
+    ]
+  },
+  "StartingList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Active": {
+          "type": "resref",
+          "value": "condition"
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "condition-completed-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "medical_supplies"
+              }
+            }
+          ]
+        },
+        "Index": {
+          "type": "dword",
+          "value": 7
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Active": {
+          "type": "resref",
+          "value": "condition"
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "condition-on-quest-state"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "medical_supplies 2"
+              }
+            }
+          ]
+        },
+        "Index": {
+          "type": "dword",
+          "value": 5
+        }
+      },
+      {
+        "__struct_id": 2,
+        "Active": {
+          "type": "resref",
+          "value": "condition"
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "condition-has-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "medical_supplies"
+              }
+            }
+          ]
+        },
+        "Index": {
+          "type": "dword",
+          "value": 3
+        }
+      },
+      {
+        "__struct_id": 3,
+        "Active": {
+          "type": "resref",
+          "value": ""
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Index": {
+          "type": "dword",
+          "value": 0
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,1227 @@
+{
+  "__data_type": "DLG ",
+  "DelayEntry": {
+    "type": "dword",
+    "value": 0
+  },
+  "DelayReply": {
+    "type": "dword",
+    "value": 0
+  },
+  "EndConverAbort": {
+    "type": "resref",
+    "value": "nw_walk_wp"
+  },
+  "EndConversation": {
+    "type": "resref",
+    "value": "nw_walk_wp"
+  },
+  "EntryList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 1
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 0
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"Ah, traveler! I see you're well-equipped for a journey. Might you spare a moment to aid a humble farmer?\""
+          }
+        }
+      },
+      {
+        "__struct_id": 1,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": []
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"Oh, I understand. May the stars guide you on your path, then.\""
+          }
+        }
+      },
+      {
+        "__struct_id": 2,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 3
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 2
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"The trouble stems from the banthas; their recent unease has been a distraction, and amidst this chaos, someone has pilfered their milk. This theft is particularly troubling as the milk is crucial for the forthcoming festival, and its absence is bound to cast a pall of gloom over the festivities.\""
+          }
+        }
+      },
+      {
+        "__struct_id": 3,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 4
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"I can offer you some credits, and you'll have my gratitude. Plus, you'll always be welcome at our table for a hearty meal whenever you're passing through Dantooine.\""
+          }
+        }
+      },
+      {
+        "__struct_id": 4,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": []
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"Thank you! The Dantari have moved to the southern fields. Please be cautious, as they tend to be hostile towards strangers.\""
+          }
+        }
+      },
+      {
+        "__struct_id": 5,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 6
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 5
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"Please make sure you've got enough milk. I need twenty bottles, thank you!\""
+          }
+        }
+      },
+      {
+        "__struct_id": 6,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 8
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 7
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"We will need these. Here's your reward.\""
+          }
+        }
+      },
+      {
+        "__struct_id": 7,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": []
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"Thank you for your help!\""
+          }
+        }
+      }
+    ]
+  },
+  "NumWords": {
+    "type": "dword",
+    "value": 206
+  },
+  "PreventZoomIn": {
+    "type": "byte",
+    "value": 0
+  },
+  "ReplyList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 1
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"I have other matters to attend to. Sorry, but I can't help.\""
+          }
+        }
+      },
+      {
+        "__struct_id": 1,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 2
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"What assistance do you require?\""
+          }
+        }
+      },
+      {
+        "__struct_id": 2,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": []
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"Sorry! Maybe next time.\""
+          }
+        }
+      },
+      {
+        "__struct_id": 3,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 3
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"I can help you for sure.\""
+          }
+        }
+      },
+      {
+        "__struct_id": 4,
+        "ActionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-accept-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "bantha_milk_quest"
+              }
+            }
+          ]
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Active": {
+                "type": "resref",
+                "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
+              "Index": {
+                "type": "dword",
+                "value": 4
+              },
+              "IsChild": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": "action"
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"Deal. I'll bring you your blue milk.\"\n"
+          }
+        }
+      },
+      {
+        "__struct_id": 5,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": []
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"No, not yet sorry.\""
+          }
+        }
+      },
+      {
+        "__struct_id": 6,
+        "ActionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-request-quest-items"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "bantha_milk_quest"
+              }
+            }
+          ]
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": []
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": "action"
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"Yes, here you go.\""
+          }
+        }
+      },
+      {
+        "__struct_id": 7,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": []
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "\"I'll be back later for my reward.\""
+          }
+        }
+      },
+      {
+        "__struct_id": 8,
+        "ActionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-advance-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "bantha_milk_quest"
+              }
+            }
+          ]
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "EntriesList": {
+          "type": "list",
+          "value": []
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Script": {
+          "type": "resref",
+          "value": "action"
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "[Collect reward]"
+          }
+        }
+      }
+    ]
+  },
+  "StartingList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Active": {
+          "type": "resref",
+          "value": "condition"
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "condition-completed-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "bantha_milk_quest"
+              }
+            }
+          ]
+        },
+        "Index": {
+          "type": "dword",
+          "value": 7
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Active": {
+          "type": "resref",
+          "value": "condition"
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "condition-on-quest-state"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "bantha_milk_quest 2"
+              }
+            }
+          ]
+        },
+        "Index": {
+          "type": "dword",
+          "value": 6
+        }
+      },
+      {
+        "__struct_id": 2,
+        "Active": {
+          "type": "resref",
+          "value": "condition"
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "condition-has-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "bantha_milk_quest"
+              }
+            }
+          ]
+        },
+        "Index": {
+          "type": "dword",
+          "value": 5
+        }
+      },
+      {
+        "__struct_id": 3,
+        "Active": {
+          "type": "resref",
+          "value": ""
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Index": {
+          "type": "dword",
+          "value": 0
+        }
+      }
+    ]
+  }
+}

@@ -634,20 +634,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "Source: Carpets by JaffBarrow"
         }
       },
@@ -684,13 +670,6 @@
         "Comment": {
           "type": "cexostring",
           "value": "Source: Carpets by JaffBarrow"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
         }
       },
       {

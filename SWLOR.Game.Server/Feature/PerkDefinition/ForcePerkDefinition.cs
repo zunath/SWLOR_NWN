@@ -472,14 +472,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Premonition")
 
                 .AddPerkLevel()
-                .Description("Grants 5% concealment to other party members while concentrating.")
+                .Description("Grants 15% concealment to other party members while concentrating.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.Premonition1)
 
                 .AddPerkLevel()
-                .Description("Grants 10% concealment to other party members while concentrating.")
+                .Description("Grants 25% concealment to other party members while concentrating.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

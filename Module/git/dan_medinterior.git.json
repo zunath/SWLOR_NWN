@@ -97,7 +97,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "dan_medisupp"
         },
         "CRAdjust": {
           "type": "int",
@@ -643,7 +643,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 46.8021240234375
+          "value": 46.28595733642578
         },
         "YOrientation": {
           "type": "float",
@@ -651,11 +651,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 26.04548454284668
+          "value": 25.56284141540527
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": -5.7220458984375e-006
         }
       }
     ]

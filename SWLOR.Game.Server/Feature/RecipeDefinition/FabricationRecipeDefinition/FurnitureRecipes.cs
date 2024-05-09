@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reactive;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -65,6 +67,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 2)
                 .Component("fiberp_ruined", 1);
+
+            // Campfire
+            _builder.Create(RecipeType.Campfire, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Lighting)
+                .Resref("structure_0011")
+                .Level(1)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("ref_veldite", 1)
+                .Component("wood", 1);
 
             // Carpet
             _builder.Create(RecipeType.Carpet, SkillType.Fabrication)
@@ -220,6 +233,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("wood", 3)
                 .Component("ref_veldite", 2);
 
+            // Table, Darkwood
+            _builder.Create(RecipeType.TableDarkwood, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Surfaces)
+                .Resref("structure_0015")
+                .Level(5)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("wood", 3)
+                .Component("ref_veldite", 2);
+
             // Table, Wood, With Fish
             _builder.Create(RecipeType.TableWoodWithFish, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Surfaces)
@@ -319,6 +343,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_veldite", 4)
                 .Component("elec_ruined", 2);
 
+            // Table, Coffee, Shelf
+            _builder.Create(RecipeType.TableCoffeeShelf, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Surfaces)
+                .Resref("structure_0016")
+                .Level(7)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("ref_veldite", 4)
+                .Component("wood", 3);
+
             // Net
             _builder.Create(RecipeType.Net, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Fixtures)
@@ -373,6 +408,40 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_ruined", 2)
                 .Component("wood", 4);
+
+            // Umbrella, Blue
+            _builder.Create(RecipeType.UmbrellaBlue, SkillType.Fabrication)
+                .Category(RecipeCategoryType.MiscellaneousFurniture)
+                .Resref("structure_0049")
+                .Level(8)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("wood", 4)
+                .Component("lth_ruined", 4);
+
+            // Umbrella, Red
+            _builder.Create(RecipeType.UmbrellaRed, SkillType.Fabrication)
+                .Category(RecipeCategoryType.MiscellaneousFurniture)
+                .Resref("structure_0050")
+                .Level(8)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("wood", 4)
+                .Component("lth_ruined", 4);
+
+            // Trash Can
+            _builder.Create(RecipeType.TrashCan, SkillType.Fabrication)
+                .Category(RecipeCategoryType.MiscellaneousFurniture)
+                .Resref("structure_0288")
+                .Level(8)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("ref_veldite", 4)
+                .Component("wood", 3);
 
             // Doorway, Metal
             _builder.Create(RecipeType.DoorwayMetal, SkillType.Fabrication)
@@ -429,6 +498,41 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("lth_flawed", 3)
                 .Component("fiberp_flawed", 5);
 
+            // Lamp, Bars
+            _builder.Create(RecipeType.LampBars, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Lighting)
+                .Resref("structure_0034")
+                .Level(9)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 1)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("ref_veldite", 5)
+                .Component("wood", 5);
+
+            // Screen, Closed
+            _builder.Create(RecipeType.ScreenClosed, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0289")
+                .Level(9)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("wood", 4)
+                .Component("lth_ruined", 5);
+
+            // Screen, Open
+            _builder.Create(RecipeType.ScreenOpen, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0290")
+                .Level(9)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("wood", 4)
+                .Component("lth_ruined", 5);
+
             // Torch Bracket
             _builder.Create(RecipeType.TorchBracket, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Lighting)
@@ -472,6 +576,30 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("lth_ruined", 6)
                 .Component("wood", 3);
+
+            // Chair, Desk (Light Gray)
+            _builder.Create(RecipeType.ChairDeskBlackDarkGrey, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Seating)
+                .Resref("structure_0291")
+                .Level(10)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("wood", 5)
+                .Component("fiberp_ruined", 5);
+
+            // Lamp, Bars (Dark)
+            _builder.Create(RecipeType.LampBarsDark, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Lighting)
+                .Resref("structure_0292")
+                .Level(10)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 1)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("ref_veldite", 5)
+                .Component("wood", 5);
 
             // DNA Extractor I
             _builder.Create(RecipeType.DNAExtractor1, SkillType.Fabrication)
@@ -585,6 +713,39 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 2)
                 .Component("fiberp_flawed", 1);
+
+            // Bed, Low (Blue)
+            _builder.Create(RecipeType.BedLowBlue, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Bed)
+                .Resref("structure_0109")
+                .Level(12)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("fine_wood", 2)
+                .Component("lth_flawed", 2);
+
+            // Bed, Low (Red)
+            _builder.Create(RecipeType.BedLowRed, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Bed)
+                .Resref("structure_0110")
+                .Level(12)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("fine_wood", 2)
+                .Component("lth_flawed", 2);
+
+            // Pile Of Cushions, Square
+            _builder.Create(RecipeType.PileOfCushionsSquare, SkillType.Fabrication)
+                .Category(RecipeCategoryType.MiscellaneousFurniture)
+                .Resref("structure_0287")
+                .Level(12)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("fiberp_flawed", 1)
+                .Component("lth_flawed", 2);
 
             // Window
             _builder.Create(RecipeType.Window, SkillType.Fabrication)
@@ -717,7 +878,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 2)
                 .Component("ref_scordspar", 3);
-            
+
+            // Mat, Small Tatami
+            _builder.Create(RecipeType.MatSmallTatami, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Flooring)
+                .Resref("structure_0046")
+                .Level(14)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("fine_wood", 2)
+                .Component("fiberp_flawed", 3);
+
             // Brazier, Stone
             _builder.Create(RecipeType.BrazierStone, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
@@ -772,6 +944,29 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("ref_scordspar", 3)
                 .Component("fiberp_flawed", 2);
+
+            // Chair, Wooden Padded
+            _builder.Create(RecipeType.ChairWoodenPadded, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Seating)
+                .Resref("structure_0053")
+                .Level(15)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("fine_wood", 3)
+                .Component("ref_scordspar", 3);
+
+            // Mat, Medium Tatami
+            _builder.Create(RecipeType.MatMediumTatami, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Flooring)
+                .Resref("structure_0293")
+                .Level(15)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("fine_wood", 3)
+                .Component("fiberp_flawed", 3);
 
             // Statue, Guardian
             _builder.Create(RecipeType.StatueGuardian, SkillType.Fabrication)
@@ -960,6 +1155,29 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_scordspar", 4)
                 .Component("elec_flawed", 2);
 
+            // Chair, Curved Form
+            _builder.Create(RecipeType.ChairCurvedForm, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Seating)
+                .Resref("structure_0063")
+                .Level(18)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("fine_wood", 4)
+                .Component("ref_scordspar", 4);
+
+            // Lantern, Floor Small
+            _builder.Create(RecipeType.LanternFloorSmall, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Lighting)
+                .Resref("structure_0294")
+                .Level(18)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("fine_wood", 4)
+                .Component("fiberp_flawed", 4);
+
             // Doorway, Stone
             _builder.Create(RecipeType.DoorwayStone, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Doors)
@@ -1003,6 +1221,41 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fine_wood", 5)
                 .Component("fiberp_flawed", 3);
+
+            // Chair, Wooden Striped
+            _builder.Create(RecipeType.ChairWoodenStriped, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Seating)
+                .Resref("structure_0066")
+                .Level(19)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("fine_wood", 3)
+                .Component("ref_scordspar", 5);
+
+            // Table, Coffee, Wood /w Glass
+            _builder.Create(RecipeType.TableCoffeeWoodwGlass, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Surfaces)
+                .Resref("structure_0295")
+                .Level(19)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("ref_scordspar", 4)
+                .Component("fine_wood", 4);
+
+            // Bed, Art Deco
+            _builder.Create(RecipeType.BedArtDeco, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Bed)
+                .Resref("structure_0296")
+                .Level(19)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("fine_wood", 4)
+                .Component("lth_flawed", 4);
 
             // Statue, Monster
             _builder.Create(RecipeType.StatueMonster, SkillType.Fabrication)
@@ -1058,6 +1311,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 1)
                 .Component("fiberp_good", 4)
                 .Component("ref_plagionite", 2);
+
+            // Wardrobe, Grey, Low
+            _builder.Create(RecipeType.WardrobeGreyLow, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Bed)
+                .Resref("structure_0297")
+                .Level(20)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 2)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 1)
+                .Component("ref_scordspar", 5)
+                .Component("fine_wood", 4);
 
             // DNA Extractor II
             _builder.Create(RecipeType.DNAExtractor2, SkillType.Fabrication)
@@ -1184,6 +1449,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ancient_wood", 2)
                 .Component("lth_good", 1);
 
+            // Footlocker, Black
+            _builder.Create(RecipeType.FootlockerBlack, SkillType.Fabrication)
+                .Category(RecipeCategoryType.MiscellaneousFurniture)
+                .Resref("structure_0071")
+                .Level(22)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_plagionite", 3)
+                .Component("ancient_wood", 1);
+
             // Pedestal, Sword
             _builder.Create(RecipeType.PedestalSword, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
@@ -1250,6 +1526,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_plagionite", 3)
                 .Component("fiberp_good", 2);
 
+            // Table, Steel, Stained
+            _builder.Create(RecipeType.TableSteelStained, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Surfaces)
+                .Resref("structure_0087")
+                .Level(23)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_plagionite", 3)
+                .Component("ancient_wood", 3);
+
             // Urn
             _builder.Create(RecipeType.Urn, SkillType.Fabrication)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
@@ -1315,6 +1602,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("fiberp_flawed", 2)
                 .Component("lth_flawed", 3);
+
+            // Monitor, Overhead
+            _builder.Create(RecipeType.MonitorOverhead, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0094")
+                .Level(24)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_plagionite", 2)
+                .Component("elec_good", 4);
 
             // Cage
             _builder.Create(RecipeType.Cage, SkillType.Fabrication)
@@ -1403,6 +1701,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("fiberp_flawed", 4)
                 .Component("ref_plagionite", 2);
 
+            // Pillar, Power Control
+            _builder.Create(RecipeType.PillarPowerControl, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0231")
+                .Level(25)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_plagionite", 3)
+                .Component("elec_good", 3);
+
             // Statue, Wyvern
             _builder.Create(RecipeType.StatueWyvern, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
@@ -1457,6 +1766,30 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("elec_good", 3);
 
+            // Fountain, Dark Grey
+            _builder.Create(RecipeType.FountainDarkGrey, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0298")
+                .Level(26)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_plagionite", 4)
+                .Component("fiberp_good", 3);
+
+            // Canopy, Leather
+            _builder.Create(RecipeType.CanopyLeather, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0299")
+                .Level(26)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ancient_wood", 4)
+                .Component("lth_good", 3);
+
             // Fountain
             _builder.Create(RecipeType.Fountain, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
@@ -1510,6 +1843,29 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .RequirementPerk(PerkType.FurnitureBlueprints, 3)
                 .Component("ref_plagionite", 5)
                 .Component("elec_good", 3);
+
+            // Chair, Dining, Gothic
+            _builder.Create(RecipeType.ChairDiningGothic, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Seating)
+                .Resref("structure_0105")
+                .Level(27)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_plagionite", 4)
+                .Component("ancient_wood", 3);
+
+            // Console, Floor Mounted, Dark
+            _builder.Create(RecipeType.ConsoleFloorMountedDark, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0300")
+                .Level(27)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_plagionite", 4)
+                .Component("elec_good", 4);
 
             // Altar, Stone
             _builder.Create(RecipeType.AltarStone, SkillType.Fabrication)
@@ -1576,6 +1932,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("fiberp_flawed", 2)
                 .Component("elec_flawed", 3);
 
+            // Carpet, Medallion
+            _builder.Create(RecipeType.CarpetMedallion, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Flooring)
+                .Resref("structure_0232")
+                .Level(28)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .Component("lth_good", 4)
+                .Component("fiberp_good", 4);
+
             // Bear Skin Rug
             _builder.Create(RecipeType.BearSkinRug, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Flooring)
@@ -1630,6 +1996,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("elec_good", 3);
 
+            // Chair, Pilot
+            _builder.Create(RecipeType.ChairPilot, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Seating)
+                .Resref("structure_0301")
+                .Level(29)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ancient_wood", 5)
+                .Component("lth_good", 4);
+
             // Altar, Evil
             _builder.Create(RecipeType.AltarEvil, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
@@ -1673,6 +2051,29 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ancient_wood", 6)
                 .Component("lth_good", 3);
+
+            // Fountain, Stone, 4 Spouts
+            _builder.Create(RecipeType.FountainStone4Spouts, SkillType.Fabrication)
+                .Category(RecipeCategoryType.MiscellaneousFurniture)
+                .Resref("structure_0246")
+                .Level(30)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_plagionite", 5)
+                .Component("ancient_wood", 5);
+
+            // Carpet, Twisted Pattern
+            _builder.Create(RecipeType.CarpetTwistedPattern, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Flooring)
+                .Resref("structure_0302")
+                .Level(30)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 3)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("lth_good", 5)
+                .Component("fiberp_good", 4);
 
             // DNA Extractor III
             _builder.Create(RecipeType.DNAExtractor3, SkillType.Fabrication)
@@ -1732,6 +2133,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_keromber", 1)
                 .Component("aracia_wood", 1);
 
+            // Speaker, Standing
+            _builder.Create(RecipeType.SpeakerStanding, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0272")
+                .Level(31)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_keromber", 1)
+                .Component("elec_imperfect", 1);
+
             // Statue, Wizard
             _builder.Create(RecipeType.StatueWizard, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
@@ -1775,6 +2187,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 2)
                 .Component("aracia_wood", 1);
+
+            // Locker, Open Shelves
+            _builder.Create(RecipeType.LockerOpenShelves, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0273")
+                .Level(32)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_keromber", 2)
+                .Component("fiberp_imperfect", 2);
 
             // Table, Stone, Large
             _builder.Create(RecipeType.TableStoneLarge, SkillType.Fabrication)
@@ -1953,6 +2376,29 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("aracia_wood", 3)
                 .Component("ref_keromber", 2);
 
+            // Cabinet, Liquor (Mixed)
+            _builder.Create(RecipeType.CabinetLiquorMixed, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0274")
+                .Level(35)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("aracia_wood", 3)
+                .Component("lth_imperfect", 3);
+
+            // Console, Tall w/ Screen (Orange)
+            _builder.Create(RecipeType.ConsoleTallwScreenOrange, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0303")
+                .Level(35)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_keromber", 3)
+                .Component("elec_imperfect", 3);
+
             // Pillar, Flame
             _builder.Create(RecipeType.PillarFlame, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Fixtures)
@@ -2018,6 +2464,29 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("lth_good", 4)
                 .Component("ref_plagionite", 2);
+
+            // Holo Projector, Standing
+            _builder.Create(RecipeType.HoloProjectorStanding, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0304")
+                .Level(36)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_keromber", 3)
+                .Component("elec_imperfect", 3);
+
+            // Metal Wall, Single, Panels
+            _builder.Create(RecipeType.MetalWallSinglePanels, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Wall)
+                .Resref("structure_0325")
+                .Level(37)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_keromber", 2)
+                .Component("fiberp_imperfect", 1);
 
             // Mining Well Platform
             _builder.Create(RecipeType.MiningWellPlatform, SkillType.Fabrication)
@@ -2085,6 +2554,28 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_keromber", 2)
                 .Component("fiberp_imperfect", 2);
 
+            // Counter, Lab (Straight)
+            _builder.Create(RecipeType.CounterLabStraight, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Surfaces)
+                .Resref("structure_0275")
+                .Level(37)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_keromber", 3)
+                .Component("aracia_wood", 3);
+
+            // Counter, Lab (Sink)
+            _builder.Create(RecipeType.CounterLabSink, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Surfaces)
+                .Resref("structure_0276")
+                .Level(37)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_keromber", 4)
+                .Component("aracia_wood", 3);
+
             // Mining Well
             _builder.Create(RecipeType.MiningWell, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Fixtures)
@@ -2151,6 +2642,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_keromber", 4)
                 .Component("fiberp_imperfect", 2);
 
+            // Metal Wall, Single, Indent
+            _builder.Create(RecipeType.MetalWallSingleIndent, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Wall)
+                .Resref("structure_0305")
+                .Level(38)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_keromber", 3)
+                .Component("fiberp_imperfect", 2);
+
             // Mirror
             _builder.Create(RecipeType.Mirror, SkillType.Fabrication)
                 .Category(RecipeCategoryType.MiscellaneousFurniture)
@@ -2206,6 +2709,29 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("aracia_wood", 5)
                 .Component("ref_keromber", 3);
 
+            // Chair, Brown Wingback
+            _builder.Create(RecipeType.ChairBrownWingback, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Seating)
+                .Resref("structure_0277")
+                .Level(39)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("aracia_wood", 4)
+                .Component("lth_imperfect", 4);
+
+            // Metal Wall, Wide, Indent
+            _builder.Create(RecipeType.MetalWallWideIndent, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Wall)
+                .Resref("structure_0306")
+                .Level(39)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_keromber", 3)
+                .Component("fiberp_imperfect", 3);
+
             // Rune Pillar
             _builder.Create(RecipeType.RunePillar, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Fixtures)
@@ -2260,6 +2786,29 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_keromber", 6)
                 .Component("aracia_wood", 3);
+
+            // Metal Wall, Door, Indent
+            _builder.Create(RecipeType.MetalWallDoorIndent, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Wall)
+                .Resref("structure_0307")
+                .Level(40)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_keromber", 4)
+                .Component("fiberp_imperfect", 3);
+
+            // Pillar, Dish Tower
+            _builder.Create(RecipeType.PillarDishTower, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0278")
+                .Level(40)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 4)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_keromber", 4)
+                .Component("elec_imperfect", 5);
 
             // DNA Extractor IV
             _builder.Create(RecipeType.DNAExtractor4, SkillType.Fabrication)
@@ -2341,6 +2890,18 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 2)
                 .Component("fiberp_high", 1);
+
+            // Holo Display 1
+            _builder.Create(RecipeType.HoloDisplay1, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0308")
+                .Level(41)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 1)
+                .Component("elec_high", 1);
 
             // Dran Statue
             _builder.Create(RecipeType.DranStatue, SkillType.Fabrication)
@@ -2507,6 +3068,71 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_jasioclase", 3)
                 .Component("hyphae_wood", 2);
 
+            // Banner, Jedi Order
+            _builder.Create(RecipeType.BannerJediOrder, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0317")
+                .Level(44)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("hyphae_wood", 5)
+                .Component("lth_high", 5)
+                .Component("fiberp_high", 5);
+
+            // Banner, Empire
+            _builder.Create(RecipeType.BannerEmpire, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0318")
+                .Level(44)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("hyphae_wood", 5)
+                .Component("lth_high", 5)
+                .Component("fiberp_high", 5);
+
+            // Banner, Mandalorian
+            _builder.Create(RecipeType.BannerMandalorian, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0319")
+                .Level(44)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("hyphae_wood", 5)
+                .Component("lth_high", 5)
+                .Component("fiberp_high", 5);
+
+            // Banner, Republic
+            _builder.Create(RecipeType.BannerRepublic, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0320")
+                .Level(44)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("hyphae_wood", 5)
+                .Component("lth_high", 5)
+                .Component("fiberp_high", 5);
+
+            // Banner, Cartel
+            _builder.Create(RecipeType.BannerCartel, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0321")
+                .Level(44)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("hyphae_wood", 5)
+                .Component("lth_high", 5)
+                .Component("fiberp_high", 5);
+
             // Throne, Wood
             _builder.Create(RecipeType.ThroneWood, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Seating)
@@ -2562,6 +3188,42 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_jasioclase", 4)
                 .Component("fiberp_high", 3);
 
+            // Console, Tall w/ Screen (Spiral)
+            _builder.Create(RecipeType.ConsoleTwScreenSpiral, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0279")
+                .Level(45)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 3)
+                .Component("elec_high", 3);
+
+            // Metal Wall, Single, Grating
+            _builder.Create(RecipeType.MetalWallSingleGrating, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Wall)
+                .Resref("structure_0309")
+                .Level(45)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 3)
+                .Component("fiberp_high", 3);
+
+            // Dance Floor
+            _builder.Create(RecipeType.DanceFloor, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Flooring)
+                .Resref("structure_0314")
+                .Level(45)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 4)
+                .Component("fiberp_high", 4)
+                .Component("ref_arkoxit", 1);
+
             // Monster Statue
             _builder.Create(RecipeType.MonsterStatue, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Statues)
@@ -2595,6 +3257,40 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("elec_imperfect", 4)
                 .Component("ref_jasioclase", 2);
 
+            // Storage Tank, Cylinder
+            _builder.Create(RecipeType.StorageTankCylinder, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0280")
+                .Level(46)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 3)
+                .Component("elec_high", 4);
+
+            // WorkStationMonitors
+            _builder.Create(RecipeType.WorkStationMonitors, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Surfaces)
+                .Resref("structure_0281")
+                .Level(46)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 4)
+                .Component("elec_high", 3);
+
+            // Metal Wall, Wide, Grating
+            _builder.Create(RecipeType.MetalWallWideGrating, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Wall)
+                .Resref("structure_0310")
+                .Level(46)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 4)
+                .Component("fiberp_high", 3);
+
             // Carpet, Fancy, Smaller
             _builder.Create(RecipeType.CarpetFancySmaller, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Flooring)
@@ -2627,6 +3323,42 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("elec_imperfect", 4)
                 .Component("ref_jasioclase", 2);
+
+            // Chest, Lengthwise
+            _builder.Create(RecipeType.ChestLengthwise, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0282")
+                .Level(47)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("hyphae_wood", 4)
+                .Component("ref_jasioclase", 3);
+
+            // Metal Wall, Door, Grating
+            _builder.Create(RecipeType.MetalWallDoorGrating, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Wall)
+                .Resref("structure_0311")
+                .Level(47)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 4)
+                .Component("fiberp_high", 4);
+
+            // Metal Wall, Single, Hazard
+            _builder.Create(RecipeType.MetalWallSingleHazard, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Wall)
+                .Resref("structure_0322")
+                .Level(47)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("hyphae_wood", 5)
+                .Component("fiberp_high", 5);
 
             // Bench, Wood, Small 2
             _builder.Create(RecipeType.BenchWoodSmall2, SkillType.Fabrication)
@@ -2672,6 +3404,43 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_jasioclase", 4)
                 .Component("elec_high", 6);
 
+            // Console, Central Control
+            _builder.Create(RecipeType.ConsoleCentralControl, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0283")
+                .Level(48)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("elec_high", 5);
+
+            // Medical, Monitoring Unit
+            _builder.Create(RecipeType.MedicalMonitoringUnit, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0313")
+                .Level(48)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("elec_high", 5)
+                .Component("ref_arkoxit", 2);
+
+            // Metal Wall, Wide, Hazard
+            _builder.Create(RecipeType.MetalWallWideHazard, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Wall)
+                .Resref("structure_0323")
+                .Level(48)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("hyphae_wood", 5)
+                .Component("fiberp_high", 5);
+
             // Chair, Shell
             _builder.Create(RecipeType.ChairShell, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Seating)
@@ -2716,6 +3485,56 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("hyphae_wood", 6)
                 .Component("ref_jasioclase", 3);
 
+            // Console, Circular Command
+            _builder.Create(RecipeType.ConsoleCircularCommand, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0284")
+                .Level(49)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("elec_high", 5);
+
+            // Holo Projector, Hover
+            _builder.Create(RecipeType.HoloProjectorHover, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0315")
+                .Level(49)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("elec_high", 5)
+                .Component("ref_arkoxit", 2);
+
+            // Metal Wall, Door, Hazard
+            _builder.Create(RecipeType.MetalWallDoorHazard, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Wall)
+                .Resref("structure_0324")
+                .Level(49)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("hyphae_wood", 5)
+                .Component("fiberp_high", 5);
+
+            // Storage, Warehouse, Industry
+            _builder.Create(RecipeType.StorageWarehouseIndustry, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Bed)
+                .Resref("structure_0316")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("hyphae_wood", 5)
+                .Component("ref_arkoxit", 2);
+
             // Couch, Wood, Yellow
             _builder.Create(RecipeType.CouchWoodYellow, SkillType.Fabrication)
                 .Category(RecipeCategoryType.Seating)
@@ -2748,6 +3567,40 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_jasioclase", 6)
                 .Component("hyphae_wood", 3);
+
+            // Storage, Cargo Container
+            _builder.Create(RecipeType.StorageCargoContainer, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0285")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 6)
+                .Component("hyphae_wood", 4);
+
+            // Console, Corner, Large
+            _builder.Create(RecipeType.ConsoleCornerLarge, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0286")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 6)
+                .Component("elec_high", 6);
+
+            // Holo Projector, Small Tree
+            _builder.Create(RecipeType.HoloProjectorSmallTree, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Electronics)
+                .Resref("structure_0312")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("ref_jasioclase", 6)
+                .Component("elec_high", 5);
 
             // Droid Assembly Terminal
             _builder.Create(RecipeType.DroidAssemblyTerminal, SkillType.Fabrication)
@@ -2790,6 +3643,83 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 2);
+
+            // Swoop Bike, Black
+            _builder.Create(RecipeType.SwoopBikeBlack, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0326")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementPerk(PerkType.StructureBlueprints, 2)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("r_pow_supp_unit", 2)
+                .Component("r_const_parts", 5)
+                .Component("em_amp_4", 2)
+                .Component("hull_boost_4", 2)
+                .Component("elec_high", 40)
+                .Component("ref_arkoxit", 20)
+                .Component("emerald", 10)
+                .Component("zinsiam", 5);
+
+            // Swoop Bike, Grey
+            _builder.Create(RecipeType.SwoopBikeGrey, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0327")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementPerk(PerkType.StructureBlueprints, 2)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("r_pow_supp_unit", 2)
+                .Component("r_const_parts", 5)
+                .Component("em_amp_4", 2)
+                .Component("hull_boost_4", 2)
+                .Component("elec_high", 40)
+                .Component("ref_arkoxit", 20)
+                .Component("emerald", 10)
+                .Component("zinsiam", 5);
+
+            // Swoop Bike, Red
+            _builder.Create(RecipeType.SwoopBikeRed, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0328")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementPerk(PerkType.StructureBlueprints, 2)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("r_pow_supp_unit", 2)
+                .Component("r_const_parts", 5)
+                .Component("em_amp_4", 2)
+                .Component("hull_boost_4", 2)
+                .Component("elec_high", 40)
+                .Component("ref_arkoxit", 20)
+                .Component("emerald", 10)
+                .Component("zinsiam", 5);
+
+            // Swoop Bike, Yellow
+            _builder.Create(RecipeType.SwoopBikeYellow, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Fixtures)
+                .Resref("structure_0329")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .RequirementPerk(PerkType.StructureBlueprints, 2)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Structure, 2)
+                .Component("r_pow_supp_unit", 2)
+                .Component("r_const_parts", 5)
+                .Component("em_amp_4", 2)
+                .Component("hull_boost_4", 2)
+                .Component("elec_high", 40)
+                .Component("ref_arkoxit", 20)
+                .Component("emerald", 10)
+                .Component("zinsiam", 5);
+
         }
     }
 }

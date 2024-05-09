@@ -3075,7 +3075,7 @@
   },
   "Mod_MinGameVer": {
     "type": "cexostring",
-    "value": "1.88"
+    "value": "1.87"
   },
   "Mod_MinPerHour": {
     "type": "byte",
@@ -3202,10 +3202,6 @@
   "Mod_Tag": {
     "type": "cexostring",
     "value": "SWLOR"
-  },
-  "Mod_UUID": {
-    "type": "cexostring",
-    "value": ""
   },
   "Mod_Version": {
     "type": "dword",

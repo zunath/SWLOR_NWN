@@ -1969,7 +1969,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
                 .Component("milk", 6)
                 .Component("b_flour", 3)
-                .Component("yot_bean", 1);
+                .Component("yotbean", 1);
 
             // Dantooine Carrotcake
             _builder.Create(RecipeType.DantooineCarrotCake, SkillType.Agriculture)

@@ -557,8 +557,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Well done, you've gathered what Shelby needed. Make sure you talk to her for a reward.")
 
-                .AddGoldReward(1500)
-                .AddXPReward(1500)
+                .AddGoldReward(5000)
+                .AddXPReward(2500)
                 .AddItemReward("recipe_fabmedic1", 1);
         }
 

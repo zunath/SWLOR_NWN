@@ -20,6 +20,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private void AdrenalStim(uint source, uint target, int level)
         {
             var willBonus = GetAbilityModifier(AbilityType.Willpower, source);
+            if (source != target)
+            {
+                willBonus += level * 2;
+            }
             Stat.RestoreStamina(target, (willBonus / 2) + 2 * level);
         }
 

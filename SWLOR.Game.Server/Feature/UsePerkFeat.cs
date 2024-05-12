@@ -273,6 +273,11 @@ namespace SWLOR.Game.Server.Feature
             CheckForActivationInterruption(activationId, position);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
 
+            if (GetIsPC(activator) && !Space.IsPlayerInSpaceMode(activator))
+            {
+                ApplyEffectToObject(DurationType.Temporary, EffectCutsceneImmobilize(), activator, 1.5f);
+            }
+
             var executeImpact = ability.ActivationAction == null 
                 ? true
                 : ability.ActivationAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);

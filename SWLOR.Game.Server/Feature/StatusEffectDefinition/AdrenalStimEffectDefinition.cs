@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var willBonus = GetAbilityModifier(AbilityType.Willpower, source);
             if (source != target)
             {
-                willBonus += level * 2;
+                willBonus == level * 2;
             }
             Stat.RestoreStamina(target, (willBonus / 2) + 2 * level);
         }

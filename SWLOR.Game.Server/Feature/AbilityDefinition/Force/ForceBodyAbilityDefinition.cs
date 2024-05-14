@@ -30,8 +30,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, activator, StatusEffectType.ForceBody1, 60f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 2), activator, 60f);
+                    StatusEffect.Apply(activator, activator, StatusEffectType.ForceBody1, 30f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 2), activator, 30f);
                 });
         }
         private void ForceBody2()
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, activator, StatusEffectType.ForceBody2, 60f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 4), activator, 60f);
+                    StatusEffect.Apply(activator, activator, StatusEffectType.ForceBody2, 30f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 4), activator, 30f);
                 });
         }
     }

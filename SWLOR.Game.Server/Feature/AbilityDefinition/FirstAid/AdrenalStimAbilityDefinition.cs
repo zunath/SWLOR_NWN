@@ -52,8 +52,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
-                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim1, 30f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 2), activator, 30f);
+                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim1, 18f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 2), activator, 18f);
                 });
         }
 
@@ -90,8 +90,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
-                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim2, 60f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 4), activator, 60f);
+                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim2, 30f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 4), activator, 30f);
                 });
         }
 
@@ -128,8 +128,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
-                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim3, 120f);
-                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 6), activator, 120f);
+                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim3, 42f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 6), activator, 42f);
                 });
         }
     }

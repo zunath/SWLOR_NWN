@@ -24,7 +24,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ForceRestore(uint source, uint target, bool forceBody, int level)
         {
-            var willBonus = GetAbilityModifier(AbilityType.Willpower, source) - 5;
+            var willBonus = GetAbilityModifier(AbilityType.Willpower, source) - 2;
+            if (!forceBody)
+            {
+                willBonus -= 3;
+            }
             if (willBonus < 0)
             {
                 willBonus = 0;

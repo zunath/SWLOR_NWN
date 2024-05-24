@@ -186,17 +186,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Dathomir - Hidden Tunnels"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "dath_hiddentun"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Dathomir - Mountain Caves"
                     },
                     "RESREF": {

@@ -142534,11 +142534,11 @@
         },
         "MarkDown": {
           "type": "int",
-          "value": 60
+          "value": 40
         },
         "MarkUp": {
           "type": "int",
-          "value": 150
+          "value": 100
         },
         "MaxBuyPrice": {
           "type": "int",
@@ -142731,7 +142731,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.363116314379561e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -143504,7 +143504,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.363116314379561e-043
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",

@@ -18,7 +18,7 @@
   },
   "IdentifyPrice": {
     "type": "int",
-    "value": -1
+    "value": 100
   },
   "LocName": {
     "type": "cexolocstring",
@@ -32,7 +32,7 @@
   },
   "MarkUp": {
     "type": "int",
-    "value": 150
+    "value": 100
   },
   "MaxBuyPrice": {
     "type": "int",

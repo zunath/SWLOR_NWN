@@ -882348,11 +882348,11 @@
         },
         "MarkDown": {
           "type": "int",
-          "value": 60
+          "value": 40
         },
         "MarkUp": {
           "type": "int",
-          "value": 150
+          "value": 100
         },
         "MaxBuyPrice": {
           "type": "int",

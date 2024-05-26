@@ -78,7 +78,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .DroidAISlots(3)
                 .RequirementSkill(SkillType.TwoHanded, 35)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SuperiorWeaponFocus);
         }
 
@@ -91,7 +90,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Increases the maximum critical damage of two-handed weapons by 50%.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwoHanded, 45)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.IncreaseMultiplier);
         }
 

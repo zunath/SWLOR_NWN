@@ -39,8 +39,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .CanTargetSelf()
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    var industrialBonus = Space.GetShipStatus(activator).Industrial;
-                    repairAmount += (industrialBonus + moduleBonus) / 2;
+                    repairAmount += (activatorShipStatus.Industrial + moduleBonus) / 2;
 
                     for (int i = 0; i < 6; i++)
                     {

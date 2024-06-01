@@ -55,6 +55,7 @@
         Stables = 50,
         TrainingStore = 51,
         Incubator = 52,
+        TargetDescription = 53,
 
         DebugEnmity = 900,
         ChangePortrait = 9999

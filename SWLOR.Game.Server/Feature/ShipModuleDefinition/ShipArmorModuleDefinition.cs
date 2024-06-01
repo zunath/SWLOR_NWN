@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             _builder.Create(itemTag)
                 .Name(name)
-                .ShortName(name)
+                .ShortName(shortName)
                 .Texture("iit_ess8_145")
                 .Description($"Improves a ship's EM defense by {armorBoost*2}.")
                 .PowerType(ShipModulePowerType.Low)
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             _builder.Create(itemTag)
                 .Name(name)
-                .ShortName(name)
+                .ShortName(shortName)
                 .Texture("iit_ess8_145")
                 .Description($"Improves a ship's explosive defense by {armorBoost*2}.")
                 .PowerType(ShipModulePowerType.Low)
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             _builder.Create(itemTag)
                 .Name(name)
-                .ShortName(name)
+                .ShortName(shortName)
                 .Texture("iit_ess8_145")
                 .Description($"Improves a ship's overall defenses by {armorBoost} at the cost of {armorBoost} evasion.")
                 .PowerType(ShipModulePowerType.Low)

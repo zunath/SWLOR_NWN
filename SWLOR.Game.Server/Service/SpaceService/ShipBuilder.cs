@@ -126,11 +126,37 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// Sets the number of low power nodes on this ship.
         /// Low power nodes are typically used for shield boosters, armor reinforcement, etc.
         /// </summary>
-        /// <param name="lowPowerNodes">The number of low power nodes to set.</param>
+        /// <param name="lowPowerNodes">The number of configuration nodes to set.</param>
         /// <returns>A ship builder with the configured options.</returns>
         public ShipBuilder LowPowerNodes(int lowPowerNodes)
         {
             _activeShip.LowPowerNodes = lowPowerNodes;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the number of ship configuration nodes on this ship.
+        /// By default ships should have 1 configuration node.
+        /// </summary>
+        /// <param name="shipConfigurationNodes">The number of low power nodes to set.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder ShipConfigurationNodes(int shipConfigurationNodes)
+        {
+            _activeShip.ConfigurationNodes = shipConfigurationNodes;
+
+            return this;
+        }
+
+
+        /// <summary>
+        /// Determines if the ship is a capital ship.
+        /// </summary>
+        /// <param name="CapitalShip">If the ship is a capital ship.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder CapitalShip()
+        {
+            _activeShip.CapitalShip = true;
 
             return this;
         }

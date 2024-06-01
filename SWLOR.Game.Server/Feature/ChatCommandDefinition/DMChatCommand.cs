@@ -16,7 +16,6 @@ using SWLOR.Game.Server.Core.NWNX;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
-using SWLOR.Game.Server.Service.BeastMasteryService;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -54,6 +53,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Broadcast();
             SetScale();
             GetScale();
+            ShipStats();
+            RepairShip();
 
             return _builder.Build();
         }
@@ -142,6 +143,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     if (GetIsDead(target))
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+                        Ability.ReapplyPlayerAuraAOE(target);
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(999), target);
@@ -1017,6 +1019,91 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var shownScale = targetScale.ToString("0.###");
 
                     SendMessageToPC(user, $"{targetName} has a scale of {shownScale}.");
+                });
+        }
+
+        private void ShipStats()
+        {
+            _builder.Create("shipstats")
+                .Description("Provides a readout of a given ship's stats.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    if (GetIsDM(target) != true && GetIsDMPossessed(target) != true)
+                    {
+                        if (Space.GetShipStatus(target) != null)
+                        {
+                            var npcStats = Stat.GetNPCStats(target);
+                            var level = npcStats.Level;
+                            if (GetIsPC(target) == true)
+                            {
+                                var playerId = GetObjectUUID(target);
+                                var dbPlayer = DB.Get<Player>(playerId);
+                                level = dbPlayer.Skills[Service.SkillService.SkillType.Piloting].Rank;
+                            }
+                            var targetName = GetName(target);
+                            var targetStatus = Space.GetShipStatus(target);
+                            SendMessageToPC(user, $"{targetName} stats: \n" +
+                                $"Armor: {targetStatus.Hull} Max: {targetStatus.MaxHull} \n" +
+                                $"Shields: {targetStatus.Shield} Max: {targetStatus.MaxShield} \n" +
+                                $"Capacitor: {targetStatus.Capacitor} Max: {targetStatus.MaxCapacitor} \n" +
+                                $"Shield Regen: {targetStatus.ShieldRechargeRate} \n" +
+                                $"EM Damage Bonus: {targetStatus.EMDamage} \n" +
+                                $"Thermal Damage Bonus: {targetStatus.ThermalDamage} \n" +
+                                $"Explosive Damage Bonus: {targetStatus.ExplosiveDamage} \n" +
+                                $"Accuracy: {targetStatus.Accuracy} \n" +
+                                $"Evasion: {targetStatus.Evasion} \n" +
+                                $"Thermal Defense: {targetStatus.ThermalDefense} \n" +
+                                $"EM Defense: {targetStatus.EMDefense} \n" +
+                                $"Explosive Defense: {targetStatus.ExplosiveDefense} \n" +
+                                $"Skill Level: {level}");
+                        }
+                    }
+                });
+        }
+
+        private void RepairShip()
+        {
+            _builder.Create("repairship")
+                .Description("Restores a ship's armor, shield and capacitor by the indicated amount.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    if (Space.GetShipStatus(target) != null && !GetIsDM(target) && !GetIsDMPossessed(target))
+                    {
+                        var targetStatus = Space.GetShipStatus(target);
+
+                        if (args.Length <= 0)
+                        {
+                            targetStatus.Capacitor = targetStatus.MaxCapacitor;
+                            targetStatus.Hull = targetStatus.MaxHull;
+                            targetStatus.Shield = targetStatus.MaxShield;
+                        }
+                        else if (int.TryParse(args[0], out var amount))
+                        {
+                            Space.RestoreHull(target, Space.GetShipStatus(target), amount);
+                            Space.RestoreShield(target, Space.GetShipStatus(target), amount);
+                            Space.RestoreCapacitor(target, Space.GetShipStatus(target), amount);
+                        }
+
+                        if (GetIsPC(target))
+                        {
+                            var targetPlayerId = GetObjectUUID(target);
+                            var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
+                            var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
+
+                            dbPlayerShip.Status.Shield = targetStatus.Shield;
+                            dbPlayerShip.Status.Hull = targetStatus.Hull;
+
+                            DB.Set(dbPlayerShip);
+                            ExecuteScript("pc_shld_adjusted", target);
+                            ExecuteScript("pc_hull_adjusted", target);
+                        }
+                    }
                 });
         }
     }

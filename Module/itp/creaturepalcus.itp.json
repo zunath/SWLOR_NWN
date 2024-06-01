@@ -1029,45 +1029,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Animals"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Aurek Strikefighter"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_aurek"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 4.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Animals"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bulk Freighter"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_bulkf"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 11.0
+                      "value": 65.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1075,37 +1037,18 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Centurion-Class Battlecruiser"
+                      "value": "Centurion Battlecruiser"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "cap_btlcrui"
+                      "value": "sithcap5"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Animals"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Courier"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_courier"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 12.0
+                      "value": 35.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1113,18 +1056,18 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Derriphan-Class Battleship"
+                      "value": "Clan Zel Arun Bomber"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "cap_btlship"
+                      "value": "t4bomber"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 6.0
+                      "value": 40.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1132,37 +1075,18 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Foray-Class Blockade Runner"
+                      "value": "Clan Zel Arun Defense Platform"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "cap_corvette"
+                      "value": "t4platform"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Animals"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Freighter"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_freighter"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 8.0
+                      "value": 33.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1170,18 +1094,18 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Hammerhead-Class Cruiser"
+                      "value": "Clan Zel Arun Fighter"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "cap_cruiser"
+                      "value": "t4fighter"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 9.0
+                      "value": 40.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1189,18 +1113,18 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Interdictor-Class Heavy Cruiser"
+                      "value": "Clan Zel Arun Gunship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "cap_hvycrui"
+                      "value": "t4gunship"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 14.0
+                      "value": 37.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1208,30 +1132,277 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Kandosii-Class Dreadnought"
+                      "value": "Clan Zel Arun Interceptor"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "cap_dread"
+                      "value": "t4interceptor"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 16.0
+                      "value": 40.0
                     },
                     "FACTION": {
                       "type": "cexostring",
-                      "value": "Commoner"
+                      "value": "Hostile"
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Light Escort"
+                      "value": "Clan Zel Arun Treasure Barge"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "starship23"
+                      "value": "t4cargo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 45.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Clan Zel Arun Yacht"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t4capital"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 65.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Derriphan Destroyer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcap2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 65.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Harrower Dreadnought"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcap7"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6bomber"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Defense Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6platform"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6fighter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6gunship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 57.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6interceptor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 60.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Imperial Logistics Vessel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t6cargo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 65.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Inquisitor Assault Cruiser"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcap3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 65.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Interdictor Heavy Cruiser"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcap4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 65.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jahavey'ir Cruiser"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mandocap1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 65.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kandosii Dreadnought"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mandocap3"
                     }
                   },
                   {
@@ -1242,41 +1413,22 @@
                     },
                     "FACTION": {
                       "type": "cexostring",
-                      "value": "Commoner"
+                      "value": "Hostile"
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Light Freighter"
+                      "value": "Krakenborne Bomber"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "starship22"
+                      "value": "t2bomber"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 5.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Animals"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Merchantman"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "npc_merchant"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
+                      "value": 20.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1284,18 +1436,18 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mk. 1 Defense Platform"
+                      "value": "Krakenborne Defense Platform"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "npc_turret1"
+                      "value": "t2platform"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 2.0
+                      "value": 13.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1303,18 +1455,18 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mk. 2 Defense Platform"
+                      "value": "Krakenborne Fighter"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "npc_turret2"
+                      "value": "t2fighter"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 3.0
+                      "value": 20.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1322,18 +1474,18 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mk. 3 Defense Platform"
+                      "value": "Krakenborne Gunship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "npc_turret3"
+                      "value": "t2gunship"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 4.0
+                      "value": 17.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1341,18 +1493,18 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mk. 4 Defense Platform"
+                      "value": "Krakenborne Interceptor"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "npc_turret4"
+                      "value": "t2interceptor"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 5.0
+                      "value": 25.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1360,56 +1512,18 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mk. 5 Defense Platform"
+                      "value": "Krakenborne Privateer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "npc_turret5"
+                      "value": "t2capital"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 14.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mon Calamari Cruiser"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "moncal_cruiser"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 14.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mon Calamari Cruiser"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "starship2170"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 5.0
+                      "value": 20.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1417,18 +1531,18 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Pirate Borealis"
+                      "value": "Krakenborne Trovehauler"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "pirate_borealis"
+                      "value": "t2cargo"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 4.0
+                      "value": 65.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1436,163 +1550,11 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Pirate Drake"
+                      "value": "Kyramud Battleship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "pirate_drake"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 5.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pirate Eleyna"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "pirate_eleyna"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pirate Ferron"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "pirate_ferron"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 4.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pirate Hammer"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "pirate_hammer"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 2.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pirate Nightmare"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "pirate_nightmare"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pirate Ranger"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "pirate_ranger"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pirate Storm"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "pirate_storm"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pirate Sybil"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "pirate_sybil"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pirate Terror"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "pirate_terror"
+                      "value": "mandocap2"
                     }
                   },
                   {
@@ -1618,7 +1580,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 7.0
+                      "value": 45.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -1626,30 +1588,163 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Praetorian-Class Frigate"
+                      "value": "Red Hand Bomber"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "cap_frigate"
+                      "value": "t5bomber"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 2.0
+                      "value": 50.0
                     },
                     "FACTION": {
                       "type": "cexostring",
-                      "value": "Animals"
+                      "value": "Hostile"
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Shuttle"
+                      "value": "Red Hand Defense Platform"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "npc_shuttle"
+                      "value": "t5platform"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 43.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5fighter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5gunship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 47.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5interceptor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 55.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Marauder"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5capital"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 50.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Red Hand Munitions Smuggler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t5cargo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Septra Khanate Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1bomber"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Septra Khanate Defense Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1platform"
                     }
                   },
                   {
@@ -1664,68 +1759,258 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Sith Fighter"
+                      "value": "Septra Khanate Fighter"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "npc_sithfig"
+                      "value": "t1fighter"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 14.0
+                      "value": 10.0
                     },
                     "FACTION": {
                       "type": "cexostring",
-                      "value": "Commoner"
+                      "value": "Hostile"
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Star Destroyer"
+                      "value": "Septra Khanate Gunship"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "starship2169"
+                      "value": "t1gunship"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 14.0
+                      "value": 7.0
                     },
                     "FACTION": {
                       "type": "cexostring",
-                      "value": "Neutral"
+                      "value": "Hostile"
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Shuttle"
+                      "value": "Septra Khanate Interceptor"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "viscara_shuttle"
+                      "value": "t1interceptor"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 14.0
+                      "value": 15.0
                     },
                     "FACTION": {
                       "type": "cexostring",
-                      "value": "Neutral"
+                      "value": "Hostile"
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara Shuttle"
+                      "value": "Septra Khanate Raidmaster"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "viscarashuttle"
+                      "value": "t1capital"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Septra Khanate Scrap Hauler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t1cargo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snowdrift Syndicate Bomber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3bomber"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snowdrift Syndicate Defense Platform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3platform"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 23.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snowdrift Syndicate Fighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3fighter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snowdrift Syndicate Frostvault"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3cargo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snowdrift Syndicate Gunship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3gunship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 27.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Snowdrift Syndicate Interceptor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3interceptor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 65.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Supremacy Battleship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcap6"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Syndicate Snowpiercer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "t3capital"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 65.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thranta Corvette"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithcap1"
                     }
                   }
                 ]
@@ -10549,6 +10834,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vdathturtle"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 23.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gaping Spider"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vgapingspider"
                     }
                   },
                   {

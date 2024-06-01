@@ -259,8 +259,9 @@
         Rejuvenation = 252,
         FrenziedShout = 253,
         IncubationManagement = 254,
+        IntuitivePiloting = 255,
 
-        // 255-256 are free
+        // 256 is free
 
         FishingRods = 257,
         ShoutRange = 258,
@@ -302,5 +303,6 @@
         ForceTouch = 293,
         Innervate = 294,
         ForceLink = 295,
+        AdrenalStim = 298,
     }
 }

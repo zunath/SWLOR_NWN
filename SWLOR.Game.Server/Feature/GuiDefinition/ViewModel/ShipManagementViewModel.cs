@@ -296,6 +296,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool Configuration1Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool Configuration2Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool Configuration3Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool Configuration4Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool Configuration5Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool Configuration6Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool Configuration7Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool Configuration8Visible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public string LowPower1Tooltip
         {
             get => Get<string>();
@@ -344,6 +392,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string Configuration1Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration2Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration3Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration4Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration5Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration6Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration7Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration8Tooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public string LowPower1Resref
         {
             get => Get<string>();
@@ -380,6 +476,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
         public string LowPower8Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration1Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration2Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration3Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration4Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration5Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration6Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration7Resref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string Configuration8Resref
         {
             get => Get<string>();
             set => Set(value);
@@ -502,6 +646,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 bonuses = 0.90f;
 
             price -= (int)(price * bonuses);
+            if (ship.Status.CapitalShip)
+            {
+                price *= 5;
+            }
 
             return price;
         }
@@ -609,6 +757,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LowPower7Visible = false;
                 LowPower8Visible = false;
 
+                Configuration1Visible = false;
+                Configuration2Visible = false;
+                Configuration3Visible = false;
+                Configuration4Visible = false;
+                Configuration5Visible = false;
+                Configuration6Visible = false;
+                Configuration7Visible = false;
+                Configuration8Visible = false;
+
                 LowPower1Tooltip = string.Empty;
                 LowPower2Tooltip = string.Empty;
                 LowPower3Tooltip = string.Empty;
@@ -626,6 +783,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LowPower6Resref = _blank;
                 LowPower7Resref = _blank;
                 LowPower8Resref = _blank;
+
+                Configuration1Resref = _blank;
+                Configuration2Resref = _blank;
+                Configuration3Resref = _blank;
+                Configuration4Resref = _blank;
+                Configuration5Resref = _blank;
+                Configuration6Resref = _blank;
+                Configuration7Resref = _blank;
+                Configuration8Resref = _blank;
 
                 IsRefitEnabled = false;
                 IsBoardShipEnabled = false;
@@ -923,6 +1089,135 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LowPower8Tooltip = string.Empty;
                 }
 
+                Configuration1Visible = shipDetail.ConfigurationNodes >= 1;
+                Configuration2Visible = shipDetail.ConfigurationNodes >= 2;
+                Configuration3Visible = shipDetail.ConfigurationNodes >= 3;
+                Configuration4Visible = shipDetail.ConfigurationNodes >= 4;
+                Configuration5Visible = shipDetail.ConfigurationNodes >= 5;
+                Configuration6Visible = shipDetail.ConfigurationNodes >= 6;
+                Configuration7Visible = shipDetail.ConfigurationNodes >= 7;
+                Configuration8Visible = shipDetail.ConfigurationNodes >= 8;
+
+                module = ship.Status.ConfigurationModules.ContainsKey(1)
+                    ? ship.Status.ConfigurationModules[1]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration1Resref = detail.Texture;
+                    Configuration1Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration1Resref = _blank;
+                    Configuration1Tooltip = string.Empty;
+                }
+
+                module = ship.Status.ConfigurationModules.ContainsKey(2)
+                    ? ship.Status.ConfigurationModules[2]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration2Resref = detail.Texture;
+                    Configuration2Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration2Resref = _blank;
+                    Configuration2Tooltip = string.Empty;
+                }
+
+                module = ship.Status.ConfigurationModules.ContainsKey(3)
+                    ? ship.Status.ConfigurationModules[3]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration3Resref = detail.Texture;
+                    Configuration3Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration3Resref = _blank;
+                    Configuration3Tooltip = string.Empty;
+                }
+
+                module = ship.Status.ConfigurationModules.ContainsKey(4)
+                    ? ship.Status.ConfigurationModules[4]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration4Resref = detail.Texture;
+                    Configuration4Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration4Resref = _blank;
+                    Configuration4Tooltip = string.Empty;
+                }
+
+                module = ship.Status.ConfigurationModules.ContainsKey(5)
+                    ? ship.Status.ConfigurationModules[5]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration5Resref = detail.Texture;
+                    Configuration5Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration5Resref = _blank;
+                    Configuration5Tooltip = string.Empty;
+                }
+
+                module = ship.Status.ConfigurationModules.ContainsKey(6)
+                    ? ship.Status.ConfigurationModules[6]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration6Resref = detail.Texture;
+                    Configuration6Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration6Resref = _blank;
+                    Configuration6Tooltip = string.Empty;
+                }
+
+                module = ship.Status.ConfigurationModules.ContainsKey(7)
+                    ? ship.Status.ConfigurationModules[7]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration7Resref = detail.Texture;
+                    Configuration7Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration7Resref = _blank;
+                    Configuration7Tooltip = string.Empty;
+                }
+
+                module = ship.Status.ConfigurationModules.ContainsKey(8)
+                    ? ship.Status.ConfigurationModules[8]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    Configuration8Resref = detail.Texture;
+                    Configuration8Tooltip = detail.Name;
+                }
+                else
+                {
+                    Configuration8Resref = _blank;
+                    Configuration8Tooltip = string.Empty;
+                }
+
                 IsBoardShipEnabled = isAtCurrentLocation;
                 IsNameEnabled = permission.Permissions[PropertyPermissionType.RenameProperty] && isAtCurrentLocation;
                 IsRefitEnabled = permission.Permissions[PropertyPermissionType.RefitShip] && isAtCurrentLocation;
@@ -1055,7 +1350,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         ThermalDefense = shipDetail.ThermalDefense + bonuses.ThermalDefense,
                         Accuracy = shipDetail.Accuracy + bonuses.Accuracy,
                         Evasion = shipDetail.Evasion + bonuses.Evasion,
-                        ShieldRechargeRate = shipDetail.ShieldRechargeRate - bonuses.ShieldRechargeRate
+                        ShieldRechargeRate = shipDetail.ShieldRechargeRate - bonuses.ShieldRechargeRate,
+                        CapitalShip = shipDetail.CapitalShip
                     }
                 };
                 DB.Set(ship);
@@ -1225,6 +1521,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
+                    var capShip = dbShip.Status.CapitalShip;
+                    var capMod = moduleDetails.CapitalClassModule;
+
+                    if (!capShip && capMod)
+                    {
+                        SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
+                        return;
+                    }
+
+                    if (capShip && !capMod)
+                    {
+                        SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
+                        return;
+                    }
+
                     var moduleBonus = Space.GetModuleBonus(item);
                     dbShip.Status.HighPowerModules[slot] = new ShipStatus.ShipStatusModule
                     {
@@ -1294,6 +1605,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         SendMessageToPC(Player, "Only low-powered ship modules may be installed to this slot.");
                         return;
                     }
+
+                    var capShip = dbShip.Status.CapitalShip;
+                    var capMod = moduleDetails.CapitalClassModule;
+
+                    if (capShip != true && capMod == true)
+                    {
+                        SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
+                        return;
+                    }
+
+                    if (capShip == true && capMod != true)
+                    {
+                        SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
+                        return;
+                    }
+
                     dbShip.Status.LowPowerModules[slot] = new ShipStatus.ShipStatusModule
                     {
                         ItemInstanceId = GetObjectUUID(item),
@@ -1327,6 +1654,91 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LoadShip();
                 });
             }
+        }
+
+        private void ProcessConfiguration(int slot)
+        {
+            var shipId = _shipIds[SelectedShipIndex];
+            var dbShip = DB.Get<PlayerShip>(shipId);
+            var module = dbShip.Status.ConfigurationModules.ContainsKey(slot)
+                ? dbShip.Status.ConfigurationModules[slot]
+                : null;
+
+            // No module is equipped in this slot. 
+            // Put player into targeting mode to select a module.
+            if (module == null)
+            {
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship configuration module within your inventory",
+                    item =>
+                    {
+                        var itemTag = GetTag(item);
+                        if (!Space.IsRegisteredShipModule(itemTag))
+                        {
+                            SendMessageToPC(Player, "Only ship configuration modules may be installed to this slot.");
+                            return;
+                        }
+
+                        var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
+                        var moduleBonus = Space.GetModuleBonus(item);
+
+                        if (!ValidateModuleEquip(dbShip, item))
+                            return;
+
+                        if (moduleDetails.PowerType != ShipModulePowerType.Config)
+                        {
+                            SendMessageToPC(Player, "Only ship configuration modules may be installed to this slot.");
+                            return;
+                        }
+
+                        var capShip = dbShip.Status.CapitalShip;
+                        var capMod = moduleDetails.CapitalClassModule;
+
+                        if (!capShip && capMod)
+                        {
+                            SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
+                            return;
+                        }
+
+                        if (capShip && !capMod)
+                        {
+                            SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
+                            return;
+                        }
+
+                        dbShip.Status.ConfigurationModules[slot] = new ShipStatus.ShipStatusModule
+                        {
+                            ItemInstanceId = GetObjectUUID(item),
+                            SerializedItem = ObjectPlugin.Serialize(item),
+                            ItemTag = itemTag,
+                            RecastTime = DateTime.MinValue,
+                            ModuleBonus = moduleBonus
+                        };
+
+                        moduleDetails.ModuleEquippedAction?.Invoke(Player, dbShip.Status, moduleBonus);
+
+                        DB.Set(dbShip);
+
+                        DestroyObject(item);
+                        LoadShip();
+                    });
+            }
+            // A module exists. Prompt user whether they'd like to uninstall it.
+            else
+            {
+                var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                ShowModal($"{moduleDetail.Name} is equipped to ship configuration slot #{slot}. Would you like to uninstall it?", () =>
+                {
+                    var item = ObjectPlugin.Deserialize(module.SerializedItem);
+                    var moduleBonus = Space.GetModuleBonus(item);
+                    ObjectPlugin.AcquireItem(Player, item);
+
+                    moduleDetail.ModuleUnequippedAction?.Invoke(Player, dbShip.Status, moduleBonus);
+                    dbShip.Status.ConfigurationModules.Remove(slot);
+                    DB.Set(dbShip);
+                    LoadShip();
+                });
+            }
+
         }
 
         public Action OnClickHighPower1() => () =>
@@ -1394,6 +1806,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickLowPower8() => () =>
         {
             ProcessLowPower(8);
+        };
+
+        public Action OnClickConfiguration1() => () =>
+        {
+            ProcessConfiguration(1);
+        };
+
+        public Action OnClickConfiguration2() => () =>
+        {
+            ProcessConfiguration(2);
+        };
+
+        public Action OnClickConfiguration3() => () =>
+        {
+            ProcessConfiguration(3);
+        };
+
+        public Action OnClickConfiguration4() => () =>
+        {
+            ProcessConfiguration(4);
+        };
+
+        public Action OnClickConfiguration5() => () =>
+        {
+            ProcessConfiguration(5);
+        };
+
+        public Action OnClickConfiguration6() => () =>
+        {
+            ProcessConfiguration(6);
+        };
+
+        public Action OnClickConfiguration7() => () =>
+        {
+            ProcessConfiguration(7);
+        };
+
+        public Action OnClickConfiguration8() => () =>
+        {
+            ProcessConfiguration(8);
         };
 
         public Action OnClickBoardShip() => () =>

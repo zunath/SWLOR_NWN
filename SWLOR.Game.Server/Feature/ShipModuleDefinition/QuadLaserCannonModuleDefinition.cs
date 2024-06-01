@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class QuadLaserCannonModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -76,9 +76,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
                 var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
                 
-                for (int i = 0; i < totalAttacks; i++)
+                for (var i = 0; i < totalAttacks; i++)
                 {
-                    float delay = i * 0.25f;
+                    var delay = i * 0.25f;
                     DelayCommand(delay, () =>
                     {
                         var chanceToHit = Space.CalculateChanceToHit(activator, target);

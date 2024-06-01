@@ -4,18 +4,18 @@ using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
-    public class TargettingArrayModuleDefinition : IShipModuleListDefinition
+    public class TargetingArrayModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            TargettingArray("cap_target1", "Dedicated Targetting Sensor Array", "Target Array", 20);
+            TargetingArray("cap_target1", "Dedicated Targeting Sensor Array", "Target Array", 20);
 
             return _builder.Build();
         }
 
-        private void TargettingArray(string itemTag,
+        private void TargetingArray(string itemTag,
             string name,
             string shortName,
             int boostAmount)
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, 5)
                 .CapitalClassModule()
-                .EquippedAction((creature, shipStatus, moduleBonus) =>
+                .EquippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.Accuracy += boostAmount + moduleBonus;
                     shipStatus.ThermalDamage += 2 * (boostAmount + moduleBonus);
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     shipStatus.ExplosiveDamage += 2 * (boostAmount + moduleBonus);
                     shipStatus.Evasion -= boostAmount;
                 })
-                .UnequippedAction((creature, shipStatus, moduleBonus) =>
+                .UnequippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.Accuracy -= boostAmount + moduleBonus;
                     shipStatus.ThermalDamage -= 2 * (boostAmount + moduleBonus);

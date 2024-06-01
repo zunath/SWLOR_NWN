@@ -48,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {"ore_gostian", new OreDetail(5, "ref_gostian", 125)},
 
             {"raw_arkoxit", new OreDetail(5, "ref_arkoxit", 150)},
+            {"ore_arda", new OreDetail(5, "ref_arda", 150)},
 
             // Options below are for further expansion down the road.
             {"raw_ochne", new OreDetail(99, "ref_ochne", 175)},

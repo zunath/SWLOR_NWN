@@ -124,7 +124,7 @@
   },
   "SkyBox": {
     "type": "byte",
-    "value": 14
+    "value": 23
   },
   "SunAmbientColor": {
     "type": "dword",
@@ -44187,13 +44187,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "vac01"
   },
   "Version": {
     "type": "dword",
-    "value": 20
+    "value": 21
   },
   "Width": {
     "type": "int",

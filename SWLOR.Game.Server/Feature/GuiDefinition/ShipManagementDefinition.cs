@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.ShipManagement)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 545f, 295.5f)
+                .SetInitialGeometry(0, 0, 545f, 350f)
                 .SetTitle("Ship Management")
 
                 .AddColumn(col =>
@@ -308,6 +308,81 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindTooltip(model => model.LowPower8Tooltip)
                             .SetHeight(32f)
                             .SetWidth(32f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("Configuration Slot")
+                            .SetHeight(20f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButtonImage()
+                             .BindImageResref(model => model.Configuration1Resref)
+                             .BindIsVisible(model => model.Configuration1Visible)
+                             .BindIsEnabled(model => model.IsRefitEnabled)
+                             .BindOnClicked(model => model.OnClickConfiguration1())
+                             .BindTooltip(model => model.Configuration1Tooltip)
+                             .SetHeight(32f)
+                             .SetWidth(32f);
+                        row.AddButtonImage()
+                             .BindImageResref(model => model.Configuration2Resref)
+                             .BindIsVisible(model => model.Configuration2Visible)
+                             .BindIsEnabled(model => model.IsRefitEnabled)
+                             .BindOnClicked(model => model.OnClickConfiguration2())
+                             .BindTooltip(model => model.Configuration2Tooltip)
+                             .SetHeight(32f)
+                             .SetWidth(32f);
+                        row.AddButtonImage()
+                             .BindImageResref(model => model.Configuration3Resref)
+                             .BindIsVisible(model => model.Configuration3Visible)
+                             .BindIsEnabled(model => model.IsRefitEnabled)
+                             .BindOnClicked(model => model.OnClickConfiguration3())
+                             .BindTooltip(model => model.Configuration3Tooltip)
+                             .SetHeight(32f)
+                             .SetWidth(32f);
+                        row.AddButtonImage()
+                             .BindImageResref(model => model.Configuration4Resref)
+                             .BindIsVisible(model => model.Configuration4Visible)
+                             .BindIsEnabled(model => model.IsRefitEnabled)
+                             .BindOnClicked(model => model.OnClickConfiguration4())
+                             .BindTooltip(model => model.Configuration4Tooltip)
+                             .SetHeight(32f)
+                             .SetWidth(32f);
+                        row.AddButtonImage()
+                             .BindImageResref(model => model.Configuration5Resref)
+                             .BindIsVisible(model => model.Configuration5Visible)
+                             .BindIsEnabled(model => model.IsRefitEnabled)
+                             .BindOnClicked(model => model.OnClickConfiguration5())
+                             .BindTooltip(model => model.Configuration5Tooltip)
+                             .SetHeight(32f)
+                             .SetWidth(32f);
+                        row.AddButtonImage()
+                             .BindImageResref(model => model.Configuration6Resref)
+                             .BindIsVisible(model => model.Configuration6Visible)
+                             .BindIsEnabled(model => model.IsRefitEnabled)
+                             .BindOnClicked(model => model.OnClickConfiguration6())
+                             .BindTooltip(model => model.Configuration6Tooltip)
+                             .SetHeight(32f)
+                             .SetWidth(32f);
+                        row.AddButtonImage()
+                             .BindImageResref(model => model.Configuration7Resref)
+                             .BindIsVisible(model => model.Configuration7Visible)
+                             .BindIsEnabled(model => model.IsRefitEnabled)
+                             .BindOnClicked(model => model.OnClickConfiguration7())
+                             .BindTooltip(model => model.Configuration7Tooltip)
+                             .SetHeight(32f)
+                             .SetWidth(32f);
+                        row.AddButtonImage()
+                             .BindImageResref(model => model.Configuration8Resref)
+                             .BindIsVisible(model => model.Configuration8Visible)
+                             .BindIsEnabled(model => model.IsRefitEnabled)
+                             .BindOnClicked(model => model.OnClickConfiguration8())
+                             .BindTooltip(model => model.Configuration8Tooltip)
+                             .SetHeight(32f)
+                             .SetWidth(32f);
                     });
 
                     col.AddRow(row =>

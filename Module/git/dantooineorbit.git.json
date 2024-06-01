@@ -27,11 +27,11 @@
       },
       "MusicBattle": {
         "type": "int",
-        "value": 0
+        "value": 304
       },
       "MusicDay": {
         "type": "int",
-        "value": 0
+        "value": 260
       },
       "MusicDelay": {
         "type": "int",
@@ -39,7 +39,7 @@
       },
       "MusicNight": {
         "type": "int",
-        "value": 0
+        "value": 260
       }
     }
   },
@@ -655,7 +655,7 @@
           "id": 5670,
           "type": "cexolocstring",
           "value": {
-            "0": "Starlane - Dathomir"
+            "0": "Starlane - Mon Cala"
           }
         },
         "OnClick": {
@@ -3622,7 +3622,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "SPACE_RESOURCES_DANTOOINE_ORBIT"
+          "value": "SPACE_RESOURCES_DATHOMIR_ORBIT"
         }
       },
       {
@@ -3652,7 +3652,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "SPACE_DANTOOINE_ORBIT"
+          "value": "SPACE_DATHOMIR_ORBIT"
         }
       }
     ]

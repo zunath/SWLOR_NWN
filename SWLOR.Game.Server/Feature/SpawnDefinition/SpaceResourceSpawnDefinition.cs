@@ -72,11 +72,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void KorribanOrbit()
         {
             _builder.Create("SPACE_RESOURCES_KORRIBAN_ORBIT", "Space Resources - Korriban Orbit")
-                .AddSpawn(ObjectType.Placeable, "spc_asteroid_til")
-                .WithFrequency(50)
+                .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
+                .WithFrequency(25)
 
-                .AddSpawn(ObjectType.Placeable, "asteroid_currian")
-                .WithFrequency(30);
+                .AddSpawn(ObjectType.Placeable, "asteroid_ardani")
+                .WithFrequency(1);
         }
 
         private void DathomirOrbit()
@@ -84,10 +84,13 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("SPACE_RESOURCES_DATHOMIR_ORBIT", "Space Resources - Dathomir Orbit")
                 
                 .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
-                .WithFrequency(50)
+                .WithFrequency(37)
 
                 .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
-                .WithFrequency(10);
+                .WithFrequency(25)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_ardani")
+                .WithFrequency(3);
         }
         private void DantooineOrbit()
         { 

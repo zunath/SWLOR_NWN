@@ -67946,6 +67946,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ardanium Asteroid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "asteroid_arda"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Arkoxit Vein"
                     },
                     "RESREF": {

@@ -17,12 +17,15 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int ShieldRechargeRate { get; set; }
         public int HighPowerNodes { get; set; }
         public int LowPowerNodes { get; set; }
+        public int ConfigurationNodes { get; set; }
         public int Accuracy { get; set; }
         public int Evasion { get; set; }
         public int ExplosiveDefense { get; set; }
         public int ThermalDefense { get; set; }
         public int EMDefense { get; set; }
+        public int IndustryBonus { get; set; }
         public bool HasDroidBay { get; set; }
+        public bool CapitalShip { get; set; }
 
         public Dictionary<PerkType, int> RequiredPerks { get; set; }
 

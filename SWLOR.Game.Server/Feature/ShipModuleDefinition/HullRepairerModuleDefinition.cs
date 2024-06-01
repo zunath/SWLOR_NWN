@@ -14,17 +14,16 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            HullRepairer("hull_rep_b", "Basic Hull Repairer", "B. Hull Rep.", "Restores targeted or user ship's hull HP by 6.", 1, 10f, 8, 6);
-            HullRepairer("hull_rep_1", "Hull Repairer I", "Hull Rep. I", "Restores targeted or user ship's hull HP by 8.", 2, 12f, 9, 8);
-            HullRepairer("hull_rep_2", "Hull Repairer II", "Hull Rep. II", "Restores targeted or user ship's hull HP by 10.", 3, 14f, 10, 10);
-            HullRepairer("hull_rep_3", "Hull Repairer III", "Hull Rep. III", "Restores targeted or user ship's hull HP by 12.", 4, 16f, 11, 12);
-            HullRepairer("hull_rep_4", "Hull Repairer IV", "Hull Rep. IV", "Restores targeted or user ship's hull HP by 14.", 5, 18f, 12, 14);
+            HullRepairer("hull_rep_b", "Basic Hull Repairer", "B. Hull Rep.", "Restores targeted or user ship's hull HP by 10.", 1, 4, 7);
+            HullRepairer("hull_rep_1", "Hull Repairer I", "Hull Rep. I", "Restores targeted or user ship's hull HP by 14.", 2, 6, 14);
+            HullRepairer("hull_rep_2", "Hull Repairer II", "Hull Rep. II", "Restores targeted or user ship's hull HP by 18.", 3, 8, 21);
+            HullRepairer("hull_rep_3", "Hull Repairer III", "Hull Rep. III", "Restores targeted or user ship's hull HP by 22.", 4, 10, 28);
+            HullRepairer("hull_rep_4", "Hull Repairer IV", "Hull Rep. IV", "Restores targeted or user ship's hull HP by 26.", 5, 12, 35);
 
             return _builder.Build();
         }
 
-
-        private void HullRepairer(string itemTag, string name, string shortName, string description, int requiredLevel, float recast, int capacitor, int baseRecovery)
+        private void HullRepairer(string itemTag, string name, string shortName, string description, int requiredLevel, int capacitor, int baseRecovery)
         {
             _builder.Create(itemTag)
                 .Name(name)
@@ -37,11 +36,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description(description)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
-                .Recast(recast)
+                .Recast(12f)
                 .Capacitor(capacitor)
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    if (!GetIsObjectValid(target))
+                    if (!GetIsObjectValid(target) || GetIsEnemy(target, activator))
                     {
                         target = activator;
                         targetShipStatus = activatorShipStatus;
@@ -58,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Breach), target);
 
-                    var recovery = baseRecovery + moduleBonus * 2;
+                    var recovery = baseRecovery + (moduleBonus + activatorShipStatus.Industrial) * 2;
                     Space.RestoreHull(target, targetShipStatus, recovery);
 
                     Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {recovery} hull HP to {GetName(target)}'s ship.");

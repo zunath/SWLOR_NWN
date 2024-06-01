@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature
                 Activity.ClearBusy(activator);
 
                 // Moved during casting or activator died. Cancel the activation.
-                if (GetLocalInt(activator, id) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0 || (GetCurrentAction(activator) != ActionType.Invalid && GetIsPC(activator) == true))
+                if (GetLocalInt(activator, id) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0)
                     return;
                 
                 if (!Ability.CanUseAbility(activator, target, feat, ability.AbilityLevel, targetLocation))
@@ -272,6 +272,11 @@ namespace SWLOR.Game.Server.Feature
             ProcessAnimationAndVisualEffects(activationDelay);
             CheckForActivationInterruption(activationId, position);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
+
+            if (GetIsPC(activator) && !Space.IsPlayerInSpaceMode(activator))
+            {
+                ApplyEffectToObject(DurationType.Temporary, EffectCutsceneImmobilize(), activator, 1.5f);
+            }
 
             var executeImpact = ability.ActivationAction == null 
                 ? true

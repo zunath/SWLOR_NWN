@@ -10,11 +10,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            ShieldBooster("shld_boost_b", "Basic Shield Booster", 5, 1);
-            ShieldBooster("shld_boost_1", "Shield Booster I", 8, 2);
-            ShieldBooster("shld_boost_2", "Shield Booster II", 11, 3);
-            ShieldBooster("shld_boost_3", "Shield Booster III", 14, 4);
-            ShieldBooster("shld_boost_4", "Shield Booster IV", 17, 5);
+            ShieldBooster("shld_boost_b", "Basic Shield Booster", 8, 1);
+            ShieldBooster("shld_boost_1", "Shield Booster I", 16, 2);
+            ShieldBooster("shld_boost_2", "Shield Booster II", 24, 3);
+            ShieldBooster("shld_boost_3", "Shield Booster III", 32, 4);
+            ShieldBooster("shld_boost_4", "Shield Booster IV", 40, 5);
 
             return _builder.Build();
         }

@@ -165,6 +165,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ore_gostian", 30)
                 .AddItem("diamond", 2)
                 .AddItem("zinsiam", 1);
+
+            _builder.Create("ASTEROID_ARDANIUM")
+                .AddItem("ore_arda", 9)
+                .AddItem("zinsiam", 1);
         }
     }
 }

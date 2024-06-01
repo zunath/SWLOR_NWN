@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             EnergyManagement(builder);
             MiningModules(builder);
             StarshipMining(builder);
+            IntuitivePiloting(builder);
 
             return builder.Build();
         }
@@ -196,5 +197,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.StarshipMining2);
         }
 
+        private void IntuitivePiloting(PerkBuilder builder)
+        {
+            builder.Create(PerkCategoryType.Piloting, PerkType.IntuitivePiloting)
+                .Name("Intuitive Piloting")
+
+                .AddPerkLevel()
+                .Description("Allows for Willpower to be used in place of Perception for starship module effectiveness.")
+                .Price(3)
+                .RequirementSkill(SkillType.Piloting, 0)
+                .GrantsFeat(FeatType.IntuitivePiloting);
+        }
     }
 }

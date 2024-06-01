@@ -113,6 +113,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
 
                     var targetDistance = GetDistanceBetween(activator, target);
+                    var targetLocation = GetLocation(target);
                     var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
 
                     var chanceToHit = Space.CalculateChanceToHit(activator, target);

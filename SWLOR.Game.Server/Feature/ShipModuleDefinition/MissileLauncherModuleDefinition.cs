@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class MissileLauncherModuleDefinition : IShipModuleListDefinition    
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
                 .Recast(12f)
-                .ValidationAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
+                .ValidationAction((activator, _, _, _, _) =>
                 {
                     var item = GetItemPossessedBy(activator, MissileItemResref);
                     var stackSize = GetItemStackSize(item);
@@ -113,7 +113,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
 
                     var targetDistance = GetDistanceBetween(activator, target);
-                    var targetLocation = GetLocation(target);
                     var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
 
                     var chanceToHit = Space.CalculateChanceToHit(activator, target);

@@ -1420,8 +1420,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("capc_modcomp", 1)
                 .Component("capc_power", 3);
 
-            // Dedicated Targetting Sensor Array
-            _builder.Create(RecipeType.TargettingArray, SkillType.Engineering)
+            // Dedicated Targeting Sensor Array
+            _builder.Create(RecipeType.TargetingArray, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("cap_target1")
                 .Level(52)

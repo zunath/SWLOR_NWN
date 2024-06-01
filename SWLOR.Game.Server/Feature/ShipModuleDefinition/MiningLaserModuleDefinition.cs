@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class MiningLaserModuleDefinition: IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.MiningModules, requiredLevel)
                 .Capacitor(capacitor)
                 .Recast(recast)
-                .ValidationAction((activator, status, target, shipStatus, moduleBonus) =>
+                .ValidationAction((_, _, target, _, _) =>
                 {
                     // Ensure an asteroid ore type has been specified by the builder.
                     var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     return string.Empty;
                 })
-                .ActivatedAction((activator, status, target, shipStatus, moduleBonus) =>
+                .ActivatedAction((activator, _, target, _, moduleBonus) =>
                 {
                     SetLocalBool(target, Mined, true);
                     // Remaining units aren't set - pick a random number to assign.

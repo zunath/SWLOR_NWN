@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class BeamCannonModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -62,9 +62,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     var beam = EffectBeam(VisualEffect.Vfx_Beam_Holy, activator, BodyNode.Chest);
 
-                    for (int i = 0; i < 3; i++)
+                    for (var i = 0; i < 3; i++)
                     {
-                        float delay = i * 0.33f;
+                        var delay = i * 0.33f;
                         DelayCommand(delay, () =>
                         {
                             var chanceToHit = Space.CalculateChanceToHit(activator, target);

@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class ProtonBombModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, 5)
                 .Recast(18f)
-                .ValidationAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
+                .ValidationAction((activator, _, target, _, _) =>
                 {
                     var item = GetItemPossessedBy(activator, ProtonBombItemResref);
                     var stackSize = GetItemStackSize(item);

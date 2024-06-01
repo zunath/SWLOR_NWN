@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Core.NWNX.Enum
         SkillHealValidTargets = 56,
         SkillStealthInCombat = 60,
 
-        /// Miscellaneous Targetting Messages
+        /// Miscellaneous Targeting Messages
         TargetUnaware = 6,
         ActionNotPossibleStatus = 7,
         ActionNotPossiblePvp = 187,

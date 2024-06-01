@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class StripMinerModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Capacitor(30)
                 .Recast(18)
                 .CapitalClassModule()
-                .ValidationAction((activator, status, target, shipStatus, moduleBonus) =>
+                .ValidationAction((_, _, target, _, _) =>
                 {
                     var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
                     if (string.IsNullOrWhiteSpace(lootTableId))
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     return string.Empty;
                 })
-                .ActivatedAction((activator, status, target, shipStatus, moduleBonus) =>
+                .ActivatedAction((activator, _, target, _, moduleBonus) =>
                 {
                     SetLocalBool(target, Mined, true);
 

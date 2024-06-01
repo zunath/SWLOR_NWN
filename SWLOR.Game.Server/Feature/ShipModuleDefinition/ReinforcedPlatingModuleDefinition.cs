@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class ReinforcedPlatingModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -28,14 +28,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, 5)
                 .CapitalClassModule()
-                .EquippedAction((creature, shipStatus, moduleBonus) =>
+                .EquippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.ThermalDefense += 3 * (boostAmount + moduleBonus);
                     shipStatus.EMDefense += 3 * (boostAmount + moduleBonus);
                     shipStatus.ExplosiveDefense += 3 * (boostAmount + moduleBonus);
                     shipStatus.Evasion -= boostAmount;
                 })
-                .UnequippedAction((creature, shipStatus, moduleBonus) =>
+                .UnequippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.ThermalDefense -= 3 * (boostAmount + moduleBonus);
                     shipStatus.EMDefense -= 3 * (boostAmount + moduleBonus);

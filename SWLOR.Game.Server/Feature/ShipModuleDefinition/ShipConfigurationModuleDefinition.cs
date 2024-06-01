@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class ShipConfigurationModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 $"Industrial Level: +{industrial} + Module Bonus x 2 (Industrial frames only)")
                 .PowerType(ShipModulePowerType.Config)
                 .RequirePerk(PerkType.Starships, requiredLevel)
-                .EquippedAction((creature, shipStatus, moduleBonus) =>
+                .EquippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.MaxHull += armor + moduleBonus * 4;
                     shipStatus.MaxShield += shield + moduleBonus * 4;
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         shipStatus.Industrial += industrial + moduleBonus;
                     }
                 })
-                .UnequippedAction((creature, shipStatus, moduleBonus) =>
+                .UnequippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.MaxHull -= armor + moduleBonus * 4;
                     shipStatus.MaxShield -= shield + moduleBonus * 4;
@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .PowerType(ShipModulePowerType.Config)
                 .RequirePerk(PerkType.Starships, requiredLevel)
                 .CapitalClassModule()
-                .EquippedAction((creature, shipStatus, moduleBonus) =>
+                .EquippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.MaxHull += armor + moduleBonus * 4;
                     shipStatus.MaxShield += shield + moduleBonus * 4;
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         shipStatus.Industrial += industrial + moduleBonus;
                     }
                 })
-                .UnequippedAction((creature, shipStatus, moduleBonus) =>
+                .UnequippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.MaxHull -= armor + moduleBonus * 4;
                     shipStatus.MaxShield -= shield + moduleBonus * 4;

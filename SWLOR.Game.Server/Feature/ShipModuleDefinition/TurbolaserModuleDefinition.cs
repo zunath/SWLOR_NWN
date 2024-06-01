@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class TurboLaserModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -74,9 +74,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
                     var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
                     var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
-                    for (int i = 0; i < attacks; i++)
+                    for (var i = 0; i < attacks; i++)
                     {
-                        float delay = i * 3f;
+                        var delay = i * 3f;
                         DelayCommand(delay, () =>
                         {
                             if (!GetIsDead(activator) && !GetIsDead(target))

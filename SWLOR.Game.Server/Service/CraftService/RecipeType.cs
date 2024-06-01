@@ -2459,7 +2459,7 @@
         ReinforcedPlating = 4768,
         RepairFieldGenerator = 4769,
         StormCannon = 4770,
-        TargettingArray = 4771,
+        TargetingArray = 4771,
         Turbolaser1 = 4772,
         Turbolaser2 = 4773,
         Turbolaser3 = 4774,

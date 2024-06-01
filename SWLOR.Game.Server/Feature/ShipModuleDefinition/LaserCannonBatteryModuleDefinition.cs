@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class LaserCannonBatteryModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             .Capacitor(15)
             .CapitalClassModule()
             .CanTargetSelf()
-            .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
+            .ActivatedAction((activator, activatorShipStatus, target, _, moduleBonus) =>
             {
                 var attackBonus = activatorShipStatus.ThermalDamage;
                 var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
@@ -70,9 +70,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
                 var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
 
-                for (int i = 0; i < 9; i++)
+                for (var i = 0; i < 9; i++)
                 {
-                    float delay = i * 2f;
+                    var delay = i * 2f;
                     DelayCommand(delay, () =>
                     {
                         if (!GetIsDead(activator))
@@ -93,7 +93,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                         nearbyDefense,
                                         nearbyDefenderStat,
                                         0);
-                                    var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
                                     var chanceToHit = Space.CalculateChanceToHit(activator, nearbyTarget);
                                     var roll = Random.D100(1);
                                     var isHit = roll <= chanceToHit;

@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class RepairFieldGeneratorModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -36,14 +36,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Recast(12f)
                 .CapitalClassModule()
                 .CanTargetSelf()
-                .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
+                .ActivatedAction((activator, _, target, targetShipStatus, moduleBonus) =>
                 {
                     var industrialBonus = Space.GetShipStatus(activator).Industrial;
                     repairAmount += (industrialBonus + moduleBonus) / 2;
 
-                    for (int i = 0; i < 6; i++)
+                    for (var i = 0; i < 6; i++)
                     {
-                        float delay = i * 1f;
+                        var delay = i * 1f;
                         DelayCommand(delay, () =>
                         {
                             target = GetFirstObjectInShape(Shape.Sphere, 8.0f, GetLocation(activator), true, ObjectType.Creature);

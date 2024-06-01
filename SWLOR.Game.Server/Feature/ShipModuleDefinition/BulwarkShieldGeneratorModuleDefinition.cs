@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class BulwarkShieldGeneratorModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -41,9 +41,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 {
                     repairAmount += (activatorShipStatus.Industrial + moduleBonus) / 2;
 
-                    for (int i = 0; i < 6; i++)
+                    for (var i = 0; i < 6; i++)
                     {
-                        float delay = i * 2f;
+                        var delay = i * 2f;
                         DelayCommand(delay, () =>
                         {
                             target = GetFirstObjectInShape(Shape.Sphere, 8.0f, GetLocation(activator), true, ObjectType.Creature);

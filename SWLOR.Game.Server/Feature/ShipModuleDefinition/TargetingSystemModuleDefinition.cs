@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class TargetingSystemModuleDefinition: IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -29,11 +29,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's accuracy by {accuracyBoostAmount}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
-                .EquippedAction((creature, shipStatus, moduleBonus) =>
+                .EquippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.Accuracy += accuracyBoostAmount + moduleBonus;
                 })
-                .UnequippedAction((creature, shipStatus, moduleBonus) =>
+                .UnequippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.Accuracy -= accuracyBoostAmount + moduleBonus;
                 });

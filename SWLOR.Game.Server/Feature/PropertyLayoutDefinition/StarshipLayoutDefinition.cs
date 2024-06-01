@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 {
-    public class StarshipLayoutDefinition: IPropertyLayoutListDefinition
+    public class StarshipLayoutDefinition : IPropertyLayoutListDefinition
     {
         private readonly PropertyLayoutBuilder _builder = new();
         public Dictionary<PropertyLayoutType, PropertyLayout> Build()
@@ -21,6 +21,9 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             Saber();
             Striker();
             Throne();
+            Fighter();
+            Corvette();
+            Basilisk();
 
             return _builder.Build();
         }
@@ -191,6 +194,48 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .InitialPrice(0)
                 .PricePerDay(0)
                 .AreaInstance("ship_throne_z");
+        }
+
+        private void Fighter()
+        {
+            _builder.Create(PropertyLayoutType.Fighter)
+                .PropertyType(PropertyType.Starship)
+                .Name("Fighter")
+                .StructureLimit(6)
+                .ItemStorageLimit(5)
+                .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
+                .InitialPrice(0)
+                .PricePerDay(0)
+                .AreaInstance("ship_fight_v");
+        }
+
+        private void Corvette()
+        {
+            _builder.Create(PropertyLayoutType.Corvette)
+                .PropertyType(PropertyType.Starship)
+                .Name("Throne")
+                .StructureLimit(100)
+                .ItemStorageLimit(40)
+                .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
+                .InitialPrice(0)
+                .PricePerDay(0)
+                .AreaInstance("ship_corv_v");
+        }
+
+        private void Basilisk()
+        {
+            _builder.Create(PropertyLayoutType.Basilisk)
+                .PropertyType(PropertyType.Starship)
+                .Name("Throne")
+                .StructureLimit(40)
+                .ItemStorageLimit(5)
+                .BuildingLimit(0)
+                .ResearchDeviceLimit(0)
+                .InitialPrice(0)
+                .PricePerDay(0)
+                .AreaInstance("ship_basi_v");
         }
     }
 }

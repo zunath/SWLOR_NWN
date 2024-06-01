@@ -44197,7 +44197,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 24
+    "value": 26
   },
   "Width": {
     "type": "int",

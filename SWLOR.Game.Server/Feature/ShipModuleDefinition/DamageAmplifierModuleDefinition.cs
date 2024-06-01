@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class DamageAmplifierModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -40,11 +40,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's EM attack by {emDamageBonus}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
-                .EquippedAction((creature, shipStatus, moduleBonus) =>
+                .EquippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.EMDamage += emDamageBonus + moduleBonus;
                 })
-                .UnequippedAction((creature, shipStatus, moduleBonus) =>
+                .UnequippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.EMDamage -= emDamageBonus + moduleBonus;
                 });
@@ -59,11 +59,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's thermal attack by {thermalDamageBonus}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
-                .EquippedAction((creature, shipStatus, moduleBonus) =>
+                .EquippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.ThermalDamage += thermalDamageBonus + moduleBonus;
                 })
-                .UnequippedAction((creature, shipStatus, moduleBonus) =>
+                .UnequippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.ThermalDamage -= thermalDamageBonus + moduleBonus;
                 });
@@ -78,11 +78,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's explosive attack by {explosiveDamageBonus}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
-                .EquippedAction((creature, shipStatus, moduleBonus) =>
+                .EquippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.ExplosiveDamage += explosiveDamageBonus + moduleBonus;
                 })
-                .UnequippedAction((creature, shipStatus, moduleBonus) =>
+                .UnequippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.ExplosiveDamage -= explosiveDamageBonus + moduleBonus;
                 });

@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 2)
 				.Component("elec_ruined", 1);
 
-            // Beam Cannon 1
+            // Basic Beam Cannon
             _builder.Create(RecipeType.BeamCannon1, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("beamcannon1")
@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 3);
 
-			// Hypermatter Injector 1
+			// Basic Hypermatter Injector
 			_builder.Create(RecipeType.FuelInjector1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_inject1")
@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 3);
 
-			// Mirrored Plating 1
+			// Basic Mirrored Plating
 			_builder.Create(RecipeType.ThermalArmor1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("las_armor_1")
@@ -209,8 +209,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 1);
 
-			// Supplemental Ion Shielding 1
-			_builder.Create(RecipeType.IonArmor1, SkillType.Engineering)
+            // Basic Supplemental Ion Shielding
+            _builder.Create(RecipeType.IonArmor1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_armor_1")
 				.Level(5)
@@ -220,8 +220,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 1);
 
-			// Reactive Armor 1
-			_builder.Create(RecipeType.ExplosiveArmor1, SkillType.Engineering)
+            // Basic Reactive Armor
+            _builder.Create(RecipeType.ExplosiveArmor1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_armor_1")
 				.Level(5)
@@ -231,8 +231,8 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 1);
 
-			// Durasteel Plating 1
-			_builder.Create(RecipeType.HeavyArmor1, SkillType.Engineering)
+            // Basic Durasteel Plating
+            _builder.Create(RecipeType.HeavyArmor1, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hvy_armor_1")
 				.Level(5)
@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_tilarium", 5)
 				.Component("elec_ruined", 1);
 
-            // Fighter Config 1
+            // Basic Fighter Config
             _builder.Create(RecipeType.FighterConfig1, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_fig1")
@@ -253,7 +253,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_tilarium", 3)
                 .Component("elec_ruined", 2);
 
-            // Bomber Config 1
+            // Basic Bomber Config
             _builder.Create(RecipeType.BomberConfig1, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_bmb1")
@@ -264,7 +264,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_tilarium", 3)
                 .Component("elec_ruined", 2);
 
-            // Interceptor Config 1
+            // Basic Interceptor Config
             _builder.Create(RecipeType.InterceptorConfig1, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_int1")
@@ -275,7 +275,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_tilarium", 3)
                 .Component("elec_ruined", 2);
 
-            // Logistics Config 1
+            // Basic Logistics Config
             _builder.Create(RecipeType.LogisticsConfig1, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind1")
@@ -312,7 +312,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 2)
 				.Component("elec_flawed", 1);
 
-            // Beam Cannon 2
+            // Beam Cannon I
             _builder.Create(RecipeType.BeamCannon2, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("beamcannon2")
@@ -455,7 +455,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 3);
 			
-			// Hypermatter Injector II
+			// Hypermatter Injector I
 			_builder.Create(RecipeType.FuelInjector2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_inject2")
@@ -466,7 +466,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 3);
 			
-			// Mirror Plating II
+			// Mirror Plating I
 			_builder.Create(RecipeType.ThermalArmor2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("las_armor_2")
@@ -477,7 +477,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 1);
 			
-			// Supplemental Ion Shielding II
+			// Supplemental Ion Shielding I
 			_builder.Create(RecipeType.IonArmor2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_armor_2")
@@ -488,7 +488,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 1);
 
-			// Reactive Armor II
+			// Reactive Armor I
 			_builder.Create(RecipeType.ExplosiveArmor2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_armor_2")
@@ -499,7 +499,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 1);
 
-			// Durasteel Plating II
+			// Durasteel Plating I
 			_builder.Create(RecipeType.HeavyArmor2, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hvy_armor_2")
@@ -510,7 +510,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_currian", 5)
 				.Component("elec_flawed", 1);
 
-            // Fighter Config 2
+            // Fighter Config I
             _builder.Create(RecipeType.FighterConfig2, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_fig2")
@@ -521,7 +521,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_currian", 3)
                 .Component("elec_flawed", 2);
 
-            // Bomber Config 2
+            // Bomber Config I
             _builder.Create(RecipeType.BomberConfig2, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_bmb2")
@@ -532,7 +532,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_currian", 3)
                 .Component("elec_flawed", 2);
 
-            // Interceptor Config 2
+            // Interceptor Config I
             _builder.Create(RecipeType.InterceptorConfig2, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_int2")
@@ -543,7 +543,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_currian", 3)
                 .Component("elec_flawed", 2);
 
-            // Logistics Config 2
+            // Logistics Config I
             _builder.Create(RecipeType.LogisticsConfig2, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind2")
@@ -580,7 +580,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 2)
 				.Component("elec_good", 1);
 
-            // Beam Cannon 3
+            // Beam Cannon II
             _builder.Create(RecipeType.BeamCannon3, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("beamcannon3")
@@ -723,7 +723,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 3);
 
-			// Hypermatter Injector III
+			// Hypermatter Injector II
 			_builder.Create(RecipeType.FuelInjector3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_inject3")
@@ -734,7 +734,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 3);
 
-			// Mirrored Plating III
+			// Mirrored Plating II
 			_builder.Create(RecipeType.ThermalArmor3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("las_armor_3")
@@ -745,7 +745,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 1);
 
-			// Supplemental Ion Shielding III
+			// Supplemental Ion Shielding II
 			_builder.Create(RecipeType.IonArmor3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_armor_3")
@@ -756,7 +756,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 1);
 
-			// Reactive Armor III
+			// Reactive Armor II
 			_builder.Create(RecipeType.ExplosiveArmor3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_armor_3")
@@ -767,7 +767,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 1);
 
-			// Durasteel Plating III
+			// Durasteel Plating II
 			_builder.Create(RecipeType.HeavyArmor3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hvy_armor_3")
@@ -778,7 +778,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_idailia", 5)
 				.Component("elec_good", 1);
 
-            // Fighter Config 3
+            // Fighter Config II
             _builder.Create(RecipeType.FighterConfig3, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_fig3")
@@ -789,7 +789,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_idailia", 3)
                 .Component("elec_good", 2);
 
-            // Bomber Config 3
+            // Bomber Config II
             _builder.Create(RecipeType.BomberConfig3, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_bmb3")
@@ -800,7 +800,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_idailia", 3)
                 .Component("elec_good", 2);
 
-            // Interceptor Config 3
+            // Interceptor Config II
             _builder.Create(RecipeType.InterceptorConfig3, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_int3")
@@ -811,7 +811,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_idailia", 3)
                 .Component("elec_good", 2);
 
-            // Logistics Config 3
+            // Logistics Config II
             _builder.Create(RecipeType.LogisticsConfig3, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind3")
@@ -848,7 +848,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 2)
 				.Component("elec_imperfect", 1);
 
-            //  Beam Cannon 4
+            //  Beam Cannon III
             _builder.Create(RecipeType.BeamCannon4, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("beamcannon4")
@@ -947,7 +947,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 1)
 				.Component("elec_imperfect", 1);
 
-			//  Missile Launcher II
+			//  Missile Launcher III
 			_builder.Create(RecipeType.MissileLauncher3, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("msl_launch_3")
@@ -991,7 +991,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 3);
 
-			// Hypermatter Injector IV
+			// Hypermatter Injector III
 			_builder.Create(RecipeType.FuelInjector4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_inject4")
@@ -1002,7 +1002,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 3);
 
-			// Mirrored Plating IV
+			// Mirrored Plating III
 			_builder.Create(RecipeType.ThermalArmor4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("las_armor_4")
@@ -1013,7 +1013,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 1);
 
-			// Supplemental Ion Shielding IV
+			// Supplemental Ion Shielding III
 			_builder.Create(RecipeType.IonArmor4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_armor_4")
@@ -1024,7 +1024,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 1);
 
-			// Reactive Armor IV
+			// Reactive Armor III
 			_builder.Create(RecipeType.ExplosiveArmor4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_armor_4")
@@ -1035,7 +1035,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 1);
 
-			// Durasteel Plating IV
+			// Durasteel Plating III
 			_builder.Create(RecipeType.HeavyArmor4, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hvy_armor_4")
@@ -1046,7 +1046,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_barinium", 5)
 				.Component("elec_imperfect", 1);
 
-            // Fighter Config 4
+            // Fighter Config III
             _builder.Create(RecipeType.FighterConfig4, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_fig4")
@@ -1057,7 +1057,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_barinium", 3)
                 .Component("elec_imperfect", 2);
 
-            // Bomber Config 4
+            // Bomber Config III
             _builder.Create(RecipeType.BomberConfig4, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_bmb4")
@@ -1068,7 +1068,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_barinium", 3)
                 .Component("elec_imperfect", 2);
 
-            // Interceptor Config 4
+            // Interceptor Config III
             _builder.Create(RecipeType.InterceptorConfig4, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_int4")
@@ -1079,7 +1079,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_barinium", 3)
                 .Component("elec_imperfect", 2);
 
-            // Logistics Config 4
+            // Logistics Config III
             _builder.Create(RecipeType.LogisticsConfig4, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind4")
@@ -1116,7 +1116,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 2)
 				.Component("elec_high", 1);
 
-            //  Beam Cannon 5
+            //  Beam Cannon IV
             _builder.Create(RecipeType.BeamCannon5, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("beamcannon5")
@@ -1270,7 +1270,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 3);
 
-			// Hypermatter Injector V
+			// Hypermatter Injector IV
 			_builder.Create(RecipeType.FuelInjector5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_inject5")
@@ -1281,7 +1281,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 3);
 
-			// Mirrored Plating V
+			// Mirrored Plating IV
 			_builder.Create(RecipeType.ThermalArmor5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("las_armor_5")
@@ -1292,7 +1292,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 1);
 
-			// Supplemental Ion Shielding V
+			// Supplemental Ion Shielding IV
 			_builder.Create(RecipeType.IonArmor5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("ion_armor_5")
@@ -1303,7 +1303,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 1);
 
-			// Reactive Armor V
+			// Reactive Armor IV
 			_builder.Create(RecipeType.ExplosiveArmor5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("exp_armor_5")
@@ -1314,7 +1314,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 1);
 
-			// Durasteel Plating V
+			// Durasteel Plating IV
 			_builder.Create(RecipeType.HeavyArmor5, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("hvy_armor_5")
@@ -1325,7 +1325,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("ref_gostian", 5)
 				.Component("elec_high", 1);
 
-            // Fighter Config 5
+            // Fighter Config IV
             _builder.Create(RecipeType.FighterConfig5, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_fig5")
@@ -1336,7 +1336,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 2);
 
-            // Bomber Config 5
+            // Bomber Config IV
             _builder.Create(RecipeType.BomberConfig5, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_bmb5")
@@ -1347,7 +1347,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 2);
 
-            // Interceptor Config 5
+            // Interceptor Config IV
             _builder.Create(RecipeType.InterceptorConfig5, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_int5")
@@ -1358,7 +1358,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 2);
 
-            // Logistics Config 5
+            // Logistics Config IV
             _builder.Create(RecipeType.LogisticsConfig5, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("config_ind5")

@@ -566,7 +566,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .SetText("")
+                                        .SetText("XP Penalty")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });
@@ -618,7 +618,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 col.AddRow(row =>
                                 {
                                     row.AddLabel()
-                                        .SetText("")
+                                        .BindText(model => model.XPPenalty)
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left);
                                 });

@@ -384,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnRetrieveStructure() => () =>
         {
-            ShowModal($"Are you sure you want to retrieve this structure?", () =>
+            ShowModal($"Are you sure you want to retrieve this structure? WARNING: Any structures, items, research jobs, etc. contained inside will be permanently lost.", () =>
             {
                 var structure = GetStructure();
                 var parentProperty = DB.Get<WorldProperty>(structure.ParentPropertyId);
@@ -433,17 +433,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // Some structures have specific logic which must be run when they're picked up. Do that now.
                 Property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.Retrieved, structure, placeable);
-
-                DB.Delete<WorldProperty>(structure.Id);
-
-                // Remove any child instances this structure contains.
-                if (structure.ChildPropertyIds.ContainsKey(PropertyChildType.Interior))
-                {
-                    foreach (var childId in structure.ChildPropertyIds[PropertyChildType.Interior])
-                    {
-                        DB.Delete<WorldProperty>(childId);
-                    }
-                }
+                
+                Property.DeleteProperty(structure);
 
                 StructureNames.RemoveAt(SelectedStructureIndex);
                 StructureToggles.RemoveAt(SelectedStructureIndex);

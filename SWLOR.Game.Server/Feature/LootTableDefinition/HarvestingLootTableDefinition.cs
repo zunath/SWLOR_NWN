@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 {
     public class HarvestingLootTableDefinition : ILootTableDefinition
     {
-        private readonly LootTableBuilder _builder = new LootTableBuilder();
+        private readonly LootTableBuilder _builder = new();
 
         public Dictionary<string, LootTable> BuildLootTables()
         {
@@ -164,6 +164,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("ASTEROID_GOSTIAN")
                 .AddItem("ore_gostian", 30)
                 .AddItem("diamond", 2)
+                .AddItem("zinsiam", 1);
+
+            _builder.Create("ASTEROID_ARDANIUM")
+                .AddItem("ore_arda", 9)
                 .AddItem("zinsiam", 1);
         }
     }

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.CombatService;
 
@@ -9,6 +11,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         private readonly Dictionary<BeastType, BeastDetail> _beasts = new();
         private BeastDetail _activeBeast;
         private BeastLevel _activeLevel;
+        private MutationDetail _activeMutation;
 
         /// <summary>
         /// Creates a new beast configuration.
@@ -19,6 +22,18 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         {
             _activeBeast = new BeastDetail();
             _beasts.Add(type, _activeBeast);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies the name of the beast.
+        /// </summary>
+        /// <param name="name">The name to use.</param>
+        /// <returns>A configured BeastBuilder object</returns>
+        public BeastBuilder Name(string name)
+        {
+            _activeBeast.Name = name;
 
             return this;
         }
@@ -235,6 +250,121 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         }
 
         /// <summary>
+        /// Specifies this beast can mutate into the specified type of beast in the Incubation process.
+        /// </summary>
+        /// <param name="type">The type of beast which can be mutated into.</param>
+        /// <returns>A configured BeastBuilder object</returns>
+        public BeastBuilder CanMutateInto(BeastType type)
+        {
+            _activeMutation = new MutationDetail(type);
+            _activeBeast.PossibleMutations.Add(_activeMutation);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies this mutation can only occur on the specified days of week.
+        /// This only occurs if the job finishes on this day.
+        /// </summary>
+        /// <param name="dayOfWeek">The day of the week</param>
+        /// <param name="additionalDaysOfWeek">Any additional days of the week.</param>
+        /// <returns>A configured BeastBuilder object</returns>
+        public BeastBuilder MutationRequiresDayOfWeek(DayOfWeek dayOfWeek, params DayOfWeek[] additionalDaysOfWeek)
+        {
+            var requirement = new MutationRequirementDayOfWeek(dayOfWeek, additionalDaysOfWeek);
+            _activeMutation.Requirements.Add(requirement);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies this mutation can only occur if the overall mutation chance meets a certain threshold.
+        /// Valid values are between 1 and 100.
+        /// </summary>
+        /// <param name="minimumChance">The minimum chance.</param>
+        /// <returns>A configured BeastBuilder object</returns>
+        public BeastBuilder MutationRequiresMinimumChance(int minimumChance)
+        {
+            var requirement = new MutationRequirementMinimumChance(minimumChance);
+            _activeMutation.Requirements.Add(requirement);
+
+            return this;
+        }
+
+        private MutationRequirementEnzyme GetEnzymeRequirement()
+        {
+            var existing = _activeMutation
+                .Requirements
+                .FirstOrDefault(x => x.GetType() == typeof(MutationRequirementEnzyme));
+            if (existing == null)
+            {
+                existing = new MutationRequirementEnzyme();
+                _activeMutation.Requirements.Add(existing);
+            }
+            return (MutationRequirementEnzyme)existing;
+        }
+
+        /// <summary>
+        /// Specifies this mutation can only occur if a certain number of a specific color of Lyase are used.
+        /// Valid values are between 1 and 3.
+        /// Valid colors are Blue, Orange, Red, Green, Black
+        /// </summary>
+        /// <param name="color">The required color</param>
+        /// <param name="amount">The required number which must be used.</param>
+        /// <returns>A configured BeastBuilder object</returns>
+        public BeastBuilder MutationRequiresLyaseColor(EnzymeColorType color, int amount)
+        {
+            var requirement = GetEnzymeRequirement();
+            requirement.LyaseEnzymeColors[color] = amount;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies this mutation can only occur if a certain number of a specific color of Isomerase are used.
+        /// Valid values are between 1 and 3.
+        /// Valid colors are Blue, Orange, Red, Green, Yellow
+        /// </summary>
+        /// <param name="color">The required color</param>
+        /// <param name="amount">The required number which must be used.</param>
+        /// <returns>A configured BeastBuilder object</returns>
+        public BeastBuilder MutationRequiresIsomeraseColor(EnzymeColorType color, int amount)
+        {
+            var requirement = GetEnzymeRequirement();
+            requirement.IsomeraseEnzymeColors[color] = amount;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies this mutation can only occur if a certain number of a specific color of Hydrolase are used.
+        /// Valid values are between 1 and 3.
+        /// Valid colors are Blue, Orange, Red, Purple, White
+        /// </summary>
+        /// <param name="color">The required color</param>
+        /// <param name="amount">The required number which must be used.</param>
+        /// <returns>A configured BeastBuilder object</returns>
+        public BeastBuilder MutationRequiresHydrolaseColor(EnzymeColorType color, int amount)
+        {
+            var requirement = GetEnzymeRequirement();
+            requirement.HydrolaseEnzymeColors[color] = amount;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Indicates the weighted chance this mutation will appear compared to all other possible mutations.
+        /// </summary>
+        /// <param name="weight">The weighted chance to use.</param>
+        /// <returns>A configured BeastBuilder object</returns>
+        public BeastBuilder MutationWeight(int weight)
+        {
+            _activeMutation.Weight = weight;
+
+            return this;
+        }
+
+        /// <summary>
         /// Builds the beast's definition.
         /// </summary>
         /// <returns>A collection of beast details.</returns>
@@ -242,6 +372,5 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         {
             return _beasts;
         }
-
     }
 }

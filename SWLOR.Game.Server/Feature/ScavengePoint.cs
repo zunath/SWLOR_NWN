@@ -91,6 +91,8 @@ namespace SWLOR.Game.Server.Feature
 
                     CreateItemOnObject(item.Resref, placeable, quantity);
                     xp = deltaXP;
+
+                    Loot.SpawnLoot(placeable, user, "LOOT_TABLE_");
                 }
                 else
                 {

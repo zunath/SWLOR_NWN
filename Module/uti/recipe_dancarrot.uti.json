@@ -117,11 +117,11 @@
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 2202
+          "type": "cexostring",
+          "value": "2202"
         }
       }
     ]

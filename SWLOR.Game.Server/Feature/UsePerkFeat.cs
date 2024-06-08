@@ -277,7 +277,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectSlow(), activator, 1.5f);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneImmobilize(), activator, 1.5f);
-                DelayCommand(1.5f, () =>
+                DelayCommand(1.6f, () =>
                 {
                     Stat.ApplyPlayerMovementRate(activator);
                 });

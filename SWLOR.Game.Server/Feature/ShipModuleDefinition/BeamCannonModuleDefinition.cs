@@ -16,11 +16,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            BeamCannon("beamcannon1", "Basic Beam Cannon", "Basic Beam C.", "A stream of energy deals increasing damage with each successive hit. Starts at 3 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 3, 1);
-            BeamCannon("beamcannon2", "Beam Cannon I", "Beam Cann. 1", "A stream of energy deals increasing damage with each successive hit. Starts at 6 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 6, 2);
-            BeamCannon("beamcannon3", "Beam Cannon II", "Beam Cann. 2", "A stream of energy deals increasing damage with each successive hit. Starts at 9 DMG per tick and increases by 1 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 9, 3);
-            BeamCannon("beamcannon4", "Beam Cannon III", "Beam Cann. 3", "A stream of energy deals increasing damage with each successive hit. Starts at 12 DMG per tick and increases by 2 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 12, 4);
-            BeamCannon("beamcannon5", "Beam Cannon IV", "Beam Cann. 4", "A stream of energy deals increasing damage with each successive hit. Starts at 15 DMG per tick and increases by 2 DMG with each consecutive hit. Resets on a miss. Ticks are every 0.2 seconds for 1 second.", 15, 5);
+            BeamCannon("beamcannon1", "Basic Beam Cannon", "Basic Beam C.", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 3 DMG on a hit.", 3, 1);
+            BeamCannon("beamcannon2", "Beam Cannon I", "Beam Cann. 1", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 6 DMG on a hit.", 6, 2);
+            BeamCannon("beamcannon3", "Beam Cannon II", "Beam Cann. 2", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 9 DMG on a hit.", 9, 3);
+            BeamCannon("beamcannon4", "Beam Cannon III", "Beam Cann. 3", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 12 DMG on a hit.", 12, 4);
+            BeamCannon("beamcannon5", "Beam Cannon IV", "Beam Cann. 4", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 15 DMG on a hit.", 15, 5);
 
             return _builder.Build();
         }

@@ -275,7 +275,12 @@ namespace SWLOR.Game.Server.Feature
 
             if (GetIsPC(activator) && !Space.IsPlayerInSpaceMode(activator))
             {
+                ApplyEffectToObject(DurationType.Temporary, EffectSlow(), activator, 1.5f);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneImmobilize(), activator, 1.5f);
+                DelayCommand(1.6f, () =>
+                {
+                    Stat.ApplyPlayerMovementRate(activator);
+                });
             }
 
             var executeImpact = ability.ActivationAction == null 

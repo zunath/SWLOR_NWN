@@ -462,7 +462,23 @@ namespace SWLOR.Game.Server.Service
                 HairColorId = 79,
                 HeadId = 235
             };
+             _defaultRaceAppearancesMale[RacialType.Ewok] = new RacialAppearance
+            {
+                AppearanceType = AppearanceType.Ewok,
 
+                SkinColorId = 0,
+                HairColorId = 0,
+                HeadId = 111,
+                PelvisId = 7
+            };
+            _defaultRaceAppearancesFemale[RacialType.Ewok] = new RacialAppearance
+            {
+                AppearanceType = AppearanceType.Ewok,
+
+                SkinColorId = 0,
+                HairColorId = 0,
+                HeadId = 111,
+                PelvisId = 7
         }
 
         /// <summary>

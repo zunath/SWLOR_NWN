@@ -89,3 +89,11 @@ case 'Y': sb.Append("A"); break;
 
 case 'z': sb.Append("s"); break;
 case 'Z': sb.Append("S"); break;
+
+     }
+            }
+
+            return sb.ToString();
+        }
+    }
+}

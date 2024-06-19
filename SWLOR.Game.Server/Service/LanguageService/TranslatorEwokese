@@ -1,3 +1,17 @@
+﻿using System.Text;
+
+namespace SWLOR.Game.Server.Service.LanguageService
+{
+    public class TranslatorBothese : ITranslator
+    {
+        public string Translate(string message)
+        {
+            var sb = new StringBuilder();
+
+            foreach (var ch in message)
+            {
+                switch (ch)
+                {
 case 'a': sb.Append("q"); break;
 case 'A': sb.Append("Q"); break;
 

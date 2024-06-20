@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Service.LanguageService
 {
-    public class TranslatorBothese : ITranslator
+    public class TranslatorEwokese : ITranslator
     {
         public string Translate(string message)
         {

@@ -468,9 +468,11 @@ namespace SWLOR.Game.Server.Service
 
                 SkinColorId = 0,
                 HairColorId = 0,
-                TorsoId = 20,
                 HeadId = 111,
+
+                TorsoId = 20,
                 PelvisId = 7
+
             };
             _defaultRaceAppearancesFemale[RacialType.Ewok] = new RacialAppearance
             {
@@ -478,9 +480,11 @@ namespace SWLOR.Game.Server.Service
 
                 SkinColorId = 0,
                 HairColorId = 0,
-                TorsoId = 20,
                 HeadId = 111,
+
+                TorsoId = 20,
                 PelvisId = 7
+                
             };
 
         }

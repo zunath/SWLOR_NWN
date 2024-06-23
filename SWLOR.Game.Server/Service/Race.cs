@@ -469,9 +469,24 @@ namespace SWLOR.Game.Server.Service
                 SkinColorId = 0,
                 HairColorId = 0,
                 HeadId = 111,
+                Scale = 0.88f,
 
-                TorsoId = 20,
-                PelvisId = 7
+                TorsoId = 208,
+                PelvisId = 208,
+
+                RightBicepId = 208,
+                RightForearmId = 208,
+                RightHandId = 209,
+                RightThighId = 208,
+                RightShinId = 208,
+                RightFootId = 208,
+
+                LeftBicepId = 208,
+                LeftForearmId = 208,
+                LeftHandId = 209,
+                LeftThighId = 208,
+                LeftShinId = 208,
+                LeftFootId = 208
 
             };
             _defaultRaceAppearancesFemale[RacialType.Ewok] = new RacialAppearance
@@ -481,10 +496,25 @@ namespace SWLOR.Game.Server.Service
                 SkinColorId = 0,
                 HairColorId = 0,
                 HeadId = 111,
+                Scale = 0.88f,
 
-                TorsoId = 20,
-                PelvisId = 7
-                
+                TorsoId = 208,
+                PelvisId = 208,
+
+                RightBicepId = 208,
+                RightForearmId = 208,
+                RightHandId = 209,
+                RightThighId = 208,
+                RightShinId = 208,
+                RightFootId = 208,
+
+                LeftBicepId = 208,
+                LeftForearmId = 208,
+                LeftHandId = 209,
+                LeftThighId = 208,
+                LeftShinId = 208,
+                LeftFootId = 208
+
             };
 
         }

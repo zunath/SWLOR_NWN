@@ -6,7 +6,7 @@
         public virtual float MinimumScale => 0.85f;
         public abstract int[] MaleHeads { get; }
         public abstract int[] FemaleHeads { get; }
-        public virtual int[] Torsos { get; } = { 1, 2};
+        public virtual int[] Torsos { get; } = { 1, 2, 166};
         public virtual int[] Pelvis { get; } = { 1, 2, 11 };
         public virtual int[] RightBicep { get; } = { 1, 2 };
         public virtual int[] RightForearm { get; } = { 1, 2, 152 };

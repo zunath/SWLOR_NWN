@@ -468,8 +468,8 @@ namespace SWLOR.Game.Server.Service
 
                 SkinColorId = 0,
                 HairColorId = 0,
-                HeadId = 111,
-                Scale = 0.88f,
+                HeadId = 114,
+                Scale = 0.86f,
 
                 TorsoId = 208,
                 PelvisId = 208,
@@ -495,8 +495,8 @@ namespace SWLOR.Game.Server.Service
 
                 SkinColorId = 0,
                 HairColorId = 0,
-                HeadId = 111,
-                Scale = 0.88f,
+                HeadId = 114,
+                Scale = 0.86f,
 
                 TorsoId = 208,
                 PelvisId = 208,

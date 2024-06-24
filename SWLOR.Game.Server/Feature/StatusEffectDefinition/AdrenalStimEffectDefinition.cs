@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
 
@@ -19,8 +20,23 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void AdrenalStim(uint source, uint target, int level)
         {
-            var willBonus = GetAbilityScore(source, AbilityType.Willpower);
-            Stat.RestoreStamina(target, (willBonus / 2) + 2 * level);
+            var willBonus = GetAbilityModifier(AbilityType.Willpower, source) - 5;
+            if (target == source)
+            {
+                willBonus += level * 2;
+            }
+            if (willBonus <= 0)
+            {
+                willBonus = 0;
+            }
+            var staminaAmount = willBonus + level;
+            if (staminaAmount < level)
+            {
+                staminaAmount = level;
+            }
+
+            Stat.RestoreStamina(target, staminaAmount);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
         }
 
         private void AdrenalStim1(StatusEffectBuilder builder)

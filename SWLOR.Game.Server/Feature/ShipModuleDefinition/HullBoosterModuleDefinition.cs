@@ -6,15 +6,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class HullBoosterModuleDefinition: IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            HullBooster("hull_boost_b", "Basic Hull Booster", 5, 1);
-            HullBooster("hull_boost_1", "Hull Booster I", 8, 2);
-            HullBooster("hull_boost_2", "Hull Booster II", 11, 3);
-            HullBooster("hull_boost_3", "Hull Booster III", 14, 4);
-            HullBooster("hull_boost_4", "Hull Booster IV", 17, 5);
+            HullBooster("hull_boost_b", "Basic Hull Booster", 8, 1);
+            HullBooster("hull_boost_1", "Hull Booster I", 16, 2);
+            HullBooster("hull_boost_2", "Hull Booster II", 24, 3);
+            HullBooster("hull_boost_3", "Hull Booster III", 32, 4);
+            HullBooster("hull_boost_4", "Hull Booster IV", 40, 5);
 
             return _builder.Build();
         }
@@ -28,11 +28,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's maximum hull by {hullBoostAmount}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
-                .EquippedAction((creature, shipStatus, moduleBonus) =>
+                .EquippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.MaxHull += hullBoostAmount + moduleBonus * 2;
                 })
-                .UnequippedAction((creature, shipStatus, moduleBonus) =>
+                .UnequippedAction((_, shipStatus, moduleBonus) =>
                 {
                     shipStatus.MaxHull -= hullBoostAmount + moduleBonus * 2;
 

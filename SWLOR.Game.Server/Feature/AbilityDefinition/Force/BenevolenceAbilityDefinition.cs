@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 effect = TagEffect(effect, BeneRegen);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
             }
-            var willHeal = baseAmount + targetBonus * 4 + Random.D10(targetBonus * 3);
+            var willHeal = baseAmount + (targetBonus * 4) + Random.D4(targetBonus);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(willHeal), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);

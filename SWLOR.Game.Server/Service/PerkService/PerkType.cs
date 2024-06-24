@@ -259,7 +259,7 @@
         Rejuvenation = 252,
         FrenziedShout = 253,
         IncubationManagement = 254,
-        // 255 claimed by space update (Valo)
+        IntuitivePiloting = 255,
         ScientificNetworking = 256,
         FishingRods = 257,
         ShoutRange = 258,

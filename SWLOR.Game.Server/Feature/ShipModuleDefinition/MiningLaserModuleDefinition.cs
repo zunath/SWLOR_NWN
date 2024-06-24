@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class MiningLaserModuleDefinition: IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -24,6 +24,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
             return _builder.Build();
         }
+
+        private const string Mined = "BEING_MINED";
 
         private void MiningLaser(string itemTag, string name, string shortName, int requiredLevel, int capacitor, float recast)
         {
@@ -39,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.MiningModules, requiredLevel)
                 .Capacitor(capacitor)
                 .Recast(recast)
-                .ValidationAction((activator, status, target, shipStatus, moduleBonus) =>
+                .ValidationAction((_, _, target, _, _) =>
                 {
                     // Ensure an asteroid ore type has been specified by the builder.
                     var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
@@ -55,10 +57,16 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         return "This mining laser is not powerful enough to harvest that asteroid.";
                     }
 
+                    if (GetLocalBool(target, Mined))
+                    {
+                        return "This asteroid is already being mined.";
+                    }
+
                     return string.Empty;
                 })
-                .ActivatedAction((activator, status, target, shipStatus, moduleBonus) =>
+                .ActivatedAction((activator, _, target, _, moduleBonus) =>
                 {
+                    SetLocalBool(target, Mined, true);
                     // Remaining units aren't set - pick a random number to assign.
                     var remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
                     if (remainingUnits <= 0)
@@ -76,6 +84,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     // At the end of the process, spawn the ore on the activator and reduce remaining units.
                     DelayCommand(recast + 0.1f, () =>
                     {
+                        // Perk & module bonuses. These increase the overall yield of each asteroid.
+                        var industrialBonus = Space.GetShipStatus(activator).Industrial;
+
+                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 4) + (int)(moduleBonus)/6f;
+
                         // Refresh remaining units (could have changed since the start)
                         remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
 
@@ -86,13 +99,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             return;
                         }
 
-                        // Perk & module bonuses
-                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(moduleBonus * 0.4f);
-                        if (amountToMine > remainingUnits)
-                            amountToMine = remainingUnits;
-
-                        remainingUnits -= amountToMine;
-
+                        remainingUnits -= 1 + (int)amountToMine / 2;
 
                         // Fully deplete the rock - destroy it.
                         if (remainingUnits <= 0)
@@ -134,6 +141,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             Skill.GiveSkillXP(activator, SkillType.Piloting, xp);
                         }
                     });
+                    SetLocalBool(target, Mined, false);
                 });
         }
     }

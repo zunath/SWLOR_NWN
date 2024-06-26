@@ -20,9 +20,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, create translators for every language and store them into cache.
         /// </summary>
         [NWNEventHandler("mod_load")]
-        public static void LoadTranslators()
-        {
-            _translators = new Dictionary<SkillType, ITranslator>
+        public static void LoadTranslators() => _translators = new Dictionary<SkillType, ITranslator>
             {
                 { SkillType.Bothese, new TranslatorBothese() },
                 { SkillType.Catharese, new TranslatorCatharese() },
@@ -40,9 +38,9 @@ namespace SWLOR.Game.Server.Service
                 { SkillType.MonCalamarian, new TranslatorMonCalamarian() },
                 { SkillType.Ugnaught, new TranslatorUgnaught() },
                 { SkillType.KelDor, new TranslatorKelDor() },
-                { SkillType.Nautila, new TranslatorNautila() }
+                { SkillType.Nautila, new TranslatorNautila() },
+                { SkillType.Ewokese, new TranslatorEwokese() },
             };
-        }
 
         public static string TranslateSnippetForListener(uint speaker, uint listener, SkillType language, string snippet)
         {
@@ -204,6 +202,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.MonCalamarian: r = 128; g = 128; b = 192; break;
                 case SkillType.Ugnaught: r = 255; g = 193; b = 233; break;
                 case SkillType.Nautila: r = 76; g = 230; b = 104; break;
+                case SkillType.Ewokese: r = 112; g = 28; b = 28; break;
             }
 
             return (r, g, b);
@@ -230,6 +229,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.MonCalamarian: return "Mon Calamarian";
                 case SkillType.Ugnaught: return "Ugnaught";
                 case SkillType.Nautila: return "Nautila";
+                case SkillType.Ewokese: return "Ewokese";
             }
 
             return "Basic";
@@ -287,6 +287,7 @@ namespace SWLOR.Game.Server.Service
                         new LanguageCommand("Twi'leki", SkillType.Twileki, new []{"twileki", "ryl"}),
                         new LanguageCommand("Ugnaught", SkillType.Ugnaught, new []{"ugnaught"}),
                         new LanguageCommand("Zabraki", SkillType.Zabraki, new []{"zabraki", "zabrak"}),
+                        new LanguageCommand("Ewokese", SkillType.Zabraki, new []{"Ewokese", "YubNub"}),
                     };
 
                     _languages = languages;

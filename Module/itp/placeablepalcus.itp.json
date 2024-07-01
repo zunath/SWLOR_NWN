@@ -74887,6 +74887,39 @@
                       "type": "resref",
                       "value": "_mdrn_pl_flrh001"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cushion Pile, White"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nwplc_cushpilwh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lantern, Floor Small"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nwed_flrlntrn002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mixed Liquor Cabinet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nwed_mixbarshlf"
+                    }
                   }
                 ]
               },

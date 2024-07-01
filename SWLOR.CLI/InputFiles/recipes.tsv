@@ -1,60 +1,35 @@
-Agriculture		Cooking Recipes	BlubberyFishSubstitute1	PetFood	1	Blubbery Fish Substitute I	1	2	pf_blubbfish_1	N/A	0	moat_carp	2	distilled_water	1													 +10% Beast XP				
-Agriculture		Cooking Recipes	BlubberyFishSubstitute2	PetFood	2	Blubbery Fish Substitute II	11	2	pf_blubbfish_2	N/A	0	sen_sardine	2	distilled_water	1													 +20% Beast XP				
-Agriculture		Cooking Recipes	BlubberyFishSubstitute3	PetFood	3	Blubbery Fish Substitute III	21	2	pf_blubbfish_3	N/A	0	quus	2	distilled_water	1													 +30% Beast XP				
-Agriculture		Cooking Recipes	BlubberyFishSubstitute4	PetFood	4	Blubbery Fish Substitute IV	31	2	pf_blubbfish_4	N/A	0	nebimonite	2	distilled_water	1													 +40% Beast XP				
-Agriculture		Cooking Recipes	BlubberyFishSubstitute5	PetFood	5	Blubbery Fish Substitute V	41	2	pf_blubbfish_5	N/A	0	dark_bass	2	distilled_water	1													 +50% Beast XP				
-Agriculture		Cooking Recipes	CoarseFishSubstitute1	PetFood	1	Coarse Fish Substitute I	2	2	pf_coarsefish_1	N/A	0	lamp_marimo	2	distilled_water	1													 +10% Beast XP				
-Agriculture		Cooking Recipes	CoarseFishSubstitute2	PetFood	2	Coarse Fish Substitute II	12	2	pf_coarsefish_2	N/A	0	rakaz_shellfish	2	distilled_water	1													 +20% Beast XP				
-Agriculture		Cooking Recipes	CoarseFishSubstitute3	PetFood	3	Coarse Fish Substitute III	22	2	pf_coarsefish_3	N/A	0	forest_carp	2	distilled_water	1													 +30% Beast XP				
-Agriculture		Cooking Recipes	CoarseFishSubstitute4	PetFood	4	Coarse Fish Substitute IV	32	2	pf_coarsefish_4	N/A	0	tricolored_carp	2	distilled_water	1													 +40% Beast XP				
-Agriculture		Cooking Recipes	CoarseFishSubstitute5	PetFood	5	Coarse Fish Substitute V	42	2	pf_coarsefish_5	N/A	0	crystal_bass	2	distilled_water	1													 +50% Beast XP				
-Agriculture		Cooking Recipes	CookedFishSubstitute1	PetFood	1	Cooked Fish Substitute I	3	2	pf_cookedfish_1	N/A	0	moat_carp	2	distilled_water	1													 +10% Beast XP				
-Agriculture		Cooking Recipes	CookedFishSubstitute2	PetFood	2	Cooked Fish Substitute II	13	2	pf_cookedfish_2	N/A	0	bast_sweeper	2	distilled_water	1													 +20% Beast XP				
-Agriculture		Cooking Recipes	CookedFishSubstitute3	PetFood	3	Cooked Fish Substitute III	23	2	pf_cookedfish_3	N/A	0	cheval_salmon	2	distilled_water	1													 +30% Beast XP				
-Agriculture		Cooking Recipes	CookedFishSubstitute4	PetFood	4	Cooked Fish Substitute IV	33	2	pf_cookedfish_4	N/A	0	blindfish	2	distilled_water	1													 +40% Beast XP				
-Agriculture		Cooking Recipes	CookedFishSubstitute5	PetFood	5	Cooked Fish Substitute V	43	2	pf_cookedfish_5	N/A	0	ogre_eel	2	distilled_water	1													 +50% Beast XP				
-Agriculture		Cooking Recipes	CookedMeatSubstitute1	PetFood	1	Cooked Meat Substitute I	4	3	pf_cookedmeat_1	N/A	0	warocas_meat	2	distilled_water	1													 +10% Beast XP				
-Agriculture		Cooking Recipes	CookedMeatSubstitute2	PetFood	2	Cooked Meat Substitute II	14	3	pf_cookedmeat_2	N/A	0	raivor_meat	2	distilled_water	1													 +20% Beast XP				
-Agriculture		Cooking Recipes	CookedMeatSubstitute3	PetFood	3	Cooked Meat Substitute III	24	3	pf_cookedmeat_3	N/A	0	aradile_meat	2	distilled_water	1													 +30% Beast XP				
-Agriculture		Cooking Recipes	CookedMeatSubstitute4	PetFood	4	Cooked Meat Substitute IV	34	3	pf_cookedmeat_4	N/A	0	wompratmeat	2	distilled_water	1													 +40% Beast XP				
-Agriculture		Cooking Recipes	CookedMeatSubstitute5	PetFood	5	Cooked Meat Substitute V	44	3	pf_cookedmeat_5	N/A	0	wild_meat	2	distilled_water	1													 +50% Beast XP				
-Agriculture		Cooking Recipes	DryFruitSubstitute1	PetFood	1	Dry Fruit Substitute I	5	3	pf_dryfruit_1	N/A	0	herb_v	2	distilled_water	1													 +10% Beast XP				
-Agriculture		Cooking Recipes	DryFruitSubstitute2	PetFood	2	Dry Fruit Substitute II	15	3	pf_dryfruit_2	N/A	0	v_peas	2	distilled_water	1													 +20% Beast XP				
-Agriculture		Cooking Recipes	DryFruitSubstitute3	PetFood	3	Dry Fruit Substitute III	25	3	pf_dryfruit_3	N/A	0	h_acorn	2	distilled_water	1													 +30% Beast XP				
-Agriculture		Cooking Recipes	DryFruitSubstitute4	PetFood	4	Dry Fruit Substitute IV	35	3	pf_dryfruit_4	N/A	0	herb_c	2	distilled_water	1													 +40% Beast XP				
-Agriculture		Cooking Recipes	DryFruitSubstitute5	PetFood	5	Dry Fruit Substitute V	45	3	pf_dryfruit_5	N/A	0	turnip	2	distilled_water	1													 +50% Beast XP				
-Agriculture		Cooking Recipes	FattyFishSubstitute1	PetFood	1	Fatty Fish Substitute I	6	2	pf_fattyfish_1	N/A	0	phan_newt	2	distilled_water	1													 +10% Beast XP				
-Agriculture		Cooking Recipes	FattyFishSubstitute2	PetFood	2	Fatty Fish Substitute II	16	2	pf_fattyfish_2	N/A	0	greedie	2	distilled_water	1													 +20% Beast XP				
-Agriculture		Cooking Recipes	FattyFishSubstitute3	PetFood	3	Fatty Fish Substitute III	26	2	pf_fattyfish_3	N/A	0	yorchete	2	distilled_water	1													 +30% Beast XP				
-Agriculture		Cooking Recipes	FattyFishSubstitute4	PetFood	4	Fatty Fish Substitute IV	36	2	pf_fattyfish_4	N/A	0	bonefish	2	distilled_water	1													 +40% Beast XP				
-Agriculture		Cooking Recipes	FattyFishSubstitute5	PetFood	5	Fatty Fish Substitute V	46	2	pf_fattyfish_5	N/A	0	nosteau_herring	2	distilled_water	1													 +50% Beast XP				
-Agriculture		Cooking Recipes	FattyMeatSubstitute1	PetFood	1	Fatty Meat Substitute I	7	2	pf_fattymeat_1	N/A	0	hamsi	2	distilled_water	1													 +10% Beast XP				
-Agriculture		Cooking Recipes	FattyMeatSubstitute2	PetFood	2	Fatty Meat Substitute II	17	2	pf_fattymeat_2	N/A	0	muddy_siredon	2	distilled_water	1													 +20% Beast XP				
-Agriculture		Cooking Recipes	FattyMeatSubstitute3	PetFood	3	Fatty Meat Substitute III	27	2	pf_fattymeat_3	N/A	0	moorish_idol	2	distilled_water	1													 +30% Beast XP				
-Agriculture		Cooking Recipes	FattyMeatSubstitute4	PetFood	4	Fatty Meat Substitute IV	37	2	pf_fattymeat_4	N/A	0	yayinbaligi	2	distilled_water	1													 +40% Beast XP				
-Agriculture		Cooking Recipes	FattyMeatSubstitute5	PetFood	5	Fatty Meat Substitute V	47	2	pf_fattymeat_5	N/A	0	lakerda	2	distilled_water	1													 +50% Beast XP				
-Agriculture		Cooking Recipes	JuicyFruitSubstitute1	PetFood	1	Juicy Fruit Substitute I	8	3	pf_juicyfruit_1	N/A	0	v_orange	2	distilled_water	1													 +10% Beast XP				
-Agriculture		Cooking Recipes	JuicyFruitSubstitute2	PetFood	2	Juicy Fruit Substitute II	18	3	pf_juicyfruit_2	N/A	0	v_apple	2	distilled_water	1													 +20% Beast XP				
-Agriculture		Cooking Recipes	JuicyFruitSubstitute3	PetFood	3	Juicy Fruit Substitute III	28	3	pf_juicyfruit_3	N/A	0	s_pineapple	2	distilled_water	1													 +30% Beast XP				
-Agriculture		Cooking Recipes	JuicyFruitSubstitute4	PetFood	4	Juicy Fruit Substitute IV	38	3	pf_juicyfruit_4	N/A	0	tomato	2	distilled_water	1													 +40% Beast XP				
-Agriculture		Cooking Recipes	JuicyFruitSubstitute5	PetFood	5	Juicy Fruit Substitute V	48	3	pf_juicyfruit_5	N/A	0	turnip	2	distilled_water	1													 +50% Beast XP				
-Agriculture		Cooking Recipes	SourFruitSubstitute1	PetFood	1	Sour Fruit Substitute I	9	3	pf_sourfruit_1	N/A	0	v_lemon	2	distilled_water	1													 +10% Beast XP				
-Agriculture		Cooking Recipes	SourFruitSubstitute2	PetFood	2	Sour Fruit Substitute II	19	3	pf_sourfruit_2	N/A	0	v_peas	2	distilled_water	1													 +20% Beast XP				
-Agriculture		Cooking Recipes	SourFruitSubstitute3	PetFood	3	Sour Fruit Substitute III	29	3	pf_sourfruit_3	N/A	0	nash_blood	2	distilled_water	1													 +30% Beast XP				
-Agriculture		Cooking Recipes	SourFruitSubstitute4	PetFood	4	Sour Fruit Substitute IV	39	3	pf_sourfruit_4	N/A	0	plant_butter	2	distilled_water	1													 +40% Beast XP				
-Agriculture		Cooking Recipes	SourFruitSubstitute5	PetFood	5	Sour Fruit Substitute V	49	3	pf_sourfruit_5	N/A	0	dried_bonito	2	distilled_water	1													 +50% Beast XP				
-Agriculture		Cooking Recipes	StringyMeatSubstitute1	PetFood	1	Stringy Meat Substitute I	10	3	pf_stringymeat_1	N/A	0	mynock_meat	2	distilled_water	1													 +10% Beast XP				
-Agriculture		Cooking Recipes	StringyMeatSubstitute2	PetFood	2	Stringy Meat Substitute II	20	3	pf_stringymeat_2	N/A	0	cairnmog_meat	2	distilled_water	1													 +20% Beast XP				
-Agriculture		Cooking Recipes	StringyMeatSubstitute3	PetFood	3	Stringy Meat Substitute III	30	3	pf_stringymeat_3	N/A	0	tiger_meat	2	distilled_water	1													 +30% Beast XP				
-Agriculture		Cooking Recipes	StringyMeatSubstitute4	PetFood	4	Stringy Meat Substitute IV	40	3	pf_stringymeat_4	N/A	0	sanddemon_meat	2	distilled_water	1													 +40% Beast XP				
-Agriculture		Cooking Recipes	StringyMeatSubstitute5	PetFood	5	Stringy Meat Substitute V	50	3	pf_stringymeat_5	N/A	0	wild_innards	2	distilled_water	1													 +50% Beast XP				
-Agriculture		Cooking Recipes	SweetFruitSubstitute1	PetFood	1	Sweet Fruit Substitute I	5	3	pf_sweetfood_1	N/A	0	v_apple	2	distilled_water	1													 +10% Beast XP				
-Agriculture		Cooking Recipes	SweetFruitSubstitute2	PetFood	2	Sweet Fruit Substitute II	15	3	pf_sweetfood_2	N/A	0	herb_m	2	distilled_water	1													 +20% Beast XP				
-Agriculture		Cooking Recipes	SweetFruitSubstitute3	PetFood	3	Sweet Fruit Substitute III	25	3	pf_sweetfood_3	N/A	0	ginger	2	distilled_water	1													 +30% Beast XP				
-Agriculture		Cooking Recipes	SweetFruitSubstitute4	PetFood	4	Sweet Fruit Substitute IV	35	3	pf_sweetfood_4	N/A	0	herb_t	2	distilled_water	1													 +40% Beast XP				
-Agriculture		Cooking Recipes	SweetFruitSubstitute5	PetFood	5	Sweet Fruit Substitute V	45	3	pf_sweetfood_5	N/A	0	herb_x	2	distilled_water	1													 +50% Beast XP				
-Agriculture		Cooking Recipes	TenderMeatSubstitute1	PetFood	1	Tender Meat Substitute I	8	3	pf_tendermeat_1	N/A	0	kath_meat_1	2	distilled_water	1													 +10% Beast XP				
-Agriculture		Cooking Recipes	TenderMeatSubstitute2	PetFood	2	Tender Meat Substitute II	18	3	pf_tendermeat_2	N/A	0	klorslug_meat	2	distilled_water	1													 +20% Beast XP				
-Agriculture		Cooking Recipes	TenderMeatSubstitute3	PetFood	3	Tender Meat Substitute III	28	3	pf_tendermeat_3	N/A	0	byysk_meat	2	distilled_water	1													 +30% Beast XP				
-Agriculture		Cooking Recipes	TenderMeatSubstitute4	PetFood	4	Tender Meat Substitute IV	38	3	pf_tendermeat_4	N/A	0	giant_catfish	2	distilled_water	1													 +40% Beast XP				
-Agriculture		Cooking Recipes	TenderMeatSubstitute5	PetFood	5	Tender Meat Substitute V	48	3	pf_tendermeat_5	N/A	0	shining_trout	2	distilled_water	1													 +50% Beast XP				
+Fabrication		Furniture Blueprints	Campfire	Lighting	1	Campire	1	1	structure_0011	1	Structure	1	ref_veldite	1	wood	1
+Fabrication		Furniture Blueprints	TableDarkwood	Surfaces	1	Table, Darkwood	5	1	structure_0015	1	Structure	1	wood	3	ref_veldite	2
+Fabrication		Furniture Blueprints	TableCoffeeShelf	Surfaces	1	Table, Coffee, Shelf	7	1	structure_0016	1	Structure	1	ref_veldite	4	wood	3
+Fabrication		Furniture Blueprints	UmbrellaBlue	MiscellaneousFurniture	1	Umbrella, Blue	8	1	structure_0049	1	Structure	1	wood	4	lth_ruined	4
+Fabrication		Furniture Blueprints	UmbrellaRed	MiscellaneousFurniture	1	Umbrella, Red	8	1	structure_0050	1	Structure	1	wood	4	lth_ruined	4
+Fabrication		Furniture Blueprints	LampBars	Lighting	1	Lamp, Bars	9	1	structure_0034	1	Structure	1	ref_veldite	5	wood	5
+Fabrication		Furniture Blueprints	BedLowBlue	Bed	2	Bed, Low (Blue)	12	1	structure_0109	1	Structure	1	fine_wood	2	lth_flawed	2
+Fabrication		Furniture Blueprints	BedLowRed	Bed	2	Bed, Low (Red)	12	1	structure_0110	1	Structure	1	fine_wood	2	lth_flawed	2
+Fabrication		Furniture Blueprints	MatSmallTatami	Flooring	2	Mat, Small Tatami	14	1	structure_0046	1	Structure	1	wood_fine	2	fiberp_flawed	3
+Fabrication		Furniture Blueprints	ChairWoodenPadded	Seating	2	Chair, Wooden Padded	15	1	structure_0053	1	Structure	1	fine_wood	3	ref_scordspar	3
+Fabrication		Furniture Blueprints	ChairDiningArms	Seating	2	Chair, Dining (Arms)	18	1	structure_0063	1	Structure	1	fine_wood	4	ref_scordspar	4
+Fabrication		Furniture Blueprints	ChairMahoganyPadded	Seating	2	Chair, Mahogany Padded	19	1	structure_0066	1	Structure	1	fine_wood	3	ref_scordspar	5
+Fabrication		Furniture Blueprints	FootlockerBlack	MiscellaneousFurniture	3	Footlocker, Black	22	1	structure_0071	1	Structure	2	ref_plagionite	3	ancient_wood	1
+Fabrication		Furniture Blueprints	TableSteelStained	Surfaces	3	Table, Steel, Stained	23	1	structure_0087	1	Structure	2	ref_plagionite	3	ancient_wood	3
+Fabrication		Furniture Blueprints	MonitorOverhead	Electronics	3	Monitor, Overhead	24	1	structure_0094	1	Structure	2	ref_plagionite	2	elec_good	4
+Fabrication		Furniture Blueprints	PillarPowerControl	Electronics	3	Pillar, Power Control	25	1	structure_0231	1	Structure	2	ref_plagionite	3	elec_good	3
+Fabrication		Furniture Blueprints	ChairDiningGothic	Seating	3	Chair, Dining, Gothic	27	1	structure_0105	1	Structure	2	ref_plagionite	4	ancient_wood	3
+Fabrication		Furniture Blueprints	CarpetMedallion	Flooring	3	Carpet, Medallion	28	1	structure_0232	1		2	lth_good	4	fiberp_good	4
+Fabrication		Furniture Blueprints	FountainStone4Spouts	MiscellaneousFurniture	3	Fountain, Stone, 4 Spouts	30	1	structure_0246	1	Structure	2	ref_plagionite	5	ancient_wood	5
+Fabrication		Furniture Blueprints	SpeakerStanding	Fixtures	4	Speaker, Standing	31	1	structure_0272	1	Structure	2	ref_keromber	1	elec_imperfect	1
+Fabrication		Furniture Blueprints	LockerOpenShelves	Fixtures	4	Locker, Open Shelves	32	1	structure_0273	1	Structure	2	ref_keromber	2	fiberp_imperfect	2
+Fabrication		Furniture Blueprints	CabinetLiquorMixed	Fixtures	4	Cabinet, Liquor (Mixed)	35	1	structure_0274	1	Structure	2	aracia_wood	3	lth_imperfect	3
+Fabrication		Furniture Blueprints	CounterLabStraight	Surfaces	4	Counter, Lab (Straight)	37	1	structure_0275	1	Structure	2	ref_keromber	3	aracia_wood	3
+Fabrication		Furniture Blueprints	CounterLabSink	Surfaces	4	Counter, Lab (Sink)	37	1	structure_0276	1	Structure	2	ref_keromber	4	aracia_wood	3
+Fabrication		Furniture Blueprints	ChairBrownWingback	Seating	4	Chair, Brown Wingback	39	1	structure_0277	1	Structure	2	aracia_wood	4	lth_imperfect	4
+Fabrication		Furniture Blueprints	PillarDishTower	Electronics	4	Pillar, Dish Tower	40	1	structure_0278	1	Structure	2	ref_keromber	4	elec_imperfect	5
+Fabrication		Furniture Blueprints	ConsoleTwScreenSpiral	Electronics	5	Console, Tall w/ Screen (Spiral)	45	1	structure_0279	1	Structure	2	ref_jasioclase	3	elec_high	3
+Fabrication		Furniture Blueprints	StorageTankCylinder	Fictures	5	Storage Tank, Cylinder	46	1	structure_0280	1	Structure	2	ref_jasioclase	3	elec_high	4
+Fabrication		Furniture Blueprints	WorkStationMonitors	Surfaces	5	WorkStationMonitors	46	1	structure_0281	1	Structure	2	ref_jasioclase	4	elec_high	3
+Fabrication		Furniture Blueprints	ChestLengthwise	Fixtures	5	Chest, Lengthwise	47	1	structure_0282	1	Structure	2	hyphae_wood	4	ref_jasioclase	3
+Fabrication		Furniture Blueprints	ConsoleCentralControl	Electronics	5	Console, Central Control	48	1	structure_0283	1	Structure	2	ref_jasioclase	5	elec_high	5
+Fabrication		Furniture Blueprints	ConsoleCircularCommand	Electronics	5	Console, Circular Command	49	1	structure_0284	1	Structure	2	ref_jasioclase	5	elec_high	5
+Fabrication		Furniture Blueprints	StorageCargoContainer	Fixtures	5	Storage, Cargo Container	50	1	structure_0285	1	Structure	2	ref_jasioclase	6	hyphae_wood	4
+Fabrication		Furniture Blueprints	ConsoleCornerLarge	Electronics	5	Console, Corner, Large	50	1	structure_0286	1	Structure	2	ref_jasioclase	6	elec_high	6
+Fabrication		Furniture Blueprints	PileOfCushionsSquare	MiscellaneousFurniture	2	Pile Of Cushions (Square)	12	1	structure_0281	1	Structure	1	fiberp_flawed	1	lth_flawed	2

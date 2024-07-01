@@ -5640,6 +5640,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Nurse Uniform (Female)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ngh_nurseuniform"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Oriental Dress"
                     },
                     "RESREF": {
@@ -10673,6 +10684,61 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Banner, Cartel"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0321"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Banner, Empire"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0318"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Banner, Jedi Order"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0317"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Banner, Mandalorian"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0319"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Banner, Republic"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0320"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Banner, Standing"
               },
               "RESREF": {
@@ -10750,6 +10816,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Bed, Art Deco"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0296"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Bed, Extra Large"
               },
               "RESREF": {
@@ -10799,6 +10876,28 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0141"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Bed, Low (Blue)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0109"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Bed, Low (Red)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0110"
               }
             },
             {
@@ -11036,11 +11135,33 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Cabinet, Liquor (Mixed)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0274"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Cage"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0037"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Campfire"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0011"
               }
             },
             {
@@ -11063,6 +11184,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0062"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Canopy, Leather"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0299"
               }
             },
             {
@@ -11113,11 +11245,44 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Carpet, Medallion"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0232"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Carpet, Round, Blue"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0054"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Carpet, Twisted Pattern"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0302"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chair, Brown Wingback"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0277"
               }
             },
             {
@@ -11146,6 +11311,28 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Chair, Curved Form"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0063"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chair, Desk (Black/Dark Grey)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0291"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Chair, Dining - Grey"
               },
               "RESREF": {
@@ -11162,6 +11349,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0264"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chair, Dining, Gothic"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0105"
               }
             },
             {
@@ -11217,6 +11415,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0147"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chair, Pilot"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0301"
               }
             },
             {
@@ -11289,6 +11498,28 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Chair, Wooden Padded"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0053"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chair, Wooden Striped"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0066"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Chaise Lounge - Orange"
               },
               "RESREF": {
@@ -11316,6 +11547,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0065"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Chest, Lengthwise"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0282"
               }
             },
             {
@@ -11355,6 +11597,39 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Console, Central Control"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0283"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Console, Circular Command"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0284"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Console, Corner, Large"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0286"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Console, Floor Mounted (Blue Screens)"
               },
               "RESREF": {
@@ -11371,6 +11646,39 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0149"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Console, Floor Mounted, Dark"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0300"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Console, Tall w/ Screen (Blue Spiral)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0279"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Console, Tall w/ Screen (Orange)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0303"
               }
             },
             {
@@ -11465,6 +11773,28 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Counter, Lab (Sink)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0276"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Counter, Lab (Straight)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0275"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Cushions"
               },
               "RESREF": {
@@ -11481,6 +11811,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0179"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Dance Floor"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0314"
               }
             },
             {
@@ -11740,6 +12081,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Footlocker, Black"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0071"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Footlocker, Modern (Keyed Entry)"
               },
               "RESREF": {
@@ -11773,11 +12125,33 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Fountain, Dark Grey"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0298"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Fountain, Oval"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0161"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Fountain, Stone, 4 Spouts"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0246"
               }
             },
             {
@@ -11872,6 +12246,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Holo Display 1"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0308"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Holo Display 2"
               },
               "RESREF": {
@@ -11921,6 +12306,39 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0167"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Holo Projector, Hover"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0315"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Holo Projector, Small Tree"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0312"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Holo Projector, Standing"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0304"
               }
             },
             {
@@ -12059,6 +12477,28 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Lamp, Bars"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0034"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Lamp, Bars (Dark)"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0292"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Lamp, Eggs (Pink)"
               },
               "RESREF": {
@@ -12075,6 +12515,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0171"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Lantern, Floor Small"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0294"
               }
             },
             {
@@ -12147,6 +12598,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Locker, Open Shelves"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0273"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Map"
               },
               "RESREF": {
@@ -12158,11 +12620,44 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Mat, Medium Tatami"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0293"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Mat, Small Tatami"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0046"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Medical Center - Style 1"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_5002"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Medical, Monitoring Unit"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0313"
               }
             },
             {
@@ -12213,6 +12708,39 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Metal Wall, Door, Grating"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0311"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Door, Hazard"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0324"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Door, Indent"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0307"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Metal Wall, Door, Light"
               },
               "RESREF": {
@@ -12257,11 +12785,55 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Metal Wall, Single, Grating"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0309"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Single, Hazard"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0322"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Single, Indent"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0305"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Metal Wall, Single, Light"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0251"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Single, Panels"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0325"
               }
             },
             {
@@ -12284,6 +12856,39 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0252"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Wide, Grating"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0310"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Wide, Hazard"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0323"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Metal Wall, Wide, Indent"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0306"
               }
             },
             {
@@ -12383,6 +12988,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0174"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Monitor, Overhead"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0094"
               }
             },
             {
@@ -12565,11 +13181,44 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Pile of Cushions, Square"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0287"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Pillar, Dish Tower"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0278"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Pillar, Flame"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0036"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Pillar, Power Control"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0231"
               }
             },
             {
@@ -12807,6 +13456,28 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Screen, Closed"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0289"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Screen, Open"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0290"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Sea Idol"
               },
               "RESREF": {
@@ -12933,6 +13604,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0192"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Speaker, Standing"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0272"
               }
             },
             {
@@ -13137,11 +13819,44 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Storage Tank, Cylinder"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0280"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Storage Tank, Hemisphere /w Monitor"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0200"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Storage, Cargo Container"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0285"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Storage, Warehouse, Industry"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0316"
               }
             },
             {
@@ -13170,11 +13885,77 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Swoop Bike, Black"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0326"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Swoop Bike, Grey"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0327"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Swoop Bike, Red"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0328"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Swoop Bike, Yellow"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0329"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Table, Coffee, Elegant (White)"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0202"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Table, Coffee, Shelf"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0016"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Table, Coffee, Wood /w Glass"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0295"
               }
             },
             {
@@ -13197,6 +13978,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0267"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Table, Darkwood"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0015"
               }
             },
             {
@@ -13274,6 +14066,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0234"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Table, Steel, Stained"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0087"
               }
             },
             {
@@ -13445,6 +14248,39 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Trash Can"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0288"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Umbrella, Blue"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0049"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Umbrella, Red"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0050"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Urn"
               },
               "RESREF": {
@@ -13511,6 +14347,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Wardrobe, Grey, Low"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0297"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Washbasin, Lever Faucet"
               },
               "RESREF": {
@@ -13560,6 +14407,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0159"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Work Station, Monitors"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0281"
               }
             }
           ]
@@ -45686,6 +46544,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Patterns: Banners"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_banners01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Recipe: Bream Sushi"
                     },
                     "RESREF": {
@@ -45779,6 +46648,116 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "recipe_wisushi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Schematics: Classified Designs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_fabtier5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Schematics: Corporate Designs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_fabtier4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Schematics: CZ220 Equipment"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_fabcz220"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Schematics: Dance Floor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_fabdance1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Schematics: Hazard Walls"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_hazrdwall"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Schematics: Limited Designs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_fabtier2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Schematics: Monitoring Equipment"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_fabmedic1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Schematics: Production Designs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_fabtier1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Schematics: Prototype Designs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_fabtier3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Schematics: Swoop Bikes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "recipe_fabswoop1"
                     }
                   },
                   {

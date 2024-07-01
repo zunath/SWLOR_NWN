@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         public Dictionary<string, QuestDetail> BuildQuests()
         {
             FishingGuildQuests();
+            PartyRoomForPedro();
 
             return _builder.Build();
         }
@@ -111,6 +112,24 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 {
                     Achievement.GiveAchievement(player, AchievementType.TheLegendaryRod);
                 });
+        }
+
+        private void PartyRoomForPedro()
+        {
+            _builder.Create("partyroom_pedro", "Party Room for P3DR0")
+
+                .AddState()
+                .SetStateJournalText("P3DR0 wants a new place to party where they're not going to get kicked out of. Bring them five speakers, a jukebox and the schematics for a new cantina.")
+                .AddCollectItemObjective("structure_0272", 5)
+                .AddCollectItemObjective("structure_0005", 1)
+                .AddCollectItemObjective("structure_5004", 1)
+
+                .AddState()
+                .SetStateJournalText("Look's like P3DR0's going to be able to party. Make sure you talk to them!")
+
+                .AddGoldReward(5000)
+                .AddXPReward(2500)
+                .AddItemReward("recipe_fabdance1", 1);
         }
     }
 }

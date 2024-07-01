@@ -34,6 +34,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             KathHoundPartCollection();
             TaxiTerminalRepairs();
             JoiningTheRepublic();
+            MedicalEquipmentForShelby();
+            SpiceOneSmallFavour();
 
             return _builder.Build();
         }
@@ -541,6 +543,109 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddXPReward(10000)
                 .AddGoldReward(2000)
                 .AddItemReward("key_rep_01", 1);
+        }
+
+        private void MedicalEquipmentForShelby()
+        {
+            _builder.Create("medical_equipget", "Medical Equipment for Shelby")
+
+                .AddState()
+                .SetStateJournalText("Nurse Shelby in Veles Medical Center needs ten new medical beds and the schematics for a new medical center.")
+                .AddCollectItemObjective("structure_0137", 10)
+                .AddCollectItemObjective("structure_5002", 1)
+
+                .AddState()
+                .SetStateJournalText("Well done, you've gathered what Shelby needed. Make sure you talk to her for a reward.")
+
+                .AddGoldReward(5000)
+                .AddXPReward(2500)
+                .AddItemReward("recipe_fabmedic1", 1);
+        }
+
+        private void SpiceOneSmallFavour()
+        {
+            _builder.Create("spice_onesmallfavour", "Spice: One Small Favour")
+
+                .AddState()
+                .SetStateJournalText("Stephen needs you to gather some different fiberplast so he can make some cool new rags he saw in a Magazine.")
+                .AddCollectItemObjective("fiberp_ruined", 12)
+                .AddCollectItemObjective("fiberp_flawed", 13)
+                .AddCollectItemObjective("fiberp_good", 21)
+                .AddCollectItemObjective("fiberp_imperfect", 19)
+
+                .AddState()
+                .SetStateJournalText("Fiberplast handed over - Looks like he'll get to wear those new rags now!")
+
+                .AddState()
+                .SetStateJournalText("Now Stephen needs you to get him some electronics so that he can make a sick new electric guitar.")
+                .AddCollectItemObjective("elec_ruined", 12)
+                .AddCollectItemObjective("elec_flawed", 19)
+                .AddCollectItemObjective("elec_good", 24)
+                .AddCollectItemObjective("elec_imperfect", 17)
+
+                .AddState()
+                .SetStateJournalText("You gave him the electronics, but not sure if he even has power down here.")
+
+                .AddState()
+                .SetStateJournalText("Looks like he now wants some different woods so he can build his Ma a new rocking chair.")
+                .AddCollectItemObjective("wood", 15)
+                .AddCollectItemObjective("fine_wood", 15)
+                .AddCollectItemObjective("ancient_wood", 21)
+                .AddCollectItemObjective("aracia_wood", 18)
+
+                .AddState()
+                .SetStateJournalText("All the wood has been given to him. Kind of cute that he wants to make a chair for his Ma.")
+
+                .AddState()
+                .SetStateJournalText("After hearing the thugs in the sewers talk about the Viscaran air being poison, Stephen wants some different meats to make a protein shake.")
+                .AddCollectItemObjective("kath_meat_1", 6)
+                .AddCollectItemObjective("aradile_meat", 9)
+                .AddCollectItemObjective("tiger_meat", 5)
+                .AddCollectItemObjective("wompratmeat", 3)
+
+                .AddState()
+                .SetStateJournalText("Interesting conspiracy, but you've handed the meat over. Just be glad you don't have to drink that.")
+
+                .AddState()
+                .SetStateJournalText("Apparently Stephen likes to have picnics on the surface, near the entrance to the Colony and now wants some 'rocks' to hold his blanket.")
+                .AddCollectItemObjective("raw_veldite", 15)
+                .AddCollectItemObjective("raw_scordspar", 25)
+                .AddCollectItemObjective("raw_plagionite", 19)
+                .AddCollectItemObjective("raw_keromber", 27)
+
+                .AddState()
+                .SetStateJournalText("This is just getting weird... But, atleast his picnic blanket won't move around now.")
+
+                .AddState()
+                .SetStateJournalText("He hasn't even made the electric guitar, but now he has asked for some different herb's to help with his jam sessions.")
+                .AddCollectItemObjective("herb_v", 25)
+                .AddCollectItemObjective("herb_c", 14)
+                .AddCollectItemObjective("herb_t", 21)
+                .AddCollectItemObjective("herb_x", 36)
+
+                .AddState()
+                .SetStateJournalText("Not sure that's what he's going to use the herbs for, but who are you to judge?")
+
+                .AddState()
+                .SetStateJournalText("This is going to far now. Apparently his 'home' needs some decorations. Grab these creature pieces and see what happens.")
+                .AddCollectItemObjective("raivor_tail_bone", 6)
+                .AddCollectItemObjective("scorch_chitin", 4)
+                .AddCollectItemObjective("sandswimmerh", 7)
+                .AddCollectItemObjective("tusken_bones", 11)
+
+                .AddState()
+                .SetStateJournalText("He does know he lives in the sewers, right? Oh well, you've handed them over.")
+
+                .AddState()
+                .SetStateJournalText("Stephen recently heard some people talking about a big shiny shard from Dathomir, and now he wants one...")
+                .AddCollectItemObjective("chiro_shard", 1)
+
+                .AddState()
+                .SetStateJournalText("That's the last one... Chiro shards are not easy to come by, so he better give me something for all of this now.")
+
+                .AddGoldReward(25000)
+                .AddXPReward(25000)
+                .AddItemReward("recipe_fabswoop1", 1);
         }
     }
 }

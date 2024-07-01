@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             CullTheTundraThreat();
             HutlarPowerInvestigation();
             StupendousSlugBile();
+            BreakTheByysk();
 
             return _builder.Build();
         }
@@ -153,6 +154,43 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddGoldReward(742)
                 .AddItemReward("slug_shake", 1);
+        }
+
+        private void BreakTheByysk()
+        {
+            _builder.Create("break_the_byysk", "Break the Byysk")
+
+                .AddState()
+                .SetStateJournalText("Sharene wants you to kill One Hundred Byysk. Of you go!")
+                .AddKillObjective(NPCGroupType.Byysk_Guardian, 100)
+
+                .AddState()
+                .SetStateJournalText("Return to Sharene in the Hutlar Outpost and report your progress.")
+
+                .AddState()
+                .SetStateJournalText("Sharene wants you to kill another One Hundred Byysk. Better get going")
+                .AddKillObjective(NPCGroupType.Byysk_Guardian, 100)
+
+                .AddState()
+                .SetStateJournalText("Return to Sharene, once again, at the Hutlar Outpost.")
+
+                .AddState()
+                .SetStateJournalText("Sharene wants you to kill ANOTHER One Hundred Byysk...")
+                .AddKillObjective(NPCGroupType.Byysk_Guardian, 100)
+
+                .AddState()
+                .SetStateJournalText("Return to Sharene, AGAIN.")
+
+                .AddState()
+                .SetStateJournalText("Sharene wants you to kill more Byysk... Let's go for one thousand this time!")
+                .AddKillObjective(NPCGroupType.Byysk_Guardian, 100)
+
+                .AddState()
+                .SetStateJournalText("You know what, another One Hundred will do... That is Four Hundred Guardian's. This is getting stupid!")
+
+                .AddGoldReward(20000)
+                .AddXPReward(20000)
+                .AddItemReward("recipe_banners01", 1);
         }
 
     }

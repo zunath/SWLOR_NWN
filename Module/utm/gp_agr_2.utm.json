@@ -282,7 +282,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "bag_b"
+                "value": "allspice_2"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -301,7 +301,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "allspice_2"
+                "value": "anise_2"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -320,7 +320,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "anise_2"
+                "value": "cayenne_2"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -339,7 +339,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "cayenne_2"
+                "value": "cinnamon_2"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -358,7 +358,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "cinnamon_2"
+                "value": "cloves_2"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -377,7 +377,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "cloves_2"
+                "value": "coriander_2"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -396,7 +396,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "coriander_2"
+                "value": "cumin_2"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -415,7 +415,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "cumin_2"
+                "value": "fennel_seed_2"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -434,7 +434,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "fennel_seed_2"
+                "value": "paprika_2"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -453,7 +453,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "paprika_2"
+                "value": "turmeric_2"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -472,7 +472,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "turmeric_2"
+                "value": "bag_sm"
               },
               "Repos_PosX": {
                 "type": "word",

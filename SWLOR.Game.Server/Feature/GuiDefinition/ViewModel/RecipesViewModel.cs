@@ -424,6 +424,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectRecipe() => () =>
         {
+            _selectedBlueprintItem = OBJECT_INVALID;
+
             // Deselect the current recipe.
             if (_currentRecipeIndex > -1)
             {

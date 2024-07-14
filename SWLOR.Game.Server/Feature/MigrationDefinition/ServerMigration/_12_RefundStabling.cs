@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         };
 
         public int Version => 12;
+        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
         public void Migrate()
         {
             RefundPerksByMapping(_refundMap);

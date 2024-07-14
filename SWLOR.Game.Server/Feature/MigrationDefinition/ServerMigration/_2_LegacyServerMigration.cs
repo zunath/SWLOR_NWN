@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
     public class _2_LegacyServerMigration: LegacyMigrationBase, IServerMigration
     {
         public int Version => 2;
+        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
         public void Migrate()
         {
             MigratePersistentStorageItems();

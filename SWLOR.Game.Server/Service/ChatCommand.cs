@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Loads all chat commands into cache and builds the related help text.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void OnModuleLoad()
         {
             LoadChatCommands();

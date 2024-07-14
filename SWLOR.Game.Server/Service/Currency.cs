@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, cache all currency details into memory.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheCurrencies()
         {
             var currencyTypes = Enum.GetValues(typeof(CurrencyType)).Cast<CurrencyType>();

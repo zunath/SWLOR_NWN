@@ -1156,7 +1156,7 @@ namespace SWLOR.Game.Server.Service
                 dbShip.Status = activatorShipStatus;
                 
                 DB.Set(dbShip);
-                ExecuteScript("pc_cap_adjusted", activator);
+                ExecuteScript("pc_target_upd", activator);
             }
 
             if (GetIsPC(target))
@@ -1167,6 +1167,7 @@ namespace SWLOR.Game.Server.Service
                 dbShip.Status = targetShipStatus;
 
                 DB.Set(dbShip);
+                ExecuteScript("pc_target_upd", target);
             }
         }
 

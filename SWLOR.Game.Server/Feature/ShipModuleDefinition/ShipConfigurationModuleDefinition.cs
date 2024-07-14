@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 $"Industrial Level: +{industrial} + Module Bonus x 2 (Industrial frames only)")
                 .PowerType(ShipModulePowerType.Config)
                 .RequirePerk(PerkType.Starships, requiredLevel)
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.MaxHull += armor + moduleBonus * 4;
                     shipStatus.MaxShield += shield + moduleBonus * 4;
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         shipStatus.Industrial += industrial + moduleBonus;
                     }
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.MaxHull -= armor + moduleBonus * 4;
                     shipStatus.MaxShield -= shield + moduleBonus * 4;
@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .PowerType(ShipModulePowerType.Config)
                 .RequirePerk(PerkType.Starships, requiredLevel)
                 .CapitalClassModule()
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.MaxHull += armor + moduleBonus * 4;
                     shipStatus.MaxShield += shield + moduleBonus * 4;
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         shipStatus.Industrial += industrial + moduleBonus;
                     }
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.MaxHull -= armor + moduleBonus * 4;
                     shipStatus.MaxShield -= shield + moduleBonus * 4;

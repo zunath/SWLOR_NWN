@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all status effects.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheStatusEffects()
         {
             // Organize perks to make later reads quicker.

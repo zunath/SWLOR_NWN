@@ -42,8 +42,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     repairAmount += (activatorShipStatus.Industrial + moduleBonus) / 2;
 
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, 2.0f);
-                    var nearby = GetFirstObjectInShape(Shape.Sphere, 8.0f, GetLocation(activator), true, ObjectType.Creature);
+
+                    const float Distance = 8f;
+                    var nearby = GetFirstObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
                     var count = 1;
+
                     while (GetIsObjectValid(nearby) && count <= 6)
                     {
                         if (!GetIsEnemy(nearby, activator) && 
@@ -75,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             }
                         }
 
-                        nearby = GetNextObjectInShape(Shape.Sphere, 8f, GetLocation(activator), true, ObjectType.Creature);
+                        nearby = GetNextObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
                         count++;
                     }
 

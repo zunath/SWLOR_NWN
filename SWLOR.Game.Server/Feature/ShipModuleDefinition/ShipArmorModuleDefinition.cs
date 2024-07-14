@@ -46,11 +46,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's thermal defense by {armorBoost*2}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.ThermalDefense += 2 * armorBoost + moduleBonus;
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.ThermalDefense -= 2 * armorBoost + moduleBonus;
                 });
@@ -65,11 +65,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's EM defense by {armorBoost*2}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.EMDefense += 2 * armorBoost + moduleBonus;
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.EMDefense -= 2 * armorBoost + moduleBonus;
                 });
@@ -84,11 +84,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's explosive defense by {armorBoost*2}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.ExplosiveDefense += 2 * armorBoost + moduleBonus;
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.ExplosiveDefense -= 2 * armorBoost + moduleBonus;
                 });
@@ -103,14 +103,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's overall defenses by {armorBoost} at the cost of {armorBoost} evasion.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.ThermalDefense += armorBoost + moduleBonus;
                     shipStatus.EMDefense += armorBoost + moduleBonus;
                     shipStatus.ExplosiveDefense += armorBoost + moduleBonus;
                     shipStatus.Evasion -= armorBoost;
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.ThermalDefense -= armorBoost + moduleBonus;
                     shipStatus.EMDefense -= armorBoost + moduleBonus;

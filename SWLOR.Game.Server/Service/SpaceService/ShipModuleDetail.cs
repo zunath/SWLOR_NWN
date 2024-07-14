@@ -5,8 +5,8 @@ using SWLOR.Game.Server.Service.PerkService;
 namespace SWLOR.Game.Server.Service.SpaceService
 {
     
-    public delegate void ShipModuleEquippedDelegate(uint creature, ShipStatus shipStatus, int moduleBonus);
-    public delegate void ShipModuleUnequippedDelegate(uint creature, ShipStatus shipStatus, int moduleBonus);
+    public delegate void ShipModuleEquippedDelegate(ShipStatus shipStatus, int moduleBonus);
+    public delegate void ShipModuleUnequippedDelegate(ShipStatus shipStatus, int moduleBonus);
     public delegate float ShipModuleCalculateRecastDelegate(uint creature, ShipStatus shipStatus, int moduleBonus);
     public delegate int ShipModuleCalculateCapacitorDelegate(uint creature, ShipStatus shipStatus, int moduleBonus);
     public delegate void ShipModuleActivatedDelegate(uint activator, ShipStatus activatorShipStatus, uint target, ShipStatus targetShipStatus, int moduleBonus);

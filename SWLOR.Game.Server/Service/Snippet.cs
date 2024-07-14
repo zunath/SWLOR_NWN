@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, all available conversation snippets are loaded into the cache.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheData()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()

@@ -20,7 +20,9 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, create translators for every language and store them into cache.
         /// </summary>
         [NWNEventHandler("mod_load")]
-        public static void LoadTranslators() => _translators = new Dictionary<SkillType, ITranslator>
+        public static void LoadTranslators()
+        {
+            _translators = new Dictionary<SkillType, ITranslator>
             {
                 { SkillType.Bothese, new TranslatorBothese() },
                 { SkillType.Catharese, new TranslatorCatharese() },
@@ -41,6 +43,7 @@ namespace SWLOR.Game.Server.Service
                 { SkillType.Nautila, new TranslatorNautila() },
                 { SkillType.Ewokese, new TranslatorEwokese() },
             };
+        }
 
         public static string TranslateSnippetForListener(uint speaker, uint listener, SkillType language, string snippet)
         {

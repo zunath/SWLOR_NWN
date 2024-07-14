@@ -253,6 +253,32 @@ namespace SWLOR.Game.Server.Service
                 HairColorId = 79,
                 HeadId = 235
             };
+            _defaultRaceAppearancesMale[RacialType.Ewok] = new RacialAppearance
+            {
+                AppearanceType = AppearanceType.Ewok,
+
+                SkinColorId = 0,
+                HairColorId = 0,
+                HeadId = 114,
+                Scale = 0.86f,
+
+                TorsoId = 208,
+                PelvisId = 208,
+
+                RightBicepId = 208,
+                RightForearmId = 208,
+                RightHandId = 209,
+                RightThighId = 208,
+                RightShinId = 208,
+                RightFootId = 208,
+
+                LeftBicepId = 208,
+                LeftForearmId = 208,
+                LeftHandId = 209,
+                LeftThighId = 208,
+                LeftShinId = 208,
+                LeftFootId = 208
+            };
 
             // Female appearances
             _defaultRaceAppearancesFemale[RacialType.Human] = new RacialAppearance();
@@ -462,33 +488,6 @@ namespace SWLOR.Game.Server.Service
                 HairColorId = 79,
                 HeadId = 235
             };
-            _defaultRaceAppearancesMale[RacialType.Ewok] = new RacialAppearance
-            {
-                AppearanceType = AppearanceType.Ewok,
-
-                SkinColorId = 0,
-                HairColorId = 0,
-                HeadId = 114,
-                Scale = 0.86f,
-
-                TorsoId = 208,
-                PelvisId = 208,
-
-                RightBicepId = 208,
-                RightForearmId = 208,
-                RightHandId = 209,
-                RightThighId = 208,
-                RightShinId = 208,
-                RightFootId = 208,
-
-                LeftBicepId = 208,
-                LeftForearmId = 208,
-                LeftHandId = 209,
-                LeftThighId = 208,
-                LeftShinId = 208,
-                LeftFootId = 208
-
-            };
             _defaultRaceAppearancesFemale[RacialType.Ewok] = new RacialAppearance
             {
                 AppearanceType = AppearanceType.Ewok,
@@ -514,7 +513,6 @@ namespace SWLOR.Game.Server.Service
                 LeftThighId = 208,
                 LeftShinId = 208,
                 LeftFootId = 208
-
             };
 
         }

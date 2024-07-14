@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 				.Component("elec_ruined", 3);
 
 			// Basic Hypermatter Injector
-			_builder.Create(RecipeType.FuelInjector1, SkillType.Engineering)
+			_builder.Create(RecipeType.BasicFuelInjector, SkillType.Engineering)
 				.Category(RecipeCategoryType.ShipModule)
 				.Resref("cap_inject1")
 				.Level(9)

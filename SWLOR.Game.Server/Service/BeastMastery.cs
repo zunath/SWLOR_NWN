@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Service
         public const string BeastTypeVariable = "BEAST_TYPE";
         public const string BeastLevelVariable = "BEAST_LEVEL";
 
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheData()
         {
             LoadBeasts();

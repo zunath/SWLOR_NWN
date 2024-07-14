@@ -29,11 +29,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's accuracy by {accuracyBoostAmount}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.Accuracy += accuracyBoostAmount + moduleBonus;
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.Accuracy -= accuracyBoostAmount + moduleBonus;
                 });

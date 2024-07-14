@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheData()
         {
             Load2DACache();

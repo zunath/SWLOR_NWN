@@ -158,9 +158,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddSpacer();
-
+                        
                         row.AddButton()
-                            .SetText("Craft")
+                            .BindText(model => model.CraftText)
                             .BindOnClicked(model => model.OnClickManualCraft())
                             .BindIsEnabled(model => model.IsInSetupMode)
                             .SetHeight(35f);

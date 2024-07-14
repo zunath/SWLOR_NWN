@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<SkillCategoryType, List<SkillType>> _activeSkillsByCategory = new();
         private static readonly Dictionary<SkillType, SkillAttribute> _activeSkillsContributingToCap = new();
         private static readonly Dictionary<SkillType, SkillAttribute> _activeCraftingSkills = new();
+        private static readonly Dictionary<SkillType, SkillAttribute> _activeResearchableCraftingSkills = new();
 
         /// <summary>
         /// When the module loads, skills and categories are organized into dictionaries for quick look-ups later on.
@@ -89,6 +90,11 @@ namespace SWLOR.Game.Server.Service
                     if (skillDetail.IsShownInCraftMenu)
                     {
                         _activeCraftingSkills[skillType] = skillDetail;
+                    }
+
+                    if (skillDetail.IsShownInResearchMenu)
+                    {
+                        _activeResearchableCraftingSkills[skillType] = skillDetail;
                     }
                 }
 
@@ -159,6 +165,15 @@ namespace SWLOR.Game.Server.Service
         public static Dictionary<SkillType, SkillAttribute> GetActiveCraftingSkills()
         {
             return _activeCraftingSkills.ToDictionary(x => x.Key, y => y.Value);
+        }
+
+        /// <summary>
+        /// Retrieves a dictionary of all active skills which are displayed in the research menu.
+        /// </summary>
+        /// <returns>A dictionary of active skills which are displayed in the research menu.</returns>
+        public static Dictionary<SkillType, SkillAttribute> GetActiveResearchableCraftingSkills()
+        {
+            return _activeResearchableCraftingSkills.ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>

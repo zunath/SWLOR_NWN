@@ -12763,6 +12763,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Research Terminal"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_0272"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Rope Coil"
               },
               "RESREF": {
@@ -19486,6 +19497,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "eggs_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Blueprint"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "blueprint"
                     }
                   },
                   {

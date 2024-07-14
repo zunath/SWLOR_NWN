@@ -82,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
                 .RequirementUnlocked()
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)
+                .ResearchCostModifier(0.2f)
                 .Component("ref_arkoxit", 2)
                 .Component("ref_jasioclase", 10)
                 .Component("hyphae_wood", 20)

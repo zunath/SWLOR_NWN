@@ -95,6 +95,19 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
+        /// Adjusts the cost of researching this blueprint by a certain percentage.
+        /// Positive numbers increase the cost. Negative numbers decrease it.
+        /// </summary>
+        /// <param name="modifier">The modifier to apply to researching the blueprint.</param>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder ResearchCostModifier(float modifier)
+        {
+            _activeRecipe.ResearchCostModifier = modifier;
+
+            return this;
+        }
+        
+        /// <summary>
         /// Deactivates the recipe which will prevent players from learning and crafting the item.
         /// </summary>
         /// <returns>A recipe builder with the configured options</returns>

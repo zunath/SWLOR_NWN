@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -291,7 +292,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickRecipes() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Recipes);
+            var payload = new RecipesPayload(RecipesUIMode.Recipes, SkillType.Invalid);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Recipes, payload);
         };
 
         public Action OnClickHoloCom() => () =>

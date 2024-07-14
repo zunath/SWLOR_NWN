@@ -889,6 +889,25 @@ namespace SWLOR.Game.Server.Service
             return list;
         }
 
+        /// <summary>
+        /// Builds a list of strings containing all of the item properties on an i tem.
+        /// </summary>
+        /// <param name="itemProperties">The list of item properties to use.</param>
+        /// <returns>A list containing all of the item properties.</returns>
+        public static GuiBindingList<string> BuildItemPropertyList(List<ItemProperty> itemProperties)
+        {
+            var list = new GuiBindingList<string>();
+            var sb = new StringBuilder();
+            foreach (var ip in itemProperties)
+            {
+                BuildSingleItemPropertyString(sb, ip);
+                list.Add(sb.ToString());
+                sb.Clear();
+            }
+
+            return list;
+        }
+
         private static void BuildSingleItemPropertyString(StringBuilder sb, ItemProperty ip)
         {
             var typeId = (int)GetItemPropertyType(ip);

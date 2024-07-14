@@ -1323,7 +1323,7 @@ namespace SWLOR.Game.Server.Service
                     shipStatus.ActiveModules.Add(slot);
                 }
 
-                shipModule.ModuleEquippedAction?.Invoke(creature, shipStatus, 0);
+                shipModule.ModuleEquippedAction?.Invoke(shipStatus, 0);
 
                 featCount++;
             }
@@ -1343,7 +1343,7 @@ namespace SWLOR.Game.Server.Service
                     shipStatus.ActiveModules.Add(slot);
                 }
 
-                shipModule.ModuleEquippedAction?.Invoke(creature, shipStatus, 0);
+                shipModule.ModuleEquippedAction?.Invoke(shipStatus, 0);
 
                 featCount++;
             }
@@ -1617,7 +1617,7 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     var moduleDetails = GetShipModuleDetailByItemTag(shipModule.ItemTag);
-                    moduleDetails.ModuleUnequippedAction?.Invoke(creature, dbPlayerShip.Status, shipModule.ModuleBonus);
+                    moduleDetails.ModuleUnequippedAction?.Invoke(dbPlayerShip.Status, shipModule.ModuleBonus);
 
                 }
 
@@ -1631,7 +1631,7 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     var moduleDetails = GetShipModuleDetailByItemTag(shipModule.ItemTag);
-                    moduleDetails.ModuleUnequippedAction?.Invoke(creature, dbPlayerShip.Status, shipModule.ModuleBonus);
+                    moduleDetails.ModuleUnequippedAction?.Invoke(dbPlayerShip.Status, shipModule.ModuleBonus);
                 }
 
                 // Player always loses all modules regardless if they actually dropped.

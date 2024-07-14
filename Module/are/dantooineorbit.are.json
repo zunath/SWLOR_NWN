@@ -34,7 +34,7 @@
   },
   "FogClipDist": {
     "type": "float",
-    "value": 45.0
+    "value": 80.0
   },
   "Height": {
     "type": "int",
@@ -66,15 +66,15 @@
   },
   "MoonAmbientColor": {
     "type": "dword",
-    "value": 0
+    "value": 16777215
   },
   "MoonDiffuseColor": {
     "type": "dword",
-    "value": 2570047
+    "value": 16777215
   },
   "MoonFogAmount": {
     "type": "byte",
-    "value": 15
+    "value": 0
   },
   "MoonFogColor": {
     "type": "dword",
@@ -44193,7 +44193,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 17
+    "value": 18
   },
   "Width": {
     "type": "int",

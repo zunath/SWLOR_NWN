@@ -2790,6 +2790,17 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Structure, 2)
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 2);
+
+            // Research Terminal
+            _builder.Create(RecipeType.ResearchTerminal, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Crafting)
+                .Resref("structure_0272")
+                .Level(50)
+                .Quantity(1)
+                .RequirementPerk(PerkType.FurnitureBlueprints, 5)
+                .Component("zinsiam", 10)
+                .Component("elec_imperfect", 8)
+                .Component("diamond", 4);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             "Unused in-game.",
             false,
+            false,
             false)]
         Invalid = 0,
 
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to use one-handed weapons like vibroblades, finesse vibroblades, and lightsabers.",
             true,
+            false,
             false,
             CombatPointCategoryType.Weapon)]
         OneHanded = 1,
@@ -33,6 +35,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to use heavy weapons like heavy vibroblades, polearms, and saberstaffs in combat.",
             true,
             false,
+            false,
             CombatPointCategoryType.Weapon)]
         TwoHanded = 2,
 
@@ -41,6 +44,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to fight using katars and staves in combat.",
             true,
+            false,
             false,
             CombatPointCategoryType.Weapon)]
         MartialArts = 3,
@@ -52,6 +56,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to use ranged weapons like pistols, shurikens, and rifles in combat.",
             true,
             false,
+            false,
             CombatPointCategoryType.Weapon)]
         Ranged = 4,
 
@@ -61,6 +66,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to use Force abilities.",
             true,
+            false,
             false,
             CombatPointCategoryType.Utility,
             CharacterType.ForceSensitive)]
@@ -72,6 +78,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to effectively wear and defend against attacks with armor.",
             true,
+            false,
             false)]
         Armor = 6,
 
@@ -81,6 +88,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to pilot starships, follow navigation charts, and control starship systems.",
             true,
+            false,
             false)]
         Piloting = 7,
 
@@ -90,6 +98,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to treat bodily injuries in the field with healing kits and stim packs.",
             true,
+            false,
             false)]
         FirstAid = 8,
 
@@ -98,6 +107,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             50,
             true,
             "Ability to create weapons and armor like vibroblades, blasters, and helmets.",
+            true,
             true,
             true)]
         Smithery = 9,
@@ -108,7 +118,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to create base structures and furniture.",
             true,
-            true)]
+            true,
+            false)]
         Fabrication = 10,
 
         [Skill(SkillCategoryType.Crafting,
@@ -117,6 +128,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to harvest raw materials and scavenge for supplies.",
             true,
+            false, 
             false)]
         Gathering = 11,
 
@@ -126,6 +138,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to handle people, negotiate, and manage relations.",
             true,
+            false,
             false)]
         Leadership = 12,
 
@@ -135,6 +148,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to tame wild animals, raise them, and train them.",
             true,
+            false,
             false)]
         BeastMastery = 13,
 
@@ -143,6 +157,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             20,
             true,
             "Ability to speak the Mirialan language.",
+            false,
             false,
             false)]
         Mirialan = 14,
@@ -153,6 +168,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to speak the Bothese language.",
             false,
+            false,
             false)]
         Bothese = 15,
 
@@ -161,6 +177,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             20,
             true,
             "Ability to speak the Cheunh language.",
+            false,
             false,
             false)]
         Cheunh = 16,
@@ -172,6 +189,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to speak the Zabraki language.",
             false,
+            false,
             false)]
         Zabraki = 17,
 
@@ -181,6 +199,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to speak the Twi'leki (Ryl) language.",
             false,
+            false,
             false)]
         Twileki = 18,
 
@@ -188,6 +207,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Catharese", 20,
             true,
             "Ability to speak the Catharese language.",
+            false,
             false,
             false)]
         Catharese = 19,
@@ -198,6 +218,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to speak the Dosh language.",
             false,
+            false,
             false)]
         Dosh = 20,
 
@@ -206,6 +227,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             20,
             true,
             "Ability to speak the Shyriiwook (Wookieespeak) language.",
+            false,
             false,
             false)]
         Shyriiwook = 21,
@@ -216,6 +238,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to speak the Droidspeak language.",
             false,
+            false,
             false)]
         Droidspeak = 22,
 
@@ -224,6 +247,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             20,
             true,
             "Ability to speak the Galactic Basic language.",
+            false,
             false,
             false)]
         Basic = 23,
@@ -234,6 +258,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to speak the Mandoa language.",
             false,
+            false,
             false)]
         Mandoa = 24,
 
@@ -242,6 +267,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             20,
             true,
             "Ability to speak the Huttese language.",
+            false,
             false,
             false)]
         Huttese = 25,
@@ -252,6 +278,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to speak the Mon Calamarian language.",
             false,
+            false,
             false)]
         MonCalamarian = 26,
 
@@ -260,6 +287,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             20,
             true,
             "Ability to speak the Ugnaught language.",
+            false,
             false,
             false)]
         Ugnaught = 27,
@@ -270,6 +298,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to speak the Rodese language.",
             false,
+            false,
             false)]
         Rodese = 28,
 
@@ -278,6 +307,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             20,
             true,
             "Ability to speak the Togruti language.",
+            false,
             false,
             false)]
         Togruti = 29,
@@ -288,6 +318,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to speak the Kel Dor language.",
             false,
+            false,
             false)]
         KelDor = 30,
 
@@ -297,6 +328,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to farm, fish, and cook.",
             true,
+            true,
             true)]
         Agriculture = 31,
 
@@ -305,6 +337,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             50,
             true,
             "Ability to create starships, modules, droids, and other electronic & mechanical items.",
+            true,
             true,
             true)]
         Engineering = 32,
@@ -316,6 +349,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to use grenades, bombs, and other electronics.",
             true,
             false,
+            false,
             CombatPointCategoryType.Utility,
             CharacterType.Standard)]
         Devices = 33,
@@ -325,6 +359,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             20,
             true,
             "Ability to speak the Nautila language.",
+            false,
             false,
             false)]
             Nautila = 34,
@@ -348,6 +383,7 @@ namespace SWLOR.Game.Server.Service.SkillService
         public string Description { get; set; }
         public bool ContributesToSkillCap { get; set; }
         public bool IsShownInCraftMenu { get; set; }
+        public bool IsShownInResearchMenu { get; set; }
         public CharacterType CharacterTypeRestriction { get; set; }
 
         public CombatPointCategoryType CombatPointCategory { get; set; } 
@@ -360,6 +396,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             string description,
             bool contributesToSkillCap,
             bool isShownInCraftMenu,
+            bool isShownInResearchMenu,
             CombatPointCategoryType combatPointCategory = CombatPointCategoryType.Exempt,
             CharacterType characterTypeRestriction = CharacterType.Invalid)
         {
@@ -370,6 +407,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             Description = description;
             ContributesToSkillCap = contributesToSkillCap;
             IsShownInCraftMenu = isShownInCraftMenu;
+            IsShownInResearchMenu = isShownInResearchMenu;
             CharacterTypeRestriction = characterTypeRestriction;
             CombatPointCategory = combatPointCategory;
         }

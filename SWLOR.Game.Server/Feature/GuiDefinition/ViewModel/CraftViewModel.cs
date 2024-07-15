@@ -1477,6 +1477,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var durationBonus = (int)qualityPercent;
                 var ip = ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Duration, durationBonus);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+
+                // Also increase charges based on the blueprint upgrade level
+                if (_hasBlueprint)
+                {
+                    var charges = GetItemCharges(item) + _activeBlueprint.Level;
+                    SetItemCharges(item, charges);
+                }
             }
 
             ProcessBlueprintBonuses(item);

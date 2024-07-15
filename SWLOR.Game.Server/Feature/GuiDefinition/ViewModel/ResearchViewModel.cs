@@ -393,15 +393,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             void AddBlueprintBonus()
             {
-                var innovateLevel = Perk.GetPerkLevel(Player, PerkType.Innovate);
-                var enhancementBonus = 0;
-                if (innovateLevel >= 1)
-                    enhancementBonus += 20;
-                if (innovateLevel >= 2)
-                    enhancementBonus += 40;
-                if (innovateLevel >= 3)
-                    enhancementBonus += 70;
-
                 var hasEnhancementBonus = blueprintDetails.EnhancementSlots > 0 && 
                                           blueprintDetails.Level < Craft.MaxResearchLevel;
 
@@ -422,8 +413,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     {
                         300,
                         400,
-                        400,
-                        50 + enhancementBonus
+                        400
                     };
                 }
                 
@@ -440,10 +430,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 else if (index == 2) // 2 = Time Reduction
                 {
                     blueprintDetails.TimeReduction += Random.D10(1);
-                }
-                else if (index == 3) // 3 = Enhancement Slot
-                {
-                    blueprintDetails.EnhancementSlots++;
                 }
             }
 

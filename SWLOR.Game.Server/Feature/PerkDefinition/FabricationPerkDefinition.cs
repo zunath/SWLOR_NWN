@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             FabricationEquipment();
             Research();
             ScientificNetworking();
-            Innovate();
             ResearchProjects();
 
             return _builder.Build();
@@ -249,27 +248,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Blueprints are created with an additional licensed run.")
                 .Price(3)
                 .RequirementSkill(SkillType.Fabrication, 50);
-        }
-
-        private void Innovate()
-        {
-            _builder.Create(PerkCategoryType.Fabrication, PerkType.Innovate)
-                .Name("Innovate")
-
-                .AddPerkLevel()
-                .Description("Increases the chance of adding an enhancement slot to a blueprint by 20.")
-                .Price(3)
-                .RequirementSkill(SkillType.Fabrication, 15)
-
-                .AddPerkLevel()
-                .Description("Increases the chance of adding an enhancement slot to a blueprint by 40.")
-                .Price(3)
-                .RequirementSkill(SkillType.Fabrication, 30)
-
-                .AddPerkLevel()
-                .Description("Increases the chance of adding an enhancement slot to a blueprint by 70.")
-                .Price(3)
-                .RequirementSkill(SkillType.Fabrication, 45);
         }
 
         private void ResearchProjects()

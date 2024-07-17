@@ -370,6 +370,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
            "Ability to speak the Ewok language.",
            false,
+           false,
            false)]
            Ewokese = 35,
     }

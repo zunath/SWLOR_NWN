@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Service
                         new LanguageCommand("Twi'leki", SkillType.Twileki, new []{"twileki", "ryl"}),
                         new LanguageCommand("Ugnaught", SkillType.Ugnaught, new []{"ugnaught"}),
                         new LanguageCommand("Zabraki", SkillType.Zabraki, new []{"zabraki", "zabrak"}),
-                        new LanguageCommand("Ewokese", SkillType.Zabraki, new []{"Ewokese", "YubNub"}),
+                        new LanguageCommand("Ewokese", SkillType.Ewokese, new []{"Ewokese", "YubNub"}),
                     };
 
                     _languages = languages;

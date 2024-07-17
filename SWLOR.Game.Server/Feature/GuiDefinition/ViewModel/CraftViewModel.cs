@@ -1399,13 +1399,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return quality;
         }
 
-        private int CalculateXP(int recipeLevel, int playerLevel, bool firstTime, float qualityPercent)
+        private int CalculateXP(
+            int recipeLevel, 
+            int playerLevel, 
+            int blueprintLevel,
+            bool firstTime, 
+            float qualityPercent)
         {
             var delta = recipeLevel - playerLevel;
             var xp = Skill.GetDeltaXP(delta);
             // 20% bonus for the first time.
             if (firstTime)
                 xp += (int)(xp * 0.20f);
+            xp += (int)(xp * (blueprintLevel * 0.5f));
             xp += (int)(xp * qualityPercent);
 
             return xp;
@@ -1477,6 +1483,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var durationBonus = (int)qualityPercent;
                 var ip = ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Duration, durationBonus);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+
+                // Also increase charges based on the blueprint upgrade level
+                if (_hasBlueprint)
+                {
+                    var charges = GetItemCharges(item) + _activeBlueprint.Level;
+                    SetItemCharges(item, charges);
+                }
             }
 
             ProcessBlueprintBonuses(item);
@@ -1489,7 +1502,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             // Give XP plus a percent bonus based on the quality achieved.
-            var xp = CalculateXP(recipe.Level, dbPlayer.Skills[recipe.Skill].Rank, firstTime, qualityPercent);
+            var xp = CalculateXP(
+                recipe.Level, 
+                dbPlayer.Skills[recipe.Skill].Rank, 
+                _hasBlueprint ? _activeBlueprint.Level : 0,
+                firstTime, 
+                qualityPercent);
             Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
 
             // Clean up and return to the Set Up mode.
@@ -1650,7 +1668,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusColor = GuiColor.Red;
 
             // 15% of XP is gained for failures.
-            var xp = CalculateXP(recipe.Level, dbPlayer.Skills[recipe.Skill].Rank, false, 0f);
+            var xp = CalculateXP(
+                recipe.Level, 
+                dbPlayer.Skills[recipe.Skill].Rank,
+                _hasBlueprint ? _activeBlueprint.Level : 0,
+                false, 
+                0f);
             xp = (int)(xp * 0.15f);
             Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
 

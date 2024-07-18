@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             1)]
         TTableCoffeeShelf = 16,
         [Structure("Brazier, Stone",
-            "plc_barrier",
+            "plc_brazier",
             "",
             true,
             1)]

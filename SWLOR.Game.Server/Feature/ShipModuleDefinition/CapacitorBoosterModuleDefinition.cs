@@ -31,11 +31,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
                 .EquippedAction((shipStatus, moduleBonus) =>
                 {
-                    shipStatus.MaxCapacitor += capacitorBoostAmount + moduleBonus * 2;
+                    shipStatus.MaxCapacitor += capacitorBoostAmount + moduleBonus * 5;
                 })
                 .UnequippedAction((shipStatus, moduleBonus) =>
                 {
-                    shipStatus.MaxCapacitor -= capacitorBoostAmount + moduleBonus * 2;
+                    shipStatus.MaxCapacitor -= capacitorBoostAmount + moduleBonus * 5;
                 });
         }
     }

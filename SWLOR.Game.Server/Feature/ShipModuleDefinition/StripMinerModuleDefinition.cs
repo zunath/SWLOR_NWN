@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .CapitalClassModule()
                 .ValidationAction((_, _, target, _, _) =>
                 {
-                    var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
+                    var lootTableId = GetLocalString(target, "STRIPMINE_LOOT_TABLE_ID");
                     if (string.IsNullOrWhiteSpace(lootTableId))
                     {
                         return "Only asteroids may be targeted with this module.";
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         var industrialBonus = Space.GetShipStatus(activator).Industrial;
 
-                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)((industrialBonus + moduleBonus) / 3f);
+                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 6) + (moduleBonus / 6);
 
                         SetPlotFlag(target, false);
                         ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                         Loot.SpawnLoot(target, activator, "LOOT_TABLE_");
 
-                        var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
+                        var lootTableId = GetLocalString(target, "STRIPMINE_LOOT_TABLE_ID");
                         var lootTable = Loot.GetLootTableByName(lootTableId);
 
                         for (var count = 1; count <= amountToMine; count++)

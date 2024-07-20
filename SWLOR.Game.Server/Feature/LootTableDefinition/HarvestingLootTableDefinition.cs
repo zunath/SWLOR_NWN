@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             Herbs();
             VegetablePatches();
             AsteroidMining();
+            StripMining();
 
             return _builder.Build();
         }
@@ -169,6 +170,38 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("ASTEROID_ARDANIUM")
                 .AddItem("ore_arda", 9)
                 .AddItem("zinsiam", 1);
+        }
+
+        private void StripMining()
+        {
+            _builder.Create("ASTEROID_TILARIUM_STRIP")
+                .AddItem("ore_tilarium", 30)
+                .AddItem("aluminum", 10)
+                .AddItem("quadrenium", 5);
+
+            _builder.Create("ASTEROID_CURRIAN_STRIP")
+                .AddItem("ore_currian", 30)
+                .AddItem("steel", 10)
+                .AddItem("vintrium", 5);
+
+            _builder.Create("ASTEROID_IDAILIA_STRIP")
+                .AddItem("ore_idailia", 30)
+                .AddItem("obsidian", 10)
+                .AddItem("ionite", 5);
+
+            _builder.Create("ASTEROID_BARINIUM_STRIP")
+                .AddItem("ore_barinium", 30)
+                .AddItem("crystal", 10)
+                .AddItem("katrium", 5);
+
+            _builder.Create("ASTEROID_GOSTIAN_STRIP")
+                .AddItem("ore_gostian", 30)
+                .AddItem("diamond", 10)
+                .AddItem("zinsiam", 5);
+
+            _builder.Create("ASTEROID_ARDANIUM_STRIP")
+                .AddItem("ore_arda", 30)
+                .AddItem("zinsiam", 5);
         }
     }
 }

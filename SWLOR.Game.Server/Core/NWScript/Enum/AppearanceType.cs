@@ -5311,5 +5311,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         SWLORShipAlienGunship = 10216,
         SWLORShipAlienBattleship = 10217,
         SWLORShipArmoredTransport = 10218,
+        Ewok = 10219,
     }
 }

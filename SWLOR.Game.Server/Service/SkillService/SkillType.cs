@@ -363,6 +363,16 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             false)]
             Nautila = 34,
+
+        [Skill(SkillCategoryType.Languages,
+            "Ewokese",
+            20,
+            true,
+           "Ability to speak the Ewok language.",
+           false,
+           false,
+           false)]
+           Ewokese = 35,
     }
 
     public class SkillAttribute : Attribute

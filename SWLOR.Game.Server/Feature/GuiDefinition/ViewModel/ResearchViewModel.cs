@@ -295,6 +295,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return $"Blueprint cannot be researched any further.";
             }
 
+            var recipe = Craft.GetRecipe(_recipeType);
+            foreach (var req in recipe.Requirements)
+            {
+                if (req.GetType() != typeof(RecipeUnlockRequirement))
+                    continue;
+
+                var error = req.CheckRequirements(Player);
+                if (!string.IsNullOrWhiteSpace(error))
+                {
+                    return error;
+                }
+            }
+
             var playerId = GetObjectUUID(Player);
             var maxConcurrentJobs = Perk.GetPerkLevel(Player, PerkType.ResearchProjects) + 1;
             var dbQuery = new DBQuery<ResearchJob>()

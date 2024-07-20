@@ -55,8 +55,8 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(speaker);
                 var dbSpeaker = DB.Get<Player>(playerId);
                 // Get the rank and max rank for the speaker, and garble their English text based on it.
-                var speakerSkillRank = dbSpeaker == null ? 
-                    languageSkill.MaxRank : 
+                var speakerSkillRank = dbSpeaker == null ?
+                    languageSkill.MaxRank :
                     dbSpeaker.Skills[language].Rank;
 
                 if (speakerSkillRank != languageSkill.MaxRank)
@@ -85,8 +85,8 @@ namespace SWLOR.Game.Server.Service
             // Let's grab the max rank for the listener skill, and then we roll for a successful translate based on that.
             var listenerId = GetObjectUUID(listener);
             var dbListener = DB.Get<Player>(listenerId);
-            var rank = dbListener == null ? 
-                languageSkill.MaxRank : 
+            var rank = dbListener == null ?
+                languageSkill.MaxRank :
                 dbListener.Skills[language].Rank;
             var maxRank = languageSkill.MaxRank;
 
@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Service
                         new LanguageCommand("Twi'leki", SkillType.Twileki, new []{"twileki", "ryl"}),
                         new LanguageCommand("Ugnaught", SkillType.Ugnaught, new []{"ugnaught"}),
                         new LanguageCommand("Zabraki", SkillType.Zabraki, new []{"zabraki", "zabrak"}),
-                        new LanguageCommand("Ewokese", SkillType.Ewokese, new []{"Ewokese", "YubNub"}),
+                        new LanguageCommand("Ewokese", SkillType.Ewokese, new []{"ewokese", "yubnub"}),
                     };
 
                     _languages = languages;

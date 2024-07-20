@@ -30,11 +30,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
                 .EquippedAction((shipStatus, moduleBonus) =>
                 {
-                    shipStatus.MaxShield += shieldBoostAmount + moduleBonus * 2;
+                    shipStatus.MaxShield += shieldBoostAmount + moduleBonus * 5;
                 })
                 .UnequippedAction((shipStatus, moduleBonus) =>
                 {
-                    shipStatus.MaxShield -= shieldBoostAmount + moduleBonus * 2;
+                    shipStatus.MaxShield -= shieldBoostAmount + moduleBonus * 5;
 
                     if (shipStatus.Shield > shipStatus.MaxShield)
                         shipStatus.Shield = shipStatus.MaxShield;

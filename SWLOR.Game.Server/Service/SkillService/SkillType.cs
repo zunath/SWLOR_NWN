@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true,
             "Ability to harvest raw materials and scavenge for supplies.",
             true,
-            false, 
+            false,
             false)]
         Gathering = 11,
 
@@ -362,7 +362,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             false,
             false)]
-            Nautila = 34,
+        Nautila = 34,
 
         [Skill(SkillCategoryType.Languages,
             "Ewokese",
@@ -372,7 +372,17 @@ namespace SWLOR.Game.Server.Service.SkillService
            false,
            false,
            false)]
-           Ewokese = 35,
+        Ewokese = 35,
+
+        [Skill(SkillCategoryType.Utility,
+            "Espionage",
+            50,
+            true,
+            "Ability to craft poisons, traps, and employ stealth.",
+            true,
+            false,
+            false)]
+        Espionage = 36,
     }
 
     public class SkillAttribute : Attribute
@@ -387,7 +397,7 @@ namespace SWLOR.Game.Server.Service.SkillService
         public bool IsShownInResearchMenu { get; set; }
         public CharacterType CharacterTypeRestriction { get; set; }
 
-        public CombatPointCategoryType CombatPointCategory { get; set; } 
+        public CombatPointCategoryType CombatPointCategory { get; set; }
 
         public SkillAttribute(
             SkillCategoryType category,

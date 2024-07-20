@@ -300,9 +300,16 @@
         ForceTouch = 293,
         Innervate = 294,
         ForceLink = 295,
-        // 296 is free
+        BackAttack = 296,
         Research = 297,
         AdrenalStim = 298,
         ResearchProjects = 299,
+        TacticalEscape = 300,
+        Poisoncraft = 301,
+        PoisonExpertise = 302,
+        Lockpicking = 303,
+        Trapcraft = 304,
+        TrapManagement = 305,
+        Stealth = 306,
     }
 }

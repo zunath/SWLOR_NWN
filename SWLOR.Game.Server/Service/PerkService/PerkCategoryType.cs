@@ -138,6 +138,9 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("Beast - Force", true)]
         BeastForce = 44,
+
+        [PerkCategory("Espionage", true)]
+        Espionage = 45,
     }
 
     public class PerkCategoryAttribute : Attribute

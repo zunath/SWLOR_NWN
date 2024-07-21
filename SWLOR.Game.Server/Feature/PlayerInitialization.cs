@@ -272,6 +272,9 @@ namespace SWLOR.Game.Server.Feature
                 case RacialType.Nautolan:
                     languages.Add(SkillType.Nautila);
                     break;
+                case RacialType.Ewok:
+                    languages.Add(SkillType.Ewokese);
+                    break;
             }
 
             // Fair warning: We're short-circuiting the skill system here.

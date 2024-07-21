@@ -49,7 +49,8 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Rodian = 165,
         KelDor = 166,
         Droid = 167,
-        Nautolan = 168
+        Nautolan = 168,
+        Ewok = 169
 
     }
 }

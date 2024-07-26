@@ -273,15 +273,6 @@ namespace SWLOR.Game.Server.Feature
             CheckForActivationInterruption(activationId, position);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
 
-            if (GetIsPC(activator) && !Space.IsPlayerInSpaceMode(activator))
-            {
-                ApplyEffectToObject(DurationType.Temporary, EffectSlow(), activator, 1.5f);
-                DelayCommand(1.6f, () =>
-                {
-                    Stat.ApplyPlayerMovementRate(activator);
-                });
-            }
-
             var executeImpact = ability.ActivationAction == null 
                 ? true
                 : ability.ActivationAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
@@ -293,6 +284,7 @@ namespace SWLOR.Game.Server.Feature
                     if (activationDelay > 0.0f)
                     {
                         PlayerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
+                        ApplyEffectToObject(DurationType.Temporary, EffectCutsceneImmobilize(), activator, activationDelay);
                     }
                 }
 

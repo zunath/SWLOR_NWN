@@ -223,9 +223,9 @@ namespace SWLOR.Game.Server.Feature
                     currentPosition.Z != originalPosition.Z)
                 {
                     RemoveEffectByTag(activator, "ACTIVATION_VFX");
-
                     PlayerPlugin.StopGuiTimingBar(activator, string.Empty);
                     Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)}'s ability has been interrupted.");
+                    SetLocalInt(activator, activationId, (int)ActivationStatus.Interrupted);
                     return;
                 }
 
@@ -233,18 +233,20 @@ namespace SWLOR.Game.Server.Feature
             }
 
             // This method is called after the delay of the ability has finished.
-            void CompleteActivation(string id, float abilityRecastDelay)
+            void CompleteActivation(string activationId, float abilityRecastDelay)
             {
-                DeleteLocalInt(activator, id);
                 Activity.ClearBusy(activator);
 
                 // Moved during casting or activator died. Cancel the activation.
-                if (GetLocalInt(activator, id) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0)
+                if (GetLocalInt(activator, activationId) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0)
                     return;
                 
+
                 if (!Ability.CanUseAbility(activator, target, feat, ability.AbilityLevel, targetLocation))
                     return;
-                
+
+                DeleteLocalInt(activator, activationId);
+
                 ApplyRequirementEffects(activator, ability);
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
@@ -270,8 +272,8 @@ namespace SWLOR.Game.Server.Feature
             var recastDelay = ability.RecastDelay?.Invoke(activator) ?? 0f;
             var position = GetPosition(activator);
             ProcessAnimationAndVisualEffects(activationDelay);
-            CheckForActivationInterruption(activationId, position);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
+            CheckForActivationInterruption(activationId, position);
 
             var executeImpact = ability.ActivationAction == null 
                 ? true
@@ -284,7 +286,6 @@ namespace SWLOR.Game.Server.Feature
                     if (activationDelay > 0.0f)
                     {
                         PlayerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
-                        ApplyEffectToObject(DurationType.Temporary, EffectCutsceneImmobilize(), activator, activationDelay);
                     }
                 }
 

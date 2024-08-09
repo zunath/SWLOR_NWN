@@ -25,6 +25,9 @@
         Saber = 19,
         Striker = 20,
         Throne = 21,
+        Fighter = 22,
+        Corvette = 23,
+        Basilisk = 24,
 
         City = 92,
         CityHallStyle1 = 93,
@@ -47,6 +50,8 @@
         LargeHouseStyle2 = 107,
         LargeHouseStyle3 = 108,
         LargeHouseStyle4 = 109,
+
+        LabStyle1 = 110,
     }
 
 }

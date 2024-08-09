@@ -61,6 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+            Ability.ReapplyPlayerAuraAOE(target);
 
             if (hp > 0)
             {

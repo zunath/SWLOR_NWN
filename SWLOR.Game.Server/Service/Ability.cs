@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, abilities will be cached and events will be scheduled.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheData()
         {
             CacheAbilities();
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Service
         /// Each tick, creatures with a concentration effect will be processed.
         /// This will drain FP and reapply whatever effect is associated with an ability.
         /// </summary>
-        [NWNEventHandler("mod_heartbeat")]
+        [NWNEventHandler("swlor_heartbeat")]
         public static void ProcessConcentrationEffects()
         {
             var pairs = _activeConcentrationAbilities.ToList();
@@ -475,7 +475,7 @@ namespace SWLOR.Game.Server.Service
             return count;
         }
 
-        public static void ApplyAura(uint activator, StatusEffectType type, bool targetsSelf, bool targetsParty, bool targetsNPCs)
+        public static void ApplyAura(uint activator, StatusEffectType type, bool targetsSelf, bool targetsParty, bool targetsEnemies)
         {
             if (!_playerAuras.ContainsKey(activator))
                 _playerAuras.Add(activator, new PlayerAura());
@@ -505,7 +505,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                if (aura.Auras[0].TargetsNPCs)
+                if (aura.Auras[0].TargetsEnemies)
                 {
                     foreach (var npc in aura.CreaturesInRange)
                     {
@@ -516,7 +516,7 @@ namespace SWLOR.Game.Server.Service
                 aura.Auras.RemoveAt(0);
             }
 
-            aura.Auras.Add(new PlayerAuraDetail(type, targetsSelf, targetsParty, targetsNPCs));
+            aura.Auras.Add(new PlayerAuraDetail(type, targetsSelf, targetsParty, targetsEnemies));
 
             if (targetsSelf)
             {
@@ -555,7 +555,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                if (existing.TargetsNPCs)
+                if (existing.TargetsEnemies)
                 {
                     foreach (var npc in aura.CreaturesInRange)
                     {
@@ -596,7 +596,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                if (aura.TargetsNPCs)
+                if (aura.TargetsEnemies)
                 {
                     foreach (var npc in auraDetails.CreaturesInRange)
                     {
@@ -717,8 +717,8 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            // NPCs
-            else if (!GetIsPC(entering) && !GetIsDM(entering))
+            // Enemies
+            else if (!GetIsDMPossessed(entering) && !GetIsDM(entering) && (GetIsEnemy(self, entering) || GetIsEnemy(entering, self)))
             {
                 if (_playerAuras[self].CreaturesInRange.Contains(entering))
                     return;
@@ -727,7 +727,7 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var detail in _playerAuras[self].Auras)
                 {
-                    if (detail.TargetsNPCs)
+                    if (detail.TargetsEnemies)
                     {
                         StatusEffect.Apply(self, entering, detail.Type, 0f, self);
                     }
@@ -763,7 +763,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            else if (!GetIsPC(exiting) && !GetIsDM(exiting))
+            else if (!GetIsDMPossessed(exiting) && !GetIsDM(exiting) && (GetIsEnemy(self, exiting) || GetIsEnemy(exiting, self)))
             {
                 if (!_playerAuras[self].CreaturesInRange.Contains(exiting))
                     return;
@@ -772,7 +772,7 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var detail in _playerAuras[self].Auras)
                 {
-                    if (detail.TargetsNPCs)
+                    if (detail.TargetsEnemies)
                     {
                         StatusEffect.Remove(exiting, detail.Type, false);
                     }

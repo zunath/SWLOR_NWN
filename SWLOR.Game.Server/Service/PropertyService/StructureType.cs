@@ -1545,6 +1545,29 @@ namespace SWLOR.Game.Server.Service.PropertyService
             0)]
         BeastStableTerminal = 270,
 
+        [Structure("Incubator",
+            "incubator",
+            "",
+            true,
+            0, 
+            PropertyType.Lab,
+            PropertyLayoutType.Invalid,
+            true,
+            StructureCategoryType.ResearchDevice)]
+        Incubator = 271,
+
+        [Structure("Research Terminal",
+            "research_term",
+            "",
+            true,
+            0,
+            PropertyType.Lab,
+            PropertyLayoutType.Invalid,
+            true,
+            StructureCategoryType.ResearchDevice)]
+        ResearchTerminal = 272,
+
+
         // Buildings start here (5000+)
         [Structure("City Hall - Style 1",
             "city_hall",
@@ -1699,6 +1722,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.City,
             PropertyLayoutType.LargeHouseStyle4)]
         LargeHouseStyle4 = 5016,
+
+        [Structure("Lab - Style 1",
+            "lab1",
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.LabStyle1)]
+        LabStyle1 = 5017,
     }
 
     public class StructureAttribute : Attribute
@@ -1711,6 +1743,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public PropertyType RestrictedPropertyTypes { get; set; }
         public PropertyLayoutType LayoutType { get; set; }
         public bool CanBeRetrieved { get; set; }
+        public StructureCategoryType Category { get; set; }
 
         public StructureAttribute(
             string name,
@@ -1727,9 +1760,11 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 PropertyType.MedicalCenter |
                 PropertyType.Starport |
                 PropertyType.Cantina |
-                PropertyType.House,
+                PropertyType.House |
+                PropertyType.Lab,
             PropertyLayoutType layoutType = PropertyLayoutType.Invalid,
-            bool canBeRetrieved = true)
+            bool canBeRetrieved = true,
+            StructureCategoryType category = StructureCategoryType.Structure)
         {
             Name = name;
             Resref = resref;
@@ -1739,6 +1774,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             RestrictedPropertyTypes = restrictedPropertyTypes;
             LayoutType = layoutType;
             CanBeRetrieved = canBeRetrieved;
+            Category = category;
         }
     }
 }

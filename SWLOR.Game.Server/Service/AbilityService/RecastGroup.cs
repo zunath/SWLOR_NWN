@@ -255,6 +255,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         Innervate = 123,
         [RecastGroup("Force Restore", "F. Restore", true)]
         ForceRestore = 124,
+        [RecastGroup("Adrenal Stim", "Adr. Stim", true)]
+        AdrenalStim = 125,
     }
 
     public class RecastGroupAttribute: Attribute

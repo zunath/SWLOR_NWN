@@ -12,22 +12,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class IonCannonModuleDefinition : IShipModuleListDefinition
     {
-        private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
+        private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            IonCannon("ion_cann_b", "Basic Ion Cannon", "B. Ion Cann.", "Deals 8 EM DMG to your target.", 1, 3f, 6, 8);
-            IonCannon("ion_cann_1", "Ion Cannon I", "Ion Cann. I", "Deals 12 EM DMG to your target.", 2, 4f, 9, 12);
-            IonCannon("ion_cann_2", "Ion Cannon II", "Ion Cann. II", "Deals 17 EM DMG to your target.", 3, 5f, 12, 17);
-            IonCannon("ion_cann_3", "Ion Cannon III", "Ion Cann. III", "Deals 21 EM DMG to your target.", 4, 6f, 15, 21);
-            IonCannon("ion_cann_4", "Ion Cannon IV", "Ion Cann. IV", "Deals 26 EM DMG to your target.", 5, 7f, 18, 26);
-            IonCannon("cap_turbo_1", "Capital Ship Turbolaser I", "Cap Turbo I", "Deals 45 DMG to target every 2.5 rounds.", 5, 15f, 20, 45);
-            IonCannon("cap_turbo_2", "Capital Ship Turbolaser II", "Cap Turbo II", "Deals 45 DMG to target every 1.5 rounds.", 5, 9f, 20, 45);
-            IonCannon("cap_turbo_3", "Capital Ship Turbolaser III", "Cap Turbo III", "Deals 60 DMG to target every 2.5 rounds.", 5, 15f, 20, 60);
-            IonCannon("cap_turbo_4", "Capital Ship Turbolaser IV", "Cap Turbo IV", "Deals 60 DMG to target every 1.5 rounds.", 5, 9f, 20, 60);
-            IonCannon("cap_turbo_5", "Capital Ship Turbolaser V", "Cap Turbo V", "Deals 75 DMG to target every 2.5 rounds.", 5, 15f, 20, 75);
-            IonCannon("cap_turbo_6", "Capital Ship Turbolaser VI", "Cap Turbo VI", "Deals 90 DMG to target every 2.5 rounds.", 5, 15f, 20, 90);
-            IonCannon("cap_turbo_7", "Capital Ship Turbolaser VII", "Cap Turbo VII", "Deals 90 DMG to target every 1.5 rounds.", 5, 9f, 20, 90);
+            IonCannon("ion_cann_b", "Basic Ion Cannon", "B. Ion Cann.", "Deals 15 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 1, 4, 15);
+            IonCannon("ion_cann_1", "Ion Cannon I", "Ion Cann. I", "Deals 30 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 2, 8, 30);
+            IonCannon("ion_cann_2", "Ion Cannon II", "Ion Cann. II", "Deals 45 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 3, 12, 45);
+            IonCannon("ion_cann_3", "Ion Cannon III", "Ion Cann. III", "Deals 60 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 4, 16, 60);
+            IonCannon("ion_cann_4", "Ion Cannon IV", "Ion Cann. IV", "Deals 75 EM DMG to your target. Deals reduced damage to unshielded targets, but imposes debuffs.", 5, 20, 75);
 
             return _builder.Build();
         }
@@ -38,7 +31,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             string shortName,
             string description,
             int requiredLevel,
-            float recast,
             int capacitor,
             int dmg)
         {
@@ -52,20 +44,28 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
-                .Recast(recast)
+                .Recast(10f)
                 .Capacitor(capacitor)
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    var attackBonus = moduleBonus * 2 + activatorShipStatus.EMDamage;
-                    var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-                    var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
+                    var attackBonus = activatorShipStatus.EMDamage;
+                    var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
+                    var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Piloting, attackBonus);
+
+                    if (GetHasFeat(FeatType.IntuitivePiloting, activator) && GetAbilityScore(activator, AbilityType.Willpower) > GetAbilityScore(activator, AbilityType.Perception))
+                    {
+                        attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
+                        attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
+                    }
+
+                    var moduleDamage = dmg + moduleBonus / 2;
 
                     var defenseBonus = targetShipStatus.EMDefense * 2;
                     var defense = Stat.GetDefense(target, CombatDamageType.EM, AbilityType.Vitality, defenseBonus);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,
-                        dmg,
+                        moduleDamage,
                         attackerStat,
                         defense,
                         defenderStat,
@@ -88,9 +88,21 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         {
                             AssignCommand(activator, () =>
                             {
-                                var effect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion,false, 0.5f);
+                                var shieldDamage = int.Min(damage, targetShipStatus.Shield);
+                                var armorDamage = (damage-shieldDamage)/2;
+                                if (armorDamage < 0)
+                                {
+                                    armorDamage = 0;
+                                }
+                                var effect = EffectVisualEffect(VisualEffect.Vfx_Imp_Dispel, false, 0.5f);
                                 ApplyEffectToObject(DurationType.Instant, effect, target);
-                                Space.ApplyShipDamage(activator, target, damage);
+                                Space.ApplyShipDamage(activator, target, shieldDamage);
+                                Space.ApplyShipDamage(activator, target, armorDamage);
+                                if (armorDamage > 0)
+                                {
+                                    ApplyEffectToObject(DurationType.Temporary, EffectMovementSpeedDecrease(50), target, 6f);
+                                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Agility, 2), target, 12f);
+                                }
                             });
                         });
                     }
@@ -98,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         AssignCommand(activator, () =>
                         {
-                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator, BodyNode.Chest, true);
+                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest, true);
                             ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
                         });
 

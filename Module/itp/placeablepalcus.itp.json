@@ -67946,6 +67946,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ardanium Asteroid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "asteroid_arda"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Arkoxit Vein"
                     },
                     "RESREF": {
@@ -68232,6 +68243,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Extract DNA"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "extract_corpse"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Failed Jump Start Location"
                     },
                     "RESREF": {
@@ -68419,6 +68441,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hay Piles"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_hay"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hemorgite Vein"
                     },
                     "RESREF": {
@@ -68468,6 +68501,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "asteroid_idailia"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Incubator"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "incubator"
                     }
                   },
                   {
@@ -68567,6 +68611,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mkt_dath_term"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Medical Pile"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dan_junk"
                     }
                   },
                   {
@@ -68881,6 +68936,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Player Building - Lab"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lab1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Player Building - Medical Center"
                     },
                     "RESREF": {
@@ -68963,6 +69029,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "quest_object"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Research Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "research_term"
                     }
                   },
                   {

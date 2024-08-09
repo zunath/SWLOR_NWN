@@ -48,10 +48,11 @@ namespace SWLOR.Game.Server.Feature
             }
 
             // Fire off the mod_cache event which is used for caching data, before mod_load runs.
-            ExecuteScript("mod_cache", GetModule());
+            ExecuteScript("mod_cache_bef", GetModule());
+            ExecuteScript("mod_cache_aft", GetModule());
         }
 
-        [NWNEventHandler("mod_heartbeat")]
+        [NWNEventHandler("swlor_heartbeat")]
         public static void ExecuteHeartbeatEvent()
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
@@ -142,9 +143,6 @@ namespace SWLOR.Game.Server.Feature
         {
             // Chat Plugin Events start here.
             ChatPlugin.RegisterChatScript("on_nwnx_chat");
-
-            // Damage Plugin Events start here.
-            DamagePlugin.SetDamageEventScript("on_nwnx_dmg", OBJECT_INVALID);
 
             // Events Plugin Events start here.
 
@@ -581,6 +579,12 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("SWLOR_CACHE_SKILLS_LOADED", "swlor_skl_cache");
             EventsPlugin.SubscribeEvent("SWLOR_COMBAT_POINT_DISTRIBUTED", "cp_xp_distribute");
             EventsPlugin.SubscribeEvent("SWLOR_SKILL_LOST_BY_DECAY", "swlor_lose_skill");
+            EventsPlugin.SubscribeEvent("SWLOR_DELETE_PROPERTY", "swlor_del_prop");
+
+            Scheduler.ScheduleRepeating(() =>
+            {
+                ExecuteScript("swlor_heartbeat", GetModule());
+            }, TimeSpan.FromSeconds(6));
         }
 
         /// <summary>

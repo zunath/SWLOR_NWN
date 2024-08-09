@@ -258,7 +258,9 @@
         ShockingShout = 251,
         Rejuvenation = 252,
         FrenziedShout = 253,
-
+        IncubationManagement = 254,
+        IntuitivePiloting = 255,
+        ScientificNetworking = 256,
         FishingRods = 257,
         ShoutRange = 258,
         ShieldResistance = 259,
@@ -277,7 +279,6 @@
         DNAManipulation = 272,
         IncubationProcessing = 273,
         ErraticGenius = 274,
-
         DiseasedTouch = 275,
         Clip = 276,
         SpinningClaw = 277,
@@ -299,5 +300,9 @@
         ForceTouch = 293,
         Innervate = 294,
         ForceLink = 295,
+        // 296 is free
+        Research = 297,
+        AdrenalStim = 298,
+        ResearchProjects = 299,
     }
 }

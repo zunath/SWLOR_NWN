@@ -218,7 +218,17 @@ namespace SWLOR.Game.Server.Service.SpaceService
             return this;
         }
 
+        /// <summary>
+        /// Indicates if the ship module is only equippable by capital ships.
+        /// Capital ships cannot equip non-capital modules. Non-capital ships cannot equip capital modules.
+        /// </summary>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder CapitalClassModule()
+        {
+            _activeShipModule.CapitalClassModule = true;
 
+            return this;
+        }
 
         /// <summary>
         /// Indicates a player must have the perk at a specific level in order to equip and use it.

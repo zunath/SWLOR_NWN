@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache planet climates and other pertinent data.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void LoadData()
         {
             _planetClimates = WeatherPlanetDefinitions.GetPlanetClimates();
@@ -700,7 +700,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        [NWNEventHandler("mod_heartbeat")]
+        [NWNEventHandler("swlor_heartbeat")]
         public static void OnModuleHeartbeat()
         {
             var oMod = GetModule();

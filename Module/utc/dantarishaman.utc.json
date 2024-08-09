@@ -670,7 +670,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_4"
+          "value": "LOOT_TABLE_5"
         },
         "Type": {
           "type": "dword",
@@ -678,7 +678,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "DANTOOINE_DANTARI_SHAMAN_GEAR_RARES_RARES,10,1"
+          "value": "ISOMERASE_TYPE_1,10,1"
         }
       }
     ]

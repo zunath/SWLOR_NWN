@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all relevant droid data into memory.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheData()
         {
             CacheDroidLevels();
@@ -773,6 +773,16 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 SetPortraitId(droid, constructedDroid.PortraitId);
+            }
+
+            if (constructedDroid.SoundSetId == -1)
+            {
+                constructedDroid.SoundSetId = GetSoundset(droid);
+                SaveConstructedDroid(controller, constructedDroid);
+            }
+            else
+            {
+                SetSoundset(droid, constructedDroid.SoundSetId);
             }
 
             // Ensure the spawn script gets called as it normally gets skipped

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, cache all static player market data for quick retrieval.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheData()
         {
             LoadMarketCategories();
@@ -249,6 +250,18 @@ namespace SWLOR.Game.Server.Service
             if (Fishing.IsItemFishingRod(item) || Fishing.IsItemBait(item))
                 return MarketCategoryType.Fishing;
 
+            // Incubation
+            if (BeastMastery.IsIncubationCraftingItem(item))
+                return MarketCategoryType.Incubation;
+
+            // Beast Egg
+            if (BeastMastery.IsBeastEgg(item))
+                return MarketCategoryType.BeastEgg;
+
+            // Blueprint
+            if (Craft.GetBlueprintDetails(item).Recipe != RecipeType.Invalid)
+                return MarketCategoryType.Blueprint;
+            
             return MarketCategoryType.Miscellaneous;
         }
     }

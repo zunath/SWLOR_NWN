@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all status effects.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheStatusEffects()
         {
             // Organize perks to make later reads quicker.
@@ -334,7 +334,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module heartbeat runs, execute and clean up status effects on all creatures.
         /// </summary>
-        [NWNEventHandler("mod_heartbeat")]
+        [NWNEventHandler("swlor_heartbeat")]
         public static void TickStatusEffects()
         {
             var now = DateTime.UtcNow;

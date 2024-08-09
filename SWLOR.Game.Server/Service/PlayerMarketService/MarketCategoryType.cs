@@ -75,6 +75,12 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
         Fishing = 33,
         [MarketCategory("Pet Food", true)]
         PetFood = 34,
+        [MarketCategory("Incubation", true)]
+        Incubation = 35,
+        [MarketCategory("Beast Egg", true)]
+        BeastEgg = 36,
+        [MarketCategory("Blueprint", true)]
+        Blueprint = 37,
 
         [MarketCategory("Miscellaneous", true)]
         Miscellaneous = 99

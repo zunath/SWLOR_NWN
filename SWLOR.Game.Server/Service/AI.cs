@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
         private static readonly Dictionary<AIDefinitionType, IAIDefinition> _aiDefinitions = new();
 
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheAIData()
         {
             _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition();

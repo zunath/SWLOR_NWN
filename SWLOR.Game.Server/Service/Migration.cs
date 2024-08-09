@@ -14,28 +14,75 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Migration
     {
-        private static readonly Dictionary<int, IServerMigration> _serverMigrations = new();
+        private static int _currentMigrationVersion;
+        private static int _newMigrationVersion;
+        private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostDatabase = new();
+        private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostCache = new();
         private static readonly Dictionary<int, IPlayerMigration> _playerMigrations = new();
 
         [NWNEventHandler("db_loaded")]
-        public static void LoadMigrations()
+        public static void AfterDatabaseLoaded()
         {
+            var config = GetServerConfiguration();
+            _currentMigrationVersion = config.MigrationVersion;
+
             LoadServerMigrations();
             LoadPlayerMigrations();
 
-            RunServerMigrations();
+            RunServerMigrationsPostDatabase();
         }
 
-        private static void RunServerMigrations()
+        [NWNEventHandler("mod_cache_aft")]
+        public static void AfterCacheLoaded()
+        {
+            RunServerMigrationsPostCache();
+            UpdateMigrationVersion();
+        }
+
+        private static void UpdateMigrationVersion()
+        {
+            if (_newMigrationVersion > _currentMigrationVersion)
+            {
+                var config = GetServerConfiguration();
+                config.MigrationVersion = _newMigrationVersion;
+                DB.Set(config);
+            }
+        }
+
+        private static ServerConfiguration GetServerConfiguration()
+        {
+            return DB.Get<ServerConfiguration>("SWLOR_CONFIG") ?? new ServerConfiguration();
+        }
+
+        private static IEnumerable<IServerMigration> GetMigrations(MigrationExecutionType executionType)
+        {
+            var serverConfig = GetServerConfiguration();
+            var migrationVersion = serverConfig.MigrationVersion;
+            if (executionType == MigrationExecutionType.PostDatabaseLoad)
+            {
+                var migrations = _serverMigrationsPostDatabase
+                    .Where(x => x.Key > migrationVersion)
+                    .OrderBy(o => o.Key)
+                    .Select(s => s.Value);
+
+                return migrations;
+            }
+            else
+            {
+                var migrations = _serverMigrationsPostCache
+                    .Where(x => x.Key > migrationVersion)
+                    .OrderBy(o => o.Key)
+                    .Select(s => s.Value);
+
+                return migrations;
+            }
+        }
+
+        private static void RunMigrations(MigrationExecutionType executionType)
         {
             var sw = new Stopwatch();
-            var serverConfig = DB.Get<ServerConfiguration>("SWLOR_CONFIG") ?? new ServerConfiguration();
-            var migrationVersion = serverConfig.MigrationVersion;
-            var migrations = _serverMigrations
-                .Where(x => x.Key > migrationVersion)
-                .OrderBy(o => o.Key)
-                .Select(s => s.Value);
-            var newVersion = serverConfig.MigrationVersion;
+            var migrations = GetMigrations(executionType);
+            var newVersion = 0;
 
             foreach (var migration in migrations)
             {
@@ -46,21 +93,29 @@ namespace SWLOR.Game.Server.Service
                     migration.Migrate();
                     newVersion = migration.Version;
                     sw.Stop();
-                    Log.Write(LogGroup.Migration, $"Server migration #{migration.Version} completed successfully. (Took {sw.ElapsedMilliseconds}ms)", true);
+                    Log.Write(LogGroup.Migration, $"Server migration ({executionType}) #{migration.Version} completed successfully. (Took {sw.ElapsedMilliseconds}ms)", true);
                 }
                 catch (Exception ex)
                 {
                     // It's dangerous to proceed without a successful migration. Shut down the server in this situation.
-                    Log.Write(LogGroup.Error, $"Server migration #{migration.Version} failed to apply. Exception: {ex.ToMessageAndCompleteStacktrace()}", true);
+                    Log.Write(LogGroup.Error, $"Server migration ({executionType}) #{migration.Version} failed to apply. Exception: {ex.ToMessageAndCompleteStacktrace()}. Shutting down server.", true);
                     AdministrationPlugin.ShutdownServer();
                     break;
                 }
             }
-            
-            // Migrations can edit the server configuration entity. Refresh it before updating the version.
-            serverConfig = DB.Get<ServerConfiguration>("SWLOR_CONFIG") ?? new ServerConfiguration();
-            serverConfig.MigrationVersion = newVersion;
-            DB.Set(serverConfig);
+
+            if (_newMigrationVersion < newVersion)
+                _newMigrationVersion = newVersion;
+        }
+
+        private static void RunServerMigrationsPostDatabase()
+        {
+            RunMigrations(MigrationExecutionType.PostDatabaseLoad);
+        }
+
+        public static void RunServerMigrationsPostCache()
+        {
+            RunMigrations(MigrationExecutionType.PostCacheLoad);
         }
 
         /// <summary>
@@ -117,7 +172,10 @@ namespace SWLOR.Game.Server.Service
             {
                 var instance = (IServerMigration)Activator.CreateInstance(type);
 
-                _serverMigrations.Add(instance.Version, instance);
+                if(instance.ExecutionType == MigrationExecutionType.PostDatabaseLoad)
+                    _serverMigrationsPostDatabase.Add(instance.Version, instance);
+                else 
+                    _serverMigrationsPostCache.Add(instance.Version, instance);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
@@ -20,7 +21,8 @@ namespace SWLOR.Game.Server.Service
         private static Dictionary<int, int> PortraitInternalIdsByPortraitId { get; } = new();
         private static Dictionary<int, string> PortraitResrefByInternalId { get; } = new();
         private static Dictionary<string, int> PortraitInternalIdsByPortraitResref { get; } = new();
-
+        private static Dictionary<int, string> SoundSets { get; set; } = new();
+        
         [NWNEventHandler("mod_content_chg")]
         public static void CacheItemNamesByResref()
         {
@@ -42,14 +44,16 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles caching data into server memory for quicker lookup later.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheData()
         {
             LoadItemCache();
             CachePortraitsById();
+            CacheSoundSets();
 
             Console.WriteLine($"Loaded {ItemNamesByResref.Count} item names by resref.");
             Console.WriteLine($"Loaded {PortraitIdsByInternalId.Count} portraits by Id.");
+            Console.WriteLine($"Loaded {SoundSets.Count} soundsets.");
         }
 
         private static void LoadItemCache()
@@ -118,6 +122,25 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        private static void CacheSoundSets()
+        {
+            const string SoundSets2DA = "soundset";
+            var soundSetCount = Get2DARowCount(SoundSets2DA);
+            for (var row = 0; row < soundSetCount; row++)
+            {
+                var strRef = Get2DAString(SoundSets2DA, "STRREF", row);
+                var resref = Get2DAString(SoundSets2DA, "RESREF", row);
+
+                if (!string.IsNullOrWhiteSpace(strRef) &&
+                    !string.IsNullOrWhiteSpace(resref))
+                {
+                    SoundSets.Add(row, GetStringByStrRef(Convert.ToInt32(strRef)));
+                }
+            }
+
+            SoundSets = SoundSets.OrderBy(o => o.Value).ToDictionary(x => x.Key, y => y.Value);
+        }
+        
         /// <summary>
         /// Retrieves the portrait 2DA Id from the internal Id of the portrait.
         /// The value returned by this method can be used with NWScript.SetPortrait
@@ -156,6 +179,11 @@ namespace SWLOR.Game.Server.Service
                 return -1;
 
             return PortraitInternalIdsByPortraitResref[resref];
+        }
+
+        public static Dictionary<int, string> GetSoundSets()
+        {
+            return SoundSets.ToDictionary(x => x.Key, y => y.Value);
         }
     }
 }

@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new();
         private static readonly Dictionary<uint, List<ActiveSpawn>> _activeSpawnsByArea = new();
 
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheData()
         {
             LoadSpawnTables();
@@ -380,7 +380,7 @@ namespace SWLOR.Game.Server.Service
         /// On each module heartbeat, process queued spawns and
         /// process dequeue area event requests.
         /// </summary>
-        [NWNEventHandler("mod_heartbeat")]
+        [NWNEventHandler("swlor_heartbeat")]
         public static void ProcessSpawnSystem()
         {
             ProcessQueuedSpawns();

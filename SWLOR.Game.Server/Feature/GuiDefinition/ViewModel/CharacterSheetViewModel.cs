@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -280,8 +281,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickChangePortrait() => () =>
         {
-            var payload = new ChangePortraitPayload(_target);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.ChangePortrait, payload);
+            var payload = new CustomizeCharacterPayload(_target);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.CustomizeCharacter, payload);
         };
 
         public Action OnClickQuests() => () =>
@@ -291,7 +292,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickRecipes() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Recipes);
+            var payload = new RecipesPayload(RecipesUIMode.Recipes, SkillType.Invalid);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Recipes, payload);
         };
 
         public Action OnClickHoloCom() => () =>
@@ -646,7 +648,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
                 APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
-                APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level)}";
+                APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
             }
         }
 
@@ -716,7 +718,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
             APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
-            APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level)}";
+            APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
         }
 
         public void Refresh(EquipItemRefreshEvent payload)

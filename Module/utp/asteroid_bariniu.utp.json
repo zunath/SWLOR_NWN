@@ -219,7 +219,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ID"
+          "value": "ASTEROID_LOOT_TABLE_ID"
         },
         "Type": {
           "type": "dword",
@@ -243,6 +243,36 @@
         "Value": {
           "type": "int",
           "value": 4
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "LYASE_TYPE_1,9,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "STRIPMINE_LOOT_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "ASTEROID_BARINIUM_STRIP"
         }
       }
     ]

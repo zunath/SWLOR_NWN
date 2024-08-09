@@ -74,9 +74,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                         if(creature != activator) 
                         {
                             ApplyEffect(activator, creature, 3, 12f);
-                        }
-                        count++;
 
+                            count++;
+                        }
                         creature = GetNextObjectInShape(Shape.SpellCone, RadiusSize.Colossal, GetLocation(target), true);
                     }
                     break;

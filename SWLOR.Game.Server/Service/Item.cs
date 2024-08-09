@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheData()
         {
             Load2DACache();
@@ -880,6 +880,25 @@ namespace SWLOR.Game.Server.Service
             var list = new GuiBindingList<string>();
             var sb = new StringBuilder();
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                BuildSingleItemPropertyString(sb, ip);
+                list.Add(sb.ToString());
+                sb.Clear();
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// Builds a list of strings containing all of the item properties on an i tem.
+        /// </summary>
+        /// <param name="itemProperties">The list of item properties to use.</param>
+        /// <returns>A list containing all of the item properties.</returns>
+        public static GuiBindingList<string> BuildItemPropertyList(List<ItemProperty> itemProperties)
+        {
+            var list = new GuiBindingList<string>();
+            var sb = new StringBuilder();
+            foreach (var ip in itemProperties)
             {
                 BuildSingleItemPropertyString(sb, ip);
                 list.Add(sb.ToString());

@@ -699,7 +699,7 @@
         DNAExtractor3 = 1253,
         DNAExtractor4 = 1254,
         DNAExtractor5 = 1255,
-        Campfire = 1256,
+        ResearchTerminal = 1256,
         TableDarkwood = 1257,
         TableCoffeeShelf = 1258,
         UmbrellaBlue = 1259,
@@ -776,6 +776,7 @@
         SwoopBikeGrey = 1330,
         SwoopBikeRed = 1331,
         SwoopBikeYellow = 1332,
+        Campfire = 1333,
 
         ReinforcedConstructionParts = 1496,
         ReinforcedPowerSupplyUnit = 1497,

@@ -102,11 +102,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "structure_0272"
+    "value": "structure_0330"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "structure_0272"
+    "value": "structure_0330"
   },
   "xModelPart1": {
     "type": "word",

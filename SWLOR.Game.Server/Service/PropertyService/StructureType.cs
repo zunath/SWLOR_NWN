@@ -1625,12 +1625,17 @@ namespace SWLOR.Game.Server.Service.PropertyService
             StructureCategoryType.ResearchDevice)]
         Incubator = 271,
 
-        [Structure("Speaker, Standing",
-            "swlor_0011",
+        [Structure("Research Terminal",
+            "research_term",
             "",
             true,
-            1)]
-        SpeakerStanding = 272,
+            0,
+            PropertyType.Lab,
+            PropertyLayoutType.Invalid,
+            true,
+            StructureCategoryType.ResearchDevice)]
+        ResearchTerminal = 272,
+
         [Structure("Locker, Open Shelves",
             "_mdrn_pl_lockerm",
             "",
@@ -1973,6 +1978,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         SwoopBikeYellow = 329,
+        [Structure("Speaker, Standing",
+            "swlor_0011",
+            "",
+            true,
+            1)]
+        SpeakerStanding = 330,
 
         // Buildings start here (5000+)
         [Structure("City Hall - Style 1",

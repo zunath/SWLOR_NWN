@@ -1590,7 +1590,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "dantlibjedi"
         },
         "CRAdjust": {
           "type": "int",

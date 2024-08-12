@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .RemoveAction((target, data) =>
                 {
                     RemoveEffectByTag(target, EffectTag);
+                    DelayCommand(0.5f,() => Stat.ApplyPlayerMovementRate(target));
                 });
         }
 

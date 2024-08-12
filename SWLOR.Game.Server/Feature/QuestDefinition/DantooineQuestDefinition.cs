@@ -118,8 +118,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                .AddState()
                .SetStateJournalText("The Jedi librarian needs Yot Beans and Dantooine Starworts for his research. Collect these items and bring them back.")
-               .AddCollectItemObjective("yotbeans", 10)
-               .AddCollectItemObjective("dant_starworts", 15)
+               .AddCollectItemObjective("yotbean", 10)
+               .AddCollectItemObjective("dant_starwort", 15)
 
                .AddState()
                .SetStateJournalText("Return to the Jedi librarian with the collected herbs.")

@@ -914,8 +914,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The number of seconds to wait before the blueprint is researched to the next level.</returns>
         public static int CalculateBlueprintResearchSeconds(RecipeType recipe, int blueprintLevel, int reductionBonus)
         {
-            // todo: change base constant back to 200 after testing.
-            return CalculateResearchCost(recipe, blueprintLevel, 1, reductionBonus * 0.01f);
+            return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);
         }
 
         /// <summary>

@@ -29,11 +29,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's evasion by {evasionBoostAmount}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.Evasion += evasionBoostAmount + moduleBonus;
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.Evasion -= evasionBoostAmount + moduleBonus;
                 });

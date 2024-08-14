@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
     public class _8_EnableServerResetReminders: ServerMigrationBase, IServerMigration
     {
         public int Version => 8;
+        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
         public void Migrate()
         {
             var query = new DBQuery<Player>();

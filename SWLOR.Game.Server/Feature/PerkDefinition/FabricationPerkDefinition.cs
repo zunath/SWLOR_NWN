@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             FurnitureBlueprints();
             StructureBlueprints();
             FabricationEquipment();
+            Research();
+            ScientificNetworking();
+            ResearchProjects();
 
             return _builder.Build();
         }
@@ -198,6 +201,69 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Fabrication, 45)
                 .GrantsFeat(FeatType.FabricationEquipment5);
+        }
+
+        private void Research()
+        {
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.Research)
+                .Name("Research")
+
+                .AddPerkLevel()
+                .Description("Grants ability to research tier 1 blueprints.")
+                .Price(2)
+                .RequirementSkill(SkillType.Fabrication, 10)
+
+                .AddPerkLevel()
+                .Description("Grants ability to research tier 2 blueprints.")
+                .Price(2)
+                .RequirementSkill(SkillType.Fabrication, 20)
+
+                .AddPerkLevel()
+                .Description("Grants ability to research tier 3 blueprints.")
+                .Price(3)
+                .RequirementSkill(SkillType.Fabrication, 30)
+
+                .AddPerkLevel()
+                .Description("Grants ability to research tier 4 blueprints.")
+                .Price(3)
+                .RequirementSkill(SkillType.Fabrication, 40)
+
+                .AddPerkLevel()
+                .Description("Grants ability to research tier 5 blueprints.")
+                .Price(3)
+                .RequirementSkill(SkillType.Fabrication, 50);
+        }
+
+        private void ScientificNetworking()
+        {
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.ScientificNetworking)
+                .Name("Scientific Networking")
+
+                .AddPerkLevel()
+                .Description("Blueprints are created with an additional licensed run.")
+                .Price(3)
+                .RequirementSkill(SkillType.Fabrication, 25)
+
+                .AddPerkLevel()
+                .Description("Blueprints are created with an additional licensed run.")
+                .Price(3)
+                .RequirementSkill(SkillType.Fabrication, 50);
+        }
+
+        private void ResearchProjects()
+        {
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.ResearchProjects)
+                .Name("Research Projects")
+
+                .AddPerkLevel()
+                .Description("Increases the maximum number of concurrent research jobs by 1, for a total of 2.")
+                .Price(2)
+                .RequirementSkill(SkillType.Fabrication, 25)
+
+                .AddPerkLevel()
+                .Description("Increases the maximum number of concurrent research jobs by 1, for a total of 3.")
+                .Price(3)
+                .RequirementSkill(SkillType.Fabrication, 50);
         }
     }
 }

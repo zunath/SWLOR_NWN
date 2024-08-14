@@ -5,9 +5,10 @@ using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
-    public class _4_ResaveNotes : ServerMigrationBase
+    public class _4_ResaveNotes : ServerMigrationBase, IServerMigration
     {
         public int Version => 4;
+        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
         public void Migrate()
         {
             var query = new DBQuery<PlayerNote>();

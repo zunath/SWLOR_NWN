@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all perk and character type information.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheData()
         {
             CachePerks();

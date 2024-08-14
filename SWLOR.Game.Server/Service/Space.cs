@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all space data into memory.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void LoadSpaceSystem()
         {
             LoadShips();
@@ -1156,7 +1156,7 @@ namespace SWLOR.Game.Server.Service
                 dbShip.Status = activatorShipStatus;
                 
                 DB.Set(dbShip);
-                ExecuteScript("pc_cap_adjusted", activator);
+                ExecuteScript("pc_target_upd", activator);
             }
 
             if (GetIsPC(target))
@@ -1167,6 +1167,7 @@ namespace SWLOR.Game.Server.Service
                 dbShip.Status = targetShipStatus;
 
                 DB.Set(dbShip);
+                ExecuteScript("pc_target_upd", target);
             }
         }
 
@@ -1323,7 +1324,7 @@ namespace SWLOR.Game.Server.Service
                     shipStatus.ActiveModules.Add(slot);
                 }
 
-                shipModule.ModuleEquippedAction?.Invoke(creature, shipStatus, 0);
+                shipModule.ModuleEquippedAction?.Invoke(shipStatus, 0);
 
                 featCount++;
             }
@@ -1343,7 +1344,7 @@ namespace SWLOR.Game.Server.Service
                     shipStatus.ActiveModules.Add(slot);
                 }
 
-                shipModule.ModuleEquippedAction?.Invoke(creature, shipStatus, 0);
+                shipModule.ModuleEquippedAction?.Invoke(shipStatus, 0);
 
                 featCount++;
             }
@@ -1617,7 +1618,7 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     var moduleDetails = GetShipModuleDetailByItemTag(shipModule.ItemTag);
-                    moduleDetails.ModuleUnequippedAction?.Invoke(creature, dbPlayerShip.Status, shipModule.ModuleBonus);
+                    moduleDetails.ModuleUnequippedAction?.Invoke(dbPlayerShip.Status, shipModule.ModuleBonus);
 
                 }
 
@@ -1631,7 +1632,7 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     var moduleDetails = GetShipModuleDetailByItemTag(shipModule.ItemTag);
-                    moduleDetails.ModuleUnequippedAction?.Invoke(creature, dbPlayerShip.Status, shipModule.ModuleBonus);
+                    moduleDetails.ModuleUnequippedAction?.Invoke(dbPlayerShip.Status, shipModule.ModuleBonus);
                 }
 
                 // Player always loses all modules regardless if they actually dropped.

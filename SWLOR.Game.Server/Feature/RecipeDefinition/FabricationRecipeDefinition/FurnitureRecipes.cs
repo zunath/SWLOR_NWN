@@ -3730,7 +3730,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("ref_arkoxit", 20)
                 .Component("emerald", 10)
                 .Component("zinsiam", 5);
-
+                
         }
     }
 }

@@ -40,7 +40,8 @@ namespace SWLOR.Game.Server.Service
                 { SkillType.MonCalamarian, new TranslatorMonCalamarian() },
                 { SkillType.Ugnaught, new TranslatorUgnaught() },
                 { SkillType.KelDor, new TranslatorKelDor() },
-                { SkillType.Nautila, new TranslatorNautila() }
+                { SkillType.Nautila, new TranslatorNautila() },
+                { SkillType.Ewokese, new TranslatorEwokese() },
             };
         }
 
@@ -54,8 +55,8 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(speaker);
                 var dbSpeaker = DB.Get<Player>(playerId);
                 // Get the rank and max rank for the speaker, and garble their English text based on it.
-                var speakerSkillRank = dbSpeaker == null ? 
-                    languageSkill.MaxRank : 
+                var speakerSkillRank = dbSpeaker == null ?
+                    languageSkill.MaxRank :
                     dbSpeaker.Skills[language].Rank;
 
                 if (speakerSkillRank != languageSkill.MaxRank)
@@ -84,8 +85,8 @@ namespace SWLOR.Game.Server.Service
             // Let's grab the max rank for the listener skill, and then we roll for a successful translate based on that.
             var listenerId = GetObjectUUID(listener);
             var dbListener = DB.Get<Player>(listenerId);
-            var rank = dbListener == null ? 
-                languageSkill.MaxRank : 
+            var rank = dbListener == null ?
+                languageSkill.MaxRank :
                 dbListener.Skills[language].Rank;
             var maxRank = languageSkill.MaxRank;
 
@@ -204,6 +205,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.MonCalamarian: r = 128; g = 128; b = 192; break;
                 case SkillType.Ugnaught: r = 255; g = 193; b = 233; break;
                 case SkillType.Nautila: r = 76; g = 230; b = 104; break;
+                case SkillType.Ewokese: r = 112; g = 28; b = 28; break;
             }
 
             return (r, g, b);
@@ -230,6 +232,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.MonCalamarian: return "Mon Calamarian";
                 case SkillType.Ugnaught: return "Ugnaught";
                 case SkillType.Nautila: return "Nautila";
+                case SkillType.Ewokese: return "Ewokese";
             }
 
             return "Basic";
@@ -287,6 +290,7 @@ namespace SWLOR.Game.Server.Service
                         new LanguageCommand("Twi'leki", SkillType.Twileki, new []{"twileki", "ryl"}),
                         new LanguageCommand("Ugnaught", SkillType.Ugnaught, new []{"ugnaught"}),
                         new LanguageCommand("Zabraki", SkillType.Zabraki, new []{"zabraki", "zabrak"}),
+                        new LanguageCommand("Ewokese", SkillType.Ewokese, new []{"ewokese", "yubnub"}),
                     };
 
                     _languages = languages;

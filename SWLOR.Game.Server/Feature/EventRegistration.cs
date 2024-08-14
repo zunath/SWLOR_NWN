@@ -48,7 +48,8 @@ namespace SWLOR.Game.Server.Feature
             }
 
             // Fire off the mod_cache event which is used for caching data, before mod_load runs.
-            ExecuteScript("mod_cache", GetModule());
+            ExecuteScript("mod_cache_bef", GetModule());
+            ExecuteScript("mod_cache_aft", GetModule());
         }
 
         [NWNEventHandler("swlor_heartbeat")]

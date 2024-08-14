@@ -28,13 +28,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's maximum hull by {hullBoostAmount}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
-                    shipStatus.MaxHull += hullBoostAmount + moduleBonus * 2;
+                    shipStatus.MaxHull += hullBoostAmount + moduleBonus * 5;
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
-                    shipStatus.MaxHull -= hullBoostAmount + moduleBonus * 2;
+                    shipStatus.MaxHull -= hullBoostAmount + moduleBonus * 5;
 
                     if (shipStatus.Hull > shipStatus.MaxHull)
                         shipStatus.Hull = shipStatus.MaxHull;

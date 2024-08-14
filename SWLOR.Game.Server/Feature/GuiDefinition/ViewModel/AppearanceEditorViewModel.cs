@@ -122,7 +122,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _racialAppearances[AppearanceType.MonCalamari] = new MonCalamariRacialAppearanceDefinition();
             _racialAppearances[AppearanceType.Ugnaught] = new UgnaughtRacialAppearanceDefinition();
             _racialAppearances[AppearanceType.Droid] = new DroidRacialAppearanceDefinition();
-            _racialAppearances[AppearanceType.Nautolan] = new NautolanRacialAppearanceDefinition();
+            _racialAppearances[AppearanceType.Nautolan] = new NautolanRacialAppearanceDefinition(); 
+            _racialAppearances[AppearanceType.Ewok] = new EwokRacialAppearanceDefinition();
+            
         }
 
         private static void LoadArmorAppearances()
@@ -145,6 +147,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _armorAppearances[AppearanceType.Ugnaught] = new GeneralArmorAppearanceDefinition();
             _armorAppearances[AppearanceType.Droid] = new DroidArmorAppearanceDefinition();
             _armorAppearances[AppearanceType.Nautolan] = new GeneralArmorAppearanceDefinition();
+            _armorAppearances[AppearanceType.Ewok] = new GeneralArmorAppearanceDefinition();
         }
 
         private static void LoadWeaponAppearances()

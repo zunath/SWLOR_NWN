@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles caching data into server memory for quicker lookup later.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheData()
         {
             LoadItemCache();

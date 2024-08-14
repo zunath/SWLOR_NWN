@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
     public class _13_StinkyWompratsQuestFix: ServerMigrationBase, IServerMigration
     {
         public int Version => 13;
+        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
         public void Migrate()
         {
             var query = new DBQuery<Player>();

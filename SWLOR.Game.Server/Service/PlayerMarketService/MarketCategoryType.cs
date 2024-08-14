@@ -79,6 +79,8 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
         Incubation = 35,
         [MarketCategory("Beast Egg", true)]
         BeastEgg = 36,
+        [MarketCategory("Blueprint", true)]
+        Blueprint = 37,
 
         [MarketCategory("Miscellaneous", true)]
         Miscellaneous = 99

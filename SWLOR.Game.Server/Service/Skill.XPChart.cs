@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all XP chart data used for quick access.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheXPChartData()
         {
             CalculateTotalXP();

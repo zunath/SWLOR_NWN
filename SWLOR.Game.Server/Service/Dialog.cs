@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module is loaded, the assembly will be searched for conversations.
         /// These will be added to the cache for use at a later time.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void RegisterConversations()
         {
             // Use reflection to get all of the conversation implementations.

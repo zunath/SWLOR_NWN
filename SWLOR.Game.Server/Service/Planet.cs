@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache relevant data needed by the Planet service.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheData()
         {
             CachePlanets();

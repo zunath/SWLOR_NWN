@@ -1485,6 +1485,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return false;
             }
 
+            var capShip = dbShip.Status.CapitalShip;
+            var capMod = moduleDetails.CapitalClassModule;
+
+            if (!capShip && capMod)
+            {
+                SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
+                return false;
+            }
+
+            if (capShip && !capMod)
+            {
+                SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
+                return false;
+            }
+
             return true;
         }
 
@@ -1521,21 +1536,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    var capShip = dbShip.Status.CapitalShip;
-                    var capMod = moduleDetails.CapitalClassModule;
-
-                    if (!capShip && capMod)
-                    {
-                        SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
-                        return;
-                    }
-
-                    if (capShip && !capMod)
-                    {
-                        SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
-                        return;
-                    }
-
                     var moduleBonus = Space.GetModuleBonus(item);
                     dbShip.Status.HighPowerModules[slot] = new ShipStatus.ShipStatusModule
                     {
@@ -1546,7 +1546,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         ModuleBonus = moduleBonus
                     };
 
-                    moduleDetails.ModuleEquippedAction?.Invoke(Player, dbShip.Status, moduleBonus);
+                    moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
 
                     DB.Set(dbShip);
 
@@ -1564,7 +1564,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     ObjectPlugin.AcquireItem(Player, item);
 
                     var moduleBonus = Space.GetModuleBonus(item);
-                    moduleDetail.ModuleUnequippedAction?.Invoke(Player, dbShip.Status, moduleBonus);
+                    moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
                     dbShip.Status.HighPowerModules.Remove(slot);
                     DB.Set(dbShip);
                     LoadShip();
@@ -1606,20 +1606,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    var capShip = dbShip.Status.CapitalShip;
-                    var capMod = moduleDetails.CapitalClassModule;
-
-                    if (capShip != true && capMod == true)
-                    {
-                        SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
-                        return;
-                    }
-
-                    if (capShip == true && capMod != true)
-                    {
-                        SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
-                        return;
-                    }
 
                     dbShip.Status.LowPowerModules[slot] = new ShipStatus.ShipStatusModule
                     {
@@ -1630,7 +1616,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         ModuleBonus = moduleBonus
                     };
 
-                    moduleDetails.ModuleEquippedAction?.Invoke(Player, dbShip.Status, moduleBonus);
+                    moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
 
                     DB.Set(dbShip);
 
@@ -1648,7 +1634,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var moduleBonus = Space.GetModuleBonus(item);
                     ObjectPlugin.AcquireItem(Player, item);
 
-                    moduleDetail.ModuleUnequippedAction?.Invoke(Player, dbShip.Status, moduleBonus);
+                    moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
                     dbShip.Status.LowPowerModules.Remove(slot);
                     DB.Set(dbShip);
                     LoadShip();
@@ -1690,21 +1676,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             return;
                         }
 
-                        var capShip = dbShip.Status.CapitalShip;
-                        var capMod = moduleDetails.CapitalClassModule;
-
-                        if (!capShip && capMod)
-                        {
-                            SendMessageToPC(Player, "Capital class modules may only be installed to capital ships.");
-                            return;
-                        }
-
-                        if (capShip && !capMod)
-                        {
-                            SendMessageToPC(Player, "Capital ships can only equip capital class modules.");
-                            return;
-                        }
-
                         dbShip.Status.ConfigurationModules[slot] = new ShipStatus.ShipStatusModule
                         {
                             ItemInstanceId = GetObjectUUID(item),
@@ -1714,7 +1685,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             ModuleBonus = moduleBonus
                         };
 
-                        moduleDetails.ModuleEquippedAction?.Invoke(Player, dbShip.Status, moduleBonus);
+                        moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
 
                         DB.Set(dbShip);
 
@@ -1732,7 +1703,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var moduleBonus = Space.GetModuleBonus(item);
                     ObjectPlugin.AcquireItem(Player, item);
 
-                    moduleDetail.ModuleUnequippedAction?.Invoke(Player, dbShip.Status, moduleBonus);
+                    moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
                     dbShip.Status.ConfigurationModules.Remove(slot);
                     DB.Set(dbShip);
                     LoadShip();

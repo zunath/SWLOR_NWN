@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
 
@@ -16,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             HarvestingHerbs();
             FetchPetTreat();
             CollectHerbsForLibrarian();
+            HiddenCave();
             return _builder.Build();
         }
 
@@ -118,8 +121,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                .AddState()
                .SetStateJournalText("The Jedi librarian needs Yot Beans and Dantooine Starworts for his research. Collect these items and bring them back.")
-               .AddCollectItemObjective("yotbeans", 10)
-               .AddCollectItemObjective("dant_starworts", 15)
+               .AddCollectItemObjective("yotbean", 10)
+               .AddCollectItemObjective("dant_starwort", 15)
 
                .AddState()
                .SetStateJournalText("Return to the Jedi librarian with the collected herbs.")
@@ -127,6 +130,26 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                .AddItemReward("emerald", 2)
                .AddXPReward(5000)
                .AddGoldReward(3000);
+        }
+        private void HiddenCave()
+        {
+            _builder.Create("hidden_cave", "Find the hidden cave")
+
+                .AddState()
+                .AddKillObjective(NPCGroupType.Dantooine_KinrathQueen, 1)
+                .SetStateJournalText("Head to the kinrath cave and defeat the Kinrath queen. Return to Joran when the work is done.")
+
+                .AddState()
+                .SetStateJournalText("You defeated the Kinrath Queen. Return to Joran for that shovel.")
+
+                .AddGoldReward(7500)
+                .AddXPReward(12000)
+
+                .OnCompleteAction((player, sourceObject) =>
+                {
+                    KeyItem.GiveKeyItem(player, KeyItemType.DantooineShovel);
+                }); 
+
         }
     }
 }

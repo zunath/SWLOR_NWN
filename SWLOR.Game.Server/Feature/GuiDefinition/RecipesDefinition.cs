@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 545f, 600f)
-                .SetTitle("Recipes")
+                .BindTitle(model => model.Title)
 
                 .AddColumn(col =>
                 {
@@ -48,7 +48,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindSelectedIndex(model => model.SelectedCategoryId)
                             .BindOptions(model => model.Categories)
                             .BindIsEnabled(model => model.IsSkillSelected)
-                            .SetWidth(200f);
+                        .SetWidth(200f);
+                        
+                        row.AddButton()
+                            .SetText("Select Blueprint")
+                            .BindIsVisible(model => model.ShowSelectBlueprint)
+                            .SetHeight(35f)
+                            .BindOnClicked(model => model.OnClickSelectBlueprint());
 
                         row.AddSpacer();
                     });
@@ -152,11 +158,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row2.AddSpacer();
                                 row2.AddButton()
-                                    .SetText("Craft Item")
-                                    .BindIsVisible(model => model.IsInCraftingMode)
-                                    .BindIsEnabled(model => model.CanCraftRecipe)
+                                    .BindText(model => model.ActionButtonText)
+                                    .BindIsVisible(model => model.IsCraftOrResearchVisible)
+                                    .BindIsEnabled(model => model.CanCraftOrResearchRecipe)
                                     .SetHeight(35f)
-                                    .BindOnClicked(model => model.OnClickCraftItem());
+                                    .BindOnClicked(model => model.OnClickCraftOrResearch());
                                 row2.AddSpacer();
                             });
                         });

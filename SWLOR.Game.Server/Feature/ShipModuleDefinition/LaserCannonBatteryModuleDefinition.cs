@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            LaserCannonBattery("lasbattery1", "Laser Cannon Battery I", "Las Cann Bat 1", "Fires at 75% of nearby targets for 20 DMG. Fires once every 2 seconds for 18 seconds.", 30);
+            LaserCannonBattery("lasbattery1", "Laser Cannon Battery I", "Las Cann Bat 1", "Fires at 75% of nearby targets for 30 DMG. Fires once every 2 seconds for 18 seconds.", 30);
 
             LaserCannonBattery("npcautolas1", "NPC Laser Cannon Battery 1", "npcautolas1", "Fires at 75% of nearby targets. Fires once every 2 seconds for 18 seconds.", 10);
             LaserCannonBattery("npcautolas2", "NPC Laser Cannon Battery 2", "npcautolas2", "Fires at 75% of nearby targets. Fires once every 2 seconds for 18 seconds.", 15);

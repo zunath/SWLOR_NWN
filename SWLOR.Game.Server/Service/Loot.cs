@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Service
         public const string CorpseBodyVariable = "CORPSE_BODY";
         private const string CorpseCopyItemVariable = "CORPSE_ITEM_COPY";
 
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void RegisterLootTables()
         {
             // Get all implementations of spawn table definitions.

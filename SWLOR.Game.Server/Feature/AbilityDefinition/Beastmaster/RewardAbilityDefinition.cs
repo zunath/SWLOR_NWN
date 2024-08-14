@@ -77,9 +77,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         private void Impact(uint activator, int baseHealingAmount)
         {
             var willBonus = GetAbilityModifier(AbilityType.Social, activator);
-            var amount = baseHealingAmount + willBonus * 8 + Random.D10(1);
-
             var beast = GetAssociate(AssociateType.Henchman, activator);
+            var maxHP = GetMaxHitPoints(beast);
+            var amount = baseHealingAmount + willBonus * 10 + (maxHP / 5) + Random.D10(1);
+
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), beast);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), beast);
 

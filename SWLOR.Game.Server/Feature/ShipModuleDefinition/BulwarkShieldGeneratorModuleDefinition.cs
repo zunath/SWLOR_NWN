@@ -37,33 +37,53 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Recast(12f)
                 .CapitalClassModule()
                 .CanTargetSelf()
-                .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
+                .ActivatedAction((activator, activatorShipStatus, _, _, moduleBonus) =>
                 {
                     repairAmount += (activatorShipStatus.Industrial + moduleBonus) / 2;
 
-                    for (var i = 0; i < 6; i++)
+                    ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, 2.0f);
+
+                    const float Distance = 8f;
+                    var nearby = GetFirstObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
+                    var count = 1;
+
+                    while (GetIsObjectValid(nearby) && count <= 6)
                     {
-                        var delay = i * 2f;
-                        DelayCommand(delay, () =>
+                        if (!GetIsEnemy(nearby, activator) && 
+                            !GetIsDead(activator) && 
+                            Space.GetShipStatus(nearby) != null &&
+                            nearby != activator)
                         {
-                            target = GetFirstObjectInShape(Shape.Sphere, 8.0f, GetLocation(activator), true, ObjectType.Creature);
-                            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, 2.0f);
-                            if (!GetIsEnemy(target, activator) && !GetIsDead(activator) && Space.GetShipStatus(target) != null)
+                            var nearbyStatus = Space.GetShipStatus(nearby);
+                            
+                            ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), nearby, 2.0f);
+                            ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), nearby, 2.0f);
+                            ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4), nearby, 2.0f);
+                        
+                            Space.RestoreShield(nearby, nearbyStatus, repairAmount);
+
+                            if (GetIsPC(nearby) && !GetIsDM(nearby) && !GetIsDMPossessed(nearby))
                             {
-                                targetShipStatus = Space.GetShipStatus(target);
-                                if (target != activator)
+                                var playerId = GetObjectUUID(nearby);
+                                var dbPlayer = DB.Get<Player>(playerId);
+                                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+
+                                if (dbShip != null)
                                 {
-                                    ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), target, 2.0f);
-                                    ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), target, 2.0f);
-                                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4), target, 2.0f);
+                                    dbShip.Status = nearbyStatus;
+                                    DB.Set(dbShip);
+
+                                    ExecuteScript("pc_target_upd", nearby);
                                 }
-                                Space.RestoreShield(target, targetShipStatus, repairAmount);
                             }
-                        });
+                        }
+
+                        nearby = GetNextObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
+                        count++;
                     }
 
-                    Enmity.ModifyEnmityOnAll(activator, 250 + (repairAmount * 6));
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {repairAmount * 6} shield HP to nearby ships, and reinforces their shield integrity.");
+                    Enmity.ModifyEnmityOnAll(activator, 250 + (repairAmount * count));
+                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {repairAmount * count} shield HP to nearby ships, and reinforces their shield integrity.");
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }

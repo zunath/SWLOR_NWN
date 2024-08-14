@@ -32,6 +32,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private RecipeType _recipe;
         
+        private uint _blueprintItem;
+        private BlueprintDetail _activeBlueprint;
+        private bool _hasBlueprint;
+        private static readonly BlueprintBonuses _blueprintBonuses = new();
+
         private PerkType _rapidSynthesisPerk;
         private PerkType _carefulSynthesisPerk;
         
@@ -70,6 +75,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string CraftText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+        
         public GuiBindingList<string> RecipeDescription
         {
             get => Get<GuiBindingList<string>>();
@@ -374,26 +385,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _components.Clear();
 
             _recipe = initialPayload.Recipe;
-            var detail = Craft.GetRecipe(_recipe);
-            var itemName = Cache.GetItemNameByResref(detail.Resref);
+            _blueprintItem = initialPayload.BlueprintItem;
+            var recipe = Craft.GetRecipe(_recipe);
+            var blueprint = Craft.GetBlueprintDetails(_blueprintItem);
+            _hasBlueprint = blueprint.Recipe != RecipeType.Invalid;
+            
+            var itemName = Cache.GetItemNameByResref(recipe.Resref);
             
             SwitchToSetUpMode();
             StatusColor = GuiColor.Green;
             StatusText = string.Empty;
 
-            IsEnhancement1Visible = detail.EnhancementSlots >= 1;
-            IsEnhancement2Visible = detail.EnhancementSlots >= 2;
-            IsEnhancement3Visible = detail.EnhancementSlots >= 3;
-            IsEnhancement4Visible = detail.EnhancementSlots >= 4;
-            IsEnhancement5Visible = detail.EnhancementSlots >= 5;
-            IsEnhancement6Visible = detail.EnhancementSlots >= 6;
-            IsEnhancement7Visible = detail.EnhancementSlots >= 7;
-            IsEnhancement8Visible = detail.EnhancementSlots >= 8;
-
-            RecipeName = $"Recipe: {detail.Quantity}x {itemName}";
-            RecipeLevel = $"Level: {detail.Level}";
+            var enhancementSlots = recipe.EnhancementSlots + blueprint.EnhancementSlots;
             
-            var (recipeDescription, recipeColors) = Craft.BuildRecipeDetail(Player, _recipe);
+            IsEnhancement1Visible = enhancementSlots >= 1;
+            IsEnhancement2Visible = enhancementSlots >= 2;
+            IsEnhancement3Visible = enhancementSlots >= 3;
+            IsEnhancement4Visible = enhancementSlots >= 4;
+            IsEnhancement5Visible = enhancementSlots >= 5;
+            IsEnhancement6Visible = enhancementSlots >= 6;
+            IsEnhancement7Visible = enhancementSlots >= 7;
+            IsEnhancement8Visible = enhancementSlots >= 8;
+
+            CraftText = _hasBlueprint 
+                ? $"Craft [{Craft.CalculateBlueprintCraftCreditCost(_blueprintItem):N0}cr]"
+                : "Craft";
+            RecipeName = $"Recipe: {recipe.Quantity}x {itemName}";
+            RecipeLevel = $"Level: {recipe.Level}";
+            
+            var (recipeDescription, recipeColors) = Craft.BuildRecipeDetail(Player, _recipe, blueprint);
             RecipeDescription = recipeDescription;
             RecipeColors = recipeColors;
 
@@ -737,7 +757,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 var type = GetItemPropertyType(ip);
-                var subType = GetItemPropertySubType(ip);
+                var subType = (EnhancementSubType)GetItemPropertySubType(ip);
                 var amount = GetItemPropertyCostTableValue(ip);
 
                 // Progress Penalty - Add to total
@@ -1257,6 +1277,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void SwitchToCraftMode()
         {
+            if (_hasBlueprint)
+            {
+                _activeBlueprint = Craft.GetBlueprintDetails(_blueprintItem);
+                var cost = Craft.CalculateBlueprintCraftCreditCost(_blueprintItem);
+                AssignCommand(Player, () => TakeGoldFromCreature(cost, Player, true));
+                
+                _activeBlueprint.LicensedRuns--;
+                Craft.SetBlueprintDetails(_blueprintItem, _activeBlueprint);
+                
+                SendMessageToPC(Player, $"Remaining licensed runs: {_activeBlueprint.LicensedRuns}");
+
+                var (recipeDescription, recipeColors) = Craft.BuildRecipeDetail(Player, _recipe, _activeBlueprint);
+                RecipeDescription = recipeDescription;
+                RecipeColors = recipeColors;
+            }
+            
             StatusText = string.Empty;
             StatusColor = GuiColor.Green;
 
@@ -1296,9 +1332,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return true;
         }
 
+        private bool ProcessBlueprintRequirements()
+        {
+            if (!_hasBlueprint)
+                return true;
+
+            var blueprintDetails = Craft.GetBlueprintDetails(_blueprintItem);
+
+            if (blueprintDetails.LicensedRuns <= 0)
+            {
+                StatusText = $"No licensed runs remaining!";
+                StatusColor = GuiColor.Red;
+                
+                return false;
+            }
+            
+            var cost = Craft.CalculateBlueprintCraftCreditCost(_blueprintItem);
+            if (GetGold(Player) < cost)
+            {
+                StatusText = $"Insufficient credits!";
+                StatusColor = GuiColor.Red;
+                
+                return false;
+            }
+
+            return true;
+        }
+
         public Action OnClickManualCraft() => () =>
         {
-            if (ProcessComponents())
+            if (ProcessBlueprintRequirements() && ProcessComponents())
             {
                 SwitchToCraftMode();
             }
@@ -1336,13 +1399,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return quality;
         }
 
-        private int CalculateXP(int recipeLevel, int playerLevel, bool firstTime, float qualityPercent)
+        private int CalculateXP(
+            int recipeLevel, 
+            int playerLevel, 
+            int blueprintLevel,
+            bool firstTime, 
+            float qualityPercent)
         {
             var delta = recipeLevel - playerLevel;
             var xp = Skill.GetDeltaXP(delta);
             // 20% bonus for the first time.
             if (firstTime)
                 xp += (int)(xp * 0.20f);
+            xp += (int)(xp * (blueprintLevel * 0.5f));
             xp += (int)(xp * qualityPercent);
 
             return xp;
@@ -1384,8 +1453,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);
             var qualityPercent = (float)_quality / (float)_maxQuality; 
 
-            // We override the additional gold price field so that players are encouraged to sell their goods to other players rather than selling to an NPC.
-            ItemPlugin.SetAddGoldPieceValue(item, (int) (30 * ((recipe.Level / 10) + 1) + 3.5f * recipe.Level));
+            ItemPlugin.SetAddGoldPieceValue(item, (int) (30 * ((recipe.Level / 10f) + 1) + 3.5f * recipe.Level));
 
             // Apply item properties provided by enhancements, provided the transfer check passes.
             var allProperties = _itemPropertiesEnhancement1
@@ -1415,8 +1483,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var durationBonus = (int)qualityPercent;
                 var ip = ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Duration, durationBonus);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+
+                // Also increase charges based on the blueprint upgrade level
+                if (_hasBlueprint)
+                {
+                    var charges = GetItemCharges(item) + _activeBlueprint.Level;
+                    SetItemCharges(item, charges);
+                }
             }
 
+            ProcessBlueprintBonuses(item);
+            
             // Add the recipe to the completed list (unlocks auto-crafting)
             if (firstTime)
             {
@@ -1425,7 +1502,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             // Give XP plus a percent bonus based on the quality achieved.
-            var xp = CalculateXP(recipe.Level, dbPlayer.Skills[recipe.Skill].Rank, firstTime, qualityPercent);
+            var xp = CalculateXP(
+                recipe.Level, 
+                dbPlayer.Skills[recipe.Skill].Rank, 
+                _hasBlueprint ? _activeBlueprint.Level : 0,
+                firstTime, 
+                qualityPercent);
             Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
 
             // Clean up and return to the Set Up mode.
@@ -1451,10 +1533,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshRecipeStats();
             StatusText = "Successfully created the item!";
             StatusColor = GuiColor.Green;
-
+            
             Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{GetName(item)}'.");
         }
 
+        private void ProcessBlueprintBonuses(uint item)
+        {
+            if (!_hasBlueprint)
+                return;
+
+            // Random bonuses
+            var recipe = Craft.GetRecipe(_recipe);
+            for (var currentBonus = 1; currentBonus <= _activeBlueprint.ItemBonuses; currentBonus++)
+            {
+                var tier = currentBonus;
+
+                // Stat pool tier is based on the recipe level.
+                // This ensures top-end stats don't get applied to a low-tier weapon, for balancing purposes.
+                if (recipe.Level >= 0 && recipe.Level <= 20 && tier > 1)
+                    tier = 1;
+                else if (recipe.Level >= 21 && recipe.Level <= 40 && tier > 2)
+                    tier = 2;
+
+                var bonus = _blueprintBonuses.PickBonus(recipe.EnhancementType, tier, recipe.IsItemIntendedForCrafting);
+                if (bonus == null)
+                    continue;
+
+                var ip = Craft.BuildItemPropertyForEnhancement(bonus.Type, bonus.Amount);
+                ApplyProperty(item, ip);
+
+                var subTypeDetail = Craft.GetEnhancementSubType(bonus.Type);
+                SendMessageToPC(Player, ColorToken.Green($"Blueprint Bonus applied: {subTypeDetail.Name} +{bonus.Amount}"));
+            }
+            
+            // Guaranteed bonuses
+            foreach (var ip in _activeBlueprint.GuaranteedBonuses)
+            {
+                ApplyProperty(item, ip);
+            }
+        }
+        
         private void ProcessFailure()
         {
             // Guard against the client queuing up numerous craft requests which results in duplicate items being spawned.
@@ -1550,7 +1668,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusColor = GuiColor.Red;
 
             // 15% of XP is gained for failures.
-            var xp = CalculateXP(recipe.Level, dbPlayer.Skills[recipe.Skill].Rank, false, 0f);
+            var xp = CalculateXP(
+                recipe.Level, 
+                dbPlayer.Skills[recipe.Skill].Rank,
+                _hasBlueprint ? _activeBlueprint.Level : 0,
+                false, 
+                0f);
             xp = (int)(xp * 0.15f);
             Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
 

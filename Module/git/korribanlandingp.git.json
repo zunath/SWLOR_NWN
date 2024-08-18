@@ -57171,6 +57171,5071 @@
           "type": "float",
           "value": 7.384185778391839e-007
         }
+      },
+      {
+        "__struct_id": 4,
+        "Appearance_Head": {
+          "type": "byte",
+          "value": 1
+        },
+        "Appearance_Type": {
+          "type": "word",
+          "value": 6
+        },
+        "ArmorPart_RFoot": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_Belt": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_LBicep": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LFArm": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LFoot": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LHand": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LShin": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LShoul": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_LThigh": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Neck": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Pelvis": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RBicep": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RFArm": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RHand": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RShin": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RShoul": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_RThigh": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Torso": {
+          "type": "byte",
+          "value": 1
+        },
+        "Cha": {
+          "type": "byte",
+          "value": 28
+        },
+        "ChallengeRating": {
+          "type": "float",
+          "value": 50.0
+        },
+        "ClassList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 2,
+              "Class": {
+                "type": "int",
+                "value": 20
+              },
+              "ClassLevel": {
+                "type": "short",
+                "value": 40
+              }
+            }
+          ]
+        },
+        "Color_Hair": {
+          "type": "byte",
+          "value": 1
+        },
+        "Color_Skin": {
+          "type": "byte",
+          "value": 1
+        },
+        "Color_Tattoo1": {
+          "type": "byte",
+          "value": 1
+        },
+        "Color_Tattoo2": {
+          "type": "byte",
+          "value": 1
+        },
+        "Con": {
+          "type": "byte",
+          "value": 34
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": "rev_shuttleguard"
+        },
+        "CRAdjust": {
+          "type": "int",
+          "value": 24
+        },
+        "CurrentHitPoints": {
+          "type": "short",
+          "value": 120
+        },
+        "DecayTime": {
+          "type": "dword",
+          "value": 5000
+        },
+        "Deity": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "The Revanites are a splinter faction of Malak's Sith Empire. After Revan's fall, they are those who took issue with Malak's new, more destructive war, and threw in with Lord Valerius, supporting his rebellion against the Darth and bid to claim the title of Dark Lord of the Sith. For some their loyalty is to Valerius, others to their idea of who Revan was and what he stood for, others simply take issue with Darth Malak, and some still seek out the Revanites for their less despicable tendencies as far as Sith go, seeing them more as the Jedi Crusaders of the late Mandalorian Wars than the monsters that compose the Sith Empire. Regardless, they are still followers of the Dark Side.\n\nThe Revanites promote competition amongst their ranks, both among the Force Sensitives among their number and their rank and file troops. Those the most merciless, cruel and powerful amongst them are elevated, while those exhibiting softer tendencies are treated like fodder and find death sooner rather than later - often from friendly fire.\n\nThese are the former among them. Clad in finer armor and given access to the newest in Imperial weapons technology as reward for their faithful service to the Sith."
+          }
+        },
+        "Dex": {
+          "type": "byte",
+          "value": 34
+        },
+        "Disarmable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Equip_ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 1,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 17
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cloth1Color": {
+                "type": "byte",
+                "value": 58
+              },
+              "Cloth2Color": {
+                "type": "byte",
+                "value": 90
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Leather1Color": {
+                "type": "byte",
+                "value": 91
+              },
+              "Leather2Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Sith Honor Guard Helmet"
+                }
+              },
+              "Metal1Color": {
+                "type": "byte",
+                "value": 7
+              },
+              "Metal2Color": {
+                "type": "byte",
+                "value": 7
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 47
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": []
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "SithHonorGuardHelmet"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpchtroop5"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 47
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 2,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "ArmorPart_Belt": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_LBicep": {
+                "type": "byte",
+                "value": 247
+              },
+              "ArmorPart_LFArm": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_LFoot": {
+                "type": "byte",
+                "value": 241
+              },
+              "ArmorPart_LHand": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_LShin": {
+                "type": "byte",
+                "value": 228
+              },
+              "ArmorPart_LShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_LThigh": {
+                "type": "byte",
+                "value": 232
+              },
+              "ArmorPart_Neck": {
+                "type": "byte",
+                "value": 4
+              },
+              "ArmorPart_Pelvis": {
+                "type": "byte",
+                "value": 233
+              },
+              "ArmorPart_RBicep": {
+                "type": "byte",
+                "value": 247
+              },
+              "ArmorPart_RFArm": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_RFoot": {
+                "type": "byte",
+                "value": 241
+              },
+              "ArmorPart_RHand": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_Robe": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RShin": {
+                "type": "byte",
+                "value": 228
+              },
+              "ArmorPart_RShoul": {
+                "type": "byte",
+                "value": 57
+              },
+              "ArmorPart_RThigh": {
+                "type": "byte",
+                "value": 232
+              },
+              "ArmorPart_Torso": {
+                "type": "byte",
+                "value": 179
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 16
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cloth1Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "Cloth2Color": {
+                "type": "byte",
+                "value": 91
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": ""
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Leather1Color": {
+                "type": "byte",
+                "value": 43
+              },
+              "Leather2Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "LocalizedName": {
+                "id": 12835,
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Sith Honor Guard Armor"
+                }
+              },
+              "Metal1Color": {
+                "type": "byte",
+                "value": 58
+              },
+              "Metal2Color": {
+                "type": "byte",
+                "value": 95
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": []
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "SithHonorGuardArmor"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpcaelite2"
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 247
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 241
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 228
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 232
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 4
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 233
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 247
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 241
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 228
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 57
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 232
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 179
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 16,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 7
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 0
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "(NPC 3) Elite Rifle"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 71
+              },
+              "ModelPart2": {
+                "type": "byte",
+                "value": 201
+              },
+              "ModelPart3": {
+                "type": "byte",
+                "value": 11
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 55
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 14
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 61
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  }
+                ]
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "NPC3EliteRifle"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpcrelite3"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 71
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 201
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 11
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 131072,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 73
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 0
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 0
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Sith Elite T3 Skin"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 1
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 42
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 50
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 118
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 35
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 55
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 94
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 2
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 35
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 55
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 94
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 35
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 43
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 55
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 99
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 41
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 200
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 92
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "SithEliteT3Skin"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpcselite3"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 1
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 7.791219461645983e-043
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            }
+          ]
+        },
+        "FactionID": {
+          "type": "word",
+          "value": 2
+        },
+        "FeatList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 4
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1593
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1349
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1788
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1844
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1242
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 411
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 289
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 44
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 45
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 46
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1785
+              }
+            }
+          ]
+        },
+        "FirstName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": " Lin-Harik Honor Guard"
+          }
+        },
+        "fortbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "Gender": {
+          "type": "byte",
+          "value": 0
+        },
+        "GoodEvil": {
+          "type": "byte",
+          "value": 50
+        },
+        "HitPoints": {
+          "type": "short",
+          "value": 120
+        },
+        "Int": {
+          "type": "byte",
+          "value": 34
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 0
+        },
+        "IsImmortal": {
+          "type": "byte",
+          "value": 0
+        },
+        "IsPC": {
+          "type": "byte",
+          "value": 0
+        },
+        "ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 1
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 0
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "(NPC 3) Elite Sword"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 253
+              },
+              "ModelPart2": {
+                "type": "byte",
+                "value": 253
+              },
+              "ModelPart3": {
+                "type": "byte",
+                "value": 251
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 15
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 5
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 40
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 83
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 2
+                    }
+                  }
+                ]
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "NPC3EliteSword"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpcmelite3"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 253
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 253
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 251
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 2.662467082217152e-043
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            }
+          ]
+        },
+        "LastName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "LawfulChaotic": {
+          "type": "byte",
+          "value": 50
+        },
+        "Lootable": {
+          "type": "byte",
+          "value": 0
+        },
+        "MaxHitPoints": {
+          "type": "short",
+          "value": 600
+        },
+        "NaturalAC": {
+          "type": "byte",
+          "value": 0
+        },
+        "NoPermDeath": {
+          "type": "byte",
+          "value": 0
+        },
+        "PerceptionRange": {
+          "type": "byte",
+          "value": 10
+        },
+        "Phenotype": {
+          "type": "int",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 4125
+        },
+        "Race": {
+          "type": "byte",
+          "value": 6
+        },
+        "refbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "ScriptAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDialogue": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptEndRound": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnBlocked": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnNotice": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptRested": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptSpawn": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptSpellAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptUserDefine": {
+          "type": "resref",
+          "value": ""
+        },
+        "SkillList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "SoundSetFile": {
+          "type": "word",
+          "value": 932
+        },
+        "SpecAbilityList": {
+          "type": "list",
+          "value": []
+        },
+        "StartingPackage": {
+          "type": "byte",
+          "value": 82
+        },
+        "Str": {
+          "type": "byte",
+          "value": 28
+        },
+        "Subrace": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "r_prax_honorguard"
+        },
+        "Tail_New": {
+          "type": "dword",
+          "value": 0
+        },
+        "TemplateList": {
+          "type": "list",
+          "value": []
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "vnpcstroop5nh"
+        },
+        "WalkRate": {
+          "type": "int",
+          "value": 4
+        },
+        "willbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "Wings_New": {
+          "type": "dword",
+          "value": 0
+        },
+        "Wis": {
+          "type": "byte",
+          "value": 28
+        },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 1
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 1
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.7071067690849304
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 58.70687484741211
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.7071067690849304
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 110.9717559814453
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-006
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Appearance_Head": {
+          "type": "byte",
+          "value": 1
+        },
+        "Appearance_Type": {
+          "type": "word",
+          "value": 6
+        },
+        "ArmorPart_RFoot": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_Belt": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_LBicep": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LFArm": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LFoot": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LHand": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LShin": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LShoul": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_LThigh": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Neck": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Pelvis": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RBicep": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RFArm": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RHand": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RShin": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RShoul": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_RThigh": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Torso": {
+          "type": "byte",
+          "value": 1
+        },
+        "Cha": {
+          "type": "byte",
+          "value": 12
+        },
+        "ChallengeRating": {
+          "type": "float",
+          "value": 15.0
+        },
+        "ClassList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 2,
+              "Class": {
+                "type": "int",
+                "value": 66
+              },
+              "ClassLevel": {
+                "type": "short",
+                "value": 40
+              }
+            }
+          ]
+        },
+        "Color_Hair": {
+          "type": "byte",
+          "value": 1
+        },
+        "Color_Skin": {
+          "type": "byte",
+          "value": 1
+        },
+        "Color_Tattoo1": {
+          "type": "byte",
+          "value": 1
+        },
+        "Color_Tattoo2": {
+          "type": "byte",
+          "value": 1
+        },
+        "Con": {
+          "type": "byte",
+          "value": 12
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CRAdjust": {
+          "type": "int",
+          "value": -2
+        },
+        "CurrentHitPoints": {
+          "type": "short",
+          "value": 35
+        },
+        "DecayTime": {
+          "type": "dword",
+          "value": 5000
+        },
+        "Deity": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Clad in silvery armor, these men and women are a menace to the galaxy. Many of them were once Republic Troopers, veterans of the Mandalorian Wars and saviors of the Republic, who have now become traitor and answer not to the Senate but to Darth Malak and his inner circle. Others are more recent recruits, whether pressed into service or eager ot make the most of Imperial rule by siding with their new overlords."
+          }
+        },
+        "Dex": {
+          "type": "byte",
+          "value": 12
+        },
+        "Disarmable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Equip_ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 1,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 17
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cloth1Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "Cloth2Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Leather1Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "Leather2Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Sith Trooper Helmet"
+                }
+              },
+              "Metal1Color": {
+                "type": "byte",
+                "value": 56
+              },
+              "Metal2Color": {
+                "type": "byte",
+                "value": 7
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 120
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": []
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "SithTrooperHelmet"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpchtroop1"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 120
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 2,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "ArmorPart_Belt": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_LBicep": {
+                "type": "byte",
+                "value": 248
+              },
+              "ArmorPart_LFArm": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_LFoot": {
+                "type": "byte",
+                "value": 241
+              },
+              "ArmorPart_LHand": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_LShin": {
+                "type": "byte",
+                "value": 228
+              },
+              "ArmorPart_LShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_LThigh": {
+                "type": "byte",
+                "value": 232
+              },
+              "ArmorPart_Neck": {
+                "type": "byte",
+                "value": 250
+              },
+              "ArmorPart_Pelvis": {
+                "type": "byte",
+                "value": 233
+              },
+              "ArmorPart_RBicep": {
+                "type": "byte",
+                "value": 248
+              },
+              "ArmorPart_RFArm": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_RFoot": {
+                "type": "byte",
+                "value": 241
+              },
+              "ArmorPart_RHand": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_Robe": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RShin": {
+                "type": "byte",
+                "value": 228
+              },
+              "ArmorPart_RShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RThigh": {
+                "type": "byte",
+                "value": 232
+              },
+              "ArmorPart_Torso": {
+                "type": "byte",
+                "value": 248
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 16
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cloth1Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "Cloth2Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": ""
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Leather1Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "Leather2Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "LocalizedName": {
+                "id": 12835,
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Sith Trooper Armor"
+                }
+              },
+              "Metal1Color": {
+                "type": "byte",
+                "value": 56
+              },
+              "Metal2Color": {
+                "type": "byte",
+                "value": 95
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": []
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "sith_tarmor"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpcatroop1"
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 248
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 241
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 228
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 232
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 250
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 233
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 248
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 241
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 228
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 232
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 248
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 16,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 7
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 0
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "(NPC 1) Trooper Rifle"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 11
+              },
+              "ModelPart2": {
+                "type": "byte",
+                "value": 152
+              },
+              "ModelPart3": {
+                "type": "byte",
+                "value": 11
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 11
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 14
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 61
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  }
+                ]
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "NPC1TrooperRifle"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpcrtroop1"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 11
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 152
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 11
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 131072,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 73
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 0
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 0
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Sith Trooper T1 Skin"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 1
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 35
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 7
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 94
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 2
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 35
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 7
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 94
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 43
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 15
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 99
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "SithTrooperT1Skin"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpcstroop1"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 1
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            }
+          ]
+        },
+        "FactionID": {
+          "type": "word",
+          "value": 4
+        },
+        "FeatList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 4
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1590
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 411
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 289
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 44
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 45
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 46
+              }
+            }
+          ]
+        },
+        "FirstName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": " Lin-Harik Trooper"
+          }
+        },
+        "fortbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "Gender": {
+          "type": "byte",
+          "value": 0
+        },
+        "GoodEvil": {
+          "type": "byte",
+          "value": 50
+        },
+        "HitPoints": {
+          "type": "short",
+          "value": 35
+        },
+        "Int": {
+          "type": "byte",
+          "value": 12
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 0
+        },
+        "IsImmortal": {
+          "type": "byte",
+          "value": 0
+        },
+        "IsPC": {
+          "type": "byte",
+          "value": 0
+        },
+        "ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 1
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 0
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "(NPC 1) Trooper Sword"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 253
+              },
+              "ModelPart2": {
+                "type": "byte",
+                "value": 253
+              },
+              "ModelPart3": {
+                "type": "byte",
+                "value": 251
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 11
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  }
+                ]
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "NPC1TrooperSword"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpcmtroop1"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 253
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 253
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 251
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            }
+          ]
+        },
+        "LastName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "LawfulChaotic": {
+          "type": "byte",
+          "value": 50
+        },
+        "Lootable": {
+          "type": "byte",
+          "value": 0
+        },
+        "MaxHitPoints": {
+          "type": "short",
+          "value": 75
+        },
+        "NaturalAC": {
+          "type": "byte",
+          "value": 0
+        },
+        "NoPermDeath": {
+          "type": "byte",
+          "value": 0
+        },
+        "PerceptionRange": {
+          "type": "byte",
+          "value": 9
+        },
+        "Phenotype": {
+          "type": "int",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 4125
+        },
+        "Race": {
+          "type": "byte",
+          "value": 6
+        },
+        "refbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "ScriptAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDialogue": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptEndRound": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnBlocked": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnNotice": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptRested": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptSpawn": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptSpellAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptUserDefine": {
+          "type": "resref",
+          "value": ""
+        },
+        "SkillList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "SoundSetFile": {
+          "type": "word",
+          "value": 932
+        },
+        "SpecAbilityList": {
+          "type": "list",
+          "value": []
+        },
+        "StartingPackage": {
+          "type": "byte",
+          "value": 157
+        },
+        "Str": {
+          "type": "byte",
+          "value": 12
+        },
+        "Subrace": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "SithTrooper1"
+        },
+        "Tail_New": {
+          "type": "dword",
+          "value": 0
+        },
+        "TemplateList": {
+          "type": "list",
+          "value": []
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "vnpcstroop1"
+        },
+        "WalkRate": {
+          "type": "int",
+          "value": 4
+        },
+        "willbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "Wings_New": {
+          "type": "dword",
+          "value": 0
+        },
+        "Wis": {
+          "type": "byte",
+          "value": 8
+        },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 1
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 1
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 1.056148703342518e-038
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 55.31967544555664
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 109.7900390625
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 4.999999987376214e-007
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Appearance_Head": {
+          "type": "byte",
+          "value": 1
+        },
+        "Appearance_Type": {
+          "type": "word",
+          "value": 6
+        },
+        "ArmorPart_RFoot": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_Belt": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_LBicep": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LFArm": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LFoot": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LHand": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LShin": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LShoul": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_LThigh": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Neck": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Pelvis": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RBicep": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RFArm": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RHand": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RShin": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RShoul": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_RThigh": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Torso": {
+          "type": "byte",
+          "value": 1
+        },
+        "Cha": {
+          "type": "byte",
+          "value": 12
+        },
+        "ChallengeRating": {
+          "type": "float",
+          "value": 15.0
+        },
+        "ClassList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 2,
+              "Class": {
+                "type": "int",
+                "value": 66
+              },
+              "ClassLevel": {
+                "type": "short",
+                "value": 40
+              }
+            }
+          ]
+        },
+        "Color_Hair": {
+          "type": "byte",
+          "value": 1
+        },
+        "Color_Skin": {
+          "type": "byte",
+          "value": 1
+        },
+        "Color_Tattoo1": {
+          "type": "byte",
+          "value": 1
+        },
+        "Color_Tattoo2": {
+          "type": "byte",
+          "value": 1
+        },
+        "Con": {
+          "type": "byte",
+          "value": 12
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CRAdjust": {
+          "type": "int",
+          "value": -2
+        },
+        "CurrentHitPoints": {
+          "type": "short",
+          "value": 35
+        },
+        "DecayTime": {
+          "type": "dword",
+          "value": 5000
+        },
+        "Deity": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Clad in silvery armor, these men and women are a menace to the galaxy. Many of them were once Republic Troopers, veterans of the Mandalorian Wars and saviors of the Republic, who have now become traitor and answer not to the Senate but to Darth Malak and his inner circle. Others are more recent recruits, whether pressed into service or eager ot make the most of Imperial rule by siding with their new overlords."
+          }
+        },
+        "Dex": {
+          "type": "byte",
+          "value": 12
+        },
+        "Disarmable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Equip_ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 1,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 17
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cloth1Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "Cloth2Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Leather1Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "Leather2Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Sith Trooper Helmet"
+                }
+              },
+              "Metal1Color": {
+                "type": "byte",
+                "value": 56
+              },
+              "Metal2Color": {
+                "type": "byte",
+                "value": 7
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 120
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": []
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "SithTrooperHelmet"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpchtroop1"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 120
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 2,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "ArmorPart_Belt": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_LBicep": {
+                "type": "byte",
+                "value": 248
+              },
+              "ArmorPart_LFArm": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_LFoot": {
+                "type": "byte",
+                "value": 241
+              },
+              "ArmorPart_LHand": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_LShin": {
+                "type": "byte",
+                "value": 228
+              },
+              "ArmorPart_LShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_LThigh": {
+                "type": "byte",
+                "value": 232
+              },
+              "ArmorPart_Neck": {
+                "type": "byte",
+                "value": 250
+              },
+              "ArmorPart_Pelvis": {
+                "type": "byte",
+                "value": 233
+              },
+              "ArmorPart_RBicep": {
+                "type": "byte",
+                "value": 248
+              },
+              "ArmorPart_RFArm": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_RFoot": {
+                "type": "byte",
+                "value": 241
+              },
+              "ArmorPart_RHand": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_Robe": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RShin": {
+                "type": "byte",
+                "value": 228
+              },
+              "ArmorPart_RShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RThigh": {
+                "type": "byte",
+                "value": 232
+              },
+              "ArmorPart_Torso": {
+                "type": "byte",
+                "value": 248
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 16
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cloth1Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "Cloth2Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": ""
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Leather1Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "Leather2Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "LocalizedName": {
+                "id": 12835,
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Sith Trooper Armor"
+                }
+              },
+              "Metal1Color": {
+                "type": "byte",
+                "value": 56
+              },
+              "Metal2Color": {
+                "type": "byte",
+                "value": 95
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": []
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "sith_tarmor"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpcatroop1"
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 248
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 241
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 228
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 232
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 250
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 233
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 248
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 241
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 228
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 232
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 248
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 16,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 7
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 0
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "(NPC 1) Trooper Rifle"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 11
+              },
+              "ModelPart2": {
+                "type": "byte",
+                "value": 152
+              },
+              "ModelPart3": {
+                "type": "byte",
+                "value": 11
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 11
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 14
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 61
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  }
+                ]
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "NPC1TrooperRifle"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpcrtroop1"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 11
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 152
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 11
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 1.205116679319343e-043
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            },
+            {
+              "__struct_id": 131072,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 73
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 0
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 0
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Sith Trooper T1 Skin"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 1
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 35
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 7
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 94
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 2
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 35
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 7
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 94
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 43
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 15
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 99
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "SithTrooperT1Skin"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpcstroop1"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 1
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 2.454069515154972e-018
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            }
+          ]
+        },
+        "FactionID": {
+          "type": "word",
+          "value": 4
+        },
+        "FeatList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 4
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1590
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 411
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 289
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 44
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 45
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 46
+              }
+            }
+          ]
+        },
+        "FirstName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": " Lin-Harik Trooper"
+          }
+        },
+        "fortbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "Gender": {
+          "type": "byte",
+          "value": 0
+        },
+        "GoodEvil": {
+          "type": "byte",
+          "value": 50
+        },
+        "HitPoints": {
+          "type": "short",
+          "value": 35
+        },
+        "Int": {
+          "type": "byte",
+          "value": 12
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 0
+        },
+        "IsImmortal": {
+          "type": "byte",
+          "value": 0
+        },
+        "IsPC": {
+          "type": "byte",
+          "value": 0
+        },
+        "ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 1
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {}
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 0
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "(NPC 1) Trooper Sword"
+                }
+              },
+              "ModelPart1": {
+                "type": "byte",
+                "value": 253
+              },
+              "ModelPart2": {
+                "type": "byte",
+                "value": 253
+              },
+              "ModelPart3": {
+                "type": "byte",
+                "value": 251
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 11
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 1
+                    }
+                  }
+                ]
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 0
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "NPC1TrooperSword"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "vnpcmtroop1"
+              },
+              "xModelPart1": {
+                "type": "word",
+                "value": 253
+              },
+              "xModelPart2": {
+                "type": "word",
+                "value": 253
+              },
+              "xModelPart3": {
+                "type": "word",
+                "value": 251
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            }
+          ]
+        },
+        "LastName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "LawfulChaotic": {
+          "type": "byte",
+          "value": 50
+        },
+        "Lootable": {
+          "type": "byte",
+          "value": 0
+        },
+        "MaxHitPoints": {
+          "type": "short",
+          "value": 75
+        },
+        "NaturalAC": {
+          "type": "byte",
+          "value": 0
+        },
+        "NoPermDeath": {
+          "type": "byte",
+          "value": 0
+        },
+        "PerceptionRange": {
+          "type": "byte",
+          "value": 9
+        },
+        "Phenotype": {
+          "type": "int",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 4125
+        },
+        "Race": {
+          "type": "byte",
+          "value": 6
+        },
+        "refbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "ScriptAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDialogue": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptEndRound": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnBlocked": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnNotice": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptRested": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptSpawn": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptSpellAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptUserDefine": {
+          "type": "resref",
+          "value": ""
+        },
+        "SkillList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "SoundSetFile": {
+          "type": "word",
+          "value": 932
+        },
+        "SpecAbilityList": {
+          "type": "list",
+          "value": []
+        },
+        "StartingPackage": {
+          "type": "byte",
+          "value": 157
+        },
+        "Str": {
+          "type": "byte",
+          "value": 12
+        },
+        "Subrace": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "SithTrooper1"
+        },
+        "Tail_New": {
+          "type": "dword",
+          "value": 0
+        },
+        "TemplateList": {
+          "type": "list",
+          "value": []
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "vnpcstroop1"
+        },
+        "WalkRate": {
+          "type": "int",
+          "value": 4
+        },
+        "willbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "Wings_New": {
+          "type": "dword",
+          "value": 0
+        },
+        "Wis": {
+          "type": "byte",
+          "value": 8
+        },
+        "xAppearance_Head": {
+          "type": "word",
+          "value": 1
+        },
+        "xArmorPart_RFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Belt": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LFoot": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_LShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_LThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Neck": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Pelvis": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RBicep": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RFArm": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RHand": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShin": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_RShoul": {
+          "type": "word",
+          "value": 0
+        },
+        "xBodyPart_RThigh": {
+          "type": "word",
+          "value": 1
+        },
+        "xBodyPart_Torso": {
+          "type": "word",
+          "value": 1
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 59.26454162597656
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 109.8716506958008
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-006
+        }
       }
     ]
   },
@@ -62166,15 +67231,15 @@
         },
         "X": {
           "type": "float",
-          "value": 61.11167526245117
+          "value": 54.00357818603516
         },
         "Y": {
           "type": "float",
-          "value": 99.25478363037109
+          "value": 108.7063751220703
         },
         "Z": {
           "type": "float",
-          "value": 0.0
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -63760,231 +68825,6 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 30063
-        },
-        "AutoRemoveKey": {
-          "type": "byte",
-          "value": 0
-        },
-        "Bearing": {
-          "type": "float",
-          "value": 1.963495254516602
-        },
-        "BodyBag": {
-          "type": "byte",
-          "value": 0
-        },
-        "CloseLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Conversation": {
-          "type": "resref",
-          "value": ""
-        },
-        "CurrentHP": {
-          "type": "short",
-          "value": 10
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "DisarmDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Faction": {
-          "type": "dword",
-          "value": 1
-        },
-        "Fort": {
-          "type": "byte",
-          "value": 5
-        },
-        "Hardness": {
-          "type": "byte",
-          "value": 5
-        },
-        "HasInventory": {
-          "type": "byte",
-          "value": 0
-        },
-        "HP": {
-          "type": "short",
-          "value": 10
-        },
-        "Interruptable": {
-          "type": "byte",
-          "value": 1
-        },
-        "KeyName": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "KeyRequired": {
-          "type": "byte",
-          "value": 0
-        },
-        "Lockable": {
-          "type": "byte",
-          "value": 1
-        },
-        "Locked": {
-          "type": "byte",
-          "value": 0
-        },
-        "LocName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "[SWLOR] Skeleton, Krayt                                                              "
-          }
-        },
-        "OnClick": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnClosed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDamaged": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDeath": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDisarm": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnHeartbeat": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnInvDisturbed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnLock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnMeleeAttacked": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnOpen": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnSpellCastAt": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnTrapTriggered": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUnlock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUsed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUserDefined": {
-          "type": "resref",
-          "value": ""
-        },
-        "OpenLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Plot": {
-          "type": "byte",
-          "value": 1
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 0
-        },
-        "Ref": {
-          "type": "byte",
-          "value": 0
-        },
-        "Static": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "swlor_0001"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "swlor_0064"
-        },
-        "TrapDetectable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapDetectDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapDisarmable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapFlag": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapOneShot": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapType": {
-          "type": "byte",
-          "value": 0
-        },
-        "Type": {
-          "type": "byte",
-          "value": 0
-        },
-        "Useable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Will": {
-          "type": "byte",
-          "value": 0
-        },
-        "X": {
-          "type": "float",
-          "value": 80.9852294921875
-        },
-        "Y": {
-          "type": "float",
-          "value": 95.51905059814453
-        },
-        "Z": {
-          "type": "float",
-          "value": -5.222045729169622e-006
-        }
-      },
-      {
-        "__struct_id": 9,
-        "AnimationState": {
-          "type": "byte",
-          "value": 0
-        },
-        "Appearance": {
-          "type": "dword",
           "value": 30109
         },
         "AutoRemoveKey": {
@@ -64218,7 +69058,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.159844636917114
+          "value": -2.158972024917603
         },
         "BodyBag": {
           "type": "byte",
@@ -64416,15 +69256,15 @@
         },
         "X": {
           "type": "float",
-          "value": 63.77861022949219
+          "value": 63.77999877929688
         },
         "Y": {
           "type": "float",
-          "value": 85.18064880371094
+          "value": 85.18000030517578
         },
         "Z": {
           "type": "float",
-          "value": -5.7220458984375e-006
+          "value": 1.200000047683716
         }
       },
       {
@@ -86051,15 +90891,15 @@
         },
         "X": {
           "type": "float",
-          "value": 53.43050765991211
+          "value": 52.50604629516602
         },
         "Y": {
           "type": "float",
-          "value": 118.0492477416992
+          "value": 109.2833099365234
         },
         "Z": {
           "type": "float",
-          "value": 0.2473125457763672
+          "value": -5.222045729169622e-006
         }
       },
       {
@@ -122750,6 +127590,1901 @@
         "Z": {
           "type": "float",
           "value": -5.222045729169622e-006
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 20848
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": -0.0
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 3
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Complex, Tower (Dark)"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "_mdrn_pl_colony"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "_mdrn_pl_colony"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 79.53302764892578
+        },
+        "Y": {
+          "type": "float",
+          "value": 86.32620239257813
+        },
+        "Z": {
+          "type": "float",
+          "value": 9.313225746154785e-009
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 20837
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": -0.0
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 3
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Facility, Landing Pad"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "_mdrn_pl_fac13f"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "_mdrn_pl_fac13f"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 0
+        },
+        "VisTransformList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 6,
+              "AnimationSpeed": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 1.0
+                  }
+                }
+              },
+              "RotateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "RotateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "ScaleX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.698337197303772
+                  }
+                }
+              },
+              "ScaleY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.698337197303772
+                  }
+                }
+              },
+              "ScaleZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.698337197303772
+                  }
+                }
+              },
+              "Scope": {
+                "type": "int",
+                "value": 0
+              },
+              "TranslateX": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateY": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              },
+              "TranslateZ": {
+                "__struct_id": 0,
+                "type": "struct",
+                "value": {
+                  "__struct_id": 0,
+                  "LerpType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "TimerType": {
+                    "type": "int",
+                    "value": 0
+                  },
+                  "ValueTo": {
+                    "type": "float",
+                    "value": 0.0
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 65.88346862792969
+        },
+        "Y": {
+          "type": "float",
+          "value": 92.33156585693359
+        },
+        "Z": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 479
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": -3.141592264175415
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 15
+        },
+        "Description": {
+          "id": 14662,
+          "type": "cexolocstring",
+          "value": {
+            "0": "Board a shuttle to head from the Revanite base on Viscara to the location of the Praxeum Project..."
+          }
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 15
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 16
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 15
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": "Key_S_1"
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 1
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 1
+        },
+        "LocName": {
+          "id": 5800,
+          "type": "cexolocstring",
+          "value": {
+            "0": "Travel to the Praxeum Project..."
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": "teleport"
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 18
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 1
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "RevBaseEntering"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "invisobjlarge"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "rev_starbase_entrance"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "KEY_ITEM_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "MISSING_KEY_ITEM_MESSAGE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISIBILITY_HIDDEN_DEFAULT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISIBILITY_OBJECT_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISUAL_EFFECT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 57.12837219238281
+        },
+        "Y": {
+          "type": "float",
+          "value": 110.1687698364258
+        },
+        "Z": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 4
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 20898
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": 1.401298464324817e-045
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 3
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Shuttle, Class 3 (Large)"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "_mdrn_pl_strst3l"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "_mdrn_pl_strst3l"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 67.77999877929688
+        },
+        "Y": {
+          "type": "float",
+          "value": 99.36000061035156
+        },
+        "Z": {
+          "type": "float",
+          "value": -4.0
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 31576
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": 2.038778983403467e-038
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 3
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "[SWTOR] Container 5 (Stack)"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "SWTOR_CONTAINER005"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "swd_conta005"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 60.02816009521484
+        },
+        "Y": {
+          "type": "float",
+          "value": 92.29810333251953
+        },
+        "Z": {
+          "type": "float",
+          "value": 1.661084055900574
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 31624
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": 7.006492321624085e-044
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 3
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "[SWTOR] Conveyor"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "SWTOR_CONVEYORS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "swd_convay01"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 54.09059143066406
+        },
+        "Y": {
+          "type": "float",
+          "value": 104.241340637207
+        },
+        "Z": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 31624
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": -0.0
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 3
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "[SWTOR] Conveyor"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "SWTOR_CONVEYORS"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "swd_convay01"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 64.80070495605469
+        },
+        "Y": {
+          "type": "float",
+          "value": 106.1368103027344
+        },
+        "Z": {
+          "type": "float",
+          "value": 1.661083221435547
         }
       }
     ]
@@ -304554,7 +311289,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 79.59612274169922
+          "value": 81.15659332275391
         },
         "YOrientation": {
           "type": "float",
@@ -304562,11 +311297,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 108.951530456543
+          "value": 113.3767166137695
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.03900146484375
+          "value": 0.2179393768310547
         }
       },
       {
@@ -305026,7 +311761,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 51.51255035400391
+          "value": 68.15332794189453
         },
         "YOrientation": {
           "type": "float",
@@ -305034,11 +311769,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 86.33069610595703
+          "value": 110.2272262573242
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.002180576324462891
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -305334,6 +312069,68 @@
         "ZPosition": {
           "type": "float",
           "value": -8.58306884765625e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "id": 14817,
+          "type": "cexolocstring",
+          "value": {
+            "0": "Waypoint"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "rev_starbase_exit"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_waypoint001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 57.10523223876953
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 111.3391799926758
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.222045729169622e-006
         }
       }
     ]

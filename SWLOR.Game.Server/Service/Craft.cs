@@ -2,26 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using ResearchJob = SWLOR.Game.Server.Entity.ResearchJob;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Craft
     {
-        private static readonly GuiColor _white = new GuiColor(255, 255, 255);
-        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
-        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
-        private static readonly GuiColor _cyan = new GuiColor(0, 255, 255);
+        public const int MaxResearchLevel = 10;
 
         private static readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
         private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _allCategories = new();
@@ -29,6 +32,11 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<SkillType, Dictionary<RecipeType, RecipeDetail>> _recipesBySkill = new();
         private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>> _recipesBySkillAndCategory = new();
         private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, RecipeCategoryAttribute>> _categoriesBySkill = new();
+        private static readonly Dictionary<EnhancementSubType, EnhancementSubTypeAttribute> _enhancementSubTypes = new();
+
+        private static readonly Dictionary<RecipeType, RecipeDetail> _researchableRecipes = new();
+        private static readonly Dictionary<SkillType, Dictionary<RecipeType, RecipeDetail>> _researchableRecipesBySkill = new();
+        private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>> _researchableRecipesBySkillAndCategory = new();
 
         private static readonly RecipeLevelChart _levelChart = new();
         private static readonly HashSet<string> _componentResrefs = new();
@@ -41,8 +49,7 @@ namespace SWLOR.Game.Server.Service
         {
             CacheCategories();
             CacheRecipes();
-
-            Console.WriteLine($"Loaded {_recipes.Count} recipes.");
+            CacheEnhancementSubTypes();
         }
 
         /// <summary>
@@ -61,6 +68,8 @@ namespace SWLOR.Game.Server.Service
                     _activeCategories[category] = categoryDetail;
                 }
             }
+            
+            Console.WriteLine($"Loaded {_allCategories.Count} recipe category types.");
         }
 
         /// <summary>
@@ -68,6 +77,23 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void CacheRecipes()
         {
+            void UpdateCraftingStatus(RecipeDetail recipe)
+            {
+                var tempContainer = GetObjectByTag("TEMP_ITEM_STORAGE");
+                var item = CreateItemOnObject(recipe.Resref, tempContainer);
+
+                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                {
+                    var type = GetItemPropertyType(ip);
+                    if (type == ItemPropertyType.Craftsmanship || type == ItemPropertyType.Control)
+                    {
+                        recipe.IsItemIntendedForCrafting = true;
+                    }
+                }
+                
+                DestroyObject(item);
+            }
+            
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IRecipeListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
@@ -85,12 +111,25 @@ namespace SWLOR.Game.Server.Service
                         continue;
                     }
 
+                    var isResearchable = IsResearchableRecipe(recipe);
+
                     _recipes[recipeType] = recipe;
+                    if (isResearchable)
+                        _researchableRecipes[recipeType] = recipe;
+
+                    UpdateCraftingStatus(recipe);
 
                     // Organize recipes by skill.
                     if (!_recipesBySkill.ContainsKey(recipe.Skill))
                         _recipesBySkill[recipe.Skill] = new Dictionary<RecipeType, RecipeDetail>();
                     _recipesBySkill[recipe.Skill][recipeType] = recipe;
+
+                    if (isResearchable)
+                    {
+                        if (!_researchableRecipesBySkill.ContainsKey(recipe.Skill))
+                            _researchableRecipesBySkill[recipe.Skill] = new Dictionary<RecipeType, RecipeDetail>();
+                        _researchableRecipesBySkill[recipe.Skill][recipeType] = recipe;
+                    }
 
                     // Organize recipe by skill and category.
                     if(!_recipesBySkillAndCategory.ContainsKey(recipe.Skill))
@@ -100,6 +139,18 @@ namespace SWLOR.Game.Server.Service
                         _recipesBySkillAndCategory[recipe.Skill][recipe.Category] = new Dictionary<RecipeType, RecipeDetail>();
 
                     _recipesBySkillAndCategory[recipe.Skill][recipe.Category][recipeType] = recipe;
+
+                    if (isResearchable)
+                    {
+                        if(!_researchableRecipesBySkillAndCategory.ContainsKey(recipe.Skill))
+                            _researchableRecipesBySkillAndCategory[recipe.Skill] = new Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>();
+
+                        if (!_researchableRecipesBySkillAndCategory[recipe.Skill].ContainsKey(recipe.Category))
+                            _researchableRecipesBySkillAndCategory[recipe.Skill][recipe.Category] = new Dictionary<RecipeType, RecipeDetail>();
+
+                        _researchableRecipesBySkillAndCategory[recipe.Skill][recipe.Category][recipeType] = recipe;
+                    }
+
 
                     // Organize categories by skill based on whether there are any recipes under that category.
                     if (recipe.IsActive)
@@ -119,8 +170,29 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
+            
+            Console.WriteLine($"Loaded {_recipes.Count} recipes.");
         }
 
+        private static bool IsResearchableRecipe(RecipeDetail recipe)
+        {
+            return recipe.EnhancementType == RecipeEnhancementType.Weapon ||
+                   recipe.EnhancementType == RecipeEnhancementType.Armor ||
+                   recipe.EnhancementType == RecipeEnhancementType.Food;
+        }
+
+        private static void CacheEnhancementSubTypes()
+        {
+            var subTypes = Enum.GetValues(typeof(EnhancementSubType)).Cast<EnhancementSubType>();
+            foreach (var type in subTypes)
+            {
+                var detail = type.GetAttribute<EnhancementSubType, EnhancementSubTypeAttribute>();
+                _enhancementSubTypes[type] = detail;
+            }
+            
+            Console.WriteLine($"Loaded {_enhancementSubTypes.Count} enhancement sub types.");
+        }
+        
         /// <summary>
         /// Retrieves the details about a recipe.
         /// If recipe type has not been registered, an exception will be raised.
@@ -140,6 +212,17 @@ namespace SWLOR.Game.Server.Service
         public static bool RecipeExists(RecipeType recipeType)
         {
             return _recipes.ContainsKey(recipeType);
+        }
+
+        /// <summary>
+        /// Retrieves the details about an enhancement subtype.
+        /// If the enhancement subtype has not been registered, an exception will be raised.
+        /// </summary>
+        /// <param name="subType">The subtype of the enhancement.</param>
+        /// <returns>The enhancement subtype detail.</returns>
+        public static EnhancementSubTypeAttribute GetEnhancementSubType(EnhancementSubType subType)
+        {
+            return _enhancementSubTypes[subType];
         }
 
         /// <summary>
@@ -203,9 +286,19 @@ namespace SWLOR.Game.Server.Service
             return _recipes;
         }
 
+        public static Dictionary<RecipeType, RecipeDetail> GetAllResearchableRecipes()
+        {
+            return _researchableRecipes;
+        }
+
         public static Dictionary<RecipeType, RecipeDetail> GetAllRecipesBySkill(SkillType skill)
         {
             return _recipesBySkill[skill];
+        }
+
+        public static Dictionary<RecipeType, RecipeDetail> GetAllResearchableRecipesBySkill(SkillType skill)
+        {
+            return _researchableRecipesBySkill[skill];
         }
 
         /// <summary>
@@ -223,6 +316,23 @@ namespace SWLOR.Game.Server.Service
                 return new Dictionary<RecipeType, RecipeDetail>();
 
             return _recipesBySkillAndCategory[skill][category].ToDictionary(x => x.Key, y => y.Value);
+        }
+
+        /// <summary>
+        /// Retrieves all of the researchable recipes associated with a skill and category.
+        /// </summary>
+        /// <param name="skill">The skill to search by.</param>
+        /// <param name="category">The category to search by.</param>
+        /// <returns></returns>
+        public static Dictionary<RecipeType, RecipeDetail> GetResearchableRecipesBySkillAndCategory(SkillType skill, RecipeCategoryType category)
+        {
+            if (!_researchableRecipesBySkillAndCategory.ContainsKey(skill))
+                return new Dictionary<RecipeType, RecipeDetail>();
+
+            if (!_researchableRecipesBySkillAndCategory[skill].ContainsKey(category))
+                return new Dictionary<RecipeType, RecipeDetail>();
+
+            return _researchableRecipesBySkillAndCategory[skill][category].ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>
@@ -246,59 +356,101 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetLastUsedBy();
             var skillType = (SkillType)GetLocalInt(OBJECT_SELF, "CRAFTING_SKILL_TYPE_ID");
-            var payload = new RecipesPayload(skillType);
+            var payload = new RecipesPayload(RecipesUIMode.Crafting, skillType);
             Gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
         }
-        
+
         /// <summary>
         /// Builds a recipe's detail for use within the NUI window.
         /// </summary>
         /// <param name="player">The player to build for.</param>
         /// <param name="recipe">The recipe to build.</param>
-        public static (GuiBindingList<string>, GuiBindingList<GuiColor>) BuildRecipeDetail(uint player, RecipeType recipe)
+        /// <param name="blueprint">The blueprint details. null if not a blueprint</param>
+        public static (GuiBindingList<string>, GuiBindingList<GuiColor>) BuildRecipeDetail(uint player, RecipeType recipe, BlueprintDetail blueprint)
         {
             var detail = GetRecipe(recipe);
             var recipeDetails = new GuiBindingList<string>();
             var recipeDetailColors = new GuiBindingList<GuiColor>();
 
             recipeDetails.Add("[COMPONENTS]");
-            recipeDetailColors.Add(_cyan);
+            recipeDetailColors.Add(GuiColor.Cyan);
             foreach (var (resref, quantity) in detail.Components)
             {
                 var componentName = Cache.GetItemNameByResref(resref);
                 recipeDetails.Add($"{quantity}x {componentName}");
-                recipeDetailColors.Add(_white);
+                recipeDetailColors.Add(GuiColor.White);
             }
 
             recipeDetails.Add(string.Empty);
-            recipeDetailColors.Add(_green);
+            recipeDetailColors.Add(GuiColor.Green);
 
             recipeDetails.Add("[REQUIREMENTS]");
-            recipeDetailColors.Add(_cyan);
+            recipeDetailColors.Add(GuiColor.Cyan);
             foreach (var req in detail.Requirements)
             {
                 recipeDetails.Add(req.RequirementText);
                 recipeDetailColors.Add(string.IsNullOrWhiteSpace(req.CheckRequirements(player))
-                    ? _green
-                    : _red);
+                    ? GuiColor.Green
+                    : GuiColor.Red);
             }
 
             recipeDetails.Add(string.Empty);
-            recipeDetailColors.Add(_green);
+            recipeDetailColors.Add(GuiColor.Green);
 
             recipeDetails.Add("[PROPERTIES]");
-            recipeDetailColors.Add(_cyan);
+            recipeDetailColors.Add(GuiColor.Cyan);
             var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = CreateItemOnObject(detail.Resref, tempStorage);
             
             foreach (var ip in Item.BuildItemPropertyList(item))
             {
                 recipeDetails.Add(ip);
-                recipeDetailColors.Add(_white);
+                recipeDetailColors.Add(GuiColor.White);
             }
             
             DestroyObject(item);
 
+            recipeDetails.Add(string.Empty);
+            recipeDetailColors.Add(GuiColor.White);
+            
+            if (blueprint != null && blueprint.Recipe != RecipeType.Invalid)
+            {
+                recipeDetails.Add("[BLUEPRINT]");
+                recipeDetailColors.Add(GuiColor.Cyan);
+
+                if (blueprint.Level == 0)
+                {
+                    recipeDetails.Add("No Bonuses");
+                    recipeDetailColors.Add(GuiColor.White);
+                }
+                else
+                {
+                    if (blueprint.LicensedRuns > 0)
+                    {
+                        recipeDetails.Add($"Licensed Runs x{blueprint.LicensedRuns}");
+                        recipeDetailColors.Add(GuiColor.White);
+                    }
+                    if (blueprint.ItemBonuses > 0)
+                    {
+                        recipeDetails.Add($"Stat Bonus x{blueprint.ItemBonuses}");
+                        recipeDetailColors.Add(GuiColor.White);
+                    }
+
+                    if (blueprint.CreditReduction > 0)
+                    {
+                        recipeDetails.Add($"Price Reduced -{blueprint.CreditReduction}%");
+                        recipeDetailColors.Add(GuiColor.White);
+                    }
+
+                    if (blueprint.EnhancementSlots > 0)
+                    {
+                        recipeDetails.Add($"Bonus Enhancements x{blueprint.EnhancementSlots}");
+                        recipeDetailColors.Add(GuiColor.White);
+                    }
+                }
+                
+            }
+            
             return (recipeDetails, recipeDetailColors);
         }
 
@@ -326,6 +478,22 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Determines whether a player can research a specific recipe.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <param name="recipeType">The recipe to check</param>
+        /// <returns>true if the player can research the recipe, false otherwise</returns>
+        public static bool CanPlayerResearchRecipe(uint player, RecipeType recipeType)
+        {
+            var recipe = GetRecipe(recipeType);
+            var tier = recipe.Level / 10 + 1;
+            if (tier > 5)
+                tier = 5;
+
+            return Perk.GetPerkLevel(player, PerkType.Research) >= tier;
+        }
+        
+        /// <summary>
         /// Retrieves a recipe's level detail by the given level number.
         /// </summary>
         /// <param name="level">The level to search by.</param>
@@ -341,207 +509,207 @@ namespace SWLOR.Game.Server.Service
         /// <param name="subTypeId">The sub type of the enhancement</param>
         /// <param name="amount">The amount to apply.</param>
         /// <returns></returns>
-        public static ItemProperty BuildItemPropertyForEnhancement(int subTypeId, int amount)
+        public static ItemProperty BuildItemPropertyForEnhancement(EnhancementSubType subTypeId, int amount)
         {
             switch (subTypeId)
             {
-                case 1: // Defense - Physical
+                case EnhancementSubType.DefensePhysical: // Defense - Physical
                     return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Physical, amount);
-                case 2: // Defense - Force
+                case EnhancementSubType.DefenseForce: // Defense - Force
                     return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Force, amount);
-                case 3: // Defense - Fire
+                case EnhancementSubType.DefenseFire: // Defense - Fire
                     return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Fire, amount);
-                case 4: // Defense - Poison
+                case EnhancementSubType.DefensePoison: // Defense - Poison
                     return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Poison, amount);
-                case 5: // Defense - Electrical
+                case EnhancementSubType.DefenseElectrical: // Defense - Electrical
                     return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Electrical, amount);
-                case 6: // Defense - Ice
+                case EnhancementSubType.DefenseIce: // Defense - Ice
                     return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Ice, amount);
-                case 7: // Evasion
+                case EnhancementSubType.Evasion: // Evasion
                     return ItemPropertyCustom(ItemPropertyType.Evasion, -1, amount);
-                case 8: // HP
+                case EnhancementSubType.HP: // HP
                     return ItemPropertyCustom(ItemPropertyType.HPBonus, -1, amount);
-                case 9: // FP
+                case EnhancementSubType.FP: // FP
                     return ItemPropertyCustom(ItemPropertyType.FP, -1, amount);
-                case 10: // Stamina
+                case EnhancementSubType.Stamina: // Stamina
                     return ItemPropertyCustom(ItemPropertyType.Stamina, -1, amount);
-                case 11: // Vitality
+                case EnhancementSubType.Vitality: // Vitality
                     return ItemPropertyAbilityBonus(AbilityType.Vitality, amount);
-                case 12: // Social
+                case EnhancementSubType.Social: // Social
                     return ItemPropertyAbilityBonus(AbilityType.Social, amount);
-                case 13: // Willpower
+                case EnhancementSubType.Willpower: // Willpower
                     return ItemPropertyAbilityBonus(AbilityType.Willpower, amount);
-                case 14: // Control - Smithery
+                case EnhancementSubType.ControlSmithery: // Control - Smithery
                     return ItemPropertyCustom(ItemPropertyType.Control, 1, amount);
-                case 15: // Craftsmanship - Smithery
+                case EnhancementSubType.CraftsmanshipSmithery: // Craftsmanship - Smithery
                     return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 1, amount);
                 
                 // 16 and 17 are applied within the view model, as they are not actually item properties.
                 
-                case 18: // DMG - Physical
+                case EnhancementSubType.DMGPhysical: // DMG - Physical
                     return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, amount);
-                case 19: // DMG - Force
+                case EnhancementSubType.DMGForce: // DMG - Force
                     return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Force, amount);
-                case 20: // DMG - Fire
+                case EnhancementSubType.DMGFire: // DMG - Fire
                     return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Fire, amount);
-                case 21: // DMG - Poison
+                case EnhancementSubType.DMGPoison: // DMG - Poison
                     return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Poison, amount);
-                case 22: // DMG - Electrical
+                case EnhancementSubType.DMGElectrical: // DMG - Electrical
                     return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Electrical, amount);
-                case 23: // DMG - Ice
+                case EnhancementSubType.DMGIce: // DMG - Ice
                     return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Ice, amount);
-                case 24: // Might
+                case EnhancementSubType.Might: // Might
                     return ItemPropertyAbilityBonus(AbilityType.Might, amount);
-                case 25: // Perception
+                case EnhancementSubType.Perception: // Perception
                     return ItemPropertyAbilityBonus(AbilityType.Perception, amount);
-                case 26: // Accuracy
+                case EnhancementSubType.Accuracy: // Accuracy
                     return ItemPropertyAttackBonus(amount);
-                case 27: // Recast Reduction
+                case EnhancementSubType.RecastReduction: // Recast Reduction
                     return ItemPropertyCustom(ItemPropertyType.AbilityRecastReduction, -1, amount);
-                case 28: // Structure Bonus
+                case EnhancementSubType.StructureBonus: // Structure Bonus
                     return ItemPropertyCustom(ItemPropertyType.StructureBonus, -1, amount);
-                case 29: // Food Bonus - HP Regen
+                case EnhancementSubType.FoodBonusHPRegen: // Food Bonus - HP Regen
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.HPRegen, amount);
-                case 30: // Food Bonus - FP Regen
+                case EnhancementSubType.FoodBonusFPRegen: // Food Bonus - FP Regen
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.FPRegen, amount);
-                case 31: // Food Bonus - STM Regen
+                case EnhancementSubType.FoodBonusSTMRegen: // Food Bonus - STM Regen
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.STMRegen, amount);
-                case 32: // Food Bonus - Rest Regen
+                case EnhancementSubType.FoodBonusRestRegen: // Food Bonus - Rest Regen
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.RestRegen, amount);
-                case 33: // Food Bonus - XP Bonus
+                case EnhancementSubType.FoodBonusXPBonus: // Food Bonus - XP Bonus
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.XPBonus, amount);
-                case 34: // Food Bonus - Recast Reduction
+                case EnhancementSubType.FoodBonusRecastReduction: // Food Bonus - Recast Reduction
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.RecastReduction, amount);
-                case 35: // Food Bonus - Duration
+                case EnhancementSubType.FoodBonusDuration: // Food Bonus - Duration
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Duration, amount);
-                case 36: // Food Bonus - HP
+                case EnhancementSubType.FoodBonusHP: // Food Bonus - HP
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.HP, amount);
-                case 37: // Food Bonus - FP
+                case EnhancementSubType.FoodBonusFP: // Food Bonus - FP
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.FP, amount);
-                case 38: // Food Bonus - STM
+                case EnhancementSubType.FoodBonusSTM: // Food Bonus - STM
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.STM, amount);
-                case 39: // Control - Engineering
+                case EnhancementSubType.ControlEngineering: // Control - Engineering
                     return ItemPropertyCustom(ItemPropertyType.Control, 2, amount);
-                case 40: // Craftsmanship - Engineering
+                case EnhancementSubType.CraftsmanshipEngineering: // Craftsmanship - Engineering
                     return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 2, amount);
-                case 41: // Control - Fabrication
+                case EnhancementSubType.ControlFabrication: // Control - Fabrication
                     return ItemPropertyCustom(ItemPropertyType.Control, 3, amount);
-                case 42: // Craftsmanship - Fabrication
+                case EnhancementSubType.CraftsmanshipFabrication: // Craftsmanship - Fabrication
                     return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 3, amount);
-                case 43: // Control - Agriculture
+                case EnhancementSubType.ControlAgriculture: // Control - Agriculture
                     return ItemPropertyCustom(ItemPropertyType.Control, 4, amount);
-                case 44: // Craftsmanship - Agriculture
+                case EnhancementSubType.CraftsmanshipAgriculture: // Craftsmanship - Agriculture
                     return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 4, amount);
-                case 45: // Module Bonus
+                case EnhancementSubType.ModuleBonus: // Module Bonus
                     return ItemPropertyCustom(ItemPropertyType.ModuleBonus, -1, amount);
-                case 46: // Starship Hull
+                case EnhancementSubType.StarshipHull: // Starship Hull
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 46, amount);
-                case 47: // Starship Capacitor
+                case EnhancementSubType.StarshipCapacitor: // Starship Capacitor
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 47, amount);
-                case 48: // Starship Shield
+                case EnhancementSubType.StarshipShield: // Starship Shield
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 48, amount);
-                case 49: // Starship Shield Recharge Rate
+                case EnhancementSubType.StarshipShieldRechargeRate: // Starship Shield Recharge Rate
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 49, amount);
-                case 50: // Starship EM Damage
+                case EnhancementSubType.StarshipEMDamage: // Starship EM Damage
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 50, amount);
-                case 51: // Starship Thermal Damage
+                case EnhancementSubType.StarshipThermalDamage: // Starship Thermal Damage
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 51, amount);
-                case 52: // Starship Explosive Damage
+                case EnhancementSubType.StarshipExplosiveDamage: // Starship Explosive Damage
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 52, amount);
-                case 53: // Starship Accuracy
+                case EnhancementSubType.StarshipAccuracy: // Starship Accuracy
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 53, amount);
-                case 54: // Starship Evasion
+                case EnhancementSubType.StarshipEvasion: // Starship Evasion
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 54, amount);
-                case 55: // Starship Thermal Defense
+                case EnhancementSubType.StarshipThermalDefense: // Starship Thermal Defense
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 55, amount);
-                case 56: // Starship Explosive Defense
+                case EnhancementSubType.StarshipExplosiveDefense: // Starship Explosive Defense
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 56, amount);
-                case 57: // Starship EM Defense
+                case EnhancementSubType.StarshipEMDefense: // Starship EM Defense
                     return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 57, amount);
-                case 58: // Agility
+                case EnhancementSubType.Agility: // Agility
                     return ItemPropertyAbilityBonus(AbilityType.Agility, amount);
-                case 59: // Attack
-                    return ItemPropertyCustom(ItemPropertyType.Attack, -1, amount);
-                case 60: // Food Bonus - Attack
+                
+                // 59 is free
+                
+                case EnhancementSubType.FoodBonusAttack: // Food Bonus - Attack
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Attack, amount);
-                case 61: // Food Bonus - Accuracy
+                case EnhancementSubType.FoodBonusAccuracy: // Food Bonus - Accuracy
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Accuracy, amount);
-                case 62: // Food Bonus - Physical Defense
+                case EnhancementSubType.FoodBonusPhysicalDefense: // Food Bonus - Physical Defense
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefensePhysical, amount);
-                case 63: // Food Bonus - Force Defense
+                case EnhancementSubType.FoodBonusForceDefense: // Food Bonus - Force Defense
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseForce, amount);
-                case 64: // Food Bonus - Poison Defense
+                case EnhancementSubType.FoodBonusPoisonDefense: // Food Bonus - Poison Defense
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefensePoison, amount);
-                case 65: // Food Bonus - Fire Defense
+                case EnhancementSubType.FoodBonusFireDefense: // Food Bonus - Fire Defense
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseFire, amount);
-                case 66: // Food Bonus - Ice Defense
+                case EnhancementSubType.FoodBonusIceDefense: // Food Bonus - Ice Defense
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseIce, amount);
-                case 67: // Food Bonus - Electrical Defense
+                case EnhancementSubType.FoodBonusElectricalDefense: // Food Bonus - Electrical Defense
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseElectrical, amount);
-                case 68: // Food Bonus - Evasion
+                case EnhancementSubType.FoodBonusEvasion: // Food Bonus - Evasion
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Evasion, amount);
-                case 69: // Food Bonus - Control Smithery
+                case EnhancementSubType.FoodBonusControlSmithery: // Food Bonus - Control Smithery
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlSmithery, amount);
-                case 70: // Food Bonus - Craftsmanship Smithery
+                case EnhancementSubType.FoodBonusCraftsmanshipSmithery: // Food Bonus - Craftsmanship Smithery
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipSmithery, amount);
-                case 71: // Food Bonus - Control Fabrication
+                case EnhancementSubType.FoodBonusControlFabrication: // Food Bonus - Control Fabrication
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlFabrication, amount);
-                case 72: // Food Bonus - Craftsmanship Fabrication
+                case EnhancementSubType.FoodBonusCraftsmanshipFabrication: // Food Bonus - Craftsmanship Fabrication
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipFabrication, amount);
-                case 73: // Food Bonus - Control Engineering
+                case EnhancementSubType.FoodBonusControlEngineering: // Food Bonus - Control Engineering
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlEngineering, amount);
-                case 74: // Food Bonus - Craftsmanship Engineering
+                case EnhancementSubType.FoodBonusCraftsmanshipEngineering: // Food Bonus - Craftsmanship Engineering
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipEngineering, amount);
-                case 75: // Food Bonus - Control Agriculture
+                case EnhancementSubType.FoodBonusControlAgriculture: // Food Bonus - Control Agriculture
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlAgriculture, amount);
-                case 76: // Food Bonus - Craftsmanship Agriculture
+                case EnhancementSubType.FoodBonusCraftsmanshipAgriculture: // Food Bonus - Craftsmanship Agriculture
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipAgriculture, amount);
-                case 77: // Food Bonus - Might
+                case EnhancementSubType.FoodBonusMight: // Food Bonus - Might
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Might, amount);
-                case 78: // Food Bonus - Perception
+                case EnhancementSubType.FoodBonusPerception: // Food Bonus - Perception
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Perception, amount);
-                case 79: // Food Bonus - Vitality
+                case EnhancementSubType.FoodBonusVitality: // Food Bonus - Vitality
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Vitality, amount);
-                case 80: // Food Bonus - Willpower
+                case EnhancementSubType.FoodBonusWillpower: // Food Bonus - Willpower
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Willpower, amount);
-                case 81: // Food Bonus - Agility
+                case EnhancementSubType.FoodBonusAgility: // Food Bonus - Agility
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Agility, amount);
-                case 82: // Food Bonus - Social
+                case EnhancementSubType.FoodBonusSocial: // Food Bonus - Social
                     return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Social, amount);
-                case 83: // Attack
+                case EnhancementSubType.Attack: // Attack
                     return ItemPropertyCustom(ItemPropertyType.Attack, -1, amount);
-                case 84: // Force Attack
+                case EnhancementSubType.ForceAttack: // Force Attack
                     return ItemPropertyCustom(ItemPropertyType.ForceAttack, -1, amount);
 
                 // 83-101 are free
 
-                case 102: // Droid: AI Slot
+                case EnhancementSubType.DroidAISlot: // Droid: AI Slot
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 3, amount);
-                case 103: // Droid: HP
+                case EnhancementSubType.DroidHP: // Droid: HP
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 4, amount);
-                case 104: // Droid: STM
+                case EnhancementSubType.DroidSTM: // Droid: STM
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 5, amount);
-                case 105: // Droid: MGT
+                case EnhancementSubType.DroidMGT: // Droid: MGT
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 6, amount);
-                case 106: // Droid: PER
+                case EnhancementSubType.DroidPER: // Droid: PER
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 7, amount);
-                case 107: // Droid: VIT
+                case EnhancementSubType.DroidVIT: // Droid: VIT
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 8, amount);
-                case 108: // Droid: WIL
+                case EnhancementSubType.DroidWIL: // Droid: WIL
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 9, amount);
-                case 109: // Droid: AGI
+                case EnhancementSubType.DroidAGI: // Droid: AGI
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 10, amount);
-                case 110: // Droid: SOC
+                case EnhancementSubType.DroidSOC: // Droid: SOC
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 11, amount);
-                case 111: // Droid: 1-Handed
+                case EnhancementSubType.Droid1Handed: // Droid: 1-Handed
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 12, amount);
-                case 112: // Droid: 2-Handed
+                case EnhancementSubType.Droid2Handed: // Droid: 2-Handed
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 13, amount);
-                case 113: // Droid: Martial Arts
+                case EnhancementSubType.DroidMartialArts: // Droid: Martial Arts
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 14, amount);
-                case 114: // Droid: Ranged
+                case EnhancementSubType.DroidRanged: // Droid: Ranged
                     return ItemPropertyCustom(ItemPropertyType.DroidStat, 15, amount);
-
             }
 
             throw new Exception("Unsupported enhancement type.");
@@ -554,5 +722,216 @@ namespace SWLOR.Game.Server.Service
             Gui.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
         }
 
+        [NWNEventHandler("research_term")]
+        public static void UseResearchTerminal()
+        {
+            var player = GetLastUsedBy();
+            var playerId = GetObjectUUID(player);
+            var terminal = OBJECT_SELF;
+            var researchLevel = Perk.GetPerkLevel(player, PerkType.Research);
+
+            if (researchLevel <= 0)
+            {
+                SendMessageToPC(player, $"Perk 'Research I' is required to use research terminals.");
+                return;
+            }
+            
+            var propertyId = Property.GetPropertyId(terminal);
+
+            if (string.IsNullOrWhiteSpace(propertyId))
+            {
+                SendMessageToPC(player, $"This research terminal cannot be used.");
+                return;
+            }
+
+            var query = new DBQuery<ResearchJob>()
+                .AddFieldSearch(nameof(ResearchJob.ParentPropertyId), propertyId, false);
+            var dbJob = DB.Search(query)
+                .FirstOrDefault();
+
+            if (dbJob == null)
+            {
+                var payload = new RecipesPayload(RecipesUIMode.Research, SkillType.Invalid);
+                Gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, terminal);
+            }
+            else
+            {
+                if (dbJob.PlayerId != playerId)
+                {
+                    var now = DateTime.UtcNow;
+                    if (dbJob.DateCompleted > now)
+                    {
+                        var delta = dbJob.DateCompleted - now;
+                        var completionTime = Time.GetTimeLongIntervals(delta, false);
+                        SendMessageToPC(player, $"Another player's incubation job is active. This job will complete in: {completionTime}.");
+                    }
+                    else
+                    {
+                        SendMessageToPC(player, $"Another player's research job is active. This job has completed.");
+                    }
+                }
+                else
+                {
+                    var payload = new ResearchPayload(propertyId, OBJECT_INVALID, RecipeType.Invalid);
+                    Gui.TogglePlayerWindow(player, GuiWindowType.Research, payload, terminal);
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Retrieves a blueprint detail object about an item.
+        /// If item is not a blueprint, resulting recipe type will be Invalid.
+        /// </summary>
+        /// <param name="blueprint">The blueprint item</param>
+        /// <returns>A blueprint detail object</returns>
+        public static BlueprintDetail GetBlueprintDetails(uint blueprint)
+        {
+            var blueprintDetail = new BlueprintDetail();
+            var recipeId = GetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID");
+            blueprintDetail.Recipe = (RecipeType)recipeId;
+            blueprintDetail.RandomEnhancementSlotGranted = GetLocalBool(blueprint, "BLUEPRINT_RANDOM_ENHANCEMENT_SLOT_GRANTED");
+
+            for (var ip = GetFirstItemProperty(blueprint); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(blueprint))
+            {
+                var type = GetItemPropertyType(ip);
+                var subType = GetItemPropertySubType(ip);
+                var costValue = GetItemPropertyCostTableValue(ip);
+
+                if (type == ItemPropertyType.Blueprint)
+                {
+                    if (subType == (int)BlueprintSubType.Level)
+                    {
+                        blueprintDetail.Level = costValue;
+                    }
+                    else if (subType == (int)BlueprintSubType.LicensedRuns)
+                    {
+                        blueprintDetail.LicensedRuns = costValue;
+                    }
+                    else if (subType == (int)BlueprintSubType.ItemBonuses)
+                    {
+                        blueprintDetail.ItemBonuses = costValue;
+                    }
+                    else if (subType == (int)BlueprintSubType.CreditReduction)
+                    {
+                        blueprintDetail.CreditReduction = costValue;
+                    }
+                    else if (subType == (int)BlueprintSubType.TimeReduction)
+                    {
+                        blueprintDetail.TimeReduction = costValue;
+                    }
+                    else if (subType == (int)BlueprintSubType.EnhancementSlots)
+                    {
+                        blueprintDetail.EnhancementSlots = costValue;
+                    }
+                }
+                else if (type == ItemPropertyType.ArmorEnhancement ||
+                         type == ItemPropertyType.WeaponEnhancement ||
+                         type == ItemPropertyType.StructureEnhancement ||
+                         type == ItemPropertyType.FoodEnhancement ||
+                         type == ItemPropertyType.StarshipEnhancement ||
+                         type == ItemPropertyType.ModuleEnhancement ||
+                         type == ItemPropertyType.DroidEnhancement)
+                {
+                    var enhancementIP = BuildItemPropertyForEnhancement((EnhancementSubType)subType, costValue);
+                    blueprintDetail.GuaranteedBonuses.Add(enhancementIP);
+                }
+                
+            }
+
+            return blueprintDetail;
+        }
+
+        /// <summary>
+        /// Sets details about a blueprint onto the item.
+        /// These are a combination of item properties and local variables set onto the item.
+        /// </summary>
+        /// <param name="blueprint">The blueprint to modify.</param>
+        /// <param name="blueprintDetail">The details about the blueprint.</param>
+        public static void SetBlueprintDetails(uint blueprint, BlueprintDetail blueprintDetail)
+        {
+            if (blueprintDetail.LicensedRuns <= 0)
+            {
+                DestroyObject(blueprint);
+                return;
+            }
+            
+            SetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID", (int)blueprintDetail.Recipe);
+            SetLocalBool(blueprint, "BLUEPRINT_RANDOM_ENHANCEMENT_SLOT_GRANTED", blueprintDetail.RandomEnhancementSlotGranted);
+            
+            BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, blueprintDetail.Level), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.LicensedRuns, blueprintDetail.LicensedRuns), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.ItemBonuses, blueprintDetail.ItemBonuses), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.CreditReduction, blueprintDetail.CreditReduction), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.TimeReduction, blueprintDetail.TimeReduction), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(blueprint, ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.EnhancementSlots, blueprintDetail.EnhancementSlots), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            
+        }
+
+        private static int CalculateResearchCost(RecipeType recipe, int blueprintLevel, int baseConstant, float reductionBonus)
+        {
+            var recipeDetail = GetRecipe(recipe);
+            var perkLevel = recipeDetail.Level / 10 + 1;
+            if (perkLevel > 5)
+                perkLevel = 5;
+
+            var price = baseConstant * (Math.Pow(perkLevel, 2.2f) * Math.Pow(blueprintLevel, 2f));
+            price += price * recipeDetail.ResearchCostModifier;
+            price -= reductionBonus * price;
+
+            return (int)price;
+        }
+
+        /// <summary>
+        /// Calculates the credit cost to craft a blueprint.
+        /// </summary>
+        /// <param name="blueprint">The blueprint to craft.</param>
+        /// <returns>The number of credits to charge the player to craft the item.</returns>
+        public static int CalculateBlueprintCraftCreditCost(uint blueprint)
+        {
+            var blueprintDetail = GetBlueprintDetails(blueprint);
+            var reductionBonus = blueprintDetail.CreditReduction * 0.01f;
+            return CalculateResearchCost(blueprintDetail.Recipe, blueprintDetail.Level, 80, reductionBonus);
+        }
+
+        /// <summary>
+        /// Calculates the credit cost to research a blueprint.
+        /// </summary>
+        /// <param name="recipe">The recipe to research</param>
+        /// <param name="blueprintLevel">The level of the blueprint</param>
+        /// <param name="reductionBonus">The % reduction towards credit cost to research</param>
+        /// <returns>The number of credits to charge the player to research the blueprint.</returns>
+        public static int CalculateBlueprintResearchCreditCost(RecipeType recipe, int blueprintLevel, int reductionBonus)
+        {
+            return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);
+        }
+
+        /// <summary>
+        /// Calculates the number of seconds it takes to research a blueprint.
+        /// </summary>
+        /// <param name="recipe">The recipe to research</param>
+        /// <param name="blueprintLevel">The level of the blueprint</param>
+        /// <param name="reductionBonus">The % reduction towards credit cost to research</param>
+        /// <returns>The number of seconds to wait before the blueprint is researched to the next level.</returns>
+        public static int CalculateBlueprintResearchSeconds(RecipeType recipe, int blueprintLevel, int reductionBonus)
+        {
+            return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);
+        }
+
+        /// <summary>
+        /// When a property is removed, also remove any associated research jobs.
+        /// </summary>
+        [NWNEventHandler("swlor_del_prop")]
+        public static void OnRemoveProperty()
+        {
+            var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
+            var dbQuery = new DBQuery<ResearchJob>()
+                .AddFieldSearch(nameof(ResearchJob.ParentPropertyId), propertyId, false);
+            var dbJobs = DB.Search(dbQuery).ToList();
+
+            foreach (var dbJob in dbJobs)
+            {
+                DB.Delete<ResearchJob>(dbJob.Id);
+            }
+        }
     }
 }

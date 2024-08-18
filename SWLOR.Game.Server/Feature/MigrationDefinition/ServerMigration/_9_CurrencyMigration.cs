@@ -11,6 +11,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
     public class _9_CurrencyMigration : ServerMigrationBase, IServerMigration
     {
         public int Version => 9;
+
+        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
+
         public void Migrate()
         {
             var dbQuery = new DBQuery<Player>();

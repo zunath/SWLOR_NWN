@@ -40,11 +40,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's EM attack by {emDamageBonus}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.EMDamage += emDamageBonus + moduleBonus;
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.EMDamage -= emDamageBonus + moduleBonus;
                 });
@@ -59,11 +59,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's thermal attack by {thermalDamageBonus}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.ThermalDamage += thermalDamageBonus + moduleBonus;
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.ThermalDamage -= thermalDamageBonus + moduleBonus;
                 });
@@ -78,11 +78,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's explosive attack by {explosiveDamageBonus}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.ExplosiveDamage += explosiveDamageBonus + moduleBonus;
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.ExplosiveDamage -= explosiveDamageBonus + moduleBonus;
                 });

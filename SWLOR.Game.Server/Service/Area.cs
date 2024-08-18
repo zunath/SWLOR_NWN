@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Service
         private static Dictionary<string, uint> AreasByResref { get; } = new();
         private static Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
 
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void CacheData()
         {
             CacheAreasByResref();

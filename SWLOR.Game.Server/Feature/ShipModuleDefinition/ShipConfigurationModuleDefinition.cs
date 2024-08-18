@@ -60,9 +60,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             ShipConfig("con_hvy5", "NPC Hvy Conf 5", "NPC HVY5", "iit_ess8_121", 1, 0, 0, 0, 85, 0, 85, 0, 65, 30, 30, 0);
             ShipConfig("con_hvy6", "NPC Hvy Conf 6", "NPC HVY6", "iit_ess8_121", 1, 0, 0, 0, 100, 0, 100, 0, 80, 30, 30, 0);
 
-            CapShipConfig("cap_indus", "Logistics Nexus Configuration", "iit_ess8_124", 5, 500, 0, 0, 100, 0, 100, 0, 100, 0, 0, 20, 0);
-            CapShipConfig("cap_skirm", "Skirmisher Configuration", "iit_ess8_121", 5, 100, 250, 0, 75, 0, 75, 0, 75, 0, 0, 0, -10);
-            CapShipConfig("cap_warship", "Warship Configuration", "iit_ess8_123", 5, 300, 300, 0, 200, 0, 200, 0, 200, 0, 0, 0, 0);
+            CapShipConfig("cap_indus", "Logistics Nexus Configuration", "iit_ess8_124", 5, 500, 0, 0, 100, 0, 100, 0, 100, 0, 0, 6, 0);
+            CapShipConfig("cap_skirm", "Skirmisher Configuration", "iit_ess8_121", 5, 100, 250, 0, 75, 0, 75, 0, 75, 40, 40, 0, -10);
+            CapShipConfig("cap_warship", "Warship Configuration", "iit_ess8_123", 5, 300, 300, 50, 200, 50, 200, 50, 200, 0, 0, 0, 0);
 
             CapShipConfig("npc_cap1", "Boss Conf 1", "iit_ess8_121", 1, 0, 0, 0, 20, 0, 15, 10, 10, 5, 5, 0, 0);
             CapShipConfig("npc_cap2", "Boss Conf 2", "iit_ess8_121", 1, 0, 0, 5, 50, 5, 37, 20, 5, 10, 0, 0, 0);
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 $"Industrial Level: +{industrial} + Module Bonus x 2 (Industrial frames only)")
                 .PowerType(ShipModulePowerType.Config)
                 .RequirePerk(PerkType.Starships, requiredLevel)
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.MaxHull += armor + moduleBonus * 4;
                     shipStatus.MaxShield += shield + moduleBonus * 4;
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         shipStatus.Industrial += industrial + moduleBonus;
                     }
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.MaxHull -= armor + moduleBonus * 4;
                     shipStatus.MaxShield -= shield + moduleBonus * 4;
@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .PowerType(ShipModulePowerType.Config)
                 .RequirePerk(PerkType.Starships, requiredLevel)
                 .CapitalClassModule()
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.MaxHull += armor + moduleBonus * 4;
                     shipStatus.MaxShield += shield + moduleBonus * 4;
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         shipStatus.Industrial += industrial + moduleBonus;
                     }
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.MaxHull -= armor + moduleBonus * 4;
                     shipStatus.MaxShield -= shield + moduleBonus * 4;

@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, read the ambientmusic.2da file for all active songs.
         /// Add these to the cache.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
+        [NWNEventHandler("mod_cache_bef")]
         public static void LoadSongList()
         {
             const string File = "ambientmusic";

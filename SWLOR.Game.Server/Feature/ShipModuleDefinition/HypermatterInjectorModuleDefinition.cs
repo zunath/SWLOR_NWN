@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
     {
         private readonly ShipModuleBuilder _builder = new();
 
+        private const string FuelCapsuleItemResref = "ship_fuelcapsule";
+
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
             HypermatterInjector("cap_inject1", "Basic Hypermatter Injector", "Basic Fuel Inj", "Consumes a fuel capsule to restore 8 capacitor.", 1, 8);
@@ -36,6 +38,17 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Texture("iit_ess_032")
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
                 .Recast(60f)
+                .ValidationAction((activator, _, _, _, _) =>
+                {
+                    var item = GetItemPossessedBy(activator, FuelCapsuleItemResref);
+                    var stackSize = GetItemStackSize(item);
+                    if (stackSize <= 0 && GetIsPC(activator))
+                    {
+                        return "You need a fuel capsule to activate this module.";
+                    }
+
+                    return string.Empty;
+                })
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     if (!GetIsObjectValid(target))
@@ -51,6 +64,17 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var beam = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator, BodyNode.Chest);
                             ApplyEffectToObject(DurationType.Temporary, beam, target, 1.0f);
                         });
+                    }
+
+                    var item = GetItemPossessedBy(activator, FuelCapsuleItemResref);
+                    var stackSize = GetItemStackSize(item);
+                    if (stackSize <= 1)
+                    {
+                        DestroyObject(item);
+                    }
+                    else
+                    {
+                        SetItemStackSize(item, stackSize - 1);
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Breach), target);

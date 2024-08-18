@@ -56,6 +56,7 @@
         TrainingStore = 51,
         Incubator = 52,
         Research = 53,
+        TargetDescription = 54,
 
         DebugEnmity = 900,
         ChangePortrait = 9999

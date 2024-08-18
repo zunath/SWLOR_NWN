@@ -29,13 +29,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's maximum capacitor by {capacitorBoostAmount}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
-                .EquippedAction((_, shipStatus, moduleBonus) =>
+                .EquippedAction((shipStatus, moduleBonus) =>
                 {
-                    shipStatus.MaxCapacitor += capacitorBoostAmount + moduleBonus * 2;
+                    shipStatus.MaxCapacitor += capacitorBoostAmount + moduleBonus * 5;
                 })
-                .UnequippedAction((_, shipStatus, moduleBonus) =>
+                .UnequippedAction((shipStatus, moduleBonus) =>
                 {
-                    shipStatus.MaxCapacitor -= capacitorBoostAmount + moduleBonus * 2;
+                    shipStatus.MaxCapacitor -= capacitorBoostAmount + moduleBonus * 5;
                 });
         }
     }

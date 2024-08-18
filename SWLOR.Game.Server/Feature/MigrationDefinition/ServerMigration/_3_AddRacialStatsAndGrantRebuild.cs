@@ -6,9 +6,10 @@ using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
-    public class _3_AddRacialStatsAndGrantRebuild: ServerMigrationBase
+    public class _3_AddRacialStatsAndGrantRebuild: ServerMigrationBase, IServerMigration
     {
         public int Version => 3;
+        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
         public void Migrate()
         {
             var query = new DBQuery<Player>();

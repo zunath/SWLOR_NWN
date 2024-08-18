@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Service.PerkService
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            if (dbPlayer.Perks.ContainsKey(_cannotHavePerkType))
+            if (dbPlayer.Perks.ContainsKey(_cannotHavePerkType) &&
+                dbPlayer.Perks[_cannotHavePerkType] > 0)
                 return $"You cannot have perk: {perkDetail.Name}";
 
             return string.Empty;

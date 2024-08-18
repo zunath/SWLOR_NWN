@@ -1556,6 +1556,18 @@ namespace SWLOR.Game.Server.Service.PropertyService
             StructureCategoryType.ResearchDevice)]
         Incubator = 271,
 
+        [Structure("Research Terminal",
+            "research_term",
+            "",
+            true,
+            0,
+            PropertyType.Lab,
+            PropertyLayoutType.Invalid,
+            true,
+            StructureCategoryType.ResearchDevice)]
+        ResearchTerminal = 272,
+
+
         // Buildings start here (5000+)
         [Structure("City Hall - Style 1",
             "city_hall",

@@ -251,7 +251,7 @@
               },
               "ArmorPart_Neck": {
                 "type": "byte",
-                "value": 254
+                "value": 2
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
@@ -412,7 +412,7 @@
               },
               "xArmorPart_Neck": {
                 "type": "word",
-                "value": 254
+                "value": 2
               },
               "xArmorPart_Pelvi": {
                 "type": "word",
@@ -456,7 +456,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 5.142765364072079e-043
+                "value": 1.845259290360023e-017
               },
               "XPosition": {
                 "type": "float",
@@ -634,7 +634,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.845259290360023e-017
+                "value": 5.142765364072079e-043
               },
               "XPosition": {
                 "type": "float",

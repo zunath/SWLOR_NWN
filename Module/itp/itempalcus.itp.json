@@ -49416,6 +49416,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Armor Submission Token"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "arm_sub_token"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Czerka Basic Access Keycard"
                     },
                     "RESREF": {
@@ -49454,6 +49465,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dan_jedi_003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Food Submission Token"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "food_sub_token"
                     }
                   },
                   {
@@ -49674,6 +49696,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "key_smuggler01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Weapon Submission Token"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wpn_sub_token"
                     }
                   }
                 ]

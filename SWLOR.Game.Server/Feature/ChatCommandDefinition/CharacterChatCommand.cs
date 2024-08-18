@@ -37,12 +37,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             DeleteCommand();
             LanguageCommand();
             ToggleEmoteStyle();
-            ChangeItemDescription();
             ConcentrationAbility();
             Customize();
             AlwaysWalk();
             AssociateCommands();
             Follow();
+            ChangeDescription();
             OrderCompanion();
 
             return _builder.Build();
@@ -303,33 +303,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private void ChangeItemDescription()
-        {
-            _builder.Create("changeitemdescription", "itemdesc")
-                .Description("Changes the description of an item in your inventory. Example: /changeitemdescription New Name")
-                .Permissions(AuthorizationLevel.All)
-                .RequiresTarget()
-                .Action((user, target, location, args) =>
-                {
-                    if (!GetIsObjectValid(target) ||
-                        GetItemPossessor(target) != user ||
-                        GetObjectType(target) != ObjectType.Item)
-                    {
-                        SendMessageToPC(user, "Only items in your inventory may be targeted with this command.");
-                        return;
-                    }
-                    
-                    var sb = new StringBuilder();
-
-                    foreach (var arg in args)
-                    {
-                        sb.Append(' ').Append(arg);
-                    }
-
-                    SetDescription(target, sb.ToString());
-                    SendMessageToPC(user, "New description set!");
-                });
-        }
 
         private void ConcentrationAbility()
         {
@@ -483,6 +456,29 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             ActionOpenDoor(target);
                         });
                     }
+                });
+        }
+        private void ChangeDescription()
+        {
+            _builder.Create("description", "desc")
+                .Description("Brings up a window to change the description of a target.")
+                .Permissions(AuthorizationLevel.All)
+                .RequiresTarget()
+                .Action((user, target, _, _) =>
+                {
+                    var isDM = GetIsDM(user) || GetIsDMPossessed(user);
+
+                    if (!isDM || GetIsObjectValid(target) == false)
+                    {
+                        if (!GetIsObjectValid(target) || GetItemPossessor(target) != user || GetObjectType(target) != ObjectType.Item)
+                        {
+                            SendMessageToPC(user, "You can only change descriptions of items in your inventory with this command.");
+                            return;
+                        }
+                    }
+
+                    var payload = new TargetDescriptionPayload(target);
+                    Gui.TogglePlayerWindow(user, GuiWindowType.TargetDescription, payload);
                 });
         }
     }

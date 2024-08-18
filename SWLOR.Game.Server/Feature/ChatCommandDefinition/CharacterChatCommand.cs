@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
@@ -34,7 +33,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             DeleteCommand();
             LanguageCommand();
             ToggleEmoteStyle();
-            ChangeDescription();
             ConcentrationAbility();
             Customize();
             AlwaysWalk();
@@ -299,29 +297,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private void ChangeDescription()
-        {
-            _builder.Create("changedescription", "changedesc")
-                .Description("Brings up an NUI window to change the description of a target. Players may only target items in their own inventory.")
-                .Permissions(AuthorizationLevel.All)
-                .RequiresTarget()
-                .Action((user, target, location, args) =>
-                {
-                    var isDM = GetIsDM(user) || GetIsDMPossessed(user);
-
-                    if (!isDM || GetIsObjectValid(target) == false)
-                    {
-                        if (!GetIsObjectValid(target) || GetItemPossessor(target) != user || GetObjectType(target) != ObjectType.Item)
-                        {
-                            SendMessageToPC(user, "You can only change descriptions of items in your inventory with this command.");
-                            return;
-                        }
-                    }
-
-                    var payload = new TargetDescriptionPayload(target);
-                    Gui.TogglePlayerWindow(user, GuiWindowType.TargetDescription, payload);
-                });
-        }
 
         private void ConcentrationAbility()
         {

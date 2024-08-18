@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Native
             var area = attacker.GetArea();
             ProfilerPlugin.PushPerfScope("RunScript",
                 "Script", $"NATIVE:{nameof(OnGetDamageRoll)}",
-                "Area", area.m_sTag.ToString(),
+                "Area", area == null ? "Unknown" : area.m_sTag.ToString(),
                 "ObjectType", "Creature");
 
             var targetObject = CNWSObject.FromPointer(pTarget);

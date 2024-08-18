@@ -1,0 +1,117 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 311
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 0
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "This item can be turned in to a QM or DM in exchange for a roleplay-based reward. The terms of this exchange can be worked out via a ticket on Discord.\n\nSimply creating this item is not enough to get a reward. This must be organized with the QM or DM ahead of time and THEN this item should be created. You can't just make the item and demand a reward for it."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "This item can be turned in to a QM or DM in exchange for a roleplay-based reward. The terms of this exchange can be worked out via a ticket on Discord.\n\nSimply creating this item is not enough to get a reward. This must be organized with the QM or DM ahead of time and THEN this item should be created. You can't just make the item and demand a reward for it."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Food Submission Token"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 1
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 1
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 1
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 33
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 100
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 100
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 288
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 1
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "food_sub_token"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "food_sub_token"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
+  }
+}

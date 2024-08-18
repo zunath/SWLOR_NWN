@@ -4,7 +4,7 @@
     {
         Invalid = 0,
 
-        // Smithery: 1-1000
+        #region Smithery: 1-1000
 
         BasicGreatSword = 1,
         BasicSpear = 2,
@@ -441,8 +441,13 @@
         ImmortalGloves = 404,
         ImmortalBoots = 405,
         BolRifle = 406,
+        WeaponSubmissionTokenSmithery = 407,
+        ArmorSubmissionTokenSmithery = 408,
 
-        // Fabrication:  1001-2000
+        #endregion
+
+        #region Fabrication:  1001-2000
+
         BedRoll = 1001,
         Easel = 1002,
         Candle = 1003,
@@ -724,8 +729,10 @@
         LargeHouseStyle4 = 1516,
         LabStyle1 = 1517,
 
+        #endregion
 
-        // Cooking: 2001-3000
+        #region Cooking: 2001-3000
+
         MynockMeatBall = 2001,
         WarocasPotPie = 2002,
         SugarCookies = 2003,
@@ -936,7 +943,12 @@
         KraftersKebab = 2203,
         DathomirPie = 2204,
 
-        // Engineering: 3001-6000
+        FoodSubmissionTokenAgriculture = 2205,
+
+        #endregion
+
+        #region Engineering: 3001-6000
+
         BasicCapacitorBooster = 3001,
         BasicCombatLaser = 3002,
         BasicEMAmplifier = 3003,
@@ -2480,5 +2492,11 @@
         SkirmisherConfig = 4787,
         WarshipConfig1 = 4788,
         StripMiner = 4789,
+
+        WeaponSubmissionTokenEngineering = 4790,
+        ArmorSubmissionTokenEngineering = 4791,
+
+        #endregion
+
     }
 }

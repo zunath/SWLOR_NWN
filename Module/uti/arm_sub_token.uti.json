@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 49
+    "value": 0
   },
   "ArmorPart_Belt": {
     "type": "byte",
@@ -18,15 +18,15 @@
   },
   "ArmorPart_LFoot": {
     "type": "byte",
-    "value": 255
+    "value": 1
   },
   "ArmorPart_LHand": {
     "type": "byte",
-    "value": 63
+    "value": 1
   },
   "ArmorPart_LShin": {
     "type": "byte",
-    "value": 247
+    "value": 2
   },
   "ArmorPart_LShoul": {
     "type": "byte",
@@ -34,15 +34,15 @@
   },
   "ArmorPart_LThigh": {
     "type": "byte",
-    "value": 17
+    "value": 1
   },
   "ArmorPart_Neck": {
     "type": "byte",
-    "value": 2
+    "value": 1
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
-    "value": 161
+    "value": 1
   },
   "ArmorPart_RBicep": {
     "type": "byte",
@@ -54,11 +54,11 @@
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 255
+    "value": 1
   },
   "ArmorPart_RHand": {
     "type": "byte",
-    "value": 63
+    "value": 1
   },
   "ArmorPart_Robe": {
     "type": "byte",
@@ -66,7 +66,7 @@
   },
   "ArmorPart_RShin": {
     "type": "byte",
-    "value": 247
+    "value": 2
   },
   "ArmorPart_RShoul": {
     "type": "byte",
@@ -74,11 +74,11 @@
   },
   "ArmorPart_RThigh": {
     "type": "byte",
-    "value": 17
+    "value": 1
   },
   "ArmorPart_Torso": {
     "type": "byte",
-    "value": 19
+    "value": 1
   },
   "BaseItem": {
     "type": "int",
@@ -90,11 +90,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 23
+    "value": 25
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 23
+    "value": 0
   },
   "Comment": {
     "type": "cexostring",
@@ -102,20 +102,22 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "This item can be turned in to a QM or DM in exchange for a roleplay-based reward. The terms of this exchange can be worked out via a ticket on Discord.\n\nSimply creating this item is not enough to get a reward. This must be organized with the QM or DM ahead of time and THEN this item should be created. You can't just make the item and demand a reward for it."
+    }
   },
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This item can be turned in to a QM or DM in exchange for a roleplay-based reward. The terms of this exchange can be worked out via a ticket on Discord.\n\nSimply creating this item is not enough to get a reward. This must be organized with the QM or DM ahead of time and THEN this item should be created. You can't just make the item and demand a reward for it."
     }
   },
   "Identified": {
@@ -124,38 +126,69 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 23
+    "value": 2
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 23
+    "value": 25
   },
   "LocalizedName": {
-    "id": 12835,
     "type": "cexolocstring",
     "value": {
-      "0": "[NPC] Outlaw Outfit Female 2"
+      "0": "Armor Submission Token"
     }
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 7
+    "value": 54
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 7
+    "value": 54
   },
   "PaletteID": {
     "type": "byte",
-    "value": 58
+    "value": 1
   },
   "Plot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PropertiesList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 33
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 100
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 100
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 288
+        }
+      }
+    ]
   },
   "StackSize": {
     "type": "word",
@@ -163,15 +196,15 @@
   },
   "Stolen": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Tag": {
     "type": "cexostring",
-    "value": "npc_looter_f_2"
+    "value": "arm_sub_token"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "npc_looter_f_2"
+    "value": "arm_sub_token"
   },
   "xArmorPart_Belt": {
     "type": "word",
@@ -187,15 +220,15 @@
   },
   "xArmorPart_LFoot": {
     "type": "word",
-    "value": 255
+    "value": 1
   },
   "xArmorPart_LHand": {
     "type": "word",
-    "value": 63
+    "value": 1
   },
   "xArmorPart_LShin": {
     "type": "word",
-    "value": 247
+    "value": 2
   },
   "xArmorPart_LShou": {
     "type": "word",
@@ -203,15 +236,15 @@
   },
   "xArmorPart_LThig": {
     "type": "word",
-    "value": 17
+    "value": 1
   },
   "xArmorPart_Neck": {
     "type": "word",
-    "value": 2
+    "value": 1
   },
   "xArmorPart_Pelvi": {
     "type": "word",
-    "value": 161
+    "value": 1
   },
   "xArmorPart_RBice": {
     "type": "word",
@@ -223,11 +256,11 @@
   },
   "xArmorPart_RFoot": {
     "type": "word",
-    "value": 255
+    "value": 1
   },
   "xArmorPart_RHand": {
     "type": "word",
-    "value": 63
+    "value": 1
   },
   "xArmorPart_Robe": {
     "type": "word",
@@ -235,7 +268,7 @@
   },
   "xArmorPart_RShin": {
     "type": "word",
-    "value": 247
+    "value": 2
   },
   "xArmorPart_RShou": {
     "type": "word",
@@ -243,10 +276,10 @@
   },
   "xArmorPart_RThig": {
     "type": "word",
-    "value": 17
+    "value": 1
   },
   "xArmorPart_Torso": {
     "type": "word",
-    "value": 19
+    "value": 1
   }
 }

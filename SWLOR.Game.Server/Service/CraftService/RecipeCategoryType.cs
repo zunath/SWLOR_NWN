@@ -126,6 +126,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         Tool = 58,
         [RecipeCategory("Capital Construction", true)]
         CapitalConstruction = 59,
+        [RecipeCategory("Special Submission Items", true)]
+        SpecialSubmissionItems = 60,
     }
 
     public class RecipeCategoryAttribute : Attribute

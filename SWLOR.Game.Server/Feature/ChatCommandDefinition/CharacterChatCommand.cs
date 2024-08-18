@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             AlwaysWalk();
             AssociateCommands();
             Follow();
+            ChangeDescription();
 
             return _builder.Build();
         }
@@ -415,6 +416,29 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         ActionMoveToObject(target, true);
                     });
+                });
+        }
+        private void ChangeDescription()
+        {
+            _builder.Create("description", "desc")
+                .Description("Brings up a window to change the description of a target.")
+                .Permissions(AuthorizationLevel.All)
+                .RequiresTarget()
+                .Action((user, target, _, _) =>
+                {
+                    var isDM = GetIsDM(user) || GetIsDMPossessed(user);
+
+                    if (!isDM || GetIsObjectValid(target) == false)
+                    {
+                        if (!GetIsObjectValid(target) || GetItemPossessor(target) != user || GetObjectType(target) != ObjectType.Item)
+                        {
+                            SendMessageToPC(user, "You can only change descriptions of items in your inventory with this command.");
+                            return;
+                        }
+                    }
+
+                    var payload = new TargetDescriptionPayload(target);
+                    Gui.TogglePlayerWindow(user, GuiWindowType.TargetDescription, payload);
                 });
         }
     }

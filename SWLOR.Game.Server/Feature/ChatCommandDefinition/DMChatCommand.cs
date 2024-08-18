@@ -16,7 +16,6 @@ using SWLOR.Game.Server.Core.NWNX;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
-using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -56,7 +55,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             GetScale();
             ShipStats();
             RepairShip();
-            ChangeDescription();
 
             return _builder.Build();
         }
@@ -1109,17 +1107,5 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private void ChangeDescription()
-        {
-            _builder.Create("description", "desc")
-                .Description("Brings up a window to change the description of a target.")
-                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
-                .RequiresTarget()
-                .Action((user, target, _, _) =>
-                {
-                    var payload = new TargetDescriptionPayload(target);
-                    Gui.TogglePlayerWindow(user, GuiWindowType.TargetDescription, payload);
-                });
-        }
     }
 }

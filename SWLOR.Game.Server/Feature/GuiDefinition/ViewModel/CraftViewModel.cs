@@ -1571,6 +1571,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 ApplyProperty(item, ip);
             }
+
+            // Identify the blueprint level on the finished item
+            var blueprintLevelIP = ItemPropertyCustom(ItemPropertyType.Blueprint, (int)BlueprintSubType.Level, _activeBlueprint.Level);
+            BiowareXP2.IPSafeAddItemProperty(item, blueprintLevelIP, 0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
         }
         
         private void ProcessFailure()

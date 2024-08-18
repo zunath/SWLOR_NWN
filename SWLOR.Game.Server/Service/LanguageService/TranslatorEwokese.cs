@@ -90,6 +90,7 @@ namespace SWLOR.Game.Server.Service.LanguageService
                     case 'z': sb.Append("s"); break;
                     case 'Z': sb.Append("S"); break;
 
+                    default: sb.Append(ch); break;
                 }
             }
 

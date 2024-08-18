@@ -1106,5 +1106,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                 });
         }
+
     }
 }

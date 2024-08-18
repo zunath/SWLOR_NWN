@@ -454,33 +454,32 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void OrderCompanion()
         {
             _builder.Create("ordercompanion", "order", "oc")
-                .Description("Orders your active companion to move to perform an interaction with a target. \n" +
-                "Use this command on your henchman to clear its enmity table and cancel all actions.")
+                .Description("Orders your active companion to move to perform an interaction with a target. Use this command on your henchman to cancel all actions.")
                 .Permissions(AuthorizationLevel.All)
                 .RequiresTarget()
-                .Action((user, target, location, args) =>
+                .Action((user, target, _, _) =>
                 {
                     var associate = GetHenchman(user);
                     if (target == associate)
                     {
                         AssignCommand(associate, () =>
                         {
-                            ClearAllActions(true);
+                            ClearAllActions();
                         });
                     }
-                    else if (GetIsEnemy(target, user) == true || GetObjectType(target) == ObjectType.Placeable)
+                    else if (GetIsEnemy(target, user) || GetObjectType(target) == ObjectType.Placeable)
                     {
                         AssignCommand(associate, () =>
                         {
-                            ClearAllActions(true);
+                            ClearAllActions();
                             ActionAttack(target);
                         });
                     }
-                    else if (GetObjectType(target) == ObjectType.Door && GetLocked(target) == false)
+                    else if (GetObjectType(target) == ObjectType.Door && !GetLocked(target))
                     {
                         AssignCommand(associate, () =>
                         {
-                            ClearAllActions(true);
+                            ClearAllActions();
                             ActionOpenDoor(target);
                         });
                     }

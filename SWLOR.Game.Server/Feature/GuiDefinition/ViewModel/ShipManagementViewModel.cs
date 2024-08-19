@@ -1516,8 +1516,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (module == null)
             {
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship high-powered module within your inventory.",
-                    item =>
+                    item => 
                 {
+                    dbShip = DB.Get<PlayerShip>(shipId);
                     var itemTag = GetTag(item);
                     if (!Space.IsRegisteredShipModule(itemTag))
                     {
@@ -1587,6 +1588,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a low-powered ship module within your inventory",
                     item =>
                 {
+                    dbShip = DB.Get<PlayerShip>(shipId);
                     var itemTag = GetTag(item);
                     if (!Space.IsRegisteredShipModule(itemTag))
                     {
@@ -1657,6 +1659,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship configuration module within your inventory",
                     item =>
                     {
+                        dbShip = DB.Get<PlayerShip>(shipId);
                         var itemTag = GetTag(item);
                         if (!Space.IsRegisteredShipModule(itemTag))
                         {

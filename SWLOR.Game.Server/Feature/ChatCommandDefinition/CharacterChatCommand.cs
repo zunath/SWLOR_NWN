@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             AssociateCommands();
             Follow();
             ChangeDescription();
+            OrderCompanion();
 
             return _builder.Build();
         }
@@ -416,6 +417,41 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         ActionMoveToObject(target, true);
                     });
+                });
+        }
+
+        private void OrderCompanion()
+        {
+            _builder.Create("ordercompanion", "order", "oc")
+                .Description("Orders your active companion to move to perform an interaction with a target. Use this command on your henchman to cancel all actions.")
+                .Permissions(AuthorizationLevel.All)
+                .RequiresTarget()
+                .Action((user, target, _, _) =>
+                {
+                    var associate = GetHenchman(user);
+                    if (target == associate)
+                    {
+                        AssignCommand(associate, () =>
+                        {
+                            ClearAllActions();
+                        });
+                    }
+                    else if (GetIsEnemy(target, user) || GetObjectType(target) == ObjectType.Placeable)
+                    {
+                        AssignCommand(associate, () =>
+                        {
+                            ClearAllActions();
+                            ActionAttack(target);
+                        });
+                    }
+                    else if (GetObjectType(target) == ObjectType.Door && !GetLocked(target))
+                    {
+                        AssignCommand(associate, () =>
+                        {
+                            ClearAllActions();
+                            ActionOpenDoor(target);
+                        });
+                    }
                 });
         }
         private void ChangeDescription()

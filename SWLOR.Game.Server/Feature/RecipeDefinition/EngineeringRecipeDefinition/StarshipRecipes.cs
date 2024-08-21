@@ -48,12 +48,12 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("fiberp_ruined", 3)
                 .Component("elec_ruined", 3);
 
-            // Ship Missiles x3
-            _builder.Create(RecipeType.Missile3, SkillType.Engineering)
+            // Ship Missiles x5
+            _builder.Create(RecipeType.Missile5, SkillType.Engineering)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("ship_missile")
                 .Level(5)
-                .Quantity(3)
+                .Quantity(5)
                 .RequirementPerk(PerkType.StarshipBlueprints, 1)
                 .Component("ref_tilarium", 1)
                 .Component("elec_ruined", 1);
@@ -96,6 +96,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("steel", 3)
                 .Component("fiberp_flawed", 3)
                 .Component("elec_flawed", 3);
+
+            // Ship Missiles x15
+            _builder.Create(RecipeType.Missile15, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("ship_missile")
+                .Level(15)
+                .Quantity(15)
+                .RequirementPerk(PerkType.StarshipBlueprints, 2)
+                .Component("ref_currian", 5)
+                .Component("elec_flawed", 1);
         }
 
         private void Tier3()
@@ -126,14 +136,14 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("fiberp_good", 3)
                 .Component("elec_good", 3);
 
-            // Ship Missiles x10
-            _builder.Create(RecipeType.Missile10, SkillType.Engineering)
+            // Ship Missiles x25
+            _builder.Create(RecipeType.Missile25, SkillType.Engineering)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("ship_missile")
                 .Level(25)
-                .Quantity(10)
+                .Quantity(25)
                 .RequirementPerk(PerkType.StarshipBlueprints, 3)
-                .Component("ref_idailia", 3)
+                .Component("ref_idailia", 7)
                 .Component("elec_good", 2);
 
             // Hypermatter Capsule x3
@@ -174,6 +184,16 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("crystal", 3)
                 .Component("fiberp_imperfect", 3)
                 .Component("elec_imperfect", 3);
+
+            // Ship Missiles x35
+            _builder.Create(RecipeType.Missile35, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("ship_missile")
+                .Level(25)
+                .Quantity(35)
+                .RequirementPerk(PerkType.StarshipBlueprints, 4)
+                .Component("ref_barinium", 9)
+                .Component("elec_imperfect", 2);
         }
 
         private void Tier5()
@@ -259,22 +279,22 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("fiberp_high", 3)
                 .Component("elec_high", 3);
 
-            // Ship Missiles x25
-            _builder.Create(RecipeType.Missile25, SkillType.Engineering)
+            // Ship Missiles x45
+            _builder.Create(RecipeType.Missile45, SkillType.Engineering)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("ship_missile")
                 .Level(45)
-                .Quantity(25)
+                .Quantity(45)
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .Component("ref_gostian", 10)
-                .Component("elec_high", 2);
+                .Component("ref_gostian", 11)
+                .Component("elec_high", 3);
 
-            // Proton Bomb
+            // Proton Bomb x5
             _builder.Create(RecipeType.ProtonBomb, SkillType.Engineering)
                 .Category(RecipeCategoryType.Starship)
                 .Resref("proton_bomb")
                 .Level(45)
-                .Quantity(1)
+                .Quantity(5)
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("ref_gostian", 3)
                 .Component("elec_high", 2)

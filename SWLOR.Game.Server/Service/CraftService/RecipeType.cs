@@ -2387,9 +2387,9 @@
         InstructionShielding4 = 4686,
         InstructionInfusion1 = 4687,
         InstructionInfusion2 = 4688,
-        Missile3 = 4689,
-        Missile10 = 4690,
-        Missile25 = 4691,
+        Missile5 = 4689,
+        Missile25 = 4690,
+        Missile45 = 4691,
         FuelCapsule1 = 4692,
         FuelCapsule3 = 4693,
         FuelCapsule5 = 4694,
@@ -2495,6 +2495,10 @@
 
         WeaponSubmissionTokenEngineering = 4790,
         ArmorSubmissionTokenEngineering = 4791,
+
+        Missile15 = 4792,
+        Missile35 = 4793,
+
 
         #endregion
 

@@ -1387,7 +1387,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Category(RecipeCategoryType.ShipModule)
                 .Resref("acm_ammo")
                 .Level(52)
-                .Quantity(1)
+                .Quantity(10)
                 .RequirementUnlocked()
                 .RequirementPerk(PerkType.StarshipBlueprints, 5)
                 .Component("elec_high", 3)

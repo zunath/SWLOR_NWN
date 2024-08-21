@@ -21,7 +21,5 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         {
             RecalculateAllShipStats();
         }
-
-        }
     }
 }

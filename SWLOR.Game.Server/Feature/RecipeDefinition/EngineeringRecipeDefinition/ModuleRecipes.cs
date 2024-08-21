@@ -1382,18 +1382,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("capc_modcomp", 1)
 				.Component("capc_power", 3);
 
-            // Assault Concussion Missile
-            _builder.Create(RecipeType.AssaultConcMissile, SkillType.Engineering)
-                .Category(RecipeCategoryType.ShipModule)
-                .Resref("acm_ammo")
-                .Level(52)
-                .Quantity(10)
-                .RequirementUnlocked()
-                .RequirementPerk(PerkType.StarshipBlueprints, 5)
-                .Component("elec_high", 3)
-                .Component("ref_arda", 3)
-                .Component("ref_gostian", 5);
-
             // Advanced Thrusters
             _builder.Create(RecipeType.AdvancedThrusters, SkillType.Engineering)
                 .Category(RecipeCategoryType.ShipModule)

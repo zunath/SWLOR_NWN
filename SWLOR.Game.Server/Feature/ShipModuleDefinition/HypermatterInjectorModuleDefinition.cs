@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             HypermatterInjector("cap_inject1", "Basic Hypermatter Injector", "Basic Fuel Inj", "Consumes a fuel capsule to restore 8 capacitor.", 1, 8);
             HypermatterInjector("cap_inject2", "Hypermatter Injector I", "Fuel Inj 1", "Consumes a fuel capsule to restore 14 capacitor.", 2, 14);
-            HypermatterInjector("cap_inject3", "Hypermatter Injector II", "FUel Inj 2", "Consumes a fuel capsules to restore 20 capacitor.", 3, 20);
+            HypermatterInjector("cap_inject3", "Hypermatter Injector II", "Fuel Inj 2", "Consumes a fuel capsules to restore 20 capacitor.", 3, 20);
             HypermatterInjector("cap_inject4", "Hypermatter Injector III", "Fuel Inj 3", "Consumes a fuel capsules to restore 26 capacitor.", 4, 26);
             HypermatterInjector("cap_inject5", "Hypermatter Injector IV", "Fuel Inj 4", "Consumes a fuel capsules to restore 32 capacitor.", 5, 32);
 

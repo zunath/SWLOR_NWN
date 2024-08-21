@@ -315,6 +315,22 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Determines whether an item is starship ammo.
+        /// </summary>
+        public static bool IsStarshipAmmo(uint item)
+        {
+            var resref = GetResRef(item);
+            if (resref == "ship_missile" ||
+                resref == "ship_fuelcapsule" ||
+                resref == "proton_bomb" ||
+                resref == "acm_ammo")
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Sets a player's current target.
         /// </summary>
         /// <param name="creature">The creature whose target will be set.</param>

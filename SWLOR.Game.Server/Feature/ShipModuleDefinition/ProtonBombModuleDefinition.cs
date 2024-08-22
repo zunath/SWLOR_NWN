@@ -33,8 +33,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             var roll = Random.D100(1);
             var isHit = hitOverride ?? roll <= chanceToHit;
 
-            var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
+            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
+            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Piloting, attackBonus);
+            if (GetHasFeat(FeatType.IntuitivePiloting, activator) && GetAbilityScore(activator, AbilityType.Willpower) > GetAbilityScore(activator, AbilityType.Perception))
+            {
+                attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
+                attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
+            }
 
             if (isHit)
             {

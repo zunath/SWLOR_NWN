@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
@@ -37,8 +38,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             var roll = Random.D100(1);
             var isHit = hitOverride ?? roll <= chanceToHit;
 
-            var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
+            var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
+            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Piloting, attackBonus);
+            if (GetHasFeat(FeatType.IntuitivePiloting, activator) && GetAbilityScore(activator, AbilityType.Willpower) > GetAbilityScore(activator, AbilityType.Perception))
+            {
+                attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
+                attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
+            }
 
             if (isHit)
             {
@@ -100,6 +106,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     if (targetShipStatus.Shield <= 4)
                     {
                         moduleDamage += moduleDamage / 4;
+                    }
+                    if (targetShipStatus.Shield >= 5)
+                    {
+                        moduleDamage -= moduleDamage / 5;
                     }
                     var item = GetItemPossessedBy(activator, MissileItemResref);
                     var stackSize = GetItemStackSize(item);

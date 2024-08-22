@@ -81,6 +81,8 @@ namespace SWLOR.Game.Server.Service.PlayerMarketService
         BeastEgg = 36,
         [MarketCategory("Blueprint", true)]
         Blueprint = 37,
+        [MarketCategory("Starship Ammo", true)]
+        StarshipAmmo = 38,
 
         [MarketCategory("Miscellaneous", true)]
         Miscellaneous = 99

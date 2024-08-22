@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 })
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    var moduleDamage = dmg + moduleBonus;
+                    var moduleDamage = dmg + (moduleBonus * 2);
                     // Bombs do 50% more damage to unshielded targets. Due to shield recharge starting instantly, allow for up to 4 shield points to be considered "unshielded".
                     if (targetShipStatus.Shield <= 4)
                     {

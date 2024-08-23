@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         SetItemStackSize(item, stackSize - 1);
                     }
 
-                    var moduleDamage = dmg + moduleBonus;
+                    var moduleDamage = dmg + (moduleBonus * 3);
 
                     var targetDistance = GetDistanceBetween(activator, target);
                     var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));

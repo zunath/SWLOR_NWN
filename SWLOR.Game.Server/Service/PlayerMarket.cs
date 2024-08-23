@@ -261,6 +261,10 @@ namespace SWLOR.Game.Server.Service
             // Blueprint
             if (Craft.GetBlueprintDetails(item).Recipe != RecipeType.Invalid)
                 return MarketCategoryType.Blueprint;
+
+            //Starship Ammo
+            if (Space.IsStarshipAmmo(item))
+                return MarketCategoryType.StarshipAmmo;
             
             return MarketCategoryType.Miscellaneous;
         }

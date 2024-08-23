@@ -1498,8 +1498,9 @@ namespace SWLOR.Game.Server.Service
         /// Does not take into account any equipped gear on the player, only modules attached to the ship.
         /// </summary>
         /// <param name="attacker">The attacker to check</param>
+        /// <param name="attackBonus">The attack bonus to apply</param>
         /// <returns>The attack of the ship</returns>
-        public static int GetShipAttack(uint attacker)
+        public static int GetShipAttack(uint attacker, int attackBonus)
         {
             var stat = GetAttackStat(attacker);
             int level;
@@ -1517,7 +1518,7 @@ namespace SWLOR.Game.Server.Service
                 level = npcStats.Level;
             }
 
-            return 8 + (2 * level) + stat;
+            return 8 + (2 * level) + stat + attackBonus;
         }
 
         /// <summary>
@@ -1525,8 +1526,9 @@ namespace SWLOR.Game.Server.Service
         /// Does not take into account any equipped gear on the player, only modules attached to the ship.
         /// </summary>
         /// <param name="defender">The defender to check</param>
+        /// <param name="defenseBonus">The defense bonus to apply</param>
         /// <returns>The defense of the ship</returns>
-        public static int GetShipDefense(uint defender)
+        public static int GetShipDefense(uint defender, int defenseBonus)
         {
             var stat = GetAbilityScore(defender, AbilityType.Vitality);
             int level;
@@ -1544,7 +1546,7 @@ namespace SWLOR.Game.Server.Service
                 level = npcStats.Level;
             }
 
-            return (int)(8 + (stat * 1.5f) + level);
+            return (int)(8 + (stat * 1.5f) + level + defenseBonus);
         }
 
         /// <summary>

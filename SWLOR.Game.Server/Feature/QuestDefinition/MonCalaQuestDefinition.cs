@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText("P3DR0 wants a new place to party where they're not going to get kicked out. Bring them five speakers, a jukebox, and the schematics for a new cantina.")
-                .AddCollectItemObjective("structure_0272", 5)
+                .AddCollectItemObjective("structure_0330", 5)
                 .AddCollectItemObjective("structure_0005", 1)
                 .AddCollectItemObjective("structure_5004", 1)
 

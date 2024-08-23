@@ -50,35 +50,14 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             builder.Create("tusken_rampage", "Tusken Rampage")
 
                 .AddState()
-                .SetStateJournalText("The Militia wants you to kill Fifty Tusken Raider's.")
-                .AddKillObjective(NPCGroupType.Tatooine_TuskenRaider, 50)
+                .SetStateJournalText("The Militia wants you to kill one hundred and fifty Tusken Raiders.")
+                .AddKillObjective(NPCGroupType.Tatooine_TuskenRaider, 150)
 
                 .AddState()
-                .SetStateJournalText("That was easier then it should have been. Report back to that man.")
+                .SetStateJournalText("That's all those Tuskens taken care of. Go talk to that man!")
 
-                .AddState()
-                .SetStateJournalText("Another Fifty, that killed moisture farmers this time. Easy enough.")
-                .AddKillObjective(NPCGroupType.Tatooine_TuskenRaider, 50)
-
-                .AddState()
-                .SetStateJournalText("Those were dealt with. Hopefully the moisture is farmed more now. Back to the man.")
-
-                .AddState()
-                .SetStateJournalText("Another Fifty... Apparently this time they're going after the trading routes.")
-                .AddKillObjective(NPCGroupType.Tatooine_TuskenRaider, 50)
-
-                .AddState()
-                .SetStateJournalText("Well, that was quick. Report back to the man once more.")
-
-                .AddState()
-                .SetStateJournalText("Now he wants you to kill Five Hundred of them... Better get to work.")
-                .AddKillObjective(NPCGroupType.Tatooine_TuskenRaider, 50)
-
-                .AddState()
-                .SetStateJournalText("Fifty... You've killed Fifty... There is no way you're doing another Four Hundred. Go talk to that man!")
-
-                .AddGoldReward(10000)
-                .AddXPReward(10000)
+                .AddGoldReward(7500)
+                .AddXPReward(7500)
                 .AddItemReward("recipe_hazrdwall", 1);
         }
     }

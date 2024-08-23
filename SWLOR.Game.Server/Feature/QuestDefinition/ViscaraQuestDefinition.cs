@@ -555,7 +555,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("structure_5002", 1)
 
                 .AddState()
-                .SetStateJournalText("Well done, you've gathered what Shelby needed. Make sure you talk to her for a reward.")
+                .SetStateJournalText("Well done! You've gathered what Shelby needed. Make sure you talk to her for a reward.")
 
                 .AddGoldReward(5000)
                 .AddXPReward(2500)
@@ -567,14 +567,14 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             _builder.Create("spice_onesmallfavour", "Spice: One Small Favour")
 
                 .AddState()
-                .SetStateJournalText("Stephen needs you to gather some different fiberplast so he can make some cool new rags he saw in a Magazine.")
+                .SetStateJournalText("Stephen needs you to gather some different fiberplast so he can make some cool new rags he saw in a magazine.")
                 .AddCollectItemObjective("fiberp_ruined", 12)
                 .AddCollectItemObjective("fiberp_flawed", 13)
                 .AddCollectItemObjective("fiberp_good", 21)
                 .AddCollectItemObjective("fiberp_imperfect", 19)
 
                 .AddState()
-                .SetStateJournalText("Fiberplast handed over - Looks like he'll get to wear those new rags now!")
+                .SetStateJournalText("Fiberplast handed over - looks like he'll get to wear those new rags now!")
 
                 .AddState()
                 .SetStateJournalText("Now Stephen needs you to get him some electronics so that he can make a sick new electric guitar.")
@@ -584,17 +584,17 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("elec_imperfect", 17)
 
                 .AddState()
-                .SetStateJournalText("You gave him the electronics, but not sure if he even has power down here.")
+                .SetStateJournalText("You gave him the electronics, but you're not sure if he even has power down here.")
 
                 .AddState()
-                .SetStateJournalText("Looks like he now wants some different woods so he can build his Ma a new rocking chair.")
+                .SetStateJournalText("Looks like he now wants some different woods so he can build his ma a new rocking chair.")
                 .AddCollectItemObjective("wood", 15)
                 .AddCollectItemObjective("fine_wood", 15)
                 .AddCollectItemObjective("ancient_wood", 21)
                 .AddCollectItemObjective("aracia_wood", 18)
 
                 .AddState()
-                .SetStateJournalText("All the wood has been given to him. Kind of cute that he wants to make a chair for his Ma.")
+                .SetStateJournalText("All the wood has been given to him. Kind of cute that he wants to make a chair for his ma.")
 
                 .AddState()
                 .SetStateJournalText("After hearing the thugs in the sewers talk about the Viscaran air being poison, Stephen wants some different meats to make a protein shake.")
@@ -607,17 +607,17 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("Interesting conspiracy, but you've handed the meat over. Just be glad you don't have to drink that.")
 
                 .AddState()
-                .SetStateJournalText("Apparently Stephen likes to have picnics on the surface, near the entrance to the Colony and now wants some 'rocks' to hold his blanket.")
+                .SetStateJournalText("Apparently, Stephen likes to have picnics on the surface near the entrance to the Colony and now wants some 'rocks' to hold his blanket.")
                 .AddCollectItemObjective("raw_veldite", 15)
                 .AddCollectItemObjective("raw_scordspar", 25)
                 .AddCollectItemObjective("raw_plagionite", 19)
                 .AddCollectItemObjective("raw_keromber", 27)
 
                 .AddState()
-                .SetStateJournalText("This is just getting weird... But, atleast his picnic blanket won't move around now.")
+                .SetStateJournalText("This is just getting weird... But at least his picnic blanket won't move around now.")
 
                 .AddState()
-                .SetStateJournalText("He hasn't even made the electric guitar, but now he has asked for some different herb's to help with his jam sessions.")
+                .SetStateJournalText("He hasn't even made the electric guitar, but now he has asked for some different herbs to help with his jam sessions.")
                 .AddCollectItemObjective("herb_v", 25)
                 .AddCollectItemObjective("herb_c", 14)
                 .AddCollectItemObjective("herb_t", 21)
@@ -627,7 +627,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("Not sure that's what he's going to use the herbs for, but who are you to judge?")
 
                 .AddState()
-                .SetStateJournalText("This is going to far now. Apparently his 'home' needs some decorations. Grab these creature pieces and see what happens.")
+                .SetStateJournalText("This is going too far now. Apparently, his 'home' needs some decorations. Grab these creature pieces and see what happens.")
                 .AddCollectItemObjective("raivor_tail_bone", 6)
                 .AddCollectItemObjective("scorch_chitin", 4)
                 .AddCollectItemObjective("sandswimmerh", 7)
@@ -641,7 +641,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("chiro_shard", 1)
 
                 .AddState()
-                .SetStateJournalText("That's the last one... Chiro shards are not easy to come by, so he better give me something for all of this now.")
+                .SetStateJournalText("That's the last one. Chiro shards are not easy to come by, so he better give you something for all of this now.")
 
                 .AddGoldReward(25000)
                 .AddXPReward(25000)

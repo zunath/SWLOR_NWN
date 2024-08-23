@@ -161,35 +161,14 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             _builder.Create("break_the_byysk", "Break the Byysk")
 
                 .AddState()
-                .SetStateJournalText("Sharene wants you to kill One Hundred Byysk. Of you go!")
-                .AddKillObjective(NPCGroupType.Byysk_Guardian, 100)
+                .SetStateJournalText("Sharene wants you to kill two hundred and fifty Byysk. Off you go!")
+                .AddKillObjective(NPCGroupType.Byysk_Guardian, 250)
 
                 .AddState()
-                .SetStateJournalText("Return to Sharene in the Hutlar Outpost and report your progress.")
+                .SetStateJournalText("That wasn't too bad! It didn't take as long as you thought it would. Good work! Return to Sharene.")
 
-                .AddState()
-                .SetStateJournalText("Sharene wants you to kill another One Hundred Byysk. Better get going")
-                .AddKillObjective(NPCGroupType.Byysk_Guardian, 100)
-
-                .AddState()
-                .SetStateJournalText("Return to Sharene, once again, at the Hutlar Outpost.")
-
-                .AddState()
-                .SetStateJournalText("Sharene wants you to kill ANOTHER One Hundred Byysk...")
-                .AddKillObjective(NPCGroupType.Byysk_Guardian, 100)
-
-                .AddState()
-                .SetStateJournalText("Return to Sharene, AGAIN.")
-
-                .AddState()
-                .SetStateJournalText("Sharene wants you to kill more Byysk... Let's go for one thousand this time!")
-                .AddKillObjective(NPCGroupType.Byysk_Guardian, 100)
-
-                .AddState()
-                .SetStateJournalText("You know what, another One Hundred will do... That is Four Hundred Guardian's. This is getting stupid!")
-
-                .AddGoldReward(20000)
-                .AddXPReward(20000)
+                .AddGoldReward(15000)
+                .AddXPReward(15000)
                 .AddItemReward("recipe_banners01", 1);
         }
 

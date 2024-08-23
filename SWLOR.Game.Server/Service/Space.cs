@@ -1439,7 +1439,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Calculates the accuracy of a ship.
-        /// Does not take into account any equipped gear on the player, only modules associated to the ship.
+        /// Does not take into account any equipped gear on the player, only modules attached to the ship.
         /// </summary>
         /// <param name="attacker">The attacker to check</param>
         /// <returns>The accuracy of the ship</returns>
@@ -1467,7 +1467,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Calculates the evasion of a ship.
-        /// Does not take into account any equipped gear on the player, only modules associated to the ship.
+        /// Does not take into account any equipped gear on the player, only modules attached to the ship.
         /// </summary>
         /// <param name="defender">The defender to check</param>
         /// <returns>The evasion of the ship</returns>
@@ -1491,6 +1491,80 @@ namespace SWLOR.Game.Server.Service
             }
 
             return stat * 3 + level + bonus;
+        }
+
+        /// <summary>
+        /// Calculates the attack of a ship.
+        /// Does not take into account any equipped gear on the player, only modules attached to the ship.
+        /// </summary>
+        /// <param name="attacker">The attacker to check</param>
+        /// <returns>The attack of the ship</returns>
+        public static int GetShipAttack(uint attacker)
+        {
+            var stat = GetAttackStat(attacker);
+            int level;
+
+            if (GetIsPC(attacker) && !GetIsDM(attacker))
+            {
+                var playerId = GetObjectUUID(attacker);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                level = dbPlayer.Skills[SkillType.Piloting].Rank;
+            }
+            else
+            {
+                var npcStats = Stat.GetNPCStats(attacker);
+                level = npcStats.Level;
+            }
+
+            return 8 + (2 * level) + stat;
+        }
+
+        /// <summary>
+        /// Calculates the defense of a ship.
+        /// Does not take into account any equipped gear on the player, only modules attached to the ship.
+        /// </summary>
+        /// <param name="defender">The defender to check</param>
+        /// <returns>The defense of the ship</returns>
+        public static int GetShipDefense(uint defender)
+        {
+            var stat = GetAbilityScore(defender, AbilityType.Vitality);
+            int level;
+
+            if (GetIsPC(defender) && !GetIsDM(defender))
+            {
+                var playerId = GetObjectUUID(defender);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                level = dbPlayer.Skills[SkillType.Piloting].Rank;
+            }
+            else
+            {
+                var npcStats = Stat.GetNPCStats(defender);
+                level = npcStats.Level;
+            }
+
+            return (int)(8 + (stat * 1.5f) + level);
+        }
+
+        /// <summary>
+        /// Gets the ability score stat used by the attacking ship.
+        /// If attacker has the Intuitive Piloting feat and WIL > PER, then WIL is returned.
+        /// Otherwise returns PER
+        /// </summary>
+        /// <param name="attacker">The attacker to check</param>
+        /// <returns>The raw stat value of the attacker. This will be either WIL or PER depending on Intuitive Piloting.</returns>
+        public static int GetAttackStat(uint attacker)
+        {
+            var wil = GetAbilityScore(attacker, AbilityType.Willpower);
+            var per = GetAbilityScore(attacker, AbilityType.Perception);
+
+            if (GetHasFeat(FeatType.IntuitivePiloting, attacker) && wil > per)
+            {
+                return wil;
+            }
+
+            return per;
         }
 
         /// <summary>

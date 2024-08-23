@@ -264,7 +264,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddCollectItemObjective("scrap_metal", 150)
 
                 .AddState()
-                .SetStateJournalText("That's a lot of scrap metal, hopefully it's enough. See 5CR4P has to beep.")
+                .SetStateJournalText("That's a lot of scrap metal. Hopefully, it's enough. See what 5CR4P has to beep about.")
 
                 .AddGoldReward(2500)
                 .AddXPReward(2500)

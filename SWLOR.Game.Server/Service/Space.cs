@@ -315,6 +315,22 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Determines whether an item is starship ammo.
+        /// </summary>
+        public static bool IsStarshipAmmo(uint item)
+        {
+            var resref = GetResRef(item);
+            if (resref == "ship_missile" ||
+                resref == "ship_fuelcapsule" ||
+                resref == "proton_bomb" ||
+                resref == "acm_ammo")
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Sets a player's current target.
         /// </summary>
         /// <param name="creature">The creature whose target will be set.</param>
@@ -1415,10 +1431,66 @@ namespace SWLOR.Game.Server.Service
             if (attackerShipStatus == null || defenderShipStatus == null)
                 return 0;
 
-            var attackerAccuracy = Stat.GetAccuracy(attacker, OBJECT_INVALID, AbilityType.Agility, SkillType.Piloting) + attackerShipStatus.Accuracy;
-            var defenderEvasion = Stat.GetEvasion(defender, SkillType.Piloting) + defenderShipStatus.Evasion;
+            var attackerAccuracy = GetShipAccuracy(attacker);
+            var defenderEvasion = GetShipEvasion(defender);
 
             return Combat.CalculateHitRate(attackerAccuracy, defenderEvasion, 0);
+        }
+
+        /// <summary>
+        /// Calculates the accuracy of a ship.
+        /// Does not take into account any equipped gear on the player, only modules associated to the ship.
+        /// </summary>
+        /// <param name="attacker">The attacker to check</param>
+        /// <returns>The accuracy of the ship</returns>
+        private static int GetShipAccuracy(uint attacker)
+        {
+            var attackerShipStatus = GetShipStatus(attacker);
+            var bonus = attackerShipStatus.Accuracy;
+            var stat = GetAbilityScore(attacker, AbilityType.Agility);
+            int level;
+
+            if (GetIsPC(attacker) && !GetIsDM(attacker))
+            {
+                var playerId = GetObjectUUID(attacker);
+                var dbPlayer = DB.Get<Player>(playerId);
+                level = dbPlayer.Skills[SkillType.Piloting].Rank;
+            }
+            else
+            {
+                var npcStats = Stat.GetNPCStats(attacker);
+                level = npcStats.Level;
+            }
+
+            return stat * 3 + level + bonus;
+        }
+
+        /// <summary>
+        /// Calculates the evasion of a ship.
+        /// Does not take into account any equipped gear on the player, only modules associated to the ship.
+        /// </summary>
+        /// <param name="defender">The defender to check</param>
+        /// <returns>The evasion of the ship</returns>
+        private static int GetShipEvasion(uint defender)
+        {
+            var defenderShipStatus = GetShipStatus(defender);
+            var bonus = defenderShipStatus.Evasion;
+            var stat = GetAbilityScore(defender, AbilityType.Agility);
+            int level;
+
+            if (GetIsPC(defender) && !GetIsDM(defender))
+            {
+                var playerId = GetObjectUUID(defender);
+                var dbPlayer = DB.Get<Player>(playerId);
+                level = dbPlayer.Skills[SkillType.Piloting].Rank;
+            }
+            else
+            {
+                var npcStats = Stat.GetNPCStats(defender);
+                level = npcStats.Level;
+            }
+
+            return stat * 3 + level + bonus;
         }
 
         /// <summary>

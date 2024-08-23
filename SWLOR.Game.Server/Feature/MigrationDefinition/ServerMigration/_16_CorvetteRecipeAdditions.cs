@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
     public class _16_CorvetteRecipeAdditions: ServerMigrationBase, IServerMigration
     {
         public int Version => 16;
-        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostCacheLoad;
+        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
         public void Migrate()
         {
             var query = new DBQuery<Player>();
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
             foreach (var player in dbPlayers)
             {
-                if (player.UnlockedRecipes.ContainsKey(Service.CraftService.RecipeType.CorvetteNeutThranta) == true)
+                if (player.UnlockedRecipes.ContainsKey(Service.CraftService.RecipeType.CorvetteNeutThranta))
                 {
                     player.UnlockedRecipes[Service.CraftService.RecipeType.CorvetteJehaveyFrigate] = DateTime.UtcNow;
                 }

@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Piloting, attackBonus);
+
             if (GetHasFeat(FeatType.IntuitivePiloting, activator) && GetAbilityScore(activator, AbilityType.Willpower) > GetAbilityScore(activator, AbilityType.Perception))
             {
                 attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
@@ -102,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     var moduleDamage = dmg + moduleBonus;
-                    // Missiles do 25% more damage to unshielded targets. Due to shield recharge starting instantly, allow for up to 4 shield points to be considered "unshielded".
+                    // Missiles do 25% more damage to unshielded targets, and 20% less to shielded targets. Due to shield recharge starting instantly, allow for up to 8 shield points to be considered "unshielded".
                     if (targetShipStatus.Shield <= 8)
                     {
                         moduleDamage += moduleDamage / 4;

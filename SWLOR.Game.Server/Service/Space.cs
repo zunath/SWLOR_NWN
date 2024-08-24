@@ -1619,7 +1619,16 @@ namespace SWLOR.Game.Server.Service
             // Apply death if shield and hull have reached zero.
             if (targetShipStatus.Shield <= 0 && targetShipStatus.Hull <= 0)
             {
-                AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target));
+                // Lexicon Note regarding GetFirstObjectInShape/GetNextObjectInShape
+                // Do not apply EffectDamage without a DelayCommand (do DelayCommand(0.0, Apply...) at minimum).
+                // If you do fire it the OnDamaged or OnDeath OnPlayerDeath script may fire, causing this loop to reset
+                // and start from scratch when you call GetNextObjectInShape
+                // (since those scripts may call their own GetFirstObjectInShape).
+                // To work around this, put the death effect on a 0f delay.
+                DelayCommand(0f, () =>
+                {
+                    AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDeath(), target));
+                });
                 ClearCurrentTarget(attacker);
             }
             else

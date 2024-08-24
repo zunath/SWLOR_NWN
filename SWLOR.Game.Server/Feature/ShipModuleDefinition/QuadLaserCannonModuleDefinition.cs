@@ -60,17 +60,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
             {
                 var attackBonus = activatorShipStatus.ThermalDamage;
-                var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-                var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Piloting, attackBonus);
-                if (GetHasFeat(FeatType.IntuitivePiloting, activator) && GetAbilityScore(activator, AbilityType.Willpower) > GetAbilityScore(activator, AbilityType.Perception))
-                {
-                    attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-                    attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
-                }
+                var attackerStat = Space.GetAttackStat(activator);
+                var attack = Space.GetShipAttack(activator, attackBonus);
 
                 var moduleDamage = dmg + moduleBonus / 2;
                 var defenseBonus = targetShipStatus.ThermalDefense * 2;
-                var defense = Stat.GetDefense(target, CombatDamageType.Thermal, AbilityType.Vitality, defenseBonus);
+                var defense = Space.GetShipDefense(target, defenseBonus);
                 var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 
                 var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
@@ -91,26 +86,27 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             defense,
                             defenderStat,
                             0);
+
                         if (isHit)
                         {
                             AssignCommand(activator, () =>
-                        {
-                                    ApplyEffectToObject(DurationType.Instant, sound, target);
-                                    ApplyEffectToObject(DurationType.Instant, missile, target);
+                            {
+                                ApplyEffectToObject(DurationType.Instant, sound, target);
+                                ApplyEffectToObject(DurationType.Instant, missile, target);
 
-                                    DelayCommand(0.3f, () =>
-                                    {
-                                        Space.ApplyShipDamage(activator, target, damage);
-                                    });
+                                DelayCommand(0.3f, () =>
+                                {
+                                    Space.ApplyShipDamage(activator, target, damage);
                                 });
+                            });
                         }
                         else
                         {
                             AssignCommand(activator, () =>
-                        {
-                                    ApplyEffectToObject(DurationType.Instant, sound, target);
-                                    ApplyEffectToObject(DurationType.Instant, missile, target);
-                                });
+                            {
+                                ApplyEffectToObject(DurationType.Instant, sound, target);
+                                ApplyEffectToObject(DurationType.Instant, missile, target);
+                            });
                         }
 
                         var attackId = isHit ? 1 : 4;

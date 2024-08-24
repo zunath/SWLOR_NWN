@@ -41,7 +41,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 {
                     repairAmount += (activatorShipStatus.Industrial + moduleBonus) / 2;
 
-
                     const float Distance = 8f;
                     var nearby = GetFirstObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
                     var count = 1;

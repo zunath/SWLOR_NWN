@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Type(ShipModuleType.BeamLaser)
                 .Texture("iit_ess_017")
                 .Description(description)
-                .MaxDistance(30f)
+                .MaxDistance(60f)
                 .ValidTargetType(ObjectType.Creature)
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)

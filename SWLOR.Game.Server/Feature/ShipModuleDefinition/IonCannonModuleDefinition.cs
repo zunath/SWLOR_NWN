@@ -49,19 +49,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     var attackBonus = activatorShipStatus.EMDamage;
-                    var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-                    var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Piloting, attackBonus);
-
-                    if (GetHasFeat(FeatType.IntuitivePiloting, activator) && GetAbilityScore(activator, AbilityType.Willpower) > GetAbilityScore(activator, AbilityType.Perception))
-                    {
-                        attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-                        attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
-                    }
-
+                    var attackerStat = Space.GetAttackStat(activator);
+                    var attack = Space.GetShipAttack(activator, attackBonus);
                     var moduleDamage = dmg + moduleBonus / 2;
 
                     var defenseBonus = targetShipStatus.EMDefense * 2;
-                    var defense = Stat.GetDefense(target, CombatDamageType.EM, AbilityType.Vitality, defenseBonus);
+                    var defense = Space.GetShipDefense(target, defenseBonus);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                     var damage = Combat.CalculateDamage(
                         attack,

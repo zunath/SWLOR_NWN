@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
                     }
 
-                    var moduleDamage = dmg + moduleBonus;
+                    var moduleDamage = dmg + moduleBonus / 2;
 
                     var defenseBonus = targetShipStatus.EMDefense * 2;
                     var defense = Stat.GetDefense(target, CombatDamageType.EM, AbilityType.Vitality, defenseBonus);
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             AssignCommand(activator, () =>
                             {
                                 var shieldDamage = int.Min(damage, targetShipStatus.Shield);
-                                var armorDamage = (damage-shieldDamage)/3;
+                                var armorDamage = (damage-shieldDamage)/2;
                                 if (armorDamage < 0)
                                 {
                                     armorDamage = 0;

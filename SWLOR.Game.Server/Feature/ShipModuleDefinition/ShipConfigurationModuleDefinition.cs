@@ -65,18 +65,18 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             CapShipConfig("cap_warship", "Warship Configuration", "iit_ess8_123", 5, 300, 300, 50, 200, 50, 200, 50, 200, 0, 0, 0, 0);
 
             CapShipConfig("npc_cap1", "Boss Conf 1", "iit_ess8_121", 1, 0, 0, 0, 20, 0, 15, 10, 10, 5, 5, 0, 0);
-            CapShipConfig("npc_cap2", "Boss Conf 2", "iit_ess8_121", 1, 0, 0, 10, 50, 10, 37, 20, 5, 10, 5, 0, 0);
-            CapShipConfig("npc_cap3", "Boss Conf 3", "iit_ess8_121", 1, 0, 0, 20, 100, 20, 75, 10, 50, 15, 5, 0, 0);
-            CapShipConfig("npc_cap4", "Boss Conf 4", "iit_ess8_121", 1, 0, 0, 25, 150, 30, 100, 20, 75, 20, 5, 0, 0);
-            CapShipConfig("npc_cap5", "Boss Conf 5", "iit_ess8_121", 1, 0, 0, 30, 250, 40, 175, 30, 125, 30, 5, 0, 0);
+            CapShipConfig("npc_cap2", "Boss Conf 2", "iit_ess8_121", 1, 0, 0, 10, 50, 10, 37, 20, 5, 10, 0, 0, 0);
+            CapShipConfig("npc_cap3", "Boss Conf 3", "iit_ess8_121", 1, 0, 0, 20, 100, 20, 75, 10, 50, 15, 0, 0, 0);
+            CapShipConfig("npc_cap4", "Boss Conf 4", "iit_ess8_121", 1, 0, 0, 25, 150, 30, 100, 20, 75, 20, 0, 0, 0);
+            CapShipConfig("npc_cap5", "Boss Conf 5", "iit_ess8_121", 1, 0, 0, 30, 250, 40, 175, 30, 125, 30, 0, 0, 0);
 
-            CapShipConfig("con_cap1", "NPC Cap Conf 1", "iit_ess8_121", 1, 0, 0, 30, 250, 30, 175, 30, 125, 30, 5, 0, 0);
-            CapShipConfig("con_cap2", "NPC Cap Conf 2", "iit_ess8_121", 1, 0, 0, 30, 275, 30, 190, 30, 140, 30, 5, 0, 0);
-            CapShipConfig("con_cap3", "NPC Cap Conf 3", "iit_ess8_121", 1, 0, 0, 30, 300, 30, 205, 30, 155, 30, 5, 0, 0);
-            CapShipConfig("con_cap4", "NPC Cap Conf 4", "iit_ess8_121", 1, 0, 0, 30, 325, 30, 220, 30, 170, 35, 7, 0, 0);
-            CapShipConfig("con_cap5", "NPC Cap Conf 5", "iit_ess8_121", 1, 0, 0, 30, 350, 30, 235, 30, 195, 35, 7, 0, 0);
-            CapShipConfig("con_cap6", "NPC Cap Conf 6", "iit_ess8_121", 1, 0, 0, 30, 375, 30, 250, 30, 210, 40, 10, 0, 0);
-            CapShipConfig("con_cap7", "NPC Cap Conf 7", "iit_ess8_121", 1, 0, 0, 30, 400, 30, 275, 30, 225, 40, 10, 0, 0);
+            CapShipConfig("con_cap1", "NPC Cap Conf 1", "iit_ess8_121", 1, 0, 0, 30, 250, 30, 175, 30, 125, 30, 0, 0, 0);
+            CapShipConfig("con_cap2", "NPC Cap Conf 2", "iit_ess8_121", 1, 0, 0, 30, 275, 30, 190, 30, 140, 30, 0, 0, 0);
+            CapShipConfig("con_cap3", "NPC Cap Conf 3", "iit_ess8_121", 1, 0, 0, 30, 300, 30, 205, 30, 155, 30, 0, 0, 0);
+            CapShipConfig("con_cap4", "NPC Cap Conf 4", "iit_ess8_121", 1, 0, 0, 30, 325, 30, 220, 30, 170, 35, 0, 0, 0);
+            CapShipConfig("con_cap5", "NPC Cap Conf 5", "iit_ess8_121", 1, 0, 0, 30, 350, 30, 235, 30, 195, 35, 0, 0, 0);
+            CapShipConfig("con_cap6", "NPC Cap Conf 6", "iit_ess8_121", 1, 0, 0, 30, 375, 30, 250, 30, 210, 40, 0, 0, 0);
+            CapShipConfig("con_cap7", "NPC Cap Conf 7", "iit_ess8_121", 1, 0, 0, 30, 400, 30, 275, 30, 225, 40, 0, 0, 0);
 
             return _builder.Build();
         }
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Texture(texture)
                 .Description($"Provides several base stats to a ship to allow it to fulfill a role and operate at full capacity: \n" +
                 $"Armor: +{armor} + Module Bonus x 4 \n" +
-                $"Shield: +{shield} + Module Bonus x 4 \n" +
+                $"Shield: +{shield} + Module Bonus * 4 \n" +
                 $"Thermal Attack: +{thermalAttack} + Module Bonus x 2 +  \n" +
                 $"Thermal Defense: +{thermalDefense} + Module Bonus x 2 \n" +
                 $"EM Attack: +{ionAttack} + Module Bonus x 2 \n" +
@@ -181,8 +181,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Texture(texture)
                 .Description($"Provides several base stats to a ship to allow it to fulfill a role and operate at full capacity: \n" +
                 $"Armor: +{armor} + Module Bonus x 4 \n" +
-                $"Shield: +{shield} + Module Bonus x 4 \n" +
-                $"Thermal Attack: +{thermalAttack} + Module Bonus x 2 \n" +
+                $"Shield: +{shield} + Module Bonus * 4 \n" +
+                $"Thermal Attack: +{thermalAttack} + Module Bonus x 2 +  \n" +
                 $"Thermal Defense: +{thermalDefense} + Module Bonus x 2 \n" +
                 $"EM Attack: +{ionAttack} + Module Bonus x 2 \n" +
                 $"EM Defense: +{ionDefense} + Module Bonus x 2 \n" +

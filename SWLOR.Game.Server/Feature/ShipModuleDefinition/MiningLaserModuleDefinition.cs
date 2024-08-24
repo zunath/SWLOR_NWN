@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         // Perk & module bonuses. These increase the overall yield of each asteroid.
                         var industrialBonus = Space.GetShipStatus(activator).Industrial;
 
-                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 4) + (int)(moduleBonus)/12f;
+                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 4) + (int)(moduleBonus)/6f;
 
                         // Refresh remaining units (could have changed since the start)
                         remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");

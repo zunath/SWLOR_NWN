@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
                 .WithFrequency(25)
 
-                .AddSpawn(ObjectType.Placeable, "asteroid_ardani")
+                .AddSpawn(ObjectType.Placeable, "asteroid_arda")
                 .WithFrequency(1);
         }
 
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
                 .WithFrequency(25)
 
-                .AddSpawn(ObjectType.Placeable, "asteroid_ardani")
+                .AddSpawn(ObjectType.Placeable, "asteroid_arda")
                 .WithFrequency(3);
         }
         private void DantooineOrbit()

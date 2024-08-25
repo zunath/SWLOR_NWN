@@ -33,13 +33,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             var roll = Random.D100(1);
             var isHit = hitOverride ?? roll <= chanceToHit;
 
-            var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
+            var attackerStat = Space.GetAttackStat(activator);
+            var attack = Space.GetShipAttack(activator, attackBonus);
 
             if (isHit)
             {
                 var defenseBonus = targetShipStatus.ExplosiveDefense * 2;
-                var defense = Stat.GetDefense(target, CombatDamageType.Explosive, AbilityType.Vitality, defenseBonus);
+                var defense = Space.GetShipDefense(target, defenseBonus);
                 var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
                 var damage = Combat.CalculateDamage(
                     attack,
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         SetItemStackSize(item, stackSize - 1);
                     }
 
-                    var moduleDamage = dmg + moduleBonus;
+                    var moduleDamage = dmg + (moduleBonus * 3);
 
                     var targetDistance = GetDistanceBetween(activator, target);
                     var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));

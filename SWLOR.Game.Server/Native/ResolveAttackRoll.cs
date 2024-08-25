@@ -194,42 +194,6 @@ namespace SWLOR.Game.Server.Native
                 
             }
 
-            // Attacking from behind.  Does not apply to Force attacks.
-            // Vectors are X=-1 to +1, Y=-1 to +1, Z=0.  
-            // If the absolute difference between the two vectors is less than 0.5 radians, treat as a backstab.
-            //
-            // m_vOrientation does not update during combat, even if the creature is moving a lot, turning to attack
-            // etc.  So cache the orientation we have when we attack, and only fall back to m_vOrientation if 
-            // a creature hasn't attacked yet.  Clear these variables on PCs if not in combat in heartbeat.
-
-            var defX = defender.m_ScriptVars.GetFloat(new CExoString("ATTACK_ORIENTATION_X"));
-            var defY = defender.m_ScriptVars.GetFloat(new CExoString("ATTACK_ORIENTATION_Y"));
-
-            if (defX == 0.0f && defY == 0.0f)
-            {
-                Log.Write(LogGroup.Attack, "Defender has not attacked yet, using pre-combat position.");
-                var defFacing = defender.m_vOrientation;
-                defX = (float)defFacing.x;
-                defY = (float)defFacing.y;
-            }
-
-            var attX = defender.m_vPosition.x - attacker.m_vPosition.x;
-            var attY = defender.m_vPosition.y - attacker.m_vPosition.y;
-
-            attacker.m_ScriptVars.SetFloat(new CExoString("ATTACK_ORIENTATION_X"), attX);
-            attacker.m_ScriptVars.SetFloat(new CExoString("ATTACK_ORIENTATION_Y"), attY);
-
-            var delta = Math.Abs(Math.Atan2(attY, attX) - Math.Atan2(defY, defX));
-            Log.Write(LogGroup.Attack, "Attacker facing is " + attX + ", " + attY);
-            Log.Write(LogGroup.Attack, "Defender facing is " + defX + ", " + defY);
-
-            if (delta <= 0.5)
-            {
-                Log.Write(LogGroup.Attack, "Backstab!  Attacker angle (radians): " + Math.Atan2(attY, attX) + 
-                                           ", Defender angle (radians): " + Math.Atan2(defY, defX));
-                accuracyModifiers += 30;
-            }
-
             // Dual wield penalty.
             var offhand = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
             var bDoubleWeapon =

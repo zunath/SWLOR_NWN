@@ -63,12 +63,12 @@ namespace SWLOR.Game.Server.Native
                 return 0;
             }
 
-            var attackType = (uint) AttackType.Melee;
+            var attackType = AttackType.Melee;
             
             // Figure out what sort of attack this is.  Note - damage from abilities does not go through this function.
             if (attacker.GetRangeWeaponEquipped() == 1)
             {
-                attackType = (uint) AttackType.Ranged;
+                attackType = AttackType.Ranged;
             }
 
             // We have now resolved what sort of attack we are doing.
@@ -209,6 +209,14 @@ namespace SWLOR.Game.Server.Native
                 else if (Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) &&
                     Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
                     dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2.0f);
+            }
+
+            if (attackType == AttackType.Melee &&
+                targetObject.m_nObjectType == (int)ObjectType.Creature)
+            {
+                var backAttackBonus = CalculateBackAttackBonusDMG(attacker, CNWSCreature.FromPointer(pTarget));
+                dmgValues[CombatDamageType.Physical] += backAttackBonus;
+                Log.Write(LogGroup.Attack, $"Back Attack Bonus: {backAttackBonus} DMG");
             }
 
             var critMultiplier = 1;
@@ -515,6 +523,68 @@ namespace SWLOR.Game.Server.Native
             }
 
             return -1;
+        }
+
+        private static int CalculateBackAttackBonusDMG(CNWSCreature attacker, CNWSCreature defender)
+        {
+            // Attacking from behind.  Does not apply to Force attacks.
+            // Vectors are X=-1 to +1, Y=-1 to +1, Z=0.  
+            // If the absolute difference between the two vectors is less than 0.5 radians, treat as a backstab.
+            //
+            // m_vOrientation does not update during combat, even if the creature is moving a lot, turning to attack
+            // etc.  So cache the orientation we have when we attack, and only fall back to m_vOrientation if 
+            // a creature hasn't attacked yet.  Clear these variables on PCs if not in combat in heartbeat.
+
+            var defX = defender.m_ScriptVars.GetFloat(new CExoString("ATTACK_ORIENTATION_X"));
+            var defY = defender.m_ScriptVars.GetFloat(new CExoString("ATTACK_ORIENTATION_Y"));
+
+            if (defX == 0.0f && defY == 0.0f)
+            {
+                Log.Write(LogGroup.Attack, "Defender has not attacked yet, using pre-combat position.");
+                var defFacing = defender.m_vOrientation;
+                defX = defFacing.x;
+                defY = defFacing.y;
+            }
+
+            var attX = defender.m_vPosition.x - attacker.m_vPosition.x;
+            var attY = defender.m_vPosition.y - attacker.m_vPosition.y;
+
+            attacker.m_ScriptVars.SetFloat(new CExoString("ATTACK_ORIENTATION_X"), attX);
+            attacker.m_ScriptVars.SetFloat(new CExoString("ATTACK_ORIENTATION_Y"), attY);
+
+            var delta = Math.Abs(Math.Atan2(attY, attX) - Math.Atan2(defY, defX));
+            Log.Write(LogGroup.Attack, "Attacker facing is " + attX + ", " + attY);
+            Log.Write(LogGroup.Attack, "Defender facing is " + defX + ", " + defY);
+            Log.Write(LogGroup.Attack, $"Back attack delta = {delta}");
+
+            if (delta <= 0.65f)
+            {
+                Log.Write(LogGroup.Attack, "Back attack.  Attacker angle (radians): " + Math.Atan2(attY, attX) +
+                                           ", Defender angle (radians): " + Math.Atan2(defY, defX));
+
+                if (attacker.m_pStats.HasFeat((ushort)FeatType.BackAttack5) == 1)
+                {
+                    return 10;
+                }
+                if (attacker.m_pStats.HasFeat((ushort)FeatType.BackAttack4) == 1)
+                {
+                    return 8;
+                }
+                if (attacker.m_pStats.HasFeat((ushort)FeatType.BackAttack3) == 1)
+                {
+                    return 6;
+                }
+                if (attacker.m_pStats.HasFeat((ushort)FeatType.BackAttack2) == 1)
+                {
+                    return 4;
+                }
+                if (attacker.m_pStats.HasFeat((ushort)FeatType.BackAttack1) == 1)
+                {
+                    return 2;
+                }
+            }
+
+            return 0;
         }
     }
 }

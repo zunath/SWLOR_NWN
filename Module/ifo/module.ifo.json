@@ -2855,6 +2855,13 @@
           "type": "resref",
           "value": "prefab_sfde3"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "viscaralegiona"
+        }
       }
     ]
   },
@@ -3293,6 +3300,10 @@
   "Mod_Tag": {
     "type": "cexostring",
     "value": "SWLOR"
+  },
+  "Mod_UUID": {
+    "type": "cexostring",
+    "value": ""
   },
   "Mod_Version": {
     "type": "dword",

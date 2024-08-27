@@ -307,7 +307,7 @@
         TacticalEscape = 300,
         Poisoncraft = 301,
         PoisonExpertise = 302,
-        Lockpicking = 303,
+        Slicing = 303,
         Trapcraft = 304,
         TrapManagement = 305,
         Stealth = 306,

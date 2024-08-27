@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             TacticalEscape();
             Poisoncraft();
             PoisonExpertise();
-            Lockpicking();
+            Slicing();
             Trapcraft();
             TrapManagement();
             Stealth();
@@ -130,39 +130,39 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PoisonExpertise2);
         }
 
-        private void Lockpicking()
+        private void Slicing()
         {
-            _builder.Create(PerkCategoryType.Espionage, PerkType.Lockpicking)
-                .Name("Lockpicking")
+            _builder.Create(PerkCategoryType.Espionage, PerkType.Slicing)
+                .Name("Slicing")
 
                 .AddPerkLevel()
-                .Description("Tier 1 locks can be picked.")
+                .Description("Tier 1 locks can be picked and hacked.")
                 .Price(1)
-                .GrantsFeat(FeatType.Lockpicking1)
+                .GrantsFeat(FeatType.Slicing1)
 
                 .AddPerkLevel()
-                .Description("Tier 2 locks can be picked.")
+                .Description("Tier 2 locks can be picked and hacked.")
                 .Price(1)
                 .RequirementSkill(SkillType.Espionage, 10)
-                .GrantsFeat(FeatType.Lockpicking2)
+                .GrantsFeat(FeatType.Slicing2)
 
                 .AddPerkLevel()
-                .Description("Tier 3 locks can be picked.")
+                .Description("Tier 3 locks can be picked and hacked.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 20)
-                .GrantsFeat(FeatType.Lockpicking3)
+                .GrantsFeat(FeatType.Slicing3)
 
                 .AddPerkLevel()
-                .Description("Tier 4 locks can be picked.")
+                .Description("Tier 4 locks can be picked and hacked.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 30)
-                .GrantsFeat(FeatType.Lockpicking4)
+                .GrantsFeat(FeatType.Slicing4)
 
                 .AddPerkLevel()
-                .Description("Tier 5 locks can be picked.")
+                .Description("Tier 5 locks can be picked and hacked.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 40)
-                .GrantsFeat(FeatType.Lockpicking5);
+                .GrantsFeat(FeatType.Slicing5);
         }
 
         private void Trapcraft()

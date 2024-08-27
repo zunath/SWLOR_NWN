@@ -2804,56 +2804,7 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "pref_lehon"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "prefab_sfarr"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "prefab_sfbat"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "prefab_sfde4"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "prefab_sfdeg"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "prefab_sfde1"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "prefab_sfde2"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "prefab_sfde3"
+          "value": "viscaralegiona"
         }
       }
     ]
@@ -3293,6 +3244,10 @@
   "Mod_Tag": {
     "type": "cexostring",
     "value": "SWLOR"
+  },
+  "Mod_UUID": {
+    "type": "cexostring",
+    "value": ""
   },
   "Mod_Version": {
     "type": "dword",

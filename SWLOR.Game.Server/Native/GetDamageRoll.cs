@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.SkillService;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
@@ -564,22 +565,27 @@ namespace SWLOR.Game.Server.Native
 
                 if (attacker.m_pStats.HasFeat((ushort)FeatType.BackAttack5) == 1)
                 {
+                    CombatPoint.AddCombatPointNative(attacker, defender, SkillType.Espionage, 3);
                     return 10;
                 }
                 if (attacker.m_pStats.HasFeat((ushort)FeatType.BackAttack4) == 1)
                 {
+                    CombatPoint.AddCombatPointNative(attacker, defender, SkillType.Espionage, 3);
                     return 8;
                 }
                 if (attacker.m_pStats.HasFeat((ushort)FeatType.BackAttack3) == 1)
                 {
+                    CombatPoint.AddCombatPointNative(attacker, defender, SkillType.Espionage, 2);
                     return 6;
                 }
                 if (attacker.m_pStats.HasFeat((ushort)FeatType.BackAttack2) == 1)
                 {
+                    CombatPoint.AddCombatPointNative(attacker, defender, SkillType.Espionage, 2);
                     return 4;
                 }
                 if (attacker.m_pStats.HasFeat((ushort)FeatType.BackAttack1) == 1)
                 {
+                    CombatPoint.AddCombatPointNative(attacker, defender, SkillType.Espionage);
                     return 2;
                 }
             }

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.SkillService;
+using AssociateType = SWLOR.Game.Server.Core.NWScript.Enum.Associate.AssociateType;
+using CharacterType = SWLOR.Game.Server.Enumeration.CharacterType;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -254,6 +255,32 @@ namespace SWLOR.Game.Server.Service
             var npcStats = Stat.GetNPCStats(creature);
             var level = npcStats.Level;
             UpdateLastCreatureLevel(player, level);
+        }
+
+        [NWNEventHandler("ntv_add_compoint")]
+        public static void HandleNativeCombatPoint()
+        {
+            var player = OBJECT_SELF;
+            var target = GetLocalObject(player, "NATIVE_COMBAT_POINT_TARGET");
+            var skill = (SkillType)GetLocalInt(player, "NATIVE_COMBAT_POINT_SKILLTYPE");
+            var amount = GetLocalInt(player, "NATIVE_COMBAT_POINT_AMOUNT");
+
+            AddCombatPoint(OBJECT_SELF, target, skill, amount);
+        }
+
+        public static void AddCombatPointNative(CNWSCreature player, CNWSCreature creature, SkillType skill, int amount = 1)
+        {
+            var targetVar = new CExoString("NATIVE_COMBAT_POINT_TARGET");
+            var skillTypeVar = new CExoString("NATIVE_COMBAT_POINT_SKILLTYPE");
+            var amountVar = new CExoString("NATIVE_COMBAT_POINT_AMOUNT");
+
+            player.m_ScriptVars.SetObject(targetVar, creature.m_idSelf);
+            player.m_ScriptVars.SetInt(skillTypeVar, (int)skill);
+            player.m_ScriptVars.SetInt(amountVar, amount);
+            NWNXLib.VirtualMachine().RunScript(new CExoString("ntv_add_compoint"), player.m_idSelf);
+            player.m_ScriptVars.DestroyObject(targetVar);
+            player.m_ScriptVars.DestroyInt(skillTypeVar);
+            player.m_ScriptVars.DestroyInt(amountVar);
         }
 
         /// <summary>

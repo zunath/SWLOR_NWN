@@ -48047,6 +48047,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Data Spike I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "data_spike1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Data Spike II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "data_spike2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Data Spike III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "data_spike3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Data Spike IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "data_spike4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Data Spike V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "data_spike5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dedicated Targetting Sensor Array"
                     },
                     "RESREF": {

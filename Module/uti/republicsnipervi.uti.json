@@ -14,11 +14,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 115
+    "value": 45
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 127
+    "value": 45
   },
   "Comment": {
     "type": "cexostring",
@@ -46,7 +46,7 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 22
+    "value": 63
   },
   "Leather2Color": {
     "type": "byte",
@@ -64,11 +64,11 @@
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 3
+    "value": 106
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 46
+    "value": 62
   },
   "PaletteID": {
     "type": "byte",
@@ -100,6 +100,6 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 46
+    "value": 62
   }
 }

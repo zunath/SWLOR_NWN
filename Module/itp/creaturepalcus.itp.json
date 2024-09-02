@@ -3385,25 +3385,6 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Male Twi'lek Republic Soldier"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "mkelrepsoldie001"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 12.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Male Weequay Republic Soldier"
                     },
                     "RESREF": {
@@ -3656,6 +3637,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "republictechnici"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 35.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Trooper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republictrooper"
                     }
                   },
                   {

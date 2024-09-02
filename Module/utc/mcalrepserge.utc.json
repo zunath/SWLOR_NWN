@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 129
+    "value": 119
   },
   "Appearance_Type": {
     "type": "word",
@@ -121,11 +121,11 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 20
+    "value": 2
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 2
+    "value": 6
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -182,7 +182,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "republicofficeru"
+          "value": "shipcaptainblkm"
         }
       }
     ]
@@ -346,26 +346,6 @@
     "type": "byte",
     "value": 0
   },
-  "ItemList": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "shipcaptainblkm"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 0
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      }
-    ]
-  },
   "LastName": {
     "type": "cexolocstring",
     "value": {
@@ -410,7 +390,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 574
+    "value": 4274
   },
   "Race": {
     "type": "byte",
@@ -727,7 +707,7 @@
   },
   "xAppearance_Head": {
     "type": "word",
-    "value": 129
+    "value": 119
   },
   "xArmorPart_RFoot": {
     "type": "word",

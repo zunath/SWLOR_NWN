@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 6
+    "value": 120
   },
   "Appearance_Type": {
     "type": "word",
@@ -110,7 +110,7 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 78
+    "value": 33
   },
   "Color_Skin": {
     "type": "byte",
@@ -171,7 +171,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "republic_outfit"
+          "value": "republictrooper"
         }
       },
       {
@@ -313,26 +313,6 @@
   "IsPC": {
     "type": "byte",
     "value": 0
-  },
-  "ItemList": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "republictrooper"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 0
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      }
-    ]
   },
   "LastName": {
     "type": "cexolocstring",
@@ -695,7 +675,7 @@
   },
   "xAppearance_Head": {
     "type": "word",
-    "value": 6
+    "value": 120
   },
   "xArmorPart_RFoot": {
     "type": "word",

@@ -3777,7 +3777,11 @@
   },
   "Version": {
     "type": "dword",
+<<<<<<< Updated upstream
     "value": 21
+=======
+    "value": 20
+>>>>>>> Stashed changes
   },
   "Width": {
     "type": "int",

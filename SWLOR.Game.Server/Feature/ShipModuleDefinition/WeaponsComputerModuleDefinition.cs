@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Texture("iit_ess_252")
-                .Description("This weapons computer increases all Damage by 20 but reduce Accuracy by 10.")
+                .Description("This weapons computer increases all Attack by 20 but reduce Accuracy by 10.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, 5)
                 .CapitalClassModule()

@@ -128,6 +128,8 @@ namespace SWLOR.Game.Server.Service.CraftService
         CapitalConstruction = 59,
         [RecipeCategory("Special Submission Items", true)]
         SpecialSubmissionItems = 60,
+        [RecipeCategory("Starship Ammo", true)]
+        StarshipAmmo = 61,
     }
 
     public class RecipeCategoryAttribute : Attribute

@@ -16,11 +16,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            BeamCannon("beamcannon1", "Basic Beam Cannon", "Basic Beam C.", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 3 DMG on a hit.", 3, 6, 1);
-            BeamCannon("beamcannon2", "Beam Cannon I", "Beam Cann. 1", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 6 DMG on a hit.", 6, 7, 2);
-            BeamCannon("beamcannon3", "Beam Cannon II", "Beam Cann. 2", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 9 DMG on a hit.", 9, 8, 3);
-            BeamCannon("beamcannon4", "Beam Cannon III", "Beam Cann. 3", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 12 DMG on a hit.", 12, 9, 4);
-            BeamCannon("beamcannon5", "Beam Cannon IV", "Beam Cann. 4", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 15 DMG on a hit.", 15, 10, 5);
+            BeamCannon("beamcannon1", "Basic Beam Cannon", "Basic Beam C.", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 3 thermal DMG on a hit.", 3, 6, 1);
+            BeamCannon("beamcannon2", "Beam Cannon I", "Beam Cann. 1", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 6 thermal DMG on a hit.", 6, 7, 2);
+            BeamCannon("beamcannon3", "Beam Cannon II", "Beam Cann. 2", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 9 thermal DMG on a hit.", 9, 8, 3);
+            BeamCannon("beamcannon4", "Beam Cannon III", "Beam Cann. 3", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 12 thermal DMG on a hit.", 12, 9, 4);
+            BeamCannon("beamcannon5", "Beam Cannon IV", "Beam Cann. 4", "A stream of high energy particles deals damage over time, three attacks are made over the course of one second, each tick doing 15 thermal DMG on a hit.", 15, 10, 5);
 
             return _builder.Build();
         }
@@ -49,16 +49,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     var attackBonus = activatorShipStatus.ThermalDamage;
-                    var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-                    var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Piloting, attackBonus);
-                    if (GetHasFeat(FeatType.IntuitivePiloting, activator) && GetAbilityScore(activator, AbilityType.Willpower) > GetAbilityScore(activator, AbilityType.Perception))
-                    {
-                        attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-                        attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
-                    }
+                    var attackerStat = Space.GetAttackStat(activator);
+                    var attack = Space.GetShipAttack(activator, attackBonus);
                     var moduleDamage = dmg + moduleBonus / 3;
                     var defenseBonus = targetShipStatus.ThermalDefense * 2;
-                    var defense = Stat.GetDefense(target, CombatDamageType.Thermal, AbilityType.Vitality, defenseBonus);
+                    var defense = Space.GetShipDefense(target, defenseBonus);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 
                     var beam = EffectBeam(VisualEffect.Vfx_Beam_Holy, activator, BodyNode.Chest);

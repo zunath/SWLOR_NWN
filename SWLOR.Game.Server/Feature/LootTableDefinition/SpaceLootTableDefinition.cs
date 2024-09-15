@@ -236,7 +236,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("recipe_modtarget", 1)
                 .AddItem("recipe_modturbo", 1)
                 .AddItem("recipe_conwar", 1)
-                .AddItem("recipe_modsmin", 1);
+                .AddItem("recipe_modsmin", 1)
+                .AddItem("recipe_wcomp", 1)
+                .AddItem("recipe_diverter", 1)
+                .AddItem("recipe_ewar", 1);
 
             _builder.Create("THORILIDE")
                 .AddItem("thor_crys", 1);

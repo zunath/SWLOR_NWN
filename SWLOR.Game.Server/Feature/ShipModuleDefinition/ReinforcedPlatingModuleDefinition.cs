@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Texture("iit_ess2_114")
-                .Description($"Improves a ship's defenses to Thermal, EM and Explosive by {boostAmount * 3} at the cost of {boostAmount} evasion.")
+                .Description($"Improves a ship's defenses to Thermal, EM and Explosive by {boostAmount * 3} at the cost of 50 shields.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, 5)
                 .CapitalClassModule()
@@ -33,14 +33,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     shipStatus.ThermalDefense += 3 * (boostAmount + moduleBonus);
                     shipStatus.EMDefense += 3 * (boostAmount + moduleBonus);
                     shipStatus.ExplosiveDefense += 3 * (boostAmount + moduleBonus);
-                    shipStatus.Evasion -= boostAmount;
+                    shipStatus.Shield -= 50;
                 })
                 .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.ThermalDefense -= 3 * (boostAmount + moduleBonus);
                     shipStatus.EMDefense -= 3 * (boostAmount + moduleBonus);
                     shipStatus.ExplosiveDefense -= 3 * (boostAmount + moduleBonus);
-                    shipStatus.Evasion += boostAmount;
+                    shipStatus.Shield += 50;
                 });
         }
 

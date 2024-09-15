@@ -64,13 +64,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Tactical Escape")
 
                 .AddPerkLevel()
-                .Description("Reduces your enmity by 50%.")
+                .Description("Reduces your enmity by 5% per Perception past 10, to a maximum of 50%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 25)
                 .GrantsFeat(FeatType.TacticalEscape1)
 
                 .AddPerkLevel()
-                .Description("Reduces your enmity by 100%.")
+                .Description("Reduces your enmity by 10% per Perception past 10, to a maximum of 99%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 50)
                 .GrantsFeat(FeatType.TacticalEscape2);

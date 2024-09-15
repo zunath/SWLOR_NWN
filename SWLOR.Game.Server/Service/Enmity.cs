@@ -248,6 +248,35 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Modifies the enmity of all creatures who have the specified creature on their enmity table.
+        /// Amount adjustment is based on a percentage. Valid ranges -100 to 100
+        /// </summary>
+        /// <param name="creature">The creature whose enmity will be modified.</param>
+        /// <param name="percentAdjustment">The percent amount to adjust by. Negative to reduce it, positive to increase it.</param>
+        public static void ModifyEnmityOnAllByPercent(uint creature, int percentAdjustment)
+        {
+            if (percentAdjustment == 0)
+                return;
+
+            if (percentAdjustment > 100)
+                percentAdjustment = 100;
+
+            if (percentAdjustment < -100)
+                percentAdjustment = -100;
+
+            if (!_creatureToEnemies.ContainsKey(creature))
+                return;
+
+            var percentage = percentAdjustment * 0.01f;
+
+            foreach (var enemy in _creatureToEnemies[creature])
+            {
+                var enmityValue = (int)(_enemyEnmityTables[enemy][creature] * percentage);
+                ModifyEnmity(creature, enemy, enmityValue);
+            }
+        }
+
+        /// <summary>
         /// Removes a creature from all enmity tables.
         /// </summary>
         /// <param name="creature">The creature to remove.</param>

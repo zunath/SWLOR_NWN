@@ -5750,7 +5750,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Revï¿½tement de droï¿½de ï¿½boueur"
+                      "value": "Revêtement de droïde éboueur"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -48921,6 +48921,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "capdeed_huttco"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capital Ship Deed: Jehavey'ir"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capdeed_jfrigate"
                     }
                   },
                   {

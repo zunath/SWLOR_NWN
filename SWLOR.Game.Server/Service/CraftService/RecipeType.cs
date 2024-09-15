@@ -2499,6 +2499,8 @@
         Missile15 = 4792,
         Missile35 = 4793,
 
+        CorvetteJehaveyFrigate = 4794,
+
 
         WeaponsComputer = 4795,
         CapitalEWar = 4796,

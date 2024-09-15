@@ -118,13 +118,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Poison Expertise")
 
                 .AddPerkLevel()
-                .Description("Improves poisons applied to your weapons by 20%.")
+                .Description("Improves poisons applied to your weapons by 2% per Perception past 10, to a maximum of 20%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 30)
                 .GrantsFeat(FeatType.PoisonExpertise1)
 
                 .AddPerkLevel()
-                .Description("Improves poisons applied to your weapons by 40%.")
+                .Description("Improves poisons applied to your weapons by 4% per Perception past 10, to a maximum of 40%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Espionage, 50)
                 .GrantsFeat(FeatType.PoisonExpertise2);

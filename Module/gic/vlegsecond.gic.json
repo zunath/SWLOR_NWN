@@ -273,13 +273,6 @@
           "type": "cexostring",
           "value": ""
         }
-      },
-      {
-        "__struct_id": 8,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
       }
     ]
   },
@@ -879,13 +872,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "Source: Coulisfu Oriental Rural Tileset v2.3"
         }
       },
@@ -950,48 +936,6 @@
         "Comment": {
           "type": "cexostring",
           "value": "Rokugan V2 by Kerry Mortensen\r\n"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
         }
       },
       {
@@ -2391,20 +2335,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "Source: LOKPak v3 by Danmar"
         }
       },
@@ -2504,13 +2434,6 @@
         "Comment": {
           "type": "cexostring",
           "value": "Source: Coulisfu Oriental Rural Tileset v2.3"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "volition's Bio Placeables by volition\r\n"
         }
       },
       {
@@ -3189,55 +3112,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "Boulder"
         }
       },
@@ -3470,13 +3344,6 @@
         "Comment": {
           "type": "cexostring",
           "value": "Source: All Purpose Placeables 1.1 by M.G.Skaggs"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
         }
       },
       {
@@ -4253,20 +4120,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Source: DK Furniture Plus by Nethy"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "Source: DK Furniture Plus by Nethy"
         }
       },
@@ -4751,6 +4604,1525 @@
         "Comment": {
           "type": "cexostring",
           "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: DK Furniture Plus by Nethy"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: DK Furniture Plus by Nethy"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "6 placeable fences/walls with endpoles by Okto\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "6 placeable fences/walls with endpoles by Okto\r\n"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Columns & Things by NewAge"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Columns & Things by NewAge"
         }
       },
       {

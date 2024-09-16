@@ -49603,6 +49603,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Legion Access Keycode"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_sith_01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Legion ID Codes - Level 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_leg_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Legion ID Codes - Level 3"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_leg_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mandalorian Fort Ka'ra Access Keycode"
                     },
                     "RESREF": {
@@ -49641,17 +49674,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "key_rep_003"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Revanite Access Keycode"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "key_sith_01"
                     }
                   },
                   {

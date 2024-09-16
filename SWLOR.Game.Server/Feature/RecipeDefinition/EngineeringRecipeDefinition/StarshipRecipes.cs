@@ -322,6 +322,19 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("capc_corhull", 1)
                 .Component("capc_powsys", 1)
                 .Component("capc_eng", 1);
+
+            // JehaveyFrigate
+            _builder.Create(RecipeType.CorvetteJehaveyFrigate, SkillType.Engineering)
+                .Category(RecipeCategoryType.Starship)
+                .Resref("capdeed_jfrigate")
+                .Level(53)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Starship, 2)
+                .Component("capc_corhull", 1)
+                .Component("capc_powsys", 1)
+                .Component("capc_eng", 1);
         }
     }
 }

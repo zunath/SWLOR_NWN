@@ -5739,7 +5739,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Revï¿½tement de droï¿½de ï¿½boueur"
+                      "value": "Revêtement de droïde éboueur"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -10099,6 +10099,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Republic Sniper Armour"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vrepnpctroopa001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Republic Soldier Armor"
                     },
                     "RESREF": {
@@ -10544,6 +10555,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vtdrakegunnerarm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Twilek Republic Soldier Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vrepnpctrooph001"
                     }
                   }
                 ]

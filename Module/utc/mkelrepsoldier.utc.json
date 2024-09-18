@@ -178,7 +178,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "republictrooper"
+          "value": "republic_outfit"
         }
       },
       {
@@ -320,6 +320,26 @@
   "IsPC": {
     "type": "byte",
     "value": 0
+  },
+  "ItemList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "republictrooper"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 0
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
   },
   "LastName": {
     "type": "cexolocstring",

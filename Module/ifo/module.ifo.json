@@ -3109,7 +3109,7 @@
   },
   "Mod_ID": {
     "type": "void",
-    "value": "ï¿½ï¿½ï¿½ï¿½\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "ÿÿÿÿ\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",
@@ -3244,10 +3244,6 @@
   "Mod_Tag": {
     "type": "cexostring",
     "value": "SWLOR"
-  },
-  "Mod_UUID": {
-    "type": "cexostring",
-    "value": ""
   },
   "Mod_Version": {
     "type": "dword",

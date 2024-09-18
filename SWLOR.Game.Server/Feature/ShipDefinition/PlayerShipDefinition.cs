@@ -382,6 +382,21 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .ShipConfigurationNodes(1)
                 .CapitalShip()
                 .InteriorLayout(PropertyLayoutType.Corvette);
+
+            _builder.Create("capdeed_jfrigate")
+                .ItemResref("capdeed_jfrigate")
+                .Name("Jehavey'ir")
+                .Appearance(AppearanceType.SWLORShipMandalorianJehaveyFrigate)
+                .RequirePerk(PerkType.Starships, 5)
+                .MaxArmor(750)
+                .MaxCapacitor(500)
+                .MaxShield(750)
+                .ShieldRechargeRate(30)
+                .HighPowerNodes(3)
+                .LowPowerNodes(4)
+                .ShipConfigurationNodes(1)
+                .CapitalShip()
+                .InteriorLayout(PropertyLayoutType.Corvette);
         }
     }
 }

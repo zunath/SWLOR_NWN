@@ -21318,6 +21318,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantooine Starwort"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dant_starwort"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dark Bass"
                     },
                     "RESREF": {

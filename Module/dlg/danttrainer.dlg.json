@@ -122,7 +122,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hello there! I see you're eager to help out. I need yot beans to make treats for our pets here at the battlegym. Can you fetch it for me?"
+            "0": "Hello there! I see you're eager to help out. I need yot beans to make treats for our pets here at the battle gym. Can you fetch it for me?"
           }
         }
       },
@@ -504,7 +504,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Excellent! Thank you so much. Here is your reward: some credits and a  pet treats. Your help is greatly appreciated!"
+            "0": "Excellent! Thank you so much. Here is your reward: some credits and a pet treat. Your help is greatly appreciated!"
           }
         }
       },

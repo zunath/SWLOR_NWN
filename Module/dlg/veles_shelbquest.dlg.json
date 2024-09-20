@@ -260,7 +260,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "If you could get me ten new Medical Bed's, and perhaps the schematics for a new medical center? That'd be great!"
+            "0": "If you could get me ten new medical beds and perhaps the schematics for a new medical center, that would be great!"
           }
         }
       },
@@ -535,7 +535,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Thanks for your help again! If anything else pops up, i'll be sure to reach out."
+            "0": "Thanks for your help again! If anything else pops up, I'll be sure to reach out."
           }
         }
       }
@@ -825,7 +825,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Of course, i'll be right back."
+            "0": "Of course, I'll be right back."
           }
         }
       },

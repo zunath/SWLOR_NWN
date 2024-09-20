@@ -348,7 +348,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "<StartHighlight>[The droid looks at you with a glint in it's torch.]</Start>"
+            "0": "<StartHighlight>[The droid looks at you with a glint in its torch.]</Start>"
           }
         }
       },
@@ -535,7 +535,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "<StartHighlight>[The droid seems happy with it's carts filled with scrap metal.]</Start>"
+            "0": "<StartHighlight>[The droid seems happy with its carts filled with scrap metal.]</Start>"
           }
         }
       }
@@ -825,7 +825,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Alright, i'll be back shortly."
+            "0": "Alright, I'll be back shortly."
           }
         }
       },
@@ -927,7 +927,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here you go buddy."
+            "0": "Here you go, buddy."
           }
         }
       },
@@ -992,7 +992,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "You're welcome little droid! Good luck with all that scrap."
+            "0": "You're welcome, little droid! Good luck with all that scrap."
           }
         }
       },

@@ -48927,6 +48927,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Capital Ship Deed: Jehavey'ir"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "capdeed_jfrigate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Capital Ship Deed: Republic Thranta Corvette"
                     },
                     "RESREF": {

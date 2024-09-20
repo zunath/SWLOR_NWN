@@ -160,6 +160,32 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                         DestroyObject(oldItem);
                         DestroyObject(newItem);
                     }
+
+                    if (dbShip.Status.ConfigurationModules.ContainsKey(slot))
+                    {
+                        var tempStorage = GetTempStorage();
+                        var oldItem = ObjectPlugin.Deserialize(dbShip.Status.ConfigurationModules[slot].SerializedItem);
+                        var resref = GetResRef(oldItem);
+                        var moduleBonus = Space.GetModuleBonus(oldItem);
+
+                        var newItem = CreateItemOnObject(resref, tempStorage);
+                        var newItemTag = GetTag(newItem);
+                        var moduleDetails = Space.GetShipModuleDetailByItemTag(newItemTag);
+
+                        if (moduleBonus > 0)
+                        {
+                            BiowareXP2.IPSafeAddItemProperty(newItem, ItemPropertyCustom(ItemPropertyType.ModuleBonus, -1, moduleBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                        }
+
+                        dbShip.Status.ConfigurationModules[slot].ItemInstanceId = GetObjectUUID(newItem);
+                        dbShip.Status.ConfigurationModules[slot].ItemTag = newItemTag;
+                        dbShip.Status.ConfigurationModules[slot].SerializedItem = ObjectPlugin.Serialize(newItem);
+
+                        moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
+
+                        DestroyObject(oldItem);
+                        DestroyObject(newItem);
+                    }
                 }
 
                 DB.Set(dbShip);

@@ -2576,6 +2576,8 @@
         Missile15 = 4792,
         Missile35 = 4793,
 
+        CorvetteJehaveyFrigate = 4794,
+
 
         #endregion
 

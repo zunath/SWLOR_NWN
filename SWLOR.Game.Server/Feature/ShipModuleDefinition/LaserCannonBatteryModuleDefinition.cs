@@ -58,16 +58,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             .ActivatedAction((activator, activatorShipStatus, target, _, moduleBonus) =>
             {
                 var attackBonus = activatorShipStatus.ThermalDamage;
-                var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-                var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Piloting, attackBonus);
-                if (GetHasFeat(FeatType.IntuitivePiloting, activator) && GetAbilityScore(activator, AbilityType.Willpower) > GetAbilityScore(activator, AbilityType.Perception))
-                {
-                    attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-                    attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Piloting, attackBonus);
-                }
+                var attackerStat = Space.GetAttackStat(activator);
+                var attack = Space.GetShipAttack(activator, attackBonus);
 
                 var moduleDMG = dmg + moduleBonus / 2;
-                var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
                 var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
 
                 for (var i = 0; i < 9; i++)
@@ -80,12 +74,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var nearbyTarget = GetFirstObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
                             while (GetIsObjectValid(nearbyTarget))
                             {
-                                if (nearbyTarget != activator && Random.D4(1) != 1 && GetIsEnemy(nearbyTarget, activator) && Space.GetShipStatus(nearbyTarget) != null)
+                                if (nearbyTarget != activator && 
+                                    Random.D4(1) != 1 && 
+                                    GetIsEnemy(nearbyTarget, activator) && 
+                                    Space.GetShipStatus(nearbyTarget) != null)
                                 {
                                     var nearbyShipStatus = Space.GetShipStatus(nearbyTarget);
                                     var nearbyDefenseBonus = nearbyShipStatus.ThermalDefense * 2;
-                                    var nearbyDefense = Stat.GetDefense(target, CombatDamageType.Thermal, AbilityType.Vitality, nearbyDefenseBonus);
-                                    var nearbyDefenderStat = GetAbilityScore(target, AbilityType.Vitality);
+                                    var nearbyDefense = Space.GetShipDefense(nearbyTarget, nearbyDefenseBonus);
+                                    var nearbyDefenderStat = GetAbilityScore(nearbyTarget, AbilityType.Vitality);
                                     var damage = Combat.CalculateDamage(
                                         attack,
                                         moduleDMG,

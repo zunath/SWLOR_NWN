@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
     {
 
         public int Version => 15;
-        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
+        public MigrationExecutionType ExecutionType => MigrationExecutionType.PostCacheLoad;
         public void Migrate()
         {
             RecalculateAllShipStats();

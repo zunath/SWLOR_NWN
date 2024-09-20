@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             CullTheTundraThreat();
             HutlarPowerInvestigation();
             StupendousSlugBile();
+            BreakTheByysk();
 
             return _builder.Build();
         }
@@ -153,6 +154,22 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddGoldReward(742)
                 .AddItemReward("slug_shake", 1);
+        }
+
+        private void BreakTheByysk()
+        {
+            _builder.Create("break_the_byysk", "Break the Byysk")
+
+                .AddState()
+                .SetStateJournalText("Sharene wants you to kill two hundred and fifty Byysk. Off you go!")
+                .AddKillObjective(NPCGroupType.Byysk_Guardian, 250)
+
+                .AddState()
+                .SetStateJournalText("That wasn't too bad! It didn't take as long as you thought it would. Good work! Return to Sharene.")
+
+                .AddGoldReward(15000)
+                .AddXPReward(15000)
+                .AddItemReward("recipe_banners01", 1);
         }
 
     }

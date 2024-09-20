@@ -103,7 +103,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Greetings! This unit would request that you, being infront of me, is to aid me. State your decision... Now."
+            "0": "Greetings! This unit requests that you, being in front of me, aid me. State your decision now."
           }
         }
       },
@@ -190,9 +190,9 @@
         },
         "Text": {
           "type": "cexolocstring",
-          "value": {
-            "0": "Outstanding! P3DR0 would request an establishment to, as the beings say, party. Please advise if you can gather the following equipment for me: Five Speakers, One Jukebox, and One schematic for Cantina."
-          }
+            "value": {
+              "0": "Outstanding! P3DR0 requests an establishment for what the beings refer to as a party. Please advise if you can gather the following equipment for me: five speakers, one jukebox, and one schematic for a cantina."
+            }
         }
       },
       {
@@ -279,7 +279,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Greetings! This unit would like to inquire if the, being infront of me, has managed to obtain the requested items."
+            "0": "Greetings! This unit would like to inquire if you, being in front of me, have managed to obtain the requested items."
           }
         }
       },
@@ -348,7 +348,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Outstanding, being in front of me! This unit would like to congratulate you on assisting me."
+            "0": "Outstanding, being in front of me! This unit would like to congratulate you, on assisting me."
           }
         }
       },
@@ -417,7 +417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "This unit certainly hopes so! I will be in contact once: The Oil Pit is open for being patronage."
+            "0": "This unit certainly hopes so! I will be in contact once the Oil Pit construction has been completed."
           }
         }
       },
@@ -915,7 +915,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I.. look forward to it?"
+            "0": "I... look forward to it?"
           }
         }
       }

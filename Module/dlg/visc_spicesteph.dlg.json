@@ -1316,7 +1316,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Oh... This will be -easy-. I need some rocks to hold the corners down so I can enjoy my picnic's... <StartAction>[He holds out the list... again.]</Start>"
+            "0": "Oh... This will be -easy-. I need some rocks to hold the corners down so I can enjoy my picnics... <StartAction>[He holds out the list... again.]</Start>"
           }
         }
       },
@@ -2108,7 +2108,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "There was these two guys in hood's a couple weeks ago, and they were talking about these shiny shards that can be found on some bigger creatures on Dathomir. I have no idea, but I think it'd look pretty cool hung up in the center of the room."
+            "0": "There was these two guys in hoods a couple weeks ago, and they were talking about these shiny shards that can be found on some bigger creatures on Dathomir. I have no idea, but I think it'd look pretty cool hung up in the center of the room."
           }
         }
       },
@@ -3297,7 +3297,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not excatly... I'll be back. "
+            "0": "Not exactly... I'll be back. "
           }
         }
       },
@@ -3354,7 +3354,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "This wasn't to bad... Here you go."
+            "0": "This wasn't too bad... Here you go."
           }
         }
       },
@@ -3925,7 +3925,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Rock's are harder to find then I though... I'll be back."
+            "0": "Rocks are harder to find then I thought... I'll be back."
           }
         }
       },
@@ -4239,7 +4239,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Nto quite, I wanted to ask what these are actually for... But, nevermind. Be back soon."
+            "0": "Not quite, I wanted to ask what these are actually for... But, nevermind. Be back soon."
           }
         }
       },

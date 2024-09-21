@@ -30,7 +30,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
@@ -39,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Legion Access Keycode"
+      "0": "Legion ID Codes - Level 3"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 240
+    "value": 239
   },
   "PaletteID": {
     "type": "byte",
@@ -68,14 +70,14 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Key_S_1"
+    "value": "Key_L_3"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "key_sith_01"
+    "value": "key_leg_3"
   },
   "xModelPart1": {
     "type": "word",
-    "value": 240
+    "value": 239
   }
 }

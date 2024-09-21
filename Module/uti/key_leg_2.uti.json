@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Legion Access Keycode"
+      "0": "Legion ID Codes - Level 2"
     }
   },
   "ModelPart1": {
@@ -68,11 +68,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Key_S_1"
+    "value": "Key_L_2"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "key_sith_01"
+    "value": "key_leg_2"
   },
   "xModelPart1": {
     "type": "word",

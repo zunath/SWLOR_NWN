@@ -2,7 +2,57 @@
   "__data_type": "GIC ",
   "Creature List": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      }
+    ]
   },
   "Door List": {
     "type": "list",
@@ -297,14 +347,77 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Source: LOKPak v3 by Danmar"
+          "value": ""
         }
       },
       {
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "volition's Bio Placeables by volition\r\n"
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Magic Sparks - Purple"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Magic Sparks - Purple"
         }
       },
       {
@@ -382,6 +495,4255 @@
         "Comment": {
           "type": "cexostring",
           "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Flame - Large (No Glow)"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Flame - Large (No Glow)"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Flame - Large (No Glow)"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Flame - Large (No Glow)"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Flame - Large (No Glow)"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Flame - Large (No Glow)"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Flame - Large (No Glow)"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Placeable Lightshafts with pwk by Demigog"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Placeable Lightshafts with pwk by Demigog"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: Placeable Lightshafts with pwk by Demigog"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Works for both standard and secret trap doors.\r\n\r\nFor standard, the tag of the waypoint destination must be set to LOC_<tag of door>.\r\n\r\nFor secret, the waypoint should be set to LOC_<tag of detect trigger>."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Shaft of Light - Green"
         }
       },
       {
@@ -396,6 +4758,39 @@
   "SoundList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 6,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "PlayInToolset": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "PlayInToolset": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "PlayInToolset": {
+          "type": "byte",
+          "value": 1
+        }
+      },
       {
         "__struct_id": 6,
         "Comment": {
@@ -438,7 +4833,7 @@
         "__struct_id": 1,
         "Comment": {
           "type": "cexostring",
-          "value": "Prevents random resource spawns from spawning within the trigger."
+          "value": ""
         }
       },
       {
@@ -466,7 +4861,7 @@
         "__struct_id": 1,
         "Comment": {
           "type": "cexostring",
-          "value": ""
+          "value": "Prevents random resource spawns from spawning within the trigger."
         }
       },
       {
@@ -488,62 +4883,6 @@
   "WaypointList": {
     "type": "list",
     "value": [
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
       {
         "__struct_id": 5,
         "Comment": {

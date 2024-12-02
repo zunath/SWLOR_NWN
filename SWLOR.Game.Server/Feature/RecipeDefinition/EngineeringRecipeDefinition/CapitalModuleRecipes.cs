@@ -290,6 +290,19 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("capc_techcom", 1)
                 .Component("capc_modcomp", 1)
                 .Component("capc_power", 3);
+
+            // Assault Concussion Missile Launcher I
+            _builder.Create(RecipeType.AssaultConcMissileLauncher, SkillType.Engineering)
+                .Category(RecipeCategoryType.ShipModule)
+                .Resref("acm_launch_1")
+                .Level(52)
+                .Quantity(1)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.StarshipBlueprints, 5)
+                .EnhancementSlots(RecipeEnhancementType.Module, 2)
+                .Component("capc_techcom", 1)
+                .Component("capc_modcomp", 1)
+                .Component("capc_power", 3);
         }
     }
 }

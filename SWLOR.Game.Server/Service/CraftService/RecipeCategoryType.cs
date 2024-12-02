@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Service.CraftService
         [RecipeCategory("Starship Ammo", true)]
         StarshipAmmo = 61,
         [RecipeCategory("Capital Module Recipes", true)]
-        CapitalShipModule =62,
+        CapitalShipModule = 62,
     }
 
     public class RecipeCategoryAttribute : Attribute

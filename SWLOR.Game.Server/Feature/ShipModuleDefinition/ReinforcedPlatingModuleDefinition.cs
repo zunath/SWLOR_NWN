@@ -33,14 +33,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     shipStatus.ThermalDefense += 3 * (boostAmount + moduleBonus);
                     shipStatus.EMDefense += 3 * (boostAmount + moduleBonus);
                     shipStatus.ExplosiveDefense += 3 * (boostAmount + moduleBonus);
-                    shipStatus.Shield -= 50;
+                    shipStatus.MaxShield -= 50;
                 })
                 .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.ThermalDefense -= 3 * (boostAmount + moduleBonus);
                     shipStatus.EMDefense -= 3 * (boostAmount + moduleBonus);
                     shipStatus.ExplosiveDefense -= 3 * (boostAmount + moduleBonus);
-                    shipStatus.Shield += 50;
+                    shipStatus.MaxShield += 50;
                 });
         }
 

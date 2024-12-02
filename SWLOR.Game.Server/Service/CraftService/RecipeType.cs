@@ -2500,8 +2500,6 @@
         Missile35 = 4793,
 
         CorvetteJehaveyFrigate = 4794,
-
-
         WeaponsComputer = 4795,
         CapitalEWar = 4796,
         CapitalPowerDiverter = 4797,

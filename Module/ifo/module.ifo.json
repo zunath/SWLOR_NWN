@@ -2804,7 +2804,21 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "viscaralegiona"
+          "value": "vlegionbasemain"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "vlegsecond"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "vlegthird"
         }
       }
     ]

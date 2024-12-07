@@ -39,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .CanTargetSelf()
                 .ActivatedAction((activator, activatorShipStatus, _, _, moduleBonus) =>
                 {
-                    repairAmount += (activatorShipStatus.Industrial * moduleBonus);
+                    var bonusRecovery = activatorShipStatus.Industrial * moduleBonus;
+                    var recovery = repairAmount + bonusRecovery;
 
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, 12.0f);
 
@@ -60,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), nearby, 2.0f);
                             ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4), nearby, 10.0f);
                         
-                            Space.RestoreShield(nearby, nearbyStatus, repairAmount);
+                            Space.RestoreShield(nearby, nearbyStatus, recovery);
 
                             if (GetIsPC(nearby) && !GetIsDM(nearby) && !GetIsDMPossessed(nearby))
                             {
@@ -84,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
 
                     Enmity.ModifyEnmityOnAll(activator, 100 + repairAmount);
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {repairAmount} shield HP to nearby ships reinforcing their shield integrity.");
+                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {recovery} shield HP to nearby ships reinforcing their shield integrity.");
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }

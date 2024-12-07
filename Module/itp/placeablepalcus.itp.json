@@ -68859,6 +68859,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Pile of Herbs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dantooine_herb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Pilot Ship"
                     },
                     "RESREF": {

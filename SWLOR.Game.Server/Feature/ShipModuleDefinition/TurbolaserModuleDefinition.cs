@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var attackerStat = Space.GetAttackStat(activator);
                     var attack = Space.GetShipAttack(activator, attackBonus);
 
-                    var moduleDamage = dmg + moduleBonus * 2;
+                    var moduleDamage = dmg + moduleBonus * 3;
                     var defenseBonus = targetShipStatus.ThermalDefense * 2;
                     var defense = Space.GetShipDefense(target, defenseBonus);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);

@@ -8,29 +8,29 @@ using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
-    public class BulwarkShieldGeneratorModuleDefinition : IShipModuleListDefinition
+    public class CapitalEwarModuleDefinition : IShipModuleListDefinition
     {
         private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            BulwarkShieldGenerator("bulwarkgen", "Bulwark Shield Generator", "Bulwark Gen", "An advanced suite of shield generators project at a wide range, protecting allied ships and reinforcing their shields.", 10);
+            CapitalEWarModule("cap_ewar", "Capital E-War Module", "Cap Ewarmod", "Sends out a pulse scrambling enemy fire systems, forcing them towards yourself.", 100);
 
             return _builder.Build();
         }
 
-        private void BulwarkShieldGenerator(
+        private void CapitalEWarModule(
             string itemTag,
             string name,
             string shortName,
             string description,
-            int repairAmount)
+            int enmityAmount)
         {
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
-                .Type(ShipModuleType.BulwarkShieldGenerator)
-                .Texture("iit_ess_075")
+                .Type(ShipModuleType.CapitalEwar)
+                .Texture("iit_ess_253")
                 .Description(description)
                 .PowerType(ShipModulePowerType.High)
                 .Capacitor(25)
@@ -39,54 +39,37 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .CanTargetSelf()
                 .ActivatedAction((activator, activatorShipStatus, _, _, moduleBonus) =>
                 {
-                    var bonusRecovery = activatorShipStatus.Industrial * moduleBonus;
-                    var recovery = repairAmount + bonusRecovery;
+                    enmityAmount += moduleBonus * 25;
 
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, 12.0f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4),activator, 12.0f);
 
                     const float Distance = 20f;
                     var nearby = GetFirstObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
                     var count = 1;
 
-                    while (GetIsObjectValid(nearby) && count <= 6)
+                    while (GetIsObjectValid(nearby) && count <= 10)
                     {
-                        if (!GetIsEnemy(nearby, activator) && 
-                            !GetIsDead(activator) && 
+                        if (GetIsEnemy(nearby, activator) &&
+                            !GetIsDead(activator) &&
                             Space.GetShipStatus(nearby) != null &&
                             nearby != activator)
                         {
                             var nearbyStatus = Space.GetShipStatus(nearby);
-                            
+
                             ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), nearby, 2.0f);
                             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), nearby, 2.0f);
-                            ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4), nearby, 10.0f);
-                        
-                            Space.RestoreShield(nearby, nearbyStatus, recovery);
-
-                            if (GetIsPC(nearby) && !GetIsDM(nearby) && !GetIsDMPossessed(nearby))
-                            {
-                                var playerId = GetObjectUUID(nearby);
-                                var dbPlayer = DB.Get<Player>(playerId);
-                                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
-
-                                if (dbShip != null)
-                                {
-                                    dbShip.Status = nearbyStatus;
-                                    DB.Set(dbShip);
-
-                                    ExecuteScript("pc_target_upd", nearby);
-                                }
-                            }
+                            Enmity.ModifyEnmity(activator, nearby, enmityAmount);
 
                             count++;
                         }
 
                         nearby = GetNextObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
+                        
                     }
 
-                    Enmity.ModifyEnmityOnAll(activator, 100 + repairAmount);
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {recovery} shield HP to nearby ships reinforcing their shield integrity.");
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} activates their E-War device and begins to draw fire.");
                 });
         }
     }

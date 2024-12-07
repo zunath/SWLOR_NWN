@@ -50,12 +50,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             .Type(ShipModuleType.QuadLaser)
             .Texture("iit_ess2_035")
             .Description(description)
-            .MaxDistance(60f)
+            .MaxDistance(20f)
             .ValidTargetType(ObjectType.Creature)
             .PowerType(ShipModulePowerType.High)
             .RequirePerk(PerkType.OffensiveModules, 5)
             .Recast(8f)
-            .Capacitor(totalAttacks * 2)
+            .Capacitor(totalAttacks * 3)
             .CapitalClassModule()
             .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
             {

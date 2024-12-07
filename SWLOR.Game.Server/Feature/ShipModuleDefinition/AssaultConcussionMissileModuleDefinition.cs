@@ -96,10 +96,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 })
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
-                    // Missiles do 25% more damage to unshielded targets. Due to shield recharge starting instantly, allow for up to 4 shield points to be considered "unshielded".
-                    if (targetShipStatus.Shield <= 4)
+                    var moduleDamage = dmg + (moduleBonus * 3);
+                    // Missiles do 25% more damage to unshielded targets. Due to shield recharge starting instantly, allow for up to 10 shield points to be considered "unshielded".
+                    if (targetShipStatus.Shield <= 10)
                     {
-                        dmg += dmg / 4;
+                        moduleDamage += moduleDamage / 4;
                     }
                     var item = GetItemPossessedBy(activator, ACMItemResref);
                     var stackSize = GetItemStackSize(item);
@@ -111,8 +112,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         SetItemStackSize(item, stackSize - 1);
                     }
-
-                    var moduleDamage = dmg + (moduleBonus * 3);
 
                     var targetDistance = GetDistanceBetween(activator, target);
                     var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));

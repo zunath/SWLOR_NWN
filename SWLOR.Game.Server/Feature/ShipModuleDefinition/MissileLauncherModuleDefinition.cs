@@ -96,8 +96,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     var moduleDamage = dmg + moduleBonus;
-                    // Missiles do 25% more damage to unshielded targets. Due to shield recharge starting instantly, allow for up to 4 shield points to be considered "unshielded".
-                    if (targetShipStatus.Shield <= 4)
+                    // Missiles do 25% more damage to unshielded targets. Due to shield recharge starting instantly, allow for up to 10 shield points to be considered "unshielded".
+                    if (targetShipStatus.Shield <= 10)
                     {
                         moduleDamage += moduleDamage / 4;
                     }

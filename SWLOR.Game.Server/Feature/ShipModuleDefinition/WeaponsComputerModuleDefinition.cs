@@ -4,18 +4,18 @@ using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
-    public class TargetingArrayModuleDefinition : IShipModuleListDefinition
+    public class WeaponsComputerModuleDefinition : IShipModuleListDefinition
     {
         private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            TargetingArray("cap_target1", "Dedicated Targeting Sensor Array", "Target Array", 20);
+            WeaponsComputer("cap_wcomp1", "Dedicated Weapons System Computer", "Weapons Computer", 20);
 
             return _builder.Build();
         }
 
-        private void TargetingArray(string itemTag,
+        private void WeaponsComputer(string itemTag,
             string name,
             string shortName,
             int boostAmount)
@@ -23,24 +23,25 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
-                .Texture("iit_ess_247")
-                .Description($"A suite of dedicated passive sensors for your ship's weapons systems. They improve your accuracy by {boostAmount}, but passive sensor tech reduces your Attack by five.")
+                .Texture("iit_ess_252")
+                .Description("This weapons computer increases all Attack by 20 but reduces Accuracy by 10.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, 5)
                 .CapitalClassModule()
                 .EquippedAction((shipStatus, moduleBonus) =>
                 {
-                    shipStatus.Accuracy += boostAmount + moduleBonus;
-                    shipStatus.ThermalDamage -= 5;
-                    shipStatus.EMDamage -= 5;
-                    shipStatus.ExplosiveDamage -= 5;
+                    shipStatus.ThermalDamage += boostAmount + moduleBonus;
+                    shipStatus.EMDamage += boostAmount + moduleBonus;
+                    shipStatus.ExplosiveDamage += boostAmount + moduleBonus;
+                    shipStatus.Accuracy -= 10;
                 })
                 .UnequippedAction((shipStatus, moduleBonus) =>
                 {
-                    shipStatus.Accuracy -= boostAmount + moduleBonus;
-                    shipStatus.ThermalDamage += 5;
-                    shipStatus.EMDamage += 5;
-                    shipStatus.ExplosiveDamage += 5;
+
+                    shipStatus.ThermalDamage -= boostAmount + moduleBonus;
+                    shipStatus.EMDamage -= boostAmount + moduleBonus;
+                    shipStatus.ExplosiveDamage -= boostAmount + moduleBonus;
+                    shipStatus.Accuracy += 10;
                 });
         }
     }

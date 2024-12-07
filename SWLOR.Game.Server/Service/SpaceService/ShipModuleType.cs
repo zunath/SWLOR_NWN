@@ -21,5 +21,7 @@
         BeamLaser = 16,
         ProtonBomb = 17,
         StripMiner = 18,
+        CapitalEwar = 19,
+        CapitalPowerDiverter = 20,
     }
 }

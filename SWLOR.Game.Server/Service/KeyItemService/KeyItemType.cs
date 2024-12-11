@@ -170,6 +170,8 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         DantooineWarehouseMap = 77,
         [KeyItem(KeyItemCategoryType.Maps, "Dantooine - Canyon River Map", true, "Map of the Canyon Rivers on Dantooine.")]
         DantooineCanyonRiverMap = 78,
+        [KeyItem(KeyItemCategoryType.QuestItems, "Shovel for cave", true, "You've been given a shovel to clear the rock near the lake cave.")]
+        DantooineShovel = 79,
     }
 
     public class KeyItemAttribute : Attribute

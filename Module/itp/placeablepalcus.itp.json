@@ -74912,24 +74912,24 @@
                   },
                   {
                     "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Lantern, Floor Small"
-                    },
                     "RESREF": {
                       "type": "resref",
                       "value": "nwed_flrlntrn002"
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16812168
                     }
                   },
                   {
                     "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mixed Liquor Cabinet"
-                    },
                     "RESREF": {
                       "type": "resref",
                       "value": "nwed_mixbarshlf"
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16812336
                     }
                   }
                 ]

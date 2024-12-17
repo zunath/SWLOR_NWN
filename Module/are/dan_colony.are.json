@@ -6873,7 +6873,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 68
+    "value": 73
   },
   "Width": {
     "type": "int",

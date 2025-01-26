@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .PropertyType(PropertyType.Lab)
                 .Name("Lab")
                 .StructureLimit(40)
-                .ItemStorageLimit(0)
+                .ItemStorageLimit(5)
                 .BuildingLimit(0)
                 .ResearchDeviceLimit(20)
                 .InitialPrice(0)

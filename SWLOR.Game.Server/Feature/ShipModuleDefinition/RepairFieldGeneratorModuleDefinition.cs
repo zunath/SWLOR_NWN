@@ -52,7 +52,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         if (!GetIsEnemy(nearby, activator) && 
                             !GetIsDead(activator) && 
-                            Space.GetShipStatus(nearby) != null)
+                            Space.GetShipStatus(nearby) != null &&
+                            nearby != activator)
                         {
                             var nearbyStatus = Space.GetShipStatus(nearby);
                             ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Disintegrate, activator, BodyNode.Chest), nearby, 1.0f);

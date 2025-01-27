@@ -19,6 +19,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             ShieldRepairer("shld_rep_2", "Shield Repairer II", "Shld. Rep. II", "Restores targeted or user ship's shield HP by 21.", 3, 16, 21);
             ShieldRepairer("shld_rep_3", "Shield Repairer III", "Shld. Rep. III", "Restores targeted or user ship's shield HP by 28.", 4, 20, 28);
             ShieldRepairer("shld_rep_4", "Shield Repairer IV", "Shld. Rep. IV", "Restores targeted or user ship's shield HP by 35.", 5, 24, 35);
+            ShieldRepairer("npc_shld_r_1", "NPC Shield Repairer I", "NPC ShldR 1", "Restores targeted or user ship's shield HP by 10.", 0, 10, 10);
+            ShieldRepairer("npc_shld_r_2", "NPC Shield Repairer II", "NPC ShldR 2", "Restores targeted or user ship's shield HP by 15.", 0, 10, 15);
+            ShieldRepairer("npc_shld_r_3", "NPC Shield Repairer III", "NPC ShldR 3", "Restores targeted or user ship's shield HP by 20.", 0, 10, 20);
+            ShieldRepairer("npc_shld_r_4", "NPC Shield Repairer IV", "NPC ShldR 4", "Restores targeted or user ship's shield HP by 25.", 0, 10, 25);
+            ShieldRepairer("npc_shld_r_5", "NPC Shield Repairer V", "NPC ShldR 5", "Restores targeted or user ship's shield HP by 30.", 0, 10, 30);
 
             return _builder.Build();
         }

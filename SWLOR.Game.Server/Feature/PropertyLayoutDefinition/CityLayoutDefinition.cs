@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             _builder.Create(PropertyLayoutType.City)
                 .PropertyType(PropertyType.City)
                 .Name("City")
-                .StructureLimit(50) // For Cities, determines how many regular structures (non-buildings) can be placed in the area
+                .StructureLimit(75) // For Cities, determines how many regular structures (non-buildings) can be placed in the area
                 .ItemStorageLimit(0)
                 .BuildingLimit(21)
                 .ResearchDeviceLimit(0)

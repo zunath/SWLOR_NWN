@@ -45,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t1gunship")
                 .ItemTag("NPC_Gunship1")
+                .ShipModule("npc_shld_r_1")
                 .ShipModule("con_hvy1")
                 .ShipModule("ion_cann_b")
                 .ShipModule("msl_launch_b")
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t1platform")
                 .ItemTag("NPC_Platform1")
+                .ShipModule("npc_shld_r_1")
                 .ShipModule("con_hvy1")
                 .ShipModule("npcautolas1")
                 .ShipModule("beamcannon1")
@@ -60,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t1cargo")
                 .ItemTag("NPC_Cargo1")
+                .ShipModule("npc_hull_r1")
                 .ShipModule("con_hvy1")
                 .ShipModule("ion_cann_b")
                 .ShipModule("ion_cann_b")
@@ -110,6 +113,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t2platform")
                 .ItemTag("NPC_Platform2")
+                .ShipModule("npc_hull_r2")
                 .ShipModule("con_hvy2")
                 .ShipModule("npcautolas2")
                 .ShipModule("beamcannon2")
@@ -117,6 +121,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t2cargo")
                 .ItemTag("NPC_Cargo2")
+                .ShipModule("npc_hull_r2")
                 .ShipModule("con_hvy2")
                 .ShipModule("ion_cann_1")
                 .ShipModule("ion_cann_1")
@@ -137,6 +142,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
         {
             _builder.Create("t3bomber")
                 .ItemTag("NPC_Bomber3")
+                .ShipModule("npc_shld_r_2")
                 .ShipModule("con_bmb3")
                 .ShipModule("msl_launch_2")
                 .ShipModule("com_laser_2")
@@ -144,6 +150,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t3fighter")
                 .ItemTag("NPC_Fighter3")
+                .ShipModule("npc_shld_r_1")
                 .ShipModule("con_fig3")
                 .ShipModule("ion_cann_2")
                 .ShipModule("com_laser_2")
@@ -151,6 +158,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t3interceptor")
                 .ItemTag("NPC_Interceptor3")
+                .ShipModule("npc_shld_r_2")
                 .ShipModule("con_int3")
                 .ShipModule("com_laser_2")
                 .ShipModule("com_laser_2")
@@ -159,6 +167,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t3gunship")
                 .ItemTag("NPC_Gunship3")
+                .ShipModule("npc_shld_r_3")
                 .ShipModule("con_hvy3")
                 .ShipModule("ion_cann_2")
                 .ShipModule("msl_launch_2")
@@ -167,6 +176,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t3platform")
                 .ItemTag("NPC_Platform3")
+                .ShipModule("npc_shld_r_3")
                 .ShipModule("con_hvy3")
                 .ShipModule("npcautolas3")
                 .ShipModule("beamcannon3")
@@ -174,6 +184,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t3cargo")
                 .ItemTag("NPC_Cargo3")
+                .ShipModule("npc_hull_r3")
                 .ShipModule("con_hvy3")
                 .ShipModule("ion_cann_2")
                 .ShipModule("ion_cann_2")
@@ -223,6 +234,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t4platform")
                 .ItemTag("NPC_Platform4")
+                .ShipModule("npc_shld_r_4")
                 .ShipModule("con_hvy4")
                 .ShipModule("npcautolas4")
                 .ShipModule("beamcannon4")
@@ -230,6 +242,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t4cargo")
                 .ItemTag("NPC_Cargo4")
+                .ShipModule("npc_shld_r_4")
                 .ShipModule("con_hvy4")
                 .ShipModule("ion_cann_3")
                 .ShipModule("ion_cann_3")
@@ -250,6 +263,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
         {
             _builder.Create("t5bomber")
                 .ItemTag("NPC_Bomber5")
+                .ShipModule("npc_hull_r5")
                 .ShipModule("con_bmb5")
                 .ShipModule("msl_launch_4")
                 .ShipModule("msl_launch_4")
@@ -273,6 +287,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t5gunship")
                 .ItemTag("NPC_Gunship5")
+                .ShipModule("npc_hull_r5")
                 .ShipModule("con_hvy5")
                 .ShipModule("npcautolas5")
                 .ShipModule("ion_cann_4")
@@ -282,6 +297,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t5platform")
                 .ItemTag("NPC_Platform5")
+                .ShipModule("npc_shld_r_5")
                 .ShipModule("con_hvy5")
                 .ShipModule("npcautolas5")
                 .ShipModule("beamcannon5")
@@ -289,6 +305,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t5cargo")
                 .ItemTag("NPC_Cargo5")
+                .ShipModule("npc_shld_r_5")
                 .ShipModule("con_hvy5")
                 .ShipModule("ion_cann_4")
                 .ShipModule("ion_cann_4")
@@ -306,6 +323,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t6bomber")
                 .ItemTag("NPC_Bomber6")
+                .ShipModule("npc_hull_r5")
                 .ShipModule("con_bmb5")
                 .ShipModule("msl_launch_4")
                 .ShipModule("msl_launch_4")
@@ -314,6 +332,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t6fighter")
                 .ItemTag("NPC_Fighter6")
+                .ShipModule("npc_hull_r5")
                 .ShipModule("con_fig5")
                 .ShipModule("ion_cann_4")
                 .ShipModule("com_laser_4")
@@ -321,6 +340,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t6interceptor")
                 .ItemTag("NPC_Interceptor6")
+                .ShipModule("npc_hull_r5")
                 .ShipModule("con_int5")
                 .ShipModule("com_laser_4")
                 .ShipModule("com_laser_4")
@@ -329,6 +349,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t6gunship")
                 .ItemTag("NPC_Gunship6")
+                .ShipModule("npc_hull_r5")
                 .ShipModule("con_hvy6")
                 .ShipModule("npcautolas6")
                 .ShipModule("ion_cann_4")
@@ -338,6 +359,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t6platform")
                 .ItemTag("NPC_Platform6")
+                .ShipModule("npc_hull_r5")
                 .ShipModule("con_hvy6")
                 .ShipModule("npcautolas6")
                 .ShipModule("beamcannon5")
@@ -345,6 +367,7 @@ namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 
             _builder.Create("t6cargo")
                 .ItemTag("NPC_Cargo6")
+                .ShipModule("npc_hull_r5")
                 .ShipModule("con_hvy6")
                 .ShipModule("ion_cann_4")
                 .ShipModule("ion_cann_4")

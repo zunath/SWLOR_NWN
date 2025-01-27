@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             JoiningTheRepublic();
             MedicalEquipmentForShelby();
             SpiceOneSmallFavour();
+            DantooineHerbs();
 
             return _builder.Build();
         }
@@ -646,6 +647,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGoldReward(25000)
                 .AddXPReward(25000)
                 .AddItemReward("recipe_fabswoop1", 1);
+        }
+        private void DantooineHerbs()
+        {
+            _builder.Create("dantooine_herbs", "Collect Dantooine Starwort Herbs")
+
+                .AddState()
+                .SetStateJournalText("Collect 20 Dantooine Starwort Herbs and bring them to Doc Joe in Veles Colony.")
+                .AddCollectItemObjective("dant_starwort", 20)
+
+                .AddState()
+                .SetStateJournalText("You have collected 20 Dantooine Starwort Herbs. Return to Doc Joe in Veles Colony for your reward.")
+
+                .AddGoldReward(5000)
+                .AddXPReward(4000);
         }
     }
 }

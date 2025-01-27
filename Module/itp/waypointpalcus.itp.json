@@ -675,6 +675,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantooine Herbs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dantooine_herb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dantooine Junk Pile"
                     },
                     "RESREF": {

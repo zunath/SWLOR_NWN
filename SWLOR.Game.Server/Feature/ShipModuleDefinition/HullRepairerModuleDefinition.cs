@@ -19,6 +19,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             HullRepairer("hull_rep_2", "Hull Repairer II", "Hull Rep. II", "Restores targeted or user ship's hull HP by 21.", 3, 16, 21);
             HullRepairer("hull_rep_3", "Hull Repairer III", "Hull Rep. III", "Restores targeted or user ship's hull HP by 28.", 4, 20, 28);
             HullRepairer("hull_rep_4", "Hull Repairer IV", "Hull Rep. IV", "Restores targeted or user ship's hull HP by 35.", 5, 24, 35);
+            HullRepairer("npc_hull_r1", "NPC Hull Repairer I", "NPC HullR 1", "Restores targeted or user ship's hull HP by 20", 0, 5, 20);
+            HullRepairer("npc_hull_r2", "NPC Hull Repairer II", "NPC HullR 2", "Restores targeted or user ship's hull HP by 25", 0, 5, 25);
+            HullRepairer("npc_hull_r3", "NPC Hull Repairer III", "NPC HullR 3", "Restores targeted or user ship's hull HP by 30", 0, 5, 30);
+            HullRepairer("npc_hull_r4", "NPC Hull Repairer IV", "NPC HullR 4", "Restores targeted or user ship's hull HP by 35", 0, 5, 35);
+            HullRepairer("npc_hull_r5", "NPC Hull Repairer V", "NPC HullR 5", "Restores targeted or user ship's hull HP by 40", 0, 5, 40);
 
             return _builder.Build();
         }

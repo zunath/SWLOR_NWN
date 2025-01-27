@@ -190,9 +190,9 @@
         },
         "Text": {
           "type": "cexolocstring",
-            "value": {
-              "0": "Outstanding! P3DR0 requests an establishment for what the beings refer to as a party. Please advise if you can gather the following equipment for me: five speakers, one jukebox, and one schematic for a cantina."
-            }
+          "value": {
+            "0": "Outstanding! P3DR0 requests an establishment for what the beings refer to as a party. Please advise if you can gather the following equipment for me: five speakers, one jukebox, and one schematic for a cantina."
+          }
         }
       },
       {

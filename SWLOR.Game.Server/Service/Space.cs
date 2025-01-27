@@ -1907,7 +1907,7 @@ namespace SWLOR.Game.Server.Service
                              shipModuleDetail.Type == ShipModuleType.BulwarkShieldGenerator)
                     {
                         var shieldPointsLost = shipStatus.MaxShield - shipStatus.Shield;
-                        if (shieldPointsLost >= 8)
+                        if (shieldPointsLost >= shipStatus.MaxShield * 0.75)
                         {
                             useModule = true;
                         }
@@ -1916,7 +1916,7 @@ namespace SWLOR.Game.Server.Service
                              shipModuleDetail.Type == ShipModuleType.RepairFieldGenerator)
                     {
                         var hullPointsLost = shipStatus.MaxHull - shipStatus.Hull;
-                        if (hullPointsLost >= 6)
+                        if (hullPointsLost >= shipStatus.MaxHull * 0.75)
                         {
                             useModule = true;
                         }

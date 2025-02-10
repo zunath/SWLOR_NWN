@@ -285,6 +285,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Korriban - Rogue Sith"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korriinitiate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Korriban - Shyrack"
                     },
                     "RESREF": {
@@ -344,7 +355,7 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "tukata_spn"
+                      "value": "tukata"
                     }
                   },
                   {

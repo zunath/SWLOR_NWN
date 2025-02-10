@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Caverns();
             Dunes();
             SithCrypt();
+            SithTemples();
             KorribanFortress();
 
             return _builder.Build();
@@ -184,6 +185,34 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .WithFrequency(1)
                 .RespawnDelay(5);
+        }
+        private void SithTemples()
+        {
+            _builder.Create("KORRIBAN_TEMPLES")
+                .AddSpawn(ObjectType.Creature, "shyrack")
+                .WithFrequency(30)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "sithsnake")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "tukata")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "korriinitiate")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "korr_wraid")
+                .WithFrequency(10)
+                .RandomlyWalks()
+                .ReturnsHome();
         }
     }
 }

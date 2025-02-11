@@ -189,6 +189,16 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void SithTemples()
         {
             _builder.Create("KORRIBAN_TEMPLES")
+                .AddSpawn(ObjectType.Creature, "s_app")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
+                .AddSpawn(ObjectType.Creature, "s_app_m")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome()
+
                 .AddSpawn(ObjectType.Creature, "shyrack")
                 .WithFrequency(30)
                 .RandomlyWalks()

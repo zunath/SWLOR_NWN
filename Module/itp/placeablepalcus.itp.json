@@ -19008,17 +19008,6 @@
                   },
                   {
                     "__struct_id": 0,
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "zep_traps009"
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 16812588
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
                       "value": "Razor Wire"
@@ -19026,6 +19015,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "razorwirepcbl"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "zep_traps009"
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16812588
                     }
                   },
                   {
@@ -74909,6 +74909,39 @@
                       "type": "resref",
                       "value": "_mdrn_pl_flrh001"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cushion Pile, White"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nwplc_cushpilwh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nwed_flrlntrn002"
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16812168
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nwed_mixbarshlf"
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16812336
+                    }
                   }
                 ]
               },
@@ -79010,7 +79043,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "<cï¿½ï¿½ï¿½><cï¿½ï¿½ ><cï¿½ ï¿½><c ï¿½ï¿½><cï¿½  ><c ï¿½ ><c  ï¿½><cï¿½ï¿½ï¿½>Color Tag Generator"
+                      "value": "<cÿÿÿ><cÿÿ ><cÿ ÿ><c ÿÿ><cÿ  ><c ÿ ><c  ÿ><cÿÿÿ>Color Tag Generator"
                     },
                     "RESREF": {
                       "type": "resref",

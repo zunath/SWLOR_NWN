@@ -3201,7 +3201,7 @@
   },
   "Mod_MinGameVer": {
     "type": "cexostring",
-    "value": "1.87"
+    "value": "1.80"
   },
   "Mod_MinPerHour": {
     "type": "byte",

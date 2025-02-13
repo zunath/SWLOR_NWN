@@ -42,11 +42,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "tukata_spn"
+    "value": "tukata"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "tukata_spn"
+    "value": "tukata"
   },
   "VarTable": {
     "type": "list",

@@ -1,0 +1,405 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "ArmorPart_Belt": {
+    "type": "byte",
+    "value": 19
+  },
+  "ArmorPart_LBicep": {
+    "type": "byte",
+    "value": 10
+  },
+  "ArmorPart_LFArm": {
+    "type": "byte",
+    "value": 10
+  },
+  "ArmorPart_LFoot": {
+    "type": "byte",
+    "value": 12
+  },
+  "ArmorPart_LHand": {
+    "type": "byte",
+    "value": 4
+  },
+  "ArmorPart_LShin": {
+    "type": "byte",
+    "value": 10
+  },
+  "ArmorPart_LShoul": {
+    "type": "byte",
+    "value": 10
+  },
+  "ArmorPart_LThigh": {
+    "type": "byte",
+    "value": 23
+  },
+  "ArmorPart_Neck": {
+    "type": "byte",
+    "value": 30
+  },
+  "ArmorPart_Pelvis": {
+    "type": "byte",
+    "value": 10
+  },
+  "ArmorPart_RBicep": {
+    "type": "byte",
+    "value": 10
+  },
+  "ArmorPart_RFArm": {
+    "type": "byte",
+    "value": 10
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 12
+  },
+  "ArmorPart_RHand": {
+    "type": "byte",
+    "value": 4
+  },
+  "ArmorPart_Robe": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RShin": {
+    "type": "byte",
+    "value": 10
+  },
+  "ArmorPart_RShoul": {
+    "type": "byte",
+    "value": 10
+  },
+  "ArmorPart_RThigh": {
+    "type": "byte",
+    "value": 23
+  },
+  "ArmorPart_Torso": {
+    "type": "byte",
+    "value": 5
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 16
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 52
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 23
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 1
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 23
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 23
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Apprentice Dark Side Robe"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 24
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 0
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 5
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 4
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 3
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 10
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 45
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 8
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 119
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 37
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 25
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 90
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 33
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 3
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 100
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 111
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "apprentice_dark_side_robe"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "apprentice_dark_"
+  },
+  "xArmorPart_Belt": {
+    "type": "word",
+    "value": 19
+  },
+  "xArmorPart_LBice": {
+    "type": "word",
+    "value": 10
+  },
+  "xArmorPart_LFArm": {
+    "type": "word",
+    "value": 10
+  },
+  "xArmorPart_LFoot": {
+    "type": "word",
+    "value": 12
+  },
+  "xArmorPart_LHand": {
+    "type": "word",
+    "value": 4
+  },
+  "xArmorPart_LShin": {
+    "type": "word",
+    "value": 10
+  },
+  "xArmorPart_LShou": {
+    "type": "word",
+    "value": 10
+  },
+  "xArmorPart_LThig": {
+    "type": "word",
+    "value": 23
+  },
+  "xArmorPart_Neck": {
+    "type": "word",
+    "value": 30
+  },
+  "xArmorPart_Pelvi": {
+    "type": "word",
+    "value": 10
+  },
+  "xArmorPart_RBice": {
+    "type": "word",
+    "value": 10
+  },
+  "xArmorPart_RFArm": {
+    "type": "word",
+    "value": 10
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 12
+  },
+  "xArmorPart_RHand": {
+    "type": "word",
+    "value": 4
+  },
+  "xArmorPart_Robe": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RShin": {
+    "type": "word",
+    "value": 10
+  },
+  "xArmorPart_RShou": {
+    "type": "word",
+    "value": 10
+  },
+  "xArmorPart_RThig": {
+    "type": "word",
+    "value": 23
+  },
+  "xArmorPart_Torso": {
+    "type": "word",
+    "value": 5
+  }
+}

@@ -30,9 +30,7 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",
@@ -41,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Pelko Skin"
+      "0": "Rogue Sith Hide"
     }
   },
   "ModelPart1": {
@@ -67,11 +65,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 41
+          "value": 38
         },
         "CostValue": {
           "type": "word",
-          "value": 5
+          "value": 10
         },
         "Param1": {
           "type": "byte",
@@ -83,7 +81,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 117
+          "value": 91
         },
         "Subtype": {
           "type": "word",
@@ -102,7 +100,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 21
+          "value": 15
         },
         "Param1": {
           "type": "byte",
@@ -115,37 +113,6 @@
         "PropertyName": {
           "type": "word",
           "value": 99
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 41
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 100
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 92
         },
         "Subtype": {
           "type": "word",
@@ -164,11 +131,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "pelko_skin"
+    "value": "rogue_sith"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "pelko_skin"
+    "value": "rogue_sith"
   },
   "xModelPart1": {
     "type": "word",

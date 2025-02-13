@@ -30,9 +30,7 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",
@@ -41,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Pelko Skin"
+      "0": "Tukata Skin"
     }
   },
   "ModelPart1": {
@@ -67,11 +65,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 41
+          "value": 35
         },
         "CostValue": {
           "type": "word",
-          "value": 5
+          "value": 50
         },
         "Param1": {
           "type": "byte",
@@ -83,11 +81,42 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 117
+          "value": 94
         },
         "Subtype": {
           "type": "word",
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 20
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
           "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1
         }
       },
       {
@@ -102,7 +131,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 21
+          "value": 36
         },
         "Param1": {
           "type": "byte",
@@ -129,11 +158,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 41
+          "value": 2
         },
         "CostValue": {
           "type": "word",
-          "value": 100
+          "value": 4
         },
         "Param1": {
           "type": "byte",
@@ -145,7 +174,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 92
+          "value": 51
         },
         "Subtype": {
           "type": "word",
@@ -164,11 +193,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "pelko_skin"
+    "value": "tukataskin"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "pelko_skin"
+    "value": "tukataskin"
   },
   "xModelPart1": {
     "type": "word",

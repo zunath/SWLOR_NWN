@@ -17,7 +17,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             SithApprentice();
             KorribanFortressLoot();
             SithCryptCrates();
-
+            RogueSith();
+            Tukata(); 
             return _builder.Build();
         }
 
@@ -319,6 +320,32 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("recipe_wisushi", 10)
                 .AddItem("recipe_tesushi", 10)
                 .AddItem("recipe_dosushi", 10);
+        }
+        private void RogueSith()
+        {
+            _builder.Create("KORRIBAN_SITH_ROGUE")
+                .AddItem("elec_flawed", 15)
+                .AddItem("stolen_s_artifact", 10)
+                .AddItem("lth_good", 5)
+                .AddItem("sith_longsword", 5);
+
+            _builder.Create("KORRIBAN_SITH_ROGUE_RARES")
+                .IsRare()
+                .AddItem("map_56", 11, 1, true)
+                .AddGold(32, 5);
+        }
+        private void Tukata()
+        {
+            _builder.Create("KORRIBAN_TUKATA")
+                .AddItem("lth_ruined", 5)
+                .AddItem("lth_good", 5);
+                
+
+            _builder.Create("KORRIBAN_TUKATA_RARES")
+                .IsRare()
+                .AddItem("map_56", 11, 1, true)
+                .AddGold(32, 5);
+
         }
     }
 }

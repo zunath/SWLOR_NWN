@@ -2,7 +2,7 @@
 {
     public class DroidArmorAppearanceDefinition: BaseArmorAppearanceDefinition
     {
-        public override int[] Helmet { get; } = {0 };
+        public override int[] Helmet { get; } = {11, 43 };
         public override int[] Cloak { get; } = {0 };
         public override int[] Neck { get; } = {0, 1, 2, 7, 200, 201, 202, 203, 204, 205, 206, };
         public override int[] Torso { get; } = {1, 2, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214 };

@@ -50725,6 +50725,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Legion ID Codes - Jail"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "key_leg_jail"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Legion ID Codes - Level 2"
                     },
                     "RESREF": {

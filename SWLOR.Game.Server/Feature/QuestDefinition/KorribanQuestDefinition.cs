@@ -44,11 +44,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Inquisitor Dral'kor Keth has tasked you with retrieving a stolen Sith artifacts from rogue initiates in the outskirts of the Sith Academy.")
                 .AddKillObjective(NPCGroupType.Korriban_RogueInitiates, 3)
-                .AddCollectItemObjective("stolen_s_artifac", 10)
+                .AddCollectItemObjective("stolen_s_artifac", 3)
 
                 .AddState()
                 .SetStateJournalText("You have recovered the stolen Sith artifact. Return it to Inquisitor Dral'kor Keth.")
-                .AddXPReward(4000)
+                .AddXPReward(2000)
                 .AddGoldReward(1000);
                 
         }

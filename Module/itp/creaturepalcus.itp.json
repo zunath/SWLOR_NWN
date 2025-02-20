@@ -10081,6 +10081,30 @@
                 "type": "byte",
                 "value": 3
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 39.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Merchant"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "SithBasementGiver"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithbasementgive"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6691

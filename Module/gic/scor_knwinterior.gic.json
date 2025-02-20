@@ -1068,20 +1068,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Rubble (Battlefield)"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Rubble (Battlefield)"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": ""
         }
       },
@@ -1090,20 +1076,6 @@
         "Comment": {
           "type": "cexostring",
           "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": "Rubble (Battlefield)"
         }
       },
       {

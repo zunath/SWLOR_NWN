@@ -9840,7 +9840,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 22
+    "value": 23
   },
   "Width": {
     "type": "int",

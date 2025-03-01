@@ -83,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void SithApprentice()
         {
             _builder.Create("KORRIBAN_SITH_APPRENTICE")
+                .AddGold(1250, 1)
                 .AddItem("lth_ruined", 5)
                 .AddItem("lth_flawed", 10)
                 .AddItem("lth_good", 5)
@@ -324,6 +325,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void RogueSith()
         {
             _builder.Create("KORRIBAN_SITH_ROGUE")
+                .AddGold(1250, 1)
                 .AddItem("elec_flawed", 15)
                 .AddItem("stolen_s_artifact", 10)
                 .AddItem("lth_good", 5)

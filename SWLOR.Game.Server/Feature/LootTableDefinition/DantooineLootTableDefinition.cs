@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void QueenKinrath()
         {
             _builder.Create("DANTOOINE_KINRATH_QUEEN")
+                .AddGold(1350, 1)
                 .AddItem("fiberp_high", 20)
                 .AddItem("yotbean", 100);
 
@@ -183,6 +184,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void BolBoss()
         {
             _builder.Create("DANTOOINE_BOL_BOSS")
+                .AddGold(1350, 1)
                 .AddItem("lth_high", 20)
                 .AddItem("carrot", 20)
                 .AddItem("bol_leather", 40)
@@ -218,6 +220,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void MedicalCache()
         {
             _builder.Create("DANTOOINE_JUNKPILES")
+                .AddGold(1000, 1)
                 .AddItem("kolto_injection", 20)
                 .AddItem("medisyringes", 20)
                 .AddGold(10, 15);

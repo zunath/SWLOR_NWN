@@ -273,25 +273,6 @@
                 "type": "word",
                 "value": 0
               }
-            },
-            {
-              "__struct_id": 2,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "recipe_fabtier1"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 4
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 0
-              }
             }
           ]
         }

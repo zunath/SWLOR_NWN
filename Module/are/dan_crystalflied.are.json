@@ -6863,17 +6863,13 @@
       }
     ]
   },
-  "TileBrdrDisabled": {
-    "type": "byte",
-    "value": 0
-  },
   "Tileset": {
     "type": "resref",
     "value": "wsf10"
   },
   "Version": {
     "type": "dword",
-    "value": 22
+    "value": 20
   },
   "Width": {
     "type": "int",

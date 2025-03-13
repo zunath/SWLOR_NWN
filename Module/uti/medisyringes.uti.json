@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 1000
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 311
+    "value": 205
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 1000
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -26,15 +26,11 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": "These medical syringes remain useful and can be either sold or donated to medical personnel in need."
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",
@@ -48,7 +44,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 102
+    "value": 35
   },
   "PaletteID": {
     "type": "byte",
@@ -80,6 +76,6 @@
   },
   "xModelPart1": {
     "type": "word",
-    "value": 102
+    "value": 35
   }
 }

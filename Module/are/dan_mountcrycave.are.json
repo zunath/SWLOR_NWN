@@ -3595,17 +3595,13 @@
       }
     ]
   },
-  "TileBrdrDisabled": {
-    "type": "byte",
-    "value": 0
-  },
   "Tileset": {
     "type": "resref",
     "value": "zdc01"
   },
   "Version": {
     "type": "dword",
-    "value": 10
+    "value": 9
   },
   "Width": {
     "type": "int",

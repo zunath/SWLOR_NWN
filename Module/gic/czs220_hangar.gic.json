@@ -37,13 +37,6 @@
           "type": "cexostring",
           "value": ""
         }
-      },
-      {
-        "__struct_id": 4,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
       }
     ]
   },
@@ -425,20 +418,6 @@
         "Comment": {
           "type": "cexostring",
           "value": "Medieval Non-gunpowder siege artillery by some_ux\r\n"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
         }
       },
       {

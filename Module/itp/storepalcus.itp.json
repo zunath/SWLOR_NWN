@@ -82,17 +82,6 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Dweller Water"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "dwellerwater"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
                 "value": "Fishing Store"
               },
               "RESREF": {

@@ -1703,17 +1703,13 @@
       }
     ]
   },
-  "TileBrdrDisabled": {
-    "type": "byte",
-    "value": 0
-  },
   "Tileset": {
     "type": "resref",
     "value": "tfb01"
   },
   "Version": {
     "type": "dword",
-    "value": 11
+    "value": 10
   },
   "Width": {
     "type": "int",

@@ -1230,17 +1230,13 @@
       }
     ]
   },
-  "TileBrdrDisabled": {
-    "type": "byte",
-    "value": 0
-  },
   "Tileset": {
     "type": "resref",
     "value": "tmi"
   },
   "Version": {
     "type": "dword",
-    "value": 18
+    "value": 17
   },
   "Width": {
     "type": "int",

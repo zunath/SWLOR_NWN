@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 1287
+    "value": 13
   },
   "Cursed": {
     "type": "byte",
@@ -62,7 +62,7 @@
   },
   "StackSize": {
     "type": "word",
-    "value": 99
+    "value": 1
   },
   "Stolen": {
     "type": "byte",

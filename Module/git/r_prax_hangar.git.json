@@ -17862,7 +17862,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 25.67258262634277
+          "value": 25.67257499694824
         },
         "YOrientation": {
           "type": "float",
@@ -17870,7 +17870,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 85.35576629638672
+          "value": 85.34755706787109
         },
         "ZPosition": {
           "type": "float",
@@ -57585,7 +57585,7 @@
           "id": 5800,
           "type": "cexolocstring",
           "value": {
-            "0": "Travel to Korriban..."
+            "0": "Travel to Viscara..."
           }
         },
         "OnClick": {
@@ -63853,7 +63853,16 @@
               "__struct_id": 0
             },
             {
-              "__struct_id": 4,
+              "__struct_id": 4
+            },
+            {
+              "__struct_id": 2
+            },
+            {
+              "__struct_id": 3
+            },
+            {
+              "__struct_id": 1,
               "ItemList": {
                 "type": "list",
                 "value": [
@@ -63861,19 +63870,19 @@
                     "__struct_id": 0,
                     "AddCost": {
                       "type": "dword",
-                      "value": 248
+                      "value": 11
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 211
+                      "value": 311
                     },
                     "Charges": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 249
+                      "value": 11
                     },
                     "Cursed": {
                       "type": "byte",
@@ -63881,9 +63890,7 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {
-                        "0": "An ale brewed by the Gamorrean's using a secret recipe. Hard hitting and taste's like shit but guaranteed to get you drunk fast."
-                      }
+                      "value": {}
                     },
                     "Description": {
                       "type": "cexolocstring",
@@ -63902,12 +63909,12 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Ale Gamorrean"
+                        "0": "Melon Juice"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 4
+                      "value": 182
                     },
                     "Plot": {
                       "type": "byte",
@@ -63915,7 +63922,70 @@
                     },
                     "PropertiesList": {
                       "type": "list",
-                      "value": []
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 45
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 4
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 106
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 4
+                          }
+                        }
+                      ]
                     },
                     "Repos_PosX": {
                       "type": "word",
@@ -63935,15 +64005,15 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "AleGamorrean"
+                      "value": "FOOD"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "night_alegamorre"
+                      "value": "melon_juice"
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 4
+                      "value": 182
                     },
                     "XOrientation": {
                       "type": "float",
@@ -63970,19 +64040,19 @@
                     "__struct_id": 1,
                     "AddCost": {
                       "type": "dword",
-                      "value": 248
+                      "value": 11
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 211
+                      "value": 311
                     },
                     "Charges": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 249
+                      "value": 11
                     },
                     "Cursed": {
                       "type": "byte",
@@ -63990,13 +64060,13 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {
-                        "0": "Created by a coruscant local, this ale tastes sweet and is easy to drink. "
-                      }
+                      "value": {}
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": ""
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -64009,12 +64079,12 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Ale Gold Squadron Lager"
+                        "0": "Pineapple Juice"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 3
+                      "value": 182
                     },
                     "Plot": {
                       "type": "byte",
@@ -64022,7 +64092,70 @@
                     },
                     "PropertiesList": {
                       "type": "list",
-                      "value": []
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 45
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 106
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 4
+                          }
+                        }
+                      ]
                     },
                     "Repos_PosX": {
                       "type": "word",
@@ -64042,19 +64175,19 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "AleGoldSquadronLager"
+                      "value": "FOOD"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "night_alegoldsqu"
+                      "value": "pine_juice"
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 3
+                      "value": 182
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.356315642694011e-019
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -64077,19 +64210,19 @@
                     "__struct_id": 2,
                     "AddCost": {
                       "type": "dword",
-                      "value": 248
+                      "value": 11
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 211
+                      "value": 311
                     },
                     "Charges": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 249
+                      "value": 11
                     },
                     "Cursed": {
                       "type": "byte",
@@ -64097,13 +64230,13 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {
-                        "0": "A bitter white wine that is popular along side a bantha steak."
-                      }
+                      "value": {}
                     },
                     "Description": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": ""
+                      }
                     },
                     "Identified": {
                       "type": "byte",
@@ -64116,12 +64249,12 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Andoan White Wine"
+                        "0": "Tomato Juice"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 2
+                      "value": 182
                     },
                     "Plot": {
                       "type": "byte",
@@ -64129,7 +64262,70 @@
                     },
                     "PropertiesList": {
                       "type": "list",
-                      "value": []
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 45
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 5
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 106
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 4
+                          }
+                        }
+                      ]
                     },
                     "Repos_PosX": {
                       "type": "word",
@@ -64149,19 +64345,19 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "AndoanWhiteWine"
+                      "value": "FOOD"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "night_andoanwhit"
+                      "value": "tomato_juice"
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 2
+                      "value": 182
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.500311243727242e-019
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -64184,19 +64380,19 @@
                     "__struct_id": 3,
                     "AddCost": {
                       "type": "dword",
-                      "value": 248
+                      "value": 11
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 211
+                      "value": 311
                     },
                     "Charges": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 249
+                      "value": 11
                     },
                     "Cursed": {
                       "type": "byte",
@@ -64204,9 +64400,7 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {
-                        "0": "A shot of liquor that is infused with a small portion of bacta. Guaranteed to get one drunk and feeling healthier at the same time."
-                      }
+                      "value": {}
                     },
                     "Description": {
                       "type": "cexolocstring",
@@ -64225,12 +64419,12 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Bacta Lestat"
+                        "0": "Wild Blood Broth"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 4
+                      "value": 16
                     },
                     "Plot": {
                       "type": "byte",
@@ -64238,7 +64432,132 @@
                     },
                     "PropertiesList": {
                       "type": "list",
-                      "value": []
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 45
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 5
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 106
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 7
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 45
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 5
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 106
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 6
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 45
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 106
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 8
+                          }
+                        }
+                      ]
                     },
                     "Repos_PosX": {
                       "type": "word",
@@ -64258,19 +64577,19 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "BactaLestat"
+                      "value": "FOOD"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "night_bactalesta"
+                      "value": "wild_bbroth"
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 4
+                      "value": 16
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.356315642694011e-019
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -64293,19 +64612,19 @@
                     "__struct_id": 4,
                     "AddCost": {
                       "type": "dword",
-                      "value": 498
+                      "value": 11
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 210
+                      "value": 311
                     },
                     "Charges": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 499
+                      "value": 11
                     },
                     "Cursed": {
                       "type": "byte",
@@ -64313,9 +64632,7 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {
-                        "0": "A simple cigar. Light it up and have a puff."
-                      }
+                      "value": {}
                     },
                     "Description": {
                       "type": "cexolocstring",
@@ -64334,12 +64651,12 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Cigar"
+                        "0": "Apple Juice"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 3
+                      "value": 182
                     },
                     "Plot": {
                       "type": "byte",
@@ -64347,7 +64664,70 @@
                     },
                     "PropertiesList": {
                       "type": "list",
-                      "value": []
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 45
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 106
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 4
+                          }
+                        }
+                      ]
                     },
                     "Repos_PosX": {
                       "type": "word",
@@ -64367,19 +64747,19 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "Cigar"
+                      "value": "FOOD"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "night_cigar"
+                      "value": "apple_juice"
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 3
+                      "value": 182
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.3301325313696e-009
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -64402,28 +64782,28 @@
                     "__struct_id": 5,
                     "AddCost": {
                       "type": "dword",
-                      "value": 498
+                      "value": 50
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 210
+                      "value": 205
                     },
                     "Charges": {
                       "type": "byte",
-                      "value": 0
+                      "value": 5
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 499
+                      "value": 51
                     },
                     "Cursed": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "A cigarette. Bad for the body bud good for the nerves."
+                        "0": "It's a Stupendious Slug Shake! It'll completely restore your HP but..."
                       }
                     },
                     "Description": {
@@ -64443,452 +64823,52 @@
                     "LocalizedName": {
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Cigarette"
+                        "0": "Stupendous Slug Shake"
                       }
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 177
                     },
                     "Plot": {
                       "type": "byte",
-                      "value": 0
+                      "value": 1
                     },
                     "PropertiesList": {
                       "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 6
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "Cigarette"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "night_cigarette"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.356315642694011e-019
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 6,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 248
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 249
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "A beautiful red wine brewed on Corellia. It's sweet taste comes from the raspberry's that are infused inside."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Corellian Red Wine"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 2
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 8
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "CorellianRedWine"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "night_corellianr"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 2
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 2.3301325313696e-009
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 7,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 248
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 249
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "A small pink shot served in a diamond glass... because it eats through anything else in seconds.  Only for the strongest constitutions, and most crazed minds. "
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Give Me Death"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 2
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 9
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "GiveMeDeath"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "givemedeath"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 2
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.356315642694011e-019
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 8,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 248
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 249
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Not even the bartenders know what goes into these drinks. All they know is it comes in a giant metal barrel and tastes delicious."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Mysterious Mithreas"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 3
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 3
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "MysetriousMithreas"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "night_mystermith"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 3
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 2.3301325313696e-009
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 9,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 248
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 249
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "A drink that resembles a reactor core if you look down into the drink. It's quite better but goes down easy."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Reactor Core"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 3
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
+                        }
+                      ]
                     },
                     "Repos_PosX": {
                       "type": "word",
@@ -64896,7 +64876,7 @@
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 3
+                      "value": 0
                     },
                     "StackSize": {
                       "type": "word",
@@ -64908,1101 +64888,39 @@
                     },
                     "Tag": {
                       "type": "cexostring",
-                      "value": "ReactorCore"
+                      "value": "slug_shake"
                     },
                     "TemplateResRef": {
                       "type": "resref",
-                      "value": "night_reactorcor"
+                      "value": "slug_shake"
                     },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 3
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.356317839892513e-019
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 10,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 248
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 249
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Bantha milk, vodka and dark chocolate make up sith spit. Tastes good and easy to make, a staple in most bars."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Sith Spit"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 3
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
+                    "VarTable": {
                       "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 6
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 3
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "SithSpit"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "night_sithspit"
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "SlugShake"
+                          }
+                        }
+                      ]
                     },
                     "xModelPart1": {
                       "type": "word",
-                      "value": 3
+                      "value": 177
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.356315642694011e-019
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 11,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 248
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 249
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "A cider made primaly from citrus fruit gathered somewhere on viscara. "
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Spice Runner Hard Cider"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 4
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 7
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 3
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "SpiceRunnerHardCider"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "night_spiderrunn"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.44135110213417e-019
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 12,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 248
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 249
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Orange with a bit of lime for those that don't want to drink alcohol but still wanna look cool. *Thumbs up*"
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Taelon Shot"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 4
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "TaelonShot"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "night_taelonshot"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.356315642694011e-019
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 13,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 248
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 249
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "A drink that's contents are still unknown, but when drunken, makes the consumer want to get naked and dance."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "The Naughty Naia"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 4
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "TheNaughtyNaia"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "night_naughtnaia"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 9.320530125478399e-009
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 14,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 248
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 249
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "A teal-colored, bubbly wine that is produced on the planet of Alderaan and served across the galaxy."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Toniray Wine"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 2
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 2
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "TonirayWine"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "night_toniraywin"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 2
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 9.320530125478399e-009
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 15,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 248
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 249
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "An ale created by trandoshan prisoners in a toilet on Coruscant. Now brewed professionally and sold across the galaxy but no one but trandoshans can stomach it."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Trandoshan Ale"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 3
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 3
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "TrandoshanAle"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "night_trandoshan"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 3
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.065307169715806e-038
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 16,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 8
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 9
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "A glass of high quality H20. This used to be named \"Simply Pilgrim\" but the bars went back to the original name of water."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Water"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 4
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 8
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "Water"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "night_water"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.356315642694011e-019
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 17,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 248
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 249
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "White Wampa is simply vodka, milk and snow. Often served on Hoth at large gatherings, but can be served in bars using shaved ice instead of snow."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "White Wampa"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 4
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 9
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "WhiteWampa"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "night_whitewampa"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.356315642694011e-019
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 18,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 248
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 249
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "This drink doesn't behave like a usual liquid.  It's constantly swirling into new shapes, as if going to climb out of the mug, before collapsing into liquid again.  Unnerving. "
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Xisigin"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 4
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 10
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "Xisigin"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "xisigin"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.356317839892513e-019
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 19,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 248
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 211
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 249
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "A double shot of malt whisky with several ice cubes. This drink is a delicacy all throughout the galaxy and only the sophisticated drink such a perfect drink."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {}
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Zunath On The Rocks"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 4
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": []
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 10
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "ZunathOnTheRocks"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "night_zunathonth"
-                    },
-                    "xModelPart1": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 1.356878125510547e-019
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -66023,15 +64941,6 @@
                   }
                 ]
               }
-            },
-            {
-              "__struct_id": 2
-            },
-            {
-              "__struct_id": 3
-            },
-            {
-              "__struct_id": 1
             }
           ]
         },
@@ -66053,7 +64962,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 25.7130126953125
+          "value": 25.60052299499512
         },
         "YOrientation": {
           "type": "float",
@@ -66061,7 +64970,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 84.87884521484375
+          "value": 85.07570648193359
         },
         "ZPosition": {
           "type": "float",

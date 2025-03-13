@@ -244,7 +244,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "steel_rods_3"
+                "value": "bag_b"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -263,30 +263,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "bag_md"
+                "value": "steel_rods_3"
               },
               "Repos_PosX": {
                 "type": "word",
                 "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 2,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "recipe_fabtier3"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 4
               },
               "Repos_Posy": {
                 "type": "word",

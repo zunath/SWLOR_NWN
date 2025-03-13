@@ -86,6 +86,13 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
           "value": "volition's Bio Placeables by volition\r\n"
         }
       },
@@ -115,6 +122,20 @@
         "Comment": {
           "type": "cexostring",
           "value": "Source: Extra Debris Pack 1 by Brother Roth"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
         }
       },
       {

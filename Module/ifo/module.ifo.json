@@ -2279,6 +2279,13 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "viscarawildwest"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "viscarawildwoods"
         }
       },
@@ -2608,6 +2615,13 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+          "value": "v_repubbase_1"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
           "value": "v_repubbase_2"
         }
       },
@@ -2616,6 +2630,20 @@
         "Area_Name": {
           "type": "resref",
           "value": "v_repubbase_cd"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_ext"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_hang"
         }
       },
       {
@@ -2797,112 +2825,77 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "area006"
+          "value": "ar_scor_kacademy"
         }
       },
       {
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "vrcityhall"
+          "value": "ar_scor_korrcan"
         }
       },
       {
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "area010"
+          "value": "ar_scor_kortemp"
         }
       },
       {
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "area001"
+          "value": "pw_ar_ka_arkania"
         }
       },
       {
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "area008"
+          "value": "pw_ar_sc_arkcave"
         }
       },
       {
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "area009"
+          "value": "pw_ar_sc_arki001"
         }
       },
       {
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "v_repubbase_hang"
+          "value": "pw_ar_sc_arkmine"
         }
       },
       {
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "area004"
+          "value": "ar_scor_kvalinte"
         }
       },
       {
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "area007"
+          "value": "scor_knwinterior"
         }
       },
       {
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "area002"
+          "value": "scor_kscaves"
         }
       },
       {
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "v_repubbase_1"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "viscarawildwest"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "area005"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "area011"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "area012"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "area003"
+          "value": "hiddenquestzone"
         }
       }
     ]
@@ -3207,7 +3200,7 @@
   },
   "Mod_ID": {
     "type": "void",
-    "value": "ÿÿÿÿ\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "ï¿½ï¿½ï¿½ï¿½\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",
@@ -3215,7 +3208,7 @@
   },
   "Mod_MinGameVer": {
     "type": "cexostring",
-    "value": "1.87"
+    "value": "1.80"
   },
   "Mod_MinPerHour": {
     "type": "byte",
@@ -3342,6 +3335,10 @@
   "Mod_Tag": {
     "type": "cexostring",
     "value": "SWLOR"
+  },
+  "Mod_UUID": {
+    "type": "cexostring",
+    "value": ""
   },
   "Mod_Version": {
     "type": "dword",

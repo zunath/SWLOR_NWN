@@ -3767,13 +3767,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "shp02"
   },
   "Version": {
     "type": "dword",
-    "value": 19
+    "value": 21
   },
   "Width": {
     "type": "int",

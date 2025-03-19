@@ -46951,6 +46951,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Viscara - Crossroads West"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_081"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viscara - Deep Mountains Map"
                     },
                     "RESREF": {
@@ -47000,6 +47011,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "map_048"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Mountain Ascent Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_82"
                     }
                   },
                   {

@@ -84,15 +84,7 @@
   },
   "Door List": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 8,
-        "Comment": {
-          "type": "cexostring",
-          "value": "CryptExit"
-        }
-      }
-    ]
+    "value": []
   },
   "Encounter List": {
     "type": "list",

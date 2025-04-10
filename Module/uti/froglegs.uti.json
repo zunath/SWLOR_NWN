@@ -1,0 +1,85 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 1020
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 526
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 1020
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Alchemized frog legs, warped by forbidden magic, exude an eerie, dark-side pulse. Their slimy texture and sinister aura make them a rare and unsettling ingredient for only the boldest of alchemists. A relic of corrupted nature."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": ""
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Frog Legs"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 127
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 64
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "froglegs"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "froglegs"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 127
+  }
+}

@@ -1061,13 +1061,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Rubble (Battlefield)"
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": ""
         }
       },
@@ -2507,7 +2500,15 @@
   },
   "StoreList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 11,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      }
+    ]
   },
   "TriggerList": {
     "type": "list",

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.CLI.Model;
+using SWLOR.Game.Server.Extension;
 
 namespace SWLOR.CLI
 {
@@ -30,7 +31,24 @@ namespace SWLOR.CLI
             if (File.Exists(_config.TlkPath))
             {
                 var destination = $"{_config.OutputPath}tlk/{Path.GetFileName(_config.TlkPath)}";
-                File.Copy(_config.TlkPath, destination);
+                
+                // Ensure the tlk directory exists
+                var tlkDir = Path.GetDirectoryName(destination);
+                if (!Directory.Exists(tlkDir))
+                {
+                    Directory.CreateDirectory(tlkDir);
+                }
+                
+                try
+                {
+                    File.Copy(_config.TlkPath, destination, true); // true = overwrite
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Warning: Cannot copy TLK file - it is locked by another process (likely the game).");
+                    Console.WriteLine($"The build will continue, but you may need to restart the game to see TLK changes.");
+                    Console.WriteLine($"Exception: {ex.ToMessageAndCompleteStacktrace()}");
+                }
             }
             else
             {
@@ -70,10 +88,19 @@ namespace SWLOR.CLI
             {
                 if (Directory.Exists(_config.OutputPath))
                 {
-                    // Delete .tlk
-                    if (File.Exists($"{_config.OutputPath}tlk/{Path.GetFileName(_config.TlkPath)}"))
+                    // Try to delete .tlk, but don't fail if it's locked by the game
+                    var tlkPath = $"{_config.OutputPath}tlk/{Path.GetFileName(_config.TlkPath)}";
+                    if (File.Exists(tlkPath))
                     {
-                        File.Delete($"{_config.OutputPath}tlk/{Path.GetFileName(_config.TlkPath)}");
+                        try
+                        {
+                            File.Delete(tlkPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Warning: TLK file is locked by another process (likely the game). Skipping deletion.");
+                            Console.WriteLine($"Exception: {ex.ToMessageAndCompleteStacktrace()}");
+                        }
                     }
 
                     Parallel.ForEach(_config.HakList, hak =>
@@ -117,12 +144,28 @@ namespace SWLOR.CLI
                         var filePath = _config.OutputPath + "hak/" + hak.Name;
                         if (File.Exists(filePath + ".hak"))
                         {
-                            File.Delete(filePath + ".hak");
+                            try
+                            {
+                                File.Delete(filePath + ".hak");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Warning: Hak file {hak.Name}.hak is locked by another process. Skipping deletion.");
+                                Console.WriteLine($"Exception: {ex.ToMessageAndCompleteStacktrace()}");
+                            }
                         }
 
                         if (File.Exists(filePath + ".md5"))
                         {
-                            File.Delete(filePath + ".md5");
+                            try
+                            {
+                                File.Delete(filePath + ".md5");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Warning: Checksum file {hak.Name}.md5 is locked by another process. Skipping deletion.");
+                                Console.WriteLine($"Exception: {ex.ToMessageAndCompleteStacktrace()}");
+                            }
                         }
                     });
                 }
@@ -162,6 +205,13 @@ namespace SWLOR.CLI
         /// <param name="folderPath">The folder where the assets are.</param>
         private void CompileHakpak(string hakName, string folderPath)
         {
+            // Ensure the hak directory exists
+            var hakDir = $"{_config.OutputPath}hak/";
+            if (!Directory.Exists(hakDir))
+            {
+                Directory.CreateDirectory(hakDir);
+            }
+            
             var command = $"nwn_erf -f \"{_config.OutputPath}hak/{hakName}.hak\" -e HAK -c ./{folderPath}";
             Console.WriteLine($"Building hak: {hakName}.hak");
 

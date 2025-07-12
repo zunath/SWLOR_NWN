@@ -122,11 +122,35 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void EndCall()
         {
             _builder.Create("endcall")
-                .Description("Ends your current HoloCom call.")
+                .Description("Ends your current HoloCom call or cancels an outgoing call attempt.")
                 .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    HoloCom.SetIsInCall(user, HoloCom.GetCallReceiver(user), false);
+                    // Handle active calls
+                    if (HoloCom.IsInCall(user))
+                    {
+                        var callTarget = HoloCom.GetTargetForActiveCall(user);
+                        HoloCom.SetIsInCall(user, callTarget, false);
+                        SendMessageToPC(user, "You end your HoloCom call.");
+                    }
+                    // Handle outgoing call attempts
+                    else if (HoloCom.IsCallSender(user))
+                    {
+                        var callReceiver = HoloCom.GetCallReceiver(user);
+                        if (GetIsObjectValid(callReceiver))
+                        {
+                            // Notify the receiver that the call attempt has ended
+                            SendMessageToPC(callReceiver, "Your HoloCom stops buzzing.");
+                        }
+                        
+                        // Clean up call attempt state
+                        HoloCom.CleanupCallAttempt(user, callReceiver);
+                        SendMessageToPC(user, "You cancel your HoloCom call.");
+                    }
+                    else
+                    {
+                        SendMessageToPC(user, "You don't have any active calls or outgoing call attempts to end.");
+                    }
                 });
         }
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         /// <summary>
         /// Whenever a resource despawns, if it has an associated prop placeable, destroy it from the game world.
         /// </summary>
-        [NWNEventHandler("spawn_despawn")]
+        [NWNEventHandler(ScriptName.OnSpawnDespawn)]
         public static void CleanupResourcePropPlaceables()
         {
             var resource = OBJECT_SELF;

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Discord;
 using SWLOR.Game.Server.Core;
@@ -268,7 +268,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// If a player is missing any skills in their DB record, they will be added here.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void AddMissingSkills()
         {
             var player = GetEnteringObject();

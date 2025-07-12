@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.ItemService;
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         /// Play a matching animation that lasts the duration of the stun.
         /// Set pheno to normal, tailtype to none and movement rate back to normal after.
         /// </summary>
-        [NWNEventHandler("crea_damaged_bef")]
+        [NWNEventHandler(ScriptName.OnCreatureDamagedBefore)]
         public static void AttackedDismount()
         {
             var player = OBJECT_SELF; ;
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         /// When a creature acquires emnity and is mounted, dismount. 
         /// Set pheno to normal, tail to none and movement rate to normal.
         /// </summary>
-        [NWNEventHandler("enmity_acquired")]
+        [NWNEventHandler(ScriptName.OnEnmityAcquired)]
         public static void AttackDismount()
         {
             var player = OBJECT_SELF;
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         /// Set pheno to normal, tail to none and movement rate to normal.
         /// Warning: This is not currently working. Need to hook the right script. *****!
         /// </summary>
-        [NWNEventHandler("speeder_hook")]
+        [NWNEventHandler(ScriptName.OnSpeederHook)]
         public static void AreaTransitionDismount()
         {
             var player = OBJECT_SELF;

@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class HoloCom
     {
-        [NWNEventHandler("mod_death")]
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void OnModuleDeath()
         {
             var player = GetLastPlayerDied();
@@ -16,14 +16,14 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnModuleEnter()
         {
             var player = GetEnteringObject();
             RemoveEffectByTag(player, "HOLOCOM_CALL_IMMOBILIZE");
         }
 
-        [NWNEventHandler("mod_exit")]
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void OnModuleLeave()
         {
             var player = GetExitingObject();
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        [NWNEventHandler("mod_chat")]
+        [NWNEventHandler(ScriptName.OnModuleChat)]
         public static void OnModuleChat()
         {
             var sender = GetPCChatSpeaker();

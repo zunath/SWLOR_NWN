@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             return true;
         }
 
-        [NWNEventHandler("prop_star_term")]
+        [NWNEventHandler(ScriptName.OnPropertyStarportTerminal)]
         public static void UsePropertyStarportTerminal()
         {
             var player = GetLastUsedBy();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, skills and categories are organized into dictionaries for quick look-ups later on.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             // Initialize the list of categories.

@@ -78,5 +78,10 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// </summary>
         Action OnModalCancelClick();
 
+        /// <summary>
+        /// Runs when the window is closed.
+        /// </summary>
+        Action OnWindowClosed();
+
     }
 }

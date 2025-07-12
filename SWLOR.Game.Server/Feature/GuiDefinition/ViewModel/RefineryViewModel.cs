@@ -355,7 +355,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             InputItemToggles[index] = !InputItemToggles[index];
         };
 
-        public Action OnWindowClosed() => () =>
+        public override Action OnWindowClosed() => () =>
         {
             foreach (var serialized in _inputItems)
             {

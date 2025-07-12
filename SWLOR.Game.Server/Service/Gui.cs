@@ -260,6 +260,9 @@ namespace SWLOR.Game.Server.Service
             if (eventType != "watch")
                 return;
 
+            if (string.IsNullOrWhiteSpace(windowId))
+                return;
+
             if (!_playerWindows.ContainsKey(playerId))
                 return;
 

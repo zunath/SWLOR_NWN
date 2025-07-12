@@ -108,6 +108,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     resourceCount--;
 
+                    var itemsGathered = 1; // Track number of items gathered
                     CreateItemOnObject(loot.Resref, user);
 
                     // Additional loot tables - these adhere to standard loot table rules.
@@ -119,6 +120,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     {
                         loot = lootTable.GetRandomItem();
                         CreateItemOnObject(loot.Resref, user);
+                        itemsGathered++; // Increment for the second item
                     }
 
                     if (resourceCount <= 0)
@@ -146,7 +148,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         var delta = veinLevel - dbSkill.Rank;
                         var deltaXP = Skill.GetDeltaXP(delta);
 
-                        Skill.GiveSkillXP(user, SkillType.Gathering, deltaXP, false, false);
+                        // Give XP for each item gathered
+                        Skill.GiveSkillXP(user, SkillType.Gathering, deltaXP * itemsGathered, false, false);
                     }
 
                     ExecuteScript("harvester_used", user);

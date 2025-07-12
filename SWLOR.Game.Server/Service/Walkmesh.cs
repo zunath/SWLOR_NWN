@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module content changes, rerun the baking process.
         /// </summary>
-        [NWNEventHandler("mod_content_chg")]
+        [NWNEventHandler(ScriptName.OnModuleContentChange)]
         public static void LoadWalkmeshes()
         {
             StoreNoSpawnZoneTriggers();
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
         /// These locations can be used to spawn objects randomly throughout an area.
         /// This only runs if the module content has NOT changed since the last run.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RetrieveWalkmeshes()
         {
             if (_bakingRan)

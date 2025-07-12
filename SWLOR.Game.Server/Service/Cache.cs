@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service
         private static Dictionary<string, int> PortraitInternalIdsByPortraitResref { get; } = new();
         private static Dictionary<int, string> SoundSets { get; set; } = new();
         
-        [NWNEventHandler("mod_content_chg")]
+        [NWNEventHandler(ScriptName.OnModuleContentChange)]
         public static void CacheItemNamesByResref()
         {
             var resref = UtilPlugin.GetFirstResRef(ResRefType.Item);
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles caching data into server memory for quicker lookup later.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             LoadItemCache();

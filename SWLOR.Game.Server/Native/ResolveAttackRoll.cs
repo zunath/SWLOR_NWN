@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using Pipelines.Sockets.Unofficial.Arenas;
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Native
         // ReSharper disable once NotAccessField.Local
         private static ResolveAttackRollHook _callOriginal;
 
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, void*, void> pHook = &OnResolveAttackRoll;

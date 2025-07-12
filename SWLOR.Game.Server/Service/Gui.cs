@@ -346,6 +346,9 @@ namespace SWLOR.Game.Server.Service
             {
                 SaveWindowGeometry(playerId, type, playerWindow.ViewModel.Geometry);
                 NuiDestroy(player, playerWindow.WindowToken);
+                
+                // Call OnWindowClosed to ensure proper cleanup (like returning items to player)
+                playerWindow.ViewModel.OnWindowClosed()?.Invoke();
             }
         }
 

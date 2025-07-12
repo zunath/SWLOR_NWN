@@ -17,6 +17,7 @@ using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using SavingThrow = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrow;
+using MovementRate = SWLOR.Game.Server.Core.NWScript.Enum.MovementRate;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -480,6 +481,11 @@ namespace SWLOR.Game.Server.Service
         
         public static void ApplyPlayerMovementRate(uint player)
         {
+            if (GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player))
+            {
+                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+            }
+
             var movementRate = 1.0f;
             if (Ability.IsAbilityToggled(player, AbilityToggleType.Dash))
             {
@@ -510,6 +516,9 @@ namespace SWLOR.Game.Server.Service
                     movementRate -= amount * 0.01f;
                 }
             }
+
+            if (movementRate > 1.5f)
+                movementRate = 1.5f;
 
             CreaturePlugin.SetMovementRateFactor(player, movementRate);
         }

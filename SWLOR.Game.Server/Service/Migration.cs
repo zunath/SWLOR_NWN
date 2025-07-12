@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostCache = new();
         private static readonly Dictionary<int, IPlayerMigration> _playerMigrations = new();
 
-        [NWNEventHandler("db_loaded")]
+        [NWNEventHandler(ScriptName.OnDatabaseLoaded)]
         public static void AfterDatabaseLoaded()
         {
             var config = GetServerConfiguration();
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service
             RunServerMigrationsPostDatabase();
         }
 
-        [NWNEventHandler("mod_cache_aft")]
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public static void AfterCacheLoaded()
         {
             RunServerMigrationsPostCache();
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player logs into the server and after initialization has run, run the migration process on their character.
         /// </summary>
-        [NWNEventHandler("char_init_after")]
+        [NWNEventHandler(ScriptName.OnCharacterInitAfter)]
         public static void RunPlayerMigrations()
         {
             var player = GetEnteringObject();

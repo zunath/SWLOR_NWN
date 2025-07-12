@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Service.LootService;
 
 namespace SWLOR.Game.Server.Feature.LootTableDefinition
 {
-    public class DantooineLootTableDefinition: ILootTableDefinition
+    public class DantooineLootTableDefinition : ILootTableDefinition
     {
         private readonly LootTableBuilder _builder = new();
 
@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             VoritorLizard();
             BolBoss();
             Iriaz();
+            DantooineHerb();
 
             return _builder.Build();
         }
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("DANTOOINE_KINRATH_QUEEN")
                 .AddItem("fiberp_high", 20)
                 .AddItem("yotbean", 100);
-      
+
             _builder.Create("DANTOOINE_KINRATH_QUEEN_RARES")
                 .IsRare()
                 .AddItem("emerald", 1, 1, true)
@@ -41,8 +42,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("dan_kin_boots", 20, 1, true);
 
             _builder.Create("DANTOOINE_KINRATH_QUEEN_GEMS")
-                    .AddItem("emerald", 100, 1, true); 
-                    
+                    .AddItem("emerald", 100, 1, true);
+
             _builder.Create("DANTOOINE_KINRATH_QUEEN_RECIPES")
                     .AddItem("recipe_dancarrot", 20)
                     .AddItem("recipe_krafterk", 20)
@@ -87,9 +88,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("DANTOOINE_DANTARI_HUNTER_GEAR")
                 .AddItem("dantari_iknife", 20);
-                
+
             _builder.Create("DANTOOINE_DANTARI_HUNTER_GEAR_RARES")
-                .AddItem("dan_heavy_armor",  1)
+                .AddItem("dan_heavy_armor", 1)
                 .AddItem("dan_hyper_gloves", 1)
                 .AddItem("dan_h_cloak", 1)
                 .AddItem("dan_shuriken", 1);
@@ -221,11 +222,17 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("medisyringes", 20)
                 .AddGold(10, 15);
         }
-        
+
         private void DantooineHay()
         {
             _builder.Create("DANTOOINE_HAY")
                 .AddItem("haybundle", 50);
+
+        }
+        private void DantooineHerb()
+        {
+            _builder.Create("DANTOOINE_HERB")
+                .AddItem("dant_starwort", 50);
 
         }
     }

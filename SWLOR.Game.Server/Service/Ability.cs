@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, abilities will be cached and events will be scheduled.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             CacheAbilities();
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Service
         /// Each tick, creatures with a concentration effect will be processed.
         /// This will drain FP and reapply whatever effect is associated with an ability.
         /// </summary>
-        [NWNEventHandler("swlor_heartbeat")]
+        [NWNEventHandler(ScriptName.OnSwlorHeartbeat)]
         public static void ProcessConcentrationEffects()
         {
             var pairs = _activeConcentrationAbilities.ToList();
@@ -442,7 +442,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Whenever a weapon's OnHit event is fired, add a Leadership combat point if an Aura is active.
         /// </summary>
-        [NWNEventHandler("item_on_hit")]
+        [NWNEventHandler(ScriptName.OnItemHit)]
         public static void AddLeadershipCombatPoint()
         {
             var player = OBJECT_SELF;
@@ -641,7 +641,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, apply the Aura AOE effect.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ApplyAuraAOE()
         {
             var player = GetEnteringObject();
@@ -651,7 +651,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player exits the server, remove all of their Aura effects.
         /// </summary>
-        [NWNEventHandler("mod_exit")]
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void ClearAurasOnExit()
         {
             var player = GetExitingObject();
@@ -661,7 +661,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player dies, remove all of their Aura effects.
         /// </summary>
-        [NWNEventHandler("mod_death")]
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void ClearAurasOnDeath()
         {
             var player = GetLastPlayerDied();
@@ -671,7 +671,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player respawns, reapply the aura AOE effect
         /// </summary>
-        [NWNEventHandler("mod_respawn")]
+        [NWNEventHandler(ScriptName.OnModuleRespawn)]
         public static void ReapplyAuraOnRespawn()
         {
             var player = GetLastRespawnButtonPresser();
@@ -681,7 +681,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters space mode, remove all of their Aura effects.
         /// </summary>
-        [NWNEventHandler("space_enter")]
+        [NWNEventHandler(ScriptName.OnSpaceEnter)]
         public static void ClearAurasOnSpaceEntry()
         {
             var player = OBJECT_SELF;
@@ -691,7 +691,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Whenever a creature enters the aura, add them to the cache.
         /// </summary>
-        [NWNEventHandler("aura_enter")]
+        [NWNEventHandler(ScriptName.OnAuraEnter)]
         public static void AuraEnter()
         {
             var entering = GetEnteringObject();
@@ -738,7 +738,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Whenever a creature exits the aura, remove it from the cache.
         /// </summary>
-        [NWNEventHandler("aura_exit")]
+        [NWNEventHandler(ScriptName.OnAuraExit)]
         public static void AuraExit()
         {
             var exiting = GetExitingObject();

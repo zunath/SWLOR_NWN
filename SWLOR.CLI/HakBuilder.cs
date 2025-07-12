@@ -85,6 +85,13 @@ namespace SWLOR.CLI
                             return;
                         }
 
+                        // Skip checksum checking if disabled
+                        if (!_config.EnableChecksumChecking)
+                        {
+                            Console.WriteLine(hak.Name + " needs to be built (checksum checking disabled)");
+                            return;
+                        }
+
                         var checksumFolder = ChecksumUtil.ChecksumFolder(hak.Path);
                         _checksumDictionary.Add(hak.Name, checksumFolder);
 
@@ -170,12 +177,16 @@ namespace SWLOR.CLI
                 process.WaitForExit();
             }
 
-            if (!_checksumDictionary.TryGetValue(hakName, out var checksum))
+            // Only perform checksum operations if enabled
+            if (_config.EnableChecksumChecking)
             {
-                checksum = ChecksumUtil.ChecksumFolder(folderPath);
-            }
+                if (!_checksumDictionary.TryGetValue(hakName, out var checksum))
+                {
+                    checksum = ChecksumUtil.ChecksumFolder(folderPath);
+                }
 
-            ChecksumUtil.WriteChecksumFile(_config.OutputPath + "hak/" + hakName + ".md5", checksum);
+                ChecksumUtil.WriteChecksumFile(_config.OutputPath + "hak/" + hakName + ".md5", checksum);
+            }
         }
     }
 }

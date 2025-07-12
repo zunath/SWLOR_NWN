@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
@@ -49,10 +50,19 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                             ApplyEffectToObject(DurationType.Permanent, effect, target);
                             break;
                     }
+                    
+                    Stat.ApplyPlayerMovementRate(target);
                 })
                 .RemoveAction((target, data) =>
                 {
                     RemoveEffectByTag(target, EffectTag);
+
+                    // We have to put this on a delay because the RemoveEffect() call above does not
+                    // actually remove the effect until after the script ends. This throws off the calculations happening in Stat.ApplyPlayerMovementRate.
+                    DelayCommand(0.1f, () =>
+                    {
+                        Stat.ApplyPlayerMovementRate(target);
+                    });
                 });
         }
 

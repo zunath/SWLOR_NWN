@@ -121,6 +121,11 @@ namespace SWLOR.Game.Server.Service.NPCService
         Dantooine_PlainsThune = 55,
         [NPCGroup("Bol")]
         Dantooine_Bol = 56,
+        [NPCGroup("Byysk Guardian")]
+        Byysk_Guardian = 57,
+        [NPCGroup("Korriban Initiates")]
+        Korriban_RogueInitiates = 58,
+
     }
 
     public class NPCGroupAttribute : Attribute

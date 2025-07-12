@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service;
@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Writes an audit log when a player connects to the server.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void AuditClientConnection()
         {
             var player = GetEnteringObject();
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Writes an audit log when a player disconnects from the server.
         /// </summary>
-        [NWNEventHandler("mod_exit")]
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void AuditClientDisconnection()
         {
             var player = GetExitingObject();
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Writes an audit log when a player sends a chat message.
         /// </summary>
-        [NWNEventHandler("on_nwnx_chat")]
+        [NWNEventHandler(ScriptName.OnNWNXChat)]
         public static void AuditChatMessages()
         {
             static string BuildRegularLog()

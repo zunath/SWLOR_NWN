@@ -24,25 +24,23 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Texture("iit_ess_247")
-                .Description($"A suite of dedicated active sensors for your ship's weapons systems. They improve your accuracy by {boostAmount} and attack by {boostAmount * 2}, but active sensor tech leaves you more visible to enemies, reducing evasion by {boostAmount}.")
+                .Description($"A suite of dedicated passive sensors for your ship's weapons systems. They improve your accuracy by {boostAmount}, but passive sensor tech reduces your Attack by five.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, 5)
                 .CapitalClassModule()
                 .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.Accuracy += boostAmount + moduleBonus;
-                    shipStatus.ThermalDamage += 2 * (boostAmount + moduleBonus);
-                    shipStatus.EMDamage += 2 * (boostAmount + moduleBonus);
-                    shipStatus.ExplosiveDamage += 2 * (boostAmount + moduleBonus);
-                    shipStatus.Evasion -= boostAmount;
+                    shipStatus.ThermalDamage -= 5;
+                    shipStatus.EMDamage -= 5;
+                    shipStatus.ExplosiveDamage -= 5;
                 })
                 .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.Accuracy -= boostAmount + moduleBonus;
-                    shipStatus.ThermalDamage -= 2 * (boostAmount + moduleBonus);
-                    shipStatus.EMDamage -= 2 * (boostAmount + moduleBonus);
-                    shipStatus.ExplosiveDamage -= 2 * (boostAmount + moduleBonus);
-                    shipStatus.Evasion += boostAmount;
+                    shipStatus.ThermalDamage += 5;
+                    shipStatus.EMDamage += 5;
+                    shipStatus.ExplosiveDamage += 5;
                 });
         }
     }

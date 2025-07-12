@@ -74,11 +74,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         public static void RemoveEffect()
         {
             var target = OBJECT_SELF;
-            if (GetIsPC(target) && !GetIsDM(target) && !GetIsDMPossessed(target))
-            {
-                CreaturePlugin.SetMovementRate(target, MovementRate.PC);
-            }
-
             Stat.ApplyPlayerMovementRate(target);
         }
 

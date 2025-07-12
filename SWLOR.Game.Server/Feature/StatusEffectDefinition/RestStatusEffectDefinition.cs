@@ -30,6 +30,18 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatusEffect.Remove(player, StatusEffectType.Rest);
         }
 
+        /// <summary>
+        /// When a player attacks, remove the rest effect
+        /// </summary>
+        [NWNEventHandler("input_atk_aft")]
+        public static void RemoveRestOnAttack()
+        {
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+            
+            StatusEffect.Remove(player, StatusEffectType.Rest);
+        }
+
         [NWNEventHandler("mod_enter")]
         public static void RemoveRestOnLogin()
         {

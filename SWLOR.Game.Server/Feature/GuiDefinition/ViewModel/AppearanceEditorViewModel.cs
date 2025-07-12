@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private AppearanceArmorColor _selectedColorChannel;
         private ColorTarget _colorTarget;
 
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void LoadAppearances()
         {
             LoadRacialAppearances();
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadWeaponAppearances();
         }
 
-        [NWNEventHandler("dm_poss_bef")]
-        [NWNEventHandler("dm_possfull_bef")]
+        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
+        [NWNEventHandler(ScriptName.OnDMPossessFullBefore)]
         public static void CloseAppearanceWindowOnPossessionBefore()
         {
             var dm = OBJECT_SELF;

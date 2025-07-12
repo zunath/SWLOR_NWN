@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ApplyPlayerStats()
         {
             ApplyTemporaryPlayerStats();
@@ -361,7 +361,7 @@ namespace SWLOR.Game.Server.Service
         /// After a player's status effects are reassociated,
         /// adjust any food HP if necessary.
         /// </summary>
-        [NWNEventHandler("assoc_stateffect")]
+        [NWNEventHandler(ScriptName.OnAssociateStateEffect)]
         public static void ReapplyFoodHP()
         {
             var player = OBJECT_SELF;

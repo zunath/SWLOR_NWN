@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LogService;
@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player starts dying, instantly kill them.
         /// </summary>
-        [NWNEventHandler("mod_dying")]
+        [NWNEventHandler(ScriptName.OnModuleDying)]
         public static void OnPlayerDying()
         {
             ApplyEffectToObject(DurationType.Instant, EffectDeath(), GetLastPlayerDying());
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles resetting a player's standard faction reputations and displaying the respawn pop-up menu.
         /// </summary>
-        [NWNEventHandler("mod_death")]
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void OnPlayerDeath()
         {
             var player = GetLastPlayerDied();
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
         /// Handles setting player's HP, FP, and STM to half of maximum,
         /// applies penalties for death, and teleports him or her to their home point.
         /// </summary>
-        [NWNEventHandler("mod_respawn")]
+        [NWNEventHandler(ScriptName.OnModuleRespawn)]
         public static void OnPlayerRespawn()
         {
             var player = GetLastRespawnButtonPresser();
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles setting a player's respawn point if they don't have one set already.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void InitializeRespawnPoint()
         {
             var player = GetEnteringObject();

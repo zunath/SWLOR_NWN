@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Service
         public const string CorpseBodyVariable = "CORPSE_BODY";
         private const string CorpseCopyItemVariable = "CORPSE_ITEM_COPY";
 
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void RegisterLootTables()
         {
             // Get all implementations of spawn table definitions.
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature spawns, items which can be stolen are spawned and marked as undroppable.
         /// These items are only available with the Thief ability "Steal" and related perks.
         /// </summary>
-        [NWNEventHandler("crea_spawn_bef")]
+        [NWNEventHandler(ScriptName.OnCreatureSpawnBefore)]
         public static void SpawnStealLoot()
         {
             var creature = OBJECT_SELF;
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature dies, loot tables are spawned based on local variables.
         /// </summary>
-        [NWNEventHandler("crea_death_bef")]
+        [NWNEventHandler(ScriptName.OnCreatureDeathBefore)]
         public static void SpawnLootOnCreatureDeath()
         {
             SpawnLoot(OBJECT_SELF, OBJECT_SELF, "LOOT_TABLE_");
@@ -235,7 +235,7 @@ namespace SWLOR.Game.Server.Service
         /// a local variable is set on the creature which will be picked up when spawning items.
         /// These will be checked later when the creature dies and loot is spawned.
         /// </summary>
-        [NWNEventHandler("item_on_hit")]
+        [NWNEventHandler(ScriptName.OnItemHit)]
         public static void MarkCreditfinderAndTreasureHunterOnTarget()
         {
             var attacker = OBJECT_SELF;
@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.Service
         /// Handles creating a corpse placeable on a creature's death, copying its inventory to the placeable,
         /// and changing the name of the placeable to match the creature.
         /// </summary>
-        [NWNEventHandler("crea_death_bef")]
+        [NWNEventHandler(ScriptName.OnCreatureDeathBefore)]
         public static void ProcessCorpse()
         {
             var self = OBJECT_SELF;
@@ -376,7 +376,7 @@ namespace SWLOR.Game.Server.Service
         /// When the loot corpse is closed, either spawn an "Extract" placeable to be used with Beast Mastery DNA extraction
         /// or remove the dead creature from the game.
         /// </summary>
-        [NWNEventHandler("corpse_closed")]
+        [NWNEventHandler(ScriptName.OnCorpseClosed)]
         public static void CloseCorpseContainer()
         {
             var container = OBJECT_SELF;
@@ -418,7 +418,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player adds an item to a corpse, return it to them.
         /// When a player removes an item from the corpse, update the connected creature's appearance if needed.
         /// </summary>
-        [NWNEventHandler("corpse_disturbed")]
+        [NWNEventHandler(ScriptName.OnCorpseDisturbed)]
         public static void DisturbCorpseContainer()
         {
             var looter = GetLastDisturbed();

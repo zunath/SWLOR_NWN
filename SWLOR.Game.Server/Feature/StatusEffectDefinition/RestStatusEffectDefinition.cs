@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         /// <summary>
         /// When a player is damaged, remove the rest effect
         /// </summary>
-        [NWNEventHandler("pc_damaged")]
+        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
         public static void RemoveRestOnDamage()
         {
             var player = OBJECT_SELF;
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         /// <summary>
         /// When a player attacks, remove the rest effect
         /// </summary>
-        [NWNEventHandler("input_atk_aft")]
+        [NWNEventHandler(ScriptName.OnInputAttackAfter)]
         public static void RemoveRestOnAttack()
         {
             var player = OBJECT_SELF;
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatusEffect.Remove(player, StatusEffectType.Rest);
         }
 
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void RemoveRestOnLogin()
         {
             var player = GetEnteringObject();

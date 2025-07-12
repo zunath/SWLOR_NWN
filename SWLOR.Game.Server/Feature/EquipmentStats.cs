@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, cache the actions taken for each type of custom item property.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterStatActions()
         {
             _statChangeActions[ItemPropertyType.HPBonus] = ApplyHPBonus;
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is equipped, if it has any custom status, apply them now.
         /// This should be run in the "after" event because any restrictions should be checked first.
         /// </summary>
-        [NWNEventHandler("item_eqp_bef")]
+        [NWNEventHandler(ScriptName.OnItemEquipBefore)]
         public static void ApplyStats()
         {
             var creature = OBJECT_SELF;
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When an item is unequipped, if it has any custom stats, remove them now.
         /// </summary>
-        [NWNEventHandler("item_uneqp_bef")]
+        [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
         public static void RemoveStats()
         {
             var creature = OBJECT_SELF;

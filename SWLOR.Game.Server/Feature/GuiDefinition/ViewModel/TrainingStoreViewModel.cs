@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using SWLOR.Game.Server.Core;
@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class TrainingStoreViewModel: GuiViewModelBase<TrainingStoreViewModel, GuiPayloadBase>,
         IGuiRefreshable<RPXPRefreshEvent>
     {
-        [NWNEventHandler("open_train_store")]
+        [NWNEventHandler(ScriptName.OnOpenTrainingStore)]
         public static void OpenTrainingStore()
         {
             var player = GetPCSpeaker();

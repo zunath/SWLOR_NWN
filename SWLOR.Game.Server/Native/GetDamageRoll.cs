@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using NWN.Native.API;
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Native
         // ReSharper disable once NotAccessedField.Local
         private static GetDamageRollHook _callOriginal;
 
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, void*, int, int, int, int, int, int> pHook = &OnGetDamageRoll;

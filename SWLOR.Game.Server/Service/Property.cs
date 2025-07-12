@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all relevant data into memory.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             CachePropertyTypes();
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, clean up any deleted data, refreshes permissions and then load properties.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void OnModuleLoad()
         {
             RefreshPermissions();
@@ -1627,7 +1627,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an apartment terminal is used, open the Apartment NUI
         /// </summary>
-        [NWNEventHandler("apartment_term")]
+        [NWNEventHandler(ScriptName.OnApartmentTerminal)]
         public static void StartApartmentConversation()
         {
             var player = GetLastUsedBy();
@@ -1720,7 +1720,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters a property instance, add them to the list of players.
         /// </summary>
-        [NWNEventHandler("area_enter")]
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void EnterPropertyInstance()
         {
             var player = GetExitingObject();
@@ -1739,7 +1739,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player exits a property instance, remove them from the list of players.
         /// </summary>
-        [NWNEventHandler("area_exit")]
+        [NWNEventHandler(ScriptName.OnAreaExit)]
         public static void ExitPropertyInstance()
         {
             var player = GetExitingObject();
@@ -1826,7 +1826,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the property menu feat is used, open the GUI window.
         /// </summary>
-        [NWNEventHandler("feat_use_bef")]
+        [NWNEventHandler(ScriptName.OnFeatUseBefore)]
         public static void PropertyMenu()
         {
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
@@ -1909,7 +1909,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Before an item is used, if it is a structure item, place it at the specified location.
         /// </summary>
-        [NWNEventHandler("item_use_bef")]
+        [NWNEventHandler(ScriptName.OnItemUseBefore)]
         public static void PlaceStructure()
         {
             var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
@@ -2113,7 +2113,7 @@ namespace SWLOR.Game.Server.Service
         /// When a building entrance is used, port the player inside the instance if they have permission
         /// or display an error message saying they don't have permission to enter.
         /// </summary>
-        [NWNEventHandler("enter_property")]
+        [NWNEventHandler(ScriptName.OnEnterProperty)]
         public static void EnterBuilding()
         {
             var player = GetLastUsedBy();
@@ -2170,7 +2170,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the Citizenship terminal is used, open the Manage Citizenship UI.
         /// </summary>
-        [NWNEventHandler("open_citizenship")]
+        [NWNEventHandler(ScriptName.OnOpenCitizenship)]
         public static void OpenCitizenshipMenu()
         {
             var player = GetLastUsedBy();
@@ -2206,7 +2206,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the City Management terminal is used, open the City Management UI.
         /// </summary>
-        [NWNEventHandler("open_city_manage")]
+        [NWNEventHandler(ScriptName.OnOpenCityManage)]
         public static void OpenCityManagementMenu()
         {
             var player = GetLastUsedBy();

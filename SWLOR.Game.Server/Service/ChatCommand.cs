@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Loads all chat commands into cache and builds the related help text.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void OnModuleLoad()
         {
             LoadChatCommands();
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles validating and processing chat commands sent by players and DMs.
         /// </summary>
-        [NWNEventHandler("on_nwnx_chat")]
+        [NWNEventHandler(ScriptName.OnNWNXChat)]
         public static void HandleChatMessage()
         {
             var sender = OBJECT_SELF;

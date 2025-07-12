@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player leaves the server, save their persistent HP.
         /// </summary>
-        [NWNEventHandler("mod_exit")]
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void SaveHP()
         {
             var player = GetExitingObject();
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player enters the server, load their persistent HP.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void LoadHP()
         {
             var player = GetEnteringObject();

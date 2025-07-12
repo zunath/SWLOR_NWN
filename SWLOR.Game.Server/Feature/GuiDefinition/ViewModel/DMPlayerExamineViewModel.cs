@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private const int MaxNotes = 50;
 
-        [NWNEventHandler("examine_bef")]
+        [NWNEventHandler(ScriptName.OnExamineBefore)]
         public static void ExaminePlayer()
         {
             var dm = OBJECT_SELF;

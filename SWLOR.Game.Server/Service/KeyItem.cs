@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all key item data.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadData()
         {
             // Organize categories
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a placeable with a key item defined is used by a player, give it to them.
         /// </summary>
-        [NWNEventHandler("get_key_item")]
+        [NWNEventHandler(ScriptName.OnGetKeyItem)]
         public static void ObtainKeyItem()
         {
 

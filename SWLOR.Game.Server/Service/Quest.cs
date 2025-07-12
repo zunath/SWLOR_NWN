@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             RegisterQuests();
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the module, load their quests.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void LoadPlayerQuests()
         {
             var player = GetEnteringObject();
@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an NPC is killed, any objectives for quests a player currently has active will be updated.
         /// </summary>
-        [NWNEventHandler("crea_death_bef")]
+        [NWNEventHandler(ScriptName.OnCreatureDeathBefore)]
         public static void ProgressKillTargetObjectives()
         {
             var creature = OBJECT_SELF;
@@ -302,7 +302,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an item collector placeable is opened, 
         /// </summary>
-        [NWNEventHandler("qst_collect_open")]
+        [NWNEventHandler(ScriptName.OnQuestCollectOpen)]
         public static void OpenItemCollector()
         {
             var container = OBJECT_SELF;
@@ -339,7 +339,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an item collector placeable is closed, clear its inventory and destroy it.
         /// </summary>
-        [NWNEventHandler("qst_collect_clsd")]
+        [NWNEventHandler(ScriptName.OnQuestCollectClosed)]
         public static void CloseItemCollector()
         {
             var player = GetLastClosedBy();
@@ -359,7 +359,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an item collector placeable is disturbed, 
         /// </summary>
-        [NWNEventHandler("qst_collect_dist")]
+        [NWNEventHandler(ScriptName.OnQuestCollectDisturbed)]
         public static void DisturbItemCollector()
         {
             var type = GetInventoryDisturbType();
@@ -422,7 +422,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player uses a quest placeable, handle the progression.
         /// </summary>
-        [NWNEventHandler("quest_placeable")]
+        [NWNEventHandler(ScriptName.OnQuestPlaceable)]
         public static void UseQuestPlaceable()
         {
             var player = GetLastUsedBy();
@@ -434,7 +434,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters a quest trigger, handle the progression.
         /// </summary>
-        [NWNEventHandler("quest_trigger")]
+        [NWNEventHandler(ScriptName.OnQuestTrigger)]
         public static void EnterQuestTrigger()
         {
             var player = GetEnteringObject();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player targets an object, execute the assigned action.
         /// </summary>
-        [NWNEventHandler("mod_p_target")]
+        [NWNEventHandler(ScriptName.OnModulePlayerTarget)]
         public static void RunTargetedItemAction()
         {
             var player = GetLastPlayerToSelectTarget();

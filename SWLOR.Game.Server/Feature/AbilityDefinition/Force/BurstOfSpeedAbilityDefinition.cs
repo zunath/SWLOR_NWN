@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return string.Empty;
         }
 
-        [NWNEventHandler("bspeed_apply")]
+        [NWNEventHandler(ScriptName.OnBurstOfSpeedApply)]
         public static void ApplyEffect()
         {
             var activeEffect = GetLastRunScriptEffect();
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             Stat.ApplyPlayerMovementRate(target);
         }
 
-        [NWNEventHandler("bspeed_removed")]
+        [NWNEventHandler(ScriptName.OnBurstOfSpeedRemoved)]
         public static void RemoveEffect()
         {
             var target = OBJECT_SELF;

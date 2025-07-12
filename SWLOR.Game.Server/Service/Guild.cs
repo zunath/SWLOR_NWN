@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, cache relevant data and load guild tasks.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadData()
         {
             var guildTypes = Enum.GetValues(typeof(GuildType)).Cast<GuildType>();
@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// After quests are registered, refresh the available guild tasks.
         /// </summary>
-        [NWNEventHandler("qsts_registered")]
+        [NWNEventHandler(ScriptName.OnQuestsRegistered)]
         public static void RefreshGuildTasks()
         {
             if (DateTasksLoaded != null) return;

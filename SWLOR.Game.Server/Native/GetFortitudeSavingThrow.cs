@@ -41,8 +41,6 @@ namespace SWLOR.Game.Server.Native
                         0, 
                         (int)SavingThrow.Fortitude);
 
-            if (stats.HasFeat((ushort)FeatType.LuckOfHeroes) == 1)
-                modifier += (sbyte)rules.GetRulesetIntEntry(new CExoString("LUCKOFHEROES_SAVE_BONUS"), 1);
 
             if (stats.HasFeat((ushort)FeatType.PrestigeDarkBlessing) == 1)
                 modifier += (sbyte)stats.m_nCharismaModifier;

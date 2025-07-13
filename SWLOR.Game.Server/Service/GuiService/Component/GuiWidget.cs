@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string ColorBindName { get; set; }
         private bool IsColorBound => !string.IsNullOrWhiteSpace(ColorBindName);
 
-        public Dictionary<string, GuiMethodDetail> Events { get; private set; }
+        public Dictionary<string, GuiMethodDetail> Events { get; private set; } = new();
 
         public abstract Json BuildElement();
 

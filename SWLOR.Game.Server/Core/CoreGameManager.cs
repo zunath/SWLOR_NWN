@@ -12,17 +12,17 @@ namespace SWLOR.Game.Server.Core
         public delegate void ServerLoopEvent(ulong frame);
 
         /// <inheritdoc cref="ICoreEventHandler.OnMainLoop"/>
-        public event ServerLoopEvent? OnServerLoop;
+        public event ServerLoopEvent? OnServerLoop = null!;
 
         public delegate void SignalEvent(string signal);
 
         /// <inheritdoc cref="ICoreEventHandler.OnSignal"/>
-        public event SignalEvent? OnSignal;
+        public event SignalEvent? OnSignal = null!;
 
         public delegate void RunScriptEvent(string scriptName, uint objectSelf, out int scriptHandleResult);
 
         /// <inheritdoc cref="ICoreEventHandler.OnRunScript"/>
-        public event RunScriptEvent? OnRunScript;
+        public event RunScriptEvent? OnRunScript = null!;
 
         // Native Management
         private readonly Stack<uint> _scriptContexts = new Stack<uint>();

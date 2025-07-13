@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Core
         public static void StackPush(float value) => NWNCore.NativeFunctions.StackPushFloat(value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static void StackPush(string value)
+        public static void StackPush(string? value)
         {
             IntPtr charPtr = GetNullTerminatedString(value);
             NWNCore.NativeFunctions.StackPushRawString(charPtr);
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Core
         public static float StackPopFloat() => NWNCore.NativeFunctions.StackPopFloat();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static string? StackPopString() => ReadNullTerminatedString(NWNCore.NativeFunctions.StackPopRawString());
+        public static string? StackPopString() => ReadNullTerminatedString(NWNCore.NativeFunctions.StackPopRawString())!;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static uint StackPopObject() => NWNCore.NativeFunctions.StackPopObject();

@@ -5,6 +5,7 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <LangVersion>10</LangVersion>
     <OutputType>Library</OutputType>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

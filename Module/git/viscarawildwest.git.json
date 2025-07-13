@@ -28401,7 +28401,7 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": "WP_V_Wildlands_to_Mountains"
+          "value": "WP_V_MountAscent_to_MountValley"
         },
         "LinkedToFlags": {
           "type": "byte",
@@ -28450,7 +28450,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "V_Mountain_to_Wildlands"
+          "value": "V_MountValley_to_MountAscent"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -29198,7 +29198,7 @@
         },
         "HasMapNote": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "LinkedTo": {
           "type": "cexostring",
@@ -29210,15 +29210,17 @@
         },
         "MapNote": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "Mountain Ascent"
+          }
         },
         "MapNoteEnabled": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
-          "value": "WP_V_Mountain_to_Wildlands"
+          "value": "WP_V_MountValley_to_MountAscent"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -29230,7 +29232,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 311.4800109863281
+          "value": 311.9114990234375
         },
         "YOrientation": {
           "type": "float",
@@ -29238,11 +29240,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 120.9899978637695
+          "value": 127.612419128418
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": 0.04303550720214844
         }
       },
       {

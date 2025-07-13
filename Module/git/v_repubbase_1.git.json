@@ -34477,7 +34477,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "RepBase_Exit"
+                "value": "WP_V_RepBaseExt_to_RepBaseInt"
               }
             },
             {
@@ -134603,7 +134603,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "RepBase_Entrance"
+          "value": "WP_V_RepBaseInt_to_RepBaseExt"
         },
         "TemplateResRef": {
           "type": "resref",

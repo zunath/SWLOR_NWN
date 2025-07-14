@@ -27,6 +27,7 @@
 		<th>CD Key</th>
 		<th>Completed Tutorial</th>
 		<th>Date Created</th>
+		<th>Actions</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -44,6 +45,9 @@
 				<td>No</td>
 			}
 			<td>@account.DateCreated</td>
+			<td>
+				<a href="/viewaccount/@account.Id" class="btn btn-sm btn-info">View Details</a>
+			</td>
 		</tr>
 	}
 

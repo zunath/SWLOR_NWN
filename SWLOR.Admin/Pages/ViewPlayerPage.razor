@@ -64,7 +64,7 @@
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link @(ActiveTab == "stats" ? "active" : "")" @onclick="@(() => SetActiveTab("stats"))" type="button">
-                <i class="fas fa-heart"></i> Stats & Combat
+                <i class="fas fa-heart"></i> Stats
             </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -94,7 +94,7 @@
         @if (ActiveTab == "overview")
         {
             <!-- Overview Tab -->
-            <PlayerOverview Player="@ActivePlayer" RacialStatDisplay="@GetRacialStatDisplay()" />
+            <PlayerOverview Player="@ActivePlayer" />
         }
 
         @if (ActiveTab == "stats")
@@ -164,17 +164,5 @@
         }
         
         return "No rebuild detected";
-    }
-
-    protected string GetRacialStatDisplay()
-    {
-        if (ActivePlayer == null) return "Unknown";
-        
-        if (ActivePlayer.RacialStat == AbilityType.Invalid)
-        {
-            return "None";
-        }
-        
-        return ActivePlayer.RacialStat.ToString();
     }
 }

@@ -31,10 +31,6 @@
                         <td><strong>Appearance Scale:</strong></td>
                         <td>@Player.AppearanceScale</td>
                     </tr>
-                    <tr>
-                        <td><strong>Racial Stat:</strong></td>
-                        <td>@RacialStatDisplay</td>
-                    </tr>
                 </table>
             </div>
         </div>
@@ -151,9 +147,6 @@
 @code {
     [Parameter]
     public Player Player { get; set; } = null!;
-
-    [Parameter]
-    public string RacialStatDisplay { get; set; } = string.Empty;
 
     private string GetCharacterTypeDisplay()
     {

@@ -31,6 +31,59 @@
         </div>
     </div>
 
+    <!-- Debug Information -->
+    @if (ShowDebugInfo)
+    {
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="card border-warning">
+                    <div class="card-header bg-warning">
+                        <h5><i class="fas fa-bug"></i> Debug Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Player ID:</strong> @PlayerId</p>
+                        <p><strong>Unallocated AP:</strong> @ActivePlayer.UnallocatedAP</p>
+                        <p><strong>Upgraded Stats Raw Data:</strong></p>
+                        <ul>
+                            @foreach (var stat in ActivePlayer.UpgradedStats)
+                            {
+                                <li>@stat.Key: @stat.Value</li>
+                            }
+                        </ul>
+                        <p><strong>Base Stats Raw Data:</strong></p>
+                        <ul>
+                            @foreach (var stat in ActivePlayer.BaseStats)
+                            {
+                                <li>@stat.Key: @stat.Value</li>
+                            }
+                        </ul>
+                        <p><strong>Database Connection Test:</strong></p>
+                        <ul>
+                            <li>Player ID: @PlayerId</li>
+                            <li>Player Found: @(ActivePlayer != null)</li>
+                            <li>Player Name: @(ActivePlayer?.Name ?? "N/A")</li>
+                            <li>Player Version: @(ActivePlayer?.Version ?? 0)</li>
+                            <li>Rebuild Complete: @(ActivePlayer?.RebuildComplete ?? false)</li>
+                            <li>Rebuild Status: @GetRebuildStatus()</li>
+                            <li>Unallocated AP: @(ActivePlayer?.UnallocatedAP ?? 0)</li>
+                        </ul>
+                        <button class="btn btn-sm btn-warning" @onclick="ToggleDebugInfo">Hide Debug Info</button>
+                        <button class="btn btn-sm btn-danger" @onclick="TestDatabaseConnection">Test DB Connection</button>
+                        <button class="btn btn-sm btn-info" @onclick="RefreshPlayerData">Refresh Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row mb-3">
+            <div class="col-12">
+                <button class="btn btn-sm btn-warning" @onclick="ToggleDebugInfo">Show Debug Info</button>
+            </div>
+        </div>
+    }
+
     <!-- Status Badge -->
     <div class="row mb-3">
         <div class="col">
@@ -720,6 +773,7 @@
 
     protected Player? ActivePlayer;
     protected string ActiveTab = "overview";
+    protected bool ShowDebugInfo = false;
 
     protected override void OnInitialized()
     {
@@ -736,6 +790,48 @@
     {
         ActiveTab = tabName;
         StateHasChanged();
+    }
+
+    protected void ToggleDebugInfo()
+    {
+        ShowDebugInfo = !ShowDebugInfo;
+        StateHasChanged();
+    }
+
+    protected void TestDatabaseConnection()
+    {
+        if (ActivePlayer != null)
+        {
+            // Test setting some data
+            ActivePlayer.UpgradedStats[AbilityType.Might] = 5;
+            ActivePlayer.UpgradedStats[AbilityType.Perception] = 3;
+            ActivePlayer.UnallocatedAP = 10;
+            
+            // Save the changes
+            DB.Set(ActivePlayer);
+            
+            // Reload the data
+            ActivePlayer = DB.Get<Player>(PlayerId);
+            StateHasChanged();
+        }
+    }
+
+    protected void RefreshPlayerData()
+    {
+        ActivePlayer = DB.Get<Player>(PlayerId);
+        StateHasChanged();
+    }
+
+    protected string GetRebuildStatus()
+    {
+        if (ActivePlayer == null) return "Unknown";
+        
+        if (ActivePlayer.RebuildComplete)
+        {
+            return "Rebuild Complete - Stats may have been reset";
+        }
+        
+        return "No rebuild detected";
     }
 
     // Stat calculation helper methods

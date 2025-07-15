@@ -65,6 +65,7 @@
                             <li>Player Version: @(ActivePlayer?.Version ?? 0)</li>
                             <li>Rebuild Complete: @(ActivePlayer?.RebuildComplete ?? false)</li>
                             <li>Rebuild Status: @GetRebuildStatus()</li>
+                            <li>Racial Stat: @GetRacialStatDisplay()</li>
                             <li>Unallocated AP: @(ActivePlayer?.UnallocatedAP ?? 0)</li>
                         </ul>
                         <button class="btn btn-sm btn-warning" @onclick="ToggleDebugInfo">Hide Debug Info</button>
@@ -167,7 +168,7 @@
                                 </tr>
                                 <tr>
                                     <td><strong>Racial Stat:</strong></td>
-                                    <td>@ActivePlayer.RacialStat</td>
+                                    <td>@GetRacialStatDisplay()</td>
                                 </tr>
                             </table>
                         </div>
@@ -366,7 +367,7 @@
                                 @foreach (var stat in ActivePlayer.BaseStats)
                                 {
                                     <div class="col-md-4 col-lg-2 mb-2">
-                                        <strong>@stat.Key:</strong> @stat.Value
+                                        <strong>@stat.Key:</strong> @stat.Value@(ActivePlayer.RacialStat == stat.Key ? " (+1)" : "")
                                     </div>
                                 }
                             </div>
@@ -832,6 +833,18 @@
         }
         
         return "No rebuild detected";
+    }
+
+    protected string GetRacialStatDisplay()
+    {
+        if (ActivePlayer == null) return "Unknown";
+        
+        if (ActivePlayer.RacialStat == AbilityType.Invalid)
+        {
+            return "None";
+        }
+        
+        return ActivePlayer.RacialStat.ToString();
     }
 
     // Stat calculation helper methods

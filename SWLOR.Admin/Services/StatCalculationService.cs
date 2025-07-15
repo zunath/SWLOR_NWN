@@ -96,18 +96,20 @@ namespace SWLOR.Admin.Services
         }
 
         /// <summary>
-        /// Gets the max HP from the player entity
-        /// Note: HP calculation uses the native NWN engine and is complex, so we use the stored value
+        /// Calculates max HP using the formula: 70 + FLOOR(((Vitality - 10) / 2)) * 40 + MaxHP
         /// </summary>
         /// <param name="player">The player entity</param>
         /// <param name="foodBonus">Optional food bonus (default 0)</param>
-        /// <returns>The stored max HP value</returns>
+        /// <returns>The calculated max HP value</returns>
         public static int CalculateMaxHP(Player player, int foodBonus = 0)
         {
             if (player == null) return BaseHP;
-            // HP calculation uses native NWN GetMaxHitPoints() function and is complex
-            // We use the stored MaxHP value from the database
-            return player.MaxHP + foodBonus;
+            
+            var vitalityStat = GetAbilityScore(player, AbilityType.Vitality);
+            var vitalityModifier = CalculateAbilityModifier(vitalityStat);
+            var vitalityBonus = vitalityModifier * 40;
+            
+            return BaseHP + vitalityBonus + foodBonus;
         }
 
         /// <summary>

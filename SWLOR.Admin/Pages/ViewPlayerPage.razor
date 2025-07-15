@@ -3,6 +3,7 @@
 @using SWLOR.Game.Server.Enumeration
 @using SWLOR.Game.Server.Core.NWScript.Enum
 @using SWLOR.Game.Server.Service.SkillService
+@using SWLOR.Game.Server.Service.PerkService
 @using SWLOR.Admin.Services
 @using System.Linq
 @using System.Reflection
@@ -118,7 +119,12 @@
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link @(ActiveTab == "skills" ? "active" : "")" @onclick="@(() => SetActiveTab("skills"))" type="button">
-                <i class="fas fa-graduation-cap"></i> Skills & Perks
+                <i class="fas fa-graduation-cap"></i> Skills
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(ActiveTab == "perks" ? "active" : "")" @onclick="@(() => SetActiveTab("perks"))" type="button">
+                <i class="fas fa-star"></i> Perks
             </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -446,8 +452,6 @@
                         </div>
                         <div class="card-body">
                             <p><strong>Total Skills:</strong> @ActivePlayer.Skills.Count</p>
-                            <p><strong>Total Perks:</strong> @ActivePlayer.Perks.Count</p>
-                            <p><strong>Unlocked Perks:</strong> @ActivePlayer.UnlockedPerks.Count</p>
                             <p><strong>Unlocked Recipes:</strong> @ActivePlayer.UnlockedRecipes.Count</p>
                             <p><strong>Crafted Recipes:</strong> @ActivePlayer.CraftedRecipes.Count</p>
                             <p><strong>Key Items:</strong> @ActivePlayer.KeyItems.Count</p>
@@ -580,6 +584,117 @@
                                     </table>
                                 </div>
                             }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (ActiveTab == "perks")
+        {
+            <!-- Perks Tab -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-star"></i> Purchased Perks</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Total Purchased Perks:</strong> @ActivePlayer.Perks.Count</p>
+                            @if (ActivePlayer.Perks.Count > 0)
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-sm">
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th>Perk</th>
+                                                <th>Level</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var perk in ActivePlayer.Perks)
+                                            {
+                                                <tr>
+                                                    <td>@GetPerkDisplayName(perk.Key)</td>
+                                                    <td>@perk.Value</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No perks purchased yet.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-unlock"></i> Unlocked Perks</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Total Unlocked Perks:</strong> @ActivePlayer.UnlockedPerks.Count</p>
+                            @if (ActivePlayer.UnlockedPerks.Count > 0)
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-sm">
+                                        <thead class="table-success">
+                                            <tr>
+                                                <th>Perk</th>
+                                                <th>Unlocked Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var perk in ActivePlayer.UnlockedPerks)
+                                            {
+                                                <tr>
+                                                    <td>@GetPerkDisplayName(perk.Key)</td>
+                                                    <td>@perk.Value.ToString("yyyy-MM-dd HH:mm")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No perks unlocked yet.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-bar"></i> Perk Statistics</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <h4 class="text-primary">@ActivePlayer.Perks.Count</h4>
+                                        <p class="text-muted">Purchased Perks</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <h4 class="text-success">@ActivePlayer.UnlockedPerks.Count</h4>
+                                        <p class="text-muted">Unlocked Perks</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <h4 class="text-info">@(ActivePlayer.Perks.Values.Sum())</h4>
+                                        <p class="text-muted">Total Perk Levels</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -954,5 +1069,16 @@
             // Fallback to enum name if attribute is not found
             return skillType.ToString();
         }
+    }
+
+    protected string GetPerkDisplayName(PerkType perkType)
+    {
+        // For now, return the enum name as a formatted string
+        // This can be enhanced later with proper perk attributes if they exist
+        var name = perkType.ToString();
+        
+        // Convert from PascalCase to Title Case with spaces
+        var result = System.Text.RegularExpressions.Regex.Replace(name, "([a-z])([A-Z])", "$1 $2");
+        return result;
     }
 }

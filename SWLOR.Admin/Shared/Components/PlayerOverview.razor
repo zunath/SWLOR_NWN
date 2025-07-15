@@ -1,6 +1,7 @@
 @namespace SWLOR.Admin.Shared.Components
 @using SWLOR.Game.Server.Service.CurrencyService
 @using SWLOR.Game.Server.Enumeration
+@using System.Reflection
 
 <div class="row">
     <div class="col-md-6">
@@ -16,7 +17,7 @@
                     </tr>
                     <tr>
                         <td><strong>Character Type:</strong></td>
-                        <td>@Player.CharacterType</td>
+                        <td>@GetCharacterTypeDisplay()</td>
                     </tr>
                     <tr>
                         <td><strong>Emote Style:</strong></td>
@@ -153,4 +154,11 @@
 
     [Parameter]
     public string RacialStatDisplay { get; set; } = string.Empty;
+
+    private string GetCharacterTypeDisplay()
+    {
+        var field = Player.CharacterType.GetType().GetField(Player.CharacterType.ToString());
+        var attribute = field?.GetCustomAttribute<CharacterTypeAttribute>();
+        return attribute?.Name ?? Player.CharacterType.ToString();
+    }
 } 

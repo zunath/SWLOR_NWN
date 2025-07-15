@@ -34,25 +34,7 @@
     </div>
 
     <!-- Debug Information -->
-    @if (ShowDebugInfo)
-    {
-        <PlayerDebug 
-            PlayerId="@PlayerId"
-            Player="@ActivePlayer"
-            RebuildStatus="@GetRebuildStatus()"
-            RacialStatDisplay="@GetRacialStatDisplay()"
-            OnHideDebug="@ToggleDebugInfo"
-            OnTestDatabaseConnection="@TestDatabaseConnection"
-            OnRefreshPlayerData="@RefreshPlayerData" />
-    }
-    else
-    {
-        <div class="row mb-3">
-            <div class="col-12">
-                <button class="btn btn-sm btn-warning" @onclick="ToggleDebugInfo">Show Debug Info</button>
-            </div>
-        </div>
-    }
+    @* Debug info and button removed as per request *@
 
     <!-- Status Badge -->
     <div class="row mb-3">
@@ -153,7 +135,7 @@
 
     protected Player? ActivePlayer;
     protected string ActiveTab = "overview";
-    protected bool ShowDebugInfo = false;
+    // ShowDebugInfo and related methods removed
 
     protected override void OnInitialized()
     {
@@ -169,36 +151,6 @@
     protected void SetActiveTab(string tabName)
     {
         ActiveTab = tabName;
-        StateHasChanged();
-    }
-
-    protected void ToggleDebugInfo()
-    {
-        ShowDebugInfo = !ShowDebugInfo;
-        StateHasChanged();
-    }
-
-    protected void TestDatabaseConnection()
-    {
-        if (ActivePlayer != null)
-        {
-            // Test setting some data
-            ActivePlayer.UpgradedStats[AbilityType.Might] = 5;
-            ActivePlayer.UpgradedStats[AbilityType.Perception] = 3;
-            ActivePlayer.UnallocatedAP = 10;
-            
-            // Save the changes
-            DB.Set(ActivePlayer);
-            
-            // Reload the data
-            ActivePlayer = DB.Get<Player>(PlayerId);
-            StateHasChanged();
-        }
-    }
-
-    protected void RefreshPlayerData()
-    {
-        ActivePlayer = DB.Get<Player>(PlayerId);
         StateHasChanged();
     }
 

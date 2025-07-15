@@ -1,5 +1,6 @@
 ﻿@page "/player"
 @inject NavigationManager NavManager
+@using System.Reflection
 
 <h3>Players (@_totalRecords)</h3>
 
@@ -36,7 +37,7 @@
 	{
 		<tr>
 			<td>@player.Name</td>
-			<td>@player.CharacterType.ToString()</td>
+			<td>@GetCharacterTypeDisplay(player.CharacterType)</td>
 			<td>@player.DateCreated</td>
             <td>
 
@@ -160,5 +161,12 @@
             SetPage(page);
         }
         _pageInput = string.Empty;
+    }
+
+    private string GetCharacterTypeDisplay(SWLOR.Game.Server.Enumeration.CharacterType type)
+    {
+        var field = type.GetType().GetField(type.ToString());
+        var attribute = field?.GetCustomAttribute<SWLOR.Game.Server.Enumeration.CharacterTypeAttribute>();
+        return attribute?.Name ?? type.ToString();
     }
 }

@@ -1,176 +1,733 @@
 ﻿@page "/viewplayer/{PlayerId}"
 @using SWLOR.Game.Server.Service.CurrencyService
+@using SWLOR.Game.Server.Enumeration
+@using SWLOR.Game.Server.Core.NWScript.Enum
+@using SWLOR.Game.Server.Service.SkillService
+@using SWLOR.Admin.Services
+@using System.Linq
 
 @if (!PlayerExists())
 {
-    <label>Player Id not found</label>
-
+    <div class="alert alert-danger">
+        <h4>Player Not Found</h4>
+        <p>Player ID @PlayerId was not found in the database.</p>
+        <a href="/player" class="btn btn-primary">Back to Players</a>
+    </div>
     return;
 }
 
-<div class="row">
-    <div class="col">
-        <label class="form-label">Version: @ActivePlayer!.Version</label>
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>Player Details: @ActivePlayer!.Name</h2>
+            <p class="text-muted">ID: @PlayerId | Version: @ActivePlayer.Version</p>
+        </div>
+        <div class="col-auto">
+            <a href="/player" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Players
+            </a>
+        </div>
     </div>
-    <div class="col">
-        <label class="form-label">Name: @ActivePlayer.Name</label>
-    </div>
-    <div class="col">
-        <label class="form-label">
-            <input type="checkbox" disabled="disabled" class="form-check-input disabled" @bind="ActivePlayer.IsDeleted" />
-            Is Deleted
-        </label>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col">
-        <label class="form-label">Max HP: @ActivePlayer.MaxHP</label>
+    <!-- Status Badge -->
+    <div class="row mb-3">
+        <div class="col">
+            @if (ActivePlayer.IsDeleted)
+            {
+                <span class="badge bg-danger">Deleted</span>
+            }
+            else
+            {
+                <span class="badge bg-success">Active</span>
+            }
+            <span class="badge bg-info">@ActivePlayer.CharacterType</span>
+            @if (ActivePlayer.RebuildComplete)
+            {
+                <span class="badge bg-warning">Rebuild Complete</span>
+            }
+        </div>
     </div>
-    <div class="col">
-        <label class="form-label">Max FP: @ActivePlayer.MaxFP</label>
-    </div>
-    <div class="col">
-        <label class="form-label">Max STM: @ActivePlayer.MaxStamina</label>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col">
-        <label class="form-label">HP: @ActivePlayer.HP</label>
-    </div>
-    <div class="col">
-        <label class="form-label">FP: @ActivePlayer.FP</label>
-    </div>
-    <div class="col">
-        <label class="form-label">STM: @ActivePlayer.Stamina</label>
-    </div>
-</div>
+    <!-- Custom Tab Navigation -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(ActiveTab == "overview" ? "active" : "")" @onclick="@(() => SetActiveTab("overview"))" type="button">
+                <i class="fas fa-info-circle"></i> Overview
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(ActiveTab == "stats" ? "active" : "")" @onclick="@(() => SetActiveTab("stats"))" type="button">
+                <i class="fas fa-heart"></i> Stats & Combat
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(ActiveTab == "skills" ? "active" : "")" @onclick="@(() => SetActiveTab("skills"))" type="button">
+                <i class="fas fa-graduation-cap"></i> Skills & Perks
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(ActiveTab == "location" ? "active" : "")" @onclick="@(() => SetActiveTab("location"))" type="button">
+                <i class="fas fa-map-marker-alt"></i> Location & Travel
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(ActiveTab == "settings" ? "active" : "")" @onclick="@(() => SetActiveTab("settings"))" type="button">
+                <i class="fas fa-cog"></i> Settings & Preferences
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(ActiveTab == "advanced" ? "active" : "")" @onclick="@(() => SetActiveTab("advanced"))" type="button">
+                <i class="fas fa-database"></i> Advanced Data
+            </button>
+        </li>
+    </ul>
 
-<div class="row">
-    <div class="col">
-        <label class="form-label">Temp. Food HP: @ActivePlayer.TemporaryFoodHP</label>
-    </div>
-    <div class="col">
-        <label class="form-label">BAB: @ActivePlayer.BAB</label>
-    </div>
-    <div class="col">
-        <label class="form-label">Regeneration Tick: @ActivePlayer.RegenerationTick</label>
-    </div>
-</div>
+    <!-- Tab Content -->
+    <div class="tab-content mt-3">
+        @if (ActiveTab == "overview")
+        {
+            <!-- Overview Tab -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-user"></i> Basic Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Name:</strong></td>
+                                    <td>@ActivePlayer.Name</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Character Type:</strong></td>
+                                    <td>@ActivePlayer.CharacterType</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Emote Style:</strong></td>
+                                    <td>@ActivePlayer.EmoteStyle</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Appearance ID:</strong></td>
+                                    <td>@ActivePlayer.OriginalAppearanceType</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Appearance Scale:</strong></td>
+                                    <td>@ActivePlayer.AppearanceScale</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Racial Stat:</strong></td>
+                                    <td>@ActivePlayer.RacialStat</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-coins"></i> Currency & Tokens</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Perk Refund Tokens:</strong></td>
+                                    <td>@(ActivePlayer.Currencies.TryGetValue(CurrencyType.PerkRefundToken, out var perkRefund) ? perkRefund : 0)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Rebuild Tokens:</strong></td>
+                                    <td>@(ActivePlayer.Currencies.TryGetValue(CurrencyType.RebuildToken, out var rebuild) ? rebuild : 0)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Market Till:</strong></td>
+                                    <td>@ActivePlayer.MarketTill</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Property Taxes Owed:</strong></td>
+                                    <td>@ActivePlayer.PropertyOwedTaxes</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Date Perk Refund Available:</strong></td>
+                                    <td>@(ActivePlayer.DatePerkRefundAvailable?.ToString("yyyy-MM-dd HH:mm") ?? "N/A")</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
 
-<div class="row">
-    <div class="col">
-        <label class="form-label">Location: @ActivePlayer.LocationAreaResref (@ActivePlayer.LocationX, @ActivePlayer.LocationY, @ActivePlayer.LocationZ) @ActivePlayer.LocationOrientation°</label>
-    </div>
-    <div class="col">
-        <label class="form-label">Respawn: @ActivePlayer.RespawnAreaResref (@ActivePlayer.RespawnLocationX, @ActivePlayer.RespawnLocationY, @ActivePlayer.RespawnLocationZ) @ActivePlayer.RespawnLocationOrientation°</label>
-    </div>
-</div>
+        @if (ActiveTab == "stats")
+        {
+            <!-- Stats & Combat Tab -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-heart"></i> Health & Resources</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>HP:</strong></td>
+                                    <td>@ActivePlayer.HP / @StatCalculationService.CalculateMaxHP(ActivePlayer)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>FP:</strong></td>
+                                    <td>@ActivePlayer.FP / @StatCalculationService.CalculateMaxFP(ActivePlayer)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Stamina:</strong></td>
+                                    <td>@ActivePlayer.Stamina / @StatCalculationService.CalculateMaxStamina(ActivePlayer)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>HP Regen:</strong></td>
+                                    <td>@ActivePlayer.HPRegen</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>FP Regen:</strong></td>
+                                    <td>@ActivePlayer.FPRegen</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>STM Regen:</strong></td>
+                                    <td>@ActivePlayer.STMRegen</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-sword"></i> Combat Stats</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>BAB:</strong></td>
+                                    <td>@ActivePlayer.BAB</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Attack:</strong></td>
+                                    <td>@ActivePlayer.Attack</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Force Attack:</strong></td>
+                                    <td>@ActivePlayer.ForceAttack</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Evasion:</strong></td>
+                                    <td>@ActivePlayer.Evasion</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Recast Reduction:</strong></td>
+                                    <td>@ActivePlayer.AbilityRecastReduction</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-<div class="row">
-    
-    <div class="col">
-        <label class="form-label">Unallocated XP: @ActivePlayer.UnallocatedXP</label>
-    </div>
-    <div class="col">
-        <label class="form-label">Unallocated XP: @ActivePlayer.UnallocatedSP</label>
-    </div>
-    <div class="col">
-        <label class="form-label">Unallocated XP: @ActivePlayer.UnallocatedAP</label>
-    </div>
-</div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-shield-alt"></i> Base Stats</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                @foreach (var stat in ActivePlayer.BaseStats)
+                                {
+                                    <div class="col-md-4 col-lg-2 mb-2">
+                                        <strong>@stat.Key:</strong> @stat.Value
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-shield-alt"></i> Upgraded Stats</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                @foreach (var stat in ActivePlayer.UpgradedStats)
+                                {
+                                    <div class="col-md-4 col-lg-2 mb-2">
+                                        <strong>@stat.Key:</strong> @stat.Value
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
 
-<div class="row">
-    
-    <div class="col">
-        <label class="form-label">Total SP: @ActivePlayer.TotalSPAcquired</label>
-    </div>
-    <div class="col">
-        <label class="form-label">Total AP: @ActivePlayer.TotalAPAcquired</label>
-    </div>
-    <div class="col">
-        <label class="form-label">DM XP Bonus: @ActivePlayer.DMXPBonus</label>
-    </div>
-</div>
+        @if (ActiveTab == "skills")
+        {
+            <!-- Skills & Perks Tab -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-graduation-cap"></i> Experience Points</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Unallocated XP:</strong></td>
+                                    <td>@ActivePlayer.UnallocatedXP</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Unallocated SP:</strong></td>
+                                    <td>@ActivePlayer.UnallocatedSP</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Unallocated AP:</strong></td>
+                                    <td>@ActivePlayer.UnallocatedAP</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total SP Acquired:</strong></td>
+                                    <td>@ActivePlayer.TotalSPAcquired</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total AP Acquired:</strong></td>
+                                    <td>@ActivePlayer.TotalAPAcquired</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>DM XP Bonus:</strong></td>
+                                    <td>@ActivePlayer.DMXPBonus</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>XP Debt:</strong></td>
+                                    <td>@ActivePlayer.XPDebt</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-star"></i> Skills Overview</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Total Skills:</strong> @ActivePlayer.Skills.Count</p>
+                            <p><strong>Total Perks:</strong> @ActivePlayer.Perks.Count</p>
+                            <p><strong>Unlocked Perks:</strong> @ActivePlayer.UnlockedPerks.Count</p>
+                            <p><strong>Unlocked Recipes:</strong> @ActivePlayer.UnlockedRecipes.Count</p>
+                            <p><strong>Crafted Recipes:</strong> @ActivePlayer.CraftedRecipes.Count</p>
+                            <p><strong>Key Items:</strong> @ActivePlayer.KeyItems.Count</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-list"></i> Skills Detail</h5>
+                        </div>
+                        <div class="card-body">
+                            @{
+                                var combatSkills = GetSkillsByCategory(SkillCategoryType.Combat);
+                                var craftingSkills = GetSkillsByCategory(SkillCategoryType.Crafting);
+                                var utilitySkills = GetSkillsByCategory(SkillCategoryType.Utility);
+                                var languageSkills = GetSkillsByCategory(SkillCategoryType.Languages);
+                            }
 
+                            @if (combatSkills.Any())
+                            {
+                                <h6 class="text-danger mb-3"><i class="fas fa-sword"></i> Combat Skills</h6>
+                                <div class="table-responsive mb-4">
+                                    <table class="table table-striped table-sm">
+                                        <thead class="table-danger">
+                                            <tr>
+                                                <th>Skill</th>
+                                                <th>Rank</th>
+                                                <th>XP</th>
+                                                <th>Locked</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var skill in combatSkills)
+                                            {
+                                                <tr>
+                                                    <td>@skill.Key.ToString()</td>
+                                                    <td>@skill.Value.Rank</td>
+                                                    <td>@skill.Value.XP</td>
+                                                    <td>@(skill.Value.IsLocked ? "Yes" : "No")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
 
-<div class="row">
-    <div class="col">
-        <label class="form-label">HP Regen: @ActivePlayer.HPRegen</label>
-    </div>
-    <div class="col">
-        <label class="form-label">FP Regen: @ActivePlayer.FPRegen</label>
-    </div>
-    <div class="col">
-        <label class="form-label">STM Regen: @ActivePlayer.STMRegen</label>
-    </div>
-</div>
+                            @if (craftingSkills.Any())
+                            {
+                                <h6 class="text-warning mb-3"><i class="fas fa-tools"></i> Crafting Skills</h6>
+                                <div class="table-responsive mb-4">
+                                    <table class="table table-striped table-sm">
+                                        <thead class="table-warning">
+                                            <tr>
+                                                <th>Skill</th>
+                                                <th>Rank</th>
+                                                <th>XP</th>
+                                                <th>Locked</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var skill in craftingSkills)
+                                            {
+                                                <tr>
+                                                    <td>@skill.Key.ToString()</td>
+                                                    <td>@skill.Value.Rank</td>
+                                                    <td>@skill.Value.XP</td>
+                                                    <td>@(skill.Value.IsLocked ? "Yes" : "No")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
 
-<div class="row">
-    <div class="col">
-        <label class="form-label"># Perk Resets: @ActivePlayer.Currencies[CurrencyType.PerkRefundToken]</label>
-    </div>
-    <div class="col">
-        <label class="form-label"># Rebuilds: @ActivePlayer.Currencies[CurrencyType.RebuildToken]</label>
-    </div>
-    <div class="col">
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <label class="form-label">Date Perk Refund Available: @ActivePlayer.DatePerkRefundAvailable</label>
-    </div>
-    <div class="col">
-        <label>Character Type:</label>
-        <label>@ActivePlayer.CharacterType</label>
-    </div>
-    <div class="col">
-        <label>Emote Style:</label>
-        <label>@ActivePlayer.EmoteStyle</label>
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <label>Appearance ID: @ActivePlayer.OriginalAppearanceType.ToString()</label>
-    </div>
-    <div class="col">
-        <label>Movement Rate: @ActivePlayer.MovementRate</label>
-    </div>
-    <div class="col">
-        <label>Recast Reduction: @ActivePlayer.AbilityRecastReduction</label>
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <label>Market Till: @ActivePlayer.MarketTill</label>
-    </div>
-    <div class="col">
-        <label>Taxes Owed: @ActivePlayer.PropertyOwedTaxes</label>
-    </div>
-    <div class="col">
-        <label>Attack: @ActivePlayer.Attack</label>
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <label>Force Attack: @ActivePlayer.ForceAttack</label>
-    </div>
-    <div class="col">
-        <label>Evasion: @ActivePlayer.Evasion</label>
-    </div>
-    <div class="col">
-        <label>Rebuild Complete: @ActivePlayer.RebuildComplete</label>
-    </div>
-</div>
+                            @if (utilitySkills.Any())
+                            {
+                                <h6 class="text-info mb-3"><i class="fas fa-cog"></i> Utility Skills</h6>
+                                <div class="table-responsive mb-4">
+                                    <table class="table table-striped table-sm">
+                                        <thead class="table-info">
+                                            <tr>
+                                                <th>Skill</th>
+                                                <th>Rank</th>
+                                                <th>XP</th>
+                                                <th>Locked</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var skill in utilitySkills)
+                                            {
+                                                <tr>
+                                                    <td>@skill.Key.ToString()</td>
+                                                    <td>@skill.Value.Rank</td>
+                                                    <td>@skill.Value.XP</td>
+                                                    <td>@(skill.Value.IsLocked ? "Yes" : "No")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
 
+                            @if (languageSkills.Any())
+                            {
+                                <h6 class="text-success mb-3"><i class="fas fa-language"></i> Language Skills</h6>
+                                <div class="table-responsive mb-4">
+                                    <table class="table table-striped table-sm">
+                                        <thead class="table-success">
+                                            <tr>
+                                                <th>Skill</th>
+                                                <th>Rank</th>
+                                                <th>XP</th>
+                                                <th>Locked</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var skill in languageSkills)
+                                            {
+                                                <tr>
+                                                    <td>@skill.Key.ToString()</td>
+                                                    <td>@skill.Value.Rank</td>
+                                                    <td>@skill.Value.XP</td>
+                                                    <td>@(skill.Value.IsLocked ? "Yes" : "No")</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (ActiveTab == "location")
+        {
+            <!-- Location & Travel Tab -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-map-marker-alt"></i> Current Location</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Area:</strong></td>
+                                    <td>@ActivePlayer.LocationAreaResref</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Coordinates:</strong></td>
+                                    <td>(@ActivePlayer.LocationX, @ActivePlayer.LocationY, @ActivePlayer.LocationZ)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Orientation:</strong></td>
+                                    <td>@ActivePlayer.LocationOrientation°</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-home"></i> Respawn Location</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Area:</strong></td>
+                                    <td>@ActivePlayer.RespawnAreaResref</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Coordinates:</strong></td>
+                                    <td>(@ActivePlayer.RespawnLocationX, @ActivePlayer.RespawnLocationY, @ActivePlayer.RespawnLocationZ)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Orientation:</strong></td>
+                                    <td>@ActivePlayer.RespawnLocationOrientation°</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-ship"></i> Ship Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Active Ship ID:</strong></td>
+                                    <td>@ActivePlayer.ActiveShipId</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Citizen Property ID:</strong></td>
+                                    <td>@ActivePlayer.CitizenPropertyId</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-taxi"></i> Taxi Destinations</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Total Taxi Destinations:</strong> @ActivePlayer.TaxiDestinations.Count</p>
+                            @if (ActivePlayer.TaxiDestinations.Count > 0)
+                            {
+                                <ul>
+                                    @foreach (var taxi in ActivePlayer.TaxiDestinations.Take(5))
+                                    {
+                                        <li>Level @taxi.Key: @taxi.Value.Count destinations</li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (ActiveTab == "settings")
+        {
+            <!-- Settings & Preferences Tab -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-cog"></i> Player Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Battle Theme ID:</strong></td>
+                                    <td>@(ActivePlayer.Settings.BattleThemeId?.ToString() ?? "None")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Display Achievement Notifications:</strong></td>
+                                    <td>@(ActivePlayer.Settings.DisplayAchievementNotification ? "Yes" : "No")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Holonet Enabled:</strong></td>
+                                    <td>@(ActivePlayer.Settings.IsHolonetEnabled ? "Yes" : "No")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Show Helmet:</strong></td>
+                                    <td>@(ActivePlayer.Settings.ShowHelmet ? "Yes" : "No")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Show Cloak:</strong></td>
+                                    <td>@(ActivePlayer.Settings.ShowCloak ? "Yes" : "No")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Subdual Mode:</strong></td>
+                                    <td>@(ActivePlayer.Settings.IsSubdualModeEnabled ? "Yes" : "No")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Lightsaber Force Share:</strong></td>
+                                    <td>@(ActivePlayer.Settings.IsLightsaberForceShareEnabled ? "Yes" : "No")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Server Reset Reminders:</strong></td>
+                                    <td>@(ActivePlayer.Settings.DisplayServerResetReminders ? "Yes" : "No")</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-palette"></i> Chat Colors</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>OOC Chat Color:</strong></td>
+                                    <td>
+                                        @(ActivePlayer.Settings.OOCChatColor != null
+                                            ? $"RGB({ActivePlayer.Settings.OOCChatColor.Red}, {ActivePlayer.Settings.OOCChatColor.Green}, {ActivePlayer.Settings.OOCChatColor.Blue})"
+                                            : "N/A")
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Emote Chat Color:</strong></td>
+                                    <td>
+                                        @(ActivePlayer.Settings.EmoteChatColor != null
+                                            ? $"RGB({ActivePlayer.Settings.EmoteChatColor.Red}, {ActivePlayer.Settings.EmoteChatColor.Green}, {ActivePlayer.Settings.EmoteChatColor.Blue})"
+                                            : "N/A")
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Language Chat Colors:</strong></td>
+                                    <td>@ActivePlayer.Settings.LanguageChatColors.Count configured</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (ActiveTab == "advanced")
+        {
+            <!-- Advanced Data Tab -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-users"></i> Guilds & Factions</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Guilds:</strong> @ActivePlayer.Guilds.Count</p>
+                            @if (ActivePlayer.Guilds.Count > 0)
+                            {
+                                <ul>
+                                    @foreach (var guild in ActivePlayer.Guilds)
+                                    {
+                                        <li>@guild.Key: Rank @guild.Value.Rank, @guild.Value.Points points</li>
+                                    }
+                                </ul>
+                            }
+                            <p><strong>Factions:</strong> @ActivePlayer.Factions.Count</p>
+                            @if (ActivePlayer.Factions.Count > 0)
+                            {
+                                <ul>
+                                    @foreach (var faction in ActivePlayer.Factions)
+                                    {
+                                        <li>@faction.Key: Standing @faction.Value.Standing, @faction.Value.Points points</li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-quest"></i> Quests & Progress</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Active Quests:</strong> @ActivePlayer.Quests.Count</p>
+                            <p><strong>Roleplay Points:</strong> @ActivePlayer.RoleplayProgress.RPPoints</p>
+                            <p><strong>Total RP Experience:</strong> @ActivePlayer.RoleplayProgress.TotalRPExpGained</p>
+                            <p><strong>Spam Message Count:</strong> @ActivePlayer.RoleplayProgress.SpamMessageCount</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-map"></i> Maps & Pins</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Map Pins:</strong> @ActivePlayer.MapPins.Count areas</p>
+                            <p><strong>Map Progressions:</strong> @ActivePlayer.MapProgressions.Count</p>
+                            <p><strong>Object Visibilities:</strong> @ActivePlayer.ObjectVisibilities.Count</p>
+                            <p><strong>Window Geometries:</strong> @ActivePlayer.WindowGeometries.Count</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-clock"></i> System Data</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Regeneration Tick:</strong></td>
+                                    <td>@ActivePlayer.RegenerationTick</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Serialized Hotbar:</strong></td>
+                                    <td>@(string.IsNullOrEmpty(ActivePlayer.SerializedHotBar) ? "None" : "Configured")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Active Beast ID:</strong></td>
+                                    <td>@(string.IsNullOrEmpty(ActivePlayer.ActiveBeastId) ? "None" : ActivePlayer.ActiveBeastId)</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
 
 @code {
-    
     [Parameter]
     public string? PlayerId { get; set; }
 
     protected Player? ActivePlayer;
+    protected string ActiveTab = "overview";
 
     protected override void OnInitialized()
     {
@@ -181,5 +738,105 @@
     protected bool PlayerExists()
     {
         return ActivePlayer != null;
+    }
+
+    protected void SetActiveTab(string tabName)
+    {
+        ActiveTab = tabName;
+        StateHasChanged();
+    }
+
+    // Stat calculation helper methods
+    protected int GetAbilityModifier(AbilityType abilityType)
+    {
+        if (ActivePlayer == null) return 0;
+        
+        var stat = ActivePlayer.BaseStats.ContainsKey(abilityType) ? ActivePlayer.BaseStats[abilityType] : 0;
+        return (stat - 10) / 2;
+    }
+
+    protected int GetAbilityScore(AbilityType abilityType)
+    {
+        if (ActivePlayer == null) return 0;
+        
+        return ActivePlayer.BaseStats.ContainsKey(abilityType) ? ActivePlayer.BaseStats[abilityType] : 0;
+    }
+
+    protected int GetSkillLevel(SkillType skillType)
+    {
+        if (ActivePlayer == null) return 0;
+        
+        return ActivePlayer.Skills.ContainsKey(skillType) ? ActivePlayer.Skills[skillType].Rank : 0;
+    }
+
+    protected int GetHighestCombatSkillLevel()
+    {
+        if (ActivePlayer == null) return 0;
+        
+        var combatSkills = new[] { SkillType.OneHanded, SkillType.TwoHanded, SkillType.Ranged, SkillType.Force };
+        return combatSkills.Max(skill => GetSkillLevel(skill));
+    }
+
+    protected int GetHighestCombatStat()
+    {
+        if (ActivePlayer == null) return 0;
+        
+        var combatStats = new[] { AbilityType.Might, AbilityType.Perception, AbilityType.Willpower };
+        return combatStats.Max(stat => GetAbilityScore(stat));
+    }
+
+    protected int GetTotalDefenseBonus()
+    {
+        if (ActivePlayer == null) return 0;
+        
+        // Sum up all defense bonuses from equipment
+        return ActivePlayer.Defenses.Values.Sum();
+    }
+
+    protected int GetCharacterLevel()
+    {
+        if (ActivePlayer?.Skills == null) return 1;
+        
+        // Calculate level based on total skill points
+        var totalSkillPoints = ActivePlayer.Skills.Values.Sum(skill => skill.Rank);
+        var level = Math.Max(1, totalSkillPoints / 10); // Rough estimate: 10 skill points per level
+        return level;
+    }
+
+    protected Dictionary<SkillType, PlayerSkill> GetSkillsByCategory(SkillCategoryType category)
+    {
+        if (ActivePlayer?.Skills == null) return new Dictionary<SkillType, PlayerSkill>();
+        
+        return ActivePlayer.Skills
+            .Where(skill => GetSkillCategory(skill.Key) == category)
+            .ToDictionary(s => s.Key, s => s.Value);
+    }
+
+    protected SkillCategoryType GetSkillCategory(SkillType skillType)
+    {
+        // Map skill types to their categories based on the SkillType enum
+        return skillType switch
+        {
+            // Combat Skills
+            SkillType.OneHanded or SkillType.TwoHanded or SkillType.MartialArts or 
+            SkillType.Ranged or SkillType.Force or SkillType.Armor or SkillType.BeastMastery or 
+            SkillType.Devices => SkillCategoryType.Combat,
+            
+            // Crafting Skills
+            SkillType.Smithery or SkillType.Fabrication or SkillType.Gathering or 
+            SkillType.Agriculture or SkillType.Engineering => SkillCategoryType.Crafting,
+            
+            // Utility Skills
+            SkillType.Piloting or SkillType.FirstAid or SkillType.Leadership => SkillCategoryType.Utility,
+            
+            // Language Skills
+            SkillType.Mirialan or SkillType.Bothese or SkillType.Cheunh or SkillType.Zabraki or 
+            SkillType.Twileki or SkillType.Catharese or SkillType.Dosh or SkillType.Shyriiwook or 
+            SkillType.Droidspeak or SkillType.Basic or SkillType.Mandoa or SkillType.Huttese or 
+            SkillType.MonCalamarian or SkillType.Ugnaught or SkillType.Rodese or SkillType.Togruti or 
+            SkillType.KelDor or SkillType.Nautila or SkillType.Ewokese => SkillCategoryType.Languages,
+            
+            _ => SkillCategoryType.Invalid
+        };
     }
 }

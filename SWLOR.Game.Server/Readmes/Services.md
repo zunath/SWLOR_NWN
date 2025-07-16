@@ -10,41 +10,97 @@ The Service layer contains the main business logic for the game. Services are or
 
 ```
 Service/
-├── AbilityService/
-├── AchievementService/
-├── ActivityService/
-├── AIService/
-├── AnimationService/
-├── BeastMasteryService/
-├── ChatCommandService/
-├── CombatService/
-├── CraftService/
-├── CurrencyService/
-├── DBService/
-├── DialogService/
-├── DroidService/
-├── FactionService/
-├── FishingService/
-├── GuiService/
-├── ItemService/
-├── KeyItemService/
-├── LanguageService/
-├── LogService/
-├── LootService/
-├── MigrationService/
-├── NPCService/
-├── PerkService/
-├── PlayerMarketService/
-├── PropertyService/
-├── QuestService/
-├── SkillService/
-├── SnippetService/
-├── SpaceService/
-├── SpawnService/
-├── StatService/
-├── StatusEffectService/
-├── TaxiService/
-└── WeatherService/
+├── Ability.cs                         # Ability management
+├── Achievement.cs                     # Achievement system
+├── Activity.cs                        # Activity tracking
+├── AI.cs                             # AI behavior
+├── AnimationPlayer.cs                 # Animation system
+├── Area.cs                           # Area management
+├── Authorization.cs                   # Authorization system
+├── BeastMastery.cs                   # Beast companion system
+├── Cache.cs                          # Caching system
+├── ChatCommand.cs                    # Chat command handling
+├── ColorToken.cs                     # Color token system
+├── Combat.cs                         # Combat mechanics
+├── CombatPoint.cs                    # Combat point system
+├── Communication.cs                  # Communication system
+├── Craft.cs                          # Crafting system
+├── Currency.cs                       # Currency management
+├── DB.cs                             # Database operations
+├── Death.cs                          # Death handling
+├── Dialog.cs                         # Dialog system
+├── Droid.cs                          # Droid system
+├── Enmity.cs                         # Enmity system
+├── Faction.cs                        # Faction system
+├── Fishing.cs                        # Fishing system
+├── Guild.cs                          # Guild system
+├── HoloCom.cs                        # HoloCom system
+├── Item.cs                           # Item management
+├── KeyItem.cs                        # Key item system
+├── Language.cs                       # Language system
+├── Loot.cs                           # Loot system
+├── Log.cs                            # Logging system
+├── Menu.cs                           # Menu system
+├── Messaging.cs                      # Messaging system
+├── Migration.cs                      # Migration system
+├── Music.cs                          # Music system
+├── NPCGroup.cs                       # NPC group management
+├── ObjectVisibility.cs               # Object visibility
+├── Party.cs                          # Party system
+├── Perk.cs                           # Perk system
+├── Planet.cs                         # Planet management
+├── PlayerMarket.cs                   # Player market
+├── Property.cs                       # Property system
+├── Quest.cs                          # Quest system
+├── Race.cs                           # Race system
+├── Random.cs                         # Random number generation
+├── Recast.cs                         # Recast timer system
+├── Snippet.cs                        # Snippet system
+├── Space.cs                          # Space combat system
+├── Spawn.cs                          # Spawn system
+├── Stat.cs                           # Stat management
+├── StatusEffect.cs                   # Status effect system
+├── Targeting.cs                      # Targeting system
+├── Taxi.cs                           # Taxi system
+├── TileMagic.cs                      # Tile magic system
+├── Time.cs                           # Time management
+├── Walkmesh.cs                       # Walkmesh system
+├── Weather.cs                        # Weather system
+├── AbilityService/                   # Ability service components
+├── AchievementService/               # Achievement service components
+├── ActivityService/                  # Activity service components
+├── AIService/                        # AI service components
+├── AnimationService/                 # Animation service components
+├── BeastMasteryService/              # Beast mastery service components
+├── ChatCommandService/               # Chat command service components
+├── CombatService/                    # Combat service components
+├── CraftService/                     # Craft service components
+├── CurrencyService/                  # Currency service components
+├── DBService/                        # Database service components
+├── DialogService/                    # Dialog service components
+├── DroidService/                     # Droid service components
+├── FactionService/                   # Faction service components
+├── FishingService/                   # Fishing service components
+├── GuiService/                       # GUI service components
+├── ItemService/                      # Item service components
+├── KeyItemService/                   # Key item service components
+├── LanguageService/                  # Language service components
+├── LogService/                       # Log service components
+├── LootService/                      # Loot service components
+├── MigrationService/                 # Migration service components
+├── NPCService/                       # NPC service components
+├── PerkService/                      # Perk service components
+├── PlayerMarketService/              # Player market service components
+├── PropertyService/                  # Property service components
+├── QuestService/                     # Quest service components
+├── SkillService/                     # Skill service components
+├── SnippetService/                   # Snippet service components
+├── SpaceService/                     # Space service components
+├── SpawnService/                     # Spawn service components
+├── StatService/                      # Stat service components
+├── StatusEffectService/              # Status effect service components
+├── TaxiService/                      # Taxi service components
+└── WeatherService/                   # Weather service components
 ```
 
 ## Core Services
@@ -58,14 +114,7 @@ Service/
 - `AbilityDetail` - Stores ability data
 - `AbilityActivationType` - Defines how abilities activate
 
-**Common Usage**:
-```csharp
-// Check if player can use ability
-if (Ability.CanUseAbility(player, abilityType))
-{
-    Ability.UseAbility(player, target, abilityType);
-}
-```
+**Common Usage**: See `Service/Ability.cs` for available methods and usage patterns.
 
 ### 2. CombatService
 
@@ -78,17 +127,7 @@ if (Ability.CanUseAbility(player, abilityType))
 - Combat points
 - Enmity system
 
-**Common Usage**:
-```csharp
-// Calculate damage
-var damage = Combat.CalculateDamage(attack, baseDamage, attackerStat, defense, defenderStat, bonus);
-
-// Add combat points
-CombatPoint.AddCombatPoint(attacker, target, skillType, points);
-
-// Modify enmity
-Enmity.ModifyEnmity(attacker, target, amount);
-```
+**Common Usage**: See `Service/Combat.cs` and `Service/CombatPoint.cs` for combat mechanics.
 
 ### 3. PerkService
 
@@ -99,15 +138,7 @@ Enmity.ModifyEnmity(attacker, target, amount);
 - `PerkDetail` - Stores perk data
 - Perk requirements and costs
 
-**Common Usage**:
-```csharp
-// Check if player has perk
-if (Perk.HasPerk(player, perkType))
-{
-    var level = Perk.GetPerkLevel(player, perkType);
-    // Use perk level
-}
-```
+**Common Usage**: See `Service/Perk.cs` for perk management methods.
 
 ### 4. ItemService
 
@@ -119,14 +150,7 @@ if (Perk.HasPerk(player, perkType))
 - Use effects
 - Recast timers
 
-**Common Usage**:
-```csharp
-// Use an item
-if (Item.CanUseItem(player, item))
-{
-    Item.UseItem(player, item, target, location);
-}
-```
+**Common Usage**: See `Service/Item.cs` for item management methods.
 
 ### 5. QuestService
 
@@ -138,17 +162,7 @@ if (Item.CanUseItem(player, item))
 - Quest requirements
 - Quest rewards
 
-**Common Usage**:
-```csharp
-// Start a quest
-Quest.StartQuest(player, questId);
-
-// Check quest state
-var state = Quest.GetQuestState(player, questId);
-
-// Complete a quest
-Quest.CompleteQuest(player, questId);
-```
+**Common Usage**: See `Service/Quest.cs` for quest management methods.
 
 ### 6. DialogService
 
@@ -160,16 +174,7 @@ Quest.CompleteQuest(player, questId);
 - Response handling
 - Data model integration
 
-**Common Usage**:
-```csharp
-// Start a dialog
-var dialog = Dialog.StartDialog(player, npc, dialogId);
-
-// Add dialog page
-dialog.AddPage("main", page => {
-    page.AddResponse("Hello", "greeting");
-});
-```
+**Common Usage**: See `Service/Dialog.cs` for dialog management methods.
 
 ### 7. SpaceService
 
@@ -181,14 +186,7 @@ dialog.AddPage("main", page => {
 - Space combat mechanics
 - Ship navigation
 
-**Common Usage**:
-```csharp
-// Enter space mode
-Space.EnterSpace(player, shipItem);
-
-// Use ship module
-Space.UseModule(player, moduleType);
-```
+**Common Usage**: See `Service/Space.cs` for space combat methods.
 
 ### 8. BeastMasteryService
 
@@ -198,280 +196,102 @@ Space.UseModule(player, moduleType);
 - `BeastBuilder` - Creates beast configurations
 - Beast leveling
 - Beast mutations
-- Beast commands
+- Beast food and care
 
-**Common Usage**:
-```csharp
-// Summon beast
-Beast.SummonBeast(player, beastType);
-
-// Command beast
-Beast.CommandBeast(player, commandType);
-```
+**Common Usage**: See `Service/BeastMastery.cs` for beast management methods.
 
 ### 9. CraftService
 
-**Purpose**: Handles crafting and recipe management.
+**Purpose**: Handles crafting and recipe systems.
 
 **Key Components**:
 - `RecipeBuilder` - Creates recipe configurations
-- Crafting success calculations
-- Material requirements
-- Crafting bonuses
+- Crafting validation
+- Resource management
+- Quality system
 
-**Common Usage**:
-```csharp
-// Check if player can craft
-if (Craft.CanCraft(player, recipeType))
-{
-    var result = Craft.CraftItem(player, recipeType);
-}
-```
+**Common Usage**: See `Service/Craft.cs` for crafting methods.
 
 ### 10. PropertyService
 
-**Purpose**: Manages player properties and buildings.
+**Purpose**: Manages player-owned properties and buildings.
 
 **Key Components**:
-- `PropertyLayoutBuilder` - Creates property layouts
 - Property ownership
-- Building management
-- Property permissions
+- Building permissions
+- Property customization
+- Property management
 
-**Common Usage**:
-```csharp
-// Purchase property
-Property.PurchaseProperty(player, propertyType);
-
-// Enter property
-Property.EnterProperty(player, propertyId);
-```
+**Common Usage**: See `Service/Property.cs` for property management methods.
 
 ## Service Patterns
 
 ### 1. Builder Pattern
 
-Many services use builders to create complex configurations:
+Most services use builder patterns for complex object creation. See the individual service directories for builder implementations:
 
-```csharp
-// Example: Creating a perk
-var builder = new PerkBuilder();
-builder.Create(PerkCategoryType.Force, PerkType.ForceLightning)
-    .Name("Force Lightning")
-    .AddPerkLevel()
-    .Price(1);
-```
+- `Service/AbilityService/AbilityBuilder.cs`
+- `Service/PerkService/PerkBuilder.cs`
+- `Service/ChatCommandService/ChatCommandBuilder.cs`
+- `Service/CraftService/RecipeBuilder.cs`
+- `Service/BeastMasteryService/BeastBuilder.cs`
+- `Service/ItemService/ItemBuilder.cs`
 
-### 2. Validation Pattern
+### 2. Service Integration
 
-Services often validate inputs before processing:
+Services often work together to provide complex functionality. See the individual service files for integration examples and cross-service communication patterns.
 
-```csharp
-// Example: Item validation
-if (!Item.CanUseItem(player, item))
-{
-    SendMessageToPC(player, "You cannot use this item.");
-    return;
-}
-```
+### 3. Error Handling
 
-### 3. State Management Pattern
+Services include comprehensive error handling. See the individual service files for error handling patterns and logging implementations.
 
-Services manage game state and persistence:
+## Performance Considerations
 
-```csharp
-// Example: Quest state
-var questState = Quest.GetQuestState(player, questId);
-if (questState == QuestStateType.NotStarted)
-{
-    Quest.StartQuest(player, questId);
-}
-```
+### 1. Caching
 
-### 4. Event-Driven Pattern
+Services use caching to improve performance. See `Service/Cache.cs` for caching implementations and patterns.
 
-Services often respond to game events:
+### 2. Database Optimization
 
-```csharp
-// Example: Combat event
-public static void OnPlayerDamaged(uint player, uint attacker, int damage)
-{
-    // Update combat statistics
-    Stat.ModifyStat(player, AbilityType.Constitution, -damage);
-    
-    // Check for status effects
-    StatusEffect.ProcessDamage(player, damage);
-}
-```
+Database operations are optimized. See `Service/DB.cs` for database access patterns and optimization strategies.
 
-## Service Integration
+### 3. Memory Management
 
-### 1. Cross-Service Communication
+Services manage memory efficiently. See individual service files for memory management patterns and resource disposal strategies.
 
-Services often work together:
+## Testing Services
 
-```csharp
-// Example: Using multiple services
-public static void UseAbility(uint player, uint target, FeatType abilityType)
-{
-    // Check ability requirements
-    if (!Ability.CanUseAbility(player, abilityType))
-        return;
-    
-    // Calculate damage
-    var damage = Combat.CalculateDamage(/* parameters */);
-    
-    // Apply damage
-    Stat.ModifyStat(target, AbilityType.Constitution, -damage);
-    
-    // Add combat points
-    CombatPoint.AddCombatPoint(player, target, SkillType.Force, 3);
-    
-    // Modify enmity
-    Enmity.ModifyEnmity(player, target, damage);
-}
-```
+### 1. Unit Testing
 
-### 2. Data Flow
+Services should be unit tested. See the test files in the project for examples of service testing patterns.
 
-Typical data flow through services:
+### 2. Integration Testing
 
-1. **Input Validation** - Service validates inputs
-2. **Business Logic** - Service processes the request
-3. **State Update** - Service updates game state
-4. **Event Triggering** - Service triggers related events
-5. **Response** - Service returns result
+Test service interactions. See the integration test files for examples of cross-service testing.
 
 ## Best Practices
 
-### 1. Service Organization
+### 1. Service Design
 
-- Keep services focused on a single responsibility
-- Use clear, descriptive service names
-- Group related functionality together
+- Keep services focused on single responsibility
+- Use dependency injection where appropriate
+- Implement proper error handling
+- Add comprehensive logging
 
-### 2. Error Handling
-
-```csharp
-// Example: Proper error handling
-public static bool UseAbility(uint player, uint target, FeatType abilityType)
-{
-    try
-    {
-        if (!Ability.CanUseAbility(player, abilityType))
-            return false;
-            
-        // Process ability
-        return true;
-    }
-    catch (Exception ex)
-    {
-        Log.Write(LogGroup.Error, $"Error using ability: {ex.Message}");
-        return false;
-    }
-}
-```
-
-### 3. Performance Considerations
+### 2. Performance
 
 - Cache frequently accessed data
-- Use efficient data structures
-- Minimize database calls
-- Batch operations when possible
+- Optimize database queries
+- Use async operations where appropriate
+- Monitor memory usage
 
-### 4. Testing Services
+### 3. Maintainability
 
-```csharp
-// Example: Service testing
-[Test]
-public void TestAbilityService()
-{
-    var player = CreateTestPlayer();
-    var target = CreateTestTarget();
-    
-    var result = Ability.UseAbility(player, target, FeatType.ForceLightning1);
-    
-    Assert.IsTrue(result);
-    Assert.IsTrue(Stat.GetCurrentHP(target) < Stat.GetMaxHP(target));
-}
-```
+- Add XML documentation
+- Follow consistent naming conventions
+- Use builder patterns for complex objects
+- Implement proper validation
 
-## Common Service Methods
+---
 
-### 1. Validation Methods
-
-```csharp
-CanUseAbility(uint player, FeatType abilityType)
-CanUseItem(uint player, uint item)
-CanCraft(uint player, RecipeType recipeType)
-```
-
-### 2. State Methods
-
-```csharp
-GetQuestState(uint player, string questId)
-GetPerkLevel(uint player, PerkType perkType)
-GetBeastLevel(uint player, BeastType beastType)
-```
-
-### 3. Action Methods
-
-```csharp
-UseAbility(uint player, uint target, FeatType abilityType)
-UseItem(uint player, uint item, uint target, Location location)
-CraftItem(uint player, RecipeType recipeType)
-```
-
-### 4. Query Methods
-
-```csharp
-GetAbilityDetails(FeatType abilityType)
-GetItemDetails(string itemTag)
-GetRecipeDetails(RecipeType recipeType)
-```
-
-## Service Dependencies
-
-### 1. Core Dependencies
-
-Most services depend on:
-- **DBService** - Database operations
-- **LogService** - Logging functionality
-- **StatService** - Character statistics
-
-### 2. Service-Specific Dependencies
-
-- **CombatService** depends on **AbilityService** and **PerkService**
-- **QuestService** depends on **ItemService** and **FactionService**
-- **SpaceService** depends on **ShipService** and **CombatService**
-
-## Extension Points
-
-### 1. Adding New Services
-
-To add a new service:
-
-1. Create service directory in `Service/`
-2. Implement service class with static methods
-3. Add service to appropriate initialization
-4. Document service methods and usage
-
-### 2. Extending Existing Services
-
-To extend existing services:
-
-1. Add new methods to service class
-2. Follow existing naming conventions
-3. Add appropriate validation
-4. Update documentation
-
-### 3. Service Integration
-
-To integrate with other services:
-
-1. Identify required dependencies
-2. Use service methods appropriately
-3. Handle service failures gracefully
-4. Maintain separation of concerns
-
-This documentation provides a comprehensive overview of the Service layer in SWLOR.Game.Server, covering the main services, patterns, and best practices for working with the service architecture. 
+*This documentation should be updated when new services are added or existing services are modified.* 

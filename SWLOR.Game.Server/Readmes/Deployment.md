@@ -23,80 +23,33 @@ Docker/
 
 ### 1. Docker Compose Setup
 
-The main deployment configuration is in `docker-compose.yml`:
+The main deployment configuration is defined in `Docker/docker-compose.yml`. This file configures:
 
-```yaml
-version: '3.8'
-services:
-  swlor-server:
-    build: .
-    environment:
-      - SWLOR_ENVIRONMENT=development
-      - SWLOR_APP_LOG_DIRECTORY=/app/logs
-      - NWNX_REDIS_HOST=redis:6379
-    volumes:
-      - ./logs:/app/logs
-    depends_on:
-      - redis
-      - grafana
+- **Redis**: Caching and data storage using `redislabs/redismod:latest`
+- **Redis Commander**: Web interface for Redis management
+- **SWLOR Server**: Main game server using `swlor/server:8193.35.40-2` image
+- **InfluxDB**: Time-series database for metrics storage
+- **Grafana**: Monitoring and visualization dashboard
 
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./grafana-provisioning:/etc/grafana/provisioning
-```
+The configuration includes proper networking, volume mounts, and environment variable setup.
 
 ### 2. Environment Configuration
 
-Environment variables are configured in `swlor.env`:
+Environment variables are configured in `Docker/swlor.env`. Key variables include:
 
-```bash
-# Server Environment
-SWLOR_ENVIRONMENT=development  # development, test, production
-
-# Logging
-SWLOR_APP_LOG_DIRECTORY=/app/logs
-
-# Redis Configuration
-NWNX_REDIS_HOST=redis:6379
-
-# Database Configuration
-DB_CONNECTION_STRING=your_connection_string
-
-# Discord Integration
-DISCORD_BOT_TOKEN=your_discord_token
-DISCORD_GUILD_ID=your_guild_id
-```
+- `SWLOR_ENVIRONMENT`: Controls server environment (development, test, production)
+- `SWLOR_APP_LOG_DIRECTORY`: Log file location
+- `NWNX_REDIS_HOST`: Redis connection string
+- Database and Discord integration settings
 
 ### 3. Application Settings
 
-The application uses `ApplicationSettings.cs` to manage configuration:
+The application uses `ApplicationSettings.cs` to manage configuration. This class:
 
-```csharp
-public class ApplicationSettings
-{
-    public string LogDirectory { get; }
-    public string RedisIPAddress { get; }
-    public ServerEnvironmentType ServerEnvironment { get; }
-    
-    // Environment detection
-    private ApplicationSettings()
-    {
-        LogDirectory = Environment.GetEnvironmentVariable("SWLOR_APP_LOG_DIRECTORY");
-        RedisIPAddress = Environment.GetEnvironmentVariable("NWNX_REDIS_HOST");
-        
-        var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT");
-        ServerEnvironment = ParseEnvironment(environment);
-    }
-}
-```
+- Reads environment variables for configuration
+- Detects server environment automatically
+- Provides centralized access to application settings
+- Handles environment-specific behavior
 
 ## Deployment Environments
 
@@ -105,16 +58,14 @@ public class ApplicationSettings
 **Purpose**: Local development and testing
 
 **Configuration**:
-```bash
-SWLOR_ENVIRONMENT=development
-SWLOR_APP_LOG_DIRECTORY=./logs
-NWNX_REDIS_HOST=localhost:6379
-```
+- Environment: `development`
+- Log directory: `./logs`
+- Redis host: `localhost:6379`
 
 **Features**:
 - Detailed logging enabled
 - Debug information available
-- Hot reloading support
+- Debug symbols and stack traces
 - Test data available
 
 ### 2. Test Environment
@@ -122,11 +73,9 @@ NWNX_REDIS_HOST=localhost:6379
 **Purpose**: Staging and testing before production
 
 **Configuration**:
-```bash
-SWLOR_ENVIRONMENT=test
-SWLOR_APP_LOG_DIRECTORY=/app/logs
-NWNX_REDIS_HOST=redis:6379
-```
+- Environment: `test`
+- Log directory: `/app/logs`
+- Redis host: `redis:6379`
 
 **Features**:
 - Production-like configuration
@@ -139,11 +88,9 @@ NWNX_REDIS_HOST=redis:6379
 **Purpose**: Live game server
 
 **Configuration**:
-```bash
-SWLOR_ENVIRONMENT=production
-SWLOR_APP_LOG_DIRECTORY=/app/logs
-NWNX_REDIS_HOST=redis:6379
-```
+- Environment: `production`
+- Log directory: `/app/logs`
+- Redis host: `redis:6379`
 
 **Features**:
 - Optimized performance
@@ -168,15 +115,7 @@ The deployment includes pre-configured Grafana dashboards for monitoring:
 
 ### 2. Logging Configuration
 
-Logging is handled by Serilog with multiple sinks:
-
-```csharp
-// Logging setup in the application
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.File("logs/swlor-.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
-```
+Logging is handled by Serilog with multiple sinks. The configuration is defined in the application code and supports:
 
 **Log Groups**:
 - `LogGroup.Attack` - Combat-related logs
@@ -205,196 +144,151 @@ docker-compose -f docker-compose.dev.yml up
 # Build production image
 docker build -t swlor-game-server:latest .
 
-# Deploy with production configuration
+# Deploy with production config
 docker-compose -f docker-compose.prod.yml up -d
-
-# Monitor deployment
-docker-compose logs -f swlor-server
 ```
 
-### 3. CI/CD Pipeline
+### 3. Environment-Specific Configurations
 
-The project includes a post-build target in `SWLOR.Game.Server.csproj`:
+Environment-specific configurations can be created by extending the base `docker-compose.yml` file. See the Docker directory for examples of development and production configurations.
 
-```xml
-<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-  <Exec Command="cd $(SolutionDir)Build&#xD;&#xA;SWLOR.CLI.exe -o" />
-</Target>
-```
+## Service Components
 
-## Dependencies
+### 1. Redis
 
-### 1. External Dependencies
+**Purpose**: Caching and data storage
 
-**NuGet Packages**:
-- `NWN.Native` - Neverwinter Nights engine integration
-- `StackExchange.Redis` - Redis client
-- `Serilog` - Logging framework
-- `Discord.Net` - Discord bot integration
-- `Newtonsoft.Json` - JSON serialization
+**Configuration**: Defined in `Docker/docker-compose.yml`
 
-### 2. System Requirements
+**Usage**: The application connects to Redis using the connection string specified in environment variables.
 
-**Minimum Requirements**:
-- .NET 7.0 Runtime
-- Docker and Docker Compose
-- 4GB RAM
-- 10GB disk space
+### 2. InfluxDB
 
-**Recommended Requirements**:
-- .NET 7.0 SDK
-- 8GB RAM
-- 20GB disk space
-- SSD storage
+**Purpose**: Time-series data storage for metrics
+
+**Configuration**: Defined in `Docker/docker-compose.yml`
+
+**Features**:
+- Database: `nwn`
+- Admin user and password configured
+- UDP support enabled for metrics collection
+
+### 3. Grafana
+
+**Purpose**: Monitoring and visualization
+
+**Configuration**: Defined in `Docker/docker-compose.yml`
+
+**Access**: Web interface available on port 3000 with admin credentials
 
 ## Security Considerations
 
-### 1. Environment Variables
-
-**Sensitive Data**:
-- Database connection strings
-- API keys and tokens
-- Discord bot tokens
-- Redis passwords
-
-**Best Practices**:
-- Never commit sensitive data to version control
-- Use Docker secrets for production
-- Rotate credentials regularly
-- Use environment-specific configurations
-
-### 2. Network Security
+### 1. Network Security
 
 **Port Configuration**:
-- Redis: 6379 (internal only)
-- Grafana: 3000 (monitoring)
-- Game Server: Custom ports as needed
+- `5121/udp` - NWN server port
+- `3000` - Grafana web interface
+- `8081` - Redis Commander
+- `8086` - InfluxDB HTTP API
+- `8089` - InfluxDB UDP
 
-**Firewall Rules**:
-- Restrict external access to monitoring ports
-- Use VPN for administrative access
-- Implement rate limiting
+**Firewall Rules**: Configure firewall to allow only necessary ports and restrict external access to monitoring interfaces.
 
-## Troubleshooting
+### 2. Data Security
 
-### 1. Common Issues
+**Encryption**:
+- Use TLS for external connections
+- Encrypt sensitive data in Redis
+- Secure database connections
 
-**Redis Connection Issues**:
-```bash
-# Check Redis container
-docker-compose logs redis
+**Access Control**:
+- Use strong passwords for admin accounts
+- Implement role-based access control
+- Regular security audits
 
-# Test Redis connection
-docker exec -it swlor_redis_1 redis-cli ping
-```
+### 3. Container Security
 
-**Log File Issues**:
-```bash
-# Check log directory permissions
-ls -la logs/
+**Best Practices**:
+- Use minimal base images
+- Run containers as non-root users
+- Regularly update container images
+- Scan images for vulnerabilities
 
-# View recent logs
-docker-compose logs swlor-server --tail=100
-```
+## Performance Optimization
 
-**Performance Issues**:
-```bash
-# Monitor resource usage
-docker stats
+### 1. Resource Allocation
 
-# Check Grafana dashboards
-# Access http://localhost:3000
-```
+Configure resource limits and reservations in the Docker Compose file:
 
-### 2. Debug Mode
+**Memory**: Set appropriate memory limits for each service
+**CPU**: Configure CPU limits and reservations
+**Storage**: Use appropriate volume configurations
 
-Enable debug logging by setting environment variables:
+### 2. Caching Strategy
 
-```bash
-SWLOR_ENVIRONMENT=development
-SWLOR_DEBUG=true
-```
+**Redis Caching**: The application uses Redis for caching frequently accessed data
+**Application Caching**: In-memory caching for session data and temporary storage
 
-### 3. Health Checks
+### 3. Database Optimization
 
-The application includes health check endpoints:
-
-```csharp
-// Health check implementation
-public static bool IsHealthy()
-{
-    try
-    {
-        // Check Redis connection
-        // Check database connection
-        // Check core systems
-        return true;
-    }
-    catch
-    {
-        return false;
-    }
-}
-```
-
-## Scaling Considerations
-
-### 1. Horizontal Scaling
-
-**Load Balancing**:
-- Use multiple server instances
-- Implement session management
-- Configure Redis clustering
-
-**Database Scaling**:
-- Read replicas for queries
-- Connection pooling
-- Query optimization
-
-### 2. Vertical Scaling
-
-**Resource Allocation**:
-- Increase container memory limits
-- Optimize garbage collection
-- Use performance profiling
-
-**Monitoring**:
-- Set up alerts for resource usage
-- Monitor response times
-- Track error rates
+**Connection Pooling**: Configure appropriate connection pool sizes
+**Query Optimization**: Use indexed queries and optimize database operations
 
 ## Backup and Recovery
 
 ### 1. Data Backup
 
-**Redis Data**:
-```bash
-# Create Redis backup
-docker exec swlor_redis_1 redis-cli BGSAVE
+**Automated Backups**: Implement automated backup scripts for Redis and application data
+**Database Backup**: Regular backups of application data and configuration
 
-# Copy backup files
-docker cp swlor_redis_1:/data/dump.rdb ./backups/
-```
+### 2. Recovery Procedures
 
-**Database Backup**:
-- Implement automated database backups
-- Test restore procedures
-- Store backups securely
+**Redis Recovery**: Restore Redis data from backup files
+**Application Recovery**: Restore application data and configuration from backups
 
-### 2. Disaster Recovery
+## Troubleshooting
 
-**Recovery Procedures**:
-1. Stop all services
-2. Restore from backup
-3. Verify data integrity
-4. Restart services
-5. Test functionality
+### 1. Common Issues
 
-**Documentation**:
-- Maintain recovery runbooks
-- Test procedures regularly
-- Update documentation after changes
+**Container Won't Start**: Check container logs and resource usage
+**Connection Issues**: Verify network connectivity and service dependencies
+**Performance Issues**: Monitor resource usage and application logs
+
+### 2. Debugging
+
+**Enable Debug Logging**: Set debug environment variables for detailed logging
+**Access Container Shell**: Use Docker exec to access running containers
+**Check Application Status**: Monitor application processes and logs
+
+### 3. Monitoring
+
+**Health Checks**: Configure health checks for all services
+**Log Monitoring**: Monitor application and system logs for errors
+
+## Scaling
+
+### 1. Horizontal Scaling
+
+**Multiple Instances**: Deploy multiple server instances with load balancing
+**Load Balancing**: Use reverse proxy or load balancer for traffic distribution
+
+### 2. Vertical Scaling
+
+**Resource Scaling**: Increase memory and CPU allocation for services
+**Database Scaling**: Optimize database performance and connection pooling
+
+## Maintenance
+
+### 1. Regular Maintenance
+
+**Updates**: Regularly update container images and application code
+**Cleanup**: Remove unused containers, images, and volumes
+
+### 2. Monitoring
+
+**Metrics Collection**: Monitor CPU, memory, network, and disk usage
+**Alerting**: Set up alerts for resource usage and application errors
 
 ---
 
-*This documentation should be updated when deployment procedures change or new environments are added.* 
+*This documentation should be updated when deployment configuration changes or new deployment processes are added.* 

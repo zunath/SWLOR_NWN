@@ -77,6 +77,29 @@ Comprehensive documentation of the Feature layer, which contains game-specific c
 - **Implementation patterns** and best practices
 - **Integration** with services and entities
 
+### [Deployment.md](Deployment.md)
+Comprehensive documentation for deploying and running the SWLOR.Game.Server project. This includes:
+
+- **Docker configuration** and container setup
+- **Environment management** (Development, Test, Production)
+- **Monitoring and logging** with Grafana and Serilog
+- **Security considerations** and best practices
+- **Troubleshooting** and common issues
+- **Scaling strategies** and performance optimization
+- **Backup and recovery** procedures
+
+
+
+### [ProjectStructure.md](ProjectStructure.md)
+Detailed documentation of the overall project structure and development setup. This includes:
+
+- **Project organization** and architecture layers
+- **Build configuration** and dependencies
+- **Development setup** and prerequisites
+- **Application configuration** and environment management
+- **Development workflow** and best practices
+- **Deployment** and monitoring strategies
+
 ## Purpose
 
 This documentation serves several purposes:

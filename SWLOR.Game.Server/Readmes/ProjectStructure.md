@@ -53,80 +53,28 @@ SWLOR.Game.Server/
 
 **Location**: `SWLOR.Game.Server.csproj`
 
-**Key Configuration**:
-```xml
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <EnableDynamicLoading>true</EnableDynamicLoading>
-    <LangVersion>10</LangVersion>
-    <OutputType>Library</OutputType>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-</Project>
-```
-
-**Key Features**:
-- **Target Framework**: .NET 7.0
-- **Dynamic Loading**: Enabled for plugin support
-- **Language Version**: C# 10
-- **Output Type**: Library (not executable)
-- **Platform**: x64 only
-- **Unsafe Blocks**: Allowed for native code
+**Key Configuration**: See the project file for complete build configuration including:
+- Target Framework: .NET 7.0
+- Dynamic Loading: Enabled for plugin support
+- Language Version: C# 10
+- Output Type: Library (not executable)
+- Platform: x64 only
+- Unsafe Blocks: Allowed for native code
 
 ### 2. Dependencies
 
-**NuGet Packages**:
-```xml
-<ItemGroup>
-  <PackageReference Include="Discord.Net" Version="3.17.4" />
-  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  <PackageReference Include="NRediSearch" Version="2.2.79" />
-  <PackageReference Include="NReJSON" Version="4.0.0" />
-  <PackageReference Include="NWN.Native" Version="8193.35.9" />
-  <PackageReference Include="Serilog" Version="4.3.0" />
-  <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-  <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-  <PackageReference Include="StackExchange.Redis" Version="2.8.41" />
-  <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
-</ItemGroup>
-```
-
-**Key Dependencies**:
-- **NWN.Native**: Neverwinter Nights engine integration
-- **StackExchange.Redis**: Redis client for caching
-- **Serilog**: Logging framework
-- **Discord.Net**: Discord bot integration
-- **Newtonsoft.Json**: JSON serialization
+**NuGet Packages**: See `SWLOR.Game.Server.csproj` for the complete list of dependencies including:
+- NWN.Native: Neverwinter Nights engine integration
+- StackExchange.Redis: Redis client for caching
+- Serilog: Logging framework
+- Discord.Net: Discord bot integration
+- Newtonsoft.Json: JSON serialization
 
 ### 3. Build Targets
 
-**Post-Build Processing**:
-```xml
-<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-  <Exec Command="cd $(SolutionDir)Build&#xD;&#xA;SWLOR.CLI.exe -o" />
-</Target>
-```
+**Post-Build Processing**: See `SWLOR.Game.Server.csproj` for the post-build target configuration.
 
-**NWN Target**:
-```xml
-<Target Name="NWN" AfterTargets="Build">
-  <ItemGroup>
-    <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).dll" />
-    <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).pdb" />
-    <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).runtimeconfig.json" />
-    <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).deps.json" />
-  </ItemGroup>
-</Target>
-```
+**NWN Target**: See `SWLOR.Game.Server.csproj` for the NWN build target configuration.
 
 ## Application Configuration
 
@@ -136,35 +84,11 @@ SWLOR.Game.Server/
 
 **Purpose**: Centralized application configuration management.
 
-**Key Features**:
-```csharp
-public class ApplicationSettings
-{
-    public string LogDirectory { get; }
-    public string RedisIPAddress { get; }
-    public ServerEnvironmentType ServerEnvironment { get; }
-    
-    private static ApplicationSettings _settings;
-    public static ApplicationSettings Get()
-    {
-        if (_settings == null)
-            _settings = new ApplicationSettings();
-        return _settings;
-    }
-}
-```
-
-**Environment Detection**:
-```csharp
-private ApplicationSettings()
-{
-    LogDirectory = Environment.GetEnvironmentVariable("SWLOR_APP_LOG_DIRECTORY");
-    RedisIPAddress = Environment.GetEnvironmentVariable("NWNX_REDIS_HOST");
-    
-    var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT");
-    ServerEnvironment = ParseEnvironment(environment);
-}
-```
+**Key Features**: See `ApplicationSettings.cs` for the complete implementation including:
+- Environment variable reading
+- Server environment detection
+- Configuration validation
+- Centralized access to settings
 
 ### 2. Global Usings
 
@@ -172,9 +96,7 @@ private ApplicationSettings()
 
 **Purpose**: Provide global using statements for common namespaces.
 
-```csharp
-global using static SWLOR.Game.Server.Core.NWScript.NWScript;
-```
+**Configuration**: See `GlobalUsings.cs` for the global using statements.
 
 ## Architecture Layers
 
@@ -283,17 +205,8 @@ docker-compose logs -f swlor-server
 ### 3. Configuration
 
 **Environment Variables**:
-```bash
-# Development
-SWLOR_ENVIRONMENT=development
-SWLOR_APP_LOG_DIRECTORY=./logs
-NWNX_REDIS_HOST=localhost:6379
-
-# Production
-SWLOR_ENVIRONMENT=production
-SWLOR_APP_LOG_DIRECTORY=/app/logs
-NWNX_REDIS_HOST=redis:6379
-```
+- Development: See `Docker/swlor.env` for development configuration
+- Production: See `Docker/swlor.env` for production configuration
 
 ## Build Process
 
@@ -317,15 +230,11 @@ dotnet build
 
 ### 2. Post-Build Processing
 
-**CLI Processing**:
-- Builds complete NWN module
-- Processes game content
-- Generates final output files
-- Validates module integrity
+**CLI Processing**: See `SWLOR.Game.Server.csproj` for the post-build processing configuration.
 
 ### 3. Output Files
 
-**Generated Files**:
+**Generated Files**: See the build output directory for generated files including:
 - `SWLOR.Game.Server.dll`: Main assembly
 - `SWLOR.Game.Server.pdb`: Debug symbols
 - `SWLOR.Game.Server.runtimeconfig.json`: Runtime configuration
@@ -429,14 +338,7 @@ docker-compose up --build
 
 ### 2. Production Deployment
 
-**Docker Deployment**:
-```bash
-# Build production image
-docker build -t swlor-game-server:latest .
-
-# Deploy with production config
-docker-compose -f docker-compose.prod.yml up -d
-```
+**Docker Deployment**: See `Docker/docker-compose.yml` for production deployment configuration.
 
 **Environment Configuration**:
 - Use environment-specific settings
@@ -448,14 +350,7 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ### 1. Logging
 
-**Log Configuration**:
-```csharp
-// Serilog configuration
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.File("logs/swlor-.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
-```
+**Log Configuration**: See the application code for Serilog configuration.
 
 **Log Groups**:
 - `LogGroup.Attack`: Combat-related logs

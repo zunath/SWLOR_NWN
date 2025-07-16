@@ -10,54 +10,28 @@ The Entity layer contains the data models that represent game objects, player da
 
 ```
 Entity/
-├── Account.cs
-├── AreaNote.cs
-├── AuthorizedDM.cs
-├── Beast.cs
-├── BeastFood.cs
-├── BeastLevel.cs
-├── BeastMutation.cs
-├── BeastStable.cs
-├── BuildingPermission.cs
-├── Character.cs
-├── CharacterSkill.cs
-├── CharacterXP.cs
-├── CustomEffect.cs
-├── Droid.cs
-├── DroidCustomization.cs
-├── DroidPersonality.cs
-├── KeyItem.cs
-├── PCBase.cs
-├── PCCustomization.cs
-├── PCDowntime.cs
-├── PCFaction.cs
-├── PCFame.cs
-├── PCLog.cs
-├── PCMigration.cs
-├── PCOutfit.cs
-├── PCPerk.cs
-├── PCQuest.cs
-├── PCQuestKillTarget.cs
-├── PCQuestItem.cs
-├── PCQuestProgress.cs
-├── PCRegionalFame.cs
-├── PCSearchSite.cs
-├── PCSkill.cs
-├── PCSpace.cs
-├── PCStatusEffect.cs
-├── PlayerMarketItem.cs
-├── Property.cs
-├── PropertyPermission.cs
-├── Quest.cs
-├── QuestItem.cs
-├── QuestKillTarget.cs
-├── QuestPrerequisite.cs
-├── QuestState.cs
-├── QuestType.cs
-├── ServerConfiguration.cs
-├── Space.cs
-├── SpaceObject.cs
-└── World.cs
+├── Account.cs                         # Player account data
+├── AreaNote.cs                        # Area-specific notes
+├── AuthorizedDM.cs                    # DM authorization data
+├── Beast.cs                           # Beast companion data
+├── DMCreature.cs                      # DM creature data
+├── Election.cs                        # Election data
+├── EntityBase.cs                      # Base entity class
+├── IncubationJob.cs                   # Beast incubation jobs
+├── IndexedAttribute.cs                # Indexed attributes
+├── InventoryItem.cs                   # Inventory item data
+├── MarketItem.cs                      # Market item data
+├── ModuleCache.cs                     # Module cache data
+├── Player.cs                          # Player character data
+├── PlayerBan.cs                       # Player ban data
+├── PlayerNote.cs                      # Player notes
+├── PlayerOutfit.cs                    # Player outfit data
+├── PlayerShip.cs                      # Player ship data
+├── ResearchJob.cs                     # Research job data
+├── ServerConfiguration.cs             # Server configuration
+├── WorldProperty.cs                   # World property data
+├── WorldPropertyCategory.cs           # World property categories
+└── WorldPropertyPermission.cs         # World property permissions
 ```
 
 ## Core Entities
@@ -72,24 +46,14 @@ Entity/
 - `DateCreated` - Account creation date
 - `IsActive` - Whether account is active
 
-**Usage**:
-```csharp
-// Get account by ID
-var account = DB.Get<Account>(accountId);
+**Usage**: See `Entity/Account.cs` for the complete entity definition and usage patterns.
 
-// Check if account is active
-if (account.IsActive)
-{
-    // Allow login
-}
-```
-
-### 2. Character
+### 2. Player
 
 **Purpose**: Represents a player character with all associated data.
 
 **Key Properties**:
-- `CharacterID` - Unique character identifier
+- `PlayerID` - Unique player identifier
 - `AccountID` - Associated account
 - `Name` - Character name
 - `HitPoints` - Current HP
@@ -97,522 +61,175 @@ if (account.IsActive)
 - `Stamina` - Current STM
 - `Location` - Current location
 
-**Usage**:
-```csharp
-// Get character by ID
-var character = DB.Get<Character>(characterId);
+**Usage**: See `Entity/Player.cs` for the complete entity definition and usage patterns.
 
-// Update character stats
-character.HitPoints = Math.Max(0, character.HitPoints - damage);
-DB.Set(character);
-```
-
-### 3. PCPerk
-
-**Purpose**: Tracks player character perks and levels.
-
-**Key Properties**:
-- `CharacterID` - Associated character
-- `PerkID` - Perk type
-- `PerkLevel` - Current perk level
-- `DateAcquired` - When perk was acquired
-
-**Usage**:
-```csharp
-// Check if character has perk
-var perk = DB.Query<PCPerk>()
-    .Where(x => x.CharacterID == characterId && x.PerkID == perkType)
-    .FirstOrDefault();
-
-if (perk != null && perk.PerkLevel >= requiredLevel)
-{
-    // Character has required perk level
-}
-```
-
-### 4. PCQuest
-
-**Purpose**: Tracks quest progress for player characters.
-
-**Key Properties**:
-- `CharacterID` - Associated character
-- `QuestID` - Quest identifier
-- `QuestState` - Current quest state
-- `DateStarted` - When quest was started
-- `DateCompleted` - When quest was completed
-
-**Usage**:
-```csharp
-// Get quest state for character
-var quest = DB.Query<PCQuest>()
-    .Where(x => x.CharacterID == characterId && x.QuestID == questId)
-    .FirstOrDefault();
-
-if (quest == null)
-{
-    // Quest not started
-    quest = new PCQuest
-    {
-        CharacterID = characterId,
-        QuestID = questId,
-        QuestState = QuestStateType.NotStarted,
-        DateStarted = DateTime.UtcNow
-    };
-    DB.Set(quest);
-}
-```
-
-### 5. Property
-
-**Purpose**: Represents player-owned properties and buildings.
-
-**Key Properties**:
-- `PropertyID` - Unique property identifier
-- `OwnerID` - Character who owns the property
-- `PropertyType` - Type of property
-- `Location` - Property location
-- `CustomName` - Custom property name
-
-**Usage**:
-```csharp
-// Get properties owned by character
-var properties = DB.Query<Property>()
-    .Where(x => x.OwnerID == characterId)
-    .ToList();
-
-// Create new property
-var property = new Property
-{
-    OwnerID = characterId,
-    PropertyType = PropertyType.Apartment,
-    Location = location,
-    CustomName = "My Apartment"
-};
-DB.Set(property);
-```
-
-### 6. Beast
+### 3. Beast
 
 **Purpose**: Represents beast companions owned by players.
 
 **Key Properties**:
 - `BeastID` - Unique beast identifier
-- `OwnerID` - Character who owns the beast
+- `OwnerID` - Player who owns the beast
 - `BeastType` - Type of beast
-- `Level` - Current beast level
-- `Name` - Beast name
-- `Appearance` - Beast appearance
+- `Level` - Beast level
+- `Experience` - Beast experience points
 
-**Usage**:
-```csharp
-// Get player's beasts
-var beasts = DB.Query<Beast>()
-    .Where(x => x.OwnerID == characterId)
-    .ToList();
+**Usage**: See `Entity/Beast.cs` for the complete entity definition and usage patterns.
 
-// Create new beast
-var beast = new Beast
-{
-    OwnerID = characterId,
-    BeastType = BeastType.Wolf,
-    Level = 1,
-    Name = "Fang",
-    Appearance = AppearanceType.Wolf
-};
-DB.Set(beast);
-```
+### 4. WorldProperty
 
-### 7. Droid
-
-**Purpose**: Represents droid companions owned by players.
+**Purpose**: Represents world properties and buildings.
 
 **Key Properties**:
-- `DroidID` - Unique droid identifier
-- `OwnerID` - Character who owns the droid
-- `DroidType` - Type of droid
-- `PersonalityID` - Droid personality
-- `CustomizationID` - Droid customization
+- `PropertyID` - Unique property identifier
+- `OwnerID` - Player who owns the property
+- `PropertyType` - Type of property
+- `Location` - Property location
+- `CustomName` - Custom property name
 
-**Usage**:
-```csharp
-// Get player's droids
-var droids = DB.Query<Droid>()
-    .Where(x => x.OwnerID == characterId)
-    .ToList();
+**Usage**: See `Entity/WorldProperty.cs` for the complete entity definition and usage patterns.
 
-// Create new droid
-var droid = new Droid
-{
-    OwnerID = characterId,
-    DroidType = DroidType.Astromech,
-    PersonalityID = DroidPersonalityType.Geeky,
-    CustomizationID = 1
-};
-DB.Set(droid);
-```
+### 5. MarketItem
 
-### 8. KeyItem
-
-**Purpose**: Represents key items that unlock special content.
+**Purpose**: Represents items in the player market.
 
 **Key Properties**:
-- `KeyItemID` - Unique key item identifier
-- `CharacterID` - Character who has the key item
-- `KeyItemType` - Type of key item
-- `DateAcquired` - When key item was acquired
+- `MarketItemID` - Unique market item identifier
+- `SellerID` - Player selling the item
+- `ItemTag` - Item tag/resref
+- `Price` - Item price
+- `Quantity` - Item quantity
 
-**Usage**:
-```csharp
-// Check if character has key item
-var keyItem = DB.Query<KeyItem>()
-    .Where(x => x.CharacterID == characterId && x.KeyItemType == keyItemType)
-    .FirstOrDefault();
+**Usage**: See `Entity/MarketItem.cs` for the complete entity definition and usage patterns.
 
-if (keyItem != null)
-{
-    // Character has the key item
-}
-```
+### 6. IncubationJob
+
+**Purpose**: Represents beast incubation jobs.
+
+**Key Properties**:
+- `IncubationJobID` - Unique job identifier
+- `PlayerID` - Player who started the job
+- `BeastType` - Type of beast being incubated
+- `StartTime` - When incubation started
+- `EndTime` - When incubation will complete
+
+**Usage**: See `Entity/IncubationJob.cs` for the complete entity definition and usage patterns.
+
+### 7. Election
+
+**Purpose**: Represents player elections and voting.
+
+**Key Properties**:
+- `ElectionID` - Unique election identifier
+- `Title` - Election title
+- `Description` - Election description
+- `StartDate` - When voting starts
+- `EndDate` - When voting ends
+
+**Usage**: See `Entity/Election.cs` for the complete entity definition and usage patterns.
 
 ## Entity Relationships
 
 ### 1. One-to-Many Relationships
 
-```csharp
-// Account -> Characters
-var characters = DB.Query<Character>()
-    .Where(x => x.AccountID == accountId)
-    .ToList();
-
-// Character -> Perks
-var perks = DB.Query<PCPerk>()
-    .Where(x => x.CharacterID == characterId)
-    .ToList();
-
-// Character -> Quests
-var quests = DB.Query<PCQuest>()
-    .Where(x => x.CharacterID == characterId)
-    .ToList();
-```
+**Account to Player**: An account can have multiple player characters
+**Player to Beast**: A player can own multiple beast companions
+**Player to WorldProperty**: A player can own multiple properties
 
 ### 2. Many-to-Many Relationships
 
-```csharp
-// Character -> Properties (through ownership)
-var properties = DB.Query<Property>()
-    .Where(x => x.OwnerID == characterId)
-    .ToList();
-
-// Character -> Beasts (through ownership)
-var beasts = DB.Query<Beast>()
-    .Where(x => x.OwnerID == characterId)
-    .ToList();
-```
-
-### 3. Complex Relationships
-
-```csharp
-// Character with all related data
-var character = DB.Get<Character>(characterId);
-var perks = DB.Query<PCPerk>().Where(x => x.CharacterID == characterId).ToList();
-var quests = DB.Query<PCQuest>().Where(x => x.CharacterID == characterId).ToList();
-var properties = DB.Query<Property>().Where(x => x.OwnerID == characterId).ToList();
-```
+**Player to Market Items**: A player can sell multiple items in the market
 
 ## Data Access Patterns
 
 ### 1. CRUD Operations
 
-```csharp
-// Create
-var entity = new EntityType { /* properties */ };
-DB.Set(entity);
+**Create**: Create new entities using the DB service
+**Read**: Query entities using the DB service with LINQ
+**Update**: Modify entities and save using the DB service
+**Delete**: Remove entities using the DB service
 
-// Read
-var entity = DB.Get<EntityType>(id);
+### 2. Batch Operations
 
-// Update
-var entity = DB.Get<EntityType>(id);
-entity.Property = newValue;
-DB.Set(entity);
+**Batch Insert**: Insert multiple entities in a single operation
+**Batch Update**: Update multiple entities efficiently
+**Batch Delete**: Remove multiple entities in a single operation
 
-// Delete
-DB.Delete<EntityType>(id);
-```
+### 3. Query Optimization
 
-### 2. Query Patterns
+**Indexed Queries**: Use indexed properties for better performance
+**Pagination**: Implement pagination for large datasets
 
-```csharp
-// Simple query
-var entities = DB.Query<EntityType>()
-    .Where(x => x.Property == value)
-    .ToList();
+## Validation and Business Rules
 
-// Complex query
-var entities = DB.Query<EntityType>()
-    .Where(x => x.Property1 == value1 && x.Property2 == value2)
-    .OrderBy(x => x.Property3)
-    .Take(10)
-    .ToList();
+### 1. Entity Validation
 
-// Join query
-var results = DB.Query<EntityType1>()
-    .Join(DB.Query<EntityType2>(), 
-          e1 => e1.ID, 
-          e2 => e2.Entity1ID, 
-          (e1, e2) => new { Entity1 = e1, Entity2 = e2 })
-    .Where(x => x.Entity1.Property == value)
-    .ToList();
-```
+**Required Fields**: Use data annotations for required fields
+**Custom Validation**: Implement custom validation logic in entities
 
-### 3. Batch Operations
+### 2. Business Rule Enforcement
 
-```csharp
-// Batch update
-var entities = DB.Query<EntityType>()
-    .Where(x => x.Property == oldValue)
-    .ToList();
-
-foreach (var entity in entities)
-{
-    entity.Property = newValue;
-    DB.Set(entity);
-}
-
-// Batch delete
-var entitiesToDelete = DB.Query<EntityType>()
-    .Where(x => x.Property == value)
-    .ToList();
-
-foreach (var entity in entitiesToDelete)
-{
-    DB.Delete<EntityType>(entity.ID);
-}
-```
-
-## Entity Validation
-
-### 1. Data Validation
-
-```csharp
-// Example: Character validation
-public static bool ValidateCharacter(Character character)
-{
-    if (string.IsNullOrWhiteSpace(character.Name))
-        return false;
-        
-    if (character.HitPoints < 0)
-        return false;
-        
-    if (character.ForcePoints < 0)
-        return false;
-        
-    return true;
-}
-```
-
-### 2. Business Rule Validation
-
-```csharp
-// Example: Perk validation
-public static bool CanAcquirePerk(uint characterId, PerkType perkType)
-{
-    var character = DB.Get<Character>(characterId);
-    var existingPerk = DB.Query<PCPerk>()
-        .Where(x => x.CharacterID == characterId && x.PerkID == perkType)
-        .FirstOrDefault();
-        
-    // Check if already has perk
-    if (existingPerk != null)
-        return false;
-        
-    // Check requirements
-    var requirements = GetPerkRequirements(perkType);
-    return CheckRequirements(character, requirements);
-}
-```
-
-## Entity Lifecycle
-
-### 1. Creation
-
-```csharp
-// Create new entity
-var entity = new EntityType
-{
-    ID = Guid.NewGuid(),
-    CreatedDate = DateTime.UtcNow,
-    // Set other properties
-};
-
-// Validate before saving
-if (ValidateEntity(entity))
-{
-    DB.Set(entity);
-}
-```
-
-### 2. Updates
-
-```csharp
-// Update existing entity
-var entity = DB.Get<EntityType>(id);
-if (entity != null)
-{
-    entity.ModifiedDate = DateTime.UtcNow;
-    entity.Property = newValue;
-    
-    if (ValidateEntity(entity))
-    {
-        DB.Set(entity);
-    }
-}
-```
-
-### 3. Deletion
-
-```csharp
-// Soft delete (recommended)
-var entity = DB.Get<EntityType>(id);
-if (entity != null)
-{
-    entity.IsDeleted = true;
-    entity.DeletedDate = DateTime.UtcNow;
-    DB.Set(entity);
-}
-
-// Hard delete
-DB.Delete<EntityType>(id);
-```
+**State Validation**: Check entity state before operations
+**Permission Checking**: Verify access permissions for entity operations
 
 ## Performance Considerations
 
-### 1. Indexing
+### 1. Caching
 
-```csharp
-// Use indexed properties for queries
-var characters = DB.Query<Character>()
-    .Where(x => x.AccountID == accountId)  // Indexed
-    .ToList();
+**Entity Caching**: Cache frequently accessed entities
+**Query Result Caching**: Cache query results for expensive operations
 
-// Avoid queries on non-indexed properties
-var characters = DB.Query<Character>()
-    .Where(x => x.Name.Contains("John"))   // Not indexed
-    .ToList();
-```
+### 2. Database Optimization
 
-### 2. Lazy Loading
+**Index Usage**: Use indexed properties in queries
+**Batch Operations**: Use batch operations for multiple entities
 
-```csharp
-// Load related data only when needed
-var character = DB.Get<Character>(characterId);
+### 3. Memory Management
 
-// Load perks only when needed
-if (needPerks)
-{
-    var perks = DB.Query<PCPerk>()
-        .Where(x => x.CharacterID == characterId)
-        .ToList();
-}
-```
+**Dispose Pattern**: Properly dispose of database contexts
+**Lazy Loading**: Load related data only when needed
 
-### 3. Caching
+## Testing Entities
 
-```csharp
-// Cache frequently accessed data
-private static Dictionary<uint, Character> _characterCache = new();
+### 1. Unit Testing
 
-public static Character GetCharacter(uint characterId)
-{
-    if (_characterCache.TryGetValue(characterId, out var cached))
-        return cached;
-        
-    var character = DB.Get<Character>(characterId);
-    if (character != null)
-        _characterCache[characterId] = character;
-        
-    return character;
-}
-```
+**Entity Creation**: Test entity creation with valid data
+**Entity Validation**: Test validation with invalid data
 
-## Entity Extensions
+### 2. Integration Testing
 
-### 1. Adding New Entities
-
-To add a new entity:
-
-1. Create entity class in `Entity/` directory
-2. Define properties and relationships
-3. Add validation logic
-4. Update database schema
-5. Add to appropriate services
-
-### 2. Entity Inheritance
-
-```csharp
-// Base entity class
-public abstract class BaseEntity
-{
-    public Guid ID { get; set; }
-    public DateTime CreatedDate { get; set; }
-    public DateTime? ModifiedDate { get; set; }
-    public bool IsDeleted { get; set; }
-}
-
-// Derived entity
-public class Character : BaseEntity
-{
-    public string Name { get; set; }
-    public int HitPoints { get; set; }
-    // Additional properties
-}
-```
-
-### 3. Entity Interfaces
-
-```csharp
-// Interface for entities with ownership
-public interface IOwnedEntity
-{
-    uint OwnerID { get; set; }
-}
-
-// Implement in entities
-public class Property : IOwnedEntity
-{
-    public uint OwnerID { get; set; }
-    // Other properties
-}
-```
+**Database Operations**: Test entity persistence and retrieval
 
 ## Best Practices
 
 ### 1. Entity Design
 
-- Keep entities focused on a single responsibility
-- Use meaningful property names
-- Include audit fields (CreatedDate, ModifiedDate)
+- Keep entities focused on data representation
+- Use clear, descriptive property names
 - Implement proper validation
+- Follow naming conventions
 
 ### 2. Data Access
 
-- Use appropriate indexes for query performance
-- Implement caching for frequently accessed data
-- Use batch operations for multiple updates
-- Handle concurrency appropriately
+- Use appropriate query patterns
+- Implement caching where beneficial
+- Optimize database operations
+- Handle transactions properly
 
-### 3. Validation
+### 3. Performance
 
-- Validate data before saving
-- Implement business rule validation
-- Use consistent validation patterns
-- Provide meaningful error messages
+- Use indexes for frequently queried properties
+- Implement pagination for large datasets
+- Cache frequently accessed data
+- Monitor query performance
 
-### 4. Relationships
+### 4. Maintenance
 
-- Define clear relationships between entities
-- Use appropriate foreign keys
-- Handle cascading operations carefully
-- Consider performance implications of joins
+- Keep entities up-to-date with schema changes
+- Document entity relationships
+- Implement proper validation
+- Add comprehensive logging
 
-This documentation provides a comprehensive overview of the Entity layer in SWLOR.Game.Server, covering the main entities, relationships, and best practices for working with data models. 
+---
+
+*This documentation should be updated when new entities are added or existing entities are modified.* 

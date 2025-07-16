@@ -1320,8 +1320,8 @@ namespace SWLOR.Game.Server.Service
                 var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.SoldiersSpeed);
                 if (GetIsObjectValid(source))
                 {
-                    var sourceSOC = GetAbilityScore(creature, AbilityType.Social);
-                    var perkLevel = Perk.GetPerkLevel(creature, PerkType.SoldiersSpeed);
+                    var sourceSOC = GetAbilityScore(source, AbilityType.Social);
+                    var perkLevel = Perk.GetPerkLevel(source, PerkType.SoldiersSpeed);
 
                     switch (perkLevel)
                     {

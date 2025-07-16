@@ -62,3 +62,40 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+/* Custom modal styling */
+.modal.show {
+    display: block !important;
+    z-index: 1050;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.modal-dialog {
+    z-index: 1055;
+    position: relative;
+    margin: 1.75rem auto;
+}
+
+.modal-content {
+    position: relative;
+    z-index: 1056;
+}
+
+/* Button spacing */
+.btn + .btn {
+    margin-left: 0.25rem;
+}
+
+/* Table improvements */
+.table th {
+    background-color: #f8f9fa;
+    border-top: none;
+}
+
+.table td {
+    vertical-align: middle;
+}

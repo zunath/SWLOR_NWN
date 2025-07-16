@@ -1,0 +1,270 @@
+@page "/statcalculator"
+@using SWLOR.Game.Server.Core.NWScript.Enum
+@using SWLOR.Game.Server.Enumeration
+@using SWLOR.Game.Server.Service.SkillService
+@using SWLOR.Admin.Services
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>Stat Calculator Demo</h2>
+            <p class="text-muted">Interactive demonstration of SWLOR stat calculation formulas</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-calculator"></i> Stat Input</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Base Stats</strong></label>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">Might</label>
+                                <input type="number" class="form-control" @bind="MightStat" min="1" max="20" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Perception</label>
+                                <input type="number" class="form-control" @bind="PerceptionStat" min="1" max="20" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Vitality</label>
+                                <input type="number" class="form-control" @bind="VitalityStat" min="1" max="20" />
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-4">
+                                <label class="form-label">Willpower</label>
+                                <input type="number" class="form-control" @bind="WillpowerStat" min="1" max="20" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Agility</label>
+                                <input type="number" class="form-control" @bind="AgilityStat" min="1" max="20" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Social</label>
+                                <input type="number" class="form-control" @bind="SocialStat" min="1" max="20" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Skill Levels</strong></label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">One-Handed</label>
+                                <input type="number" class="form-control" @bind="OneHandedSkill" min="0" max="20" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Two-Handed</label>
+                                <input type="number" class="form-control" @bind="TwoHandedSkill" min="0" max="20" />
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Ranged</label>
+                                <input type="number" class="form-control" @bind="RangedSkill" min="0" max="20" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Force</label>
+                                <input type="number" class="form-control" @bind="ForceSkill" min="0" max="20" />
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Armor</label>
+                                <input type="number" class="form-control" @bind="ArmorSkill" min="0" max="20" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Crafting</label>
+                                <input type="number" class="form-control" @bind="CraftingSkill" min="0" max="20" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Equipment Bonuses</strong></label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Attack Bonus</label>
+                                <input type="number" class="form-control" @bind="AttackBonus" min="0" max="50" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Force Attack Bonus</label>
+                                <input type="number" class="form-control" @bind="ForceAttackBonus" min="0" max="50" />
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Evasion Bonus</label>
+                                <input type="number" class="form-control" @bind="EvasionBonus" min="0" max="50" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Defense Bonus</label>
+                                <input type="number" class="form-control" @bind="DefenseBonus" min="0" max="50" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Food Bonuses</strong></label>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">HP Bonus</label>
+                                <input type="number" class="form-control" @bind="FoodHPBonus" min="0" max="100" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">FP Bonus</label>
+                                <input type="number" class="form-control" @bind="FoodFPBonus" min="0" max="50" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Stamina Bonus</label>
+                                <input type="number" class="form-control" @bind="FoodStaminaBonus" min="0" max="50" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar"></i> Calculated Results</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-primary mb-2">
+                                <div class="card-header bg-primary text-white">
+                                    <h6>Max HP</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Base:</strong> 70</p>
+                                    <p><strong>Food Bonus:</strong> +@FoodHPBonus</p>
+                                    <p><strong>Total:</strong> @(70 + FoodHPBonus)</p>
+                                    <small class="text-muted">Uses native NWN function</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-success mb-2">
+                                <div class="card-header bg-success text-white">
+                                    <h6>Max FP</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Base:</strong> 10</p>
+                                    <p><strong>Willpower Mod:</strong> @WillpowerModifier</p>
+                                    <p><strong>Bonus:</strong> @(WillpowerModifier * 10)</p>
+                                    <p><strong>Food Bonus:</strong> +@FoodFPBonus</p>
+                                    <p><strong>Total:</strong> @(10 + (WillpowerModifier * 10) + FoodFPBonus)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-warning mb-2">
+                                <div class="card-header bg-warning text-dark">
+                                    <h6>Max Stamina</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Base:</strong> 10</p>
+                                    <p><strong>Agility Mod:</strong> @AgilityModifier</p>
+                                    <p><strong>Bonus:</strong> @(AgilityModifier * 5)</p>
+                                    <p><strong>Food Bonus:</strong> +@FoodStaminaBonus</p>
+                                    <p><strong>Total:</strong> @(10 + (AgilityModifier * 5) + FoodStaminaBonus)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-danger mb-2">
+                                <div class="card-header bg-danger text-white">
+                                    <h6>Attack</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Base:</strong> 8</p>
+                                    <p><strong>Skill Level:</strong> @HighestCombatSkill</p>
+                                    <p><strong>Stat Bonus:</strong> @HighestCombatStat</p>
+                                    <p><strong>Equipment:</strong> +@AttackBonus</p>
+                                    <p><strong>Total:</strong> @(8 + (2 * HighestCombatSkill) + HighestCombatStat + AttackBonus)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card border-info mb-2">
+                                <div class="card-header bg-info text-white">
+                                    <h6>Defense</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Base:</strong> 8</p>
+                                    <p><strong>Vitality Stat:</strong> @VitalityStat</p>
+                                    <p><strong>Stat Bonus:</strong> @((int)(VitalityStat * 1.5))</p>
+                                    <p><strong>Armor Skill:</strong> @ArmorSkill</p>
+                                    <p><strong>Equipment:</strong> +@DefenseBonus</p>
+                                    <p><strong>Total:</strong> @(8 + ((int)(VitalityStat * 1.5)) + ArmorSkill + DefenseBonus)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-secondary mb-2">
+                                <div class="card-header bg-secondary text-white">
+                                    <h6>Evasion</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Agility Stat:</strong> @AgilityStat</p>
+                                    <p><strong>Stat Bonus:</strong> @(AgilityStat * 3)</p>
+                                    <p><strong>Armor Skill:</strong> @ArmorSkill</p>
+                                    <p><strong>Equipment:</strong> +@EvasionBonus</p>
+                                    <p><strong>Total:</strong> @((AgilityStat * 3) + ArmorSkill + EvasionBonus)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    // Stat inputs
+    private int MightStat = 14;
+    private int PerceptionStat = 12;
+    private int VitalityStat = 16;
+    private int WillpowerStat = 14;
+    private int AgilityStat = 12;
+    private int SocialStat = 10;
+
+    // Skill inputs
+    private int OneHandedSkill = 5;
+    private int TwoHandedSkill = 3;
+    private int RangedSkill = 2;
+    private int ForceSkill = 4;
+    private int ArmorSkill = 3;
+    private int CraftingSkill = 2;
+
+    // Equipment bonuses
+    private int AttackBonus = 3;
+    private int ForceAttackBonus = 2;
+    private int EvasionBonus = 4;
+    private int DefenseBonus = 5;
+
+    // Food bonuses
+    private int FoodHPBonus = 20;
+    private int FoodFPBonus = 5;
+    private int FoodStaminaBonus = 3;
+
+    // Calculated values
+    private int WillpowerModifier => (WillpowerStat - 10) / 2;
+    private int AgilityModifier => (AgilityStat - 10) / 2;
+    private int HighestCombatSkill => Math.Max(Math.Max(OneHandedSkill, TwoHandedSkill), Math.Max(RangedSkill, ForceSkill));
+    private int HighestCombatStat => Math.Max(Math.Max(MightStat, PerceptionStat), WillpowerStat);
+} 

@@ -3,12 +3,12 @@
 
 <h3>DMs (@_totalRecords)</h3>
 
-<div class="row">
-
+<div class="row mb-3">
     <div class="col">
         <input type="text"
                @bind="@_searchText"
                class="form-control"
+               placeholder="Search by name..."
                @onblur="RefreshList" />
     </div>
     <div class="col-1">
@@ -17,36 +17,156 @@
             Search
         </button>
     </div>
-
+    <div class="col-auto">
+        <button @onclick="ShowAddModal"
+                class="btn btn-success">
+            <i class="fas fa-plus"></i> Add DM
+        </button>
+    </div>
 </div>
 
 <table class="table">
 	<thead>
 		<tr>
 			<th>Name</th>
+			<th>CD Key</th>
 			<th>Type</th>
 			<th>Date Created</th>
+			<th>Actions</th>
 		</tr>
 	</thead>
 	<tbody>
-
-		@foreach (var account in _dms)
+		@foreach (var dm in _dms)
 		{
 			<tr>
-				<td>@account.Name</td>
-				<td>@account.Authorization.ToString()</td>
-				<td>@account.DateCreated</td>
+				<td>@dm.Name</td>
+				<td>@dm.CDKey</td>
+				<td>@dm.Authorization.ToString()</td>
+				<td>@dm.DateCreated.ToString("MMM dd, yyyy HH:mm")</td>
+				<td>
+					<button @onclick="() => ShowEditModal(dm)" class="btn btn-sm btn-warning me-1">
+						<i class="fas fa-edit"></i> Edit
+					</button>
+					<button @onclick="() => ShowDeleteModal(dm)" class="btn btn-sm btn-danger">
+						<i class="fas fa-trash"></i> Delete
+					</button>
+				</td>
 			</tr>
 		}
-
 	</tbody>
-
 </table>
 
+<!-- Pagination Controls -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3">
+    <div class="mb-2 mb-md-0">
+        <button class="btn btn-sm btn-secondary" @onclick="PrevPage" disabled="@(_currentPage == 1)">Previous</button>
+        @for (int i = 1; i <= _totalPages; i++)
+        {
+            var pageNumber = i;
+            <button class="btn btn-sm @(pageNumber == _currentPage ? "btn-primary" : "btn-outline-primary") mx-1" @onclick="@(() => SetPage(pageNumber))">@pageNumber</button>
+        }
+        <button class="btn btn-sm btn-secondary" @onclick="NextPage" disabled="@(_currentPage == _totalPages)">Next</button>
+    </div>
+    <div>
+        <input type="number" min="1" max="@_totalPages" style="width: 60px; display: inline-block;" @bind="_pageInput" @bind:event="oninput" placeholder="Page" />
+        <button class="btn btn-sm btn-info" @onclick="JumpToPage">Go</button>
+    </div>
+    <span class="ms-2">Page @_currentPage of @_totalPages (@_totalRecords total records)</span>
+</div>
+
+<!-- Add/Edit Modal -->
+@if (_showModal)
+{
+	<div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">@(_editingDM == null ? "Add New DM" : "Edit DM")</h5>
+					<button type="button" class="btn-close" @onclick="HideModal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3">
+						<label for="dmName" class="form-label">Name</label>
+						<input type="text" id="dmName" class="form-control" @bind="_modalName" />
+					</div>
+					<div class="mb-3">
+						<label for="dmCDKey" class="form-label">CD Key</label>
+						<input type="text" 
+							   id="dmCDKey" 
+							   class="form-control" 
+							   @bind="_modalCDKey" 
+							   maxlength="8" 
+							   pattern="[A-Za-z0-9]{8}"
+							   title="CD Key must be exactly 8 alphanumeric characters"
+							   placeholder="8 characters (A-Z, a-z, 0-9)" />
+						<small class="form-text text-muted">Must be exactly 8 alphanumeric characters</small>
+					</div>
+					<div class="mb-3">
+						<label for="dmAuthorization" class="form-label">Authorization Level</label>
+						<select id="dmAuthorization" class="form-select" @bind="_modalAuthorization">
+							<option value="@AuthorizationLevel.DM">DM</option>
+							<option value="@AuthorizationLevel.Admin">Admin</option>
+						</select>
+					</div>
+					@if (!string.IsNullOrEmpty(_validationError))
+					{
+						<div class="alert alert-danger">
+							@_validationError
+						</div>
+					}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @onclick="HideModal">Cancel</button>
+					<button type="button" class="btn btn-primary" @onclick="SaveDM">Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+<!-- Delete Confirmation Modal -->
+@if (_showDeleteModal)
+{
+	<div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Confirm Delete</h5>
+					<button type="button" class="btn-close" @onclick="HideDeleteModal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p>Are you sure you want to delete DM "@_deletingDM?.Name"?</p>
+					<p class="text-danger">This action cannot be undone.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @onclick="HideDeleteModal">Cancel</button>
+					<button type="button" class="btn btn-danger" @onclick="ConfirmDelete">Delete</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
 @code {
-	protected string _searchText;
-	private List<AuthorizedDM> _dms;
+	protected string _searchText = "";
+	private List<AuthorizedDM> _dms = new();
 	protected long _totalRecords;
+
+	// Modal state
+	private bool _showModal = false;
+	private bool _showDeleteModal = false;
+	private AuthorizedDM? _editingDM;
+	private AuthorizedDM? _deletingDM;
+	private string _modalName = "";
+	private string _modalCDKey = "";
+	private AuthorizationLevel _modalAuthorization = AuthorizationLevel.DM;
+	private string _validationError = "";
+
+    // Pagination state
+    private int _currentPage = 1;
+    private const int PageSize = 20;
+    private int _totalPages = 0;
+    private string _pageInput = "";
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -63,6 +183,169 @@
 		    query.AddFieldSearch(nameof(AuthorizedDM.Name), _searchText, true);
 		}
 
+        // Calculate total pages
+        _totalPages = (int)Math.Ceiling((double)_totalRecords / PageSize);
+        
+        // Ensure current page is within valid range
+        if (_currentPage > _totalPages && _totalPages > 0)
+        {
+            _currentPage = _totalPages;
+        }
+        else if (_currentPage < 1)
+        {
+            _currentPage = 1;
+        }
+
+        // Add pagination to query
+        var offset = (_currentPage - 1) * PageSize;
+        query.AddPaging(PageSize, offset);
+
 	    _dms = DB.Search(query).ToList();
+	}
+
+    // Pagination methods
+    private void NextPage()
+    {
+        if (_currentPage < _totalPages) 
+        {
+            _currentPage++;
+            RefreshList();
+        }
+    }
+
+    private void PrevPage()
+    {
+        if (_currentPage > 1) 
+        {
+            _currentPage--;
+            RefreshList();
+        }
+    }
+
+    private void SetPage(int page)
+    {
+        if (page >= 1 && page <= _totalPages) 
+        {
+            _currentPage = page;
+            RefreshList();
+        }
+    }
+
+    private void JumpToPage()
+    {
+        if (int.TryParse(_pageInput, out int page))
+        {
+            SetPage(page);
+        }
+        _pageInput = string.Empty;
+    }
+
+	private void ShowAddModal()
+	{
+		_editingDM = null;
+		_modalName = "";
+		_modalCDKey = "";
+		_modalAuthorization = AuthorizationLevel.DM;
+		_validationError = "";
+		_showModal = true;
+	}
+
+	private void ShowEditModal(AuthorizedDM dm)
+	{
+		_editingDM = dm;
+		_modalName = dm.Name;
+		_modalCDKey = dm.CDKey;
+		_modalAuthorization = dm.Authorization;
+		_validationError = "";
+		_showModal = true;
+	}
+
+	private void ShowDeleteModal(AuthorizedDM dm)
+	{
+		_deletingDM = dm;
+		_showDeleteModal = true;
+	}
+
+	private void HideModal()
+	{
+		_showModal = false;
+		_editingDM = null;
+		_validationError = "";
+	}
+
+	private void HideDeleteModal()
+	{
+		_showDeleteModal = false;
+		_deletingDM = null;
+	}
+
+	private void SaveDM()
+	{
+		if (string.IsNullOrWhiteSpace(_modalName) || string.IsNullOrWhiteSpace(_modalCDKey))
+		{
+			// Show validation error
+			_validationError = "Name and CD Key are required.";
+			return;
+		}
+
+		// Validate CD Key format
+		var trimmedCDKey = _modalCDKey.Trim();
+		if (trimmedCDKey.Length != 8)
+		{
+			_validationError = "CD Key must be exactly 8 characters long.";
+			return;
+		}
+
+		if (!System.Text.RegularExpressions.Regex.IsMatch(trimmedCDKey, "^[A-Za-z0-9]+$"))
+		{
+			_validationError = "CD Key must contain only alphanumeric characters (A-Z, a-z, 0-9).";
+			return;
+		}
+
+		// Check if CD Key already exists (for new DMs)
+		if (_editingDM == null)
+		{
+			var existingDM = DB.Get<AuthorizedDM>(trimmedCDKey);
+			if (existingDM != null)
+			{
+				_validationError = "A DM with this CD Key already exists.";
+				return;
+			}
+		}
+
+		_validationError = "";
+
+		if (_editingDM == null)
+		{
+			// Create new DM
+			var newDM = new AuthorizedDM
+			{
+				Name = _modalName.Trim(),
+				CDKey = trimmedCDKey,
+				Authorization = _modalAuthorization
+			};
+			DB.Set(newDM);
+		}
+		else
+		{
+			// Update existing DM
+			_editingDM.Name = _modalName.Trim();
+			_editingDM.CDKey = trimmedCDKey;
+			_editingDM.Authorization = _modalAuthorization;
+			DB.Set(_editingDM);
+		}
+
+		HideModal();
+		RefreshList();
+	}
+
+	private void ConfirmDelete()
+	{
+		if (_deletingDM != null)
+		{
+			DB.Delete<AuthorizedDM>(_deletingDM.Id);
+			HideDeleteModal();
+			RefreshList();
+		}
 	}
 }

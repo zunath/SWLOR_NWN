@@ -27,6 +27,7 @@
 		<th>CD Key</th>
 		<th>Completed Tutorial</th>
 		<th>Date Created</th>
+		<th>Actions</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -44,6 +45,9 @@
 				<td>No</td>
 			}
 			<td>@account.DateCreated</td>
+			<td>
+				<a href="/viewaccount/@account.Id" class="btn btn-sm btn-info">View Details</a>
+			</td>
 		</tr>
 	}
 
@@ -51,11 +55,35 @@
 	
 </table>
 
+<!-- Pagination Controls -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3">
+    <div class="mb-2 mb-md-0">
+        <button class="btn btn-sm btn-secondary" @onclick="PrevPage" disabled="@(_currentPage == 1)">Previous</button>
+        @for (int i = 1; i <= _totalPages; i++)
+        {
+            var pageNumber = i;
+            <button class="btn btn-sm @(pageNumber == _currentPage ? "btn-primary" : "btn-outline-primary") mx-1" @onclick="@(() => SetPage(pageNumber))">@pageNumber</button>
+        }
+        <button class="btn btn-sm btn-secondary" @onclick="NextPage" disabled="@(_currentPage == _totalPages)">Next</button>
+    </div>
+    <div>
+        <input type="number" min="1" max="@_totalPages" style="width: 60px; display: inline-block;" @bind="_pageInput" @bind:event="oninput" placeholder="Page" />
+        <button class="btn btn-sm btn-info" @onclick="JumpToPage">Go</button>
+    </div>
+    <span class="ms-2">Page @_currentPage of @_totalPages (@_totalRecords total records)</span>
+</div>
+
 @code {
 	
     protected string _searchText;
 	private List<Account> _accounts;
     protected long _totalRecords;
+
+    // Pagination state
+    private int _currentPage = 1;
+    private const int PageSize = 20;
+    private int _totalPages = 0;
+    private string _pageInput = "";
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -72,6 +100,60 @@
             query.AddFieldSearch(nameof(Account.Id), _searchText, true);
         }
 
+        // Calculate total pages
+        _totalPages = (int)Math.Ceiling((double)_totalRecords / PageSize);
+        
+        // Ensure current page is within valid range
+        if (_currentPage > _totalPages && _totalPages > 0)
+        {
+            _currentPage = _totalPages;
+        }
+        else if (_currentPage < 1)
+        {
+            _currentPage = 1;
+        }
+
+        // Add pagination to query
+        var offset = (_currentPage - 1) * PageSize;
+        query.AddPaging(PageSize, offset);
+
         _accounts = DB.Search(query).ToList();
+    }
+
+    // Pagination methods
+    private void NextPage()
+    {
+        if (_currentPage < _totalPages) 
+        {
+            _currentPage++;
+            RefreshList();
+        }
+    }
+
+    private void PrevPage()
+    {
+        if (_currentPage > 1) 
+        {
+            _currentPage--;
+            RefreshList();
+        }
+    }
+
+    private void SetPage(int page)
+    {
+        if (page >= 1 && page <= _totalPages) 
+        {
+            _currentPage = page;
+            RefreshList();
+        }
+    }
+
+    private void JumpToPage()
+    {
+        if (int.TryParse(_pageInput, out int page))
+        {
+            SetPage(page);
+        }
+        _pageInput = string.Empty;
     }
 }

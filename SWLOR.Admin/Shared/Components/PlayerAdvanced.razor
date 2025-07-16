@@ -1,0 +1,90 @@
+@namespace SWLOR.Admin.Shared.Components
+@using System.Linq
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-users"></i> Guilds & Factions</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Guilds:</strong> @Player.Guilds.Count</p>
+                @if (Player.Guilds.Count > 0)
+                {
+                    <ul>
+                        @foreach (var guild in Player.Guilds)
+                        {
+                            <li>@guild.Key: Rank @guild.Value.Rank, @guild.Value.Points points</li>
+                        }
+                    </ul>
+                }
+                <p><strong>Factions:</strong> @Player.Factions.Count</p>
+                @if (Player.Factions.Count > 0)
+                {
+                    <ul>
+                        @foreach (var faction in Player.Factions)
+                        {
+                            <li>@faction.Key: Standing @faction.Value.Standing, @faction.Value.Points points</li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-quest"></i> Quests & Progress</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Active Quests:</strong> @Player.Quests.Count</p>
+                <p><strong>Roleplay Points:</strong> @Player.RoleplayProgress.RPPoints</p>
+                <p><strong>Total RP Experience:</strong> @Player.RoleplayProgress.TotalRPExpGained</p>
+                <p><strong>Spam Message Count:</strong> @Player.RoleplayProgress.SpamMessageCount</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-map"></i> Maps & Pins</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Map Pins:</strong> @Player.MapPins.Count areas</p>
+                <p><strong>Map Progressions:</strong> @Player.MapProgressions.Count</p>
+                <p><strong>Object Visibilities:</strong> @Player.ObjectVisibilities.Count</p>
+                <p><strong>Window Geometries:</strong> @Player.WindowGeometries.Count</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-clock"></i> System Data</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>Regeneration Tick:</strong></td>
+                        <td>@Player.RegenerationTick</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Serialized Hotbar:</strong></td>
+                        <td>@(string.IsNullOrEmpty(Player.SerializedHotBar) ? "None" : "Configured")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Active Beast ID:</strong></td>
+                        <td>@(string.IsNullOrEmpty(Player.ActiveBeastId) ? "None" : Player.ActiveBeastId)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Player Player { get; set; } = null!;
+} 

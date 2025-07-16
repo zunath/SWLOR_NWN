@@ -1,0 +1,351 @@
+@page "/viewaccount/{AccountId}"
+@using SWLOR.Game.Server.Service.AchievementService
+@using System.Reflection
+@using SWLOR.Game.Server.Extension
+
+@if (!AccountExists())
+{
+    <div class="alert alert-danger">
+        <h4>Account Not Found</h4>
+        <p>The account with CD Key "@AccountId" was not found.</p>
+        <a href="/account" class="btn btn-primary">Back to Accounts</a>
+    </div>
+    return;
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col">
+            <h3>Account Details - @ActiveAccount!.Id</h3>
+            <a href="/account" class="btn btn-secondary">← Back to Accounts</a>
+        </div>
+    </div>
+
+    <!-- Basic Account Information -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Account Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6"><strong>CD Key:</strong></div>
+                        <div class="col-6">@ActiveAccount.Id</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6"><strong>Times Logged In:</strong></div>
+                        <div class="col-6">@ActiveAccount.TimesLoggedIn</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6"><strong>Completed Tutorial:</strong></div>
+                        <div class="col-6">@(ActiveAccount.HasCompletedTutorial ? "Yes" : "No")</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6"><strong>Date Created:</strong></div>
+                        <div class="col-6">@ActiveAccount.DateCreated</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Achievement Progress</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6"><strong>Enemies Killed:</strong></div>
+                        <div class="col-6">@ActiveAccount.AchievementProgress.EnemiesKilled.ToString("N0")</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6"><strong>Perks Learned:</strong></div>
+                        <div class="col-6">@ActiveAccount.AchievementProgress.PerksLearned.ToString("N0")</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6"><strong>Skills Learned:</strong></div>
+                        <div class="col-6">@ActiveAccount.AchievementProgress.SkillsLearned.ToString("N0")</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6"><strong>Quests Completed:</strong></div>
+                        <div class="col-6">@ActiveAccount.AchievementProgress.QuestsCompleted.ToString("N0")</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6"><strong>Items Crafted:</strong></div>
+                        <div class="col-6">@ActiveAccount.AchievementProgress.ItemsCrafted.ToString("N0")</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievements Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Achievements (@ActiveAccount.Achievements.Count)</h5>
+                </div>
+                <div class="card-body">
+                    @if (ActiveAccount.Achievements.Count == 0)
+                    {
+                        <p class="text-muted">No achievements unlocked yet.</p>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            @foreach (var achievement in GetPagedUnlockedAchievements())
+                            {
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card border-success">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-success">@achievement.Name</h6>
+                                            <p class="card-text small">@achievement.Description</p>
+                                            <small class="text-muted">Unlocked: @achievement.UnlockDate.ToString("MMM dd, yyyy HH:mm")</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-2">
+                            <div class="mb-2 mb-md-0">
+                                <button class="btn btn-sm btn-secondary" @onclick="PrevUnlockedPage" disabled="@(_unlockedPage == 1)">Previous</button>
+                                @for (int i = 1; i <= _unlockedTotalPages; i++)
+                                {
+                                    var pageNumber = i;
+                                    <button class="btn btn-sm @(pageNumber == _unlockedPage ? "btn-primary" : "btn-outline-primary") mx-1" @onclick="@(() => SetUnlockedPage(pageNumber))">@pageNumber</button>
+                                }
+                                <button class="btn btn-sm btn-secondary" @onclick="NextUnlockedPage" disabled="@(_unlockedPage == _unlockedTotalPages)">Next</button>
+                            </div>
+                            <div>
+                                <input type="number" min="1" max="@_unlockedTotalPages" style="width: 60px; display: inline-block;" @bind="_unlockedPageInput" @bind:event="oninput" placeholder="Page" />
+                                <button class="btn btn-sm btn-info" @onclick="JumpToUnlockedPage">Go</button>
+                            </div>
+                            <span class="ms-2">Page @_unlockedPage of @_unlockedTotalPages</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Achievements Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Available Achievements</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach (var achievement in GetPagedAvailableAchievements())
+                        {
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card border-secondary">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-secondary">@achievement.Name</h6>
+                                        <p class="card-text small">@achievement.Description</p>
+                                        <small class="text-muted">Not yet unlocked</small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-2">
+                        <div class="mb-2 mb-md-0">
+                            <button class="btn btn-sm btn-secondary" @onclick="PrevAvailablePage" disabled="@(_availablePage == 1)">Previous</button>
+                            @for (int i = 1; i <= _availableTotalPages; i++)
+                            {
+                                var pageNumber = i;
+                                <button class="btn btn-sm @(pageNumber == _availablePage ? "btn-primary" : "btn-outline-primary") mx-1" @onclick="@(() => SetAvailablePage(pageNumber))">@pageNumber</button>
+                            }
+                            <button class="btn btn-sm btn-secondary" @onclick="NextAvailablePage" disabled="@(_availablePage == _availableTotalPages)">Next</button>
+                        </div>
+                        <div>
+                            <input type="number" min="1" max="@_availableTotalPages" style="width: 60px; display: inline-block;" @bind="_availablePageInput" @bind:event="oninput" placeholder="Page" />
+                            <button class="btn btn-sm btn-info" @onclick="JumpToAvailablePage">Go</button>
+                        </div>
+                        <span class="ms-2">Page @_availablePage of @_availableTotalPages</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? AccountId { get; set; }
+
+    protected Account? ActiveAccount;
+
+    // Pagination state for unlocked achievements
+    private int _unlockedPage = 1;
+    private const int UnlockedPageSize = 9;
+    private int _unlockedTotalPages = 0;
+    private string _unlockedPageInput = "";
+
+    // Pagination state for available achievements
+    private int _availablePage = 1;
+    private const int AvailablePageSize = 9;
+    private int _availableTotalPages = 0;
+    private string _availablePageInput = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (!string.IsNullOrEmpty(AccountId))
+        {
+            ActiveAccount = DB.Get<Account>(AccountId);
+            // Cache the total pages
+            _unlockedTotalPages = (int)Math.Ceiling((double)GetAchievementDetails().Count / UnlockedPageSize);
+            _availableTotalPages = (int)Math.Ceiling((double)GetAvailableAchievements().Count / AvailablePageSize);
+        }
+    }
+
+    protected bool AccountExists()
+    {
+        return ActiveAccount != null;
+    }
+
+    private List<AchievementDetail> GetAchievementDetails()
+    {
+        var details = new List<AchievementDetail>();
+        
+        foreach (var kvp in ActiveAccount!.Achievements)
+        {
+            var achievementType = kvp.Key;
+            var unlockDate = kvp.Value;
+            
+            var attribute = achievementType.GetAttribute<AchievementType, AchievementAttribute>();
+            if (attribute != null)
+            {
+                details.Add(new AchievementDetail
+                {
+                    Type = achievementType,
+                    Name = attribute.Name,
+                    Description = attribute.Description,
+                    UnlockDate = unlockDate
+                });
+            }
+        }
+
+        return details.OrderBy(x => x.UnlockDate).ToList();
+    }
+
+    private List<AchievementDetail> GetAvailableAchievements()
+    {
+        var available = new List<AchievementDetail>();
+        var unlockedTypes = ActiveAccount!.Achievements.Keys.ToHashSet();
+        
+        foreach (AchievementType achievementType in Enum.GetValues(typeof(AchievementType)))
+        {
+            if (achievementType == AchievementType.Invalid) continue;
+            
+            var attribute = achievementType.GetAttribute<AchievementType, AchievementAttribute>();
+            if (attribute != null && attribute.IsActive && !unlockedTypes.Contains(achievementType))
+            {
+                available.Add(new AchievementDetail
+                {
+                    Type = achievementType,
+                    Name = attribute.Name,
+                    Description = attribute.Description,
+                    UnlockDate = DateTime.MinValue
+                });
+            }
+        }
+
+        return available.OrderBy(x => x.Name).ToList();
+    }
+
+    // Paged data for unlocked achievements
+    private List<AchievementDetail> GetPagedUnlockedAchievements()
+    {
+        var all = GetAchievementDetails();
+        return all.Skip((_unlockedPage - 1) * UnlockedPageSize).Take(UnlockedPageSize).ToList();
+    }
+
+    // Paged data for available achievements
+    private List<AchievementDetail> GetPagedAvailableAchievements()
+    {
+        var all = GetAvailableAchievements();
+        return all.Skip((_availablePage - 1) * AvailablePageSize).Take(AvailablePageSize).ToList();
+    }
+
+    private void NextUnlockedPage()
+    {
+        if (_unlockedPage < _unlockedTotalPages) 
+        {
+            _unlockedPage++;
+            StateHasChanged();
+        }
+    }
+    private void PrevUnlockedPage()
+    {
+        if (_unlockedPage > 1) 
+        {
+            _unlockedPage--;
+            StateHasChanged();
+        }
+    }
+    private void SetUnlockedPage(int page)
+    {
+        Console.WriteLine($"SetUnlockedPage called with page: {page}");
+        if (page >= 1 && page <= _unlockedTotalPages) 
+        {
+            _unlockedPage = page;
+            StateHasChanged();
+        }
+    }
+    private void JumpToUnlockedPage()
+    {
+        if (int.TryParse(_unlockedPageInput, out int page))
+        {
+            SetUnlockedPage(page);
+        }
+        _unlockedPageInput = string.Empty;
+    }
+
+    private void NextAvailablePage()
+    {
+        if (_availablePage < _availableTotalPages) 
+        {
+            _availablePage++;
+            StateHasChanged();
+        }
+    }
+    private void PrevAvailablePage()
+    {
+        if (_availablePage > 1) 
+        {
+            _availablePage--;
+            StateHasChanged();
+        }
+    }
+    private void SetAvailablePage(int page)
+    {
+        Console.WriteLine($"SetAvailablePage called with page: {page}");
+        if (page >= 1 && page <= _availableTotalPages) 
+        {
+            _availablePage = page;
+            StateHasChanged();
+        }
+    }
+    private void JumpToAvailablePage()
+    {
+        if (int.TryParse(_availablePageInput, out int page))
+        {
+            SetAvailablePage(page);
+        }
+        _availablePageInput = string.Empty;
+    }
+
+    public class AchievementDetail
+    {
+        public AchievementType Type { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public DateTime UnlockDate { get; set; }
+    }
+} 

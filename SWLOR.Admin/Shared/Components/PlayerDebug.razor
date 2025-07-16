@@ -1,0 +1,65 @@
+@namespace SWLOR.Admin.Shared.Components
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="card border-warning">
+            <div class="card-header bg-warning">
+                <h5><i class="fas fa-bug"></i> Debug Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Player ID:</strong> @PlayerId</p>
+                <p><strong>Unallocated AP:</strong> @Player.UnallocatedAP</p>
+                <p><strong>Upgraded Stats Raw Data:</strong></p>
+                <ul>
+                    @foreach (var stat in Player.UpgradedStats)
+                    {
+                        <li>@stat.Key: @stat.Value</li>
+                    }
+                </ul>
+                <p><strong>Base Stats Raw Data:</strong></p>
+                <ul>
+                    @foreach (var stat in Player.BaseStats)
+                    {
+                        <li>@stat.Key: @stat.Value</li>
+                    }
+                </ul>
+                <p><strong>Database Connection Test:</strong></p>
+                <ul>
+                    <li>Player ID: @PlayerId</li>
+                    <li>Player Found: @(Player != null)</li>
+                    <li>Player Name: @(Player?.Name ?? "N/A")</li>
+                    <li>Player Version: @(Player?.Version ?? 0)</li>
+                    <li>Rebuild Complete: @(Player?.RebuildComplete ?? false)</li>
+                    <li>Rebuild Status: @RebuildStatus</li>
+                    <li>Racial Stat: @RacialStatDisplay</li>
+                    <li>Unallocated AP: @(Player?.UnallocatedAP ?? 0)</li>
+                </ul>
+                <button class="btn btn-sm btn-warning" @onclick="OnHideDebug">Hide Debug Info</button>
+                <button class="btn btn-sm btn-danger" @onclick="OnTestDatabaseConnection">Test DB Connection</button>
+                <button class="btn btn-sm btn-info" @onclick="OnRefreshPlayerData">Refresh Data</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string PlayerId { get; set; } = string.Empty;
+
+    [Parameter]
+    public Player Player { get; set; } = null!;
+
+    [Parameter]
+    public string RebuildStatus { get; set; } = string.Empty;
+
+    [Parameter]
+    public string RacialStatDisplay { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback OnHideDebug { get; set; }
+
+    [Parameter]
+    public EventCallback OnTestDatabaseConnection { get; set; }
+
+    [Parameter]
+    public EventCallback OnRefreshPlayerData { get; set; }
+} 

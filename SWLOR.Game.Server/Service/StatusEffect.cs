@@ -170,6 +170,13 @@ namespace SWLOR.Game.Server.Service
             { EffectIconType.DamageImmunityNegativeDecrease, EffectTypeScript.DamageImmunityDecrease },
             { EffectIconType.DamageImmunityPositiveDecrease, EffectTypeScript.DamageImmunityDecrease },
             { EffectIconType.DamageImmunitySonicDecrease, EffectTypeScript.DamageImmunityDecrease },
+            { EffectIconType.Charge, EffectTypeScript.MovementSpeedIncrease },
+            { EffectIconType.Dedication, EffectTypeScript.Invalideffect },
+            { EffectIconType.FrenziedShout, EffectTypeScript.Invalideffect },
+            { EffectIconType.Rejuvenation, EffectTypeScript.Regenerate },
+            { EffectIconType.SoldiersPrecision, EffectTypeScript.AttackIncrease },
+            { EffectIconType.SoldiersSpeed, EffectTypeScript.MovementSpeedIncrease },
+            { EffectIconType.SoldiersStrike, EffectTypeScript.DamageIncrease },
         };
 
         /// <summary>

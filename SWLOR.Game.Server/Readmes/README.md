@@ -41,6 +41,42 @@ Detailed documentation specifically for ability definitions and how they use the
 - **Integration** with other game systems
 - **Testing guidelines** for new abilities
 
+### [Services.md](Services.md)
+Comprehensive documentation of the Service layer, which handles the core business logic and game mechanics. This includes:
+
+- **30+ different services** covering all major game systems
+- **Service patterns** and integration methods
+- **Cross-service communication** examples
+- **Error handling** and performance considerations
+- **Testing strategies** for services
+
+### [Entities.md](Entities.md)
+Detailed documentation of the Entity layer, which represents the data models and database entities. This includes:
+
+- **Core entities** like Character, Account, PCPerk, PCQuest
+- **Entity relationships** and data access patterns
+- **CRUD operations** and query patterns
+- **Validation** and business rule enforcement
+- **Performance considerations** and caching strategies
+
+### [CoreSystems.md](CoreSystems.md)
+Documentation of the Core systems that provide fundamental functionality and abstractions. This includes:
+
+- **NWScript system** for NWN engine abstractions
+- **NWNX plugin system** for extended functionality
+- **Async system** for asynchronous programming
+- **Beamdog GUI system** for user interfaces
+- **Extension methods** and utility patterns
+
+### [Features.md](Features.md)
+Comprehensive documentation of the Feature layer, which contains game-specific content and implementations. This includes:
+
+- **Feature categories** like abilities, items, quests, perks
+- **Definition interfaces** and builder pattern usage
+- **Feature organization** and naming conventions
+- **Implementation patterns** and best practices
+- **Integration** with services and entities
+
 ## Purpose
 
 This documentation serves several purposes:

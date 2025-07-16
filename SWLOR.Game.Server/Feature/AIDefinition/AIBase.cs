@@ -1597,9 +1597,18 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
 
         protected (bool, (FeatType, uint)) Resuscitation()
         {
-            if (CheckIfCanUseFeat(Self, Target, FeatType.Provoke2))
+            // Resuscitation
+            if (CheckIfCanUseFeat(Self, Target, FeatType.Resuscitation3))
             {
-                return (true, (FeatType.Provoke2, Target));
+                return (true, (FeatType.Resuscitation3, Target));
+            }
+            if (CheckIfCanUseFeat(Self, Target, FeatType.Resuscitation2))
+            {
+                return (true, (FeatType.Resuscitation2, Target));
+            }
+            if (CheckIfCanUseFeat(Self, Target, FeatType.Resuscitation1))
+            {
+                return (true, (FeatType.Resuscitation1, Target));
             }
 
             return NoAction;

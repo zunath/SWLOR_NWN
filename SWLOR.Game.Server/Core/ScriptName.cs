@@ -119,6 +119,8 @@ namespace SWLOR.Game.Server.Core
         public const string OnDMPossessFullBefore = "dm_possfull_bef";
         public const string OnDMLimboBefore = "dm_limbo_bef";
         public const string OnDMSpawnObjectAfter = "dm_spwnobj_aft";
+        public const string OnDMGiveXPBefore = "dm_givexp_bef";
+        public const string OnDMGiveLevelBefore = "dm_givelvl_bef";
 
         // Player events
         public const string OnPlayerDamaged = "pc_damaged";

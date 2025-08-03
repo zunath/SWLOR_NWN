@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
@@ -32,14 +32,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), creature);
         }
 
-        [NWNEventHandler("grenade_inc1_en")]
+        [NWNEventHandler(ScriptName.OnGrenadeIncendiary1Enable)]
         public static void IncendiaryBomb1Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 4);
         }
 
-        [NWNEventHandler("grenade_inc1_hb")]
+        [NWNEventHandler(ScriptName.OnGrenadeIncendiary1Heartbeat)]
         public static void IncendiaryBomb1Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
@@ -50,14 +50,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        [NWNEventHandler("grenade_inc2_en")]
+        [NWNEventHandler(ScriptName.OnGrenadeIncendiary2Enable)]
         public static void IncendiaryBomb2Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 10);
         }
 
-        [NWNEventHandler("grenade_inc2_hb")]
+        [NWNEventHandler(ScriptName.OnGrenadeIncendiary2Heartbeat)]
         public static void IncendiaryBomb2Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
@@ -68,14 +68,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        [NWNEventHandler("grenade_inc3_en")]
+        [NWNEventHandler(ScriptName.OnGrenadeIncendiary3Enable)]
         public static void IncendiaryBomb3Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 16);
         }
 
-        [NWNEventHandler("grenade_inc3_hb")]
+        [NWNEventHandler(ScriptName.OnGrenadeIncendiary3Heartbeat)]
         public static void IncendiaryBomb3Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -17,6 +17,7 @@ using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using SavingThrow = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrow;
+using MovementRate = SWLOR.Game.Server.Core.NWScript.Enum.MovementRate;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ApplyPlayerStats()
         {
             ApplyTemporaryPlayerStats();
@@ -360,7 +361,7 @@ namespace SWLOR.Game.Server.Service
         /// After a player's status effects are reassociated,
         /// adjust any food HP if necessary.
         /// </summary>
-        [NWNEventHandler("assoc_stateffect")]
+        [NWNEventHandler(ScriptName.OnAssociateStateEffect)]
         public static void ReapplyFoodHP()
         {
             var player = OBJECT_SELF;
@@ -480,6 +481,11 @@ namespace SWLOR.Game.Server.Service
         
         public static void ApplyPlayerMovementRate(uint player)
         {
+            if (GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player))
+            {
+                CreaturePlugin.SetMovementRate(player, MovementRate.PC);
+            }
+
             var movementRate = 1.0f;
             if (Ability.IsAbilityToggled(player, AbilityToggleType.Dash))
             {
@@ -510,6 +516,9 @@ namespace SWLOR.Game.Server.Service
                     movementRate -= amount * 0.01f;
                 }
             }
+
+            if (movementRate > 1.5f)
+                movementRate = 1.5f;
 
             CreaturePlugin.SetMovementRateFactor(player, movementRate);
         }
@@ -1311,8 +1320,8 @@ namespace SWLOR.Game.Server.Service
                 var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.SoldiersSpeed);
                 if (GetIsObjectValid(source))
                 {
-                    var sourceSOC = GetAbilityScore(creature, AbilityType.Social);
-                    var perkLevel = Perk.GetPerkLevel(creature, PerkType.SoldiersSpeed);
+                    var sourceSOC = GetAbilityScore(source, AbilityType.Social);
+                    var perkLevel = Perk.GetPerkLevel(source, PerkType.SoldiersSpeed);
 
                     switch (perkLevel)
                     {

@@ -579,7 +579,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // Flurry Style (Staff)
                 if (Item.StaffBaseItemTypes.Contains(mainHandType) &&
-                    GetHasFeat(FeatType.CrushingStyle, _target))
+                    GetHasFeat(FeatType.FlurryStyle, _target))
                 {
                     damageStat = AbilityType.Perception;
                     accuracyStatOverride = AbilityType.Agility;

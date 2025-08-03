@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Service
         private static Dictionary<string, uint> AreasByResref { get; } = new();
         private static Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
 
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             CacheAreasByResref();
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Service
         /// Remove instance templates from the area cache on module load.
         /// This ensures player locations are not updated in places they shouldn't be.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RemoveInstancesFromCache()
         {
             var propertyLayouts = Property.GetAllLayoutsByPropertyType(PropertyType.Apartment);
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player or DM enters an area, add them to the cache.
         /// </summary>
-        [NWNEventHandler("area_enter")]
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void EnterArea()
         {
             var player = GetEnteringObject();
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player or DM leaves an area, remove them from the cache.
         /// </summary>
-        [NWNEventHandler("area_exit")]
+        [NWNEventHandler(ScriptName.OnAreaExit)]
         public static void ExitArea()
         {
             var player = GetExitingObject();

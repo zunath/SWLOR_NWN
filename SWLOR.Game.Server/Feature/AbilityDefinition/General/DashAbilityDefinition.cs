@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
             return _builder.Build();
         }
 
-        [NWNEventHandler("space_enter")]
+        [NWNEventHandler(ScriptName.OnSpaceEnter)]
         public static void EnterSpace()
         {
             var player = OBJECT_SELF;

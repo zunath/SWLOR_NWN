@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CharacterStatRebuildViewModel: GuiViewModelBase<CharacterStatRebuildViewModel, GuiPayloadBase>
     {
-        [NWNEventHandler("buy_stat_rebuild")]
+        [NWNEventHandler(ScriptName.OnBuyStatRebuild)]
         public static void LoadCharacterStatRebuild()
         {
             var terminal = OBJECT_SELF;

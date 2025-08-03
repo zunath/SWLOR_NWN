@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
         /// </summary>
-        [NWNEventHandler("crea_damaged_bef")]
+        [NWNEventHandler(ScriptName.OnCreatureDamagedBefore)]
         public static void CreatureDamaged()
         {
             var enemy = OBJECT_SELF;
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature attacks an enemy, increase enmity by 1.
         /// </summary>
-        [NWNEventHandler("crea_attack_bef")]
+        [NWNEventHandler(ScriptName.OnCreatureAttackBefore)]
         public static void CreatureAttacked()
         {
             var enemy = OBJECT_SELF;
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature dies, remove all enmity tables it is associated with.
         /// </summary>
-        [NWNEventHandler("crea_death_aft")]
+        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
         public static void CreatureDeath()
         {
             var enemy = OBJECT_SELF;
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature is destroyed with DestroyObject, remove all enmity tables it is associated with.
         /// </summary>
-        [NWNEventHandler("object_destroyed")]
+        [NWNEventHandler(ScriptName.OnObjectDestroyed)]
         public static void CreatureDestroyed()
         {
             var enemy = OBJECT_SELF;
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player dies, remove them from all enmity tables.
         /// </summary>
-        [NWNEventHandler("mod_death")]
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void PlayerDeath()
         {
             var player = GetLastPlayerDied();
@@ -75,8 +75,8 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player leaves, remove them from all enmity tables.
         /// </summary>
-        [NWNEventHandler("mod_exit")]
-        [NWNEventHandler("area_exit")]
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        [NWNEventHandler(ScriptName.OnAreaExit)]
         public static void PlayerExit()
         {
             var player = GetExitingObject();
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a DM limbos creatures, ensure their enmity is wiped.
         /// </summary>
-        [NWNEventHandler("dm_limbo_bef")]
+        [NWNEventHandler(ScriptName.OnDMLimboBefore)]
         public static void CreatureLimbo()
         {
             var count = Convert.ToInt32(EventsPlugin.GetEventData("NUM_TARGETS"));

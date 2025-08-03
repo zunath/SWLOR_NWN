@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache relevant data needed by the Planet service.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             CachePlanets();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service
         private static Gui.IdReservation _idReservation;
         private static readonly Dictionary<AchievementType, AchievementAttribute> _activeAchievements = new Dictionary<AchievementType, AchievementAttribute>();
 
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ReserveGuiIds()
         {
             _idReservation = Gui.ReserveIds(nameof(Achievement), 6);
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, read all achievement types and store them into the cache.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadAchievements()
         {
             var achievementTypes = Enum.GetValues(typeof(AchievementType)).Cast<AchievementType>();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all XP chart data used for quick access.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheXPChartData()
         {
             CalculateTotalXP();

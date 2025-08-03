@@ -1,4 +1,6 @@
 ﻿@page "/player"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = "DiscordAdmin")]
 @inject NavigationManager NavManager
 @using System.Reflection
 

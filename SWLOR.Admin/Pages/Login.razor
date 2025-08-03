@@ -1,0 +1,57 @@
+@page "/login"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+
+<PageTitle>Login - SWLOR Admin</PageTitle>
+
+<div class="container-fluid h-100">
+    <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <AuthorizeView>
+                        <Authorized>
+                            <h3 class="card-title text-success">
+                                <i class="fas fa-check-circle"></i> Welcome!
+                            </h3>
+                            <p class="card-text">You are successfully logged in as <strong>@GetDisplayName(context.User)</strong>.</p>
+                            <a href="/" class="btn btn-primary">
+                                <i class="fas fa-home"></i> Go to Admin Dashboard
+                            </a>
+                        </Authorized>
+                        <NotAuthorized>
+                                <h3 class="card-title">
+                                    <i class="fab fa-discord"></i> SWLOR Admin
+                                </h3>
+                                <p class="card-text">Please log in with your Discord account to access the SWLOR administration panel.</p>
+                            
+                            <a href="/login" class="btn btn-primary btn-lg">
+                                <i class="fab fa-discord"></i> Login with Discord
+                            </a>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string GetDisplayName(System.Security.Claims.ClaimsPrincipal user)
+    {
+        var username = user.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+        var discriminator = user.FindFirst("urn:discord:discriminator")?.Value;
+        
+        if (!string.IsNullOrEmpty(username))
+        {
+            if (!string.IsNullOrEmpty(discriminator) && discriminator != "0")
+            {
+                return $"{username}#{discriminator}";
+            }
+            return username;
+        }
+        
+        return "Unknown User";
+    }
+}

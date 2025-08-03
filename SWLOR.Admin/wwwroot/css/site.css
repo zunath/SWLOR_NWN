@@ -99,3 +99,47 @@ a, .btn-link {
 .table td {
     vertical-align: middle;
 }
+
+/* Login display at top of sidebar */
+.login-display-top {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.login-display-top .navbar-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.login-display-top .navbar-text .btn-link {
+    font-size: 0.875rem;
+    text-decoration: none;
+    border: none;
+    background: none;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 0.25rem 0.5rem;
+    margin-left: 0.5rem;
+}
+
+.login-display-top .navbar-text .btn-link:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+/* Responsive adjustments for login display */
+@media (max-width: 640.98px) {
+    .login-display-top {
+        padding: 0.75rem;
+    }
+    
+    .login-display-top .navbar-text {
+        font-size: 0.8rem;
+    }
+    
+    .login-display-top .navbar-text .btn-link {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}

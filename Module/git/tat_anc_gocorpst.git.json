@@ -26401,6 +26401,71 @@
           "type": "float",
           "value": 0.01000630855560303
         }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "id": 14814,
+          "type": "cexolocstring",
+          "value": {
+            "0": "Map Note"
+          }
+        },
+        "MapNote": {
+          "id": 14815,
+          "type": "cexolocstring",
+          "value": {
+            "0": "Veles Starport"
+          }
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "smesk_to_gocorp"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_mapnote001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.8314695358276367
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 7.65928840637207
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.5555703639984131
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 12.75993824005127
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.483627319335938e-006
+        }
       }
     ]
   }

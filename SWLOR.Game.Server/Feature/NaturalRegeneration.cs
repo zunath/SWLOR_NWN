@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// On module heartbeat, process a player's HP/FP/STM regeneration.
         /// </summary>
-        [NWNEventHandler("pc_heartbeat")]
+        [NWNEventHandler(ScriptName.OnPlayerHeartbeat)]
         public static void ProcessRegeneration()
         {
             var player = OBJECT_SELF;

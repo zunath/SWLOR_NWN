@@ -24,19 +24,19 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Texture("iit_ess_098")
-                .Description($"Improves a ship's evasion by {boostAmount} at the cost of {boostAmount * 3} max capacitor.")
+                .Description($"Improves a ship's evasion by {boostAmount} at the cost of 30 max capacitor.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, 5)
                 .CapitalClassModule()
                 .EquippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.Evasion += boostAmount + moduleBonus;
-                    shipStatus.MaxCapacitor -= boostAmount;
+                    shipStatus.MaxCapacitor -= 30;
                 })
                 .UnequippedAction((shipStatus, moduleBonus) =>
                 {
                     shipStatus.Evasion -= boostAmount + moduleBonus;
-                    shipStatus.MaxCapacitor += boostAmount;
+                    shipStatus.MaxCapacitor += 30;
                 });
         }
 

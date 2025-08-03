@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CharacterFullRebuildViewModel: GuiViewModelBase<CharacterFullRebuildViewModel, GuiPayloadBase>
     {
-        [NWNEventHandler("char_rebuild")]
+        [NWNEventHandler(ScriptName.OnCharacterRebuild)]
         public static void LoadCharacterMigrationWindow()
         {
             var player = GetLastUsedBy();
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(player, GuiWindowType.CharacterMigration, null, OBJECT_SELF);
         }
 
-        [NWNEventHandler("exit_rebuild")]
+        [NWNEventHandler(ScriptName.OnExitRebuild)]
         public static void ExitRebuildArea()
         {
             var player = GetLastUsedBy();
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             });
         }
 
-        [NWNEventHandler("exit_spending")]
+        [NWNEventHandler(ScriptName.OnExitSpending)]
         public static void ExitSpendingArea()
         {
             var player = GetLastUsedBy();

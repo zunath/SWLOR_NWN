@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Search();
         };
 
-        [NWNEventHandler("mod_p_target")]
+        [NWNEventHandler(ScriptName.OnModulePlayerTarget)]
         public static void RunTargetedLocationAction()
         {
             var player = GetLastPlayerToSelectTarget();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature
         /// If it is, requirements to use the feat will be checked and then the ability will activate.
         /// If there are errors at any point in this process, the creature will be notified and the execution will end.
         /// </summary>
-        [NWNEventHandler("feat_use_bef")]
+        [NWNEventHandler(ScriptName.OnFeatUseBefore)]
         public static void UseFeat()
         {
             var activator = OBJECT_SELF;
@@ -362,7 +362,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player's weapon hits a target, if an ability is queued, that ability will be executed.
         /// </summary>
-        [NWNEventHandler("item_on_hit")]
+        [NWNEventHandler(ScriptName.OnItemHit)]
         public static void ProcessQueuedWeaponAbility()
         {
             var activator = OBJECT_SELF;
@@ -392,7 +392,7 @@ namespace SWLOR.Game.Server.Feature
         /// Whenever a player enters the server, any temporary variables related to ability execution
         /// will be removed from their PC.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ClearTemporaryQueuedVariables()
         {
             var player = GetEnteringObject();
@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Whenever a player starts resting, clear any queued abilities.
         /// </summary>
-        [NWNEventHandler("rest_started")]
+        [NWNEventHandler(ScriptName.OnRestStarted)]
         public static void ClearTemporaryQueuedVariablesOnRest()
         {
             ClearQueuedAbility(OBJECT_SELF);
@@ -412,7 +412,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Whenever a player equips an item, clear any queued abilities.
         /// </summary>
-        [NWNEventHandler("item_eqp_bef")]
+        [NWNEventHandler(ScriptName.OnItemEquipBefore)]
         public static void ClearTemporaryQueuedVariablesOnEquip()
         {
             ClearQueuedAbility(OBJECT_SELF);

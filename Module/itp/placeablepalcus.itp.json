@@ -68859,6 +68859,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Pile of Herbs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dantooine_herb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Pilot Ship"
                     },
                     "RESREF": {
@@ -74897,6 +74908,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_flrh001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Cushion Pile, White"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nwplc_cushpilwh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nwed_flrlntrn002"
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16812168
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nwed_mixbarshlf"
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16812336
                     }
                   }
                 ]

@@ -6766,6 +6766,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Nurse Shelby"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ngh_velesshelby1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Onmofo"
                     },
                     "RESREF": {
@@ -7189,6 +7208,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wook_shaman"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sharene"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hutl_sharenebysk"
                     }
                   },
                   {
@@ -7933,6 +7971,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "5CR4P"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cz220_5cr4p"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 0.125
                     },
                     "FACTION": {
@@ -8136,6 +8193,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "naah"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "P3DRO"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ngh_moncalap3dr0"
                     }
                   },
                   {
@@ -10005,6 +10081,30 @@
                 "type": "byte",
                 "value": 3
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 39.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Merchant"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "SithBasementGiver"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithbasementgive"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6691
@@ -11518,6 +11618,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rogue Initiate"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "korriinitiate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 8.0
                     },
                     "FACTION": {
@@ -11683,6 +11802,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vkorrdungate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 19.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tuk'ata "
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tukata"
                     }
                   }
                 ]

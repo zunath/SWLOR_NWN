@@ -1,0 +1,246 @@
+@namespace SWLOR.Admin.Shared.Components
+@using SWLOR.Game.Server.Service.SkillService
+@using SWLOR.Game.Server.Enumeration
+@using System.Linq
+@using SWLOR.Game.Server.Extension
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-graduation-cap"></i> Experience Points</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>Unallocated XP:</strong></td>
+                        <td>@Player.UnallocatedXP</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Unallocated SP:</strong></td>
+                        <td>@Player.UnallocatedSP</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Unallocated AP:</strong></td>
+                        <td>@Player.UnallocatedAP</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total SP Acquired:</strong></td>
+                        <td>@Player.TotalSPAcquired</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total AP Acquired:</strong></td>
+                        <td>@Player.TotalAPAcquired</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DM XP Bonus:</strong></td>
+                        <td>@Player.DMXPBonus</td>
+                    </tr>
+                    <tr>
+                        <td><strong>XP Debt:</strong></td>
+                        <td>@Player.XPDebt</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-star"></i> Skills Overview</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Total Skills:</strong> @Player.Skills.Count</p>
+                <p><strong>Unlocked Recipes:</strong> @Player.UnlockedRecipes.Count</p>
+                <p><strong>Crafted Recipes:</strong> @Player.CraftedRecipes.Count</p>
+                <p><strong>Key Items:</strong> @Player.KeyItems.Count</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list"></i> Skills Detail</h5>
+            </div>
+            <div class="card-body">
+                @{
+                    var combatSkills = GetSkillsByCategory(SkillCategoryType.Combat);
+                    var craftingSkills = GetSkillsByCategory(SkillCategoryType.Crafting);
+                    var utilitySkills = GetSkillsByCategory(SkillCategoryType.Utility);
+                    var languageSkills = GetSkillsByCategory(SkillCategoryType.Languages);
+                }
+
+                @if (combatSkills.Any())
+                {
+                    <h6 class="text-danger mb-3"><i class="fas fa-crosshairs"></i> Combat Skills</h6>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-striped table-sm">
+                            <thead class="table-danger">
+                                <tr>
+                                    <th>Skill</th>
+                                    <th>Rank</th>
+                                    <th>XP</th>
+                                    <th>Locked</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var skill in combatSkills)
+                                {
+                                    <tr>
+                                        <td>@GetSkillDisplayName(skill.Key)</td>
+                                        <td>@skill.Value.Rank</td>
+                                        <td>@skill.Value.XP</td>
+                                        <td>@(skill.Value.IsLocked ? "Yes" : "No")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                @if (craftingSkills.Any())
+                {
+                    <h6 class="text-warning mb-3"><i class="fas fa-tools"></i> Crafting Skills</h6>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-striped table-sm">
+                            <thead class="table-warning">
+                                <tr>
+                                    <th>Skill</th>
+                                    <th>Rank</th>
+                                    <th>XP</th>
+                                    <th>Locked</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var skill in craftingSkills)
+                                {
+                                    <tr>
+                                        <td>@GetSkillDisplayName(skill.Key)</td>
+                                        <td>@skill.Value.Rank</td>
+                                        <td>@skill.Value.XP</td>
+                                        <td>@(skill.Value.IsLocked ? "Yes" : "No")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                @if (utilitySkills.Any())
+                {
+                    <h6 class="text-info mb-3"><i class="fas fa-cog"></i> Utility Skills</h6>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-striped table-sm">
+                            <thead class="table-info">
+                                <tr>
+                                    <th>Skill</th>
+                                    <th>Rank</th>
+                                    <th>XP</th>
+                                    <th>Locked</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var skill in utilitySkills)
+                                {
+                                    <tr>
+                                        <td>@GetSkillDisplayName(skill.Key)</td>
+                                        <td>@skill.Value.Rank</td>
+                                        <td>@skill.Value.XP</td>
+                                        <td>@(skill.Value.IsLocked ? "Yes" : "No")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                @if (languageSkills.Any())
+                {
+                    <h6 class="text-success mb-3"><i class="fas fa-language"></i> Language Skills</h6>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-striped table-sm">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Skill</th>
+                                    <th>Rank</th>
+                                    <th>XP</th>
+                                    <th>Locked</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var skill in languageSkills)
+                                {
+                                    <tr>
+                                        <td>@GetSkillDisplayName(skill.Key)</td>
+                                        <td>@skill.Value.Rank</td>
+                                        <td>@skill.Value.XP</td>
+                                        <td>@(skill.Value.IsLocked ? "Yes" : "No")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Player Player { get; set; } = null!;
+
+    protected Dictionary<SkillType, PlayerSkill> GetSkillsByCategory(SkillCategoryType category)
+    {
+        if (Player?.Skills == null) return new Dictionary<SkillType, PlayerSkill>();
+        
+        return Player.Skills
+            .Where(skill => GetSkillCategory(skill.Key) == category)
+            .ToDictionary(s => s.Key, s => s.Value);
+    }
+
+    protected SkillCategoryType GetSkillCategory(SkillType skillType)
+    {
+        // Map skill types to their categories based on the SkillType enum
+        return skillType switch
+        {
+            // Combat Skills
+            SkillType.OneHanded or SkillType.TwoHanded or SkillType.MartialArts or 
+            SkillType.Ranged or SkillType.Force or SkillType.Armor or SkillType.BeastMastery or 
+            SkillType.Devices => SkillCategoryType.Combat,
+            
+            // Crafting Skills
+            SkillType.Smithery or SkillType.Fabrication or SkillType.Gathering or 
+            SkillType.Agriculture or SkillType.Engineering => SkillCategoryType.Crafting,
+            
+            // Utility Skills
+            SkillType.Piloting or SkillType.FirstAid or SkillType.Leadership => SkillCategoryType.Utility,
+            
+            // Language Skills
+            SkillType.Mirialan or SkillType.Bothese or SkillType.Cheunh or SkillType.Zabraki or 
+            SkillType.Twileki or SkillType.Catharese or SkillType.Dosh or SkillType.Shyriiwook or 
+            SkillType.Droidspeak or SkillType.Basic or SkillType.Mandoa or SkillType.Huttese or 
+            SkillType.MonCalamarian or SkillType.Ugnaught or SkillType.Rodese or SkillType.Togruti or 
+            SkillType.KelDor or SkillType.Nautila or SkillType.Ewokese => SkillCategoryType.Languages,
+            
+            _ => SkillCategoryType.Invalid
+        };
+    }
+
+    protected string GetSkillDisplayName(SkillType skillType)
+    {
+        try
+        {
+            // Get the SkillAttribute for the skill type
+            var skillAttribute = skillType.GetAttribute<SkillType, SkillAttribute>();
+            return skillAttribute?.Name ?? skillType.ToString();
+        }
+        catch
+        {
+            // Fallback to enum name if attribute is not found
+            return skillType.ToString();
+        }
+    }
+} 

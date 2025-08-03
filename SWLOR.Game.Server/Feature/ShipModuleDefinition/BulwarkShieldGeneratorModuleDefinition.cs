@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            BulwarkShieldGenerator("bulwarkgen", "Bulwark Shield Generator", "Bulwark Gen", "An advanced suite of shield generators project at a wide range, protecting allied ships and reinforcing their defenses, and forcing most nearby foes to target the user. Lasts 12 seconds.", 10);
+            BulwarkShieldGenerator("bulwarkgen", "Bulwark Shield Generator", "Bulwark Gen", "An advanced suite of shield generators project at a wide range, protecting allied ships and reinforcing their shields.", 10);
 
             return _builder.Build();
         }
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
-                .Type(ShipModuleType.RepairFieldGenerator)
+                .Type(ShipModuleType.BulwarkShieldGenerator)
                 .Texture("iit_ess_075")
                 .Description(description)
                 .PowerType(ShipModulePowerType.High)
@@ -39,11 +39,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .CanTargetSelf()
                 .ActivatedAction((activator, activatorShipStatus, _, _, moduleBonus) =>
                 {
-                    repairAmount += (activatorShipStatus.Industrial + moduleBonus) / 2;
+                    var bonusRecovery = activatorShipStatus.Industrial * moduleBonus;
+                    var recovery = repairAmount + bonusRecovery;
 
-                    ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, 2.0f);
+                    ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), activator, 12.0f);
 
-                    const float Distance = 8f;
+                    const float Distance = 20f;
                     var nearby = GetFirstObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
                     var count = 1;
 
@@ -58,9 +59,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             
                             ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), nearby, 2.0f);
                             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), nearby, 2.0f);
-                            ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4), nearby, 2.0f);
+                            ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4), nearby, 10.0f);
                         
-                            Space.RestoreShield(nearby, nearbyStatus, repairAmount);
+                            Space.RestoreShield(nearby, nearbyStatus, recovery);
 
                             if (GetIsPC(nearby) && !GetIsDM(nearby) && !GetIsDMPossessed(nearby))
                             {
@@ -76,14 +77,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                     ExecuteScript("pc_target_upd", nearby);
                                 }
                             }
+
+                            count++;
                         }
 
                         nearby = GetNextObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
-                        count++;
                     }
 
-                    Enmity.ModifyEnmityOnAll(activator, 250 + (repairAmount * count));
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {repairAmount * count} shield HP to nearby ships, and reinforces their shield integrity.");
+                    Enmity.ModifyEnmityOnAll(activator, 100 + repairAmount);
+                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {recovery} shield HP to nearby ships reinforcing their shield integrity.");
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }

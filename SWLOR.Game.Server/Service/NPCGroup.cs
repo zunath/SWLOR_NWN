@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.NPCService;
+using SWLOR.Game.Server.Service.NPCService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             RegisterNPCGroups();

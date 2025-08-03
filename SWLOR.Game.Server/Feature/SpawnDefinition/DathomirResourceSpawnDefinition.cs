@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void Desert()
         {
             _builder.Create("DATHOMIR_DESERT_RESOURCES")
+                .ResourceDespawnDelay(90) // 1.5 hours for areas with rare arkoxit
                 .AddSpawn(ObjectType.Placeable, "keromber_vein")
                 .WithFrequency(40)
 
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void DesertWestSide()
         {
             _builder.Create("DATHOMIR_DESERT_WEST_SIDE_RESOURCES")
+                .ResourceDespawnDelay(90) // 1.5 hours for areas with rare arkoxit
                 .AddSpawn(ObjectType.Placeable, "keromber_vein")
                 .WithFrequency(40)
 
@@ -83,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void GrottoCaverns()
         {
             _builder.Create("DATHOMIR_GROTTO_CAVERNS_RESOURCES")
+                .ResourceDespawnDelay(90) // 1.5 hours for dangerous cave resources with rare arkoxit
                 .AddSpawn(ObjectType.Placeable, "keromber_vein")
                 .WithFrequency(20)
 
@@ -112,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void Grottos()
         {
             _builder.Create("DATHOMIR_GROTTOS_RESOURCES")
+                .ResourceDespawnDelay(90) // 1.5 hours for grotto resources with rare arkoxit
                 .AddSpawn(ObjectType.Placeable, "keromber_vein")
                 .WithFrequency(20)
 
@@ -144,6 +148,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void Mountains()
         {
             _builder.Create("DATHOMIR_MOUNTAINS_RESOURCES")
+                .ResourceDespawnDelay(90) // 1.5 hours for mountain resources with rare arkoxit
                 .AddSpawn(ObjectType.Placeable, "keromber_vein")
                 .WithFrequency(30)
 
@@ -173,6 +178,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void TarnishedJungles()
         {
             _builder.Create("DATHOMIR_TARNISHED_JUNGLES_RESOURCES")
+                .ResourceDespawnDelay(120) // 2 hours for organic jungle resources
 
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
                 .WithFrequency(10)
@@ -197,6 +203,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void TarnishedJunglesNorth()
         {
             _builder.Create("DATHOMIR_TARNISHED_JUNGLES_NORTH_RESOURCES")
+                .ResourceDespawnDelay(120) // 2 hours for organic jungle resources
 
                 .AddSpawn(ObjectType.Placeable, "herbs_patch_4")
                 .WithFrequency(10)
@@ -221,6 +228,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void TribeVillage()
         {
             _builder.Create("DATHOMIR_TRIBE_VILLAGE_RESOURCES")
+                .ResourceDespawnDelay(90) // 1.5 hours for tribal area with rare arkoxit
                 .AddSpawn(ObjectType.Placeable, "keromber_vein")
                 .WithFrequency(40)
 

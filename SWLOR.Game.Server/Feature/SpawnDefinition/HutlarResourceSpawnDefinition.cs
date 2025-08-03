@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void QionTundra()
         {
             _builder.Create("RESOURCES_HUTLAR_QIONTUNDRA")
+                .ResourceDespawnDelay(120) // 2 hours for cold planet tundra resources
                 .AddSpawn(ObjectType.Placeable, "plagionite_vein")
                 .WithFrequency(40)
                 .AddSpawn(ObjectType.Placeable, "keromber_vein")
@@ -43,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void Valley()
         {
             _builder.Create("RESOURCES_HUTLAR_VALLEY")
+                .ResourceDespawnDelay(120) // 2 hours for valley resources
                 .AddSpawn(ObjectType.Placeable, "plagionite_vein")
                 .WithFrequency(20)
                 .AddSpawn(ObjectType.Placeable, "keromber_vein")
@@ -66,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void Wastes()
         {
             _builder.Create("RESOURCES_HUTLAR_WASTES")
+                .ResourceDespawnDelay(120) // 2 hours for wasteland resources
                 .AddSpawn(ObjectType.Placeable, "plagionite_vein")
                 .WithFrequency(40)
                 .AddSpawn(ObjectType.Placeable, "keromber_vein")
@@ -89,6 +92,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void FrozenCave()
         {
             _builder.Create("RESOURCES_FROZEN_CAVE")
+                .ResourceDespawnDelay(90) // 1.5 hours for dangerous cave resources
                 .AddSpawn(ObjectType.Placeable, "plagionite_vein")
                 .WithFrequency(20)
                 .AddSpawn(ObjectType.Placeable, "keromber_vein")
@@ -107,10 +111,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void QionHiveResources()
         {
             _builder.Create("RESOURCES_HUTLAR_DUNGEON_BYYSK")
+                .ResourceDespawnDelay(60) // 1 hour for rare dungeon loot
                 .AddSpawn(ObjectType.Placeable, "qion_byyskchest")
                 .WithFrequency(1);
 
             _builder.Create("RESOURCES_HUTLAR_DUNGEON_HIVE")
+                .ResourceDespawnDelay(60) // 1 hour for rare dungeon loot
                 .AddSpawn(ObjectType.Placeable, "qion_hivechest")
                 .WithFrequency(1);
         }

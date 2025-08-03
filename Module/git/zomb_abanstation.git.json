@@ -470,7 +470,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -752,8 +751,7 @@
                 "type": "cexostring",
                 "value": "aban_to_hangar_control"
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -4665,7 +4663,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -5137,7 +5134,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -5390,7 +5386,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -243888,9 +243883,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -244959,7 +244952,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -245197,7 +245189,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -245420,7 +245411,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -245643,7 +245633,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -245881,7 +245870,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -246104,7 +246092,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -246327,7 +246314,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -246550,7 +246536,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -246773,7 +246758,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -246996,7 +246980,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -247219,7 +247202,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -247442,7 +247424,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -247665,7 +247646,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -247888,7 +247868,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -248111,7 +248090,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -248334,7 +248312,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -248557,7 +248534,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -248780,7 +248756,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -249003,7 +248978,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -249226,7 +249200,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -249449,7 +249422,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -249672,7 +249644,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -249895,7 +249866,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -250118,7 +250088,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -250341,7 +250310,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -250564,7 +250532,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {

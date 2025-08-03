@@ -90594,7 +90594,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -90919,7 +90918,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {

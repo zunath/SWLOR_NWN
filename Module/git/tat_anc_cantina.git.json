@@ -1569,7 +1569,7 @@
                 "type": "cexolocstring",
                 "value": {
                   "0": "Vet Tatooine",
-                  "2": "Vêtements légers"
+                  "2": "Vï¿½tements lï¿½gers"
                 }
               },
               "Metal1Color": {
@@ -4524,7 +4524,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "dt_barman_gen"
         },
         "CRAdjust": {
           "type": "int",
@@ -6163,13 +6163,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape à l'oeil, ce costumede scène est généralement le préféré des grands musiciens Bith."
+                  "2": "Tape ï¿½ l'oeil, ce costumede scï¿½ne est gï¿½nï¿½ralement le prï¿½fï¿½rï¿½ des grands musiciens Bith."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tape à l'oeil, ce costumede scène est généralement le préféré des grands musiciens Bith."
+                  "2": "Tape ï¿½ l'oeil, ce costumede scï¿½ne est gï¿½nï¿½ralement le prï¿½fï¿½rï¿½ des grands musiciens Bith."
                 }
               },
               "Identified": {
@@ -6187,7 +6187,7 @@
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "2": "Tenue de scène Bith colorée"
+                  "2": "Tenue de scï¿½ne Bith colorï¿½e"
                 }
               },
               "Metal1Color": {
@@ -20108,7 +20108,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "Etagï¿½re Cantina",
             "2": "Bar"
           }
         },
@@ -20334,7 +20334,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Etagère Cantina",
+            "0": "Etagï¿½re Cantina",
             "2": "Bar"
           }
         },
@@ -21244,7 +21244,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Cuve d'expérimentation"
+            "2": "Cuve d'expï¿½rimentation"
           }
         },
         "OnClick": {
@@ -30222,7 +30222,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Gamoréen"
+            "2": "Gamorï¿½en"
           }
         },
         "Looping": {

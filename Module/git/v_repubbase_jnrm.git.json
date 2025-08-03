@@ -1183,9 +1183,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -1416,9 +1414,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -1649,9 +1645,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",

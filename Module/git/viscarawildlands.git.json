@@ -444920,9 +444920,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -445155,9 +445153,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -445390,9 +445386,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -445625,9 +445619,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -445860,9 +445852,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -455101,9 +455091,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -455336,9 +455324,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -455571,9 +455557,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -455806,9 +455790,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -456041,9 +456023,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -456276,9 +456256,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -456511,9 +456489,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -456746,9 +456722,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -456981,9 +456955,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -457216,9 +457188,7 @@
         },
         "VarTable": {
           "type": "list",
-          "value": [
-
-          ]
+          "value": []
         },
         "Will": {
           "type": "byte",
@@ -457452,7 +457422,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {

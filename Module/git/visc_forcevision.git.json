@@ -8856,7 +8856,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -9118,8 +9117,7 @@
                 "type": "int",
                 "value": 3
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -9352,7 +9350,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -9600,7 +9597,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {

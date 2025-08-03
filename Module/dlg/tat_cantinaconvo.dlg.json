@@ -21,6 +21,10 @@
     "value": [
       {
         "__struct_id": 0,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -50,9 +54,13 @@
                 "type": "resref",
                 "value": ""
               },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
               "Index": {
                 "type": "dword",
-                "value": 0
+                "value": 1
               },
               "IsChild": {
                 "type": "byte",
@@ -65,9 +73,13 @@
                 "type": "resref",
                 "value": ""
               },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
               "Index": {
                 "type": "dword",
-                "value": 1
+                "value": 0
               },
               "IsChild": {
                 "type": "byte",
@@ -99,7 +111,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 17
+    "value": 19
   },
   "PreventZoomIn": {
     "type": "byte",
@@ -110,6 +122,10 @@
     "value": [
       {
         "__struct_id": 0,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -136,7 +152,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "tat_cantinascrip"
+          "value": ""
         },
         "Sound": {
           "type": "resref",
@@ -145,12 +161,28 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Yeah, Sure."
+            "0": "Not right now."
           }
         }
       },
       {
         "__struct_id": 1,
+        "ActionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-open-store"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              }
+            }
+          ]
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -177,7 +209,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": ""
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -186,7 +218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Nope..."
+            "0": "Yeah, sure."
           }
         }
       }
@@ -200,6 +232,10 @@
         "Active": {
           "type": "resref",
           "value": ""
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": []
         },
         "Index": {
           "type": "dword",

@@ -286,5 +286,44 @@ namespace SWLOR.Game.Server.Service
 
             DB.Set(dbPlayer);
         }
+
+        /// <summary>
+        /// Calculates the maximum amount of XP that can be distributed to a skill without any loss.
+        /// This prevents players from accidentally losing XP when distributing to skills at or near their maximum rank.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <param name="skillType">The skill type to check</param>
+        /// <returns>The maximum amount of XP that can be safely distributed</returns>
+        public static int GetMaxDistributableXP(uint player, SkillType skillType)
+        {
+            if (skillType == SkillType.Invalid || !GetIsPC(player) || GetIsDM(player)) 
+                return 0;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var skillDetails = GetSkillDetails(skillType);
+            var currentSkill = dbPlayer.Skills[skillType];
+
+            // If skill is already at maximum rank, no XP can be distributed
+            if (currentSkill.Rank >= skillDetails.MaxRank)
+                return 0;
+
+            var totalDistributableXP = 0;
+            var currentRank = currentSkill.Rank;
+            var currentXP = currentSkill.XP;
+
+            // Calculate XP needed to fill remaining ranks
+            while (currentRank < skillDetails.MaxRank)
+            {
+                var requiredXPForNextRank = GetRequiredXP(currentRank);
+                var xpNeededForThisRank = requiredXPForNextRank - currentXP;
+                
+                totalDistributableXP += xpNeededForThisRank;
+                currentRank++;
+                currentXP = 0; // After first rank, we start from 0 XP for subsequent ranks
+            }
+
+            return totalDistributableXP;
+        }
     }
 }

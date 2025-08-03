@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.ForceValor2)
                 .Name("Force Valor II")
-                .EffectIcon(EffectIconType.DamageImmunityDecrease)
+                .EffectIcon(EffectIconType.DamageImmunityIncrease)
                 .Replaces(StatusEffectType.ForceValor1);
         }
     }

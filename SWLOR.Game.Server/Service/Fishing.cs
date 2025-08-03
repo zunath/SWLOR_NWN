@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using System;
 using System.Linq;
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, retrieve and organize all fishing data for quick look-ups.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             LoadFish();
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Runs when a player interacts with a fishing point.
         /// </summary>
-        [NWNEventHandler("fish_point")]
+        [NWNEventHandler(ScriptName.OnFishPoint)]
         public static void ClickFishingPoint()
         {
             void CheckPosition(uint player, Vector3 startPosition, string attemptId)
@@ -283,6 +283,8 @@ namespace SWLOR.Game.Server.Service
 
             if (!GetIsObjectValid(fishingPoint) || GetIsDead(fishingPoint))
             {
+                // Clear any existing busy state if the fishing point is exhausted
+                Activity.ClearBusy(player);
                 SendMessageToPC(player, "This fishing point has been exhausted.");
                 return;
             }
@@ -308,7 +310,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Runs when the fishing process completes.
         /// </summary>
-        [NWNEventHandler("finish_fishing")]
+        [NWNEventHandler(ScriptName.OnFinishFishing)]
         public static void FinishFishing()
         {
             var player = OBJECT_SELF;
@@ -335,6 +337,8 @@ namespace SWLOR.Game.Server.Service
 
             if (!GetIsObjectValid(fishingPoint) || GetIsDead(fishingPoint))
             {
+                // Clear any existing busy state if the fishing point is exhausted
+                Activity.ClearBusy(player);
                 SendMessageToPC(player, "This fishing point has been exhausted.");
                 return;
             }

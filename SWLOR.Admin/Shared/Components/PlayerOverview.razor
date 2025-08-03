@@ -1,0 +1,157 @@
+@namespace SWLOR.Admin.Shared.Components
+@using SWLOR.Game.Server.Service.CurrencyService
+@using SWLOR.Game.Server.Enumeration
+@using System.Reflection
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-user"></i> Basic Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>Name:</strong></td>
+                        <td>@Player.Name</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Character Type:</strong></td>
+                        <td>@GetCharacterTypeDisplay()</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Emote Style:</strong></td>
+                        <td>@Player.EmoteStyle</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Appearance ID:</strong></td>
+                        <td>@Player.OriginalAppearanceType</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Appearance Scale:</strong></td>
+                        <td>@Player.AppearanceScale</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-coins"></i> Currency & Tokens</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>Perk Refund Tokens:</strong></td>
+                        <td>@(Player.Currencies.TryGetValue(CurrencyType.PerkRefundToken, out var perkRefund) ? perkRefund : 0)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Rebuild Tokens:</strong></td>
+                        <td>@(Player.Currencies.TryGetValue(CurrencyType.RebuildToken, out var rebuild) ? rebuild : 0)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Market Till:</strong></td>
+                        <td>@Player.MarketTill</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Property Taxes Owed:</strong></td>
+                        <td>@Player.PropertyOwedTaxes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Date Perk Refund Available:</strong></td>
+                        <td>@(Player.DatePerkRefundAvailable?.ToString("yyyy-MM-dd HH:mm") ?? "N/A")</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-cog"></i> Player Settings</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>Battle Theme ID:</strong></td>
+                        <td>@(Player.Settings.BattleThemeId?.ToString() ?? "None")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Display Achievement Notifications:</strong></td>
+                        <td>@(Player.Settings.DisplayAchievementNotification ? "Yes" : "No")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Holonet Enabled:</strong></td>
+                        <td>@(Player.Settings.IsHolonetEnabled ? "Yes" : "No")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Show Helmet:</strong></td>
+                        <td>@(Player.Settings.ShowHelmet ? "Yes" : "No")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Show Cloak:</strong></td>
+                        <td>@(Player.Settings.ShowCloak ? "Yes" : "No")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Subdual Mode:</strong></td>
+                        <td>@(Player.Settings.IsSubdualModeEnabled ? "Yes" : "No")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lightsaber Force Share:</strong></td>
+                        <td>@(Player.Settings.IsLightsaberForceShareEnabled ? "Yes" : "No")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Server Reset Reminders:</strong></td>
+                        <td>@(Player.Settings.DisplayServerResetReminders ? "Yes" : "No")</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-palette"></i> Chat Colors</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>OOC Chat Color:</strong></td>
+                        <td>
+                            @(Player.Settings.OOCChatColor != null
+                                ? $"RGB({Player.Settings.OOCChatColor.Red}, {Player.Settings.OOCChatColor.Green}, {Player.Settings.OOCChatColor.Blue})"
+                                : "N/A")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Emote Chat Color:</strong></td>
+                        <td>
+                            @(Player.Settings.EmoteChatColor != null
+                                ? $"RGB({Player.Settings.EmoteChatColor.Red}, {Player.Settings.EmoteChatColor.Green}, {Player.Settings.EmoteChatColor.Blue})"
+                                : "N/A")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Language Chat Colors:</strong></td>
+                        <td>@Player.Settings.LanguageChatColors.Count configured</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Player Player { get; set; } = null!;
+
+    private string GetCharacterTypeDisplay()
+    {
+        var field = Player.CharacterType.GetType().GetField(Player.CharacterType.ToString());
+        var attribute = field?.GetCustomAttribute<CharacterTypeAttribute>();
+        return attribute?.Name ?? Player.CharacterType.ToString();
+    }
+} 

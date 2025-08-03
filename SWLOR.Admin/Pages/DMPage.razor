@@ -1,4 +1,6 @@
 ﻿@page "/dm"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = "DiscordAdmin")]
 @using SWLOR.Game.Server.Enumeration
 
 <h3>DMs (@_totalRecords)</h3>

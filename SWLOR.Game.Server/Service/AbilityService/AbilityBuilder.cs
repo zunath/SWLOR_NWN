@@ -289,6 +289,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Indicates this ability breaks stealth and invisibility when used.
+        /// </summary>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder BreaksStealth()
+        {
+            _activeAbility.BreaksStealth = true;
+
+            return this;
+        }
+
+        /// <summary>
         /// Saves the ability level of the ability to be pulled when used later.
         /// </summary>
         /// <param name="level">The level of the ability</param>

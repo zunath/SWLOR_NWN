@@ -19963,8 +19963,7 @@
                 "type": "cexostring",
                 "value": "Key_Sheriff"
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -20216,8 +20215,7 @@
                 "type": "cexostring",
                 "value": "Key_Sheriff"
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -21135,8 +21133,7 @@
                 "type": "cexostring",
                 "value": "The holding cells are Czerka Law Enforcement access only."
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -21403,8 +21400,7 @@
                 "type": "cexostring",
                 "value": "Reckon y'oughta ask 'fore tryin' ta get into a woman's bedroom, fella."
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -22105,8 +22101,7 @@
                 "type": "cexostring",
                 "value": "Nice try."
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -22373,8 +22368,7 @@
                 "type": "cexostring",
                 "value": "Nope."
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -22858,8 +22852,7 @@
                 "type": "cexostring",
                 "value": "Uh-uh."
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -23111,8 +23104,7 @@
                 "type": "cexostring",
                 "value": "Key_Sheriff"
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -23365,7 +23357,6 @@
                 "value": "Key_Sheriff"
               }
             },
-
             {
               "__struct_id": 0,
               "Name": {
@@ -23647,8 +23638,7 @@
                 "type": "cexostring",
                 "value": "Wow, it worked! You're free! Just kidding."
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -23900,8 +23890,7 @@
                 "type": "cexostring",
                 "value": "Key_Sheriff"
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -77586,7 +77575,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {

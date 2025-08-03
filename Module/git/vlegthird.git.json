@@ -68861,8 +68861,7 @@
                 "type": "int",
                 "value": 0
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -94127,8 +94126,7 @@
                 "type": "int",
                 "value": 0
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -94392,8 +94390,7 @@
                 "type": "int",
                 "value": 0
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -94657,8 +94654,7 @@
                 "type": "int",
                 "value": 0
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -95122,7 +95118,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {

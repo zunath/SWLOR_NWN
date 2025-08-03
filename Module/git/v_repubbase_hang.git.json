@@ -29593,7 +29593,7 @@
         },
         "OnClick": {
           "type": "resref",
-          "value": "script_3"
+          "value": ""
         },
         "OnClosed": {
           "type": "resref",
@@ -29601,7 +29601,7 @@
         },
         "OnDamaged": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnDeath": {
           "type": "resref",
@@ -29613,7 +29613,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_2"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -29714,26 +29714,12 @@
         "VarTable": {
           "type": "list",
           "value": [
+
             {
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.ControlTower.OnDamaged"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_2"
+                "value": ""
               },
               "Type": {
                 "type": "dword",
@@ -29748,7 +29734,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_3"
+                "value": ""
               },
               "Type": {
                 "type": "dword",
@@ -35760,7 +35746,7 @@
         },
         "OnClick": {
           "type": "resref",
-          "value": "script_3"
+          "value": ""
         },
         "OnClosed": {
           "type": "resref",
@@ -35768,7 +35754,7 @@
         },
         "OnDamaged": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnDeath": {
           "type": "resref",
@@ -35780,7 +35766,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_2"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -35881,26 +35867,12 @@
         "VarTable": {
           "type": "list",
           "value": [
+
             {
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.ControlTower.OnDamaged"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_2"
+                "value": ""
               },
               "Type": {
                 "type": "dword",
@@ -35915,7 +35887,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_3"
+                "value": ""
               },
               "Type": {
                 "type": "dword",

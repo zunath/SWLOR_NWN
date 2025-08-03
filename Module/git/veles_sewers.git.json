@@ -24401,21 +24401,7 @@
                 "value": "SEWERS_VELES_COUNCIL"
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -24678,21 +24664,7 @@
                 "value": "SEWERS_VELES_CANTINA"
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -24955,21 +24927,7 @@
                 "value": "SEWERS_VELES_STARPORT"
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -55430,21 +55388,7 @@
                 "value": "SEWERS_VELES_INDUSTRIAL_INSIDE"
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -55707,21 +55651,7 @@
                 "value": "SEWERS_VELES_INDUSTRIAL"
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -55984,21 +55914,7 @@
                 "value": "SEWERS_VELES_RESIDENTIAL"
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -56261,21 +56177,7 @@
                 "value": "SEWERS_VELES_SLUMS"
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -56538,21 +56440,7 @@
                 "value": "SEWERS_VELES_SMUGGLER"
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -56815,21 +56703,7 @@
                 "value": "SEWERS_VELES_MEDICAL"
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -57092,21 +56966,7 @@
                 "value": "SEWERS_VELES_APARTMENT"
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -58719,21 +58579,7 @@
                 "value": "SEWERS_VELES_MARKET"
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {

@@ -37,9 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            // If activator is in stealth mode, force them out of stealth mode.
-            if (GetActionMode(activator, ActionMode.Stealth) == true)
-                SetActionMode(activator, ActionMode.Stealth, false);
+
             int dmg;
             int dc;
             const float Duration = 12f;
@@ -106,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasRecastDelay(RecastGroup.Slam, 30f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -117,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasRecastDelay(RecastGroup.Slam, 30f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -128,6 +128,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasRecastDelay(RecastGroup.Slam, 30f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

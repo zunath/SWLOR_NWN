@@ -33,6 +33,23 @@ namespace SWLOR.Game.Server.Feature
         private const string ActiveAbilityEffectivePerkLevelName = "ACTIVE_ABILITY_EFFECTIVE_PERK_LEVEL";
 
         /// <summary>
+        /// Breaks stealth and invisibility effects if the ability is configured to do so.
+        /// </summary>
+        /// <param name="activator">The creature using the ability</param>
+        /// <param name="ability">The ability details</param>
+        private static void HandleStealthBreaking(uint activator, AbilityDetail ability)
+        {
+            if (!ability.BreaksStealth) return;
+
+            // If activator is in stealth mode, force them out of stealth mode.
+            if (GetActionMode(activator, ActionMode.Stealth))
+                SetActionMode(activator, ActionMode.Stealth, false);
+
+            // Remove invisibility effects (stealth generator)
+            RemoveEffect(activator, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility);
+        }
+
+        /// <summary>
         /// When a creature uses any feat, this will check and see if the feat is registered with the perk system.
         /// If it is, requirements to use the feat will be checked and then the ability will activate.
         /// If there are errors at any point in this process, the creature will be notified and the execution will end.
@@ -248,6 +265,7 @@ namespace SWLOR.Game.Server.Feature
                 DeleteLocalInt(activator, activationId);
 
                 ApplyRequirementEffects(activator, ability);
+                HandleStealthBreaking(activator, ability);
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
 
@@ -381,6 +399,7 @@ namespace SWLOR.Game.Server.Feature
             if (!Ability.IsFeatRegistered(activeWeaponAbility)) return;
 
             var abilityDetail = Ability.GetAbilityDetail(activeWeaponAbility);
+            HandleStealthBreaking(activator, abilityDetail);
             abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
 
             DeleteLocalString(activator, ActiveAbilityIdName);

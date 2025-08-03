@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature
             "mace", 
             "windu",
             "padme", 
-            "padmé", 
+            "padm�", 
             "amidala", 
             "poe", 
             "dameron", 
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a player enters, check their character name. If the name contains reserved words,
         /// boot them out with a message saying so.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void CheckName()
         {
             var player = GetEnteringObject();

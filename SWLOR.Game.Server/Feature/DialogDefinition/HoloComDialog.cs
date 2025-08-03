@@ -47,9 +47,47 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 });
                 page.AddResponse($"Decline incoming call from {callerName}", () =>
                 {
-                    HoloCom.SetIsInCall(player, callSender, false);
+                    // Notify the sender that their call was declined
+                    SendMessageToPC(callSender, "Your HoloCom call was declined.");
+                    
+                    // Clean up call attempt state
+                    HoloCom.CleanupCallAttempt(callSender, player);
+                    
                     EndConversation();
                 });
+            }
+
+            // Add cancel call option for outgoing calls
+            if (HoloCom.IsCallSender(player) && !HoloCom.IsInCall(player))
+            {
+                var callReceiver = HoloCom.GetCallReceiver(player);
+                if (GetIsObjectValid(callReceiver))
+                {
+                    var receiverName = GetName(callReceiver);
+                    page.AddResponse($"Cancel outgoing call to {receiverName}", () =>
+                    {
+                        // Notify the receiver that the call attempt has ended
+                        SendMessageToPC(callReceiver, "Your HoloCom stops buzzing.");
+                        
+                        // Clean up call attempt state
+                        HoloCom.CleanupCallAttempt(player, callReceiver);
+                        
+                        SendMessageToPC(player, "You cancel your HoloCom call.");
+                        EndConversation();
+                    });
+                }
+                else
+                {
+                    // If receiver is no longer valid, just show a generic cancel option
+                    page.AddResponse("Cancel outgoing call", () =>
+                    {
+                        // Clean up call attempt state
+                        HoloCom.CleanupCallAttempt(player, callReceiver);
+                        
+                        SendMessageToPC(player, "You cancel your HoloCom call.");
+                        EndConversation();
+                    });
+                }
             }
 
             if (HoloCom.IsCallReceiver(player) || HoloCom.IsInCall(player) || HoloCom.IsCallSender(player)) 
@@ -83,6 +121,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private void CallPlayer(uint sender, uint receiver)
         {
+            // Check if both players are still valid before proceeding
+            if (!GetIsObjectValid(sender) || !GetIsObjectValid(receiver))
+            {
+                // Clean up any remaining call attempt state
+                if (GetIsObjectValid(sender))
+                {
+                    HoloCom.CleanupCallAttempt(sender, receiver);
+                    SendMessageToPC(sender, "Your HoloCom call went unanswered.");
+                }
+                return;
+            }
+
             if (HoloCom.IsInCall(sender) || HoloCom.IsInCall(receiver)) return;
 
             if (!HoloCom.IsCallSender(sender)) return;

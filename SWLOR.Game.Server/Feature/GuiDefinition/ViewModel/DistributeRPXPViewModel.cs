@@ -75,15 +75,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SkillName = initialPayload.SkillName;
             AvailableRPXP = $"Available RP XP: {initialPayload.MaxRPXP}";
             
-            if (_maxDistributableXP == 0)
-            {
-                MaxDistributableInfo = "Skill at max rank - no XP accepted";
-            }
-            else
-            {
-                var maxUsable = Math.Min(_availableRPXP, _maxDistributableXP);
-                MaxDistributableInfo = $"Max distributable to this skill: {maxUsable} XP";
-            }
+            UpdateMaxDistributableInfo();
 
             WatchOnClient(model => model.Distribution);
         }
@@ -137,15 +129,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP);
         };
 
-        public void Refresh(RPXPRefreshEvent payload)
+        private void UpdateMaxDistributableInfo()
         {
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            _availableRPXP = dbPlayer.UnallocatedXP;
-            _maxDistributableXP = Skill.GetMaxDistributableXP(Player, _skillType);
-            AvailableRPXP = $"Available RP XP: {dbPlayer.UnallocatedXP}";
-            
             if (_maxDistributableXP == 0)
             {
                 MaxDistributableInfo = "Skill at max rank - no XP accepted";
@@ -155,6 +140,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var maxUsable = Math.Min(_availableRPXP, _maxDistributableXP);
                 MaxDistributableInfo = $"Max distributable to this skill: {maxUsable} XP";
             }
+        }
+
+        public void Refresh(RPXPRefreshEvent payload)
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            _availableRPXP = dbPlayer.UnallocatedXP;
+            _maxDistributableXP = Skill.GetMaxDistributableXP(Player, _skillType);
+            AvailableRPXP = $"Available RP XP: {dbPlayer.UnallocatedXP}";
+            
+            UpdateMaxDistributableInfo();
         }
     }
 }

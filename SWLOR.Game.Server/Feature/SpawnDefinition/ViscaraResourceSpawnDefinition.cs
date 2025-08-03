@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void Cavern()
         {
             _builder.Create("RESOURCES_VISCARA_CAVERN")
+                .ResourceDespawnDelay(240) // 4 hours for tier 1 resources
                 .AddSpawn(ObjectType.Placeable, "veldite_vein")
                 .WithFrequency(60)
 
@@ -35,12 +36,14 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void CoxxionBase()
         {
             _builder.Create("COXXION_BASE_SCAVENGE")
+                .ResourceDespawnDelay(90) // 1.5 hours for scavenge items
                 .AddSpawn(ObjectType.Placeable, "v_cox_scav");
         }
 
         private void DeepMountainsResources()
         {
             _builder.Create("RESOURCES_VISCARA_DEEPMOUNTAINS")
+                .ResourceDespawnDelay(120) // 2 hours for higher tier resources
                 .AddSpawn(ObjectType.Placeable, "veldite_vein")
                 .WithFrequency(10)
 
@@ -63,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void MandalorianFacilityResources()
         {
             _builder.Create("RESOURCES_VISCARA_MANDALORIANFACILITY")
+                .ResourceDespawnDelay(180) // 3 hours for special loot
                 .AddSpawn(ObjectType.Placeable, "mando_crate");
         }
 
@@ -94,6 +98,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void WildlandsResources()
         {
             _builder.Create("RESOURCES_VISCARA_WILDLANDS")
+                .ResourceDespawnDelay(300) // 5 hours for basic/starting resources
                 .AddSpawn(ObjectType.Placeable, "veldite_vein")
                 .WithFrequency(20)
 
@@ -160,6 +165,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void VelesSewersResources()
         {
             _builder.Create("RESOURCES_VISCARA_VELESSEWERS")
+                .ResourceDespawnDelay(120) // 2 hours for junk/scrap
                 .AddSpawn(ObjectType.Placeable, "cz220_junk");
         }
     }

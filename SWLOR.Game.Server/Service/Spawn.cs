@@ -43,10 +43,18 @@ namespace SWLOR.Game.Server.Service
             public Guid SpawnDetailId { get; set; }
         }
 
+        private class ResourceDespawn
+        {
+            public uint ResourceObject { get; set; }
+            public DateTime DespawnTime { get; set; }
+            public Guid SpawnDetailId { get; set; }
+        }
+
         private static readonly Dictionary<Guid, SpawnDetail> _spawns = new();
         private static readonly List<QueuedSpawn> _queuedSpawns = new();
         private static readonly Dictionary<uint, List<QueuedSpawn>> _queuedSpawnsByArea = new();
         private static readonly Dictionary<uint, DateTime> _queuedAreaDespawns = new();
+        private static readonly List<ResourceDespawn> _queuedResourceDespawns = new();
         private static readonly Dictionary<string, SpawnTable> _spawnTables = new();
         private static readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new();
         private static readonly Dictionary<uint, List<ActiveSpawn>> _activeSpawnsByArea = new();
@@ -321,6 +329,36 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Queues a resource for despawning after the configured amount of time.
+        /// This is automatically called when resources are spawned from resource spawn tables.
+        /// A random variance of ±25% is applied to prevent all resources from despawning simultaneously.
+        /// </summary>
+        /// <param name="resourceObject">The resource object to despawn</param>
+        /// <param name="spawnDetailId">The spawn detail ID of the resource</param>
+        /// <param name="despawnMinutes">The number of minutes before despawning</param>
+        private static void QueueResourceDespawn(uint resourceObject, Guid spawnDetailId, int despawnMinutes)
+        {
+            var now = DateTime.UtcNow;
+            
+            // Add random variance of ±25% to stagger despawn times
+            var variancePercent = Random.Next(-25, 26); // -25% to +25%
+            var variance = (int)(despawnMinutes * (variancePercent / 100.0f));
+            var actualDespawnMinutes = despawnMinutes + variance;
+            
+            // Ensure minimum despawn time of 1 minute
+            if (actualDespawnMinutes < 1)
+                actualDespawnMinutes = 1;
+            
+            var resourceDespawn = new ResourceDespawn
+            {
+                ResourceObject = resourceObject,
+                DespawnTime = now.AddMinutes(actualDespawnMinutes),
+                SpawnDetailId = spawnDetailId
+            };
+            _queuedResourceDespawns.Add(resourceDespawn);
+        }
+
+        /// <summary>
         /// Creates a queued spawn record which is picked up by the processor.
         /// The spawn object will be created when the respawn time has passed.
         /// </summary>
@@ -385,6 +423,7 @@ namespace SWLOR.Game.Server.Service
         {
             ProcessQueuedSpawns();
             ProcessDespawnAreas();
+            ProcessResourceDespawns();
         }
 
         /// <summary>
@@ -411,6 +450,8 @@ namespace SWLOR.Game.Server.Service
                         queuedSpawn.RespawnTime = now.AddMinutes(detail.RespawnDelayMinutes);
                         continue;
                     }
+
+
 
                     var activeSpawn = new ActiveSpawn
                     {
@@ -468,6 +509,13 @@ namespace SWLOR.Game.Server.Service
                     var spawnIds = _queuedSpawnsByArea[area].Select(s => s.SpawnDetailId);
                     _queuedSpawns.RemoveAll(x => spawnIds.Contains(x.SpawnDetailId));
 
+                    // Remove area-specific resource despawns as well
+                    if (_activeSpawnsByArea.ContainsKey(area))
+                    {
+                        var areaSpawnObjects = _activeSpawnsByArea[area].Select(x => x.SpawnObject);
+                        _queuedResourceDespawns.RemoveAll(x => areaSpawnObjects.Contains(x.ResourceObject));
+                    }
+
                     // Remove area from the various cache collections.
                     _queuedSpawnsByArea.Remove(area);
 
@@ -477,6 +525,47 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     _queuedAreaDespawns.Remove(area);
+                }
+            }
+        }
+
+        /// <summary>
+        /// On each module heartbeat, iterate over the list of resources which are scheduled to
+        /// be despawned naturally. If enough time has passed, despawn the resource.
+        /// </summary>
+        private static void ProcessResourceDespawns()
+        {
+            var now = DateTime.UtcNow;
+            for (var index = _queuedResourceDespawns.Count - 1; index >= 0; index--)
+            {
+                var resourceDespawn = _queuedResourceDespawns[index];
+                
+                // Resource object no longer exists, remove from queue
+                if (!GetIsObjectValid(resourceDespawn.ResourceObject))
+                {
+                    _queuedResourceDespawns.RemoveAt(index);
+                    continue;
+                }
+
+                if (now > resourceDespawn.DespawnTime)
+                {
+                    // Execute the despawn script and remove the resource
+                    ExecuteScript("spawn_despawn", resourceDespawn.ResourceObject);
+                    SetPlotFlag(resourceDespawn.ResourceObject, false);
+                    ApplyEffectToObject(DurationType.Instant, EffectDeath(), resourceDespawn.ResourceObject);
+
+                    // Remove from active spawns and queue a respawn
+                    var spawnDetail = _spawns[resourceDespawn.SpawnDetailId];
+                    if (_activeSpawnsByArea.ContainsKey(spawnDetail.Area))
+                    {
+                        _activeSpawnsByArea[spawnDetail.Area].RemoveAll(x => x.SpawnObject == resourceDespawn.ResourceObject);
+                    }
+
+                    // Queue for respawn
+                    var respawnTime = now.AddMinutes(spawnDetail.RespawnDelayMinutes);
+                    CreateQueuedSpawn(resourceDespawn.SpawnDetailId, respawnTime);
+
+                    _queuedResourceDespawns.RemoveAt(index);
                 }
             }
         }
@@ -648,6 +737,12 @@ namespace SWLOR.Game.Server.Service
                 foreach (var action in spawnObject.OnSpawnActions)
                 {
                     action(spawn);
+                }
+
+                // If this is a placeable (resource) from a spawn table, queue it for natural despawning
+                if (spawnObject.Type == ObjectType.Placeable && spawnTable.ResourceDespawnMinutes > 0)
+                {
+                    QueueResourceDespawn(spawn, spawnId, spawnTable.ResourceDespawnMinutes);
                 }
 
                 return spawn;

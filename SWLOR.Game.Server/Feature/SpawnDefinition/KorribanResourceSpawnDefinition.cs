@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void WastelandsResources()
         {
             _builder.Create("KORRIBAN_WASTELANDS_RESOURCES", "Wastelands")
+                .ResourceDespawnDelay(180) // 3 hours for mid-tier planet resources
                 .AddSpawn(ObjectType.Placeable, "scordspar_vein")
                 .WithFrequency(50)
 
@@ -38,6 +39,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void ValleyResources()
         {
             _builder.Create("KORRIBAN_VALLEY_RESOURCES", "Valley")
+                .ResourceDespawnDelay(180) // 3 hours for mid-tier planet resources
                 .AddSpawn(ObjectType.Placeable, "scordspar_vein")
                 .WithFrequency(50)
 
@@ -51,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void RavineResources()
         {
             _builder.Create("KORRIBAN_RAVINE_RESOURCES", "Ravine")
+                .ResourceDespawnDelay(180) // 3 hours for mid-tier planet resources
                 .AddSpawn(ObjectType.Placeable, "scordspar_vein")
                 .WithFrequency(50)
 
@@ -64,6 +67,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void CavernsResources()
         {
             _builder.Create("KORRIBAN_CAVERNS_RESOURCES", "Caverns")
+                .ResourceDespawnDelay(90) // 1.5 hours for higher tier resources with plagionite
                 .AddSpawn(ObjectType.Placeable, "scordspar_vein")
                 .WithFrequency(30)
 
@@ -83,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void DunesResources()
         {
             _builder.Create("KORRIBAN_DUNES_RESOURCES", "Dunes")
+                .ResourceDespawnDelay(90) // 1.5 hours for areas with rare plagionite
                 .AddSpawn(ObjectType.Placeable, "scordspar_vein")
                 .WithFrequency(50)
 
@@ -99,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void SithCryptResources()
         {
             _builder.Create("KORRIBAN_SITH_CRYPT_RESOURCES", "Sith Crypt")
+                .ResourceDespawnDelay(60) // 1 hour for rare dungeon loot
                 .AddSpawn(ObjectType.Placeable, "sithcrypt_box_1")
                 .WithFrequency(50)
 
@@ -112,10 +118,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void SithFortressResources()
         {
             _builder.Create("KorribanDungeonLootTemple")
+                .ResourceDespawnDelay(45) // 45 minutes for elite dungeon loot
                 .AddSpawn(ObjectType.Placeable, "korrduntemple")
                 .WithFrequency(1);
 
             _builder.Create("KorribanDungeonLootForge")
+                .ResourceDespawnDelay(45) // 45 minutes for elite dungeon loot
                 .AddSpawn(ObjectType.Placeable, "korrdunforge")
                 .WithFrequency(1);
         }

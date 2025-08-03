@@ -11,12 +11,14 @@ namespace SWLOR.Game.Server.Service.SpawnService
     {
         public string Name { get; set; }
         public int RespawnDelayMinutes { get; set; }
+        public int ResourceDespawnMinutes { get; set; }
         public List<SpawnObject> Spawns { get; set; }
 
         public SpawnTable(string name)
         {
             Name = name;
             RespawnDelayMinutes = Spawn.DefaultRespawnMinutes;
+            ResourceDespawnMinutes = 180; // Default: 3 hours for resources
             Spawns = new List<SpawnObject>();
         }
 

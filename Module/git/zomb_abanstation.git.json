@@ -365,7 +365,7 @@
         },
         "OnClick": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnClosed": {
           "type": "resref",
@@ -470,21 +470,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.Quests.AbandonedStation.TransitionClick"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -632,7 +618,7 @@
         },
         "OnClick": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnClosed": {
           "type": "resref",
@@ -767,21 +753,7 @@
                 "value": "aban_to_hangar_control"
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.Quests.AbandonedStation.TransitionClick"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -4608,7 +4580,7 @@
         },
         "OnFailToOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnHeartbeat": {
           "type": "resref",
@@ -4693,21 +4665,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.Quests.AbandonedStation.ElevatorDoor"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -5074,7 +5032,7 @@
         },
         "OnClick": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnClosed": {
           "type": "resref",
@@ -5179,21 +5137,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.Quests.AbandonedStation.TransitionClick"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -5341,7 +5285,7 @@
         },
         "OnClick": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnClosed": {
           "type": "resref",
@@ -5446,21 +5390,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.Quests.AbandonedStation.TransitionClick"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -243959,21 +243889,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.Quests.AbandonedStation.ShuttleExit"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -245043,21 +244959,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -245295,21 +245197,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -245532,21 +245420,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -245769,21 +245643,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -246021,21 +245881,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -246258,21 +246104,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -246495,21 +246327,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -246732,21 +246550,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -246969,21 +246773,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -247206,21 +246996,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -247443,21 +247219,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -247680,21 +247442,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -247917,21 +247665,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -248154,21 +247888,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -248391,21 +248111,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -248628,21 +248334,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -248865,21 +248557,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -249102,21 +248780,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -249339,21 +249003,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -249576,21 +249226,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -249813,21 +249449,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -250050,21 +249672,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -250287,21 +249895,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -250524,21 +250118,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -250761,21 +250341,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {
@@ -250998,21 +250564,7 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
+
             {
               "__struct_id": 0,
               "Name": {

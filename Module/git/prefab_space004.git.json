@@ -174,7 +174,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -290,21 +290,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -436,7 +422,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -552,21 +538,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -698,7 +670,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -814,21 +786,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -960,7 +918,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -1076,21 +1034,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -1222,7 +1166,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -1338,21 +1282,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -1484,7 +1414,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -1600,21 +1530,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -1746,7 +1662,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -1862,21 +1778,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -2008,7 +1910,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -2124,21 +2026,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -2270,7 +2158,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -2386,21 +2274,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -2532,7 +2406,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -2648,21 +2522,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -2794,7 +2654,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -2910,21 +2770,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -3056,7 +2902,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -3172,21 +3018,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -3318,7 +3150,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -3434,21 +3266,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -3580,7 +3398,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -3696,21 +3514,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -3842,7 +3646,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -3958,21 +3762,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -4104,7 +3894,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -4220,21 +4010,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -4366,7 +4142,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -4482,21 +4258,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -4628,7 +4390,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -4744,21 +4506,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -4890,7 +4638,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -5006,21 +4754,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -5152,7 +4886,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -5268,21 +5002,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -5414,7 +5134,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -5530,21 +5250,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -5676,7 +5382,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -5792,21 +5498,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -5938,7 +5630,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -6054,21 +5746,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -6200,7 +5878,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -6316,21 +5994,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -6462,7 +6126,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -6578,21 +6242,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -6724,7 +6374,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -6840,21 +6490,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -6986,7 +6622,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -7102,21 +6738,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -7248,7 +6870,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -7364,21 +6986,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -7510,7 +7118,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -7626,21 +7234,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -7772,7 +7366,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -7888,21 +7482,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -8034,7 +7614,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -8150,21 +7730,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -8296,7 +7862,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -8412,21 +7978,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -8558,7 +8110,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -8674,21 +8226,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -8820,7 +8358,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -8936,21 +8474,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -9082,7 +8606,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -9198,21 +8722,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -9344,7 +8854,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -9460,21 +8970,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -9606,7 +9102,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -9722,21 +9218,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -9868,7 +9350,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -9984,21 +9466,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -10130,7 +9598,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -10246,21 +9714,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -10392,7 +9846,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -10508,21 +9962,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -10654,7 +10094,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -10770,21 +10210,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -10916,7 +10342,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -11032,21 +10458,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -11178,7 +10590,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -11294,21 +10706,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -11440,7 +10838,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -11556,21 +10954,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -11702,7 +11086,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -11818,21 +11202,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -11964,7 +11334,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -12080,21 +11450,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -12226,7 +11582,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -12342,21 +11698,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -12488,7 +11830,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -12604,21 +11946,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -12750,7 +12078,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -12866,21 +12194,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -13012,7 +12326,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -13128,21 +12442,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -13274,7 +12574,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -13390,21 +12690,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -13536,7 +12822,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -13652,21 +12938,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -13798,7 +13070,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -13914,21 +13186,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -14060,7 +13318,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -14176,21 +13434,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -14322,7 +13566,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -14438,21 +13682,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -14584,7 +13814,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -14700,21 +13930,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -14846,7 +14062,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -14962,21 +14178,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -15108,7 +14310,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -15224,21 +14426,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -15370,7 +14558,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -15486,21 +14674,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -15632,7 +14806,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -15748,21 +14922,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -15894,7 +15054,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -16010,21 +15170,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -16156,7 +15302,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -16272,21 +15418,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -16418,7 +15550,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -16534,21 +15666,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {
@@ -16680,7 +15798,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -16796,21 +15914,7 @@
                 "value": 14
               }
             },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            }
+
           ]
         },
         "Will": {

@@ -120,8 +120,6 @@
   },
   "VarTable": {
     "type": "list",
-    "value": [
-
-    ]
+    "value": []
   }
 }

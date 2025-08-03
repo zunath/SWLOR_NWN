@@ -282,8 +282,7 @@
                 "type": "int",
                 "value": 550
               }
-            },
-
+            }
           ]
         },
         "Will": {
@@ -506,7 +505,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-
             {
               "__struct_id": 0,
               "Name": {
@@ -991,7 +989,6 @@
                 "value": 1
               }
             },
-
             {
               "__struct_id": 0,
               "Name": {
@@ -1678,7 +1675,6 @@
                 "value": 3
               }
             },
-
             {
               "__struct_id": 0,
               "Name": {

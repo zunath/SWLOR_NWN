@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -320,7 +320,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 });
         }
 
-        [NWNEventHandler("item_on_hit")]
+        [NWNEventHandler(ScriptName.OnItemHit)]
         public static void ApplyAlacrityAndClarity()
         {
             var defender = OBJECT_SELF;

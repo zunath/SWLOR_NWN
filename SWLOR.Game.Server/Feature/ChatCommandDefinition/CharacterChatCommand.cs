@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             Follow();
             ChangeDescription();
             OrderCompanion();
+            ResetWindows();
 
             return _builder.Build();
         }
@@ -122,11 +123,35 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void EndCall()
         {
             _builder.Create("endcall")
-                .Description("Ends your current HoloCom call.")
+                .Description("Ends your current HoloCom call or cancels an outgoing call attempt.")
                 .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    HoloCom.SetIsInCall(user, HoloCom.GetCallReceiver(user), false);
+                    // Handle active calls
+                    if (HoloCom.IsInCall(user))
+                    {
+                        var callTarget = HoloCom.GetTargetForActiveCall(user);
+                        HoloCom.SetIsInCall(user, callTarget, false);
+                        SendMessageToPC(user, "You end your HoloCom call.");
+                    }
+                    // Handle outgoing call attempts
+                    else if (HoloCom.IsCallSender(user))
+                    {
+                        var callReceiver = HoloCom.GetCallReceiver(user);
+                        if (GetIsObjectValid(callReceiver))
+                        {
+                            // Notify the receiver that the call attempt has ended
+                            SendMessageToPC(callReceiver, "Your HoloCom stops buzzing.");
+                        }
+                        
+                        // Clean up call attempt state
+                        HoloCom.CleanupCallAttempt(user, callReceiver);
+                        SendMessageToPC(user, "You cancel your HoloCom call.");
+                    }
+                    else
+                    {
+                        SendMessageToPC(user, "You don't have any active calls or outgoing call attempts to end.");
+                    }
                 });
         }
 
@@ -475,6 +500,55 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     var payload = new TargetDescriptionPayload(target);
                     Gui.TogglePlayerWindow(user, GuiWindowType.TargetDescription, payload);
+                });
+        }
+
+        private void ResetWindows()
+        {
+            _builder.Create("resetwindows")
+                .Description("Resets all window positions and sizes to their default values.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) =>
+                {
+                    // Close all open windows for the player
+                    foreach (GuiWindowType type in Enum.GetValues(typeof(GuiWindowType)))
+                    {
+                        if (type == GuiWindowType.Invalid) continue;
+                        if (Gui.IsWindowOpen(user, type))
+                        {
+                            Gui.TogglePlayerWindow(user, type);
+                        }
+                    }
+
+                    var playerId = GetObjectUUID(user);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    
+                    // Clear all stored window geometries
+                    dbPlayer.WindowGeometries.Clear();
+                    
+                    // Save the player data
+                    DB.Set(dbPlayer);
+                    
+                    // Update all player window instances with default geometries
+                    // This ensures that when windows are reopened, they use default positions
+                    foreach (GuiWindowType type in Enum.GetValues(typeof(GuiWindowType)))
+                    {
+                        if (type == GuiWindowType.Invalid) continue;
+                        
+                        try
+                        {
+                            var playerWindow = Gui.GetPlayerWindow(user, type);
+                            var template = Gui.GetWindowTemplate(type);
+                            playerWindow.ViewModel.Geometry = template.InitialGeometry;
+                        }
+                        catch
+                        {
+                            // Window might not exist for this player, skip it
+                            continue;
+                        }
+                    }
+                    
+                    SendMessageToPC(user, ColorToken.Green("All window positions and sizes have been reset to their default values."));
                 });
         }
     }

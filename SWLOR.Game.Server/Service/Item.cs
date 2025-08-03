@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             Load2DACache();
@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an item is used, if its tag is in the item cache, run it through the action item process.
         /// </summary>
-        [NWNEventHandler("item_use_bef")]
+        [NWNEventHandler(ScriptName.OnItemUseBefore)]
         public static void UseItem()
         {
             var user = OBJECT_SELF;

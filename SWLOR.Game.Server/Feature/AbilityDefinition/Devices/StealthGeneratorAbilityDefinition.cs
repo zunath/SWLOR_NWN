@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
@@ -21,8 +21,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        [NWNEventHandler("harvester_used")]
-        [NWNEventHandler("pc_damaged")]
+        [NWNEventHandler(ScriptName.OnHarvesterUsed)]
+        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
         public static void ClearInvisibility()
         {
             RemoveEffect(OBJECT_SELF, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility);

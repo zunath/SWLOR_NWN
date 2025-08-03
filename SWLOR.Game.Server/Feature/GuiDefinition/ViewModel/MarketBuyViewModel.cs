@@ -252,6 +252,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SelectedPageIndex = newPage;
             _skipPaginationSearch = false;
+            Search();
         };
 
         public Action OnClickNextPage() => () =>
@@ -263,6 +264,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SelectedPageIndex = newPage;
             _skipPaginationSearch = false;
+            Search();
         };
 
         public Action OnClickExamine() => () =>

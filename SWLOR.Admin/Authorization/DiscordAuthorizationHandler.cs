@@ -8,14 +8,25 @@ namespace SWLOR.Admin.Authorization
 
     public class DiscordAuthorizationHandler : AuthorizationHandler<DiscordAuthorizationRequirement>
     {
-        public DiscordAuthorizationHandler()
+        private readonly AuthenticationSettings _authSettings;
+
+        public DiscordAuthorizationHandler(AuthenticationSettings authSettings)
         {
+            _authSettings = authSettings;
         }
 
         protected override Task HandleRequirementAsync(
             AuthorizationHandlerContext context,
             DiscordAuthorizationRequirement requirement)
         {
+            // If Discord auth is not required (e.g., local development), allow access
+            if (!_authSettings.RequireDiscordAuth)
+            {
+                context.Succeed(requirement);
+                return Task.CompletedTask;
+            }
+
+            // Original Discord authentication logic for production
             if (context.User.Identity?.IsAuthenticated == true)
             {
                 // Check the stored permission claim instead of making API calls

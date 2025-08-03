@@ -38,9 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             var dmg = 0;
 
-            // If activator is in stealth mode, force them out of stealth mode.
-            if (GetActionMode(activator, ActionMode.Stealth) == true)
-                SetActionMode(activator, ActionMode.Stealth, false);
+
 
             switch (level)
             {
@@ -96,6 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -110,6 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -124,6 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

@@ -90,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(1)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasImpactAction(ImpactAction);
@@ -106,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(2)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasImpactAction(ImpactAction);
@@ -122,6 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(3)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasImpactAction(ImpactAction);
@@ -138,6 +141,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasImpactAction(ImpactAction);
@@ -153,6 +157,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(5)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasImpactAction(ImpactAction);

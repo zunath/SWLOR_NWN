@@ -53,9 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
         private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            // If activator is in stealth mode, force them out of stealth mode.
-            if (GetActionMode(activator, ActionMode.Stealth) == true)
-                SetActionMode(activator, ActionMode.Stealth, false);
+
             
             switch (level)
             {
@@ -91,6 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasRecastDelay(RecastGroup.TranquilizerShot, 60f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -102,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasRecastDelay(RecastGroup.TranquilizerShot, 60f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -113,6 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasRecastDelay(RecastGroup.TranquilizerShot, 300f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

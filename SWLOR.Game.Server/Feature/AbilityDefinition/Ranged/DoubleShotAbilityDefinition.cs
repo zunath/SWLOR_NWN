@@ -37,10 +37,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             var dmg = 0;
 
-            // If activator is in stealth mode, force them out of stealth mode.
-            if (GetActionMode(activator, ActionMode.Stealth) == true)
-                SetActionMode(activator, ActionMode.Stealth, false);
-
             switch (level)
             {
                 case 1:
@@ -92,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .RequirementStamina(3)
                 .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
@@ -107,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .RequirementStamina(5)
                 .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
@@ -122,6 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .RequirementStamina(8)
                 .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {

@@ -101,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasMaxRange(30.0f)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
@@ -115,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasMaxRange(30.0f)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
@@ -129,6 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasMaxRange(30.0f)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
@@ -143,6 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasMaxRange(30.0f)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }

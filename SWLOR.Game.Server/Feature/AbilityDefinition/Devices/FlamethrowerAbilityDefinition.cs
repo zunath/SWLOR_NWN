@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(1)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var perBonus = GetAbilityScore(activator, AbilityType.Perception);
@@ -105,6 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(2)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var perBonus = GetAbilityScore(activator, AbilityType.Perception);
@@ -123,6 +125,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(3)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var perBonus = GetAbilityScore(activator, AbilityType.Perception);

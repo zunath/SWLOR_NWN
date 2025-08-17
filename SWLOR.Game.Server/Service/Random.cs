@@ -61,11 +61,18 @@
         /// <returns>The index of the selected value</returns>
         public static int GetRandomWeightedIndex(int[] weights)
         {
+            if (weights == null || weights.Length == 0)
+                return -1;
+
             int totalWeight = 0;
             foreach (int weight in weights)
             {
                 totalWeight += weight;
             }
+
+            // If all weights are 0, return -1 to indicate no valid selection
+            if (totalWeight <= 0)
+                return -1;
 
             int randomIndex = -1;
             double random = NextFloat() * totalWeight;
@@ -76,6 +83,19 @@
                 {
                     randomIndex = i;
                     break;
+                }
+            }
+
+            // Fallback: if we somehow didn't select anything, return the first valid index
+            if (randomIndex == -1)
+            {
+                for (int i = 0; i < weights.Length; i++)
+                {
+                    if (weights[i] > 0)
+                    {
+                        randomIndex = i;
+                        break;
+                    }
                 }
             }
 

@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Service
         {
             public DateTime RespawnTime { get; set; }
             public Guid SpawnDetailId { get; set; }
+            public int FailureCount { get; set; } = 0;
         }
 
         private class ResourceDespawn
@@ -120,11 +121,17 @@ namespace SWLOR.Game.Server.Service
                         Log.Write(LogGroup.Error, $"Area has an invalid spawn table Id. ({spawnTableId}) is not defined. Do you have the right spawn table Id?");
                         return;
                     }
+                    
+                    var spawnTable = _spawnTables[spawnTableId];
+                    if (spawnTable.Spawns == null || spawnTable.Spawns.Count == 0)
+                    {
+                        Log.Write(LogGroup.Error, $"Spawn table {spawnTableId} has no spawn objects defined. Skipping area spawn setup.");
+                        return;
+                    }
 
                     for (var count = 1; count <= spawnCount; count++)
                     {
                         var id = Guid.NewGuid();
-                        var spawnTable = _spawnTables[spawnTableId];
                         _spawns.Add(id, new SpawnDetail
                         {
                             SpawnTableId = spawnTableId,
@@ -444,14 +451,26 @@ namespace SWLOR.Game.Server.Service
 
                     // A valid spawn wasn't found because the spawn table didn't provide a resref.
                     // Either the table is configured wrong or the requirements for that specific table weren't met.
-                    // In this case, we bump the next respawn time and move to the next queued respawn.
                     if (spawnedObject == OBJECT_INVALID)
                     {
-                        queuedSpawn.RespawnTime = now.AddMinutes(detail.RespawnDelayMinutes);
+                        queuedSpawn.FailureCount++;
+                        
+                        // If we've failed too many times (10 attempts), remove this spawn to prevent infinite loops
+                        if (queuedSpawn.FailureCount >= 10)
+                        {
+                            Log.Write(LogGroup.Error, $"Spawn {queuedSpawn.SpawnDetailId} failed 10 times consecutively. Removing from queue to prevent infinite spawning. Check spawn table configuration.");
+                            RemoveQueuedSpawn(queuedSpawn);
+                            continue;
+                        }
+                        
+                        // Exponential backoff: delay gets longer with each failure
+                        var backoffMinutes = detail.RespawnDelayMinutes * Math.Pow(2, Math.Min(queuedSpawn.FailureCount - 1, 4)); // Cap at 16x delay
+                        queuedSpawn.RespawnTime = now.AddMinutes(backoffMinutes);
                         continue;
                     }
 
-
+                    // Reset failure count on successful spawn
+                    queuedSpawn.FailureCount = 0;
 
                     var activeSpawn = new ActiveSpawn
                     {

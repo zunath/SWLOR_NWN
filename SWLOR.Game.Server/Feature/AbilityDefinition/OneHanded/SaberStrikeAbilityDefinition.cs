@@ -36,9 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            // If activator is in stealth mode, force them out of stealth mode.
-            if (GetActionMode(activator, ActionMode.Stealth) == true)
-                SetActionMode(activator, ActionMode.Stealth, false);
+
 
             int dmg;
             int dc;
@@ -111,6 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .RequirementStamina(3)
                 .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -123,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .RequirementStamina(5)
                 .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -135,6 +135,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .RequirementStamina(8)
                 .IsWeaponAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

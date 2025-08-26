@@ -50,9 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var delay = GetDistanceBetween(activator, target) / 10.0f;
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
 
-            // If activator is in stealth mode, force them out of stealth mode.
-            if (GetActionMode(activator, ActionMode.Stealth) == true)
-                SetActionMode(activator, ActionMode.Stealth, false);
+
 
             // Make the activator face their target.
             ClearAllActions();
@@ -138,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementStamina(1)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .UnaffectedByHeavyArmor()
@@ -155,6 +154,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementStamina(1)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .UnaffectedByHeavyArmor()
@@ -172,6 +172,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementStamina(2)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .UnaffectedByHeavyArmor()

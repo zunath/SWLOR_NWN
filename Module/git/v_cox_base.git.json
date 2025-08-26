@@ -282,21 +282,6 @@
                 "type": "int",
                 "value": 550
               }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
             }
           ]
         },
@@ -520,21 +505,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            },
             {
               "__struct_id": 0,
               "Name": {
@@ -1017,21 +987,6 @@
               "Value": {
                 "type": "int",
                 "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
               }
             },
             {
@@ -1718,21 +1673,6 @@
               "Value": {
                 "type": "int",
                 "value": 3
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
               }
             },
             {

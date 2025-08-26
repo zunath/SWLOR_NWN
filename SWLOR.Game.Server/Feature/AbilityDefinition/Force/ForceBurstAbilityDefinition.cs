@@ -107,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(1)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
@@ -123,6 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(3)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
@@ -139,6 +141,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(5)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
@@ -155,6 +158,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(7)
                 .IsCastedAbility()
                 .IsHostileAbility()
+                .BreaksStealth()
                 .DisplaysVisualEffectWhenActivating()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);

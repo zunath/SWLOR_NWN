@@ -74,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasMaxRange(15f)
                 .HasImpactAction((activator,target, _, targetLocation) =>
                 {
@@ -96,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
@@ -119,6 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasMaxRange(15f)
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {

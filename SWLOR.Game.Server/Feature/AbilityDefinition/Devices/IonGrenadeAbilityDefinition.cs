@@ -80,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasMaxRange(15f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
@@ -108,6 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasMaxRange(15f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>
@@ -137,6 +139,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasMaxRange(15f)
                 .HasCustomValidation(ExplosiveValidation)
                 .HasImpactAction((activator, _, _, location) =>

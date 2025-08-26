@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private SkillType _skillType;
         private int _availableRPXP;
+        private int _maxDistributableXP;
 
         public string SkillName
         {
@@ -23,6 +24,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string AvailableRPXP
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string MaxDistributableInfo
         {
             get => Get<string>();
             set => Set(value);
@@ -50,9 +57,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (result < 0)
                     rpXP = "0";
 
-                // Handle max
-                if (result > _availableRPXP)
-                    rpXP = _availableRPXP.ToString();
+                // Handle max - limit to the minimum of available RPXP and max distributable XP to prevent loss
+                var maxAllowed = Math.Min(_availableRPXP, _maxDistributableXP);
+                if (result > maxAllowed)
+                    rpXP = maxAllowed.ToString();
 
                 Set(rpXP);
             }
@@ -63,8 +71,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Distribution = "0";
             _availableRPXP = initialPayload.MaxRPXP;
             _skillType = initialPayload.Skill;
+            _maxDistributableXP = Skill.GetMaxDistributableXP(Player, _skillType);
             SkillName = initialPayload.SkillName;
             AvailableRPXP = $"Available RP XP: {initialPayload.MaxRPXP}";
+            
+            UpdateMaxDistributableInfo();
 
             WatchOnClient(model => model.Distribution);
         }
@@ -118,13 +129,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP);
         };
 
+        private void UpdateMaxDistributableInfo()
+        {
+            if (_maxDistributableXP == 0)
+            {
+                MaxDistributableInfo = "Skill at max rank - no XP accepted";
+            }
+            else
+            {
+                var maxUsable = Math.Min(_availableRPXP, _maxDistributableXP);
+                MaxDistributableInfo = $"Max distributable to this skill: {maxUsable} XP";
+            }
+        }
+
         public void Refresh(RPXPRefreshEvent payload)
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
 
             _availableRPXP = dbPlayer.UnallocatedXP;
+            _maxDistributableXP = Skill.GetMaxDistributableXP(Player, _skillType);
             AvailableRPXP = $"Available RP XP: {dbPlayer.UnallocatedXP}";
+            
+            UpdateMaxDistributableInfo();
         }
     }
 }

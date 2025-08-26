@@ -47,6 +47,20 @@ namespace SWLOR.Game.Server.Service.SpawnService
         }
 
         /// <summary>
+        /// Sets the number of minutes before a resource despawns naturally.
+        /// This only applies to resource spawns (placeables).
+        /// Values less than 1 will default to 180 minutes (3 hours).
+        /// </summary>
+        /// <param name="minutes">The number of minutes before a resource despawns.</param>
+        public SpawnTableBuilder ResourceDespawnDelay(int minutes)
+        {
+            if (minutes < 1) minutes = 180;
+            ActiveTable.ResourceDespawnMinutes = minutes;
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a new spawn object to this spawn table.
         /// </summary>
         /// <param name="type">The object type to spawn</param>

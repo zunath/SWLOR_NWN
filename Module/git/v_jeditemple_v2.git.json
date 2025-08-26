@@ -15030,7 +15030,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -15142,21 +15142,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "The door does not budge."
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Door.OnOpenKeyCheck"
               }
             }
           ]
@@ -15311,7 +15296,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -15423,21 +15408,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "The door does not budge."
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Door.OnOpenKeyCheck"
               }
             }
           ]

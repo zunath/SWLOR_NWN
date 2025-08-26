@@ -19865,7 +19865,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -19962,21 +19962,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "Key_Sheriff"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Door.OnOpenKeyCheck"
               }
             }
           ]
@@ -20132,7 +20117,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -20229,21 +20214,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "Key_Sheriff"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Door.OnOpenKeyCheck"
               }
             }
           ]
@@ -21050,7 +21020,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -21162,21 +21132,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "The holding cells are Czerka Law Enforcement access only."
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Door.OnOpenKeyCheck"
               }
             }
           ]
@@ -21332,7 +21287,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -21444,21 +21399,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "Reckon y'oughta ask 'fore tryin' ta get into a woman's bedroom, fella."
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Door.OnOpenKeyCheck"
               }
             }
           ]
@@ -22048,7 +21988,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -22160,21 +22100,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "Nice try."
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Door.OnOpenKeyCheck"
               }
             }
           ]
@@ -22330,7 +22255,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -22442,21 +22367,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "Nope."
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Door.OnOpenKeyCheck"
               }
             }
           ]
@@ -22829,7 +22739,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -22941,21 +22851,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "Uh-uh."
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Door.OnOpenKeyCheck"
               }
             }
           ]
@@ -23111,7 +23006,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -23208,21 +23103,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "Key_Sheriff"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Door.OnOpenKeyCheck"
               }
             }
           ]
@@ -23378,7 +23258,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -23475,21 +23355,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "Key_Sheriff"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Door.OnOpenKeyCheck"
               }
             },
             {
@@ -23660,7 +23525,7 @@
         },
         "OnOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnSpellCastAt": {
           "type": "resref",
@@ -23772,21 +23637,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "Wow, it worked! You're free! Just kidding."
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Door.OnOpenKeyCheck"
               }
             }
           ]
@@ -24039,21 +23889,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "Key_Sheriff"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Door.OnOpenKeyCheck"
               }
             }
           ]
@@ -77740,21 +77575,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
             {
               "__struct_id": 0,
               "Name": {

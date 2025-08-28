@@ -16,7 +16,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             TheArtifactRecovery();
             TheSithCodeTest();
             ProvingYourDominance();
-            FactoryWorkerParts();
             EliminateKlorSlug();
             SkinsInTheShadows();
             FactoryWorkerParts();

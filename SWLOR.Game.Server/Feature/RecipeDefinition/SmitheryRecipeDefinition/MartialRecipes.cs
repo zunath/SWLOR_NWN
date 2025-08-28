@@ -192,10 +192,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
 
-            // Alchemized Staff
+            // Alchemized Spear
             _builder.Create(RecipeType.AlchemizedSpear, SkillType.Smithery)
                 .Category(RecipeCategoryType.Staff)
-                .Resref("alc_staff")
+                .Resref("alc_spear")
                 .Level(52)
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 5)

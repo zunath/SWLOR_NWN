@@ -106,7 +106,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "recipe_alcstaff"
+    "value": "recipe_alcspear"
   },
   "VarTable": {
     "type": "list",

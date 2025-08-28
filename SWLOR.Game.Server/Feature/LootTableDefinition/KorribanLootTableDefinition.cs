@@ -362,7 +362,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("FROG_BOSS_RECIPE")
                 .AddItem("recipe_gumbo", 10)
-                .AddItem("recipe_alcstaff", 50)
+                .AddItem("recipe_alcstaff", 10)
                 .AddItem("recipe_chispear", 10)
                 .AddItem("recipe_chiknife", 10)
                 .AddItem("recipe_chipistol", 10)

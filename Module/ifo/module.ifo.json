@@ -2818,13 +2818,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "vlegthird"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "ar_scor_kacademy"
         }
       },
@@ -2896,6 +2889,13 @@
         "Area_Name": {
           "type": "resref",
           "value": "hiddenquestzone"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "prefabdarkbase"
         }
       }
     ]

@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             SithCrypt();
             SithTemples();
             KorribanFortress();
+            FrogBoss();
 
             return _builder.Build();
         }
@@ -35,7 +36,15 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
                 .ReturnsHome();
         }
+        private void FrogBoss()
+        {
+            _builder.Create("FROG_BOSS", "frogboss")
+                .AddSpawn(ObjectType.Creature, "frogboss")
+                .WithFrequency(50)
+                .RandomlyWalks()
+                .ReturnsHome();
 
+        }
         private void Valley()
         {
             _builder.Create("KORRIBAN_VALLEY", "Valley")

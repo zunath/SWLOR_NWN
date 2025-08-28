@@ -2006,6 +2006,21 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("cultured_butter", 3)
                 .Component("ref_jasioclase", 1);
 
+            // Forbidden Gymbo
+            _builder.Create(RecipeType.ForbiddenGumbo, SkillType.Agriculture)
+                .Category(RecipeCategoryType.Food)
+                .Resref("forbid_gumbo")
+                .Level(52)
+                .Quantity(1)
+                .ResearchCostModifier(0.2f)
+                .RequirementUnlocked()
+                .RequirementPerk(PerkType.CookingRecipes, 5)
+                .EnhancementSlots(RecipeEnhancementType.Food, 2)
+                .Component("froglegs", 10)
+                .Component("frogguts", 2)
+                .Component("cultured_butter", 3)
+                .Component("thune_blood", 1);
+
             // Cooking Enhancement - Duration V
             _builder.Create(RecipeType.CookingEnhancementDuration5, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)

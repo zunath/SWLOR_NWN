@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             // Alchemized Staff
             _builder.Create(RecipeType.AlchemizedSpear, SkillType.Smithery)
                 .Category(RecipeCategoryType.Staff)
-                .Resref("alc_staff")
+                .Resref("alc_spear")
                 .Level(52)
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 5)

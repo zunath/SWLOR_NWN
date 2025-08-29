@@ -50868,22 +50868,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Revanite ID Codes - Level 3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "key_sith_03"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Sith ID Codes - Level 2"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "key_ren_2"
+                      "value": "key_sith_2"
                     }
                   },
                   {

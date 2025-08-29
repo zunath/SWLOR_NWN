@@ -62,7 +62,7 @@
   },
   "StackSize": {
     "type": "word",
-    "value": 1
+    "value": 10
   },
   "Stolen": {
     "type": "byte",

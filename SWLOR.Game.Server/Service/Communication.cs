@@ -57,10 +57,13 @@ namespace SWLOR.Game.Server.Service
                 dm = GetMaster(dm);
                 DeleteLocalObject(dm, DMPossessedCreature);
             }
-            // Possession - Store the variable
+            // Possession - Store the variable and clear busy status
             else
             {
                 SetLocalObject(dm, DMPossessedCreature, target);
+                
+                // Clear busy status of the possessed creature to prevent ability usage issues
+                Activity.ClearBusy(target);
             }
         }
 

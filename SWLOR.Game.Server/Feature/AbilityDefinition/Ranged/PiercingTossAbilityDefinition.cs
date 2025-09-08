@@ -38,9 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            // If activator is in stealth mode, force them out of stealth mode.
-            if (GetActionMode(activator, ActionMode.Stealth) == true)
-                SetActionMode(activator, ActionMode.Stealth, false);
+
             int dmg;
             int dc;
             float duration;
@@ -103,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .UsesAnimation(Animation.ThrowGrenade)
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -119,6 +118,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .UsesAnimation(Animation.ThrowGrenade)
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -135,6 +135,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .UsesAnimation(Animation.ThrowGrenade)
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

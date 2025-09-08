@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = "DiscordAdmin")]
 
 <PageTitle>Index</PageTitle>
 
@@ -6,4 +8,43 @@
     SWLOR Admin Tool
 </h1>
 
-This site can be used to manage data in the SWLOR database.
+        <p>Welcome to the SWLOR Admin Tool! This site can be used to manage data in the SWLOR database.</p>
+        
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="oi oi-people"></i> Account Management</h5>
+                        <p class="card-text">Manage player accounts and settings.</p>
+                        <a href="/account" class="btn btn-primary">Manage Accounts</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="oi oi-shield"></i> DM Management</h5>
+                        <p class="card-text">Manage Dungeon Master accounts and permissions.</p>
+                        <a href="/dm" class="btn btn-primary">Manage DMs</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="oi oi-person"></i> Player Management</h5>
+                        <p class="card-text">View and manage individual player data.</p>
+                        <a href="/player" class="btn btn-primary">Manage Players</a>
+                    </div>
+                </div>
+            </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="oi oi-calculator"></i> Stat Calculator</h5>
+                <p class="card-text">Interactive demonstration of SWLOR stat calculation formulas.</p>
+                <a href="/statcalculator" class="btn btn-primary">Open Calculator</a>
+            </div>
+        </div>
+        </div>
+        </div>

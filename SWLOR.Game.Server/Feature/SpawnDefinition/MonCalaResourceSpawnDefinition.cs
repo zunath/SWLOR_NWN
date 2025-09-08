@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void CoralIslesInner()
         {
             _builder.Create("RESOURCES_MONCALA_CORALISLEINNER")
+                .ResourceDespawnDelay(120) // 2 hours for mid-tier ocean planet resources
                 .AddSpawn(ObjectType.Placeable, "scordspar_vein")
                 .WithFrequency(10)
                 .AddSpawn(ObjectType.Placeable, "plagionite_vein")
@@ -48,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void CoralIslesOuter()
         {
             _builder.Create("RESOURCES_MONCALA_CORALISLEOUTER")
+                .ResourceDespawnDelay(120) // 2 hours for mid-tier ocean planet resources
                 .AddSpawn(ObjectType.Placeable, "scordspar_vein")
                 .WithFrequency(10)
                 .AddSpawn(ObjectType.Placeable, "plagionite_vein")

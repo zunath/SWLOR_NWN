@@ -283,6 +283,8 @@ namespace SWLOR.Game.Server.Service
 
             if (!GetIsObjectValid(fishingPoint) || GetIsDead(fishingPoint))
             {
+                // Clear any existing busy state if the fishing point is exhausted
+                Activity.ClearBusy(player);
                 SendMessageToPC(player, "This fishing point has been exhausted.");
                 return;
             }
@@ -335,6 +337,8 @@ namespace SWLOR.Game.Server.Service
 
             if (!GetIsObjectValid(fishingPoint) || GetIsDead(fishingPoint))
             {
+                // Clear any existing busy state if the fishing point is exhausted
+                Activity.ClearBusy(player);
                 SendMessageToPC(player, "This fishing point has been exhausted.");
                 return;
             }

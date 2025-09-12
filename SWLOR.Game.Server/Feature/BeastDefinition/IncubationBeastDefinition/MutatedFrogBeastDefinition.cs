@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 
-namespace SWLOR.Game.Server.Feature.BeastDefinition
+namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 {
     public class MutatedFrogBeastDefinition: IBeastListDefinition
     {

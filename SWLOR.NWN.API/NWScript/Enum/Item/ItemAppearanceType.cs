@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
+namespace SWLOR.NWN.API.NWScript.Enum.Item
 {
     public enum ItemAppearanceType
     {

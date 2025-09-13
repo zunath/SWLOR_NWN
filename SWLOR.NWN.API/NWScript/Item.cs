@@ -1,7 +1,7 @@
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemAppearance(uint oItem, ItemAppearanceType nType, int nIndex)
         {
-            return NWN.Core.NWScript.GetItemAppearance(oItem, (int)nType, nIndex);
+            return global::NWN.Core.NWScript.GetItemAppearance(oItem, (int)nType, nIndex);
         }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemStackSize(uint oItem)
         {
-            return NWN.Core.NWScript.GetItemStackSize(oItem);
+            return global::NWN.Core.NWScript.GetItemStackSize(oItem);
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetItemStackSize(uint oItem, int nSize)
         {
-            NWN.Core.NWScript.SetItemStackSize(oItem, nSize);
+            global::NWN.Core.NWScript.SetItemStackSize(oItem, nSize);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemCharges(uint oItem)
         {
-            return NWN.Core.NWScript.GetItemCharges(oItem);
+            return global::NWN.Core.NWScript.GetItemCharges(oItem);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetItemCharges(uint oItem, int nCharges)
         {
-            NWN.Core.NWScript.SetItemCharges(oItem, nCharges);
+            global::NWN.Core.NWScript.SetItemCharges(oItem, nCharges);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint CopyItem(uint oItem, uint oTargetInventory = OBJECT_INVALID, bool bCopyVars = false)
         {
-            return NWN.Core.NWScript.CopyItem(oItem, oTargetInventory, bCopyVars ? 1 : 0);
+            return global::NWN.Core.NWScript.CopyItem(oItem, oTargetInventory, bCopyVars ? 1 : 0);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetModuleItemAcquiredStackSize()
         {
-            return NWN.Core.NWScript.GetModuleItemAcquiredStackSize();
+            return global::NWN.Core.NWScript.GetModuleItemAcquiredStackSize();
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetNumStackedItems(uint oItem)
         {
-            return NWN.Core.NWScript.GetNumStackedItems(oItem);
+            return global::NWN.Core.NWScript.GetNumStackedItems(oItem);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetHiddenWhenEquipped(uint oItem, bool nValue)
         {
-            NWN.Core.NWScript.SetHiddenWhenEquipped(oItem, nValue ? 1 : 0);
+            global::NWN.Core.NWScript.SetHiddenWhenEquipped(oItem, nValue ? 1 : 0);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetHiddenWhenEquipped(uint oItem)
         {
-            return NWN.Core.NWScript.GetHiddenWhenEquipped(oItem);
+            return global::NWN.Core.NWScript.GetHiddenWhenEquipped(oItem);
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetInfiniteFlag(uint oItem)
         {
-            return NWN.Core.NWScript.GetInfiniteFlag(oItem);
+            return global::NWN.Core.NWScript.GetInfiniteFlag(oItem);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetInfiniteFlag(uint oItem, bool bInfinite = true)
         {
-            NWN.Core.NWScript.SetInfiniteFlag(oItem, bInfinite ? 1 : 0);
+            global::NWN.Core.NWScript.SetInfiniteFlag(oItem, bInfinite ? 1 : 0);
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetStolenFlag(uint oItem, bool nStolen)
         {
-            NWN.Core.NWScript.SetStolenFlag(oItem, nStolen ? 1 : 0);
+            global::NWN.Core.NWScript.SetStolenFlag(oItem, nStolen ? 1 : 0);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetPickpocketableFlag(uint oItem)
         {
-            return NWN.Core.NWScript.GetPickpocketableFlag(oItem) != 0;
+            return global::NWN.Core.NWScript.GetPickpocketableFlag(oItem) != 0;
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPickpocketableFlag(uint oItem, bool bPickpocketable)
         {
-            NWN.Core.NWScript.SetPickpocketableFlag(oItem, bPickpocketable ? 1 : 0);
+            global::NWN.Core.NWScript.SetPickpocketableFlag(oItem, bPickpocketable ? 1 : 0);
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetDroppableFlag(uint oItem, bool bDroppable)
         {
-            NWN.Core.NWScript.SetDroppableFlag(oItem, bDroppable ? 1 : 0);
+            global::NWN.Core.NWScript.SetDroppableFlag(oItem, bDroppable ? 1 : 0);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetDroppableFlag(uint oItem)
         {
-            return NWN.Core.NWScript.GetDroppableFlag(oItem) != 0;
+            return global::NWN.Core.NWScript.GetDroppableFlag(oItem) != 0;
         }
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetUseableFlag(uint oObject = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetUseableFlag(oObject) != 0;
+            return global::NWN.Core.NWScript.GetUseableFlag(oObject) != 0;
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetStolenFlag(uint oStolen)
         {
-            return NWN.Core.NWScript.GetStolenFlag(oStolen) != 0;
+            return global::NWN.Core.NWScript.GetStolenFlag(oStolen) != 0;
         }
 
         /// <summary>
@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetWeaponRanged(uint oItem)
         {
-            return NWN.Core.NWScript.GetWeaponRanged(oItem) != 0;
+            return global::NWN.Core.NWScript.GetWeaponRanged(oItem) != 0;
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetSpellCastItem()
         {
-            return NWN.Core.NWScript.GetSpellCastItem();
+            return global::NWN.Core.NWScript.GetSpellCastItem();
         }
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetItemActivated()
         {
-            return NWN.Core.NWScript.GetItemActivated();
+            return global::NWN.Core.NWScript.GetItemActivated();
         }
 
         /// <summary>
@@ -231,7 +231,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetItemActivator()
         {
-            return NWN.Core.NWScript.GetItemActivator();
+            return global::NWN.Core.NWScript.GetItemActivator();
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Location GetItemActivatedTargetLocation()
         {
-            return NWN.Core.NWScript.GetItemActivatedTargetLocation();
+            return global::NWN.Core.NWScript.GetItemActivatedTargetLocation();
         }
 
         /// <summary>
@@ -248,7 +248,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetItemActivatedTarget()
         {
-            return NWN.Core.NWScript.GetItemActivatedTarget();
+            return global::NWN.Core.NWScript.GetItemActivatedTarget();
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemACValue(uint oItem)
         {
-            return NWN.Core.NWScript.GetItemACValue(oItem);
+            return global::NWN.Core.NWScript.GetItemACValue(oItem);
         }
 
         /// <summary>
@@ -266,7 +266,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static BaseItem GetBaseItemType(uint oItem)
         {
-            return (BaseItem)NWN.Core.NWScript.GetBaseItemType(oItem);
+            return (BaseItem)global::NWN.Core.NWScript.GetBaseItemType(oItem);
         }
 
         /// <summary>
@@ -278,7 +278,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetItemHasItemProperty(uint oItem, ItemPropertyType nProperty)
         {
-            return NWN.Core.NWScript.GetItemHasItemProperty(oItem, (int)nProperty) == 1;
+            return global::NWN.Core.NWScript.GetItemHasItemProperty(oItem, (int)nProperty) == 1;
         }
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFirstItemInInventory(uint oTarget = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetFirstItemInInventory(oTarget);
+            return global::NWN.Core.NWScript.GetFirstItemInInventory(oTarget);
         }
 
         /// <summary>
@@ -300,7 +300,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNextItemInInventory(uint oTarget = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetNextItemInInventory(oTarget);
+            return global::NWN.Core.NWScript.GetNextItemInInventory(oTarget);
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIdentified(uint oItem)
         {
-            return NWN.Core.NWScript.GetIdentified(oItem) != 0;
+            return global::NWN.Core.NWScript.GetIdentified(oItem) != 0;
         }
 
         /// <summary>
@@ -316,7 +316,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetIdentified(uint oItem, bool bIdentified)
         {
-            NWN.Core.NWScript.SetIdentified(oItem, bIdentified ? 1 : 0);
+            global::NWN.Core.NWScript.SetIdentified(oItem, bIdentified ? 1 : 0);
         }
 
         /// <summary>
@@ -325,7 +325,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetGoldPieceValue(uint oItem)
         {
-            return NWN.Core.NWScript.GetGoldPieceValue(oItem);
+            return global::NWN.Core.NWScript.GetGoldPieceValue(oItem);
         }
 
         /// <summary>
@@ -334,7 +334,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetModuleItemAcquired()
         {
-            return NWN.Core.NWScript.GetModuleItemAcquired();
+            return global::NWN.Core.NWScript.GetModuleItemAcquired();
         }
 
         /// <summary>
@@ -344,7 +344,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetModuleItemAcquiredFrom()
         {
-            return NWN.Core.NWScript.GetModuleItemAcquiredFrom();
+            return global::NWN.Core.NWScript.GetModuleItemAcquiredFrom();
         }
 
         /// <summary>
@@ -356,7 +356,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetItemInSlot(InventorySlot nInventorySlot, uint oCreature = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetItemInSlot((int)nInventorySlot, oCreature);
+            return global::NWN.Core.NWScript.GetItemInSlot((int)nInventorySlot, oCreature);
         }
 
         /// <summary>
@@ -368,7 +368,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetBaseItemFitsInInventory(BaseItem baseItemType, uint target)
         {
-            return NWN.Core.NWScript.GetBaseItemFitsInInventory((int)baseItemType, target) == 1;
+            return global::NWN.Core.NWScript.GetBaseItemFitsInInventory((int)baseItemType, target) == 1;
         }
     }
 }

@@ -1,7 +1,7 @@
 using System.Numerics;
-using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTag(uint oObject, string sNewTag)
         {
-            NWN.Core.NWScript.SetTag(oObject, sNewTag);
+            global::NWN.Core.NWScript.SetTag(oObject, sNewTag);
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPlaceableLastClickedBy()
         {
-            return NWN.Core.NWScript.GetPlaceableLastClickedBy();
+            return global::NWN.Core.NWScript.GetPlaceableLastClickedBy();
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetName(uint oObject, string sNewName = "")
         {
-            NWN.Core.NWScript.SetName(oObject, sNewName);
+            global::NWN.Core.NWScript.SetName(oObject, sNewName);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetPortraitId(uint oTarget = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetPortraitId(oTarget);
+            return global::NWN.Core.NWScript.GetPortraitId(oTarget);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPortraitId(uint oTarget, int nPortraitId)
         {
-            NWN.Core.NWScript.SetPortraitId(oTarget, nPortraitId);
+            global::NWN.Core.NWScript.SetPortraitId(oTarget, nPortraitId);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetPortraitResRef(uint oTarget = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetPortraitResRef(oTarget);
+            return global::NWN.Core.NWScript.GetPortraitResRef(oTarget);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPortraitResRef(uint oTarget, string sPortraitResRef)
         {
-            NWN.Core.NWScript.SetPortraitResRef(oTarget, sPortraitResRef);
+            global::NWN.Core.NWScript.SetPortraitResRef(oTarget, sPortraitResRef);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetUseableFlag(uint oPlaceable, bool nUseable)
         {
-            NWN.Core.NWScript.SetUseableFlag(oPlaceable, nUseable ? 1 : 0);
+            global::NWN.Core.NWScript.SetUseableFlag(oPlaceable, nUseable ? 1 : 0);
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static string GetDescription(uint oObject, bool bOriginalDescription = false,
             bool bIdentifiedDescription = true)
         {
-            return NWN.Core.NWScript.GetDescription(oObject, bOriginalDescription ? 1 : 0, bIdentifiedDescription ? 1 : 0);
+            return global::NWN.Core.NWScript.GetDescription(oObject, bOriginalDescription ? 1 : 0, bIdentifiedDescription ? 1 : 0);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetDescription(uint oObject, string sNewDescription = "", bool bIdentifiedDescription = true)
         {
-            NWN.Core.NWScript.SetDescription(oObject, sNewDescription, bIdentifiedDescription ? 1 : 0);
+            global::NWN.Core.NWScript.SetDescription(oObject, sNewDescription, bIdentifiedDescription ? 1 : 0);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetColor(uint oObject, ColorChannel nColorChannel)
         {
-            return NWN.Core.NWScript.GetColor(oObject, (int)nColorChannel);
+            return global::NWN.Core.NWScript.GetColor(oObject, (int)nColorChannel);
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetColor(uint oObject, ColorChannel nColorChannel, int nColorValue)
         {
-            NWN.Core.NWScript.SetColor(oObject, (int)nColorChannel, nColorValue);
+            global::NWN.Core.NWScript.SetColor(oObject, (int)nColorChannel, nColorValue);
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetKeyRequiredFeedback(uint oObject)
         {
-            return NWN.Core.NWScript.GetKeyRequiredFeedback(oObject);
+            return global::NWN.Core.NWScript.GetKeyRequiredFeedback(oObject);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetKeyRequiredFeedback(uint oObject, string sFeedbackMessage)
         {
-            NWN.Core.NWScript.SetKeyRequiredFeedback(oObject, sFeedbackMessage);
+            global::NWN.Core.NWScript.SetKeyRequiredFeedback(oObject, sFeedbackMessage);
         }
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void LockCameraPitch(uint oPlayer, bool bLocked = true)
         {
-            NWN.Core.NWScript.LockCameraPitch(oPlayer, bLocked ? 1 : 0);
+            global::NWN.Core.NWScript.LockCameraPitch(oPlayer, bLocked ? 1 : 0);
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void LockCameraDistance(uint oPlayer, bool bLocked = true)
         {
-            NWN.Core.NWScript.LockCameraDistance(oPlayer, bLocked ? 1 : 0);
+            global::NWN.Core.NWScript.LockCameraDistance(oPlayer, bLocked ? 1 : 0);
         }
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void LockCameraDirection(uint oPlayer, bool bLocked = true)
         {
-            NWN.Core.NWScript.LockCameraDirection(oPlayer, bLocked ? 1 : 0);
+            global::NWN.Core.NWScript.LockCameraDirection(oPlayer, bLocked ? 1 : 0);
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetHardness(uint oObject = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetHardness(oObject);
+            return global::NWN.Core.NWScript.GetHardness(oObject);
         }
 
         /// <summary>
@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetHardness(int nHardness, uint oObject = OBJECT_INVALID)
         {
-            NWN.Core.NWScript.SetHardness(nHardness, oObject);
+            global::NWN.Core.NWScript.SetHardness(nHardness, oObject);
         }
 
         /// <summary>
@@ -265,7 +265,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLockKeyRequired(uint oObject, bool nKeyRequired = true)
         {
-            NWN.Core.NWScript.SetLockKeyRequired(oObject, nKeyRequired ? 1 : 0);
+            global::NWN.Core.NWScript.SetLockKeyRequired(oObject, nKeyRequired ? 1 : 0);
         }
 
         /// <summary>
@@ -278,7 +278,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLockKeyTag(uint oObject, string sNewKeyTag)
         {
-            NWN.Core.NWScript.SetLockKeyTag(oObject, sNewKeyTag);
+            global::NWN.Core.NWScript.SetLockKeyTag(oObject, sNewKeyTag);
         }
 
         /// <summary>
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLockLockable(uint oObject, bool nLockable = true)
         {
-            NWN.Core.NWScript.SetLockLockable(oObject, nLockable ? 1 : 0);
+            global::NWN.Core.NWScript.SetLockLockable(oObject, nLockable ? 1 : 0);
         }
 
         /// <summary>
@@ -298,7 +298,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLockUnlockDC(uint oObject, int nNewUnlockDC)
         {
-            NWN.Core.NWScript.SetLockUnlockDC(oObject, nNewUnlockDC);
+            global::NWN.Core.NWScript.SetLockUnlockDC(oObject, nNewUnlockDC);
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLockLockDC(uint oObject, int nNewLockDC)
         {
-            NWN.Core.NWScript.SetLockLockDC(oObject, nNewLockDC);
+            global::NWN.Core.NWScript.SetLockLockDC(oObject, nNewLockDC);
         }
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetWillSavingThrow(uint oObject, int nWillSave)
         {
-            NWN.Core.NWScript.SetWillSavingThrow(oObject, nWillSave);
+            global::NWN.Core.NWScript.SetWillSavingThrow(oObject, nWillSave);
         }
 
         /// <summary>
@@ -328,7 +328,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetReflexSavingThrow(uint oObject, int nReflexSave)
         {
-            NWN.Core.NWScript.SetReflexSavingThrow(oObject, nReflexSave);
+            global::NWN.Core.NWScript.SetReflexSavingThrow(oObject, nReflexSave);
         }
 
         /// <summary>
@@ -338,7 +338,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetFortitudeSavingThrow(uint oObject, int nFortitudeSave)
         {
-            NWN.Core.NWScript.SetFortitudeSavingThrow(oObject, nFortitudeSave);
+            global::NWN.Core.NWScript.SetFortitudeSavingThrow(oObject, nFortitudeSave);
         }
 
         /// <summary>
@@ -348,7 +348,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetWeight(uint oTarget = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetWeight(oTarget);
+            return global::NWN.Core.NWScript.GetWeight(oTarget);
         }
 
         /// <summary>
@@ -356,7 +356,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetModuleItemAcquiredBy()
         {
-            return NWN.Core.NWScript.GetModuleItemAcquiredBy();
+            return global::NWN.Core.NWScript.GetModuleItemAcquiredBy();
         }
 
         /// <summary>
@@ -367,7 +367,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SpeakStringByStrRef(int nStrRef, TalkVolume nTalkVolume = TalkVolume.Talk)
         {
-            NWN.Core.NWScript.SpeakStringByStrRef(nStrRef, (int)nTalkVolume);
+            global::NWN.Core.NWScript.SpeakStringByStrRef(nStrRef, (int)nTalkVolume);
         }
 
         /// <summary>
@@ -380,7 +380,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint CopyObject(uint oSource, Location locLocation, uint oOwner = OBJECT_INVALID, string sNewTag = "", bool bCopyLocalState = false)
         {
-            return NWN.Core.NWScript.CopyObject(oSource, locLocation, oOwner, sNewTag, bCopyLocalState ? 1 : 0);
+            return global::NWN.Core.NWScript.CopyObject(oSource, locLocation, oOwner, sNewTag, bCopyLocalState ? 1 : 0);
         }
 
         /// <summary>
@@ -389,7 +389,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetResRef(uint oObject)
         {
-            return NWN.Core.NWScript.GetResRef(oObject);
+            return global::NWN.Core.NWScript.GetResRef(oObject);
         }
 
         /// <summary>
@@ -399,7 +399,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetHasInventory(uint oObject)
         {
-            return NWN.Core.NWScript.GetHasInventory(oObject) == 1;
+            return global::NWN.Core.NWScript.GetHasInventory(oObject) == 1;
         }
 
         /// <summary>
@@ -409,7 +409,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetDeity(uint oCreature)
         {
-            return NWN.Core.NWScript.GetDeity(oCreature);
+            return global::NWN.Core.NWScript.GetDeity(oCreature);
         }
 
         /// <summary>
@@ -418,7 +418,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetSubRace(uint oTarget)
         {
-            return NWN.Core.NWScript.GetSubRace(oTarget);
+            return global::NWN.Core.NWScript.GetSubRace(oTarget);
         }
 
         /// <summary>
@@ -428,7 +428,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFortitudeSavingThrow(uint oTarget)
         {
-            return NWN.Core.NWScript.GetFortitudeSavingThrow(oTarget);
+            return global::NWN.Core.NWScript.GetFortitudeSavingThrow(oTarget);
         }
 
         /// <summary>
@@ -438,7 +438,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetWillSavingThrow(uint oTarget)
         {
-            return NWN.Core.NWScript.GetWillSavingThrow(oTarget);
+            return global::NWN.Core.NWScript.GetWillSavingThrow(oTarget);
         }
 
         /// <summary>
@@ -448,7 +448,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetReflexSavingThrow(uint oTarget)
         {
-            return NWN.Core.NWScript.GetReflexSavingThrow(oTarget);
+            return global::NWN.Core.NWScript.GetReflexSavingThrow(oTarget);
         }
 
         /// <summary>
@@ -457,7 +457,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetChallengeRating(uint oCreature)
         {
-            return NWN.Core.NWScript.GetChallengeRating(oCreature);
+            return global::NWN.Core.NWScript.GetChallengeRating(oCreature);
         }
 
         /// <summary>
@@ -466,7 +466,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAge(uint oCreature)
         {
-            return NWN.Core.NWScript.GetAge(oCreature);
+            return global::NWN.Core.NWScript.GetAge(oCreature);
         }
 
         /// <summary>
@@ -475,7 +475,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMovementRate(uint oCreature)
         {
-            return NWN.Core.NWScript.GetMovementRate(oCreature);
+            return global::NWN.Core.NWScript.GetMovementRate(oCreature);
         }
 
         /// <summary>
@@ -483,7 +483,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetPlotFlag(uint oTarget = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetPlotFlag(oTarget) != 0;
+            return global::NWN.Core.NWScript.GetPlotFlag(oTarget) != 0;
         }
 
         /// <summary>
@@ -491,7 +491,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPlotFlag(uint oTarget, bool nPlotFlag)
         {
-            NWN.Core.NWScript.SetPlotFlag(oTarget, nPlotFlag ? 1 : 0);
+            global::NWN.Core.NWScript.SetPlotFlag(oTarget, nPlotFlag ? 1 : 0);
         }
 
         /// <summary>
@@ -501,7 +501,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void PlayVoiceChat(VoiceChat nVoiceChatID, uint oTarget = OBJECT_INVALID)
         {
-            NWN.Core.NWScript.PlayVoiceChat((int)nVoiceChatID, oTarget);
+            global::NWN.Core.NWScript.PlayVoiceChat((int)nVoiceChatID, oTarget);
         }
 
         /// <summary>
@@ -509,7 +509,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetGold(uint oTarget = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetGold(oTarget);
+            return global::NWN.Core.NWScript.GetGold(oTarget);
         }
 
         /// <summary>
@@ -517,7 +517,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SoundObjectPlay(uint oSound)
         {
-            NWN.Core.NWScript.SoundObjectPlay(oSound);
+            global::NWN.Core.NWScript.SoundObjectPlay(oSound);
         }
 
         /// <summary>
@@ -525,7 +525,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SoundObjectStop(uint oSound)
         {
-            NWN.Core.NWScript.SoundObjectStop(oSound);
+            global::NWN.Core.NWScript.SoundObjectStop(oSound);
         }
 
         /// <summary>
@@ -535,7 +535,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SoundObjectSetVolume(uint oSound, int nVolume)
         {
-            NWN.Core.NWScript.SoundObjectSetVolume(oSound, nVolume);
+            global::NWN.Core.NWScript.SoundObjectSetVolume(oSound, nVolume);
         }
 
         /// <summary>
@@ -543,7 +543,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SoundObjectSetPosition(uint oSound, Vector3 vPosition)
         {
-            NWN.Core.NWScript.SoundObjectSetPosition(oSound, vPosition);
+            global::NWN.Core.NWScript.SoundObjectSetPosition(oSound, vPosition);
         }
 
         /// <summary>
@@ -554,7 +554,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SpeakOneLinerConversation(string sDialogResRef = "", uint oTokenTarget = OBJECT_INVALID)
         {
-            NWN.Core.NWScript.SpeakOneLinerConversation(sDialogResRef, oTokenTarget);
+            global::NWN.Core.NWScript.SpeakOneLinerConversation(sDialogResRef, oTokenTarget);
         }
 
         /// <summary>
@@ -567,7 +567,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetIsDestroyable(bool bDestroyable = true, bool bRaiseable = true,
             bool bSelectableWhenDead = false)
         {
-            NWN.Core.NWScript.SetIsDestroyable(bDestroyable ? 1 : 0, bRaiseable ? 1 : 0, bSelectableWhenDead ? 1 : 0);
+            global::NWN.Core.NWScript.SetIsDestroyable(bDestroyable ? 1 : 0, bRaiseable ? 1 : 0, bSelectableWhenDead ? 1 : 0);
         }
 
         /// <summary>
@@ -575,7 +575,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLocked(uint oTarget, bool nLocked)
         {
-            NWN.Core.NWScript.SetLocked(oTarget, nLocked ? 1 : 0);
+            global::NWN.Core.NWScript.SetLocked(oTarget, nLocked ? 1 : 0);
         }
 
         /// <summary>
@@ -583,7 +583,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetLocked(uint oTarget)
         {
-            return NWN.Core.NWScript.GetLocked(oTarget) != 0;
+            return global::NWN.Core.NWScript.GetLocked(oTarget) != 0;
         }
 
         /// <summary>
@@ -598,7 +598,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static uint CreateObject(ObjectType nObjectType, string sTemplate, Location lLocation,
             bool nUseAppearAnimation = false, string sNewTag = "")
         {
-            return NWN.Core.NWScript.CreateObject((int)nObjectType, sTemplate, lLocation, nUseAppearAnimation ? 1 : 0, sNewTag);
+            return global::NWN.Core.NWScript.CreateObject((int)nObjectType, sTemplate, lLocation, nUseAppearAnimation ? 1 : 0, sNewTag);
         }
 
         /// <summary>
@@ -610,7 +610,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNearestObject(ObjectType nObjectType = ObjectType.All, uint oTarget = OBJECT_INVALID, int nNth = 1)
         {
-            return NWN.Core.NWScript.GetNearestObject((int)nObjectType, oTarget, nNth);
+            return global::NWN.Core.NWScript.GetNearestObject((int)nObjectType, oTarget, nNth);
         }
 
         /// <summary>
@@ -623,7 +623,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static uint GetNearestObjectToLocation(Location lLocation, ObjectType nObjectType = ObjectType.All,
             int nNth = 1)
         {
-            return NWN.Core.NWScript.GetNearestObjectToLocation((int)nObjectType, lLocation, nNth);
+            return global::NWN.Core.NWScript.GetNearestObjectToLocation((int)nObjectType, lLocation, nNth);
         }
 
         /// <summary>
@@ -632,7 +632,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNearestObjectByTag(string sTag, uint oTarget = OBJECT_INVALID, int nNth = 1)
         {
-            return NWN.Core.NWScript.GetNearestObjectByTag(sTag, oTarget, nNth);
+            return global::NWN.Core.NWScript.GetNearestObjectByTag(sTag, oTarget, nNth);
         }
 
         /// <summary>
@@ -643,7 +643,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAC(uint oObject)
         {
-            return NWN.Core.NWScript.GetAC(oObject, 0);
+            return global::NWN.Core.NWScript.GetAC(oObject, 0);
         }
 
         /// <summary>
@@ -652,7 +652,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ObjectType GetObjectType(uint oTarget)
         {
-            return (ObjectType)NWN.Core.NWScript.GetObjectType(oTarget);
+            return (ObjectType)global::NWN.Core.NWScript.GetObjectType(oTarget);
         }
 
         /// <summary>
@@ -661,7 +661,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCurrentHitPoints(uint oObject = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetCurrentHitPoints(oObject);
+            return global::NWN.Core.NWScript.GetCurrentHitPoints(oObject);
         }
 
         /// <summary>
@@ -670,7 +670,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMaxHitPoints(uint oObject = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetMaxHitPoints(oObject);
+            return global::NWN.Core.NWScript.GetMaxHitPoints(oObject);
         }
 
         /// <summary>
@@ -678,7 +678,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsObjectValid(uint oObject)
         {
-            return NWN.Core.NWScript.GetIsObjectValid(oObject) != 0;
+            return global::NWN.Core.NWScript.GetIsObjectValid(oObject) != 0;
         }
 
         /// <summary>
@@ -687,7 +687,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint StringToObject(string sHex)
         {
-            return NWN.Core.NWScript.StringToObject(sHex);
+            return global::NWN.Core.NWScript.StringToObject(sHex);
         }
 
 
@@ -699,7 +699,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ReplaceObjectTexture(uint oObject, string sOld, string sNew = "")
         {
-            NWN.Core.NWScript.ReplaceObjectTexture(oObject, sOld, sNew);
+            global::NWN.Core.NWScript.ReplaceObjectTexture(oObject, sOld, sNew);
         }
 
         /// <summary>
@@ -713,7 +713,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCurrentHitPoints(uint oObject, int nHitPoints)
         {
-            NWN.Core.NWScript.SetCurrentHitPoints(oObject, nHitPoints);
+            global::NWN.Core.NWScript.SetCurrentHitPoints(oObject, nHitPoints);
         }
     }
 }

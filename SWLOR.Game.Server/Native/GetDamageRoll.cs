@@ -4,18 +4,18 @@ using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using Ability = SWLOR.Game.Server.Service.Ability;
-using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
+using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using ObjectType = NWN.Native.API.ObjectType;
-using RacialType = SWLOR.Game.Server.Core.NWScript.Enum.RacialType;
+using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
 using DamageType = NWN.Native.API.DamageType;
 
 namespace SWLOR.Game.Server.Native

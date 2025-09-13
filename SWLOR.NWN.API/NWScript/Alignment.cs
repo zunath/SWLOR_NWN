@@ -1,6 +1,6 @@
-using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void AdjustAlignment(uint oSubject, Alignment nAlignment, int nShift,
             bool bAllPartyMembers = true)
         {
-            NWN.Core.NWScript.AdjustAlignment(oSubject, (int)nAlignment, nShift, bAllPartyMembers ? 1 : 0);
+            global::NWN.Core.NWScript.AdjustAlignment(oSubject, (int)nAlignment, nShift, bAllPartyMembers ? 1 : 0);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetLawChaosValue(uint oCreature)
         {
-            return NWN.Core.NWScript.GetLawChaosValue(oCreature);
+            return global::NWN.Core.NWScript.GetLawChaosValue(oCreature);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetGoodEvilValue(uint oCreature)
         {
-            return NWN.Core.NWScript.GetGoodEvilValue(oCreature);
+            return global::NWN.Core.NWScript.GetGoodEvilValue(oCreature);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Alignment GetAlignmentLawChaos(uint oCreature)
         {
-            return (Alignment)NWN.Core.NWScript.GetAlignmentLawChaos(oCreature);
+            return (Alignment)global::NWN.Core.NWScript.GetAlignmentLawChaos(oCreature);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Alignment GetAlignmentGoodEvil(uint oCreature)
         {
-            return (Alignment)NWN.Core.NWScript.GetAlignmentGoodEvil(oCreature);
+            return (Alignment)global::NWN.Core.NWScript.GetAlignmentGoodEvil(oCreature);
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ClearPersonalReputation(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            NWN.Core.NWScript.ClearPersonalReputation(oTarget, oSource);
+            global::NWN.Core.NWScript.ClearPersonalReputation(oTarget, oSource);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetIsTemporaryFriend(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
-            NWN.Core.NWScript.SetIsTemporaryFriend(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
+            global::NWN.Core.NWScript.SetIsTemporaryFriend(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetIsTemporaryEnemy(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
-            NWN.Core.NWScript.SetIsTemporaryEnemy(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
+            global::NWN.Core.NWScript.SetIsTemporaryEnemy(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetIsTemporaryNeutral(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
-            NWN.Core.NWScript.SetIsTemporaryNeutral(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
+            global::NWN.Core.NWScript.SetIsTemporaryNeutral(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
         }
     }
 }

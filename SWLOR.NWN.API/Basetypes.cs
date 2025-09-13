@@ -1,8 +1,6 @@
-using System;
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.NWN.API
 {
     public partial class Effect
     {

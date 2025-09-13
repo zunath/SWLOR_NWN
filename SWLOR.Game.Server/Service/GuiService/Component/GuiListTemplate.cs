@@ -1,5 +1,6 @@
 ﻿using System;
 using SWLOR.Game.Server.Core;
+using SWLOR.NWN.API;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {

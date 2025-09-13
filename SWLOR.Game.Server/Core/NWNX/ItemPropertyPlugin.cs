@@ -1,5 +1,6 @@
 using System;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.NWN.API;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
@@ -8,7 +9,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         private const string PLUGIN_NAME = "NWNX_ItemProperty";
 
         // Convert native itemproperty type to unpacked structure
-        public static ItemPropertyUnpacked UnpackIP(Core.ItemProperty ip)
+        public static ItemPropertyUnpacked UnpackIP(ItemProperty ip)
         {
             const string func = "UnpackIP";
 
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         }
 
         // Convert unpacked itemproperty structure to native type.
-        public static Core.ItemProperty PackIP(ItemPropertyUnpacked itemProperty)
+        public static ItemProperty PackIP(ItemPropertyUnpacked itemProperty)
         {
             const string sFunc = "PackIP";
 

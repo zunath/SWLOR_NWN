@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 using SWLOR.Game.Server.Entity;
+using SWLOR.NWN.API;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Area;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service

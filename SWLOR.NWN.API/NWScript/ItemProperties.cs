@@ -1,12 +1,11 @@
-using System;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
-using Alignment = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.Alignment;
-using AlignmentGroup = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.AlignmentGroup;
-using SpellSchool = SWLOR.Game.Server.Core.NWScript.Enum.SpellSchool;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using Alignment = SWLOR.NWN.API.NWScript.Enum.Item.Property.Alignment;
+using AlignmentGroup = SWLOR.NWN.API.NWScript.Enum.Item.Property.AlignmentGroup;
+using SpellSchool = SWLOR.NWN.API.NWScript.Enum.SpellSchool;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -17,7 +16,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void AddItemProperty(DurationType nDurationType, ItemProperty ipProperty, uint oItem,
             float fDuration = 0.0f)
         {
-            NWN.Core.NWScript.AddItemProperty((int)nDurationType, ipProperty, oItem, fDuration);
+            global::NWN.Core.NWScript.AddItemProperty((int)nDurationType, ipProperty, oItem, fDuration);
         }
 
         /// <summary>
@@ -25,7 +24,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RemoveItemProperty(uint oItem, ItemProperty ipProperty)
         {
-            NWN.Core.NWScript.RemoveItemProperty(oItem, ipProperty);
+            global::NWN.Core.NWScript.RemoveItemProperty(oItem, ipProperty);
         }
 
         /// <summary>
@@ -33,7 +32,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsItemPropertyValid(ItemProperty ipProperty)
         {
-            return NWN.Core.NWScript.GetIsItemPropertyValid(ipProperty) != 0;
+            return global::NWN.Core.NWScript.GetIsItemPropertyValid(ipProperty) != 0;
         }
 
         /// <summary>
@@ -41,7 +40,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty GetFirstItemProperty(uint oItem)
         {
-            return NWN.Core.NWScript.GetFirstItemProperty(oItem);
+            return global::NWN.Core.NWScript.GetFirstItemProperty(oItem);
         }
 
         /// <summary>
@@ -50,7 +49,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty GetNextItemProperty(uint oItem)
         {
-            return NWN.Core.NWScript.GetNextItemProperty(oItem);
+            return global::NWN.Core.NWScript.GetNextItemProperty(oItem);
         }
 
         /// <summary>
@@ -58,7 +57,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemPropertyType GetItemPropertyType(ItemProperty ip)
         {
-            return (ItemPropertyType)NWN.Core.NWScript.GetItemPropertyType(ip);
+            return (ItemPropertyType)global::NWN.Core.NWScript.GetItemPropertyType(ip);
         }
 
         /// <summary>
@@ -66,7 +65,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static DurationType GetItemPropertyDurationType(ItemProperty ip)
         {
-            return (DurationType)NWN.Core.NWScript.GetItemPropertyDurationType(ip);
+            return (DurationType)global::NWN.Core.NWScript.GetItemPropertyDurationType(ip);
         }
 
         /// <summary>
@@ -76,7 +75,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyAbilityBonus(AbilityType nAbility, int nBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyAbilityBonus((int)nAbility, nBonus);
+            return global::NWN.Core.NWScript.ItemPropertyAbilityBonus((int)nAbility, nBonus);
         }
 
         /// <summary>
@@ -86,7 +85,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyACBonus(int nBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyACBonus(nBonus);
+            return global::NWN.Core.NWScript.ItemPropertyACBonus(nBonus);
         }
 
         /// <summary>
@@ -98,7 +97,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyACBonusVsAlign(AlignmentGroup nAlignGroup, int ACBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyACBonusVsAlign((int)nAlignGroup, ACBonus);
+            return global::NWN.Core.NWScript.ItemPropertyACBonusVsAlign((int)nAlignGroup, ACBonus);
         }
 
         /// <summary>
@@ -111,7 +110,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyACBonusVsDmgType(ItemPropertyDamageType nDamageType, int ACBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyACBonusVsDmgType((int)nDamageType, ACBonus);
+            return global::NWN.Core.NWScript.ItemPropertyACBonusVsDmgType((int)nDamageType, ACBonus);
         }
 
         /// <summary>
@@ -122,7 +121,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyACBonusVsRace(RacialType nRace, int nACBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyACBonusVsRace((int)nRace, nACBonus);
+            return global::NWN.Core.NWScript.ItemPropertyACBonusVsRace((int)nRace, nACBonus);
         }
 
         /// <summary>
@@ -133,7 +132,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyACBonusVsSAlign(Alignment nAlign, int nACBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyACBonusVsSAlign((int)nAlign, nACBonus);
+            return global::NWN.Core.NWScript.ItemPropertyACBonusVsSAlign((int)nAlign, nACBonus);
         }
 
         /// <summary>
@@ -143,7 +142,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyEnhancementBonus(int nEnhancementBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyEnhancementBonus(nEnhancementBonus);
+            return global::NWN.Core.NWScript.ItemPropertyEnhancementBonus(nEnhancementBonus);
         }
 
         /// <summary>
@@ -155,7 +154,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyEnhancementBonusVsAlign(AlignmentGroup nAlignGroup,
             int nBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyEnhancementBonusVsAlign((int)nAlignGroup, nBonus);
+            return global::NWN.Core.NWScript.ItemPropertyEnhancementBonusVsAlign((int)nAlignGroup, nBonus);
         }
 
         /// <summary>
@@ -166,7 +165,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyEnhancementBonusVsRace(RacialType nRace, int nBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyEnhancementBonusVsRace((int)nRace, nBonus);
+            return global::NWN.Core.NWScript.ItemPropertyEnhancementBonusVsRace((int)nRace, nBonus);
         }
 
         /// <summary>
@@ -178,7 +177,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyEnhancementBonusVsSAlign(Alignment nAlign,
             int nBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyEnhancementBonusVsSAlign((int)nAlign, nBonus);
+            return global::NWN.Core.NWScript.ItemPropertyEnhancementBonusVsSAlign((int)nAlign, nBonus);
         }
 
         /// <summary>
@@ -188,7 +187,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyEnhancementPenalty(int nPenalty)
         {
-            return NWN.Core.NWScript.ItemPropertyEnhancementPenalty(nPenalty);
+            return global::NWN.Core.NWScript.ItemPropertyEnhancementPenalty(nPenalty);
         }
 
         /// <summary>
@@ -197,7 +196,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyWeightReduction(ReducedWeight nReduction)
         {
-            return NWN.Core.NWScript.ItemPropertyWeightReduction((int)nReduction);
+            return global::NWN.Core.NWScript.ItemPropertyWeightReduction((int)nReduction);
         }
 
         /// <summary>
@@ -206,7 +205,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyBonusFeat(ItemPropertyFeat nFeat)
         {
-            return NWN.Core.NWScript.ItemPropertyBonusFeat((int)nFeat);
+            return global::NWN.Core.NWScript.ItemPropertyBonusFeat((int)nFeat);
         }
 
         /// <summary>
@@ -217,7 +216,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyBonusLevelSpell(Class nClass, SpellLevel nSpellLevel)
         {
-            return NWN.Core.NWScript.ItemPropertyBonusLevelSpell((int)nClass, (int)nSpellLevel);
+            return global::NWN.Core.NWScript.ItemPropertyBonusLevelSpell((int)nClass, (int)nSpellLevel);
         }
 
         /// <summary>
@@ -236,7 +235,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyCastSpell(CastSpell nSpell, CastSpellNumberUses nNumUses)
         {
-            return NWN.Core.NWScript.ItemPropertyCastSpell((int)nSpell, (int)nNumUses);
+            return global::NWN.Core.NWScript.ItemPropertyCastSpell((int)nSpell, (int)nNumUses);
         }
 
         /// <summary>
@@ -248,7 +247,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamageBonus(ItemPropertyDamageType nDamageType,
             DamageBonus nDamage)
         {
-            return NWN.Core.NWScript.ItemPropertyDamageBonus((int)nDamageType, (int)nDamage);
+            return global::NWN.Core.NWScript.ItemPropertyDamageBonus((int)nDamageType, (int)nDamage);
         }
 
         /// <summary>
@@ -261,7 +260,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamageBonusVsAlign(AlignmentGroup nAlignGroup,
             ItemPropertyDamageType nDamageType, DamageBonus nDamage)
         {
-            return NWN.Core.NWScript.ItemPropertyDamageBonusVsAlign((int)nAlignGroup, (int)nDamageType, (int)nDamage);
+            return global::NWN.Core.NWScript.ItemPropertyDamageBonusVsAlign((int)nAlignGroup, (int)nDamageType, (int)nDamage);
         }
 
         /// <summary>
@@ -274,7 +273,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamageBonusVsRace(RacialType nRace,
             ItemPropertyDamageType nDamageType, DamageBonus nDamage)
         {
-            return NWN.Core.NWScript.ItemPropertyDamageBonusVsRace((int)nRace, (int)nDamageType, (int)nDamage);
+            return global::NWN.Core.NWScript.ItemPropertyDamageBonusVsRace((int)nRace, (int)nDamageType, (int)nDamage);
         }
 
         /// <summary>
@@ -287,7 +286,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamageBonusVsSAlign(Alignment nAlign,
             ItemPropertyDamageType nDamageType, DamageBonus nDamage)
         {
-            return NWN.Core.NWScript.ItemPropertyDamageBonusVsSAlign((int)nAlign, (int)nDamageType, (int)nDamage);
+            return global::NWN.Core.NWScript.ItemPropertyDamageBonusVsSAlign((int)nAlign, (int)nDamageType, (int)nDamage);
         }
 
         /// <summary>
@@ -300,7 +299,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamageImmunity(ItemPropertyDamageType nDamageType,
             DamageImmunity nImmuneBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyDamageImmunity((int)nDamageType, (int)nImmuneBonus);
+            return global::NWN.Core.NWScript.ItemPropertyDamageImmunity((int)nDamageType, (int)nImmuneBonus);
         }
 
         /// <summary>
@@ -311,7 +310,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamagePenalty(int nPenalty)
         {
             if (nPenalty > 5) nPenalty = 5;
-            return NWN.Core.NWScript.ItemPropertyDamagePenalty(nPenalty);
+            return global::NWN.Core.NWScript.ItemPropertyDamagePenalty(nPenalty);
         }
 
         /// <summary>
@@ -322,7 +321,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyDamageReduction(DamageReduction nEnhancement, DamageSoak nHPSoak)
         {
-            return NWN.Core.NWScript.ItemPropertyDamageReduction((int)nEnhancement, (int)nHPSoak);
+            return global::NWN.Core.NWScript.ItemPropertyDamageReduction((int)nEnhancement, (int)nHPSoak);
         }
 
         /// <summary>
@@ -333,7 +332,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamageResistance(ItemPropertyDamageType nDamageType,
             DamageResist nHPResist)
         {
-            return NWN.Core.NWScript.ItemPropertyDamageResistance((int)nDamageType, (int)nHPResist);
+            return global::NWN.Core.NWScript.ItemPropertyDamageResistance((int)nDamageType, (int)nHPResist);
         }
 
         /// <summary>
@@ -344,7 +343,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamageVulnerability(ItemPropertyDamageType nDamageType,
             DamageVulnerability nVulnerability)
         {
-            return NWN.Core.NWScript.ItemPropertyDamageVulnerability((int)nDamageType, (int)nVulnerability);
+            return global::NWN.Core.NWScript.ItemPropertyDamageVulnerability((int)nDamageType, (int)nVulnerability);
         }
 
         /// <summary>
@@ -352,7 +351,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyDarkvision()
         {
-            return NWN.Core.NWScript.ItemPropertyDarkvision();
+            return global::NWN.Core.NWScript.ItemPropertyDarkvision();
         }
 
         /// <summary>
@@ -362,7 +361,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyDecreaseAbility(Ability nAbility, int nModifier)
         {
-            return NWN.Core.NWScript.ItemPropertyDecreaseAbility((int)nAbility, nModifier);
+            return global::NWN.Core.NWScript.ItemPropertyDecreaseAbility((int)nAbility, nModifier);
         }
 
         /// <summary>
@@ -372,7 +371,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyDecreaseAC(ArmorClassModiferType nModifierType, int nPenalty)
         {
-            return NWN.Core.NWScript.ItemPropertyDecreaseAC((int)nModifierType, nPenalty);
+            return global::NWN.Core.NWScript.ItemPropertyDecreaseAC((int)nModifierType, nPenalty);
         }
 
         /// <summary>
@@ -382,7 +381,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyDecreaseSkill(NWNSkillType nSkill, int nPenalty)
         {
-            return NWN.Core.NWScript.ItemPropertyDecreaseSkill((int)nSkill, nPenalty);
+            return global::NWN.Core.NWScript.ItemPropertyDecreaseSkill((int)nSkill, nPenalty);
         }
 
         /// <summary>
@@ -392,7 +391,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyContainerReducedWeight(ContainerWeight nContainerType)
         {
-            return NWN.Core.NWScript.ItemPropertyContainerReducedWeight((int)nContainerType);
+            return global::NWN.Core.NWScript.ItemPropertyContainerReducedWeight((int)nContainerType);
         }
 
         /// <summary>
@@ -404,7 +403,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyExtraMeleeDamageType(ItemPropertyDamageType nDamageType)
         {
-            return NWN.Core.NWScript.ItemPropertyExtraMeleeDamageType((int)nDamageType);
+            return global::NWN.Core.NWScript.ItemPropertyExtraMeleeDamageType((int)nDamageType);
         }
 
         /// <summary>
@@ -416,7 +415,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyExtraRangeDamageType(ItemPropertyDamageType nDamageType)
         {
-            return NWN.Core.NWScript.ItemPropertyExtraRangeDamageType((int)nDamageType);
+            return global::NWN.Core.NWScript.ItemPropertyExtraRangeDamageType((int)nDamageType);
         }
 
         /// <summary>
@@ -424,7 +423,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyHaste()
         {
-            return NWN.Core.NWScript.ItemPropertyHaste();
+            return global::NWN.Core.NWScript.ItemPropertyHaste();
         }
 
         /// <summary>
@@ -432,7 +431,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyHolyAvenger()
         {
-            return NWN.Core.NWScript.ItemPropertyHolyAvenger();
+            return global::NWN.Core.NWScript.ItemPropertyHolyAvenger();
         }
 
         /// <summary>
@@ -441,7 +440,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyImmunityMisc(ImmunityMisc nImmunityType)
         {
-            return NWN.Core.NWScript.ItemPropertyImmunityMisc((int)nImmunityType);
+            return global::NWN.Core.NWScript.ItemPropertyImmunityMisc((int)nImmunityType);
         }
 
         /// <summary>
@@ -449,7 +448,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyImprovedEvasion()
         {
-            return NWN.Core.NWScript.ItemPropertyImprovedEvasion();
+            return global::NWN.Core.NWScript.ItemPropertyImprovedEvasion();
         }
 
         /// <summary>
@@ -458,7 +457,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyBonusSpellResistance(SpellResistanceBonus nBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyBonusSpellResistance((int)nBonus);
+            return global::NWN.Core.NWScript.ItemPropertyBonusSpellResistance((int)nBonus);
         }
 
         /// <summary>
@@ -469,7 +468,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyBonusSavingThrowVsX(SaveVs nBonusType, int nBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyBonusSavingThrowVsX((int)nBonusType, nBonus);
+            return global::NWN.Core.NWScript.ItemPropertyBonusSavingThrowVsX((int)nBonusType, nBonus);
         }
 
         /// <summary>
@@ -480,7 +479,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyBonusSavingThrow(SaveBaseType nBaseSaveType, int nBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyBonusSavingThrow((int)nBaseSaveType, nBonus);
+            return global::NWN.Core.NWScript.ItemPropertyBonusSavingThrow((int)nBaseSaveType, nBonus);
         }
 
         /// <summary>
@@ -489,7 +488,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyKeen()
         {
-            return NWN.Core.NWScript.ItemPropertyKeen();
+            return global::NWN.Core.NWScript.ItemPropertyKeen();
         }
 
         /// <summary>
@@ -499,7 +498,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyLight(LightBrightness nBrightness, LightColor nColor)
         {
-            return NWN.Core.NWScript.ItemPropertyLight((int)nBrightness, (int)nColor);
+            return global::NWN.Core.NWScript.ItemPropertyLight((int)nBrightness, (int)nColor);
         }
 
         /// <summary>
@@ -509,7 +508,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyMaxRangeStrengthMod(int nModifier)
         {
-            return NWN.Core.NWScript.ItemPropertyMaxRangeStrengthMod(nModifier);
+            return global::NWN.Core.NWScript.ItemPropertyMaxRangeStrengthMod(nModifier);
         }
 
         /// <summary>
@@ -518,7 +517,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyNoDamage()
         {
-            return NWN.Core.NWScript.ItemPropertyNoDamage();
+            return global::NWN.Core.NWScript.ItemPropertyNoDamage();
         }
 
         /// <summary>
@@ -564,7 +563,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyOnHitProps(int nProperty, int nSaveDC, int nSpecial = 0)
         {
-            return NWN.Core.NWScript.ItemPropertyOnHitProps(nProperty, nSaveDC, nSpecial);
+            return global::NWN.Core.NWScript.ItemPropertyOnHitProps(nProperty, nSaveDC, nSpecial);
         }
 
         /// <summary>
@@ -575,7 +574,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyReducedSavingThrowVsX(SaveVs nBaseSaveType, int nPenalty)
         {
-            return NWN.Core.NWScript.ItemPropertyReducedSavingThrowVsX((int)nBaseSaveType, nPenalty);
+            return global::NWN.Core.NWScript.ItemPropertyReducedSavingThrowVsX((int)nBaseSaveType, nPenalty);
         }
 
         /// <summary>
@@ -586,7 +585,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyReducedSavingThrow(SaveBaseType nBonusType, int nPenalty)
         {
-            return NWN.Core.NWScript.ItemPropertyReducedSavingThrow((int)nBonusType, nPenalty);
+            return global::NWN.Core.NWScript.ItemPropertyReducedSavingThrow((int)nBonusType, nPenalty);
         }
 
         /// <summary>
@@ -595,7 +594,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyRegeneration(int nRegenAmount)
         {
-            return NWN.Core.NWScript.ItemPropertyRegeneration(nRegenAmount);
+            return global::NWN.Core.NWScript.ItemPropertyRegeneration(nRegenAmount);
         }
 
         /// <summary>
@@ -605,7 +604,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertySkillBonus(NWNSkillType nSkill, int nBonus)
         {
-            return NWN.Core.NWScript.ItemPropertySkillBonus((int)nSkill, nBonus);
+            return global::NWN.Core.NWScript.ItemPropertySkillBonus((int)nSkill, nBonus);
         }
 
         /// <summary>
@@ -614,7 +613,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertySpellImmunitySpecific(ImmunitySpell nSpell)
         {
-            return NWN.Core.NWScript.ItemPropertySpellImmunitySpecific((int)nSpell);
+            return global::NWN.Core.NWScript.ItemPropertySpellImmunitySpecific((int)nSpell);
         }
 
         /// <summary>
@@ -623,7 +622,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertySpellImmunitySchool(SpellSchool nSchool)
         {
-            return NWN.Core.NWScript.ItemPropertySpellImmunitySchool((int)nSchool);
+            return global::NWN.Core.NWScript.ItemPropertySpellImmunitySchool((int)nSchool);
         }
 
         /// <summary>
@@ -632,7 +631,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyThievesTools(int nModifier)
         {
-            return NWN.Core.NWScript.ItemPropertyThievesTools(nModifier);
+            return global::NWN.Core.NWScript.ItemPropertyThievesTools(nModifier);
         }
 
         /// <summary>
@@ -641,7 +640,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyAttackBonus(int nBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyAttackBonus(nBonus);
+            return global::NWN.Core.NWScript.ItemPropertyAttackBonus(nBonus);
         }
 
         /// <summary>
@@ -652,7 +651,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyAttackBonusVsAlign(AlignmentGroup nAlignGroup,
             int nBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyAttackBonusVsAlign((int)nAlignGroup, nBonus);
+            return global::NWN.Core.NWScript.ItemPropertyAttackBonusVsAlign((int)nAlignGroup, nBonus);
         }
 
         /// <summary>
@@ -662,7 +661,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyAttackBonusVsRace(RacialType nRace, int nBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyAttackBonusVsRace((int)nRace, nBonus);
+            return global::NWN.Core.NWScript.ItemPropertyAttackBonusVsRace((int)nRace, nBonus);
         }
 
         /// <summary>
@@ -672,7 +671,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyAttackBonusVsSAlign(Alignment nAlignment, int nBonus)
         {
-            return NWN.Core.NWScript.ItemPropertyAttackBonusVsSAlign((int)nAlignment, nBonus);
+            return global::NWN.Core.NWScript.ItemPropertyAttackBonusVsSAlign((int)nAlignment, nBonus);
         }
 
         /// <summary>
@@ -681,7 +680,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyAttackPenalty(int nPenalty)
         {
-            return NWN.Core.NWScript.ItemPropertyAttackPenalty(nPenalty);
+            return global::NWN.Core.NWScript.ItemPropertyAttackPenalty(nPenalty);
         }
 
         /// <summary>
@@ -693,7 +692,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyUnlimitedAmmo(Unlimited nAmmoDamage = Unlimited.Basic)
         {
-            return NWN.Core.NWScript.ItemPropertyUnlimitedAmmo((int)nAmmoDamage);
+            return global::NWN.Core.NWScript.ItemPropertyUnlimitedAmmo((int)nAmmoDamage);
         }
 
         /// <summary>
@@ -702,7 +701,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyLimitUseByAlign(AlignmentGroup nAlignGroup)
         {
-            return NWN.Core.NWScript.ItemPropertyLimitUseByAlign((int)nAlignGroup);
+            return global::NWN.Core.NWScript.ItemPropertyLimitUseByAlign((int)nAlignGroup);
         }
 
         /// <summary>
@@ -711,7 +710,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyLimitUseByClass(Class nClass)
         {
-            return NWN.Core.NWScript.ItemPropertyLimitUseByClass((int)nClass);
+            return global::NWN.Core.NWScript.ItemPropertyLimitUseByClass((int)nClass);
         }
 
         /// <summary>
@@ -720,7 +719,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyLimitUseByRace(RacialType nRace)
         {
-            return NWN.Core.NWScript.ItemPropertyLimitUseByRace((int)nRace);
+            return global::NWN.Core.NWScript.ItemPropertyLimitUseByRace((int)nRace);
         }
 
         /// <summary>
@@ -729,7 +728,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyLimitUseBySAlign(Alignment nAlignment)
         {
-            return NWN.Core.NWScript.ItemPropertyLimitUseBySAlign((int)nAlignment);
+            return global::NWN.Core.NWScript.ItemPropertyLimitUseBySAlign((int)nAlignment);
         }
 
         /// <summary>
@@ -737,7 +736,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty BadBadReplaceMeThisDoesNothing()
         {
-            return NWN.Core.NWScript.BadBadReplaceMeThisDoesNothing();
+            return global::NWN.Core.NWScript.BadBadReplaceMeThisDoesNothing();
         }
 
         /// <summary>
@@ -746,7 +745,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyVampiricRegeneration(int nRegenAmount)
         {
-            return NWN.Core.NWScript.ItemPropertyVampiricRegeneration(nRegenAmount);
+            return global::NWN.Core.NWScript.ItemPropertyVampiricRegeneration(nRegenAmount);
         }
 
         /// <summary>
@@ -755,7 +754,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyTrap(TrapStrength nTrapLevel, TrapType nTrapType)
         {
-            return NWN.Core.NWScript.ItemPropertyTrap((int)nTrapLevel, (int)nTrapType);
+            return global::NWN.Core.NWScript.ItemPropertyTrap((int)nTrapLevel, (int)nTrapType);
         }
 
         /// <summary>
@@ -763,7 +762,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyTrueSeeing()
         {
-            return NWN.Core.NWScript.ItemPropertyTrueSeeing();
+            return global::NWN.Core.NWScript.ItemPropertyTrueSeeing();
         }
 
         /// <summary>
@@ -789,7 +788,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyOnMonsterHitProperties(int nProperty, int nSpecial = 0)
         {
-            return NWN.Core.NWScript.ItemPropertyOnMonsterHitProperties(nProperty, nSpecial);
+            return global::NWN.Core.NWScript.ItemPropertyOnMonsterHitProperties(nProperty, nSpecial);
         }
 
         /// <summary>
@@ -798,7 +797,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyTurnResistance(int nModifier)
         {
-            return NWN.Core.NWScript.ItemPropertyTurnResistance(nModifier);
+            return global::NWN.Core.NWScript.ItemPropertyTurnResistance(nModifier);
         }
 
         /// <summary>
@@ -807,7 +806,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyMassiveCritical(DamageBonus nDamage)
         {
-            return NWN.Core.NWScript.ItemPropertyMassiveCritical((int)nDamage);
+            return global::NWN.Core.NWScript.ItemPropertyMassiveCritical((int)nDamage);
         }
 
         /// <summary>
@@ -815,7 +814,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyFreeAction()
         {
-            return NWN.Core.NWScript.ItemPropertyFreeAction();
+            return global::NWN.Core.NWScript.ItemPropertyFreeAction();
         }
 
         /// <summary>
@@ -826,7 +825,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyMonsterDamage(MonsterDamage nDamage)
         {
-            return NWN.Core.NWScript.ItemPropertyMonsterDamage((int)nDamage);
+            return global::NWN.Core.NWScript.ItemPropertyMonsterDamage((int)nDamage);
         }
 
         /// <summary>
@@ -837,7 +836,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyImmunityToSpellLevel(int nLevel)
         {
-            return NWN.Core.NWScript.ItemPropertyImmunityToSpellLevel(nLevel);
+            return global::NWN.Core.NWScript.ItemPropertyImmunityToSpellLevel(nLevel);
         }
 
         /// <summary>
@@ -847,7 +846,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertySpecialWalk()
         {
-            return NWN.Core.NWScript.ItemPropertySpecialWalk(0);
+            return global::NWN.Core.NWScript.ItemPropertySpecialWalk(0);
         }
 
         /// <summary>
@@ -856,7 +855,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyHealersKit(int nModifier)
         {
-            return NWN.Core.NWScript.ItemPropertyHealersKit(nModifier);
+            return global::NWN.Core.NWScript.ItemPropertyHealersKit(nModifier);
         }
 
         /// <summary>
@@ -865,7 +864,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyWeightIncrease(WeightIncrease nWeight)
         {
-            return NWN.Core.NWScript.ItemPropertyWeightIncrease((int)nWeight);
+            return global::NWN.Core.NWScript.ItemPropertyWeightIncrease((int)nWeight);
         }
 
         /// <summary>
@@ -874,7 +873,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetItemPropertyTag(ItemProperty nProperty)
         {
-            return NWN.Core.NWScript.GetItemPropertyTag(nProperty);
+            return global::NWN.Core.NWScript.GetItemPropertyTag(nProperty);
         }
 
         /// <summary>
@@ -882,7 +881,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertyCostTable(ItemProperty iProp)
         {
-            return NWN.Core.NWScript.GetItemPropertyCostTable(iProp);
+            return global::NWN.Core.NWScript.GetItemPropertyCostTable(iProp);
         }
 
         /// <summary>
@@ -891,7 +890,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertyCostTableValue(ItemProperty iProp)
         {
-            return NWN.Core.NWScript.GetItemPropertyCostTableValue(iProp);
+            return global::NWN.Core.NWScript.GetItemPropertyCostTableValue(iProp);
         }
 
         /// <summary>
@@ -899,7 +898,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertyParam1(ItemProperty iProp)
         {
-            return NWN.Core.NWScript.GetItemPropertyParam1(iProp);
+            return global::NWN.Core.NWScript.GetItemPropertyParam1(iProp);
         }
 
         /// <summary>
@@ -907,7 +906,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertyParam1Value(ItemProperty iProp)
         {
-            return NWN.Core.NWScript.GetItemPropertyParam1Value(iProp);
+            return global::NWN.Core.NWScript.GetItemPropertyParam1Value(iProp);
         }
 
         /// <summary>
@@ -930,7 +929,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static uint CopyItemAndModify(uint oItem, ItemAppearanceType nType, int nIndex, int nNewValue,
             bool bCopyVars = false)
         {
-            return NWN.Core.NWScript.CopyItemAndModify(oItem, (int)nType, nIndex, nNewValue, bCopyVars ? 1 : 0);
+            return global::NWN.Core.NWScript.CopyItemAndModify(oItem, (int)nType, nIndex, nNewValue, bCopyVars ? 1 : 0);
         }
 
         /// <summary>
@@ -940,7 +939,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyOnHitCastSpell(OnHitCastSpellType nSpellType, int nLevel)
         {
-            return NWN.Core.NWScript.ItemPropertyOnHitCastSpell((int)nSpellType, nLevel);
+            return global::NWN.Core.NWScript.ItemPropertyOnHitCastSpell((int)nSpellType, nLevel);
         }
 
         /// <summary>
@@ -948,7 +947,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertySubType(ItemProperty iProperty)
         {
-            return NWN.Core.NWScript.GetItemPropertySubType(iProperty);
+            return global::NWN.Core.NWScript.GetItemPropertySubType(iProperty);
         }
 
         /// <summary>
@@ -957,7 +956,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty TagItemProperty(ItemProperty nProperty, string sNewTag)
         {
-            return NWN.Core.NWScript.TagItemProperty(nProperty, sNewTag);
+            return global::NWN.Core.NWScript.TagItemProperty(nProperty, sNewTag);
         }
 
         /// <summary>
@@ -966,7 +965,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertyDuration(ItemProperty nProperty)
         {
-            return NWN.Core.NWScript.GetItemPropertyDuration(nProperty);
+            return global::NWN.Core.NWScript.GetItemPropertyDuration(nProperty);
         }
 
         /// <summary>
@@ -975,7 +974,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertyDurationRemaining(ItemProperty nProperty)
         {
-            return NWN.Core.NWScript.GetItemPropertyDurationRemaining(nProperty);
+            return global::NWN.Core.NWScript.GetItemPropertyDurationRemaining(nProperty);
         }
 
         /// <summary>
@@ -986,7 +985,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyMaterial(int nMaterialType)
         {
-            return NWN.Core.NWScript.ItemPropertyMaterial(nMaterialType);
+            return global::NWN.Core.NWScript.ItemPropertyMaterial(nMaterialType);
         }
 
         /// <summary>
@@ -997,7 +996,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyQuality(Quality nQuality)
         {
-            return NWN.Core.NWScript.ItemPropertyQuality((int)nQuality);
+            return global::NWN.Core.NWScript.ItemPropertyQuality((int)nQuality);
         }
 
         /// <summary>
@@ -1008,7 +1007,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyAdditional(Additional nAdditionalProperty)
         {
-            return NWN.Core.NWScript.ItemPropertyAdditional((int)nAdditionalProperty);
+            return global::NWN.Core.NWScript.ItemPropertyAdditional((int)nAdditionalProperty);
         }
 
         /// <summary>
@@ -1017,7 +1016,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyArcaneSpellFailure(ArcaneSpellFailure nModLevel)
         {
-            return NWN.Core.NWScript.ItemPropertyArcaneSpellFailure((int)nModLevel);
+            return global::NWN.Core.NWScript.ItemPropertyArcaneSpellFailure((int)nModLevel);
         }
 
         /// <summary>
@@ -1026,7 +1025,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyVisualEffect(ItemVisual nEffect)
         {
-            return NWN.Core.NWScript.ItemPropertyVisualEffect((int)nEffect);
+            return global::NWN.Core.NWScript.ItemPropertyVisualEffect((int)nEffect);
         }
 
         /// <summary>
@@ -1036,7 +1035,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertyUsesPerDayRemaining(uint oItem, IntPtr ip)
         {
-            return NWN.Core.NWScript.GetItemPropertyUsesPerDayRemaining(oItem, ip);
+            return global::NWN.Core.NWScript.GetItemPropertyUsesPerDayRemaining(oItem, ip);
         }
 
         /// <summary>
@@ -1046,7 +1045,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetItemPropertyUsesPerDayRemaining(uint oItem, IntPtr ip, int nUsesPerDay)
         {
-            NWN.Core.NWScript.SetItemPropertyUsesPerDayRemaining(oItem, ip, nUsesPerDay);
+            global::NWN.Core.NWScript.SetItemPropertyUsesPerDayRemaining(oItem, ip, nUsesPerDay);
         }
 
         /// <summary>
@@ -1056,7 +1055,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyCustom(ItemPropertyType nType, int nSubType = -1, int nCostTableValue = -1, int nParam1Value = -1)
         {
-            return NWN.Core.NWScript.ItemPropertyCustom((int)nType, nSubType, nCostTableValue, nParam1Value);
+            return global::NWN.Core.NWScript.ItemPropertyCustom((int)nType, nSubType, nCostTableValue, nParam1Value);
         }
 
     }

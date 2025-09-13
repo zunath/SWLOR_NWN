@@ -2,8 +2,6 @@ using System;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -12,12 +10,14 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using Player = SWLOR.Game.Server.Entity.Player;
-using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
+using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
-using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
-using SavingThrow = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrow;
-using MovementRate = SWLOR.Game.Server.Core.NWScript.Enum.MovementRate;
+using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
+using MovementRate = SWLOR.NWN.API.NWScript.Enum.MovementRate;
 
 namespace SWLOR.Game.Server.Service
 {

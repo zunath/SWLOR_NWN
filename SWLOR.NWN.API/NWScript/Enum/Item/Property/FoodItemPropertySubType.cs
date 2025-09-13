@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Core.NWScript.Enum.Item.Property
+﻿namespace SWLOR.NWN.API.NWScript.Enum.Item.Property
 {
     // Corresponds to iprp_foodtype.2da
     public enum FoodItemPropertySubType

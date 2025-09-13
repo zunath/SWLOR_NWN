@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetStoreGold(uint oidStore)
         {
-            return NWN.Core.NWScript.GetStoreGold(oidStore);
+            return global::NWN.Core.NWScript.GetStoreGold(oidStore);
         }
 
         /// <summary>
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetStoreGold(uint oidStore, int nGold)
         {
-            NWN.Core.NWScript.SetStoreGold(oidStore, nGold);
+            global::NWN.Core.NWScript.SetStoreGold(oidStore, nGold);
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetStoreMaxBuyPrice(uint oidStore)
         {
-            return NWN.Core.NWScript.GetStoreMaxBuyPrice(oidStore);
+            return global::NWN.Core.NWScript.GetStoreMaxBuyPrice(oidStore);
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetStoreMaxBuyPrice(uint oidStore, int nMaxBuy)
         {
-            NWN.Core.NWScript.SetStoreMaxBuyPrice(oidStore, nMaxBuy);
+            global::NWN.Core.NWScript.SetStoreMaxBuyPrice(oidStore, nMaxBuy);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetStoreIdentifyCost(uint oidStore)
         {
-            return NWN.Core.NWScript.GetStoreIdentifyCost(oidStore);
+            return global::NWN.Core.NWScript.GetStoreIdentifyCost(oidStore);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetStoreIdentifyCost(uint oidStore, int nCost)
         {
-            NWN.Core.NWScript.SetStoreIdentifyCost(oidStore, nCost);
+            global::NWN.Core.NWScript.SetStoreIdentifyCost(oidStore, nCost);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void OpenStore(uint oStore, uint oPC, int nBonusMarkUp = 0, int nBonusMarkDown = 0)
         {
-            NWN.Core.NWScript.OpenStore(oStore, oPC, nBonusMarkUp, nBonusMarkDown);
+            global::NWN.Core.NWScript.OpenStore(oStore, oPC, nBonusMarkUp, nBonusMarkDown);
         }
     }
 }

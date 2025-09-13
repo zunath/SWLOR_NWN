@@ -1,6 +1,6 @@
-﻿using SWLOR.Game.Server.Core.NWScript.Enum;
+﻿using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonParse(string jValue)
         {
-            return NWN.Core.NWScript.JsonParse(jValue);
+            return global::NWN.Core.NWScript.JsonParse(jValue);
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string JsonDump(Json jValue, int nIndent = -1)
         {
-            return NWN.Core.NWScript.JsonDump(jValue, nIndent);
+            return global::NWN.Core.NWScript.JsonDump(jValue, nIndent);
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static JsonType JsonGetType(Json jValue)
         {
-            return (JsonType)NWN.Core.NWScript.JsonGetType(jValue);
+            return (JsonType)global::NWN.Core.NWScript.JsonGetType(jValue);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int JsonGetLength(Json jValue)
         {
-            return NWN.Core.NWScript.JsonGetLength(jValue);
+            return global::NWN.Core.NWScript.JsonGetLength(jValue);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string JsonGetError(Json jValue)
         {
-            return NWN.Core.NWScript.JsonGetError(jValue);
+            return global::NWN.Core.NWScript.JsonGetError(jValue);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonNull(string sError = "")
         {
-            return NWN.Core.NWScript.JsonNull(sError);
+            return global::NWN.Core.NWScript.JsonNull(sError);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObject()
         {
-            return NWN.Core.NWScript.JsonObject();
+            return global::NWN.Core.NWScript.JsonObject();
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArray()
         {
-            return NWN.Core.NWScript.JsonArray();
+            return global::NWN.Core.NWScript.JsonArray();
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonString(string sValue)
         {
-            return NWN.Core.NWScript.JsonString(sValue);
+            return global::NWN.Core.NWScript.JsonString(sValue);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonInt(int nValue)
         {
-            return NWN.Core.NWScript.JsonInt(nValue);
+            return global::NWN.Core.NWScript.JsonInt(nValue);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonFloat(float fValue)
         {
-            return NWN.Core.NWScript.JsonFloat(fValue);
+            return global::NWN.Core.NWScript.JsonFloat(fValue);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonBool(bool bValue)
         {
-            return NWN.Core.NWScript.JsonBool(bValue ? 1 : 0);
+            return global::NWN.Core.NWScript.JsonBool(bValue ? 1 : 0);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string JsonGetString(Json jValue)
         {
-            return NWN.Core.NWScript.JsonGetString(jValue);
+            return global::NWN.Core.NWScript.JsonGetString(jValue);
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int JsonGetInt(Json jValue)
         {
-            return NWN.Core.NWScript.JsonGetInt(jValue);
+            return global::NWN.Core.NWScript.JsonGetInt(jValue);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float JsonGetFloat(Json jValue)
         {
-            return NWN.Core.NWScript.JsonGetFloat(jValue);
+            return global::NWN.Core.NWScript.JsonGetFloat(jValue);
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObjectKeys(Json jObject)
         {
-            return NWN.Core.NWScript.JsonObjectKeys(jObject);
+            return global::NWN.Core.NWScript.JsonObjectKeys(jObject);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObjectGet(Json jObject, string sKey)
         {
-            return NWN.Core.NWScript.JsonObjectGet(jObject, sKey);
+            return global::NWN.Core.NWScript.JsonObjectGet(jObject, sKey);
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObjectSet(Json jObject, string sKey, Json jValue)
         {
-            return NWN.Core.NWScript.JsonObjectSet(jObject, sKey, jValue);
+            return global::NWN.Core.NWScript.JsonObjectSet(jObject, sKey, jValue);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObjectDel(Json jObject, string sKey)
         {
-            return NWN.Core.NWScript.JsonObjectDel(jObject, sKey);
+            return global::NWN.Core.NWScript.JsonObjectDel(jObject, sKey);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArrayGet(Json jArray, int nIndex)
         {
-            return NWN.Core.NWScript.JsonArrayGet(jArray, nIndex);
+            return global::NWN.Core.NWScript.JsonArrayGet(jArray, nIndex);
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArraySet(Json jArray, int nIndex, Json jValue)
         {
-            return NWN.Core.NWScript.JsonArraySet(jArray, nIndex, jValue);
+            return global::NWN.Core.NWScript.JsonArraySet(jArray, nIndex, jValue);
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArrayInsert(Json jArray, Json jValue, int nIndex = -1)
         {
-            return NWN.Core.NWScript.JsonArrayInsert(jArray, jValue, nIndex);
+            return global::NWN.Core.NWScript.JsonArrayInsert(jArray, jValue, nIndex);
         }
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArrayDel(Json jArray, int nIndex)
         {
-            return NWN.Core.NWScript.JsonArrayDel(jArray, nIndex);
+            return global::NWN.Core.NWScript.JsonArrayDel(jArray, nIndex);
         }
 
         /// <summary>
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json ObjectToJson(uint oObject, bool bSaveObjectState = false)
         {
-            return NWN.Core.NWScript.ObjectToJson(oObject, bSaveObjectState ? 1 : 0);
+            return global::NWN.Core.NWScript.ObjectToJson(oObject, bSaveObjectState ? 1 : 0);
         }
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint JsonToObject(Json jObject, Location locLocation, uint oOwner = OBJECT_INVALID, bool bLoadObjectState = false)
         {
-            return NWN.Core.NWScript.JsonToObject(jObject, locLocation, oOwner, bLoadObjectState ? 1 : 0);
+            return global::NWN.Core.NWScript.JsonToObject(jObject, locLocation, oOwner, bLoadObjectState ? 1 : 0);
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonPointer(Json jData, string sPointer)
         {
-            return NWN.Core.NWScript.JsonPointer(jData, sPointer);
+            return global::NWN.Core.NWScript.JsonPointer(jData, sPointer);
         }
 
         /// <summary>
@@ -277,7 +277,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonPatch(Json jData, Json jPatch)
         {
-            return NWN.Core.NWScript.JsonPatch(jData, jPatch);
+            return global::NWN.Core.NWScript.JsonPatch(jData, jPatch);
         }
 
         /// <summary>
@@ -286,7 +286,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonDiff(Json jLHS, Json jRHS)
         {
-            return NWN.Core.NWScript.JsonDiff(jLHS, jRHS);
+            return global::NWN.Core.NWScript.JsonDiff(jLHS, jRHS);
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonMerge(Json jData, Json jMerge)
         {
-            return NWN.Core.NWScript.JsonMerge(jData, jMerge);
+            return global::NWN.Core.NWScript.JsonMerge(jData, jMerge);
         }
 
         /// <summary>
@@ -306,7 +306,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json GetLocalJson(uint oObject, string sVarName)
         {
-            return NWN.Core.NWScript.GetLocalJson(oObject, sVarName);
+            return global::NWN.Core.NWScript.GetLocalJson(oObject, sVarName);
         }
 
         /// <summary>
@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLocalJson(uint oObject, string sVarName, Json jValue)
         {
-            NWN.Core.NWScript.SetLocalJson(oObject, sVarName, jValue);
+            global::NWN.Core.NWScript.SetLocalJson(oObject, sVarName, jValue);
         }
 
         /// <summary>
@@ -322,7 +322,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DeleteLocalJson(uint oObject, string sVarName)
         {
-            NWN.Core.NWScript.DeleteLocalJson(oObject, sVarName);
+            global::NWN.Core.NWScript.DeleteLocalJson(oObject, sVarName);
         }
 
         /// <summary>
@@ -341,7 +341,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json TemplateToJson(string sResRef, ResType nResType)
         {
-            return NWN.Core.NWScript.TemplateToJson(sResRef, (int)nResType);
+            return global::NWN.Core.NWScript.TemplateToJson(sResRef, (int)nResType);
         }
 
         /// <summary>
@@ -362,7 +362,7 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         public static Json JsonArrayTransform(Json jArray, JsonArraySort nTransform)
         {
-            return NWN.Core.NWScript.JsonArrayTransform(jArray, (int)nTransform);
+            return global::NWN.Core.NWScript.JsonArrayTransform(jArray, (int)nTransform);
         }
 
         /// <summary>
@@ -377,7 +377,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             int nNth = 0,
             JsonFind nConditional = Enum.JsonFind.Equal)
         {
-            return NWN.Core.NWScript.JsonFind(jHaystack, jNeedle, nNth, (int)nConditional);
+            return global::NWN.Core.NWScript.JsonFind(jHaystack, jNeedle, nNth, (int)nConditional);
         }
 
         /// <summary>
@@ -396,7 +396,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArrayGetRange(Json jArray, int nBeginIndex, int nEndIndex)
         {
-            return NWN.Core.NWScript.JsonArrayGetRange(jArray, nBeginIndex, nEndIndex);
+            return global::NWN.Core.NWScript.JsonArrayGetRange(jArray, nBeginIndex, nEndIndex);
         }
 
         /// <summary>
@@ -415,7 +415,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonSetOp(Json jValue, JsonSet nOp, Json jOther)
         {
-            return NWN.Core.NWScript.JsonSetOp(jValue, (int)nOp, jOther);
+            return global::NWN.Core.NWScript.JsonSetOp(jValue, (int)nOp, jOther);
         }
 
         /// <summary>
@@ -439,7 +439,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             RegularExpressionType nSyntaxFlags = RegularExpressionType.Ecmascript,
             RegularExpressionFormatType nMatchFlags = RegularExpressionFormatType.Default)
         {
-            return NWN.Core.NWScript.RegExpMatch(sRegExp, sValue, (int)nSyntaxFlags, (int)nMatchFlags);
+            return global::NWN.Core.NWScript.RegExpMatch(sRegExp, sValue, (int)nSyntaxFlags, (int)nMatchFlags);
         }
 
         /// <summary>
@@ -457,7 +457,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             RegularExpressionType nSyntaxFlags = RegularExpressionType.Ecmascript,
             RegularExpressionFormatType nMatchFlags = RegularExpressionFormatType.Default)
         {
-            return NWN.Core.NWScript.RegExpIterate(sRegExp, sValue, (int)nSyntaxFlags, (int)nMatchFlags);
+            return global::NWN.Core.NWScript.RegExpIterate(sRegExp, sValue, (int)nSyntaxFlags, (int)nMatchFlags);
         }
     }
 }

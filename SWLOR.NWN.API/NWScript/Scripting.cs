@@ -1,6 +1,6 @@
-﻿using SWLOR.Game.Server.Core.NWScript.Enum;
+﻿using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetScriptParam(string sParamName)
         {
-            return NWN.Core.NWScript.GetScriptParam(sParamName);
+            return global::NWN.Core.NWScript.GetScriptParam(sParamName);
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetScriptParam(string sParamName, string sParamValue)
         {
-            NWN.Core.NWScript.SetScriptParam(sParamName, sParamValue);
+            global::NWN.Core.NWScript.SetScriptParam(sParamName, sParamValue);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static EventScript GetCurrentlyRunningEvent(bool bInheritParent = true)
         {
-            return (EventScript)NWN.Core.NWScript.GetCurrentlyRunningEvent(bInheritParent ? 1 : 0);
+            return (EventScript)global::NWN.Core.NWScript.GetCurrentlyRunningEvent(bInheritParent ? 1 : 0);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static int GetScriptInstructionsRemaining()
         {
-            return NWN.Core.NWScript.GetScriptInstructionsRemaining();
+            return global::NWN.Core.NWScript.GetScriptInstructionsRemaining();
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string CompileScript(string sScriptName, string sScriptData, bool bWrapIntoMain = false, bool bGenerateNDB = false)
         {
-            return NWN.Core.NWScript.CompileScript(sScriptName, sScriptData, bWrapIntoMain ? 1 : 0, bGenerateNDB ? 1 : 0);
+            return global::NWN.Core.NWScript.CompileScript(sScriptName, sScriptData, bWrapIntoMain ? 1 : 0, bGenerateNDB ? 1 : 0);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AbortRunningScript(string sError = "")
         {
-            NWN.Core.NWScript.AbortRunningScript(sError);
+            global::NWN.Core.NWScript.AbortRunningScript(sError);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json GetScriptBacktrace(bool bIncludeStack = true)
         {
-            return NWN.Core.NWScript.GetScriptBacktrace(bIncludeStack ? 1 : 0);
+            return global::NWN.Core.NWScript.GetScriptBacktrace(bIncludeStack ? 1 : 0);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SetJmp(string sLabel)
         {
-            return NWN.Core.NWScript.SetJmp(sLabel);
+            return global::NWN.Core.NWScript.SetJmp(sLabel);
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void LongJmp(string sLabel, int nRetVal = 1)
         {
-            NWN.Core.NWScript.LongJmp(sLabel, nRetVal);
+            global::NWN.Core.NWScript.LongJmp(sLabel, nRetVal);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsValidJmp(string sLabel)
         {
-            return NWN.Core.NWScript.GetIsValidJmp(sLabel) != 0;
+            return global::NWN.Core.NWScript.GetIsValidJmp(sLabel) != 0;
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetScriptRecursionLevel()
         {
-            return NWN.Core.NWScript.GetScriptRecursionLevel();
+            return global::NWN.Core.NWScript.GetScriptRecursionLevel();
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetScriptName(int nRecursionLevel = -1)
         {
-            return NWN.Core.NWScript.GetScriptName(nRecursionLevel);
+            return global::NWN.Core.NWScript.GetScriptName(nRecursionLevel);
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetScriptChunk(int nRecursionLevel = -1)
         {
-            return NWN.Core.NWScript.GetScriptChunk(nRecursionLevel);
+            return global::NWN.Core.NWScript.GetScriptChunk(nRecursionLevel);
         }
     }
 }

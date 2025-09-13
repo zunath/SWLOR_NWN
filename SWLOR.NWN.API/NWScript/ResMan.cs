@@ -1,6 +1,6 @@
-﻿using SWLOR.Game.Server.Core.NWScript.Enum;
+﻿using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string ResManGetAliasFor(string sResRef, ResType nResType)
         {
-            return NWN.Core.NWScript.ResManGetAliasFor(sResRef, (int)nResType);
+            return global::NWN.Core.NWScript.ResManGetAliasFor(sResRef, (int)nResType);
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string ResManFindPrefix(string sPrefix, ResType nResType, int nNth = 1, bool bSearchBaseData = false, string sOnlyKeyTable = "")
         {
-            return NWN.Core.NWScript.ResManFindPrefix(sPrefix, (int)nResType, nNth, bSearchBaseData ? 1 : 0, sOnlyKeyTable);
+            return global::NWN.Core.NWScript.ResManFindPrefix(sPrefix, (int)nResType, nNth, bSearchBaseData ? 1 : 0, sOnlyKeyTable);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string ResManGetFileContents(string sResRef, int nResType)
         {
-            return NWN.Core.NWScript.ResManGetFileContents(sResRef, nResType);
+            return global::NWN.Core.NWScript.ResManGetFileContents(sResRef, nResType);
         }
 
     }

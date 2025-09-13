@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Entity
 {

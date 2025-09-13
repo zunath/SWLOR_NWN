@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float fabs(float fValue)
         {
-            return NWN.Core.NWScript.fabs(fValue);
+            return global::NWN.Core.NWScript.fabs(fValue);
         }
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float cos(float fValue)
         {
-            return NWN.Core.NWScript.cos(fValue);
+            return global::NWN.Core.NWScript.cos(fValue);
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float sin(float fValue)
         {
-            return NWN.Core.NWScript.sin(fValue);
+            return global::NWN.Core.NWScript.sin(fValue);
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float tan(float fValue)
         {
-            return NWN.Core.NWScript.tan(fValue);
+            return global::NWN.Core.NWScript.tan(fValue);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float acos(float fValue)
         {
-            return NWN.Core.NWScript.acos(fValue);
+            return global::NWN.Core.NWScript.acos(fValue);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float asin(float fValue)
         {
-            return NWN.Core.NWScript.asin(fValue);
+            return global::NWN.Core.NWScript.asin(fValue);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float atan(float fValue)
         {
-            return NWN.Core.NWScript.atan(fValue);
+            return global::NWN.Core.NWScript.atan(fValue);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float log(float fValue)
         {
-            return NWN.Core.NWScript.log(fValue);
+            return global::NWN.Core.NWScript.log(fValue);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float pow(float fValue, float fExponent)
         {
-            return NWN.Core.NWScript.pow(fValue, fExponent);
+            return global::NWN.Core.NWScript.pow(fValue, fExponent);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float sqrt(float fValue)
         {
-            return NWN.Core.NWScript.sqrt(fValue);
+            return global::NWN.Core.NWScript.sqrt(fValue);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int abs(int nValue)
         {
-            return NWN.Core.NWScript.abs(nValue);
+            return global::NWN.Core.NWScript.abs(nValue);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 VectorNormalize(Vector3 vVector)
         {
-            return NWN.Core.NWScript.VectorNormalize(vVector);
+            return global::NWN.Core.NWScript.VectorNormalize(vVector);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float VectorMagnitude(Vector3 vVector)
         {
-            return NWN.Core.NWScript.VectorMagnitude(vVector);
+            return global::NWN.Core.NWScript.VectorMagnitude(vVector);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float FeetToMeters(float fFeet)
         {
-            return NWN.Core.NWScript.FeetToMeters(fFeet);
+            return global::NWN.Core.NWScript.FeetToMeters(fFeet);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float YardsToMeters(float fYards)
         {
-            return NWN.Core.NWScript.YardsToMeters(fYards);
+            return global::NWN.Core.NWScript.YardsToMeters(fYards);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetDistanceToObject(uint oObject)
         {
-            return NWN.Core.NWScript.GetDistanceToObject(oObject);
+            return global::NWN.Core.NWScript.GetDistanceToObject(oObject);
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool LineOfSightObject(uint oSource, uint oTarget)
         {
-            return NWN.Core.NWScript.LineOfSightObject(oSource, oTarget) != 0;
+            return global::NWN.Core.NWScript.LineOfSightObject(oSource, oTarget) != 0;
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool LineOfSightVector(Vector3 vSource, Vector3 vTarget)
         {
-            return NWN.Core.NWScript.LineOfSightVector(vSource, vTarget) != 0;
+            return global::NWN.Core.NWScript.LineOfSightVector(vSource, vTarget) != 0;
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 AngleToVector(float fAngle)
         {
-            return NWN.Core.NWScript.AngleToVector(fAngle);
+            return global::NWN.Core.NWScript.AngleToVector(fAngle);
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float VectorToAngle(Vector3 vVector)
         {
-            return NWN.Core.NWScript.VectorToAngle(vVector);
+            return global::NWN.Core.NWScript.VectorToAngle(vVector);
         }
     }
 }

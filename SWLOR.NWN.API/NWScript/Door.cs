@@ -1,6 +1,6 @@
-using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsOpen(uint oObject)
         {
-            return NWN.Core.NWScript.GetIsOpen(oObject) != 0;
+            return global::NWN.Core.NWScript.GetIsOpen(oObject) != 0;
         }
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionUnlockObject(uint oTarget)
         {
-            NWN.Core.NWScript.ActionUnlockObject(oTarget);
+            global::NWN.Core.NWScript.ActionUnlockObject(oTarget);
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionLockObject(uint oTarget)
         {
-            NWN.Core.NWScript.ActionLockObject(oTarget);
+            global::NWN.Core.NWScript.ActionLockObject(oTarget);
         }
 
 
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionOpenDoor(uint oDoor)
         {
-            NWN.Core.NWScript.ActionOpenDoor(oDoor);
+            global::NWN.Core.NWScript.ActionOpenDoor(oDoor);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionCloseDoor(uint oDoor)
         {
-            NWN.Core.NWScript.ActionCloseDoor(oDoor);
+            global::NWN.Core.NWScript.ActionCloseDoor(oDoor);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetBlockingDoor()
         {
-            return NWN.Core.NWScript.GetBlockingDoor();
+            return global::NWN.Core.NWScript.GetBlockingDoor();
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDoorActionPossible(uint oTargetDoor, DoorAction nDoorAction)
         {
-            return NWN.Core.NWScript.GetIsDoorActionPossible(oTargetDoor, (int)nDoorAction) == 1;
+            return global::NWN.Core.NWScript.GetIsDoorActionPossible(oTargetDoor, (int)nDoorAction) == 1;
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DoDoorAction(uint oTargetDoor, DoorAction nDoorAction)
         {
-            NWN.Core.NWScript.DoDoorAction(oTargetDoor, (int)nDoorAction);
+            global::NWN.Core.NWScript.DoDoorAction(oTargetDoor, (int)nDoorAction);
         }
     }
 }

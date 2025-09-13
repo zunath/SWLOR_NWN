@@ -1,4 +1,6 @@
-﻿namespace SWLOR.Game.Server.Core.Beamdog
+﻿using SWLOR.NWN.API;
+
+namespace SWLOR.Game.Server.Core.Beamdog
 {
     public static class Nui
     {

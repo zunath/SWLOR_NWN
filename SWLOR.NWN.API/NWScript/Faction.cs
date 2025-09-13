@@ -1,6 +1,6 @@
-using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFactionWeakestMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
-            return NWN.Core.NWScript.GetFactionWeakestMember(oFactionMember, bMustBeVisible ? 1 : 0);
+            return global::NWN.Core.NWScript.GetFactionWeakestMember(oFactionMember, bMustBeVisible ? 1 : 0);
         }
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFactionStrongestMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
-            return NWN.Core.NWScript.GetFactionStrongestMember(oFactionMember, bMustBeVisible ? 1 : 0);
+            return global::NWN.Core.NWScript.GetFactionStrongestMember(oFactionMember, bMustBeVisible ? 1 : 0);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFactionMostDamagedMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
-            return NWN.Core.NWScript.GetFactionMostDamagedMember(oFactionMember, bMustBeVisible ? 1 : 0);
+            return global::NWN.Core.NWScript.GetFactionMostDamagedMember(oFactionMember, bMustBeVisible ? 1 : 0);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static uint GetFactionLeastDamagedMember(uint oFactionMember = OBJECT_INVALID,
             bool bMustBeVisible = true)
         {
-            return NWN.Core.NWScript.GetFactionLeastDamagedMember(oFactionMember, bMustBeVisible ? 1 : 0);
+            return global::NWN.Core.NWScript.GetFactionLeastDamagedMember(oFactionMember, bMustBeVisible ? 1 : 0);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFactionGold(uint oFactionMember)
         {
-            return NWN.Core.NWScript.GetFactionGold(oFactionMember);
+            return global::NWN.Core.NWScript.GetFactionGold(oFactionMember);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFactionAverageReputation(uint oSourceFactionMember, uint oTarget)
         {
-            return NWN.Core.NWScript.GetFactionAverageReputation(oSourceFactionMember, oTarget);
+            return global::NWN.Core.NWScript.GetFactionAverageReputation(oSourceFactionMember, oTarget);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFactionAverageGoodEvilAlignment(uint oFactionMember)
         {
-            return NWN.Core.NWScript.GetFactionAverageGoodEvilAlignment(oFactionMember);
+            return global::NWN.Core.NWScript.GetFactionAverageGoodEvilAlignment(oFactionMember);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFactionAverageLawChaosAlignment(uint oFactionMember)
         {
-            return NWN.Core.NWScript.GetFactionAverageLawChaosAlignment(oFactionMember);
+            return global::NWN.Core.NWScript.GetFactionAverageLawChaosAlignment(oFactionMember);
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFactionAverageLevel(uint oFactionMember)
         {
-            return NWN.Core.NWScript.GetFactionAverageLevel(oFactionMember);
+            return global::NWN.Core.NWScript.GetFactionAverageLevel(oFactionMember);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFactionAverageXP(uint oFactionMember)
         {
-            return NWN.Core.NWScript.GetFactionAverageXP(oFactionMember);
+            return global::NWN.Core.NWScript.GetFactionAverageXP(oFactionMember);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFactionMostFrequentClass(uint oFactionMember)
         {
-            return NWN.Core.NWScript.GetFactionMostFrequentClass(oFactionMember);
+            return global::NWN.Core.NWScript.GetFactionMostFrequentClass(oFactionMember);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFactionWorstAC(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
-            return NWN.Core.NWScript.GetFactionWorstAC(oFactionMember, bMustBeVisible ? 1 : 0);
+            return global::NWN.Core.NWScript.GetFactionWorstAC(oFactionMember, bMustBeVisible ? 1 : 0);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFactionBestAC(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
-            return NWN.Core.NWScript.GetFactionBestAC(oFactionMember, bMustBeVisible ? 1 : 0);
+            return global::NWN.Core.NWScript.GetFactionBestAC(oFactionMember, bMustBeVisible ? 1 : 0);
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetReputation(uint oSource, uint oTarget)
         {
-            return NWN.Core.NWScript.GetReputation(oSource, oTarget);
+            return global::NWN.Core.NWScript.GetReputation(oSource, oTarget);
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AdjustReputation(uint oTarget, uint oSourceFactionMember, int nAdjustment)
         {
-            NWN.Core.NWScript.AdjustReputation(oTarget, oSourceFactionMember, nAdjustment);
+            global::NWN.Core.NWScript.AdjustReputation(oTarget, oSourceFactionMember, nAdjustment);
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsEnemy(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetIsEnemy(oTarget, oSource) != 0;
+            return global::NWN.Core.NWScript.GetIsEnemy(oTarget, oSource) != 0;
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsFriend(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetIsFriend(oTarget, oSource) != 0;
+            return global::NWN.Core.NWScript.GetIsFriend(oTarget, oSource) != 0;
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsNeutral(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetIsNeutral(oTarget, oSource) != 0;
+            return global::NWN.Core.NWScript.GetIsNeutral(oTarget, oSource) != 0;
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFactionLeader(uint oMemberOfFaction)
         {
-            return NWN.Core.NWScript.GetFactionLeader(oMemberOfFaction);
+            return global::NWN.Core.NWScript.GetFactionLeader(oMemberOfFaction);
         }
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetStandardFactionReputation(StandardFaction nStandardFaction, int nNewReputation,
             uint oCreature = OBJECT_INVALID)
         {
-            NWN.Core.NWScript.SetStandardFactionReputation((int)nStandardFaction, nNewReputation, oCreature);
+            global::NWN.Core.NWScript.SetStandardFactionReputation((int)nStandardFaction, nNewReputation, oCreature);
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetStandardFactionReputation(StandardFaction nStandardFaction, uint oCreature = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetStandardFactionReputation((int)nStandardFaction, oCreature);
+            return global::NWN.Core.NWScript.GetStandardFactionReputation((int)nStandardFaction, oCreature);
         }
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ChangeToStandardFaction(uint oCreatureToChange, StandardFaction nStandardFaction)
         {
-            NWN.Core.NWScript.ChangeToStandardFaction(oCreatureToChange, (int)nStandardFaction);
+            global::NWN.Core.NWScript.ChangeToStandardFaction(oCreatureToChange, (int)nStandardFaction);
         }
 
         /// <summary>
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFirstFactionMember(uint oMemberOfFaction, bool bPCOnly = true)
         {
-            return NWN.Core.NWScript.GetFirstFactionMember(oMemberOfFaction, bPCOnly ? 1 : 0);
+            return global::NWN.Core.NWScript.GetFirstFactionMember(oMemberOfFaction, bPCOnly ? 1 : 0);
         }
 
         /// <summary>
@@ -249,7 +249,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNextFactionMember(uint oMemberOfFaction, bool bPCOnly = true)
         {
-            return NWN.Core.NWScript.GetNextFactionMember(oMemberOfFaction, bPCOnly ? 1 : 0);
+            return global::NWN.Core.NWScript.GetNextFactionMember(oMemberOfFaction, bPCOnly ? 1 : 0);
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetFactionEqual(uint oFirstObject, uint oSecondObject = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetFactionEqual(oFirstObject, oSecondObject) != 0;
+            return global::NWN.Core.NWScript.GetFactionEqual(oFirstObject, oSecondObject) != 0;
         }
 
         /// <summary>
@@ -266,7 +266,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ChangeFaction(uint oObjectToChangeFaction, uint oMemberOfFactionToJoin)
         {
-            NWN.Core.NWScript.ChangeFaction(oObjectToChangeFaction, oMemberOfFactionToJoin);
+            global::NWN.Core.NWScript.ChangeFaction(oObjectToChangeFaction, oMemberOfFactionToJoin);
         }
     }
 }

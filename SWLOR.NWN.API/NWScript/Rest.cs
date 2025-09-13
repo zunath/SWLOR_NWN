@@ -1,6 +1,6 @@
-using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ForceRest(uint oCreature)
         {
-            NWN.Core.NWScript.ForceRest(oCreature);
+            global::NWN.Core.NWScript.ForceRest(oCreature);
         }
 
         /// <summary>
@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsResting(uint oCreature = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetIsResting(oCreature) != 0;
+            return global::NWN.Core.NWScript.GetIsResting(oCreature) != 0;
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastPCRested()
         {
-            return NWN.Core.NWScript.GetLastPCRested();
+            return global::NWN.Core.NWScript.GetLastPCRested();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static RestEventType GetLastRestEventType()
         {
-            return (RestEventType)NWN.Core.NWScript.GetLastRestEventType();
+            return (RestEventType)global::NWN.Core.NWScript.GetLastRestEventType();
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionRest(bool bCreatureToEnemyLineOfSightCheck = false)
         {
-            NWN.Core.NWScript.ActionRest(bCreatureToEnemyLineOfSightCheck ? 1 : 0);
+            global::NWN.Core.NWScript.ActionRest(bCreatureToEnemyLineOfSightCheck ? 1 : 0);
         }
     }
 }

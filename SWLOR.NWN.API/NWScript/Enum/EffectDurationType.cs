@@ -1,6 +1,4 @@
-using System;
-
-namespace SWLOR.Game.Server.Core.NWScript.Enum
+namespace SWLOR.NWN.API.NWScript.Enum
 {
     [Flags]
     public enum EffectDurationType

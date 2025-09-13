@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool IsInConversation(uint oObject)
         {
-            return NWN.Core.NWScript.IsInConversation(oObject) != 0;
+            return global::NWN.Core.NWScript.IsInConversation(oObject) != 0;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core;
+using SWLOR.NWN.API;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {

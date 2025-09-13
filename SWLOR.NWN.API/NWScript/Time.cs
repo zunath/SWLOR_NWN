@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDay()
         {
-            return NWN.Core.NWScript.GetIsDay() != 0;
+            return global::NWN.Core.NWScript.GetIsDay() != 0;
         }
 
         /// <summary>
@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsNight()
         {
-            return NWN.Core.NWScript.GetIsNight() != 0;
+            return global::NWN.Core.NWScript.GetIsNight() != 0;
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDawn()
         {
-            return NWN.Core.NWScript.GetIsDawn() != 0;
+            return global::NWN.Core.NWScript.GetIsDawn() != 0;
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDusk()
         {
-            return NWN.Core.NWScript.GetIsDusk() != 0;
+            return global::NWN.Core.NWScript.GetIsDusk() != 0;
         }
 
 
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float RoundsToSeconds(int nRounds)
         {
-            return NWN.Core.NWScript.RoundsToSeconds(nRounds);
+            return global::NWN.Core.NWScript.RoundsToSeconds(nRounds);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float HoursToSeconds(int nHours)
         {
-            return NWN.Core.NWScript.HoursToSeconds(nHours);
+            return global::NWN.Core.NWScript.HoursToSeconds(nHours);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float TurnsToSeconds(int nTurns)
         {
-            return NWN.Core.NWScript.TurnsToSeconds(nTurns);
+            return global::NWN.Core.NWScript.TurnsToSeconds(nTurns);
         }
     }
 }

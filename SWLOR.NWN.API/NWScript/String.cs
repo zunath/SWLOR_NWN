@@ -1,6 +1,6 @@
-using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetStringLength(string sString)
         {
-            return NWN.Core.NWScript.GetStringLength(sString);
+            return global::NWN.Core.NWScript.GetStringLength(sString);
         }
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetStringUpperCase(string sString)
         {
-            return NWN.Core.NWScript.GetStringUpperCase(sString);
+            return global::NWN.Core.NWScript.GetStringUpperCase(sString);
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetStringLowerCase(string sString)
         {
-            return NWN.Core.NWScript.GetStringLowerCase(sString);
+            return global::NWN.Core.NWScript.GetStringLowerCase(sString);
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetStringRight(string sString, int nCount)
         {
-            return NWN.Core.NWScript.GetStringRight(sString, nCount);
+            return global::NWN.Core.NWScript.GetStringRight(sString, nCount);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetStringLeft(string sString, int nCount)
         {
-            return NWN.Core.NWScript.GetStringLeft(sString, nCount);
+            return global::NWN.Core.NWScript.GetStringLeft(sString, nCount);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string InsertString(string sDestination, string sString, int nPosition)
         {
-            return NWN.Core.NWScript.InsertString(sDestination, sString, nPosition);
+            return global::NWN.Core.NWScript.InsertString(sDestination, sString, nPosition);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetSubString(string sString, int nStart, int nCount)
         {
-            return NWN.Core.NWScript.GetSubString(sString, nStart, nCount);
+            return global::NWN.Core.NWScript.GetSubString(sString, nStart, nCount);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int FindSubString(string sString, string sSubString, int nStart = 0)
         {
-            return NWN.Core.NWScript.FindSubString(sString, sSubString, nStart);
+            return global::NWN.Core.NWScript.FindSubString(sString, sSubString, nStart);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool TestStringAgainstPattern(string sPattern, string sStringToTest)
         {
-            return NWN.Core.NWScript.TestStringAgainstPattern(sPattern, sStringToTest) != 0;
+            return global::NWN.Core.NWScript.TestStringAgainstPattern(sPattern, sStringToTest) != 0;
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetMatchedSubstring(int nString)
         {
-            return NWN.Core.NWScript.GetMatchedSubstring(nString);
+            return global::NWN.Core.NWScript.GetMatchedSubstring(nString);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMatchedSubstringsCount()
         {
-            return NWN.Core.NWScript.GetMatchedSubstringsCount();
+            return global::NWN.Core.NWScript.GetMatchedSubstringsCount();
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             RegularExpressionType nSyntaxFlags = RegularExpressionType.Ecmascript,
             RegularExpressionFormatType nMatchFlags = RegularExpressionFormatType.Default)
         {
-            return NWN.Core.NWScript.RegExpReplace(sRegExp, sValue, sReplacement, (int)nSyntaxFlags, (int)nMatchFlags);
+            return global::NWN.Core.NWScript.RegExpReplace(sRegExp, sValue, sReplacement, (int)nSyntaxFlags, (int)nMatchFlags);
         }
     }
 }

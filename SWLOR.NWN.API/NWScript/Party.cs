@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AddToParty(uint oPC, uint oPartyLeader)
         {
-            NWN.Core.NWScript.AddToParty(oPC, oPartyLeader);
+            global::NWN.Core.NWScript.AddToParty(oPC, oPartyLeader);
         }
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RemoveFromParty(uint oPC)
         {
-            NWN.Core.NWScript.RemoveFromParty(oPC);
+            global::NWN.Core.NWScript.RemoveFromParty(oPC);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPanelButtonFlash(uint oPlayer, int nButton, int nEnableFlash)
         {
-            NWN.Core.NWScript.SetPanelButtonFlash(oPlayer, nButton, nEnableFlash);
+            global::NWN.Core.NWScript.SetPanelButtonFlash(oPlayer, nButton, nEnableFlash);
         }
     }
 }

@@ -1,10 +1,9 @@
-using System;
 using System.Numerics;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Area;
-using ObjectType = SWLOR.Game.Server.Core.NWScript.Enum.ObjectType;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Area;
+using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -14,7 +13,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetArea(uint oTarget)
         {
-            return NWN.Core.NWScript.GetArea(oTarget);
+            return global::NWN.Core.NWScript.GetArea(oTarget);
         }
 
         /// <summary>
@@ -29,7 +28,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetEnteringObject()
         {
-            return NWN.Core.NWScript.GetEnteringObject();
+            return global::NWN.Core.NWScript.GetEnteringObject();
         }
 
         /// <summary>
@@ -40,7 +39,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetExitingObject()
         {
-            return NWN.Core.NWScript.GetExitingObject();
+            return global::NWN.Core.NWScript.GetExitingObject();
         }
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 GetPosition(uint oTarget)
         {
-            return NWN.Core.NWScript.GetPosition(oTarget);
+            return global::NWN.Core.NWScript.GetPosition(oTarget);
         }
 
         /// <summary>
@@ -57,7 +56,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundPlay(uint oArea)
         {
-            NWN.Core.NWScript.MusicBackgroundPlay(oArea);
+            global::NWN.Core.NWScript.MusicBackgroundPlay(oArea);
         }
 
         /// <summary>
@@ -65,7 +64,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundStop(uint oArea)
         {
-            NWN.Core.NWScript.MusicBackgroundStop(oArea);
+            global::NWN.Core.NWScript.MusicBackgroundStop(oArea);
         }
 
         /// <summary>
@@ -75,7 +74,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundSetDelay(uint oArea, int nDelay)
         {
-            NWN.Core.NWScript.MusicBackgroundSetDelay(oArea, nDelay);
+            global::NWN.Core.NWScript.MusicBackgroundSetDelay(oArea, nDelay);
         }
 
         /// <summary>
@@ -85,7 +84,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundChangeDay(uint oArea, int nTrack)
         {
-            NWN.Core.NWScript.MusicBackgroundChangeDay(oArea, nTrack);
+            global::NWN.Core.NWScript.MusicBackgroundChangeDay(oArea, nTrack);
         }
 
         /// <summary>
@@ -95,7 +94,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundChangeNight(uint oArea, int nTrack)
         {
-            NWN.Core.NWScript.MusicBackgroundChangeNight(oArea, nTrack);
+            global::NWN.Core.NWScript.MusicBackgroundChangeNight(oArea, nTrack);
         }
 
         /// <summary>
@@ -103,7 +102,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBattlePlay(uint oArea)
         {
-            NWN.Core.NWScript.MusicBattlePlay(oArea);
+            global::NWN.Core.NWScript.MusicBattlePlay(oArea);
         }
 
         /// <summary>
@@ -111,7 +110,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBattleStop(uint oArea)
         {
-            NWN.Core.NWScript.MusicBattleStop(oArea);
+            global::NWN.Core.NWScript.MusicBattleStop(oArea);
         }
 
         /// <summary>
@@ -121,7 +120,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBattleChange(uint oArea, int nTrack)
         {
-            NWN.Core.NWScript.MusicBattleChange(oArea, nTrack);
+            global::NWN.Core.NWScript.MusicBattleChange(oArea, nTrack);
         }
 
         /// <summary>
@@ -129,7 +128,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundPlay(uint oArea)
         {
-            NWN.Core.NWScript.AmbientSoundPlay(oArea);
+            global::NWN.Core.NWScript.AmbientSoundPlay(oArea);
         }
 
         /// <summary>
@@ -137,7 +136,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundStop(uint oArea)
         {
-            NWN.Core.NWScript.AmbientSoundStop(oArea);
+            global::NWN.Core.NWScript.AmbientSoundStop(oArea);
         }
 
         /// <summary>
@@ -147,7 +146,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundChangeDay(uint oArea, int nTrack)
         {
-            NWN.Core.NWScript.AmbientSoundChangeDay(oArea, nTrack);
+            global::NWN.Core.NWScript.AmbientSoundChangeDay(oArea, nTrack);
         }
 
         /// <summary>
@@ -157,7 +156,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundChangeNight(uint oArea, int nTrack)
         {
-            NWN.Core.NWScript.AmbientSoundChangeNight(oArea, nTrack);
+            global::NWN.Core.NWScript.AmbientSoundChangeNight(oArea, nTrack);
         }
 
         /// <summary>
@@ -167,7 +166,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RecomputeStaticLighting(uint oArea)
         {
-            NWN.Core.NWScript.RecomputeStaticLighting(oArea);
+            global::NWN.Core.NWScript.RecomputeStaticLighting(oArea);
         }
 
         /// <summary>
@@ -175,7 +174,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int MusicBackgroundGetDayTrack(uint oArea)
         {
-            return NWN.Core.NWScript.MusicBackgroundGetDayTrack(oArea);
+            return global::NWN.Core.NWScript.MusicBackgroundGetDayTrack(oArea);
         }
 
         /// <summary>
@@ -183,7 +182,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int MusicBackgroundGetNightTrack(uint oArea)
         {
-            return NWN.Core.NWScript.MusicBackgroundGetNightTrack(oArea);
+            return global::NWN.Core.NWScript.MusicBackgroundGetNightTrack(oArea);
         }
 
         /// <summary>
@@ -193,7 +192,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundSetDayVolume(uint oArea, int nVolume)
         {
-            NWN.Core.NWScript.AmbientSoundSetDayVolume(oArea, nVolume);
+            global::NWN.Core.NWScript.AmbientSoundSetDayVolume(oArea, nVolume);
         }
 
         /// <summary>
@@ -203,7 +202,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundSetNightVolume(uint oArea, int nVolume)
         {
-            NWN.Core.NWScript.AmbientSoundSetNightVolume(oArea, nVolume);
+            global::NWN.Core.NWScript.AmbientSoundSetNightVolume(oArea, nVolume);
         }
 
         /// <summary>
@@ -211,7 +210,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int MusicBackgroundGetBattleTrack(uint oArea)
         {
-            return NWN.Core.NWScript.MusicBackgroundGetBattleTrack(oArea);
+            return global::NWN.Core.NWScript.MusicBackgroundGetBattleTrack(oArea);
         }
 
         /// <summary>
@@ -219,7 +218,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsAreaInterior(uint oArea = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetIsAreaInterior(oArea) != 0;
+            return global::NWN.Core.NWScript.GetIsAreaInterior(oArea) != 0;
         }
 
         /// <summary>
@@ -229,7 +228,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Weather GetWeather(uint oArea)
         {
-            return (Weather)NWN.Core.NWScript.GetWeather(oArea);
+            return (Weather)global::NWN.Core.NWScript.GetWeather(oArea);
         }
 
         /// <summary>
@@ -238,7 +237,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Natural GetIsAreaNatural(uint oArea)
         {
-            return (Natural)NWN.Core.NWScript.GetIsAreaNatural(oArea);
+            return (Natural)global::NWN.Core.NWScript.GetIsAreaNatural(oArea);
         }
 
         /// <summary>
@@ -247,7 +246,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsAreaAboveGround(uint oArea)
         {
-            return NWN.Core.NWScript.GetIsAreaAboveGround(oArea) != 0;
+            return global::NWN.Core.NWScript.GetIsAreaAboveGround(oArea) != 0;
         }
 
         /// <summary>
@@ -258,7 +257,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetSkyBox(Skybox nSkyBox, uint oArea = OBJECT_INVALID)
         {
-            NWN.Core.NWScript.SetSkyBox((int)nSkyBox, oArea);
+            global::NWN.Core.NWScript.SetSkyBox((int)nSkyBox, oArea);
         }
 
         /// <summary>
@@ -276,7 +275,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetFogColor(FogType nFogType, FogColor nFogColor, uint oArea = OBJECT_INVALID)
         {
-            NWN.Core.NWScript.SetFogColor((int)nFogType, (int)nFogColor, oArea);
+            global::NWN.Core.NWScript.SetFogColor((int)nFogType, (int)nFogColor, oArea);
         }
 
         /// <summary>
@@ -288,7 +287,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Skybox GetSkyBox(uint oArea = OBJECT_INVALID)
         {
-            return (Skybox)NWN.Core.NWScript.GetSkyBox(oArea);
+            return (Skybox)global::NWN.Core.NWScript.GetSkyBox(oArea);
         }
 
         /// <summary>
@@ -300,7 +299,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static FogColor GetFogColor(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
-            return (FogColor)NWN.Core.NWScript.GetFogColor((int)nFogType, oArea);
+            return (FogColor)global::NWN.Core.NWScript.GetFogColor((int)nFogType, oArea);
         }
 
         /// <summary>
@@ -312,7 +311,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetFogAmount(FogType nFogType, int nFogAmount, uint oArea = OBJECT_INVALID)
         {
-            NWN.Core.NWScript.SetFogAmount((int)nFogType, nFogAmount, oArea);
+            global::NWN.Core.NWScript.SetFogAmount((int)nFogType, nFogAmount, oArea);
         }
 
         /// <summary>
@@ -324,7 +323,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFogAmount(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetFogAmount((int)nFogType, oArea);
+            return global::NWN.Core.NWScript.GetFogAmount((int)nFogType, oArea);
         }
 
         /// <summary>
@@ -351,7 +350,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetTilesetResRef(uint oArea)
         {
-            return NWN.Core.NWScript.GetTilesetResRef(oArea);
+            return global::NWN.Core.NWScript.GetTilesetResRef(oArea);
         }
 
         /// <summary>
@@ -366,7 +365,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAreaSize(Dimension nAreaDimension, uint oArea = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetAreaSize((int)nAreaDimension, oArea);
+            return global::NWN.Core.NWScript.GetAreaSize((int)nAreaDimension, oArea);
         }
 
         /// <summary>
@@ -384,7 +383,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int DestroyArea(uint oArea)
         {
-            return NWN.Core.NWScript.DestroyArea(oArea);
+            return global::NWN.Core.NWScript.DestroyArea(oArea);
         }
 
 
@@ -410,7 +409,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint CreateArea(string sSourceResRef, string sNewTag = "", string sNewName = "")
         {
-            return NWN.Core.NWScript.CreateArea(sSourceResRef, sNewTag, sNewName);
+            return global::NWN.Core.NWScript.CreateArea(sSourceResRef, sNewTag, sNewName);
         }
 
         /// <summary>
@@ -434,7 +433,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint CopyArea(uint oArea)
         {
-            return NWN.Core.NWScript.CopyArea(oArea);
+            return global::NWN.Core.NWScript.CopyArea(oArea);
         }
 
         /// <summary>
@@ -442,7 +441,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFirstArea()
         {
-            return NWN.Core.NWScript.GetFirstArea();
+            return global::NWN.Core.NWScript.GetFirstArea();
         }
 
         /// <summary>
@@ -451,7 +450,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNextArea()
         {
-            return NWN.Core.NWScript.GetNextArea();
+            return global::NWN.Core.NWScript.GetNextArea();
         }
 
         /// <summary>
@@ -463,7 +462,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFirstObjectInArea(uint oArea = OBJECT_INVALID, ObjectType nObjectFilter = ObjectType.All)
         {
-            return NWN.Core.NWScript.GetFirstObjectInArea(oArea, (int)nObjectFilter);
+            return global::NWN.Core.NWScript.GetFirstObjectInArea(oArea, (int)nObjectFilter);
         }
 
         /// <summary>
@@ -475,7 +474,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNextObjectInArea(uint oArea = OBJECT_INVALID, ObjectType nObjectFilter = ObjectType.All)
         {
-            return NWN.Core.NWScript.GetNextObjectInArea(oArea, (int)nObjectFilter);
+            return global::NWN.Core.NWScript.GetNextObjectInArea(oArea, (int)nObjectFilter);
         }
 
         /// <summary>
@@ -483,7 +482,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Location GetLocation(uint oObject)
         {
-            return NWN.Core.NWScript.GetLocation(oObject);
+            return global::NWN.Core.NWScript.GetLocation(oObject);
         }
 
         /// <summary>
@@ -492,7 +491,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionJumpToLocation(Location lLocation)
         {
-            NWN.Core.NWScript.ActionJumpToLocation(lLocation);
+            global::NWN.Core.NWScript.ActionJumpToLocation(lLocation);
         }
 
         /// <summary>
@@ -500,7 +499,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Location Location(uint oArea, Vector3 vPosition, float fOrientation)
         {
-            return NWN.Core.NWScript.Location(oArea, vPosition, fOrientation);
+            return global::NWN.Core.NWScript.Location(oArea, vPosition, fOrientation);
         }
 
         /// <summary>
@@ -509,7 +508,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void ApplyEffectAtLocation(DurationType nDurationType, Effect eEffect, Location lLocation,
             float fDuration = 0.0f)
         {
-            NWN.Core.NWScript.ApplyEffectAtLocation((int)nDurationType, eEffect, lLocation, fDuration);
+            global::NWN.Core.NWScript.ApplyEffectAtLocation((int)nDurationType, eEffect, lLocation, fDuration);
         }
 
         /// <summary>
@@ -520,7 +519,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ExploreAreaForPlayer(uint oArea, uint oPlayer, bool bExplored = true)
         {
-            NWN.Core.NWScript.ExploreAreaForPlayer(oArea, oPlayer, bExplored ? 1 : 0);
+            global::NWN.Core.NWScript.ExploreAreaForPlayer(oArea, oPlayer, bExplored ? 1 : 0);
         }
 
         /// <summary>
@@ -539,7 +538,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTransitionTarget(uint oTransition, uint oTarget)
         {
-            NWN.Core.NWScript.SetTransitionTarget(oTransition, oTarget);
+            global::NWN.Core.NWScript.SetTransitionTarget(oTransition, oTarget);
         }
 
         /// <summary>
@@ -554,7 +553,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetWeather(uint oTarget, WeatherType nWeather)
         {
-            NWN.Core.NWScript.SetWeather(oTarget, (int)nWeather);
+            global::NWN.Core.NWScript.SetWeather(oTarget, (int)nWeather);
         }
 
         /// <summary>
@@ -569,7 +568,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SetTileExplored(uint creature, uint area, int x, int y, bool newState)
         {
-            return NWN.Core.NWScript.SetTileExplored(creature, area, x, y, newState ? 1 : 0);
+            return global::NWN.Core.NWScript.SetTileExplored(creature, area, x, y, newState ? 1 : 0);
         }
 
         /// <summary>
@@ -585,7 +584,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileExplored(uint creature, uint area, int x, int y)
         {
-            return NWN.Core.NWScript.GetTileExplored(creature, area, x, y);
+            return global::NWN.Core.NWScript.GetTileExplored(creature, area, x, y);
         }
 
         /// <summary>
@@ -600,7 +599,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SetCreatureExploresMinimap(uint creature, bool newState)
         {
-            return NWN.Core.NWScript.SetCreatureExploresMinimap(creature, newState ? 1 : 0);
+            return global::NWN.Core.NWScript.SetCreatureExploresMinimap(creature, newState ? 1 : 0);
         }
 
         /// <summary>
@@ -609,7 +608,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCreatureExploresMinimap(uint creature)
         {
-            return NWN.Core.NWScript.GetCreatureExploresMinimap(creature);
+            return global::NWN.Core.NWScript.GetCreatureExploresMinimap(creature);
         }
 
         /// <summary>
@@ -619,7 +618,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetSurfaceMaterial(Location at)
         {
-            return NWN.Core.NWScript.GetSurfaceMaterial(at);
+            return global::NWN.Core.NWScript.GetSurfaceMaterial(at);
         }
 
         /// <summary>
@@ -628,7 +627,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetGroundHeight(Location at)
         {
-            return NWN.Core.NWScript.GetGroundHeight(at);
+            return global::NWN.Core.NWScript.GetGroundHeight(at);
         }
 
         /// <summary>
@@ -638,7 +637,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsInSubArea(uint oCreature, uint oSubArea = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetIsInSubArea(oCreature, oSubArea) != 0;
+            return global::NWN.Core.NWScript.GetIsInSubArea(oCreature, oSubArea) != 0;
         }
 
         /// <summary>
@@ -650,7 +649,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTileMainLightColor(Location lTileLocation, int nMainLight1Color, int nMainLight2Color)
         {
-            NWN.Core.NWScript.SetTileMainLightColor(lTileLocation, nMainLight1Color, nMainLight2Color);
+            global::NWN.Core.NWScript.SetTileMainLightColor(lTileLocation, nMainLight1Color, nMainLight2Color);
         }
 
         /// <summary>
@@ -663,7 +662,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetTileSourceLightColor(Location lTileLocation, int nSourceLight1Color,
             int nSourceLight2Color)
         {
-            NWN.Core.NWScript.SetTileSourceLightColor(lTileLocation, nSourceLight1Color, nSourceLight2Color);
+            global::NWN.Core.NWScript.SetTileSourceLightColor(lTileLocation, nSourceLight1Color, nSourceLight2Color);
         }
 
         /// <summary>
@@ -673,7 +672,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileMainLight1Color(Location lTile)
         {
-            return NWN.Core.NWScript.GetTileMainLight1Color(lTile);
+            return global::NWN.Core.NWScript.GetTileMainLight1Color(lTile);
         }
 
         /// <summary>
@@ -684,7 +683,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileMainLight2Color(Location lTile)
         {
-            return NWN.Core.NWScript.GetTileMainLight2Color(lTile);
+            return global::NWN.Core.NWScript.GetTileMainLight2Color(lTile);
         }
 
         /// <summary>
@@ -695,7 +694,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileSourceLight1Color(Location lTile)
         {
-            return NWN.Core.NWScript.GetTileSourceLight1Color(lTile);
+            return global::NWN.Core.NWScript.GetTileSourceLight1Color(lTile);
         }
 
         /// <summary>
@@ -706,7 +705,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileSourceLight2Color(Location lTile)
         {
-            return NWN.Core.NWScript.GetTileSourceLight2Color(lTile);
+            return global::NWN.Core.NWScript.GetTileSourceLight2Color(lTile);
         }
 
         /// <summary>
@@ -716,7 +715,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetMapPinEnabled(uint oMapPin, bool bEnabled = true)
         {
-            NWN.Core.NWScript.SetMapPinEnabled(oMapPin, bEnabled ? 1 : 0);
+            global::NWN.Core.NWScript.SetMapPinEnabled(oMapPin, bEnabled ? 1 : 0);
         }
 
         /// <summary>
@@ -724,7 +723,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetAreaFromLocation(Location lLocation)
         {
-            return NWN.Core.NWScript.GetAreaFromLocation(lLocation);
+            return global::NWN.Core.NWScript.GetAreaFromLocation(lLocation);
         }
 
         /// <summary>
@@ -732,7 +731,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 GetPositionFromLocation(Location lLocation)
         {
-            return NWN.Core.NWScript.GetPositionFromLocation(lLocation);
+            return global::NWN.Core.NWScript.GetPositionFromLocation(lLocation);
         }
 
         /// <summary>
@@ -750,7 +749,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetAreaTransitionBMP(AreaTransition nPredefinedAreaTransition,
             string sCustomAreaTransitionBMP = "")
         {
-            NWN.Core.NWScript.SetAreaTransitionBMP((int)nPredefinedAreaTransition, sCustomAreaTransitionBMP);
+            global::NWN.Core.NWScript.SetAreaTransitionBMP((int)nPredefinedAreaTransition, sCustomAreaTransitionBMP);
         }
 
 
@@ -763,7 +762,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetAreaWind(uint oArea, Vector3 vDirection, float fMagnitude, float fYaw, float fPitch)
         {
-            NWN.Core.NWScript.SetAreaWind(oArea, vDirection, fMagnitude, fYaw, fPitch);
+            global::NWN.Core.NWScript.SetAreaWind(oArea, vDirection, fMagnitude, fYaw, fPitch);
         }
 
         /// <summary>
@@ -775,7 +774,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAreaLightColor(AreaLightColorType nColorType, uint oArea = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetAreaLightColor((int)nColorType, oArea);
+            return global::NWN.Core.NWScript.GetAreaLightColor((int)nColorType, oArea);
         }
 
         /// <summary>
@@ -798,7 +797,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             uint oArea = OBJECT_INVALID, 
             float fFadeTime = 0.0f)
         {
-            NWN.Core.NWScript.SetAreaLightColor((int)nColorType, (int)nColor, oArea, fFadeTime);
+            global::NWN.Core.NWScript.SetAreaLightColor((int)nColorType, (int)nColor, oArea, fFadeTime);
         }
 
         /// <summary>
@@ -810,7 +809,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 GetAreaLightDirection(AreaLightDirectionType nLightType, uint oArea = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetAreaLightDirection((int)nLightType, oArea);
+            return global::NWN.Core.NWScript.GetAreaLightDirection((int)nLightType, oArea);
         }
 
         /// <summary>
@@ -827,7 +826,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             uint oArea = OBJECT_INVALID, 
             float fFadeTime = 0.0f)
         {
-            NWN.Core.NWScript.SetAreaLightDirection((int)nLightType, vDirection, oArea, fFadeTime);
+            global::NWN.Core.NWScript.SetAreaLightDirection((int)nLightType, vDirection, oArea, fFadeTime);
         }
 
     }

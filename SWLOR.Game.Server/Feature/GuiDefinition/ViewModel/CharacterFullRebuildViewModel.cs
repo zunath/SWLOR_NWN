@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWScript.Enum;
 using Ability = SWLOR.Game.Server.Service.Ability;
-using ClassType = SWLOR.Game.Server.Core.NWScript.Enum.ClassType;
-using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
-using RacialType = SWLOR.Game.Server.Core.NWScript.Enum.RacialType;
-using SavingThrow = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrow;
+using ClassType = SWLOR.NWN.API.NWScript.Enum.ClassType;
+using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
+using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel

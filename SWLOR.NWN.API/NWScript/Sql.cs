@@ -1,8 +1,6 @@
-﻿using System;
-using System.Numerics;
-using SWLOR.Game.Server.Core.NWScript.Enum;
+﻿using System.Numerics;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -18,7 +16,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlDestroyDatabase(uint oObject)
         {
-            NWN.Core.NWScript.SqlDestroyDatabase(oObject);
+            global::NWN.Core.NWScript.SqlDestroyDatabase(oObject);
         }
 
         /// <summary>
@@ -27,7 +25,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string SqlGetError(IntPtr sqlQuery)
         {
-            return NWN.Core.NWScript.SqlGetError(sqlQuery);
+            return global::NWN.Core.NWScript.SqlGetError(sqlQuery);
         }
 
         /// <summary>
@@ -44,7 +42,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static IntPtr SqlPrepareQueryCampaign(string sDatabase, string sQuery)
         {
-            return NWN.Core.NWScript.SqlPrepareQueryCampaign(sDatabase, sQuery);
+            return global::NWN.Core.NWScript.SqlPrepareQueryCampaign(sDatabase, sQuery);
         }
 
         /// <summary>
@@ -67,7 +65,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static IntPtr SqlPrepareQueryObject(uint oObject, string sQuery)
         {
-            return NWN.Core.NWScript.SqlPrepareQueryObject(oObject, sQuery);
+            return global::NWN.Core.NWScript.SqlPrepareQueryObject(oObject, sQuery);
         }
 
         /// <summary>
@@ -79,7 +77,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindInt(IntPtr sqlQuery, string sParam, int nValue)
         {
-            NWN.Core.NWScript.SqlBindInt(sqlQuery, sParam, nValue);
+            global::NWN.Core.NWScript.SqlBindInt(sqlQuery, sParam, nValue);
         }
 
         /// <summary>
@@ -87,7 +85,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindFloat(IntPtr sqlQuery, string sParam, float fFloat)
         {
-            NWN.Core.NWScript.SqlBindFloat(sqlQuery, sParam, fFloat);
+            global::NWN.Core.NWScript.SqlBindFloat(sqlQuery, sParam, fFloat);
         }
 
         /// <summary>
@@ -95,7 +93,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindString(IntPtr sqlQuery, string sParam, string sString)
         {
-            NWN.Core.NWScript.SqlBindString(sqlQuery, sParam, sString);
+            global::NWN.Core.NWScript.SqlBindString(sqlQuery, sParam, sString);
         }
 
         /// <summary>
@@ -103,7 +101,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindVector(IntPtr sqlQuery, string sParam, Vector3 vVector)
         {
-            NWN.Core.NWScript.SqlBindVector(sqlQuery, sParam, vVector);
+            global::NWN.Core.NWScript.SqlBindVector(sqlQuery, sParam, vVector);
         }
 
         /// <summary>
@@ -115,7 +113,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindObject(IntPtr sqlQuery, string sParam, uint oObject, bool bSaveObjectState = false)
         {
-            NWN.Core.NWScript.SqlBindObject(sqlQuery, sParam, oObject, bSaveObjectState ? 1 : 0);
+            global::NWN.Core.NWScript.SqlBindObject(sqlQuery, sParam, oObject, bSaveObjectState ? 1 : 0);
         }
 
         /// <summary>
@@ -130,7 +128,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool SqlStep(IntPtr sqlQuery)
         {
-            return NWN.Core.NWScript.SqlStep(sqlQuery) != 0;
+            return global::NWN.Core.NWScript.SqlStep(sqlQuery) != 0;
         }
 
         /// <summary>
@@ -141,7 +139,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SqlGetInt(IntPtr sqlQuery, int nIndex)
         {
-            return NWN.Core.NWScript.SqlGetInt(sqlQuery, nIndex);
+            return global::NWN.Core.NWScript.SqlGetInt(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -152,7 +150,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float SqlGetFloat(IntPtr sqlQuery, int nIndex)
         {
-            return NWN.Core.NWScript.SqlGetFloat(sqlQuery, nIndex);
+            return global::NWN.Core.NWScript.SqlGetFloat(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -163,7 +161,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string SqlGetString(IntPtr sqlQuery, int nIndex)
         {
-            return NWN.Core.NWScript.SqlGetString(sqlQuery, nIndex);
+            return global::NWN.Core.NWScript.SqlGetString(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -174,7 +172,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 SqlGetVector(IntPtr sqlQuery, int nIndex)
         {
-            return NWN.Core.NWScript.SqlGetVector(sqlQuery, nIndex);
+            return global::NWN.Core.NWScript.SqlGetVector(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -189,7 +187,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint SqlGetObject(IntPtr sqlQuery, int nIndex, IntPtr lSpawnAt, uint oInventory = OBJECT_INVALID, bool bLoadObjectState = false)
         {
-            return NWN.Core.NWScript.SqlGetObject(sqlQuery, nIndex, lSpawnAt, oInventory, bLoadObjectState ? 1 : 0);
+            return global::NWN.Core.NWScript.SqlGetObject(sqlQuery, nIndex, lSpawnAt, oInventory, bLoadObjectState ? 1 : 0);
         }
 
         /// <summary>
@@ -202,7 +200,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindJson(SQLQuery sqlQuery, string sParam, Json jValue)
         {
-            NWN.Core.NWScript.SqlBindJson(sqlQuery, sParam, jValue);
+            global::NWN.Core.NWScript.SqlBindJson(sqlQuery, sParam, jValue);
         }
 
         /// <summary>
@@ -213,7 +211,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json SqlGetJson(SQLQuery sqlQuery, int nIndex)
         {
-            return NWN.Core.NWScript.SqlGetJson(sqlQuery, nIndex);
+            return global::NWN.Core.NWScript.SqlGetJson(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -223,7 +221,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlResetQuery(SQLQuery sqlQuery, bool bClearBinds = false)
         {
-            NWN.Core.NWScript.SqlResetQuery(sqlQuery, bClearBinds ? 1 : 0);
+            global::NWN.Core.NWScript.SqlResetQuery(sqlQuery, bClearBinds ? 1 : 0);
         }
     }
 }

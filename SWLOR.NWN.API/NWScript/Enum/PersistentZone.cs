@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Core.NWScript.Enum
+namespace SWLOR.NWN.API.NWScript.Enum
 {
     // These are for GetFirstInPersistentObject() and GetNextInPersistentObject()
     public enum PersistentZone

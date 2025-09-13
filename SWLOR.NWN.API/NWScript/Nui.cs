@@ -1,6 +1,4 @@
-﻿using SWLOR.Game.Server.Core.NWScript.Enum;
-
-namespace SWLOR.Game.Server.Core.NWScript
+﻿namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -16,7 +14,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int NuiCreateFromResRef(uint oPlayer, string sResRef, string sWindowId = "")
         {
-            return NWN.Core.NWScript.NuiCreateFromResRef(oPlayer, sResRef, sWindowId);
+            return global::NWN.Core.NWScript.NuiCreateFromResRef(oPlayer, sResRef, sWindowId);
         }
 
         /// <summary>
@@ -29,7 +27,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int NuiCreate(uint oPlayer, Json jNui, string sWindowId = "")
         {
-            return NWN.Core.NWScript.NuiCreate(oPlayer, jNui, sWindowId);
+            return global::NWN.Core.NWScript.NuiCreate(oPlayer, jNui, sWindowId);
         }
 
         /// <summary>
@@ -40,7 +38,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int NuiFindWindow(uint oPlayer, string sId)
         {
-            return NWN.Core.NWScript.NuiFindWindow(oPlayer, sId);
+            return global::NWN.Core.NWScript.NuiFindWindow(oPlayer, sId);
         }
 
         /// <summary>
@@ -51,7 +49,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void NuiDestroy(uint oPlayer, int nUiToken)
         {
-            NWN.Core.NWScript.NuiDestroy(oPlayer, nUiToken);
+            global::NWN.Core.NWScript.NuiDestroy(oPlayer, nUiToken);
         }
 
         /// <summary>
@@ -59,7 +57,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint NuiGetEventPlayer()
         {
-            return NWN.Core.NWScript.NuiGetEventPlayer();
+            return global::NWN.Core.NWScript.NuiGetEventPlayer();
         }
 
         /// <summary>
@@ -67,7 +65,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int NuiGetEventWindow()
         {
-            return NWN.Core.NWScript.NuiGetEventWindow();
+            return global::NWN.Core.NWScript.NuiGetEventWindow();
         }
 
         /// <summary>
@@ -76,7 +74,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string NuiGetEventType()
         {
-            return NWN.Core.NWScript.NuiGetEventType();
+            return global::NWN.Core.NWScript.NuiGetEventType();
         }
 
         /// <summary>
@@ -84,7 +82,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string NuiGetEventElement()
         {
-            return NWN.Core.NWScript.NuiGetEventElement();
+            return global::NWN.Core.NWScript.NuiGetEventElement();
         }
 
         /// <summary>
@@ -94,7 +92,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int NuiGetEventArrayIndex()
         {
-            return NWN.Core.NWScript.NuiGetEventArrayIndex();
+            return global::NWN.Core.NWScript.NuiGetEventArrayIndex();
         }
 
         /// <summary>
@@ -103,7 +101,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string NuiGetWindowId(uint oPlayer, int nUiToken)
         {
-            return NWN.Core.NWScript.NuiGetWindowId(oPlayer, nUiToken);
+            return global::NWN.Core.NWScript.NuiGetWindowId(oPlayer, nUiToken);
         }
 
         /// <summary>
@@ -115,7 +113,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json NuiGetBind(uint oPlayer, int nUiToken, string sBindName)
         {
-            return NWN.Core.NWScript.NuiGetBind(oPlayer, nUiToken, sBindName);
+            return global::NWN.Core.NWScript.NuiGetBind(oPlayer, nUiToken, sBindName);
         }
 
         /// <summary>
@@ -132,7 +130,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void NuiSetBind(uint oPlayer, int nUiToken, string sBindName, Json jValue)
         {
-            NWN.Core.NWScript.NuiSetBind(oPlayer, nUiToken, sBindName, jValue);
+            global::NWN.Core.NWScript.NuiSetBind(oPlayer, nUiToken, sBindName, jValue);
         }
 
         /// <summary>
@@ -141,7 +139,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void NuiSetGroupLayout(uint oPlayer, int nUiToken, string sElement, Json jNui)
         {
-            NWN.Core.NWScript.NuiSetGroupLayout(oPlayer, nUiToken, sElement, jNui);
+            global::NWN.Core.NWScript.NuiSetGroupLayout(oPlayer, nUiToken, sElement, jNui);
         }
 
         /// <summary>
@@ -151,7 +149,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int NuiSetBindWatch(uint oPlayer, int nUiToken, string sBind, bool bWatch)
         {
-            return NWN.Core.NWScript.NuiSetBindWatch(oPlayer, nUiToken, sBind, bWatch ? 1 : 0);
+            return global::NWN.Core.NWScript.NuiSetBindWatch(oPlayer, nUiToken, sBind, bWatch ? 1 : 0);
         }
 
         /// <summary>
@@ -161,7 +159,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int NuiGetNthWindow(uint oPlayer, int nNth = 0)
         {
-            return NWN.Core.NWScript.NuiGetNthWindow(oPlayer, nNth);
+            return global::NWN.Core.NWScript.NuiGetNthWindow(oPlayer, nNth);
         }
 
         /// <summary>
@@ -171,7 +169,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string NuiGetNthBind(uint oPlayer, int nToken, bool bWatched, int nNth = 0)
         {
-            return NWN.Core.NWScript.NuiGetNthBind(oPlayer, nToken, bWatched ? 1 : 0, nNth);
+            return global::NWN.Core.NWScript.NuiGetNthBind(oPlayer, nToken, bWatched ? 1 : 0, nNth);
         }
 
         /// <summary>
@@ -180,7 +178,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json NuiGetEventPayload()
         {
-            return NWN.Core.NWScript.NuiGetEventPayload();
+            return global::NWN.Core.NWScript.NuiGetEventPayload();
         }
 
         /// <summary>
@@ -189,7 +187,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json NuiGetUserData(uint oPlayer, int nToken)
         {
-            return NWN.Core.NWScript.NuiGetUserData(oPlayer, nToken);
+            return global::NWN.Core.NWScript.NuiGetUserData(oPlayer, nToken);
         }
 
         /// <summary>
@@ -200,7 +198,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void NuiSetUserData(uint oPlayer, int nToken, Json jUserData)
         {
-            NWN.Core.NWScript.NuiSetUserData(oPlayer, nToken, jUserData);
+            global::NWN.Core.NWScript.NuiSetUserData(oPlayer, nToken, jUserData);
         }
 
     }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum;
 
 // ReSharper disable once CheckNamespace
 namespace SWLOR.Game.Server.Core.NWScript

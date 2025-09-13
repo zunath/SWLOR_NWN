@@ -1,13 +1,13 @@
 using System.Numerics;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
-using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
-using Alignment = SWLOR.Game.Server.Core.NWScript.Enum.Alignment;
-using DamageType = SWLOR.Game.Server.Core.NWScript.Enum.DamageType;
-using RacialType = SWLOR.Game.Server.Core.NWScript.Enum.RacialType;
-using SpellSchool = SWLOR.Game.Server.Core.NWScript.Enum.SpellSchool;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using Alignment = SWLOR.NWN.API.NWScript.Enum.Alignment;
+using DamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
+using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
+using SpellSchool = SWLOR.NWN.API.NWScript.Enum.SpellSchool;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetEffectTag(Effect eEffect)
         {
-            return NWN.Core.NWScript.GetEffectTag(eEffect);
+            return global::NWN.Core.NWScript.GetEffectTag(eEffect);
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect TagEffect(Effect eEffect, string sNewTag)
         {
-            return NWN.Core.NWScript.TagEffect(eEffect, sNewTag);
+            return global::NWN.Core.NWScript.TagEffect(eEffect, sNewTag);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectCasterLevel(Effect eEffect)
         {
-            return NWN.Core.NWScript.GetEffectCasterLevel(eEffect);
+            return global::NWN.Core.NWScript.GetEffectCasterLevel(eEffect);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectDuration(Effect eEffect)
         {
-            return NWN.Core.NWScript.GetEffectDuration(eEffect);
+            return global::NWN.Core.NWScript.GetEffectDuration(eEffect);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectDurationRemaining(Effect eEffect)
         {
-            return NWN.Core.NWScript.GetEffectDurationRemaining(eEffect);
+            return global::NWN.Core.NWScript.GetEffectDurationRemaining(eEffect);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCutsceneImmobilize()
         {
-            return NWN.Core.NWScript.EffectCutsceneImmobilize();
+            return global::NWN.Core.NWScript.EffectCutsceneImmobilize();
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCutsceneGhost()
         {
-            return NWN.Core.NWScript.EffectCutsceneGhost();
+            return global::NWN.Core.NWScript.EffectCutsceneGhost();
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetItemCursedFlag(uint oItem)
         {
-            return NWN.Core.NWScript.GetItemCursedFlag(oItem) != 0;
+            return global::NWN.Core.NWScript.GetItemCursedFlag(oItem) != 0;
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetItemCursedFlag(uint oItem, bool nCursed)
         {
-            NWN.Core.NWScript.SetItemCursedFlag(oItem, nCursed ? 1 : 0);
+            global::NWN.Core.NWScript.SetItemCursedFlag(oItem, nCursed ? 1 : 0);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetItemPossessor(uint oItem)
         {
-            return NWN.Core.NWScript.GetItemPossessor(oItem);
+            return global::NWN.Core.NWScript.GetItemPossessor(oItem);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetItemPossessedBy(uint oCreature, string sItemTag)
         {
-            return NWN.Core.NWScript.GetItemPossessedBy(oCreature, sItemTag);
+            return global::NWN.Core.NWScript.GetItemPossessedBy(oCreature, sItemTag);
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static uint CreateItemOnObject(string sResRef, uint oTarget = OBJECT_INVALID, int nStackSize = 1,
             string sNewTag = "")
         {
-            return NWN.Core.NWScript.CreateItemOnObject(sResRef, oTarget, nStackSize, sNewTag);
+            return global::NWN.Core.NWScript.CreateItemOnObject(sResRef, oTarget, nStackSize, sNewTag);
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionEquipItem(uint oItem, InventorySlot nInventorySlot)
         {
-            NWN.Core.NWScript.ActionEquipItem(oItem, (int)nInventorySlot);
+            global::NWN.Core.NWScript.ActionEquipItem(oItem, (int)nInventorySlot);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionUnequipItem(uint oItem)
         {
-            NWN.Core.NWScript.ActionUnequipItem(oItem);
+            global::NWN.Core.NWScript.ActionUnequipItem(oItem);
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionPickUpItem(uint oItem)
         {
-            NWN.Core.NWScript.ActionPickUpItem(oItem);
+            global::NWN.Core.NWScript.ActionPickUpItem(oItem);
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionPutDownItem(uint oItem)
         {
-            NWN.Core.NWScript.ActionPutDownItem(oItem);
+            global::NWN.Core.NWScript.ActionPutDownItem(oItem);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionGiveItem(uint oItem, uint oGiveTo)
         {
-            NWN.Core.NWScript.ActionGiveItem(oItem, oGiveTo);
+            global::NWN.Core.NWScript.ActionGiveItem(oItem, oGiveTo);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionTakeItem(uint oItem, uint oTakeFrom)
         {
-            NWN.Core.NWScript.ActionTakeItem(oItem, oTakeFrom);
+            global::NWN.Core.NWScript.ActionTakeItem(oItem, oTakeFrom);
         }
 
         /// <summary>
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDeath(bool nSpectacularDeath = false, bool nDisplayFeedback = true)
         {
-            return NWN.Core.NWScript.EffectDeath(nSpectacularDeath ? 1 : 0, nDisplayFeedback ? 1 : 0);
+            return global::NWN.Core.NWScript.EffectDeath(nSpectacularDeath ? 1 : 0, nDisplayFeedback ? 1 : 0);
         }
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectKnockdown()
         {
-            return NWN.Core.NWScript.EffectKnockdown();
+            return global::NWN.Core.NWScript.EffectKnockdown();
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectCurse(int nStrMod = 1, int nDexMod = 1, int nConMod = 1, int nIntMod = 1,
             int nWisMod = 1, int nChaMod = 1)
         {
-            return NWN.Core.NWScript.EffectCurse(nStrMod, nDexMod, nConMod, nIntMod, nWisMod, nChaMod);
+            return global::NWN.Core.NWScript.EffectCurse(nStrMod, nDexMod, nConMod, nIntMod, nWisMod, nChaMod);
         }
 
         /// <summary>
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectEntangle()
         {
-            return NWN.Core.NWScript.EffectEntangle();
+            return global::NWN.Core.NWScript.EffectEntangle();
         }
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSavingThrowIncrease(int nSave, int nValue,
             SavingThrowType nSaveType = SavingThrowType.All)
         {
-            return NWN.Core.NWScript.EffectSavingThrowIncrease(nSave, nValue, (int)nSaveType);
+            return global::NWN.Core.NWScript.EffectSavingThrowIncrease(nSave, nValue, (int)nSaveType);
         }
 
         /// <summary>
@@ -265,7 +265,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAccuracyIncrease(int nBonus, AttackBonus nModifierType = AttackBonus.Misc)
         {
-            return NWN.Core.NWScript.EffectAttackIncrease(nBonus, (int)nModifierType);
+            return global::NWN.Core.NWScript.EffectAttackIncrease(nBonus, (int)nModifierType);
         }
 
         /// <summary>
@@ -277,7 +277,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageReduction(int nAmount, DamagePower nDamagePower, int nLimit = 0)
         {
-            return NWN.Core.NWScript.EffectDamageReduction(nAmount, (int)nDamagePower, nLimit);
+            return global::NWN.Core.NWScript.EffectDamageReduction(nAmount, (int)nDamagePower, nLimit);
         }
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageIncrease(int nBonus, DamageType nDamageType = DamageType.Force)
         {
-            return NWN.Core.NWScript.EffectDamageIncrease(nBonus, (int)nDamageType);
+            return global::NWN.Core.NWScript.EffectDamageIncrease(nBonus, (int)nDamageType);
         }
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect MagicalEffect(Effect eEffect)
         {
-            return NWN.Core.NWScript.MagicalEffect(eEffect);
+            return global::NWN.Core.NWScript.MagicalEffect(eEffect);
         }
 
         /// <summary>
@@ -309,7 +309,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect SupernaturalEffect(Effect eEffect)
         {
-            return NWN.Core.NWScript.SupernaturalEffect(eEffect);
+            return global::NWN.Core.NWScript.SupernaturalEffect(eEffect);
         }
 
         /// <summary>
@@ -319,7 +319,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect ExtraordinaryEffect(Effect eEffect)
         {
-            return NWN.Core.NWScript.ExtraordinaryEffect(eEffect);
+            return global::NWN.Core.NWScript.ExtraordinaryEffect(eEffect);
         }
 
         /// <summary>
@@ -333,7 +333,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             ArmorClassModiferType nModifyType = ArmorClassModiferType.Dodge,
             AC nDamageType = AC.VsDamageTypeAll)
         {
-            return NWN.Core.NWScript.EffectACIncrease(nValue, (int)nModifyType, (int)nDamageType);
+            return global::NWN.Core.NWScript.EffectACIncrease(nValue, (int)nModifyType, (int)nDamageType);
         }
 
         /// <summary>
@@ -341,7 +341,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect GetFirstEffect(uint oCreature)
         {
-            return NWN.Core.NWScript.GetFirstEffect(oCreature);
+            return global::NWN.Core.NWScript.GetFirstEffect(oCreature);
         }
 
         /// <summary>
@@ -349,7 +349,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect GetNextEffect(uint oCreature)
         {
-            return NWN.Core.NWScript.GetNextEffect(oCreature);
+            return global::NWN.Core.NWScript.GetNextEffect(oCreature);
         }
 
         /// <summary>
@@ -358,7 +358,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RemoveEffect(uint oCreature, Effect eEffect)
         {
-            NWN.Core.NWScript.RemoveEffect(oCreature, eEffect);
+            global::NWN.Core.NWScript.RemoveEffect(oCreature, eEffect);
         }
 
         /// <summary>
@@ -367,7 +367,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsEffectValid(Effect eEffect)
         {
-            return NWN.Core.NWScript.GetIsEffectValid(eEffect) == 1;
+            return global::NWN.Core.NWScript.GetIsEffectValid(eEffect) == 1;
         }
 
         /// <summary>
@@ -376,7 +376,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectDurationType(Effect eEffect)
         {
-            return NWN.Core.NWScript.GetEffectDurationType(eEffect);
+            return global::NWN.Core.NWScript.GetEffectDurationType(eEffect);
         }
 
         /// <summary>
@@ -385,7 +385,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectSubType(Effect eEffect)
         {
-            return NWN.Core.NWScript.GetEffectSubType(eEffect);
+            return global::NWN.Core.NWScript.GetEffectSubType(eEffect);
         }
 
         /// <summary>
@@ -394,7 +394,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetEffectCreator(Effect eEffect)
         {
-            return NWN.Core.NWScript.GetEffectCreator(eEffect);
+            return global::NWN.Core.NWScript.GetEffectCreator(eEffect);
         }
 
         /// <summary>
@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectHeal(int nDamageToHeal)
         {
-            return NWN.Core.NWScript.EffectHeal(nDamageToHeal);
+            return global::NWN.Core.NWScript.EffectHeal(nDamageToHeal);
         }
 
         /// <summary>
@@ -416,7 +416,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectDamage(int nDamageAmount, DamageType nDamageType = DamageType.Force,
             DamagePower nDamagePower = DamagePower.Normal)
         {
-            return NWN.Core.NWScript.EffectDamage(nDamageAmount, (int)nDamageType, (int)nDamagePower);
+            return global::NWN.Core.NWScript.EffectDamage(nDamageAmount, (int)nDamageType, (int)nDamagePower);
         }
 
         /// <summary>
@@ -425,7 +425,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAbilityIncrease(AbilityType nAbilityToIncrease, int nModifyBy)
         {
-            return NWN.Core.NWScript.EffectAbilityIncrease((int)nAbilityToIncrease, nModifyBy);
+            return global::NWN.Core.NWScript.EffectAbilityIncrease((int)nAbilityToIncrease, nModifyBy);
         }
 
         /// <summary>
@@ -437,7 +437,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageResistance(DamageType nDamageType, int nAmount, int nLimit = 0)
         {
-            return NWN.Core.NWScript.EffectDamageResistance((int)nDamageType, nAmount, nLimit);
+            return global::NWN.Core.NWScript.EffectDamageResistance((int)nDamageType, nAmount, nLimit);
         }
 
         /// <summary>
@@ -445,7 +445,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectResurrection()
         {
-            return NWN.Core.NWScript.EffectResurrection();
+            return global::NWN.Core.NWScript.EffectResurrection();
         }
 
         /// <summary>
@@ -462,7 +462,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSummonCreature(string sCreatureResref, VisualEffect nVisualEffectId = VisualEffect.Vfx_Com_Sparks_Parry,
             float fDelaySeconds = 0.0f, bool nUseAppearAnimation = false)
         {
-            return NWN.Core.NWScript.EffectSummonCreature(sCreatureResref, (int)nVisualEffectId, fDelaySeconds, nUseAppearAnimation ? 1 : 0);
+            return global::NWN.Core.NWScript.EffectSummonCreature(sCreatureResref, (int)nVisualEffectId, fDelaySeconds, nUseAppearAnimation ? 1 : 0);
         }
 
         /// <summary>
@@ -471,7 +471,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectEthereal()
         {
-            return NWN.Core.NWScript.EffectEthereal();
+            return global::NWN.Core.NWScript.EffectEthereal();
         }
 
         /// <summary>
@@ -482,7 +482,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSpellFailure(int nPercent = 100,
             SpellSchool nSpellSchool = SpellSchool.General)
         {
-            return NWN.Core.NWScript.EffectSpellFailure(nPercent, (int)nSpellSchool);
+            return global::NWN.Core.NWScript.EffectSpellFailure(nPercent, (int)nSpellSchool);
         }
 
         /// <summary>
@@ -491,7 +491,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCutsceneDominated()
         {
-            return NWN.Core.NWScript.EffectCutsceneDominated();
+            return global::NWN.Core.NWScript.EffectCutsceneDominated();
         }
 
         /// <summary>
@@ -500,7 +500,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectPetrify()
         {
-            return NWN.Core.NWScript.EffectPetrify();
+            return global::NWN.Core.NWScript.EffectPetrify();
         }
 
         /// <summary>
@@ -509,7 +509,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCutsceneParalyze()
         {
-            return NWN.Core.NWScript.EffectCutsceneParalyze();
+            return global::NWN.Core.NWScript.EffectCutsceneParalyze();
         }
 
         /// <summary>
@@ -519,7 +519,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTurnResistanceDecrease(int nHitDice)
         {
-            return NWN.Core.NWScript.EffectTurnResistanceDecrease(nHitDice);
+            return global::NWN.Core.NWScript.EffectTurnResistanceDecrease(nHitDice);
         }
 
         /// <summary>
@@ -529,7 +529,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTurnResistanceIncrease(int nHitDice)
         {
-            return NWN.Core.NWScript.EffectTurnResistanceIncrease(nHitDice);
+            return global::NWN.Core.NWScript.EffectTurnResistanceIncrease(nHitDice);
         }
 
         /// <summary>
@@ -546,7 +546,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSwarm(int nLooping, string sCreatureTemplate1, string sCreatureTemplate2 = "",
             string sCreatureTemplate3 = "", string sCreatureTemplate4 = "")
         {
-            return NWN.Core.NWScript.EffectSwarm(nLooping, sCreatureTemplate1, sCreatureTemplate2, sCreatureTemplate3, sCreatureTemplate4);
+            return global::NWN.Core.NWScript.EffectSwarm(nLooping, sCreatureTemplate1, sCreatureTemplate2, sCreatureTemplate3, sCreatureTemplate4);
         }
 
         /// <summary>
@@ -558,7 +558,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDisappearAppear(Location lLocation, int nAnimation = 1)
         {
-            return NWN.Core.NWScript.EffectDisappearAppear(lLocation, nAnimation);
+            return global::NWN.Core.NWScript.EffectDisappearAppear(lLocation, nAnimation);
         }
 
         /// <summary>
@@ -569,7 +569,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDisappear(int nAnimation = 1)
         {
-            return NWN.Core.NWScript.EffectDisappear(nAnimation);
+            return global::NWN.Core.NWScript.EffectDisappear(nAnimation);
         }
 
         /// <summary>
@@ -579,7 +579,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAppear(int nAnimation = 1)
         {
-            return NWN.Core.NWScript.EffectAppear(nAnimation);
+            return global::NWN.Core.NWScript.EffectAppear(nAnimation);
         }
 
         /// <summary>
@@ -589,7 +589,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectModifyAttacks(int nAttacks)
         {
-            return NWN.Core.NWScript.EffectModifyAttacks(nAttacks);
+            return global::NWN.Core.NWScript.EffectModifyAttacks(nAttacks);
         }
 
         /// <summary>
@@ -603,7 +603,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageShield(int nDamageAmount, DamageBonus nRandomAmount, DamageType nDamageType)
         {
-            return NWN.Core.NWScript.EffectDamageShield(nDamageAmount, (int)nRandomAmount, (int)nDamageType);
+            return global::NWN.Core.NWScript.EffectDamageShield(nDamageAmount, (int)nRandomAmount, (int)nDamageType);
         }
 
         /// <summary>
@@ -617,7 +617,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectMissChance(int nPercentage, MissChanceType nMissChanceType = MissChanceType.Normal)
         {
-            return NWN.Core.NWScript.EffectMissChance(nPercentage, (int)nMissChanceType);
+            return global::NWN.Core.NWScript.EffectMissChance(nPercentage, (int)nMissChanceType);
         }
 
         /// <summary>
@@ -634,7 +634,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSpellLevelAbsorption(int nMaxSpellLevelAbsorbed, int nTotalSpellLevelsAbsorbed = 0,
             SpellSchool nSpellSchool = SpellSchool.General)
         {
-            return NWN.Core.NWScript.EffectSpellLevelAbsorption(nMaxSpellLevelAbsorbed, nTotalSpellLevelsAbsorbed, (int)nSpellSchool);
+            return global::NWN.Core.NWScript.EffectSpellLevelAbsorption(nMaxSpellLevelAbsorbed, nTotalSpellLevelsAbsorbed, (int)nSpellSchool);
         }
 
         /// <summary>
@@ -645,7 +645,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDispelMagicBest(int nCasterLevel = USE_CREATURE_LEVEL)
         {
-            return NWN.Core.NWScript.EffectDispelMagicBest(nCasterLevel);
+            return global::NWN.Core.NWScript.EffectDispelMagicBest(nCasterLevel);
         }
 
         /// <summary>
@@ -656,7 +656,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectInvisibility(InvisibilityType nInvisibilityType)
         {
-            return NWN.Core.NWScript.EffectInvisibility((int)nInvisibilityType);
+            return global::NWN.Core.NWScript.EffectInvisibility((int)nInvisibilityType);
         }
 
         /// <summary>
@@ -670,7 +670,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectConcealment(int nPercentage, MissChanceType nMissType = MissChanceType.Normal)
         {
-            return NWN.Core.NWScript.EffectConcealment(nPercentage, (int)nMissType);
+            return global::NWN.Core.NWScript.EffectConcealment(nPercentage, (int)nMissType);
         }
 
         /// <summary>
@@ -678,7 +678,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDarkness()
         {
-            return NWN.Core.NWScript.EffectDarkness();
+            return global::NWN.Core.NWScript.EffectDarkness();
         }
 
         /// <summary>
@@ -689,7 +689,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDispelMagicAll(int nCasterLevel = USE_CREATURE_LEVEL)
         {
-            return NWN.Core.NWScript.EffectDispelMagicAll(nCasterLevel);
+            return global::NWN.Core.NWScript.EffectDispelMagicAll(nCasterLevel);
         }
 
         /// <summary>
@@ -697,7 +697,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectUltravision()
         {
-            return NWN.Core.NWScript.EffectUltravision();
+            return global::NWN.Core.NWScript.EffectUltravision();
         }
 
         /// <summary>
@@ -707,7 +707,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectNegativeLevel(int nNumLevels, bool bHPBonus = false)
         {
-            return NWN.Core.NWScript.EffectNegativeLevel(nNumLevels, bHPBonus ? 1 : 0);
+            return global::NWN.Core.NWScript.EffectNegativeLevel(nNumLevels, bHPBonus ? 1 : 0);
         }
 
         /// <summary>
@@ -715,7 +715,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectPolymorph(int nPolymorphSelection, bool nLocked = false)
         {
-            return NWN.Core.NWScript.EffectPolymorph(nPolymorphSelection, nLocked ? 1 : 0);
+            return global::NWN.Core.NWScript.EffectPolymorph(nPolymorphSelection, nLocked ? 1 : 0);
         }
 
         /// <summary>
@@ -725,7 +725,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSanctuary(int nDifficultyClass)
         {
-            return NWN.Core.NWScript.EffectSanctuary(nDifficultyClass);
+            return global::NWN.Core.NWScript.EffectSanctuary(nDifficultyClass);
         }
 
         /// <summary>
@@ -733,7 +733,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTrueSeeing()
         {
-            return NWN.Core.NWScript.EffectTrueSeeing();
+            return global::NWN.Core.NWScript.EffectTrueSeeing();
         }
 
         /// <summary>
@@ -741,7 +741,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSeeInvisible()
         {
-            return NWN.Core.NWScript.EffectSeeInvisible();
+            return global::NWN.Core.NWScript.EffectSeeInvisible();
         }
 
         /// <summary>
@@ -749,7 +749,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTimeStop()
         {
-            return NWN.Core.NWScript.EffectTimeStop();
+            return global::NWN.Core.NWScript.EffectTimeStop();
         }
 
         /// <summary>
@@ -757,7 +757,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectBlindness()
         {
-            return NWN.Core.NWScript.EffectBlindness();
+            return global::NWN.Core.NWScript.EffectBlindness();
         }
 
         /// <summary>
@@ -767,7 +767,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAbilityDecrease(AbilityType nAbility, int nModifyBy)
         {
-            return NWN.Core.NWScript.EffectAbilityDecrease((int)nAbility, nModifyBy);
+            return global::NWN.Core.NWScript.EffectAbilityDecrease((int)nAbility, nModifyBy);
         }
 
         /// <summary>
@@ -778,7 +778,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAccuracyDecrease(int nPenalty, AttackBonus nModifierType = AttackBonus.Misc)
         {
-            return NWN.Core.NWScript.EffectAttackDecrease(nPenalty, (int)nModifierType);
+            return global::NWN.Core.NWScript.EffectAttackDecrease(nPenalty, (int)nModifierType);
         }
 
         /// <summary>
@@ -788,7 +788,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageDecrease(int nPenalty, DamageType nDamageType = DamageType.Force)
         {
-            return NWN.Core.NWScript.EffectDamageDecrease(nPenalty, (int)nDamageType);
+            return global::NWN.Core.NWScript.EffectDamageDecrease(nPenalty, (int)nDamageType);
         }
 
         /// <summary>
@@ -798,7 +798,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageImmunityDecrease(int nDamageType, int nPercentImmunity)
         {
-            return NWN.Core.NWScript.EffectDamageImmunityDecrease(nDamageType, nPercentImmunity);
+            return global::NWN.Core.NWScript.EffectDamageImmunityDecrease(nDamageType, nPercentImmunity);
         }
 
         /// <summary>
@@ -812,7 +812,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             ArmorClassModiferType nModifyType = ArmorClassModiferType.Dodge,
             AC nDamageType = AC.VsDamageTypeAll)
         {
-            return NWN.Core.NWScript.EffectACDecrease(nValue, (int)nModifyType, (int)nDamageType);
+            return global::NWN.Core.NWScript.EffectACDecrease(nValue, (int)nModifyType, (int)nDamageType);
         }
 
         /// <summary>
@@ -825,7 +825,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectMovementSpeedDecrease(int nPercentChange)
         {
-            return NWN.Core.NWScript.EffectMovementSpeedDecrease(nPercentChange);
+            return global::NWN.Core.NWScript.EffectMovementSpeedDecrease(nPercentChange);
         }
 
         /// <summary>
@@ -841,7 +841,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSavingThrowDecrease(int nSave, int nValue,
             SavingThrowType nSaveType = SavingThrowType.All)
         {
-            return NWN.Core.NWScript.EffectSavingThrowDecrease(nSave, nValue, (int)nSaveType);
+            return global::NWN.Core.NWScript.EffectSavingThrowDecrease(nSave, nValue, (int)nSaveType);
         }
 
         /// <summary>
@@ -850,7 +850,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSkillDecrease(int nSkill, int nValue)
         {
-            return NWN.Core.NWScript.EffectSkillDecrease(nSkill, nValue);
+            return global::NWN.Core.NWScript.EffectSkillDecrease(nSkill, nValue);
         }
 
         /// <summary>
@@ -858,7 +858,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSpellResistanceDecrease(int nValue)
         {
-            return NWN.Core.NWScript.EffectSpellResistanceDecrease(nValue);
+            return global::NWN.Core.NWScript.EffectSpellResistanceDecrease(nValue);
         }
 
         /// <summary>
@@ -866,7 +866,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Event EventActivateItem(uint oItem, Location lTarget, uint oTarget = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.EventActivateItem(oItem, lTarget, oTarget);
+            return global::NWN.Core.NWScript.EventActivateItem(oItem, lTarget, oTarget);
         }
 
         /// <summary>
@@ -876,7 +876,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectHitPointChangeWhenDying(float fHitPointChangePerRound)
         {
-            return NWN.Core.NWScript.EffectHitPointChangeWhenDying(fHitPointChangePerRound);
+            return global::NWN.Core.NWScript.EffectHitPointChangeWhenDying(fHitPointChangePerRound);
         }
 
         /// <summary>
@@ -885,7 +885,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTurned()
         {
-            return NWN.Core.NWScript.EffectTurned();
+            return global::NWN.Core.NWScript.EffectTurned();
         }
 
         /// <summary>
@@ -898,7 +898,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             Alignment nLawChaos = Alignment.All,
             Alignment nGoodEvil = Alignment.All)
         {
-            return NWN.Core.NWScript.VersusAlignmentEffect(eEffect, (int)nLawChaos, (int)nGoodEvil);
+            return global::NWN.Core.NWScript.VersusAlignmentEffect(eEffect, (int)nLawChaos, (int)nGoodEvil);
         }
 
         /// <summary>
@@ -908,7 +908,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect VersusRacialTypeEffect(Effect eEffect, RacialType nRacialType)
         {
-            return NWN.Core.NWScript.VersusRacialTypeEffect(eEffect, (int)nRacialType);
+            return global::NWN.Core.NWScript.VersusRacialTypeEffect(eEffect, (int)nRacialType);
         }
 
         /// <summary>
@@ -916,7 +916,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect VersusTrapEffect(Effect eEffect)
         {
-            return NWN.Core.NWScript.VersusTrapEffect(eEffect);
+            return global::NWN.Core.NWScript.VersusTrapEffect(eEffect);
         }
 
         /// <summary>
@@ -927,7 +927,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSkillIncrease(NWNSkillType nSkill, int nValue)
         {
-            return NWN.Core.NWScript.EffectSkillIncrease((int)nSkill, nValue);
+            return global::NWN.Core.NWScript.EffectSkillIncrease((int)nSkill, nValue);
         }
 
         /// <summary>
@@ -937,7 +937,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTemporaryHitpoints(int nHitPoints)
         {
-            return NWN.Core.NWScript.EffectTemporaryHitpoints(nHitPoints);
+            return global::NWN.Core.NWScript.EffectTemporaryHitpoints(nHitPoints);
         }
 
         /// <summary>
@@ -953,7 +953,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Event EventConversation()
         {
-            return NWN.Core.NWScript.EventConversation();
+            return global::NWN.Core.NWScript.EventConversation();
         }
 
         /// <summary>
@@ -963,7 +963,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageImmunityIncrease(DamageType nDamageType, int nPercentImmunity)
         {
-            return NWN.Core.NWScript.EffectDamageImmunityIncrease((int)nDamageType, nPercentImmunity);
+            return global::NWN.Core.NWScript.EffectDamageImmunityIncrease((int)nDamageType, nPercentImmunity);
         }
 
         /// <summary>
@@ -972,7 +972,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectImmunity(ImmunityType nImmunityType)
         {
-            return NWN.Core.NWScript.EffectImmunity((int)nImmunityType);
+            return global::NWN.Core.NWScript.EffectImmunity((int)nImmunityType);
         }
 
         /// <summary>
@@ -980,7 +980,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectHaste()
         {
-            return NWN.Core.NWScript.EffectHaste();
+            return global::NWN.Core.NWScript.EffectHaste();
         }
 
         /// <summary>
@@ -988,7 +988,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSlow()
         {
-            return NWN.Core.NWScript.EffectSlow();
+            return global::NWN.Core.NWScript.EffectSlow();
         }
 
         /// <summary>
@@ -997,7 +997,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectPoison(Poison nPoisonType)
         {
-            return NWN.Core.NWScript.EffectPoison((int)nPoisonType);
+            return global::NWN.Core.NWScript.EffectPoison((int)nPoisonType);
         }
 
         /// <summary>
@@ -1006,7 +1006,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDisease(Disease nDiseaseType)
         {
-            return NWN.Core.NWScript.EffectDisease((int)nDiseaseType);
+            return global::NWN.Core.NWScript.EffectDisease((int)nDiseaseType);
         }
 
         /// <summary>
@@ -1014,7 +1014,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSilence()
         {
-            return NWN.Core.NWScript.EffectSilence();
+            return global::NWN.Core.NWScript.EffectSilence();
         }
 
         /// <summary>
@@ -1023,7 +1023,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSpellResistanceIncrease(int nValue)
         {
-            return NWN.Core.NWScript.EffectSpellResistanceIncrease(nValue);
+            return global::NWN.Core.NWScript.EffectSpellResistanceIncrease(nValue);
         }
 
         /// <summary>
@@ -1038,7 +1038,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectBeam(VisualEffect nBeamVisualEffect, uint oEffector, BodyNode nBodyPart, bool bMissEffect = false)
         {
-            return NWN.Core.NWScript.EffectBeam((int)nBeamVisualEffect, oEffector, (int)nBodyPart, bMissEffect ? 1 : 0);
+            return global::NWN.Core.NWScript.EffectBeam((int)nBeamVisualEffect, oEffector, (int)nBodyPart, bMissEffect ? 1 : 0);
         }
 
         /// <summary>
@@ -1054,7 +1054,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectLinkEffects(Effect eChildEffect, Effect eParentEffect)
         {
-            return NWN.Core.NWScript.EffectLinkEffects(eChildEffect, eParentEffect);
+            return global::NWN.Core.NWScript.EffectLinkEffects(eChildEffect, eParentEffect);
         }
 
         /// <summary>
@@ -1065,7 +1065,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectVisualEffect(VisualEffect visualEffectID, bool nMissEffect = false, float fScale = 1.0f, Vector3 vTranslate = new Vector3(), Vector3 vRotate = new Vector3())
         {
-            return NWN.Core.NWScript.EffectVisualEffect((int)visualEffectID, nMissEffect ? 1 : 0, fScale, vTranslate, vRotate);
+            return global::NWN.Core.NWScript.EffectVisualEffect((int)visualEffectID, nMissEffect ? 1 : 0, fScale, vTranslate, vRotate);
         }
 
         /// <summary>
@@ -1074,7 +1074,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void ApplyEffectToObject(DurationType nDurationType, Effect eEffect, uint oTarget,
             float fDuration = 0.0f)
         {
-            NWN.Core.NWScript.ApplyEffectToObject((int)nDurationType, eEffect, oTarget, fDuration);
+            global::NWN.Core.NWScript.ApplyEffectToObject((int)nDurationType, eEffect, oTarget, fDuration);
         }
 
         /// <summary>
@@ -1083,7 +1083,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static EffectTypeScript GetEffectType(Effect eEffect)
         {
-            return (EffectTypeScript)NWN.Core.NWScript.GetEffectType(eEffect);
+            return (EffectTypeScript)global::NWN.Core.NWScript.GetEffectType(eEffect);
         }
 
         /// <summary>
@@ -1093,7 +1093,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectAreaOfEffect(AreaOfEffect nAreaEffect, string sOnEnterScript = "",
             string sHeartbeatScript = "", string sOnExitScript = "")
         {
-            return NWN.Core.NWScript.EffectAreaOfEffect((int)nAreaEffect, sOnEnterScript, sHeartbeatScript, sOnExitScript);
+            return global::NWN.Core.NWScript.EffectAreaOfEffect((int)nAreaEffect, sOnEnterScript, sHeartbeatScript, sOnExitScript);
         }
 
         /// <summary>
@@ -1103,7 +1103,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectRegenerate(int nAmount, float fIntervalSeconds)
         {
-            return NWN.Core.NWScript.EffectRegenerate(nAmount, fIntervalSeconds);
+            return global::NWN.Core.NWScript.EffectRegenerate(nAmount, fIntervalSeconds);
         }
 
         /// <summary>
@@ -1116,7 +1116,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectMovementSpeedIncrease(int nPercentChange)
         {
-            return NWN.Core.NWScript.EffectMovementSpeedIncrease(nPercentChange);
+            return global::NWN.Core.NWScript.EffectMovementSpeedIncrease(nPercentChange);
         }
 
         /// <summary>
@@ -1124,7 +1124,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCharmed()
         {
-            return NWN.Core.NWScript.EffectCharmed();
+            return global::NWN.Core.NWScript.EffectCharmed();
         }
 
         /// <summary>
@@ -1132,7 +1132,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectConfused()
         {
-            return NWN.Core.NWScript.EffectConfused();
+            return global::NWN.Core.NWScript.EffectConfused();
         }
 
         /// <summary>
@@ -1140,7 +1140,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectFrightened()
         {
-            return NWN.Core.NWScript.EffectFrightened();
+            return global::NWN.Core.NWScript.EffectFrightened();
         }
 
         /// <summary>
@@ -1148,7 +1148,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDominated()
         {
-            return NWN.Core.NWScript.EffectDominated();
+            return global::NWN.Core.NWScript.EffectDominated();
         }
 
         /// <summary>
@@ -1156,7 +1156,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDazed()
         {
-            return NWN.Core.NWScript.EffectDazed();
+            return global::NWN.Core.NWScript.EffectDazed();
         }
 
         /// <summary>
@@ -1164,7 +1164,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectStunned()
         {
-            return NWN.Core.NWScript.EffectStunned();
+            return global::NWN.Core.NWScript.EffectStunned();
         }
 
         /// <summary>
@@ -1172,7 +1172,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSleep()
         {
-            return NWN.Core.NWScript.EffectSleep();
+            return global::NWN.Core.NWScript.EffectSleep();
         }
 
         /// <summary>
@@ -1180,7 +1180,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectParalyze()
         {
-            return NWN.Core.NWScript.EffectParalyze();
+            return global::NWN.Core.NWScript.EffectParalyze();
         }
 
         /// <summary>
@@ -1194,7 +1194,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSpellImmunity(Spell nImmunityToSpell = Spell.AllSpells)
         {
-            return NWN.Core.NWScript.EffectSpellImmunity((int)nImmunityToSpell);
+            return global::NWN.Core.NWScript.EffectSpellImmunity((int)nImmunityToSpell);
         }
 
         /// <summary>
@@ -1202,7 +1202,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDeaf()
         {
-            return NWN.Core.NWScript.EffectDeaf();
+            return global::NWN.Core.NWScript.EffectDeaf();
         }
 
 
@@ -1214,7 +1214,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectInteger(Effect eEffect, int nIndex)
         {
-            return NWN.Core.NWScript.GetEffectInteger(eEffect, nIndex);
+            return global::NWN.Core.NWScript.GetEffectInteger(eEffect, nIndex);
         }
 
         /// <summary>
@@ -1225,7 +1225,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetEffectFloat(Effect eEffect, int nIndex)
         {
-            return NWN.Core.NWScript.GetEffectFloat(eEffect, nIndex);
+            return global::NWN.Core.NWScript.GetEffectFloat(eEffect, nIndex);
         }
 
         /// <summary>
@@ -1236,7 +1236,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetEffectString(Effect eEffect, int nIndex)
         {
-            return NWN.Core.NWScript.GetEffectString(eEffect, nIndex);
+            return global::NWN.Core.NWScript.GetEffectString(eEffect, nIndex);
         }
         
         /// <summary>
@@ -1247,7 +1247,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetEffectObject(Effect eEffect, int nIndex)
         {
-            return NWN.Core.NWScript.GetEffectObject(eEffect, nIndex);
+            return global::NWN.Core.NWScript.GetEffectObject(eEffect, nIndex);
         }
 
         /// <summary>
@@ -1258,7 +1258,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 GetEffectVector(Effect eEffect, int nIndex)
         {
-            return NWN.Core.NWScript.GetEffectVector(eEffect, nIndex);
+            return global::NWN.Core.NWScript.GetEffectVector(eEffect, nIndex);
         }
 
         /// <summary>
@@ -1274,7 +1274,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static Effect EffectRunScript(string sOnAppliedScript = "", string sOnRemovedScript = "", string sOnIntervalScript = "", float fInterval = 0.0f, string sData = "")
         {
-            return NWN.Core.NWScript.EffectRunScript(sOnAppliedScript, sOnRemovedScript, sOnIntervalScript, fInterval, sData);
+            return global::NWN.Core.NWScript.EffectRunScript(sOnAppliedScript, sOnRemovedScript, sOnIntervalScript, fInterval, sData);
         }
 
         /// <summary>
@@ -1284,7 +1284,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns>The effect that last triggered an EffectRunScript() script.</returns>
         public static Effect GetLastRunScriptEffect()
         {
-            return NWN.Core.NWScript.GetLastRunScriptEffect();
+            return global::NWN.Core.NWScript.GetLastRunScriptEffect();
         }
 
         /// <summary>
@@ -1294,7 +1294,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static int GetLastRunScriptEffectScriptType()
         {
-            return NWN.Core.NWScript.GetLastRunScriptEffectScriptType();
+            return global::NWN.Core.NWScript.GetLastRunScriptEffectScriptType();
         }
 
         /// <summary>
@@ -1304,7 +1304,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static Effect HideEffectIcon(Effect eEffect)
         {
-            return NWN.Core.NWScript.HideEffectIcon(eEffect);
+            return global::NWN.Core.NWScript.HideEffectIcon(eEffect);
         }
 
         /// <summary>
@@ -1315,7 +1315,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectIcon(EffectIconType nIconId)
         {
-            return NWN.Core.NWScript.EffectIcon((int)nIconId);
+            return global::NWN.Core.NWScript.EffectIcon((int)nIconId);
         }
 
         /// <summary>
@@ -1326,7 +1326,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect UnyieldingEffect(Effect eEffect)
         {
-            return NWN.Core.NWScript.UnyieldingEffect(eEffect);
+            return global::NWN.Core.NWScript.UnyieldingEffect(eEffect);
         }
 
         /// <summary>
@@ -1334,7 +1334,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect IgnoreEffectImmunity(Effect eEffect)
         {
-            return NWN.Core.NWScript.IgnoreEffectImmunity(eEffect);
+            return global::NWN.Core.NWScript.IgnoreEffectImmunity(eEffect);
         }
 
         /// <summary>
@@ -1342,7 +1342,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectPacified()
         {
-            return NWN.Core.NWScript.EffectPacified();
+            return global::NWN.Core.NWScript.EffectPacified();
         }
 
         /// <summary>
@@ -1351,7 +1351,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetEffectLinkId(Effect eEffect)
         {
-            return NWN.Core.NWScript.GetEffectLinkId(eEffect);
+            return global::NWN.Core.NWScript.GetEffectLinkId(eEffect);
         }
 
         /// <summary>
@@ -1361,7 +1361,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectBonusFeat(int nFeat)
         {
-            return NWN.Core.NWScript.EffectBonusFeat(nFeat);
+            return global::NWN.Core.NWScript.EffectBonusFeat(nFeat);
         }
 
         /// <summary>
@@ -1369,7 +1369,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTimeStopImmunity()
         {
-            return NWN.Core.NWScript.EffectTimeStopImmunity();
+            return global::NWN.Core.NWScript.EffectTimeStopImmunity();
         }
 
         /// <summary>
@@ -1377,7 +1377,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectForceWalk()
         {
-            return NWN.Core.NWScript.EffectForceWalk();
+            return global::NWN.Core.NWScript.EffectForceWalk();
         }
     }
 }

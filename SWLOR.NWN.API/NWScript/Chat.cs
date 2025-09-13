@@ -1,6 +1,6 @@
-using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPCChatSpeaker()
         {
-            return NWN.Core.NWScript.GetPCChatSpeaker();
+            return global::NWN.Core.NWScript.GetPCChatSpeaker();
         }
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SendMessageToAllDMs(string szMessage)
         {
-            NWN.Core.NWScript.SendMessageToAllDMs(szMessage);
+            global::NWN.Core.NWScript.SendMessageToAllDMs(szMessage);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetPCChatMessage()
         {
-            return NWN.Core.NWScript.GetPCChatMessage();
+            return global::NWN.Core.NWScript.GetPCChatMessage();
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static TalkVolume GetPCChatVolume()
         {
-            return (TalkVolume)NWN.Core.NWScript.GetPCChatVolume();
+            return (TalkVolume)global::NWN.Core.NWScript.GetPCChatVolume();
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPCChatMessage(string sNewChatMessage = "")
         {
-            NWN.Core.NWScript.SetPCChatMessage(sNewChatMessage);
+            global::NWN.Core.NWScript.SetPCChatMessage(sNewChatMessage);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPCChatVolume(TalkVolume nTalkVolume = TalkVolume.Talk)
         {
-            NWN.Core.NWScript.SetPCChatVolume((int)nTalkVolume);
+            global::NWN.Core.NWScript.SetPCChatVolume((int)nTalkVolume);
         }
     }
 }

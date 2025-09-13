@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Core.NWScript.Enum.Associate
+namespace SWLOR.NWN.API.NWScript.Enum.Associate
 {
     public enum AssociateType
     {

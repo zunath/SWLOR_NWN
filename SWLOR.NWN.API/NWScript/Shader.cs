@@ -1,7 +1,6 @@
-﻿using System.Numerics;
-using SWLOR.Game.Server.Core.NWScript.Enum;
+﻿using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -14,7 +13,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetShaderUniformFloat(uint oPlayer, ShaderUniformType nShader, float fValue)
         {
-            NWN.Core.NWScript.SetShaderUniformFloat(oPlayer, (int)nShader, fValue);
+            global::NWN.Core.NWScript.SetShaderUniformFloat(oPlayer, (int)nShader, fValue);
         }
 
         /// <summary>
@@ -26,7 +25,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetShaderUniformInt(uint oPlayer, ShaderUniformType nShader, int nValue)
         {
-            NWN.Core.NWScript.SetShaderUniformInt(oPlayer, (int)nShader, nValue);
+            global::NWN.Core.NWScript.SetShaderUniformInt(oPlayer, (int)nShader, nValue);
         }
 
         /// <summary>
@@ -38,7 +37,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetShaderUniformVec(uint oPlayer, ShaderUniformType nShader, float fX, float fY, float fZ, float fW)
         {
-            NWN.Core.NWScript.SetShaderUniformVec(oPlayer, (int)nShader, fX, fY, fZ, fW);
+            global::NWN.Core.NWScript.SetShaderUniformVec(oPlayer, (int)nShader, fX, fY, fZ, fW);
         }
     }
 }

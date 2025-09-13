@@ -1,4 +1,6 @@
 ﻿
+using SWLOR.NWN.API;
+
 namespace SWLOR.Game.Server.Core.NWNX
 {
     public static class NWNXCore
@@ -31,12 +33,12 @@ namespace SWLOR.Game.Server.Core.NWNX
             SetLocalString(OBJECT_INVALID, NWNX_PUSH, value);
         }
 
-        public static void NWNX_PushArgumentEffect(Core.Effect value)
+        public static void NWNX_PushArgumentEffect(Effect value)
         {
             TagEffect(value, NWNX_PUSH);
         }
 
-        public static void NWNX_PushArgumentItemProperty(Core.ItemProperty value)
+        public static void NWNX_PushArgumentItemProperty(ItemProperty value)
         {
             TagItemProperty(value, NWNX_PUSH);
         }
@@ -61,13 +63,13 @@ namespace SWLOR.Game.Server.Core.NWNX
             return GetLocalString(OBJECT_INVALID, NWNX_POP);
         }
 
-        public static Core.Effect NWNX_GetReturnValueEffect()
+        public static Effect NWNX_GetReturnValueEffect()
         {
             var e = EffectBlindness();
             return TagEffect(e, NWNX_POP);
         }
 
-        public static Core.ItemProperty NWNX_GetReturnValueItemProperty()
+        public static ItemProperty NWNX_GetReturnValueItemProperty()
         {
             var ip = ItemPropertyTrueSeeing();
             return TagItemProperty(ip, NWNX_POP);

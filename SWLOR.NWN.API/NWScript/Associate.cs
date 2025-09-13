@@ -1,7 +1,7 @@
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Associate;
 
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetMaxHenchmen(int nNumHenchmen)
         {
-            NWN.Core.NWScript.SetMaxHenchmen(nNumHenchmen);
+            global::NWN.Core.NWScript.SetMaxHenchmen(nNumHenchmen);
         }
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMaxHenchmen()
         {
-            return NWN.Core.NWScript.GetMaxHenchmen();
+            return global::NWN.Core.NWScript.GetMaxHenchmen();
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static AssociateType GetAssociateType(uint oAssociate)
         {
-            return (AssociateType)NWN.Core.NWScript.GetAssociateType(oAssociate);
+            return (AssociateType)global::NWN.Core.NWScript.GetAssociateType(oAssociate);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             bool bReadyAllSpells = false, 
             Package nPackage = Package.Invalid)
         {
-            return NWN.Core.NWScript.LevelUpHenchman(oCreature, (int)nClass, bReadyAllSpells ? 1 : 0, (int)nPackage);
+            return global::NWN.Core.NWScript.LevelUpHenchman(oCreature, (int)nClass, bReadyAllSpells ? 1 : 0, (int)nPackage);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RemoveSummonedAssociate(uint oMaster, uint oAssociate = OBJECT_INVALID)
         {
-            NWN.Core.NWScript.RemoveSummonedAssociate(oMaster, oAssociate);
+            global::NWN.Core.NWScript.RemoveSummonedAssociate(oMaster, oAssociate);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFamiliarCreatureType(uint oCreature)
         {
-            return NWN.Core.NWScript.GetFamiliarCreatureType(oCreature);
+            return global::NWN.Core.NWScript.GetFamiliarCreatureType(oCreature);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAnimalCompanionCreatureType(uint oCreature)
         {
-            return NWN.Core.NWScript.GetAnimalCompanionCreatureType(oCreature);
+            return global::NWN.Core.NWScript.GetAnimalCompanionCreatureType(oCreature);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetFamiliarName(uint oCreature)
         {
-            return NWN.Core.NWScript.GetFamiliarName(oCreature);
+            return global::NWN.Core.NWScript.GetFamiliarName(oCreature);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetAnimalCompanionName(uint oTarget)
         {
-            return NWN.Core.NWScript.GetAnimalCompanionName(oTarget);
+            return global::NWN.Core.NWScript.GetAnimalCompanionName(oTarget);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetAssociate(AssociateType nAssociateType, uint oMaster = OBJECT_INVALID, int nTh = 1)
         {
-            return NWN.Core.NWScript.GetAssociate((int)nAssociateType, oMaster, nTh);
+            return global::NWN.Core.NWScript.GetAssociate((int)nAssociateType, oMaster, nTh);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AddHenchman(uint oMaster, uint oHenchman = OBJECT_INVALID)
         {
-            NWN.Core.NWScript.AddHenchman(oMaster, oHenchman);
+            global::NWN.Core.NWScript.AddHenchman(oMaster, oHenchman);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RemoveHenchman(uint oMaster, uint oHenchman = OBJECT_INVALID)
         {
-            NWN.Core.NWScript.RemoveHenchman(oMaster, oHenchman);
+            global::NWN.Core.NWScript.RemoveHenchman(oMaster, oHenchman);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetHenchman(uint oMaster = OBJECT_INVALID, int nNth = 1)
         {
-            return NWN.Core.NWScript.GetHenchman(oMaster, nNth);
+            return global::NWN.Core.NWScript.GetHenchman(oMaster, nNth);
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SummonAnimalCompanion(uint oMaster = OBJECT_INVALID)
         {
-            NWN.Core.NWScript.SummonAnimalCompanion(oMaster);
+            global::NWN.Core.NWScript.SummonAnimalCompanion(oMaster);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SummonFamiliar(uint oMaster = OBJECT_INVALID)
         {
-            NWN.Core.NWScript.SummonFamiliar(oMaster);
+            global::NWN.Core.NWScript.SummonFamiliar(oMaster);
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetLastAssociateCommand(uint oAssociate = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetLastAssociateCommand(oAssociate);
+            return global::NWN.Core.NWScript.GetLastAssociateCommand(oAssociate);
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetMaster(uint oAssociate = OBJECT_INVALID)
         {
-            return NWN.Core.NWScript.GetMaster(oAssociate);
+            return global::NWN.Core.NWScript.GetMaster(oAssociate);
         }
     }
 }

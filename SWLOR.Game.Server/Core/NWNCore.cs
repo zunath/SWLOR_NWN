@@ -5,12 +5,12 @@ namespace SWLOR.Game.Server.Core
 {
     public static partial class NWNCore
     {
-        internal static ICoreFunctionHandler FunctionHandler;
+        internal static global::NWN.Core.ICoreFunctionHandler FunctionHandler;
 
         internal static NativeHandles NativeFunctions;
         private static NativeEventHandles _eventHandles;
 
-        public static int Init(IntPtr nativeHandlesPtr, int nativeHandlesLength, ICoreFunctionHandler functionHandler, ICoreEventHandler eventHandler)
+        public static int Init(IntPtr nativeHandlesPtr, int nativeHandlesLength, global::NWN.Core.ICoreFunctionHandler functionHandler, ICoreEventHandler eventHandler)
         {
             int result = Init(nativeHandlesPtr, nativeHandlesLength, functionHandler);
             if (result == 0)
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Core
             return result;
         }
 
-        public static int Init(IntPtr nativeHandlesPtr, int nativeHandlesLength, ICoreFunctionHandler functionHandler)
+        public static int Init(IntPtr nativeHandlesPtr, int nativeHandlesLength, global::NWN.Core.ICoreFunctionHandler functionHandler)
         {
             FunctionHandler = functionHandler;
 

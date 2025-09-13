@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Core
     /// <summary>
     /// Simple GameManager implementation. Used by default if no manager is specified during bootstrap.
     /// </summary>
-    public class CoreGameManager : ICoreFunctionHandler, ICoreEventHandler
+    public class CoreGameManager : global::NWN.Core.ICoreFunctionHandler, ICoreEventHandler
     {
         // Hook-able Events
         public delegate void ServerLoopEvent(ulong frame);
@@ -33,12 +33,8 @@ namespace SWLOR.Game.Server.Core
         private const uint ObjectInvalid = 0x7F000000;
         private uint _objectSelf = ObjectInvalid;
 
-        // Interface Implementations
-        uint ICoreFunctionHandler.ObjectSelf
-        {
-            get => _objectSelf;
-            set => _objectSelf = value;
-        }
+        // NWN.Core interface implementation
+        uint global::NWN.Core.ICoreFunctionHandler.ObjectSelf => _objectSelf;
 
         void ICoreEventHandler.OnMainLoop(ulong frame)
             => OnServerLoop?.Invoke(frame);
@@ -84,7 +80,7 @@ namespace SWLOR.Game.Server.Core
             _objectSelf = old;
         }
 
-        void ICoreFunctionHandler.ClosureAssignCommand(uint obj, Action func)
+        void global::NWN.Core.ICoreFunctionHandler.ClosureAssignCommand(uint obj, Action func)
         {
             if (VM.ClosureAssignCommand(obj, _nextEventId) != 0)
             {
@@ -92,7 +88,7 @@ namespace SWLOR.Game.Server.Core
             }
         }
 
-        void ICoreFunctionHandler.ClosureDelayCommand(uint obj, float duration, Action func)
+        void global::NWN.Core.ICoreFunctionHandler.ClosureDelayCommand(uint obj, float duration, Action func)
         {
             if (VM.ClosureDelayCommand(obj, duration, _nextEventId) != 0)
             {
@@ -100,12 +96,34 @@ namespace SWLOR.Game.Server.Core
             }
         }
 
-        void ICoreFunctionHandler.ClosureActionDoCommand(uint obj, Action func)
+        void global::NWN.Core.ICoreFunctionHandler.ClosureActionDoCommand(uint obj, Action func)
         {
             if (VM.ClosureActionDoCommand(obj, _nextEventId) != 0)
             {
                 _closures.Add(_nextEventId++, func);
             }
+        }
+
+        // Public methods for external access
+        public uint ObjectSelf
+        {
+            get => _objectSelf;
+            set => _objectSelf = value;
+        }
+
+        public void ClosureAssignCommand(uint obj, Action func)
+        {
+            ((global::NWN.Core.ICoreFunctionHandler)this).ClosureAssignCommand(obj, func);
+        }
+
+        public void ClosureDelayCommand(uint obj, float duration, Action func)
+        {
+            ((global::NWN.Core.ICoreFunctionHandler)this).ClosureDelayCommand(obj, duration, func);
+        }
+
+        public void ClosureActionDoCommand(uint obj, Action func)
+        {
+            ((global::NWN.Core.ICoreFunctionHandler)this).ClosureActionDoCommand(obj, func);
         }
     }
 }

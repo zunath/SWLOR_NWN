@@ -49,6 +49,11 @@ namespace SWLOR.Game.Server.Core
             Console.WriteLine("Initializing script context...");
             _coreGameManager = new CoreGameManager();
             NWNCore.FunctionHandler = _coreGameManager;
+            
+            // Initialize NWN.Core library
+            global::NWN.Core.NWNCore.Init(_coreGameManager);
+            Console.WriteLine("NWN.Core library initialized successfully.");
+            
             Console.WriteLine("Script context initialized successfully.");
 
             Console.WriteLine("Registering loggers...");
@@ -114,9 +119,9 @@ namespace SWLOR.Game.Server.Core
         public static int ProcessRunScript(string scriptName, uint objectSelf)
         {
             // Set the script execution context
-            var oldObjectSelf = NWNCore.FunctionHandler?.ObjectSelf ?? 0x7F000000; // OBJECT_INVALID
-            if (NWNCore.FunctionHandler != null)
-                NWNCore.FunctionHandler.ObjectSelf = objectSelf;
+            var oldObjectSelf = (_coreGameManager as CoreGameManager)?.ObjectSelf ?? 0x7F000000; // OBJECT_INVALID
+            if (_coreGameManager is CoreGameManager manager)
+                manager.ObjectSelf = objectSelf;
             
             try
             {
@@ -126,8 +131,8 @@ namespace SWLOR.Game.Server.Core
             finally
             {
                 // Restore the previous script context
-                if (NWNCore.FunctionHandler != null)
-                    NWNCore.FunctionHandler.ObjectSelf = oldObjectSelf;
+                if (_coreGameManager is CoreGameManager coreManager)
+                    coreManager.ObjectSelf = oldObjectSelf;
             }
         }
 

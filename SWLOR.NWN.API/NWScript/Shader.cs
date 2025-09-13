@@ -14,10 +14,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetShaderUniformFloat(uint oPlayer, ShaderUniformType nShader, float fValue)
         {
-            VM.StackPush(fValue);
-            VM.StackPush((int)nShader);
-            VM.StackPush(oPlayer);
-            VM.Call(1038);
+            NWN.Core.NWScript.SetShaderUniformFloat(oPlayer, (int)nShader, fValue);
         }
 
         /// <summary>
@@ -29,10 +26,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetShaderUniformInt(uint oPlayer, ShaderUniformType nShader, int nValue)
         {
-            VM.StackPush(nValue);
-            VM.StackPush((int)nShader);
-            VM.StackPush(oPlayer);
-            VM.Call(1039);
+            NWN.Core.NWScript.SetShaderUniformInt(oPlayer, (int)nShader, nValue);
         }
 
         /// <summary>
@@ -44,13 +38,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetShaderUniformVec(uint oPlayer, ShaderUniformType nShader, float fX, float fY, float fZ, float fW)
         {
-            VM.StackPush(fW);
-            VM.StackPush(fZ);
-            VM.StackPush(fY);
-            VM.StackPush(fX);
-            VM.StackPush((int)nShader);
-            VM.StackPush(oPlayer);
-            VM.Call(1040);
+            NWN.Core.NWScript.SetShaderUniformVec(oPlayer, (int)nShader, fX, fY, fZ, fW);
         }
     }
 }

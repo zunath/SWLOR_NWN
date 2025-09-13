@@ -17,13 +17,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void AddJournalQuestEntry(string szPlotID, int nState, uint oCreature,
             bool bAllPartyMembers = true, bool bAllPlayers = false, bool bAllowOverrideHigher = false)
         {
-            VM.StackPush(bAllowOverrideHigher ? 1 : 0);
-            VM.StackPush(bAllPlayers ? 1 : 0);
-            VM.StackPush(bAllPartyMembers ? 1 : 0);
-            VM.StackPush(oCreature);
-            VM.StackPush(nState);
-            VM.StackPush(szPlotID);
-            VM.Call(367);
+            NWN.Core.NWScript.AddJournalQuestEntry(szPlotID, nState, oCreature, bAllPartyMembers ? 1 : 0, bAllPlayers ? 1 : 0, bAllowOverrideHigher ? 1 : 0);
         }
 
         /// <summary>
@@ -38,11 +32,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void RemoveJournalQuestEntry(string szPlotID, uint oCreature, bool bAllPartyMembers = true,
             bool bAllPlayers = false)
         {
-            VM.StackPush(bAllPlayers ? 1 : 0);
-            VM.StackPush(bAllPartyMembers ? 1 : 0);
-            VM.StackPush(oCreature);
-            VM.StackPush(szPlotID);
-            VM.Call(368);
+            NWN.Core.NWScript.RemoveJournalQuestEntry(szPlotID, oCreature, bAllPartyMembers ? 1 : 0, bAllPlayers ? 1 : 0);
         }
     }
 }

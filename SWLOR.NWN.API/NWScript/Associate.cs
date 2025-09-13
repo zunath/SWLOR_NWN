@@ -10,8 +10,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetMaxHenchmen(int nNumHenchmen)
         {
-            VM.StackPush(nNumHenchmen);
-            VM.Call(746);
+            NWN.Core.NWScript.SetMaxHenchmen(nNumHenchmen);
         }
 
         /// <summary>
@@ -19,8 +18,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMaxHenchmen()
         {
-            VM.Call(747);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetMaxHenchmen();
         }
 
         /// <summary>
@@ -29,9 +27,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static AssociateType GetAssociateType(uint oAssociate)
         {
-            VM.StackPush(oAssociate);
-            VM.Call(748);
-            return (AssociateType)VM.StackPopInt();
+            return (AssociateType)NWN.Core.NWScript.GetAssociateType(oAssociate);
         }
 
         /// <summary>
@@ -51,12 +47,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             bool bReadyAllSpells = false, 
             Package nPackage = Package.Invalid)
         {
-            VM.StackPush((int)nPackage);
-            VM.StackPush(bReadyAllSpells ? 1 : 0);
-            VM.StackPush((int)nClass);
-            VM.StackPush(oCreature);
-            VM.Call(704);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.LevelUpHenchman(oCreature, (int)nClass, bReadyAllSpells ? 1 : 0, (int)nPackage);
         }
 
         /// <summary>
@@ -65,9 +56,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RemoveSummonedAssociate(uint oMaster, uint oAssociate = OBJECT_INVALID)
         {
-            VM.StackPush(oAssociate);
-            VM.StackPush(oMaster);
-            VM.Call(503);
+            NWN.Core.NWScript.RemoveSummonedAssociate(oMaster, oAssociate);
         }
 
         /// <summary>
@@ -77,9 +66,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFamiliarCreatureType(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(497);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetFamiliarCreatureType(oCreature);
         }
 
         /// <summary>
@@ -90,9 +77,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAnimalCompanionCreatureType(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(498);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetAnimalCompanionCreatureType(oCreature);
         }
 
         /// <summary>
@@ -102,9 +87,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetFamiliarName(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(499);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetFamiliarName(oCreature);
         }
 
         /// <summary>
@@ -114,9 +97,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetAnimalCompanionName(uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.Call(500);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetAnimalCompanionName(oTarget);
         }
 
         /// <summary>
@@ -128,11 +109,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetAssociate(AssociateType nAssociateType, uint oMaster = OBJECT_INVALID, int nTh = 1)
         {
-            VM.StackPush(nTh);
-            VM.StackPush(oMaster);
-            VM.StackPush((int)nAssociateType);
-            VM.Call(364);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetAssociate((int)nAssociateType, oMaster, nTh);
         }
 
         /// <summary>
@@ -141,9 +118,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AddHenchman(uint oMaster, uint oHenchman = OBJECT_INVALID)
         {
-            VM.StackPush(oHenchman);
-            VM.StackPush(oMaster);
-            VM.Call(365);
+            NWN.Core.NWScript.AddHenchman(oMaster, oHenchman);
         }
 
         /// <summary>
@@ -151,9 +126,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RemoveHenchman(uint oMaster, uint oHenchman = OBJECT_INVALID)
         {
-            VM.StackPush(oHenchman);
-            VM.StackPush(oMaster);
-            VM.Call(366);
+            NWN.Core.NWScript.RemoveHenchman(oMaster, oHenchman);
         }
 
         /// <summary>
@@ -163,10 +136,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetHenchman(uint oMaster = OBJECT_INVALID, int nNth = 1)
         {
-            VM.StackPush(nNth);
-            VM.StackPush(oMaster);
-            VM.Call(354);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetHenchman(oMaster, nNth);
         }
 
         /// <summary>
@@ -174,8 +144,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SummonAnimalCompanion(uint oMaster = OBJECT_INVALID)
         {
-            VM.StackPush(oMaster);
-            VM.Call(334);
+            NWN.Core.NWScript.SummonAnimalCompanion(oMaster);
         }
 
         /// <summary>
@@ -183,8 +152,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SummonFamiliar(uint oMaster = OBJECT_INVALID)
         {
-            VM.StackPush(oMaster);
-            VM.Call(335);
+            NWN.Core.NWScript.SummonFamiliar(oMaster);
         }
 
         /// <summary>
@@ -192,9 +160,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetLastAssociateCommand(uint oAssociate = OBJECT_INVALID)
         {
-            VM.StackPush(oAssociate);
-            VM.Call(321);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetLastAssociateCommand(oAssociate);
         }
 
         /// <summary>
@@ -202,9 +168,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetMaster(uint oAssociate = OBJECT_INVALID)
         {
-            VM.StackPush(oAssociate);
-            VM.Call(319);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetMaster(oAssociate);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using NWN.Native.API;
-using SWLOR.Game.Server.Core.NWScript.Enum;
+﻿using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Core.NWScript
 {
@@ -14,9 +13,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetScriptParam(string sParamName)
         {
-            VM.StackPush(sParamName);
-            VM.Call(906);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetScriptParam(sParamName);
         }
 
         /// <summary>
@@ -25,9 +22,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetScriptParam(string sParamName, string sParamValue)
         {
-            VM.StackPush(sParamValue);
-            VM.StackPush(sParamName);
-            VM.Call(907);
+            NWN.Core.NWScript.SetScriptParam(sParamName, sParamValue);
         }
 
         /// <summary>
@@ -41,9 +36,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static EventScript GetCurrentlyRunningEvent(bool bInheritParent = true)
         {
-            VM.StackPush(bInheritParent ? 1 : 0);
-            VM.Call(938);
-            return (EventScript)VM.StackPopInt();
+            return (EventScript)NWN.Core.NWScript.GetCurrentlyRunningEvent(bInheritParent ? 1 : 0);
         }
 
         /// <summary>
@@ -56,8 +49,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static int GetScriptInstructionsRemaining()
         {
-            VM.Call(1029);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetScriptInstructionsRemaining();
         }
 
         /// <summary>
@@ -69,13 +61,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string CompileScript(string sScriptName, string sScriptData, bool bWrapIntoMain = false, bool bGenerateNDB = false)
         {
-            VM.StackPush(bGenerateNDB ? 1 : 0);
-            VM.StackPush(bWrapIntoMain ? 1 : 0);
-            VM.StackPush(sScriptData);
-            VM.StackPush(sScriptName);
-            VM.Call(1072);
-
-            return VM.StackPopString();
+            return NWN.Core.NWScript.CompileScript(sScriptName, sScriptData, bWrapIntoMain ? 1 : 0, bGenerateNDB ? 1 : 0);
         }
 
         /// <summary>
@@ -89,8 +75,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AbortRunningScript(string sError = "")
         {
-            VM.StackPush(sError);
-            VM.Call(1084);
+            NWN.Core.NWScript.AbortRunningScript(sError);
         }
 
         /// <summary>
@@ -112,10 +97,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json GetScriptBacktrace(bool bIncludeStack = true)
         {
-            VM.StackPush(bIncludeStack ? 1 : 0);
-            VM.Call(1085);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.GetScriptBacktrace(bIncludeStack ? 1 : 0);
         }
 
         /// <summary>
@@ -128,10 +110,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SetJmp(string sLabel)
         {
-            VM.StackPush(sLabel);
-            VM.Call(1086);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.SetJmp(sLabel);
         }
 
         /// <summary>
@@ -152,9 +131,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void LongJmp(string sLabel, int nRetVal = 1)
         {
-            VM.StackPush(nRetVal);
-            VM.StackPush(sLabel);
-            VM.Call(1087);
+            NWN.Core.NWScript.LongJmp(sLabel, nRetVal);
         }
 
         /// <summary>
@@ -162,10 +139,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsValidJmp(string sLabel)
         {
-            VM.StackPush(sLabel);
-            VM.Call(1088);
-
-            return VM.StackPopInt() == 1;
+            return NWN.Core.NWScript.GetIsValidJmp(sLabel) != 0;
         }
 
         /// <summary>
@@ -173,8 +147,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetScriptRecursionLevel()
         {
-            VM.Call(1090);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetScriptRecursionLevel();
         }
 
         /// <summary>
@@ -184,9 +157,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetScriptName(int nRecursionLevel = -1)
         {
-            VM.StackPush(nRecursionLevel);
-            VM.Call(1091);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetScriptName(nRecursionLevel);
         }
 
         /// <summary>
@@ -196,9 +167,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetScriptChunk(int nRecursionLevel = -1)
         {
-            VM.StackPush(nRecursionLevel);
-            VM.Call(1092);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetScriptChunk(nRecursionLevel);
         }
     }
 }

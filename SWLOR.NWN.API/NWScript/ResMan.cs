@@ -12,11 +12,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string ResManGetAliasFor(string sResRef, ResType nResType)
         {
-            VM.StackPush((int)nResType);
-            VM.StackPush(sResRef);
-            VM.Call(1008);
-
-            return VM.StackPopString();
+            return NWN.Core.NWScript.ResManGetAliasFor(sResRef, (int)nResType);
         }
 
         /// <summary>
@@ -28,14 +24,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string ResManFindPrefix(string sPrefix, ResType nResType, int nNth = 1, bool bSearchBaseData = false, string sOnlyKeyTable = "")
         {
-            VM.StackPush(sOnlyKeyTable);
-            VM.StackPush(bSearchBaseData ? 1 : 0);
-            VM.StackPush(nNth);
-            VM.StackPush((int)nResType);
-            VM.StackPush(sPrefix);
-            VM.Call(1009);
-
-            return VM.StackPopString();
+            return NWN.Core.NWScript.ResManFindPrefix(sPrefix, (int)nResType, nNth, bSearchBaseData ? 1 : 0, sOnlyKeyTable);
         }
 
         /// <summary>
@@ -46,11 +35,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string ResManGetFileContents(string sResRef, int nResType)
         {
-            VM.StackPush(nResType);
-            VM.StackPush(sResRef);
-            VM.Call(1071);
-
-            return VM.StackPopString();
+            return NWN.Core.NWScript.ResManGetFileContents(sResRef, nResType);
         }
 
     }

@@ -10,10 +10,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFactionWeakestMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
-            VM.StackPush(bMustBeVisible ? 1 : 0);
-            VM.StackPush(oFactionMember);
-            VM.Call(181);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetFactionWeakestMember(oFactionMember, bMustBeVisible ? 1 : 0);
         }
 
         /// <summary>
@@ -22,10 +19,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFactionStrongestMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
-            VM.StackPush(bMustBeVisible ? 1 : 0);
-            VM.StackPush(oFactionMember);
-            VM.Call(182);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetFactionStrongestMember(oFactionMember, bMustBeVisible ? 1 : 0);
         }
 
         /// <summary>
@@ -35,10 +29,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFactionMostDamagedMember(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
-            VM.StackPush(bMustBeVisible ? 1 : 0);
-            VM.StackPush(oFactionMember);
-            VM.Call(183);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetFactionMostDamagedMember(oFactionMember, bMustBeVisible ? 1 : 0);
         }
 
         /// <summary>
@@ -49,10 +40,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static uint GetFactionLeastDamagedMember(uint oFactionMember = OBJECT_INVALID,
             bool bMustBeVisible = true)
         {
-            VM.StackPush(bMustBeVisible ? 1 : 0);
-            VM.StackPush(oFactionMember);
-            VM.Call(184);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetFactionLeastDamagedMember(oFactionMember, bMustBeVisible ? 1 : 0);
         }
 
         /// <summary>
@@ -61,9 +49,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFactionGold(uint oFactionMember)
         {
-            VM.StackPush(oFactionMember);
-            VM.Call(185);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetFactionGold(oFactionMember);
         }
 
         /// <summary>
@@ -73,10 +59,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFactionAverageReputation(uint oSourceFactionMember, uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.StackPush(oSourceFactionMember);
-            VM.Call(186);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetFactionAverageReputation(oSourceFactionMember, oTarget);
         }
 
         /// <summary>
@@ -86,9 +69,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFactionAverageGoodEvilAlignment(uint oFactionMember)
         {
-            VM.StackPush(oFactionMember);
-            VM.Call(187);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetFactionAverageGoodEvilAlignment(oFactionMember);
         }
 
         /// <summary>
@@ -98,9 +79,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFactionAverageLawChaosAlignment(uint oFactionMember)
         {
-            VM.StackPush(oFactionMember);
-            VM.Call(188);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetFactionAverageLawChaosAlignment(oFactionMember);
         }
 
         /// <summary>
@@ -109,9 +88,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFactionAverageLevel(uint oFactionMember)
         {
-            VM.StackPush(oFactionMember);
-            VM.Call(189);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetFactionAverageLevel(oFactionMember);
         }
 
         /// <summary>
@@ -120,9 +97,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFactionAverageXP(uint oFactionMember)
         {
-            VM.StackPush(oFactionMember);
-            VM.Call(190);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetFactionAverageXP(oFactionMember);
         }
 
         /// <summary>
@@ -132,9 +107,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFactionMostFrequentClass(uint oFactionMember)
         {
-            VM.StackPush(oFactionMember);
-            VM.Call(191);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetFactionMostFrequentClass(oFactionMember);
         }
 
         /// <summary>
@@ -143,10 +116,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFactionWorstAC(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
-            VM.StackPush(bMustBeVisible ? 1 : 0);
-            VM.StackPush(oFactionMember);
-            VM.Call(192);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetFactionWorstAC(oFactionMember, bMustBeVisible ? 1 : 0);
         }
 
         /// <summary>
@@ -155,10 +125,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFactionBestAC(uint oFactionMember = OBJECT_INVALID, bool bMustBeVisible = true)
         {
-            VM.StackPush(bMustBeVisible ? 1 : 0);
-            VM.StackPush(oFactionMember);
-            VM.Call(193);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetFactionBestAC(oFactionMember, bMustBeVisible ? 1 : 0);
         }
 
         /// <summary>
@@ -171,10 +138,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetReputation(uint oSource, uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.StackPush(oSource);
-            VM.Call(208);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetReputation(oSource, oTarget);
         }
 
         /// <summary>
@@ -194,10 +158,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AdjustReputation(uint oTarget, uint oSourceFactionMember, int nAdjustment)
         {
-            VM.StackPush(nAdjustment);
-            VM.StackPush(oSourceFactionMember);
-            VM.StackPush(oTarget);
-            VM.Call(209);
+            NWN.Core.NWScript.AdjustReputation(oTarget, oSourceFactionMember, nAdjustment);
         }
 
         /// <summary>
@@ -205,10 +166,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsEnemy(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            VM.StackPush(oSource);
-            VM.StackPush(oTarget);
-            VM.Call(235);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsEnemy(oTarget, oSource) != 0;
         }
 
         /// <summary>
@@ -216,10 +174,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsFriend(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            VM.StackPush(oSource);
-            VM.StackPush(oTarget);
-            VM.Call(236);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsFriend(oTarget, oSource) != 0;
         }
 
         /// <summary>
@@ -227,10 +182,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsNeutral(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            VM.StackPush(oSource);
-            VM.StackPush(oTarget);
-            VM.Call(237);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsNeutral(oTarget, oSource) != 0;
         }
 
         /// <summary>
@@ -240,9 +192,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFactionLeader(uint oMemberOfFaction)
         {
-            VM.StackPush(oMemberOfFaction);
-            VM.Call(562);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetFactionLeader(oMemberOfFaction);
         }
 
         /// <summary>
@@ -254,10 +204,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetStandardFactionReputation(StandardFaction nStandardFaction, int nNewReputation,
             uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush(nNewReputation);
-            VM.StackPush((int)nStandardFaction);
-            VM.Call(523);
+            NWN.Core.NWScript.SetStandardFactionReputation((int)nStandardFaction, nNewReputation, oCreature);
         }
 
         /// <summary>
@@ -272,10 +219,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetStandardFactionReputation(StandardFaction nStandardFaction, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush((int)nStandardFaction);
-            VM.Call(524);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetStandardFactionReputation((int)nStandardFaction, oCreature);
         }
 
         /// <summary>
@@ -285,9 +229,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ChangeToStandardFaction(uint oCreatureToChange, StandardFaction nStandardFaction)
         {
-            VM.StackPush((int)nStandardFaction);
-            VM.StackPush(oCreatureToChange);
-            VM.Call(412);
+            NWN.Core.NWScript.ChangeToStandardFaction(oCreatureToChange, (int)nStandardFaction);
         }
 
         /// <summary>
@@ -297,10 +239,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFirstFactionMember(uint oMemberOfFaction, bool bPCOnly = true)
         {
-            VM.StackPush(bPCOnly ? 1 : 0);
-            VM.StackPush(oMemberOfFaction);
-            VM.Call(380);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetFirstFactionMember(oMemberOfFaction, bPCOnly ? 1 : 0);
         }
 
         /// <summary>
@@ -310,10 +249,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNextFactionMember(uint oMemberOfFaction, bool bPCOnly = true)
         {
-            VM.StackPush(bPCOnly ? 1 : 0);
-            VM.StackPush(oMemberOfFaction);
-            VM.Call(381);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetNextFactionMember(oMemberOfFaction, bPCOnly ? 1 : 0);
         }
 
         /// <summary>
@@ -321,10 +257,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetFactionEqual(uint oFirstObject, uint oSecondObject = OBJECT_INVALID)
         {
-            VM.StackPush(oSecondObject);
-            VM.StackPush(oFirstObject);
-            VM.Call(172);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetFactionEqual(oFirstObject, oSecondObject) != 0;
         }
 
         /// <summary>
@@ -333,9 +266,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ChangeFaction(uint oObjectToChangeFaction, uint oMemberOfFactionToJoin)
         {
-            VM.StackPush(oMemberOfFactionToJoin);
-            VM.StackPush(oObjectToChangeFaction);
-            VM.Call(173);
+            NWN.Core.NWScript.ChangeFaction(oObjectToChangeFaction, oMemberOfFactionToJoin);
         }
     }
 }

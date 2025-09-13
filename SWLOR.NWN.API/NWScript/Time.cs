@@ -7,8 +7,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDay()
         {
-            VM.Call(405);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsDay() != 0;
         }
 
         /// <summary>
@@ -16,8 +15,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsNight()
         {
-            VM.Call(406);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsNight() != 0;
         }
 
         /// <summary>
@@ -25,8 +23,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDawn()
         {
-            VM.Call(407);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsDawn() != 0;
         }
 
         /// <summary>
@@ -34,8 +31,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDusk()
         {
-            VM.Call(408);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsDusk() != 0;
         }
 
 
@@ -45,9 +41,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float RoundsToSeconds(int nRounds)
         {
-            VM.StackPush(nRounds);
-            VM.Call(121);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.RoundsToSeconds(nRounds);
         }
 
         /// <summary>
@@ -56,9 +50,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float HoursToSeconds(int nHours)
         {
-            VM.StackPush(nHours);
-            VM.Call(122);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.HoursToSeconds(nHours);
         }
 
         /// <summary>
@@ -67,9 +59,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float TurnsToSeconds(int nTurns)
         {
-            VM.StackPush(nTurns);
-            VM.Call(123);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.TurnsToSeconds(nTurns);
         }
     }
 }

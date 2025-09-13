@@ -1,4 +1,5 @@
 using System;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Core

@@ -32,11 +32,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void AdjustAlignment(uint oSubject, Alignment nAlignment, int nShift,
             bool bAllPartyMembers = true)
         {
-            VM.StackPush(bAllPartyMembers ? 1 : 0);
-            VM.StackPush(nShift);
-            VM.StackPush((int)nAlignment);
-            VM.StackPush(oSubject);
-            VM.Call(201);
+            NWN.Core.NWScript.AdjustAlignment(oSubject, (int)nAlignment, nShift, bAllPartyMembers ? 1 : 0);
         }
 
         /// <summary>
@@ -47,9 +43,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetLawChaosValue(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(124);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetLawChaosValue(oCreature);
         }
 
         /// <summary>
@@ -60,9 +54,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetGoodEvilValue(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(125);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetGoodEvilValue(oCreature);
         }
 
         /// <summary>
@@ -71,9 +63,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Alignment GetAlignmentLawChaos(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(126);
-            return (Alignment)VM.StackPopInt();
+            return (Alignment)NWN.Core.NWScript.GetAlignmentLawChaos(oCreature);
         }
 
         /// <summary>
@@ -82,9 +72,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Alignment GetAlignmentGoodEvil(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(127);
-            return (Alignment)VM.StackPopInt();
+            return (Alignment)NWN.Core.NWScript.GetAlignmentGoodEvil(oCreature);
         }
 
         /// <summary>
@@ -92,9 +80,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ClearPersonalReputation(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            VM.StackPush(oSource);
-            VM.StackPush(oTarget);
-            VM.Call(389);
+            NWN.Core.NWScript.ClearPersonalReputation(oTarget, oSource);
         }
 
         /// <summary>
@@ -115,11 +101,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetIsTemporaryFriend(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
-            VM.StackPush(fDurationInSeconds);
-            VM.StackPush(bDecays ? 1 : 0);
-            VM.StackPush(oSource);
-            VM.StackPush(oTarget);
-            VM.Call(390);
+            NWN.Core.NWScript.SetIsTemporaryFriend(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
         }
 
         /// <summary>
@@ -137,11 +119,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetIsTemporaryEnemy(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
-            VM.StackPush(fDurationInSeconds);
-            VM.StackPush(bDecays ? 1 : 0);
-            VM.StackPush(oSource);
-            VM.StackPush(oTarget);
-            VM.Call(391);
+            NWN.Core.NWScript.SetIsTemporaryEnemy(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
         }
 
         /// <summary>
@@ -160,11 +138,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetIsTemporaryNeutral(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
-            VM.StackPush(fDurationInSeconds);
-            VM.StackPush(bDecays ? 1 : 0);
-            VM.StackPush(oSource);
-            VM.StackPush(oTarget);
-            VM.Call(392);
+            NWN.Core.NWScript.SetIsTemporaryNeutral(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
         }
     }
 }

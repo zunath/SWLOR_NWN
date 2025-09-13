@@ -9,8 +9,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ForceRest(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(775);
+            NWN.Core.NWScript.ForceRest(oCreature);
         }
 
         /// <summary>
@@ -18,9 +17,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsResting(uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.Call(505);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsResting(oCreature) != 0;
         }
 
         /// <summary>
@@ -28,8 +25,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastPCRested()
         {
-            VM.Call(506);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastPCRested();
         }
 
         /// <summary>
@@ -38,8 +34,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static RestEventType GetLastRestEventType()
         {
-            VM.Call(508);
-            return (RestEventType)VM.StackPopInt();
+            return (RestEventType)NWN.Core.NWScript.GetLastRestEventType();
         }
 
         /// <summary>
@@ -53,8 +48,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionRest(bool bCreatureToEnemyLineOfSightCheck = false)
         {
-            VM.StackPush(bCreatureToEnemyLineOfSightCheck ? 1 : 0);
-            VM.Call(402);
+            NWN.Core.NWScript.ActionRest(bCreatureToEnemyLineOfSightCheck ? 1 : 0);
         }
     }
 }

@@ -10,9 +10,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetStringLength(string sString)
         {
-            VM.StackPush(sString);
-            VM.Call(59);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetStringLength(sString);
         }
 
         /// <summary>
@@ -21,9 +19,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetStringUpperCase(string sString)
         {
-            VM.StackPush(sString);
-            VM.Call(60);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetStringUpperCase(sString);
         }
 
         /// <summary>
@@ -32,9 +28,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetStringLowerCase(string sString)
         {
-            VM.StackPush(sString);
-            VM.Call(61);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetStringLowerCase(sString);
         }
 
         /// <summary>
@@ -43,10 +37,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetStringRight(string sString, int nCount)
         {
-            VM.StackPush(nCount);
-            VM.StackPush(sString);
-            VM.Call(62);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetStringRight(sString, nCount);
         }
 
         /// <summary>
@@ -55,10 +46,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetStringLeft(string sString, int nCount)
         {
-            VM.StackPush(nCount);
-            VM.StackPush(sString);
-            VM.Call(63);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetStringLeft(sString, nCount);
         }
 
         /// <summary>
@@ -67,11 +55,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string InsertString(string sDestination, string sString, int nPosition)
         {
-            VM.StackPush(nPosition);
-            VM.StackPush(sString);
-            VM.StackPush(sDestination);
-            VM.Call(64);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.InsertString(sDestination, sString, nPosition);
         }
 
         /// <summary>
@@ -80,11 +64,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetSubString(string sString, int nStart, int nCount)
         {
-            VM.StackPush(nCount);
-            VM.StackPush(nStart);
-            VM.StackPush(sString);
-            VM.Call(65);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetSubString(sString, nStart, nCount);
         }
 
         /// <summary>
@@ -94,22 +74,15 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int FindSubString(string sString, string sSubString, int nStart = 0)
         {
-            VM.StackPush(nStart);
-            VM.StackPush(sSubString);
-            VM.StackPush(sString);
-            VM.Call(66);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.FindSubString(sString, sSubString, nStart);
         }
 
         /// <summary>
         ///   * Returns TRUE if sStringToTest matches sPattern.
         /// </summary>
-        public static int TestStringAgainstPattern(string sPattern, string sStringToTest)
+        public static bool TestStringAgainstPattern(string sPattern, string sStringToTest)
         {
-            VM.StackPush(sStringToTest);
-            VM.StackPush(sPattern);
-            VM.Call(177);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.TestStringAgainstPattern(sPattern, sStringToTest) != 0;
         }
 
         /// <summary>
@@ -119,9 +92,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetMatchedSubstring(int nString)
         {
-            VM.StackPush(nString);
-            VM.Call(178);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetMatchedSubstring(nString);
         }
 
         /// <summary>
@@ -130,8 +101,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMatchedSubstringsCount()
         {
-            VM.Call(179);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetMatchedSubstringsCount();
         }
 
         /// <summary>
@@ -156,14 +126,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             RegularExpressionType nSyntaxFlags = RegularExpressionType.Ecmascript,
             RegularExpressionFormatType nMatchFlags = RegularExpressionFormatType.Default)
         {
-            VM.StackPush((int)nMatchFlags);
-            VM.StackPush((int)nSyntaxFlags);
-            VM.StackPush(sReplacement);
-            VM.StackPush(sValue);
-            VM.StackPush(sRegExp);
-            VM.Call(1070);
-
-            return VM.StackPopString();
+            return NWN.Core.NWScript.RegExpReplace(sRegExp, sValue, sReplacement, (int)nSyntaxFlags, (int)nMatchFlags);
         }
     }
 }

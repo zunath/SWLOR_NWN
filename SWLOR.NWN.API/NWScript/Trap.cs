@@ -18,10 +18,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCalendar(int nYear, int nMonth, int nDay)
         {
-            VM.StackPush(nDay);
-            VM.StackPush(nMonth);
-            VM.StackPush(nYear);
-            VM.Call(11);
+            NWN.Core.NWScript.SetCalendar(nYear, nMonth, nDay);
         }
 
         /// <summary>
@@ -42,11 +39,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTime(int nHour, int nMinute, int nSecond, int nMillisecond)
         {
-            VM.StackPush(nMillisecond);
-            VM.StackPush(nSecond);
-            VM.StackPush(nMinute);
-            VM.StackPush(nHour);
-            VM.Call(12);
+            NWN.Core.NWScript.SetTime(nHour, nMinute, nSecond, nMillisecond);
         }
 
         /// <summary>
@@ -54,8 +47,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCalendarYear()
         {
-            VM.Call(13);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetCalendarYear();
         }
 
         /// <summary>
@@ -63,8 +55,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCalendarMonth()
         {
-            VM.Call(14);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetCalendarMonth();
         }
 
         /// <summary>
@@ -72,8 +63,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCalendarDay()
         {
-            VM.Call(15);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetCalendarDay();
         }
 
         /// <summary>
@@ -81,8 +71,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTimeHour()
         {
-            VM.Call(16);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTimeHour();
         }
 
         /// <summary>
@@ -90,8 +79,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTimeMinute()
         {
-            VM.Call(17);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTimeMinute();
         }
 
         /// <summary>
@@ -99,8 +87,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTimeSecond()
         {
-            VM.Call(18);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTimeSecond();
         }
 
         /// <summary>
@@ -108,8 +95,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTimeMillisecond()
         {
-            VM.Call(19);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTimeMillisecond();
         }
 
         /// <summary>
@@ -120,22 +106,16 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SetTrapDetectedBy(uint oTrap, uint oDetector, bool bDetected = true)
         {
-            VM.StackPush(bDetected ? 1 : 0);
-            VM.StackPush(oDetector);
-            VM.StackPush(oTrap);
-            VM.Call(550);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.SetTrapDetectedBy(oTrap, oDetector, bDetected ? 1 : 0);
         }
 
         /// <summary>
         ///   Note: Only placeables, doors and triggers can be trapped.
         ///   * Returns TRUE if oObject is trapped.
         /// </summary>
-        public static int GetIsTrapped(uint oObject)
+        public static bool GetIsTrapped(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(551);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetIsTrapped(oObject) != 0;
         }
 
         /// <summary>
@@ -144,9 +124,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetTrapDisarmable(uint oTrapObject)
         {
-            VM.StackPush(oTrapObject);
-            VM.Call(527);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetTrapDisarmable(oTrapObject) != 0;
         }
 
         /// <summary>
@@ -155,9 +133,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetTrapDetectable(uint oTrapObject)
         {
-            VM.StackPush(oTrapObject);
-            VM.Call(528);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetTrapDetectable(oTrapObject) != 0;
         }
 
         /// <summary>
@@ -167,10 +143,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetTrapDetectedBy(uint oTrapObject, uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush(oTrapObject);
-            VM.Call(529);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetTrapDetectedBy(oTrapObject, oCreature) != 0;
         }
 
         /// <summary>
@@ -179,20 +152,16 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetTrapFlagged(uint oTrapObject)
         {
-            VM.StackPush(oTrapObject);
-            VM.Call(530);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetTrapFlagged(oTrapObject) != 0;
         }
 
         /// <summary>
         ///   Get the trap base type (TRAP_BASE_TYPE_*) of oTrapObject.
         ///   - oTrapObject: a placeable, door or trigger
         /// </summary>
-        public static int GetTrapBaseType(uint oTrapObject)
+        public static TrapBaseType GetTrapBaseType(uint oTrapObject)
         {
-            VM.StackPush(oTrapObject);
-            VM.Call(531);
-            return VM.StackPopInt();
+            return (TrapBaseType)NWN.Core.NWScript.GetTrapBaseType(oTrapObject);
         }
 
         /// <summary>
@@ -202,9 +171,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetTrapOneShot(uint oTrapObject)
         {
-            VM.StackPush(oTrapObject);
-            VM.Call(532);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetTrapOneShot(oTrapObject) != 0;
         }
 
         /// <summary>
@@ -214,9 +181,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetTrapCreator(uint oTrapObject)
         {
-            VM.StackPush(oTrapObject);
-            VM.Call(533);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetTrapCreator(oTrapObject);
         }
 
         /// <summary>
@@ -225,9 +190,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetTrapKeyTag(uint oTrapObject)
         {
-            VM.StackPush(oTrapObject);
-            VM.Call(534);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetTrapKeyTag(oTrapObject);
         }
 
         /// <summary>
@@ -236,9 +199,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTrapDisarmDC(uint oTrapObject)
         {
-            VM.StackPush(oTrapObject);
-            VM.Call(535);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTrapDisarmDC(oTrapObject);
         }
 
         /// <summary>
@@ -247,9 +208,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTrapDetectDC(uint oTrapObject)
         {
-            VM.StackPush(oTrapObject);
-            VM.Call(536);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTrapDetectDC(oTrapObject);
         }
 
         /// <summary>
@@ -262,10 +221,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNearestTrapToObject(uint oTarget = OBJECT_INVALID, bool nTrapDetected = true)
         {
-            VM.StackPush(nTrapDetected ? 1 : 0);
-            VM.StackPush(oTarget);
-            VM.Call(488);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetNearestTrapToObject(oTarget, nTrapDetected ? 1 : 0);
         }
 
         /// <summary>
@@ -274,9 +230,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastTrapDetected(uint oTarget = OBJECT_INVALID)
         {
-            VM.StackPush(oTarget);
-            VM.Call(486);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastTrapDetected(oTarget);
         }
 
         /// <summary>
@@ -285,9 +239,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetTrapActive(uint oTrapObject)
         {
-            VM.StackPush(oTrapObject);
-            VM.Call(821);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetTrapActive(oTrapObject) != 0;
         }
 
         /// <summary>
@@ -302,9 +254,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapActive(uint oTrapObject, bool nActive = true)
         {
-            VM.StackPush(nActive ? 1 : 0);
-            VM.StackPush(oTrapObject);
-            VM.Call(822);
+            NWN.Core.NWScript.SetTrapActive(oTrapObject, nActive ? 1 : 0);
         }
 
         /// <summary>
@@ -313,9 +263,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetTrapRecoverable(uint oTrapObject)
         {
-            VM.StackPush(oTrapObject);
-            VM.Call(815);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetTrapRecoverable(oTrapObject) != 0;
         }
 
         /// <summary>
@@ -324,9 +272,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapRecoverable(uint oTrapObject, bool nRecoverable = true)
         {
-            VM.StackPush(nRecoverable ? 1 : 0);
-            VM.StackPush(oTrapObject);
-            VM.Call(816);
+            NWN.Core.NWScript.SetTrapRecoverable(oTrapObject, nRecoverable ? 1 : 0);
         }
 
         /// <summary>
@@ -336,9 +282,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapDisarmable(uint oTrapObject, bool nDisarmable = true)
         {
-            VM.StackPush(nDisarmable ? 1 : 0);
-            VM.StackPush(oTrapObject);
-            VM.Call(803);
+            NWN.Core.NWScript.SetTrapDisarmable(oTrapObject, nDisarmable ? 1 : 0);
         }
 
         /// <summary>
@@ -350,9 +294,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapDetectable(uint oTrapObject, bool nDetectable = true)
         {
-            VM.StackPush(nDetectable ? 1 : 0);
-            VM.StackPush(oTrapObject);
-            VM.Call(804);
+            NWN.Core.NWScript.SetTrapDetectable(oTrapObject, nDetectable ? 1 : 0);
         }
 
         /// <summary>
@@ -363,9 +305,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapOneShot(uint oTrapObject, bool nOneShot = true)
         {
-            VM.StackPush(nOneShot ? 1 : 0);
-            VM.StackPush(oTrapObject);
-            VM.Call(805);
+            NWN.Core.NWScript.SetTrapOneShot(oTrapObject, nOneShot ? 1 : 0);
         }
 
         /// <summary>
@@ -374,9 +314,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapKeyTag(uint oTrapObject, string sKeyTag)
         {
-            VM.StackPush(sKeyTag);
-            VM.StackPush(oTrapObject);
-            VM.Call(806);
+            NWN.Core.NWScript.SetTrapKeyTag(oTrapObject, sKeyTag);
         }
 
         /// <summary>
@@ -386,9 +324,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapDisarmDC(uint oTrapObject, int nDisarmDC)
         {
-            VM.StackPush(nDisarmDC);
-            VM.StackPush(oTrapObject);
-            VM.Call(807);
+            NWN.Core.NWScript.SetTrapDisarmDC(oTrapObject, nDisarmDC);
         }
 
         /// <summary>
@@ -398,9 +334,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapDetectDC(uint oTrapObject, int nDetectDC)
         {
-            VM.StackPush(nDetectDC);
-            VM.StackPush(oTrapObject);
-            VM.Call(808);
+            NWN.Core.NWScript.SetTrapDetectDC(oTrapObject, nDetectDC);
         }
 
         /// <summary>
@@ -422,15 +356,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             string sTag = "", Faction nFaction = Faction.Hostile, string sOnDisarmScript = "",
             string sOnTrapTriggeredScript = "")
         {
-            VM.StackPush(sOnTrapTriggeredScript);
-            VM.StackPush(sOnDisarmScript);
-            VM.StackPush((int)nFaction);
-            VM.StackPush(sTag);
-            VM.StackPush(fSize);
-            VM.StackPush((int)EngineStructure.Location, lLocation);
-            VM.StackPush((int)nTrapType);
-            VM.Call(809);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.CreateTrapAtLocation((int)nTrapType, lLocation, fSize, sTag, (int)nFaction, sOnDisarmScript, sOnTrapTriggeredScript);
         }
 
         /// <summary>
@@ -449,15 +375,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   using the various SetTrap* scripting commands by passing in the object
         ///   that the trap was created on (i.e. oObject) to any subsequent SetTrap* commands.
         /// </summary>
-        public static void CreateTrapOnObject(int nTrapType, uint oObject, Faction nFaction = Faction.Hostile,
+        public static void CreateTrapOnObject(TrapBaseType nTrapType, uint oObject, Faction nFaction = Faction.Hostile,
             string sOnDisarmScript = "", string sOnTrapTriggeredScript = "")
         {
-            VM.StackPush(sOnTrapTriggeredScript);
-            VM.StackPush(sOnDisarmScript);
-            VM.StackPush((int)nFaction);
-            VM.StackPush(oObject);
-            VM.StackPush(nTrapType);
-            VM.Call(810);
+            NWN.Core.NWScript.CreateTrapOnObject((int)nTrapType, oObject, (int)nFaction, sOnDisarmScript, sOnTrapTriggeredScript);
         }
 
         /// <summary>
@@ -466,8 +387,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapDisabled(uint oTrap)
         {
-            VM.StackPush(oTrap);
-            VM.Call(555);
+            NWN.Core.NWScript.SetTrapDisabled(oTrap);
         }
     }
 }

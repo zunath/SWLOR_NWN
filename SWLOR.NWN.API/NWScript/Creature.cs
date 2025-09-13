@@ -15,9 +15,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static FootstepType GetFootstepType(uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.Call(788);
-            return (FootstepType)VM.StackPopInt();
+            return (FootstepType)NWN.Core.NWScript.GetFootstepType(oCreature);
         }
 
         /// <summary>
@@ -46,9 +44,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetFootstepType(FootstepType nFootstepType, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush((int)nFootstepType);
-            VM.Call(789);
+            NWN.Core.NWScript.SetFootstepType((int)nFootstepType, oCreature);
         }
 
         /// <summary>
@@ -66,9 +62,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static WingType GetCreatureWingType(uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.Call(790);
-            return (WingType)VM.StackPopInt();
+            return (WingType)NWN.Core.NWScript.GetCreatureWingType(oCreature);
         }
 
         /// <summary>
@@ -88,9 +82,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCreatureWingType(WingType nWingType, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush((int)nWingType);
-            VM.Call(791);
+            NWN.Core.NWScript.SetCreatureWingType((int)nWingType, oCreature);
         }
 
         /// <summary>
@@ -126,10 +118,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCreatureBodyPart(CreaturePart nPart, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush((int)nPart);
-            VM.Call(792);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetCreatureBodyPart((int)nPart, oCreature);
         }
 
         /// <summary>
@@ -174,10 +163,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCreatureBodyPart(CreaturePart nPart, int nModelNumber, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush(nModelNumber);
-            VM.StackPush((int)nPart);
-            VM.Call(793);
+            NWN.Core.NWScript.SetCreatureBodyPart((int)nPart, nModelNumber, oCreature);
         }
 
         /// <summary>
@@ -192,9 +178,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static TailType GetCreatureTailType(uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.Call(794);
-            return (TailType)VM.StackPopInt();
+            return (TailType)NWN.Core.NWScript.GetCreatureTailType(oCreature);
         }
 
         /// <summary>
@@ -211,9 +195,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCreatureTailType(TailType nTailType, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush((int)nTailType);
-            VM.Call(795);
+            NWN.Core.NWScript.SetCreatureTailType((int)nTailType, oCreature);
         }
 
         /// <summary>
@@ -221,9 +203,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static PhenoType GetPhenoType(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(778);
-            return (PhenoType)VM.StackPopInt();
+            return (PhenoType)NWN.Core.NWScript.GetPhenoType(oCreature);
         }
 
         /// <summary>
@@ -239,9 +219,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPhenoType(PhenoType nPhenoType, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush((int)nPhenoType);
-            VM.Call(779);
+            NWN.Core.NWScript.SetPhenoType((int)nPhenoType, oCreature);
         }
 
         /// <summary>
@@ -250,9 +228,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsCreatureDisarmable(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(773);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsCreatureDisarmable(oCreature) != 0;
         }
 
         /// <summary>
@@ -263,8 +239,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ClassType GetLastSpellCastClass()
         {
-            VM.Call(754);
-            return (ClassType)VM.StackPopInt();
+            return (ClassType)NWN.Core.NWScript.GetLastSpellCastClass();
         }
 
         /// <summary>
@@ -275,9 +250,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetBaseAttackBonus(int nBaseAttackBonus, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush(nBaseAttackBonus);
-            VM.Call(755);
+            NWN.Core.NWScript.SetBaseAttackBonus(nBaseAttackBonus, oCreature);
         }
 
         /// <summary>
@@ -286,8 +259,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RestoreBaseAttackBonus(uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.Call(756);
+            NWN.Core.NWScript.RestoreBaseAttackBonus(oCreature);
         }
 
 
@@ -296,9 +268,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCreatureAppearanceType(uint oCreature, AppearanceType nAppearanceType)
         {
-            VM.StackPush((int)nAppearanceType);
-            VM.StackPush(oCreature);
-            VM.Call(765);
+            NWN.Core.NWScript.SetCreatureAppearanceType(oCreature, (int)nAppearanceType);
         }
 
         /// <summary>
@@ -307,9 +277,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCreatureStartingPackage(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(766);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetCreatureStartingPackage(oCreature);
         }
 
         /// <summary>
@@ -319,9 +287,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetSpellResistance(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(749);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetSpellResistance(oCreature);
         }
 
         /// <summary>
@@ -330,9 +296,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLootable(uint oCreature, bool bLootable)
         {
-            VM.StackPush(bLootable ? 1 : 0);
-            VM.StackPush(oCreature);
-            VM.Call(740);
+            NWN.Core.NWScript.SetLootable(oCreature, bLootable ? 1 : 0);
         }
 
         /// <summary>
@@ -340,9 +304,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetLootable(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(741);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetLootable(oCreature) != 0;
         }
 
         /// <summary>
@@ -350,10 +312,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetActionMode(uint oCreature, ActionMode nMode)
         {
-            VM.StackPush((int)nMode);
-            VM.StackPush(oCreature);
-            VM.Call(735);
-            return VM.StackPopInt() == 1;
+            return NWN.Core.NWScript.GetActionMode(oCreature, (int)nMode) == 1;
         }
 
         /// <summary>
@@ -361,10 +320,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetActionMode(uint oCreature, ActionMode nMode, bool nStatus)
         {
-            VM.StackPush(nStatus ? 1 : 0);
-            VM.StackPush((int)nMode);
-            VM.StackPush(oCreature);
-            VM.Call(736);
+            NWN.Core.NWScript.SetActionMode(oCreature, (int)nMode, nStatus ? 1 : 0);
         }
 
         /// <summary>
@@ -372,9 +328,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetArcaneSpellFailure(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(737);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetArcaneSpellFailure(oCreature);
         }
 
         /// <summary>
@@ -382,9 +336,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetSubRace(uint oCreature, string sSubRace)
         {
-            VM.StackPush(sSubRace);
-            VM.StackPush(oCreature);
-            VM.Call(721);
+            NWN.Core.NWScript.SetSubRace(oCreature, sSubRace);
         }
 
         /// <summary>
@@ -392,9 +344,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetDeity(uint oCreature, string sDeity)
         {
-            VM.StackPush(sDeity);
-            VM.StackPush(oCreature);
-            VM.Call(722);
+            NWN.Core.NWScript.SetDeity(oCreature, sDeity);
         }
 
         /// <summary>
@@ -405,9 +355,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDMPossessed(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(723);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsDMPossessed(oCreature) != 0;
         }
 
         /// <summary>
@@ -418,9 +366,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void IncrementRemainingFeatUses(uint oCreature, FeatType nFeat)
         {
-            VM.StackPush((int)nFeat);
-            VM.StackPush(oCreature);
-            VM.Call(718);
+            NWN.Core.NWScript.IncrementRemainingFeatUses(oCreature, (int)nFeat);
         }
 
         /// <summary>
@@ -430,9 +376,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static AILevel GetAILevel(uint oTarget = OBJECT_INVALID)
         {
-            VM.StackPush(oTarget);
-            VM.Call(712);
-            return (AILevel)VM.StackPopInt();
+            return (AILevel)NWN.Core.NWScript.GetAILevel(oTarget);
         }
 
         /// <summary>
@@ -453,9 +397,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetAILevel(uint oTarget, AILevel nAILevel)
         {
-            VM.StackPush((int)nAILevel);
-            VM.StackPush(oTarget);
-            VM.Call(713);
+            NWN.Core.NWScript.SetAILevel(oTarget, (int)nAILevel);
         }
 
         /// <summary>
@@ -465,9 +407,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsPossessedFamiliar(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(714);
-            return VM.StackPopInt() == 1;
+            return NWN.Core.NWScript.GetIsPossessedFamiliar(oCreature) == 1;
         }
 
         /// <summary>
@@ -477,8 +417,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void UnpossessFamiliar(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(715);
+            NWN.Core.NWScript.UnpossessFamiliar(oCreature);
         }
 
         /// <summary>
@@ -486,9 +425,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetImmortal(uint oTarget = OBJECT_INVALID)
         {
-            VM.StackPush(oTarget);
-            VM.Call(708);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetImmortal(oTarget) != 0;
         }
 
         /// <summary>
@@ -504,9 +441,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DoWhirlwindAttack(bool bDisplayFeedback = true, bool bImproved = false)
         {
-            VM.StackPush(bImproved ? 1 : 0);
-            VM.StackPush(bDisplayFeedback ? 1 : 0);
-            VM.Call(709);
+            NWN.Core.NWScript.DoWhirlwindAttack(bDisplayFeedback ? 1 : 0, bImproved ? 1 : 0);
         }
 
         /// <summary>
@@ -514,9 +449,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetBaseAttackBonus(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(699);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetBaseAttackBonus(oCreature);
         }
 
         /// <summary>
@@ -528,9 +461,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetImmortal(uint oCreature, bool bImmortal)
         {
-            VM.StackPush(bImmortal ? 1 : 0);
-            VM.StackPush(oCreature);
-            VM.Call(700);
+            NWN.Core.NWScript.SetImmortal(oCreature, bImmortal ? 1 : 0);
         }
 
         /// <summary>
@@ -541,11 +472,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsSkillSuccessful(uint oTarget, NWNSkillType nSkill, int nDifficulty)
         {
-            VM.StackPush(nDifficulty);
-            VM.StackPush((int)nSkill);
-            VM.StackPush(oTarget);
-            VM.Call(689);
-            return Convert.ToBoolean(VM.StackPopInt());
+            return NWN.Core.NWScript.GetIsSkillSuccessful(oTarget, (int)nSkill, nDifficulty) != 0;
         }
 
         /// <summary>
@@ -555,9 +482,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DecrementRemainingFeatUses(uint oCreature, int nFeat)
         {
-            VM.StackPush(nFeat);
-            VM.StackPush(oCreature);
-            VM.Call(580);
+            NWN.Core.NWScript.DecrementRemainingFeatUses(oCreature, nFeat);
         }
 
         /// <summary>
@@ -567,9 +492,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DecrementRemainingSpellUses(uint oCreature, int nSpell)
         {
-            VM.StackPush(nSpell);
-            VM.StackPush(oCreature);
-            VM.Call(581);
+            NWN.Core.NWScript.DecrementRemainingSpellUses(oCreature, nSpell);
         }
 
         /// <summary>
@@ -579,9 +502,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static StealthMode GetStealthMode(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(574);
-            return (StealthMode)VM.StackPopInt();
+            return (StealthMode)NWN.Core.NWScript.GetStealthMode(oCreature);
         }
 
         /// <summary>
@@ -591,9 +512,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static DetectMode GetDetectMode(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(575);
-            return (DetectMode)VM.StackPopInt();
+            return (DetectMode)NWN.Core.NWScript.GetDetectMode(oCreature);
         }
 
         /// <summary>
@@ -603,9 +522,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static CastingMode GetDefensiveCastingMode(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(576);
-            return (CastingMode)VM.StackPopInt();
+            return (CastingMode)NWN.Core.NWScript.GetDefensiveCastingMode(oCreature);
         }
 
         /// <summary>
@@ -615,9 +532,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static AppearanceType GetAppearanceType(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(577);
-            return (AppearanceType)VM.StackPopInt();
+            return (AppearanceType)NWN.Core.NWScript.GetAppearanceType(oCreature);
         }
 
         /// <summary>
@@ -635,9 +550,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastHostileActor(uint oVictim = OBJECT_INVALID)
         {
-            VM.StackPush(oVictim);
-            VM.Call(556);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastHostileActor(oVictim);
         }
 
         /// <summary>
@@ -646,9 +559,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTurnResistanceHD(uint oUndead = OBJECT_INVALID)
         {
-            VM.StackPush(oUndead);
-            VM.Call(478);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTurnResistanceHD(oUndead);
         }
 
         /// <summary>
@@ -656,9 +567,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static CreatureSize GetCreatureSize(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(479);
-            return (CreatureSize)VM.StackPopInt();
+            return (CreatureSize)NWN.Core.NWScript.GetCreatureSize(oCreature);
         }
 
         /// <summary>
@@ -669,7 +578,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SurrenderToEnemies()
         {
-            VM.Call(476);
+            NWN.Core.NWScript.SurrenderToEnemies();
         }
 
         /// <summary>
@@ -682,10 +591,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetIsReactionTypeFriendly(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            VM.StackPush(oSource);
-            VM.StackPush(oTarget);
-            VM.Call(469);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetIsReactionTypeFriendly(oTarget, oSource);
         }
 
         /// <summary>
@@ -698,10 +604,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetIsReactionTypeNeutral(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            VM.StackPush(oSource);
-            VM.StackPush(oTarget);
-            VM.Call(470);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetIsReactionTypeNeutral(oTarget, oSource);
         }
 
         /// <summary>
@@ -714,10 +617,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsReactionTypeHostile(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            VM.StackPush(oSource);
-            VM.StackPush(oTarget);
-            VM.Call(471);
-            return VM.StackPopInt() == 1;
+            return NWN.Core.NWScript.GetIsReactionTypeHostile(oTarget, oSource) == 1;
         }
 
         /// <summary>
@@ -729,10 +629,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void TakeGoldFromCreature(int nAmount, uint oCreatureToTakeFrom, bool bDestroy = false)
         {
-            VM.StackPush(bDestroy ? 1 : 0);
-            VM.StackPush(oCreatureToTakeFrom);
-            VM.StackPush(nAmount);
-            VM.Call(444);
+            NWN.Core.NWScript.TakeGoldFromCreature(nAmount, oCreatureToTakeFrom, bDestroy ? 1 : 0);
         }
 
         /// <summary>
@@ -740,8 +637,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastKiller()
         {
-            VM.Call(437);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastKiller();
         }
 
         /// <summary>
@@ -751,9 +647,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDM(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(420);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsDM(oCreature) != 0;
         }
 
         /// <summary>
@@ -762,8 +656,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastRespawnButtonPresser()
         {
-            VM.Call(419);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastRespawnButtonPresser();
         }
 
         /// <summary>
@@ -772,7 +665,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionEquipMostEffectiveArmor()
         {
-            VM.Call(404);
+            NWN.Core.NWScript.ActionEquipMostEffectiveArmor();
         }
 
         /// <summary>
@@ -780,9 +673,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetIsEncounterCreature(uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.Call(409);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetIsEncounterCreature(oCreature);
         }
 
         /// <summary>
@@ -796,9 +687,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionEquipMostDamagingMelee(uint oVersus = OBJECT_INVALID, bool bOffHand = false)
         {
-            VM.StackPush(bOffHand ? 1 : 0);
-            VM.StackPush(oVersus);
-            VM.Call(399);
+            NWN.Core.NWScript.ActionEquipMostDamagingMelee(oVersus, bOffHand ? 1 : 0);
         }
 
         /// <summary>
@@ -810,8 +699,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionEquipMostDamagingRanged(uint oVersus = OBJECT_INVALID)
         {
-            VM.StackPush(oVersus);
-            VM.Call(400);
+            NWN.Core.NWScript.ActionEquipMostDamagingRanged(oVersus);
         }
 
         /// <summary>
@@ -819,9 +707,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void GiveXPToCreature(uint oCreature, int nXpAmount)
         {
-            VM.StackPush(nXpAmount);
-            VM.StackPush(oCreature);
-            VM.Call(393);
+            NWN.Core.NWScript.GiveXPToCreature(oCreature, nXpAmount);
         }
 
         /// <summary>
@@ -829,9 +715,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetXP(uint oCreature, int nXpAmount)
         {
-            VM.StackPush(nXpAmount);
-            VM.StackPush(oCreature);
-            VM.Call(394);
+            NWN.Core.NWScript.SetXP(oCreature, nXpAmount);
         }
 
         /// <summary>
@@ -839,9 +723,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetXP(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(395);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetXP(oCreature);
         }
 
         /// <summary>
@@ -849,10 +731,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionForceMoveToLocation(Location lDestination, bool bRun = false, float fTimeout = 30.0f)
         {
-            VM.StackPush(fTimeout);
-            VM.StackPush(bRun ? 1 : 0);
-            VM.StackPush((int)EngineStructure.Location, lDestination);
-            VM.Call(382);
+            NWN.Core.NWScript.ActionForceMoveToLocation(lDestination, bRun ? 1 : 0, fTimeout);
         }
 
         /// <summary>
@@ -861,11 +740,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void ActionForceMoveToObject(uint oMoveTo, bool bRun = false, float fRange = 1.0f,
             float fTimeout = 30.0f)
         {
-            VM.StackPush(fTimeout);
-            VM.StackPush(fRange);
-            VM.StackPush(bRun ? 1 : 0);
-            VM.StackPush(oMoveTo);
-            VM.Call(383);
+            NWN.Core.NWScript.ActionForceMoveToObject(oMoveTo, bRun ? 1 : 0, fRange, fTimeout);
         }
 
         /// <summary>
@@ -874,8 +749,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastOpenedBy()
         {
-            VM.Call(376);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastOpenedBy();
         }
 
         /// <summary>
@@ -885,10 +759,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetHasSpell(Spell nSpell, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush((int)nSpell);
-            VM.Call(377);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetHasSpell((int)nSpell, oCreature);
         }
 
         /// <summary>
@@ -896,9 +767,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Gender GetGender(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(358);
-            return (Gender)VM.StackPopInt();
+            return (Gender)NWN.Core.NWScript.GetGender(oCreature);
         }
 
         /// <summary>
@@ -908,8 +777,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static DisturbType GetInventoryDisturbType()
         {
-            VM.Call(352);
-            return (DisturbType)VM.StackPopInt();
+            return (DisturbType)NWN.Core.NWScript.GetInventoryDisturbType();
         }
 
         /// <summary>
@@ -918,8 +786,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetInventoryDisturbItem()
         {
-            VM.Call(353);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetInventoryDisturbItem();
         }
 
         /// <summary>
@@ -933,10 +800,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ClassType GetClassByPosition(int nClassPosition, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush(nClassPosition);
-            VM.Call(341);
-            return (ClassType)VM.StackPopInt();
+            return (ClassType)NWN.Core.NWScript.GetClassByPosition(nClassPosition, oCreature);
         }
 
         /// <summary>
@@ -950,10 +814,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetLevelByPosition(int nClassPosition, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush(nClassPosition);
-            VM.Call(342);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetLevelByPosition(nClassPosition, oCreature);
         }
 
         /// <summary>
@@ -963,10 +824,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetLevelByClass(ClassType nClassType, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush((int)nClassType);
-            VM.Call(343);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetLevelByClass((int)nClassType, oCreature);
         }
 
         /// <summary>
@@ -977,10 +835,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAbilityModifier(AbilityType nAbility, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush((int)nAbility);
-            VM.Call(331);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetAbilityModifier((int)nAbility, oCreature);
         }
 
         /// <summary>
@@ -988,9 +843,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsInCombat(uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.Call(320);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsInCombat(oCreature) != 0;
         }
 
         /// <summary>
@@ -998,9 +851,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void GiveGoldToCreature(uint oCreature, int nGP)
         {
-            VM.StackPush(nGP);
-            VM.StackPush(oCreature);
-            VM.Call(322);
+            NWN.Core.NWScript.GiveGoldToCreature(oCreature, nGP);
         }
 
         /// <summary>
@@ -1035,16 +886,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             Location lLocation, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1,
             int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
         {
-            VM.StackPush(nThirdCriteriaValue);
-            VM.StackPush(nThirdCriteriaType);
-            VM.StackPush(nSecondCriteriaValue);
-            VM.StackPush(nSecondCriteriaType);
-            VM.StackPush(nNth);
-            VM.StackPush((int)EngineStructure.Location, lLocation);
-            VM.StackPush(nFirstCriteriaValue ? 1 : 0);
-            VM.StackPush((int)nFirstCriteriaType);
-            VM.Call(226);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetNearestCreatureToLocation((int)nFirstCriteriaType, nFirstCriteriaValue ? 1 : 0, lLocation, nNth, nSecondCriteriaType, nSecondCriteriaValue, nThirdCriteriaType, nThirdCriteriaValue);
         }
 
         /// <summary>
@@ -1053,9 +895,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCasterLevel(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(84);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetCasterLevel(oCreature);
         }
 
         /// <summary>
@@ -1064,9 +904,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static RacialType GetRacialType(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(107);
-            return (RacialType)VM.StackPopInt();
+            return (RacialType)NWN.Core.NWScript.GetRacialType(oCreature);
         }
     }
 }

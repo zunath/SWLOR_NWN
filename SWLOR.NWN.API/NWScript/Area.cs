@@ -1,6 +1,5 @@
 using System;
 using System.Numerics;
-using NWN.Native.API;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 using ObjectType = SWLOR.Game.Server.Core.NWScript.Enum.ObjectType;
@@ -15,9 +14,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetArea(uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.Call(24);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetArea(oTarget);
         }
 
         /// <summary>
@@ -32,8 +29,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetEnteringObject()
         {
-            VM.Call(25);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetEnteringObject();
         }
 
         /// <summary>
@@ -44,8 +40,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetExitingObject()
         {
-            VM.Call(26);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetExitingObject();
         }
 
         /// <summary>
@@ -54,9 +49,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 GetPosition(uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.Call(27);
-            return VM.StackPopVector();
+            return NWN.Core.NWScript.GetPosition(oTarget);
         }
 
         /// <summary>
@@ -64,8 +57,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundPlay(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(425);
+            NWN.Core.NWScript.MusicBackgroundPlay(oArea);
         }
 
         /// <summary>
@@ -73,8 +65,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundStop(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(426);
+            NWN.Core.NWScript.MusicBackgroundStop(oArea);
         }
 
         /// <summary>
@@ -84,9 +75,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundSetDelay(uint oArea, int nDelay)
         {
-            VM.StackPush(nDelay);
-            VM.StackPush(oArea);
-            VM.Call(427);
+            NWN.Core.NWScript.MusicBackgroundSetDelay(oArea, nDelay);
         }
 
         /// <summary>
@@ -96,9 +85,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundChangeDay(uint oArea, int nTrack)
         {
-            VM.StackPush(nTrack);
-            VM.StackPush(oArea);
-            VM.Call(428);
+            NWN.Core.NWScript.MusicBackgroundChangeDay(oArea, nTrack);
         }
 
         /// <summary>
@@ -108,9 +95,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundChangeNight(uint oArea, int nTrack)
         {
-            VM.StackPush(nTrack);
-            VM.StackPush(oArea);
-            VM.Call(429);
+            NWN.Core.NWScript.MusicBackgroundChangeNight(oArea, nTrack);
         }
 
         /// <summary>
@@ -118,8 +103,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBattlePlay(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(430);
+            NWN.Core.NWScript.MusicBattlePlay(oArea);
         }
 
         /// <summary>
@@ -127,8 +111,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBattleStop(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(431);
+            NWN.Core.NWScript.MusicBattleStop(oArea);
         }
 
         /// <summary>
@@ -138,9 +121,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBattleChange(uint oArea, int nTrack)
         {
-            VM.StackPush(nTrack);
-            VM.StackPush(oArea);
-            VM.Call(432);
+            NWN.Core.NWScript.MusicBattleChange(oArea, nTrack);
         }
 
         /// <summary>
@@ -148,8 +129,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundPlay(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(433);
+            NWN.Core.NWScript.AmbientSoundPlay(oArea);
         }
 
         /// <summary>
@@ -157,8 +137,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundStop(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(434);
+            NWN.Core.NWScript.AmbientSoundStop(oArea);
         }
 
         /// <summary>
@@ -168,9 +147,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundChangeDay(uint oArea, int nTrack)
         {
-            VM.StackPush(nTrack);
-            VM.StackPush(oArea);
-            VM.Call(435);
+            NWN.Core.NWScript.AmbientSoundChangeDay(oArea, nTrack);
         }
 
         /// <summary>
@@ -180,9 +157,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundChangeNight(uint oArea, int nTrack)
         {
-            VM.StackPush(nTrack);
-            VM.StackPush(oArea);
-            VM.Call(436);
+            NWN.Core.NWScript.AmbientSoundChangeNight(oArea, nTrack);
         }
 
         /// <summary>
@@ -192,8 +167,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RecomputeStaticLighting(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(516);
+            NWN.Core.NWScript.RecomputeStaticLighting(oArea);
         }
 
         /// <summary>
@@ -201,9 +175,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int MusicBackgroundGetDayTrack(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(558);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.MusicBackgroundGetDayTrack(oArea);
         }
 
         /// <summary>
@@ -211,9 +183,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int MusicBackgroundGetNightTrack(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(559);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.MusicBackgroundGetNightTrack(oArea);
         }
 
         /// <summary>
@@ -223,9 +193,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundSetDayVolume(uint oArea, int nVolume)
         {
-            VM.StackPush(nVolume);
-            VM.StackPush(oArea);
-            VM.Call(567);
+            NWN.Core.NWScript.AmbientSoundSetDayVolume(oArea, nVolume);
         }
 
         /// <summary>
@@ -235,9 +203,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundSetNightVolume(uint oArea, int nVolume)
         {
-            VM.StackPush(nVolume);
-            VM.StackPush(oArea);
-            VM.Call(568);
+            NWN.Core.NWScript.AmbientSoundSetNightVolume(oArea, nVolume);
         }
 
         /// <summary>
@@ -245,9 +211,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int MusicBackgroundGetBattleTrack(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(569);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.MusicBackgroundGetBattleTrack(oArea);
         }
 
         /// <summary>
@@ -255,9 +219,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsAreaInterior(uint oArea = OBJECT_INVALID)
         {
-            VM.StackPush(oArea);
-            VM.Call(716);
-            return Convert.ToBoolean(VM.StackPopInt());
+            return NWN.Core.NWScript.GetIsAreaInterior(oArea) != 0;
         }
 
         /// <summary>
@@ -267,9 +229,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Weather GetWeather(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(724);
-            return (Weather)VM.StackPopInt();
+            return (Weather)NWN.Core.NWScript.GetWeather(oArea);
         }
 
         /// <summary>
@@ -278,9 +238,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Natural GetIsAreaNatural(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(725);
-            return (Natural)VM.StackPopInt();
+            return (Natural)NWN.Core.NWScript.GetIsAreaNatural(oArea);
         }
 
         /// <summary>
@@ -289,9 +247,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsAreaAboveGround(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(726);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsAreaAboveGround(oArea) != 0;
         }
 
         /// <summary>
@@ -302,9 +258,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetSkyBox(Skybox nSkyBox, uint oArea = OBJECT_INVALID)
         {
-            VM.StackPush(oArea);
-            VM.StackPush((int)nSkyBox);
-            VM.Call(777);
+            NWN.Core.NWScript.SetSkyBox((int)nSkyBox, oArea);
         }
 
         /// <summary>
@@ -322,10 +276,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetFogColor(FogType nFogType, FogColor nFogColor, uint oArea = OBJECT_INVALID)
         {
-            VM.StackPush(oArea);
-            VM.StackPush((int)nFogColor);
-            VM.StackPush((int)nFogType);
-            VM.Call(780);
+            NWN.Core.NWScript.SetFogColor((int)nFogType, (int)nFogColor, oArea);
         }
 
         /// <summary>
@@ -337,9 +288,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Skybox GetSkyBox(uint oArea = OBJECT_INVALID)
         {
-            VM.StackPush(oArea);
-            VM.Call(782);
-            return (Skybox)VM.StackPopInt();
+            return (Skybox)NWN.Core.NWScript.GetSkyBox(oArea);
         }
 
         /// <summary>
@@ -351,10 +300,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static FogColor GetFogColor(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
-            VM.StackPush(oArea);
-            VM.StackPush((int)nFogType);
-            VM.Call(783);
-            return (FogColor)VM.StackPopInt();
+            return (FogColor)NWN.Core.NWScript.GetFogColor((int)nFogType, oArea);
         }
 
         /// <summary>
@@ -366,10 +312,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetFogAmount(FogType nFogType, int nFogAmount, uint oArea = OBJECT_INVALID)
         {
-            VM.StackPush(oArea);
-            VM.StackPush(nFogAmount);
-            VM.StackPush((int)nFogType);
-            VM.Call(784);
+            NWN.Core.NWScript.SetFogAmount((int)nFogType, nFogAmount, oArea);
         }
 
         /// <summary>
@@ -381,10 +324,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFogAmount(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
-            VM.StackPush(oArea);
-            VM.StackPush((int)nFogType);
-            VM.Call(785);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetFogAmount((int)nFogType, oArea);
         }
 
         /// <summary>
@@ -411,9 +351,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetTilesetResRef(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(814);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetTilesetResRef(oArea);
         }
 
         /// <summary>
@@ -428,10 +366,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAreaSize(Dimension nAreaDimension, uint oArea = OBJECT_INVALID)
         {
-            VM.StackPush(oArea);
-            VM.StackPush((int)nAreaDimension);
-            VM.Call(829);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetAreaSize((int)nAreaDimension, oArea);
         }
 
         /// <summary>
@@ -449,9 +384,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int DestroyArea(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(859);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.DestroyArea(oArea);
         }
 
 
@@ -477,11 +410,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint CreateArea(string sSourceResRef, string sNewTag = "", string sNewName = "")
         {
-            VM.StackPush(sNewName);
-            VM.StackPush(sNewTag);
-            VM.StackPush(sSourceResRef);
-            VM.Call(858);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.CreateArea(sSourceResRef, sNewTag, sNewName);
         }
 
         /// <summary>
@@ -505,9 +434,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint CopyArea(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(860);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.CopyArea(oArea);
         }
 
         /// <summary>
@@ -515,8 +442,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFirstArea()
         {
-            VM.Call(861);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetFirstArea();
         }
 
         /// <summary>
@@ -525,8 +451,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNextArea()
         {
-            VM.Call(862);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetNextArea();
         }
 
         /// <summary>
@@ -538,10 +463,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFirstObjectInArea(uint oArea = OBJECT_INVALID, ObjectType nObjectFilter = ObjectType.All)
         {
-            VM.StackPush((int)nObjectFilter);
-            VM.StackPush(oArea);
-            VM.Call(93);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetFirstObjectInArea(oArea, (int)nObjectFilter);
         }
 
         /// <summary>
@@ -553,10 +475,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNextObjectInArea(uint oArea = OBJECT_INVALID, ObjectType nObjectFilter = ObjectType.All)
         {
-            VM.StackPush((int)nObjectFilter);
-            VM.StackPush(oArea);
-            VM.Call(94);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetNextObjectInArea(oArea, (int)nObjectFilter);
         }
 
         /// <summary>
@@ -564,9 +483,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Location GetLocation(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(213);
-            return VM.StackPopStruct((int)EngineStructure.Location);
+            return NWN.Core.NWScript.GetLocation(oObject);
         }
 
         /// <summary>
@@ -575,8 +492,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionJumpToLocation(Location lLocation)
         {
-            VM.StackPush((int)EngineStructure.Location, lLocation);
-            VM.Call(214);
+            NWN.Core.NWScript.ActionJumpToLocation(lLocation);
         }
 
         /// <summary>
@@ -584,11 +500,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Location Location(uint oArea, Vector3 vPosition, float fOrientation)
         {
-            VM.StackPush(fOrientation);
-            VM.StackPush(vPosition);
-            VM.StackPush(oArea);
-            VM.Call(215);
-            return VM.StackPopStruct((int)EngineStructure.Location);
+            return NWN.Core.NWScript.Location(oArea, vPosition, fOrientation);
         }
 
         /// <summary>
@@ -597,11 +509,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void ApplyEffectAtLocation(DurationType nDurationType, Effect eEffect, Location lLocation,
             float fDuration = 0.0f)
         {
-            VM.StackPush(fDuration);
-            VM.StackPush((int)EngineStructure.Location, lLocation);
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.StackPush((int)nDurationType);
-            VM.Call(216);
+            NWN.Core.NWScript.ApplyEffectAtLocation((int)nDurationType, eEffect, lLocation, fDuration);
         }
 
         /// <summary>
@@ -612,10 +520,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ExploreAreaForPlayer(uint oArea, uint oPlayer, bool bExplored = true)
         {
-            VM.StackPush(bExplored ? 1 : 0);
-            VM.StackPush(oPlayer);
-            VM.StackPush(oArea);
-            VM.Call(403);
+            NWN.Core.NWScript.ExploreAreaForPlayer(oArea, oPlayer, bExplored ? 1 : 0);
         }
 
         /// <summary>
@@ -634,9 +539,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTransitionTarget(uint oTransition, uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.StackPush(oTransition);
-            VM.Call(863);
+            NWN.Core.NWScript.SetTransitionTarget(oTransition, oTarget);
         }
 
         /// <summary>
@@ -651,9 +554,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetWeather(uint oTarget, WeatherType nWeather)
         {
-            VM.StackPush((int)nWeather);
-            VM.StackPush(oTarget);
-            VM.Call(507);
+            NWN.Core.NWScript.SetWeather(oTarget, (int)nWeather);
         }
 
         /// <summary>
@@ -668,13 +569,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SetTileExplored(uint creature, uint area, int x, int y, bool newState)
         {
-            VM.StackPush(newState ? 1 : 0);
-            VM.StackPush(y);
-            VM.StackPush(x);
-            VM.StackPush(area);
-            VM.StackPush(creature);
-            VM.Call(866);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.SetTileExplored(creature, area, x, y, newState ? 1 : 0);
         }
 
         /// <summary>
@@ -690,12 +585,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileExplored(uint creature, uint area, int x, int y)
         {
-            VM.StackPush(y);
-            VM.StackPush(x);
-            VM.StackPush(area);
-            VM.StackPush(creature);
-            VM.Call(867);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTileExplored(creature, area, x, y);
         }
 
         /// <summary>
@@ -710,10 +600,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SetCreatureExploresMinimap(uint creature, bool newState)
         {
-            VM.StackPush(newState ? 1 : 0);
-            VM.StackPush(creature);
-            VM.Call(868);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.SetCreatureExploresMinimap(creature, newState ? 1 : 0);
         }
 
         /// <summary>
@@ -722,9 +609,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCreatureExploresMinimap(uint creature)
         {
-            VM.StackPush(creature);
-            VM.Call(869);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetCreatureExploresMinimap(creature);
         }
 
         /// <summary>
@@ -734,9 +619,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetSurfaceMaterial(Location at)
         {
-            VM.StackPush((int)EngineStructure.Location, at);
-            VM.Call(870);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetSurfaceMaterial(at);
         }
 
         /// <summary>
@@ -745,9 +628,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetGroundHeight(Location at)
         {
-            VM.StackPush((int)EngineStructure.Location, at);
-            VM.Call(871);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.GetGroundHeight(at);
         }
 
         /// <summary>
@@ -757,10 +638,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsInSubArea(uint oCreature, uint oSubArea = OBJECT_INVALID)
         {
-            VM.StackPush(oSubArea);
-            VM.StackPush(oCreature);
-            VM.Call(768);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsInSubArea(oCreature, oSubArea) != 0;
         }
 
         /// <summary>
@@ -772,10 +650,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTileMainLightColor(Location lTileLocation, int nMainLight1Color, int nMainLight2Color)
         {
-            VM.StackPush(nMainLight2Color);
-            VM.StackPush(nMainLight1Color);
-            VM.StackPush((int)EngineStructure.Location, lTileLocation);
-            VM.Call(514);
+            NWN.Core.NWScript.SetTileMainLightColor(lTileLocation, nMainLight1Color, nMainLight2Color);
         }
 
         /// <summary>
@@ -788,10 +663,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetTileSourceLightColor(Location lTileLocation, int nSourceLight1Color,
             int nSourceLight2Color)
         {
-            VM.StackPush(nSourceLight2Color);
-            VM.StackPush(nSourceLight1Color);
-            VM.StackPush((int)EngineStructure.Location, lTileLocation);
-            VM.Call(515);
+            NWN.Core.NWScript.SetTileSourceLightColor(lTileLocation, nSourceLight1Color, nSourceLight2Color);
         }
 
         /// <summary>
@@ -801,9 +673,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileMainLight1Color(Location lTile)
         {
-            VM.StackPush((int)EngineStructure.Location, lTile);
-            VM.Call(517);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTileMainLight1Color(lTile);
         }
 
         /// <summary>
@@ -814,9 +684,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileMainLight2Color(Location lTile)
         {
-            VM.StackPush((int)EngineStructure.Location, lTile);
-            VM.Call(518);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTileMainLight2Color(lTile);
         }
 
         /// <summary>
@@ -827,9 +695,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileSourceLight1Color(Location lTile)
         {
-            VM.StackPush((int)EngineStructure.Location, lTile);
-            VM.Call(519);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTileSourceLight1Color(lTile);
         }
 
         /// <summary>
@@ -840,9 +706,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileSourceLight2Color(Location lTile)
         {
-            VM.StackPush((int)EngineStructure.Location, lTile);
-            VM.Call(520);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTileSourceLight2Color(lTile);
         }
 
         /// <summary>
@@ -852,9 +716,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetMapPinEnabled(uint oMapPin, bool bEnabled = true)
         {
-            VM.StackPush(bEnabled ? 1 : 0);
-            VM.StackPush(oMapPin);
-            VM.Call(386);
+            NWN.Core.NWScript.SetMapPinEnabled(oMapPin, bEnabled ? 1 : 0);
         }
 
         /// <summary>
@@ -862,9 +724,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetAreaFromLocation(Location lLocation)
         {
-            VM.StackPush((int)EngineStructure.Location, lLocation);
-            VM.Call(224);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetAreaFromLocation(lLocation);
         }
 
         /// <summary>
@@ -872,9 +732,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 GetPositionFromLocation(Location lLocation)
         {
-            VM.StackPush((int)EngineStructure.Location, lLocation);
-            VM.Call(223);
-            return VM.StackPopVector();
+            return NWN.Core.NWScript.GetPositionFromLocation(lLocation);
         }
 
         /// <summary>
@@ -892,9 +750,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetAreaTransitionBMP(AreaTransition nPredefinedAreaTransition,
             string sCustomAreaTransitionBMP = "")
         {
-            VM.StackPush(sCustomAreaTransitionBMP);
-            VM.StackPush((int)nPredefinedAreaTransition);
-            VM.Call(203);
+            NWN.Core.NWScript.SetAreaTransitionBMP((int)nPredefinedAreaTransition, sCustomAreaTransitionBMP);
         }
 
 
@@ -907,12 +763,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetAreaWind(uint oArea, Vector3 vDirection, float fMagnitude, float fYaw, float fPitch)
         {
-            VM.StackPush(fPitch);
-            VM.StackPush(fYaw);
-            VM.StackPush(fMagnitude);
-            VM.StackPush(vDirection);
-            VM.StackPush(oArea);
-            VM.Call(919);
+            NWN.Core.NWScript.SetAreaWind(oArea, vDirection, fMagnitude, fYaw, fPitch);
         }
 
         /// <summary>
@@ -924,11 +775,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAreaLightColor(AreaLightColorType nColorType, uint oArea = OBJECT_INVALID)
         {
-            VM.StackPush(oArea);
-            VM.StackPush((int)nColorType);
-            VM.Call(1080);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetAreaLightColor((int)nColorType, oArea);
         }
 
         /// <summary>
@@ -951,11 +798,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             uint oArea = OBJECT_INVALID, 
             float fFadeTime = 0.0f)
         {
-            VM.StackPush(fFadeTime);
-            VM.StackPush(oArea);
-            VM.StackPush((int)nColor);
-            VM.StackPush((int)nColorType);
-            VM.Call(1081);
+            NWN.Core.NWScript.SetAreaLightColor((int)nColorType, (int)nColor, oArea, fFadeTime);
         }
 
         /// <summary>
@@ -967,11 +810,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 GetAreaLightDirection(AreaLightDirectionType nLightType, uint oArea = OBJECT_INVALID)
         {
-            VM.StackPush((int)nLightType);
-            VM.StackPush(oArea);
-            VM.Call(1082);
-
-            return VM.StackPopVector();
+            return NWN.Core.NWScript.GetAreaLightDirection((int)nLightType, oArea);
         }
 
         /// <summary>
@@ -988,11 +827,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             uint oArea = OBJECT_INVALID, 
             float fFadeTime = 0.0f)
         {
-            VM.StackPush(fFadeTime);
-            VM.StackPush(oArea);
-            VM.StackPush(vDirection);
-            VM.StackPush((int)nLightType);
-            VM.Call(1083);
+            NWN.Core.NWScript.SetAreaLightDirection((int)nLightType, vDirection, oArea, fFadeTime);
         }
 
     }

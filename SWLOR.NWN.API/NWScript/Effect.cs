@@ -17,9 +17,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetEffectTag(Effect eEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(849);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetEffectTag(eEffect);
         }
 
         /// <summary>
@@ -28,10 +26,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect TagEffect(Effect eEffect, string sNewTag)
         {
-            VM.StackPush(sNewTag);
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(850);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.TagEffect(eEffect, sNewTag);
         }
 
         /// <summary>
@@ -41,9 +36,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectCasterLevel(Effect eEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(851);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetEffectCasterLevel(eEffect);
         }
 
         /// <summary>
@@ -52,9 +45,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectDuration(Effect eEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(852);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetEffectDuration(eEffect);
         }
 
         /// <summary>
@@ -63,9 +54,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectDurationRemaining(Effect eEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(853);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetEffectDurationRemaining(eEffect);
         }
 
         /// <summary>
@@ -74,8 +63,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCutsceneImmobilize()
         {
-            VM.Call(767);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectCutsceneImmobilize();
         }
 
         /// <summary>
@@ -85,8 +73,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCutsceneGhost()
         {
-            VM.Call(757);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectCutsceneGhost();
         }
 
         /// <summary>
@@ -94,9 +81,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetItemCursedFlag(uint oItem)
         {
-            VM.StackPush(oItem);
-            VM.Call(744);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetItemCursedFlag(oItem) != 0;
         }
 
         /// <summary>
@@ -104,9 +89,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetItemCursedFlag(uint oItem, bool nCursed)
         {
-            VM.StackPush(nCursed ? 1 : 0);
-            VM.StackPush(oItem);
-            VM.Call(745);
+            NWN.Core.NWScript.SetItemCursedFlag(oItem, nCursed ? 1 : 0);
         }
 
         /// <summary>
@@ -115,9 +98,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetItemPossessor(uint oItem)
         {
-            VM.StackPush(oItem);
-            VM.Call(29);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetItemPossessor(oItem);
         }
 
         /// <summary>
@@ -126,10 +107,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetItemPossessedBy(uint oCreature, string sItemTag)
         {
-            VM.StackPush(sItemTag);
-            VM.StackPush(oCreature);
-            VM.Call(30);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetItemPossessedBy(oCreature, sItemTag);
         }
 
         /// <summary>
@@ -145,12 +123,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static uint CreateItemOnObject(string sResRef, uint oTarget = OBJECT_INVALID, int nStackSize = 1,
             string sNewTag = "")
         {
-            VM.StackPush(sNewTag);
-            VM.StackPush(nStackSize);
-            VM.StackPush(oTarget);
-            VM.StackPush(sResRef);
-            VM.Call(31);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.CreateItemOnObject(sResRef, oTarget, nStackSize, sNewTag);
         }
 
         /// <summary>
@@ -170,9 +143,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionEquipItem(uint oItem, InventorySlot nInventorySlot)
         {
-            VM.StackPush((int)nInventorySlot);
-            VM.StackPush(oItem);
-            VM.Call(32);
+            NWN.Core.NWScript.ActionEquipItem(oItem, (int)nInventorySlot);
         }
 
         /// <summary>
@@ -180,8 +151,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionUnequipItem(uint oItem)
         {
-            VM.StackPush(oItem);
-            VM.Call(33);
+            NWN.Core.NWScript.ActionUnequipItem(oItem);
         }
 
         /// <summary>
@@ -191,8 +161,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionPickUpItem(uint oItem)
         {
-            VM.StackPush(oItem);
-            VM.Call(34);
+            NWN.Core.NWScript.ActionPickUpItem(oItem);
         }
 
         /// <summary>
@@ -202,8 +171,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionPutDownItem(uint oItem)
         {
-            VM.StackPush(oItem);
-            VM.Call(35);
+            NWN.Core.NWScript.ActionPutDownItem(oItem);
         }
 
         /// <summary>
@@ -213,9 +181,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionGiveItem(uint oItem, uint oGiveTo)
         {
-            VM.StackPush(oGiveTo);
-            VM.StackPush(oItem);
-            VM.Call(135);
+            NWN.Core.NWScript.ActionGiveItem(oItem, oGiveTo);
         }
 
         /// <summary>
@@ -225,9 +191,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionTakeItem(uint oItem, uint oTakeFrom)
         {
-            VM.StackPush(oTakeFrom);
-            VM.StackPush(oItem);
-            VM.Call(136);
+            NWN.Core.NWScript.ActionTakeItem(oItem, oTakeFrom);
         }
 
         /// <summary>
@@ -238,10 +202,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDeath(bool nSpectacularDeath = false, bool nDisplayFeedback = true)
         {
-            VM.StackPush(nDisplayFeedback ? 1 : 0);
-            VM.StackPush(nSpectacularDeath ? 1 : 0);
-            VM.Call(133);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDeath(nSpectacularDeath ? 1 : 0, nDisplayFeedback ? 1 : 0);
         }
 
         /// <summary>
@@ -252,8 +213,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectKnockdown()
         {
-            VM.Call(134);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectKnockdown();
         }
 
         /// <summary>
@@ -268,14 +228,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectCurse(int nStrMod = 1, int nDexMod = 1, int nConMod = 1, int nIntMod = 1,
             int nWisMod = 1, int nChaMod = 1)
         {
-            VM.StackPush(nChaMod);
-            VM.StackPush(nWisMod);
-            VM.StackPush(nIntMod);
-            VM.StackPush(nConMod);
-            VM.StackPush(nDexMod);
-            VM.StackPush(nStrMod);
-            VM.Call(138);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectCurse(nStrMod, nDexMod, nConMod, nIntMod, nWisMod, nChaMod);
         }
 
         /// <summary>
@@ -285,8 +238,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectEntangle()
         {
-            VM.Call(130);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectEntangle();
         }
 
         /// <summary>
@@ -302,11 +254,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSavingThrowIncrease(int nSave, int nValue,
             SavingThrowType nSaveType = SavingThrowType.All)
         {
-            VM.StackPush((int)nSaveType);
-            VM.StackPush(nValue);
-            VM.StackPush(nSave);
-            VM.Call(117);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSavingThrowIncrease(nSave, nValue, (int)nSaveType);
         }
 
         /// <summary>
@@ -317,10 +265,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAccuracyIncrease(int nBonus, AttackBonus nModifierType = AttackBonus.Misc)
         {
-            VM.StackPush((int)nModifierType);
-            VM.StackPush(nBonus);
-            VM.Call(118);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectAttackIncrease(nBonus, (int)nModifierType);
         }
 
         /// <summary>
@@ -332,11 +277,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageReduction(int nAmount, DamagePower nDamagePower, int nLimit = 0)
         {
-            VM.StackPush(nLimit);
-            VM.StackPush((int)nDamagePower);
-            VM.StackPush(nAmount);
-            VM.Call(119);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDamageReduction(nAmount, (int)nDamagePower, nLimit);
         }
 
         /// <summary>
@@ -348,10 +289,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageIncrease(int nBonus, DamageType nDamageType = DamageType.Force)
         {
-            VM.StackPush((int)nDamageType);
-            VM.StackPush(nBonus);
-            VM.Call(120);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDamageIncrease(nBonus, (int)nDamageType);
         }
 
         /// <summary>
@@ -361,9 +299,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect MagicalEffect(Effect eEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(112);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.MagicalEffect(eEffect);
         }
 
         /// <summary>
@@ -373,9 +309,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect SupernaturalEffect(Effect eEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(113);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.SupernaturalEffect(eEffect);
         }
 
         /// <summary>
@@ -385,9 +319,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect ExtraordinaryEffect(Effect eEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(114);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.ExtraordinaryEffect(eEffect);
         }
 
         /// <summary>
@@ -401,11 +333,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             ArmorClassModiferType nModifyType = ArmorClassModiferType.Dodge,
             AC nDamageType = AC.VsDamageTypeAll)
         {
-            VM.StackPush((int)nDamageType);
-            VM.StackPush((int)nModifyType);
-            VM.StackPush(nValue);
-            VM.Call(115);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectACIncrease(nValue, (int)nModifyType, (int)nDamageType);
         }
 
         /// <summary>
@@ -413,9 +341,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect GetFirstEffect(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(85);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.GetFirstEffect(oCreature);
         }
 
         /// <summary>
@@ -423,9 +349,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect GetNextEffect(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(86);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.GetNextEffect(oCreature);
         }
 
         /// <summary>
@@ -434,9 +358,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RemoveEffect(uint oCreature, Effect eEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.StackPush(oCreature);
-            VM.Call(87);
+            NWN.Core.NWScript.RemoveEffect(oCreature, eEffect);
         }
 
         /// <summary>
@@ -445,9 +367,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsEffectValid(Effect eEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(88);
-            return VM.StackPopInt() == 1;
+            return NWN.Core.NWScript.GetIsEffectValid(eEffect) == 1;
         }
 
         /// <summary>
@@ -456,9 +376,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectDurationType(Effect eEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(89);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetEffectDurationType(eEffect);
         }
 
         /// <summary>
@@ -467,9 +385,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectSubType(Effect eEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(90);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetEffectSubType(eEffect);
         }
 
         /// <summary>
@@ -478,9 +394,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetEffectCreator(Effect eEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(91);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetEffectCreator(eEffect);
         }
 
         /// <summary>
@@ -489,9 +403,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectHeal(int nDamageToHeal)
         {
-            VM.StackPush(nDamageToHeal);
-            VM.Call(78);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectHeal(nDamageToHeal);
         }
 
         /// <summary>
@@ -504,11 +416,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectDamage(int nDamageAmount, DamageType nDamageType = DamageType.Force,
             DamagePower nDamagePower = DamagePower.Normal)
         {
-            VM.StackPush((int)nDamagePower);
-            VM.StackPush((int)nDamageType);
-            VM.StackPush(nDamageAmount);
-            VM.Call(79);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDamage(nDamageAmount, (int)nDamageType, (int)nDamagePower);
         }
 
         /// <summary>
@@ -517,10 +425,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAbilityIncrease(AbilityType nAbilityToIncrease, int nModifyBy)
         {
-            VM.StackPush(nModifyBy);
-            VM.StackPush((int)nAbilityToIncrease);
-            VM.Call(80);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectAbilityIncrease((int)nAbilityToIncrease, nModifyBy);
         }
 
         /// <summary>
@@ -532,11 +437,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageResistance(DamageType nDamageType, int nAmount, int nLimit = 0)
         {
-            VM.StackPush(nLimit);
-            VM.StackPush(nAmount);
-            VM.StackPush((int)nDamageType);
-            VM.Call(81);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDamageResistance((int)nDamageType, nAmount, nLimit);
         }
 
         /// <summary>
@@ -544,8 +445,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectResurrection()
         {
-            VM.Call(82);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectResurrection();
         }
 
         /// <summary>
@@ -562,12 +462,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSummonCreature(string sCreatureResref, VisualEffect nVisualEffectId = VisualEffect.Vfx_Com_Sparks_Parry,
             float fDelaySeconds = 0.0f, bool nUseAppearAnimation = false)
         {
-            VM.StackPush(nUseAppearAnimation ? 1 : 0);
-            VM.StackPush(fDelaySeconds);
-            VM.StackPush((int)nVisualEffectId);
-            VM.StackPush(sCreatureResref);
-            VM.Call(83);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSummonCreature(sCreatureResref, (int)nVisualEffectId, fDelaySeconds, nUseAppearAnimation ? 1 : 0);
         }
 
         /// <summary>
@@ -576,8 +471,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectEthereal()
         {
-            VM.Call(711);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectEthereal();
         }
 
         /// <summary>
@@ -588,10 +482,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSpellFailure(int nPercent = 100,
             SpellSchool nSpellSchool = SpellSchool.General)
         {
-            VM.StackPush((int)nSpellSchool);
-            VM.StackPush(nPercent);
-            VM.Call(690);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSpellFailure(nPercent, (int)nSpellSchool);
         }
 
         /// <summary>
@@ -600,8 +491,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCutsceneDominated()
         {
-            VM.Call(604);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectCutsceneDominated();
         }
 
         /// <summary>
@@ -610,8 +500,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectPetrify()
         {
-            VM.Call(583);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectPetrify();
         }
 
         /// <summary>
@@ -620,8 +509,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCutsceneParalyze()
         {
-            VM.Call(585);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectCutsceneParalyze();
         }
 
         /// <summary>
@@ -631,9 +519,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTurnResistanceDecrease(int nHitDice)
         {
-            VM.StackPush(nHitDice);
-            VM.Call(552);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectTurnResistanceDecrease(nHitDice);
         }
 
         /// <summary>
@@ -643,9 +529,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTurnResistanceIncrease(int nHitDice)
         {
-            VM.StackPush(nHitDice);
-            VM.Call(553);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectTurnResistanceIncrease(nHitDice);
         }
 
         /// <summary>
@@ -662,13 +546,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSwarm(int nLooping, string sCreatureTemplate1, string sCreatureTemplate2 = "",
             string sCreatureTemplate3 = "", string sCreatureTemplate4 = "")
         {
-            VM.StackPush(sCreatureTemplate4);
-            VM.StackPush(sCreatureTemplate3);
-            VM.StackPush(sCreatureTemplate2);
-            VM.StackPush(sCreatureTemplate1);
-            VM.StackPush(nLooping);
-            VM.Call(510);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSwarm(nLooping, sCreatureTemplate1, sCreatureTemplate2, sCreatureTemplate3, sCreatureTemplate4);
         }
 
         /// <summary>
@@ -680,10 +558,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDisappearAppear(Location lLocation, int nAnimation = 1)
         {
-            VM.StackPush(nAnimation);
-            VM.StackPush((int)EngineStructure.Location, lLocation);
-            VM.Call(480);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDisappearAppear(lLocation, nAnimation);
         }
 
         /// <summary>
@@ -694,9 +569,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDisappear(int nAnimation = 1)
         {
-            VM.StackPush(nAnimation);
-            VM.Call(481);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDisappear(nAnimation);
         }
 
         /// <summary>
@@ -706,9 +579,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAppear(int nAnimation = 1)
         {
-            VM.StackPush(nAnimation);
-            VM.Call(482);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectAppear(nAnimation);
         }
 
         /// <summary>
@@ -718,9 +589,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectModifyAttacks(int nAttacks)
         {
-            VM.StackPush(nAttacks);
-            VM.Call(485);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectModifyAttacks(nAttacks);
         }
 
         /// <summary>
@@ -734,11 +603,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageShield(int nDamageAmount, DamageBonus nRandomAmount, DamageType nDamageType)
         {
-            VM.StackPush((int)nDamageType);
-            VM.StackPush((int)nRandomAmount);
-            VM.StackPush(nDamageAmount);
-            VM.Call(487);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDamageShield(nDamageAmount, (int)nRandomAmount, (int)nDamageType);
         }
 
         /// <summary>
@@ -752,10 +617,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectMissChance(int nPercentage, MissChanceType nMissChanceType = MissChanceType.Normal)
         {
-            VM.StackPush((int)nMissChanceType);
-            VM.StackPush(nPercentage);
-            VM.Call(477);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectMissChance(nPercentage, (int)nMissChanceType);
         }
 
         /// <summary>
@@ -772,11 +634,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSpellLevelAbsorption(int nMaxSpellLevelAbsorbed, int nTotalSpellLevelsAbsorbed = 0,
             SpellSchool nSpellSchool = SpellSchool.General)
         {
-            VM.StackPush((int)nSpellSchool);
-            VM.StackPush(nTotalSpellLevelsAbsorbed);
-            VM.StackPush(nMaxSpellLevelAbsorbed);
-            VM.Call(472);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSpellLevelAbsorption(nMaxSpellLevelAbsorbed, nTotalSpellLevelsAbsorbed, (int)nSpellSchool);
         }
 
         /// <summary>
@@ -787,9 +645,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDispelMagicBest(int nCasterLevel = USE_CREATURE_LEVEL)
         {
-            VM.StackPush(nCasterLevel);
-            VM.Call(473);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDispelMagicBest(nCasterLevel);
         }
 
         /// <summary>
@@ -800,9 +656,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectInvisibility(InvisibilityType nInvisibilityType)
         {
-            VM.StackPush((int)nInvisibilityType);
-            VM.Call(457);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectInvisibility((int)nInvisibilityType);
         }
 
         /// <summary>
@@ -816,10 +670,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectConcealment(int nPercentage, MissChanceType nMissType = MissChanceType.Normal)
         {
-            VM.StackPush((int)nMissType);
-            VM.StackPush(nPercentage);
-            VM.Call(458);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectConcealment(nPercentage, (int)nMissType);
         }
 
         /// <summary>
@@ -827,8 +678,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDarkness()
         {
-            VM.Call(459);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDarkness();
         }
 
         /// <summary>
@@ -839,9 +689,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDispelMagicAll(int nCasterLevel = USE_CREATURE_LEVEL)
         {
-            VM.StackPush(nCasterLevel);
-            VM.Call(460);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDispelMagicAll(nCasterLevel);
         }
 
         /// <summary>
@@ -849,8 +697,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectUltravision()
         {
-            VM.Call(461);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectUltravision();
         }
 
         /// <summary>
@@ -860,10 +707,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectNegativeLevel(int nNumLevels, bool bHPBonus = false)
         {
-            VM.StackPush(bHPBonus ? 1 : 0);
-            VM.StackPush(nNumLevels);
-            VM.Call(462);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectNegativeLevel(nNumLevels, bHPBonus ? 1 : 0);
         }
 
         /// <summary>
@@ -871,10 +715,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectPolymorph(int nPolymorphSelection, bool nLocked = false)
         {
-            VM.StackPush(nLocked ? 1 : 0);
-            VM.StackPush(nPolymorphSelection);
-            VM.Call(463);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectPolymorph(nPolymorphSelection, nLocked ? 1 : 0);
         }
 
         /// <summary>
@@ -884,9 +725,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSanctuary(int nDifficultyClass)
         {
-            VM.StackPush(nDifficultyClass);
-            VM.Call(464);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSanctuary(nDifficultyClass);
         }
 
         /// <summary>
@@ -894,8 +733,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTrueSeeing()
         {
-            VM.Call(465);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectTrueSeeing();
         }
 
         /// <summary>
@@ -903,8 +741,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSeeInvisible()
         {
-            VM.Call(466);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSeeInvisible();
         }
 
         /// <summary>
@@ -912,8 +749,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTimeStop()
         {
-            VM.Call(467);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectTimeStop();
         }
 
         /// <summary>
@@ -921,8 +757,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectBlindness()
         {
-            VM.Call(468);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectBlindness();
         }
 
         /// <summary>
@@ -932,10 +767,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAbilityDecrease(AbilityType nAbility, int nModifyBy)
         {
-            VM.StackPush(nModifyBy);
-            VM.StackPush((int)nAbility);
-            VM.Call(446);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectAbilityDecrease((int)nAbility, nModifyBy);
         }
 
         /// <summary>
@@ -946,10 +778,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAccuracyDecrease(int nPenalty, AttackBonus nModifierType = AttackBonus.Misc)
         {
-            VM.StackPush((int)nModifierType);
-            VM.StackPush(nPenalty);
-            VM.Call(447);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectAttackDecrease(nPenalty, (int)nModifierType);
         }
 
         /// <summary>
@@ -959,10 +788,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageDecrease(int nPenalty, DamageType nDamageType = DamageType.Force)
         {
-            VM.StackPush((int)nDamageType);
-            VM.StackPush(nPenalty);
-            VM.Call(448);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDamageDecrease(nPenalty, (int)nDamageType);
         }
 
         /// <summary>
@@ -972,10 +798,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageImmunityDecrease(int nDamageType, int nPercentImmunity)
         {
-            VM.StackPush(nPercentImmunity);
-            VM.StackPush(nDamageType);
-            VM.Call(449);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDamageImmunityDecrease(nDamageType, nPercentImmunity);
         }
 
         /// <summary>
@@ -989,11 +812,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             ArmorClassModiferType nModifyType = ArmorClassModiferType.Dodge,
             AC nDamageType = AC.VsDamageTypeAll)
         {
-            VM.StackPush((int)nDamageType);
-            VM.StackPush((int)nModifyType);
-            VM.StackPush(nValue);
-            VM.Call(450);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectACDecrease(nValue, (int)nModifyType, (int)nDamageType);
         }
 
         /// <summary>
@@ -1006,9 +825,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectMovementSpeedDecrease(int nPercentChange)
         {
-            VM.StackPush(nPercentChange);
-            VM.Call(451);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectMovementSpeedDecrease(nPercentChange);
         }
 
         /// <summary>
@@ -1024,11 +841,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSavingThrowDecrease(int nSave, int nValue,
             SavingThrowType nSaveType = SavingThrowType.All)
         {
-            VM.StackPush((int)nSaveType);
-            VM.StackPush(nValue);
-            VM.StackPush(nSave);
-            VM.Call(452);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSavingThrowDecrease(nSave, nValue, (int)nSaveType);
         }
 
         /// <summary>
@@ -1037,10 +850,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSkillDecrease(int nSkill, int nValue)
         {
-            VM.StackPush(nValue);
-            VM.StackPush(nSkill);
-            VM.Call(453);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSkillDecrease(nSkill, nValue);
         }
 
         /// <summary>
@@ -1048,9 +858,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSpellResistanceDecrease(int nValue)
         {
-            VM.StackPush(nValue);
-            VM.Call(454);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSpellResistanceDecrease(nValue);
         }
 
         /// <summary>
@@ -1058,11 +866,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Event EventActivateItem(uint oItem, Location lTarget, uint oTarget = OBJECT_INVALID)
         {
-            VM.StackPush(oTarget);
-            VM.StackPush((int)EngineStructure.Location, lTarget);
-            VM.StackPush(oItem);
-            VM.Call(424);
-            return VM.StackPopStruct((int)EngineStructure.Event);
+            return NWN.Core.NWScript.EventActivateItem(oItem, lTarget, oTarget);
         }
 
         /// <summary>
@@ -1072,9 +876,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectHitPointChangeWhenDying(float fHitPointChangePerRound)
         {
-            VM.StackPush(fHitPointChangePerRound);
-            VM.Call(387);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectHitPointChangeWhenDying(fHitPointChangePerRound);
         }
 
         /// <summary>
@@ -1083,8 +885,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTurned()
         {
-            VM.Call(379);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectTurned();
         }
 
         /// <summary>
@@ -1097,11 +898,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             Alignment nLawChaos = Alignment.All,
             Alignment nGoodEvil = Alignment.All)
         {
-            VM.StackPush((int)nGoodEvil);
-            VM.StackPush((int)nLawChaos);
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(355);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.VersusAlignmentEffect(eEffect, (int)nLawChaos, (int)nGoodEvil);
         }
 
         /// <summary>
@@ -1111,10 +908,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect VersusRacialTypeEffect(Effect eEffect, RacialType nRacialType)
         {
-            VM.StackPush((int)nRacialType);
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(356);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.VersusRacialTypeEffect(eEffect, (int)nRacialType);
         }
 
         /// <summary>
@@ -1122,9 +916,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect VersusTrapEffect(Effect eEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(357);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.VersusTrapEffect(eEffect);
         }
 
         /// <summary>
@@ -1135,10 +927,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSkillIncrease(NWNSkillType nSkill, int nValue)
         {
-            VM.StackPush(nValue);
-            VM.StackPush((int)nSkill);
-            VM.Call(351);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSkillIncrease((int)nSkill, nValue);
         }
 
         /// <summary>
@@ -1148,9 +937,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTemporaryHitpoints(int nHitPoints)
         {
-            VM.StackPush(nHitPoints);
-            VM.Call(314);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectTemporaryHitpoints(nHitPoints);
         }
 
         /// <summary>
@@ -1166,8 +953,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Event EventConversation()
         {
-            VM.Call(295);
-            return VM.StackPopStruct((int)EngineStructure.Event);
+            return NWN.Core.NWScript.EventConversation();
         }
 
         /// <summary>
@@ -1177,10 +963,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageImmunityIncrease(DamageType nDamageType, int nPercentImmunity)
         {
-            VM.StackPush(nPercentImmunity);
-            VM.StackPush((int)nDamageType);
-            VM.Call(275);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDamageImmunityIncrease((int)nDamageType, nPercentImmunity);
         }
 
         /// <summary>
@@ -1189,9 +972,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectImmunity(ImmunityType nImmunityType)
         {
-            VM.StackPush((int)nImmunityType);
-            VM.Call(273);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectImmunity((int)nImmunityType);
         }
 
         /// <summary>
@@ -1199,8 +980,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectHaste()
         {
-            VM.Call(270);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectHaste();
         }
 
         /// <summary>
@@ -1208,8 +988,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSlow()
         {
-            VM.Call(271);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSlow();
         }
 
         /// <summary>
@@ -1218,9 +997,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectPoison(Poison nPoisonType)
         {
-            VM.StackPush((int)nPoisonType);
-            VM.Call(250);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectPoison((int)nPoisonType);
         }
 
         /// <summary>
@@ -1229,9 +1006,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDisease(Disease nDiseaseType)
         {
-            VM.StackPush((int)nDiseaseType);
-            VM.Call(251);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDisease((int)nDiseaseType);
         }
 
         /// <summary>
@@ -1239,8 +1014,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSilence()
         {
-            VM.Call(252);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSilence();
         }
 
         /// <summary>
@@ -1249,9 +1023,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSpellResistanceIncrease(int nValue)
         {
-            VM.StackPush(nValue);
-            VM.Call(212);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSpellResistanceIncrease(nValue);
         }
 
         /// <summary>
@@ -1266,12 +1038,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectBeam(VisualEffect nBeamVisualEffect, uint oEffector, BodyNode nBodyPart, bool bMissEffect = false)
         {
-            VM.StackPush(bMissEffect ? 1 : 0);
-            VM.StackPush((int)nBodyPart);
-            VM.StackPush(oEffector);
-            VM.StackPush((int)nBeamVisualEffect);
-            VM.Call(207);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectBeam((int)nBeamVisualEffect, oEffector, (int)nBodyPart, bMissEffect ? 1 : 0);
         }
 
         /// <summary>
@@ -1287,10 +1054,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectLinkEffects(Effect eChildEffect, Effect eParentEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eParentEffect);
-            VM.StackPush((int)EngineStructure.Effect, eChildEffect);
-            VM.Call(199);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectLinkEffects(eChildEffect, eParentEffect);
         }
 
         /// <summary>
@@ -1301,15 +1065,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectVisualEffect(VisualEffect visualEffectID, bool nMissEffect = false, float fScale = 1.0f, Vector3 vTranslate = new Vector3(), Vector3 vRotate = new Vector3())
         {
-            VM.StackPush(vRotate);
-            VM.StackPush(vTranslate);
-            VM.StackPush(fScale);
-            VM.StackPush(nMissEffect ? 1 : 0);
-            VM.StackPush((int)visualEffectID);
-
-            VM.Call(180);
-
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectVisualEffect((int)visualEffectID, nMissEffect ? 1 : 0, fScale, vTranslate, vRotate);
         }
 
         /// <summary>
@@ -1318,11 +1074,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void ApplyEffectToObject(DurationType nDurationType, Effect eEffect, uint oTarget,
             float fDuration = 0.0f)
         {
-            VM.StackPush(fDuration);
-            VM.StackPush(oTarget);
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.StackPush((int)nDurationType);
-            VM.Call(220);
+            NWN.Core.NWScript.ApplyEffectToObject((int)nDurationType, eEffect, oTarget, fDuration);
         }
 
         /// <summary>
@@ -1331,9 +1083,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static EffectTypeScript GetEffectType(Effect eEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eEffect);
-            VM.Call(170);
-            return (EffectTypeScript)VM.StackPopInt();
+            return (EffectTypeScript)NWN.Core.NWScript.GetEffectType(eEffect);
         }
 
         /// <summary>
@@ -1343,12 +1093,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectAreaOfEffect(AreaOfEffect nAreaEffect, string sOnEnterScript = "",
             string sHeartbeatScript = "", string sOnExitScript = "")
         {
-            VM.StackPush(sOnExitScript);
-            VM.StackPush(sHeartbeatScript);
-            VM.StackPush(sOnEnterScript);
-            VM.StackPush((int)nAreaEffect);
-            VM.Call(171);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectAreaOfEffect((int)nAreaEffect, sOnEnterScript, sHeartbeatScript, sOnExitScript);
         }
 
         /// <summary>
@@ -1358,10 +1103,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectRegenerate(int nAmount, float fIntervalSeconds)
         {
-            VM.StackPush(fIntervalSeconds);
-            VM.StackPush(nAmount);
-            VM.Call(164);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectRegenerate(nAmount, fIntervalSeconds);
         }
 
         /// <summary>
@@ -1374,9 +1116,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectMovementSpeedIncrease(int nPercentChange)
         {
-            VM.StackPush(nPercentChange);
-            VM.Call(165);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectMovementSpeedIncrease(nPercentChange);
         }
 
         /// <summary>
@@ -1384,8 +1124,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCharmed()
         {
-            VM.Call(156);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectCharmed();
         }
 
         /// <summary>
@@ -1393,8 +1132,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectConfused()
         {
-            VM.Call(157);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectConfused();
         }
 
         /// <summary>
@@ -1402,8 +1140,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectFrightened()
         {
-            VM.Call(158);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectFrightened();
         }
 
         /// <summary>
@@ -1411,8 +1148,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDominated()
         {
-            VM.Call(159);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDominated();
         }
 
         /// <summary>
@@ -1420,8 +1156,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDazed()
         {
-            VM.Call(160);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDazed();
         }
 
         /// <summary>
@@ -1429,8 +1164,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectStunned()
         {
-            VM.Call(161);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectStunned();
         }
 
         /// <summary>
@@ -1438,8 +1172,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSleep()
         {
-            VM.Call(154);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSleep();
         }
 
         /// <summary>
@@ -1447,8 +1180,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectParalyze()
         {
-            VM.Call(148);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectParalyze();
         }
 
         /// <summary>
@@ -1462,9 +1194,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSpellImmunity(Spell nImmunityToSpell = Spell.AllSpells)
         {
-            VM.StackPush((int)nImmunityToSpell);
-            VM.Call(149);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectSpellImmunity((int)nImmunityToSpell);
         }
 
         /// <summary>
@@ -1472,8 +1202,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDeaf()
         {
-            VM.Call(150);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectDeaf();
         }
 
 
@@ -1485,10 +1214,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectInteger(Effect eEffect, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush((int) EngineStructure.Effect, eEffect.Handle);
-            VM.Call(939);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetEffectInteger(eEffect, nIndex);
         }
 
         /// <summary>
@@ -1499,10 +1225,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetEffectFloat(Effect eEffect, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush((int)EngineStructure.Effect, eEffect.Handle);
-            VM.Call(940);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.GetEffectFloat(eEffect, nIndex);
         }
 
         /// <summary>
@@ -1513,10 +1236,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetEffectString(Effect eEffect, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush((int)EngineStructure.Effect, eEffect.Handle);
-            VM.Call(941);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetEffectString(eEffect, nIndex);
         }
         
         /// <summary>
@@ -1527,10 +1247,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetEffectObject(Effect eEffect, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush((int)EngineStructure.Effect, eEffect.Handle);
-            VM.Call(942);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetEffectObject(eEffect, nIndex);
         }
 
         /// <summary>
@@ -1541,10 +1258,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 GetEffectVector(Effect eEffect, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush((int)EngineStructure.Effect, eEffect.Handle);
-            VM.Call(943);
-            return VM.StackPopVector();
+            return NWN.Core.NWScript.GetEffectVector(eEffect, nIndex);
         }
 
         /// <summary>
@@ -1560,13 +1274,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static Effect EffectRunScript(string sOnAppliedScript = "", string sOnRemovedScript = "", string sOnIntervalScript = "", float fInterval = 0.0f, string sData = "")
         {
-            VM.StackPush(sData);
-            VM.StackPush(fInterval);
-            VM.StackPush(sOnIntervalScript);
-            VM.StackPush(sOnRemovedScript);
-            VM.StackPush(sOnAppliedScript);
-            VM.Call(955);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectRunScript(sOnAppliedScript, sOnRemovedScript, sOnIntervalScript, fInterval, sData);
         }
 
         /// <summary>
@@ -1576,8 +1284,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns>The effect that last triggered an EffectRunScript() script.</returns>
         public static Effect GetLastRunScriptEffect()
         {
-            VM.Call(956);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.GetLastRunScriptEffect();
         }
 
         /// <summary>
@@ -1587,8 +1294,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static int GetLastRunScriptEffectScriptType()
         {
-            VM.Call(957);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetLastRunScriptEffectScriptType();
         }
 
         /// <summary>
@@ -1598,8 +1304,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static Effect HideEffectIcon(Effect eEffect)
         {
-            VM.Call(958);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.HideEffectIcon(eEffect);
         }
 
         /// <summary>
@@ -1610,9 +1315,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectIcon(EffectIconType nIconId)
         {
-            VM.StackPush((int)nIconId);
-            VM.Call(959);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectIcon((int)nIconId);
         }
 
         /// <summary>
@@ -1623,9 +1326,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect UnyieldingEffect(Effect eEffect)
         {
-            VM.StackPush(eEffect);
-            VM.Call(1036);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.UnyieldingEffect(eEffect);
         }
 
         /// <summary>
@@ -1633,9 +1334,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect IgnoreEffectImmunity(Effect eEffect)
         {
-            VM.StackPush(eEffect);
-            VM.Call(1037);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.IgnoreEffectImmunity(eEffect);
         }
 
         /// <summary>
@@ -1643,8 +1342,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectPacified()
         {
-            VM.Call(1089);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectPacified();
         }
 
         /// <summary>
@@ -1653,9 +1351,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetEffectLinkId(Effect eEffect)
         {
-            VM.StackPush(eEffect);
-            VM.Call(1096);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetEffectLinkId(eEffect);
         }
 
         /// <summary>
@@ -1665,9 +1361,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectBonusFeat(int nFeat)
         {
-            VM.StackPush(nFeat);
-            VM.Call(1107);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectBonusFeat(nFeat);
         }
 
         /// <summary>
@@ -1675,8 +1369,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTimeStopImmunity()
         {
-            VM.Call(1112);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectTimeStopImmunity();
         }
 
         /// <summary>
@@ -1684,8 +1377,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectForceWalk()
         {
-            VM.Call(1117);
-            return VM.StackPopStruct((int)EngineStructure.Effect);
+            return NWN.Core.NWScript.EffectForceWalk();
         }
     }
 }

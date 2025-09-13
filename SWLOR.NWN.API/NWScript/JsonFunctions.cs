@@ -11,13 +11,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// NB: The parsed string needs to be in game-local encoding, but the generated json structure
         ///     will contain UTF-8 data.
         /// </summary>
-        public static Json JsonParse(string jValue, int nIndent = -1)
+        public static Json JsonParse(string jValue)
         {
-            VM.StackPush(nIndent);
-            VM.StackPush(jValue);
-            VM.Call(968);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonParse(jValue);
         }
 
         /// <summary>
@@ -28,11 +24,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string JsonDump(Json jValue, int nIndent = -1)
         {
-            VM.StackPush(nIndent);
-            VM.StackPush((int)EngineStructure.Json, jValue);
-            VM.Call(969);
-
-            return VM.StackPopString();
+            return NWN.Core.NWScript.JsonDump(jValue, nIndent);
         }
 
         /// <summary>
@@ -41,10 +33,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static JsonType JsonGetType(Json jValue)
         {
-            VM.StackPush((int)EngineStructure.Json, jValue);
-            VM.Call(970);
-
-            return (JsonType) VM.StackPopInt();
+            return (JsonType)NWN.Core.NWScript.JsonGetType(jValue);
         }
 
         /// <summary>
@@ -56,10 +45,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int JsonGetLength(Json jValue)
         {
-            VM.StackPush((int)EngineStructure.Json, jValue);
-            VM.Call(971);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.JsonGetLength(jValue);
         }
 
         /// <summary>
@@ -68,10 +54,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string JsonGetError(Json jValue)
         {
-            VM.StackPush((int)EngineStructure.Json, jValue);
-            VM.Call(972);
-
-            return VM.StackPopString();
+            return NWN.Core.NWScript.JsonGetError(jValue);
         }
 
         /// <summary>
@@ -79,10 +62,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonNull(string sError = "")
         {
-            VM.StackPush(sError);
-            VM.Call(973);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonNull(sError);
         }
 
         /// <summary>
@@ -90,8 +70,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObject()
         {
-            VM.Call(974);
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonObject();
         }
 
         /// <summary>
@@ -99,8 +78,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArray()
         {
-            VM.Call(975);
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonArray();
         }
 
         /// <summary>
@@ -109,10 +87,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonString(string sValue)
         {
-            VM.StackPush(sValue);
-            VM.Call(976);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonString(sValue);
         }
 
         /// <summary>
@@ -120,10 +95,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonInt(int nValue)
         {
-            VM.StackPush(nValue);
-            VM.Call(977);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonInt(nValue);
         }
 
         /// <summary>
@@ -131,10 +103,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonFloat(float fValue)
         {
-            VM.StackPush(fValue);
-            VM.Call(978);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonFloat(fValue);
         }
 
         /// <summary>
@@ -142,10 +111,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonBool(bool bValue)
         {
-            VM.StackPush(bValue ? 1 : 0);
-            VM.Call(979);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonBool(bValue ? 1 : 0);
         }
 
         /// <summary>
@@ -155,10 +121,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string JsonGetString(Json jValue)
         {
-            VM.StackPush((int)EngineStructure.Json, jValue);
-            VM.Call(980);
-
-            return VM.StackPopString();
+            return NWN.Core.NWScript.JsonGetString(jValue);
         }
 
         /// <summary>
@@ -171,10 +134,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int JsonGetInt(Json jValue)
         {
-            VM.StackPush((int)EngineStructure.Json, jValue);
-            VM.Call(981);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.JsonGetInt(jValue);
         }
 
         /// <summary>
@@ -186,10 +146,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float JsonGetFloat(Json jValue)
         {
-            VM.StackPush((int)EngineStructure.Json, jValue);
-            VM.Call(982);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.JsonGetFloat(jValue);
         }
 
         /// <summary>
@@ -198,10 +155,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObjectKeys(Json jObject)
         {
-            VM.StackPush((int)EngineStructure.Json, jObject);
-            VM.Call(983);
-
-            return VM.StackPopStruct((int) EngineStructure.Json);
+            return NWN.Core.NWScript.JsonObjectKeys(jObject);
         }
 
         /// <summary>
@@ -210,11 +164,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObjectGet(Json jObject, string sKey)
         {
-            VM.StackPush(sKey);
-            VM.StackPush((int)EngineStructure.Json, jObject);
-            VM.Call(984);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonObjectGet(jObject, sKey);
         }
 
         /// <summary>
@@ -223,12 +173,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObjectSet(Json jObject, string sKey, Json jValue)
         {
-            VM.StackPush((int)EngineStructure.Json, jValue);
-            VM.StackPush(sKey);
-            VM.StackPush((int)EngineStructure.Json, jObject);
-            VM.Call(985);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonObjectSet(jObject, sKey, jValue);
         }
 
         /// <summary>
@@ -237,11 +182,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObjectDel(Json jObject, string sKey)
         {
-            VM.StackPush(sKey);
-            VM.StackPush((int)EngineStructure.Json, jObject);
-            VM.Call(986);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonObjectDel(jObject, sKey);
         }
 
         /// <summary>
@@ -250,11 +191,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArrayGet(Json jArray, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush((int)EngineStructure.Json, jArray);
-            VM.Call(987);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonArrayGet(jArray, nIndex);
         }
 
         /// <summary>
@@ -264,12 +201,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArraySet(Json jArray, int nIndex, Json jValue)
         {
-            VM.StackPush((int)EngineStructure.Json, jValue);
-            VM.StackPush(nIndex);
-            VM.StackPush((int)EngineStructure.Json, jArray);
-            VM.Call(988);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonArraySet(jArray, nIndex, jValue);
         }
 
         /// <summary>
@@ -282,12 +214,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArrayInsert(Json jArray, Json jValue, int nIndex = -1)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush((int)EngineStructure.Json, jValue);
-            VM.StackPush((int)EngineStructure.Json, jArray);
-            VM.Call(989);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonArrayInsert(jArray, jValue, nIndex);
         }
 
         /// <summary>
@@ -298,11 +225,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArrayDel(Json jArray, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush((int)EngineStructure.Json, jArray);
-            VM.Call(990);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonArrayDel(jArray, nIndex);
         }
 
         /// <summary>
@@ -315,11 +238,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json ObjectToJson(uint oObject, bool bSaveObjectState = false)
         {
-            VM.StackPush(bSaveObjectState ? 1 : 0);
-            VM.StackPush(oObject);
-            VM.Call(991);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.ObjectToJson(oObject, bSaveObjectState ? 1 : 0);
         }
 
         /// <summary>
@@ -331,13 +250,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint JsonToObject(Json jObject, Location locLocation, uint oOwner = OBJECT_INVALID, bool bLoadObjectState = false)
         {
-            VM.StackPush(bLoadObjectState ? 1 : 0);
-            VM.StackPush(oOwner);
-            VM.StackPush((int)EngineStructure.Location, locLocation);
-            VM.StackPush((int)EngineStructure.Json, jObject);
-            VM.Call(992);
-
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.JsonToObject(jObject, locLocation, oOwner, bLoadObjectState ? 1 : 0);
         }
 
         /// <summary>
@@ -347,11 +260,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonPointer(Json jData, string sPointer)
         {
-            VM.StackPush(sPointer);
-            VM.StackPush((int)EngineStructure.Json, jData);
-            VM.Call(993);
-
-            return VM.StackPopStruct((int) EngineStructure.Json);
+            return NWN.Core.NWScript.JsonPointer(jData, sPointer);
         }
 
         /// <summary>
@@ -368,11 +277,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonPatch(Json jData, Json jPatch)
         {
-            VM.StackPush((int)EngineStructure.Json, jPatch);
-            VM.StackPush((int)EngineStructure.Json, jData);
-            VM.Call(994);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonPatch(jData, jPatch);
         }
 
         /// <summary>
@@ -381,11 +286,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonDiff(Json jLHS, Json jRHS)
         {
-            VM.StackPush((int)EngineStructure.Json, jRHS);
-            VM.StackPush((int)EngineStructure.Json, jLHS);
-            VM.Call(995);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonDiff(jLHS, jRHS);
         }
 
         /// <summary>
@@ -396,11 +297,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonMerge(Json jData, Json jMerge)
         {
-            VM.StackPush((int)EngineStructure.Json, jMerge);
-            VM.StackPush((int)EngineStructure.Json, jData);
-            VM.Call(996);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonMerge(jData, jMerge);
         }
 
         /// <summary>
@@ -409,11 +306,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json GetLocalJson(uint oObject, string sVarName)
         {
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(997);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.GetLocalJson(oObject, sVarName);
         }
 
         /// <summary>
@@ -421,10 +314,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLocalJson(uint oObject, string sVarName, Json jValue)
         {
-            VM.StackPush((int)EngineStructure.Json, jValue);
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(998);
+            NWN.Core.NWScript.SetLocalJson(oObject, sVarName, jValue);
         }
 
         /// <summary>
@@ -432,9 +322,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DeleteLocalJson(uint oObject, string sVarName)
         {
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(999);
+            NWN.Core.NWScript.DeleteLocalJson(oObject, sVarName);
         }
 
         /// <summary>
@@ -453,11 +341,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json TemplateToJson(string sResRef, ResType nResType)
         {
-            VM.StackPush((int) nResType);
-            VM.StackPush(sResRef);
-            VM.Call(1007);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.TemplateToJson(sResRef, (int)nResType);
         }
 
         /// <summary>
@@ -478,11 +362,7 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         public static Json JsonArrayTransform(Json jArray, JsonArraySort nTransform)
         {
-            VM.StackPush((int)nTransform);
-            VM.StackPush((int)EngineStructure.Json, jArray);
-            VM.Call(1030);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonArrayTransform(jArray, (int)nTransform);
         }
 
         /// <summary>
@@ -492,18 +372,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// Return null when not found or on any error.
         /// </summary>
         public static Json JsonFind(
-            Json jHaystack, 
-            Json jNeedle, 
+            Json jHaystack,
+            Json jNeedle,
             int nNth = 0,
             JsonFind nConditional = Enum.JsonFind.Equal)
         {
-            VM.StackPush((int)nConditional);
-            VM.StackPush(nNth);
-            VM.StackPush((int)EngineStructure.Json, jNeedle);
-            VM.StackPush((int)EngineStructure.Json, jHaystack);
-            VM.Call(1031);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonFind(jHaystack, jNeedle, nNth, (int)nConditional);
         }
 
         /// <summary>
@@ -522,12 +396,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArrayGetRange(Json jArray, int nBeginIndex, int nEndIndex)
         {
-            VM.StackPush((int)nEndIndex);
-            VM.StackPush(nBeginIndex);
-            VM.StackPush((int)EngineStructure.Json, jArray);
-            VM.Call(1032);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonArrayGetRange(jArray, nBeginIndex, nEndIndex);
         }
 
         /// <summary>
@@ -546,12 +415,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonSetOp(Json jValue, JsonSet nOp, Json jOther)
         {
-            VM.StackPush((int)EngineStructure.Json, jOther);
-            VM.StackPush((int)nOp);
-            VM.StackPush((int)EngineStructure.Json, jValue);
-            VM.Call(1033);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.JsonSetOp(jValue, (int)nOp, jOther);
         }
 
         /// <summary>
@@ -570,18 +434,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// * RegExpMatch("^(test) (.+)$", "test value") -> ["test value", "test", "value"]
         /// </summary>
         public static Json RegExpMatch(
-            string sRegExp, 
-            string sValue, 
-            RegularExpressionType nSyntaxFlags = RegularExpressionType.Ecmascript, 
+            string sRegExp,
+            string sValue,
+            RegularExpressionType nSyntaxFlags = RegularExpressionType.Ecmascript,
             RegularExpressionFormatType nMatchFlags = RegularExpressionFormatType.Default)
         {
-            VM.StackPush((int)nMatchFlags);
-            VM.StackPush((int)nSyntaxFlags);
-            VM.StackPush(sValue);
-            VM.StackPush(sRegExp);
-            VM.Call(1068);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.RegExpMatch(sRegExp, sValue, (int)nSyntaxFlags, (int)nMatchFlags);
         }
 
         /// <summary>
@@ -594,18 +452,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// Example: RegExpIterate("(\\d)(\\S+)", "1i 2am 3 4asentence"); -> [["1i", "1", "i"], ["2am", "2", "am"], ["4sentence", "4", "sentence"]]
         /// </summary>
         public static Json RegExpIterate(
-            string sRegExp, 
+            string sRegExp,
             string sValue,
             RegularExpressionType nSyntaxFlags = RegularExpressionType.Ecmascript,
             RegularExpressionFormatType nMatchFlags = RegularExpressionFormatType.Default)
         {
-            VM.StackPush((int)nMatchFlags);
-            VM.StackPush((int)nSyntaxFlags);
-            VM.StackPush(sValue);
-            VM.StackPush(sRegExp);
-            VM.Call(1069);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.RegExpIterate(sRegExp, sValue, (int)nSyntaxFlags, (int)nMatchFlags);
         }
     }
 }

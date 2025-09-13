@@ -2,25 +2,12 @@ using System;
 using System.Numerics;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
-using SWLOR.Game.Server.Entity;
 
 
 namespace SWLOR.Game.Server.Core.NWScript
 {
     public partial class NWScript
     {
-        public static uint OBJECT_SELF
-        {
-            get
-            {
-                return NWNCore.FunctionHandler.ObjectSelf;
-            }
-            set
-            {
-                NWNCore.FunctionHandler.ObjectSelf = value;
-            }
-        }
-
         /// <summary>
         ///   Assign aActionToAssign to oActionSubject.
         ///   * No return value, but if an error occurs, the log file will contain
@@ -29,7 +16,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AssignCommand(uint oActionSubject, Action aActionToAssign)
         {
-            NWNCore.FunctionHandler!.ClosureAssignCommand(oActionSubject, aActionToAssign);
+            NWN.Core.NWScript.AssignCommand(oActionSubject, aActionToAssign);
         }
 
         /// <summary>
@@ -44,7 +31,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DelayCommand(float fSeconds, Action aActionToDelay)
         {
-            NWNCore.FunctionHandler!.ClosureDelayCommand(OBJECT_SELF, fSeconds, aActionToDelay);
+            NWN.Core.NWScript.DelayCommand(fSeconds, aActionToDelay);
         }
 
 
@@ -53,7 +40,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionDoCommand(Action aActionToDo)
         {
-            NWNCore.FunctionHandler!.ClosureActionDoCommand(OBJECT_SELF, aActionToDo);
+            NWN.Core.NWScript.ActionDoCommand(aActionToDo);
         }
 
         /// <summary>
@@ -62,9 +49,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int Random(int nMaxInteger)
         {
-            VM.StackPush(nMaxInteger);
-            VM.Call(0);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.Random(nMaxInteger);
         }
 
         /// <summary>
@@ -72,8 +57,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void PrintString(string sString)
         {
-            VM.StackPush(sString);
-            VM.Call(1);
+            NWN.Core.NWScript.PrintString(sString);
         }
 
         /// <summary>
@@ -83,10 +67,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void PrintFloat(float fFloat, int nWidth = 18, int nDecimals = 9)
         {
-            VM.StackPush(nDecimals);
-            VM.StackPush(nWidth);
-            VM.StackPush(fFloat);
-            VM.Call(2);
+            NWN.Core.NWScript.PrintFloat(fFloat, nWidth, nDecimals);
         }
 
         /// <summary>
@@ -96,11 +77,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string FloatToString(float fFloat, int nWidth = 18, int nDecimals = 9)
         {
-            VM.StackPush(nDecimals);
-            VM.StackPush(nWidth);
-            VM.StackPush(fFloat);
-            VM.Call(3);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.FloatToString(fFloat, nWidth, nDecimals);
         }
 
         /// <summary>
@@ -108,8 +85,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void PrintInteger(int nInteger)
         {
-            VM.StackPush(nInteger);
-            VM.Call(4);
+            NWN.Core.NWScript.PrintInteger(nInteger);
         }
 
         /// <summary>
@@ -117,8 +93,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void PrintObject(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(5);
+            NWN.Core.NWScript.PrintObject(oObject);
         }
 
         /// <summary>
@@ -131,8 +106,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ClearAllActions(bool nClearCombatState = false)
         {
-            VM.StackPush(nClearCombatState ? 1 : 0);
-            VM.Call(9);
+            NWN.Core.NWScript.ClearAllActions(nClearCombatState ? 1 : 0);
         }
 
         /// <summary>
@@ -143,8 +117,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetFacing(float fDirection)
         {
-            VM.StackPush(fDirection);
-            VM.Call(10);
+            NWN.Core.NWScript.SetFacing(fDirection);
         }
 
         /// <summary>
@@ -157,7 +130,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionRandomWalk()
         {
-            VM.Call(20);
+            NWN.Core.NWScript.ActionRandomWalk();
         }
 
         /// <summary>
@@ -170,9 +143,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionMoveToLocation(Location lDestination, bool bRun = false)
         {
-            VM.StackPush(bRun ? 1 : 0);
-            VM.StackPush((int)EngineStructure.Location, lDestination);
-            VM.Call(21);
+            NWN.Core.NWScript.ActionMoveToLocation(lDestination, bRun ? 1 : 0);
         }
 
         /// <summary>
@@ -186,10 +157,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionMoveToObject(uint oMoveTo, bool bRun = false, float fRange = 1.0f)
         {
-            VM.StackPush(fRange);
-            VM.StackPush(bRun ? 1 : 0);
-            VM.StackPush(oMoveTo);
-            VM.Call(22);
+            NWN.Core.NWScript.ActionMoveToObject(oMoveTo, bRun ? 1 : 0, fRange);
         }
 
         /// <summary>
@@ -205,10 +173,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionMoveAwayFromObject(uint oFleeFrom, bool bRun = false, float fMoveAwayRange = 40.0f)
         {
-            VM.StackPush(fMoveAwayRange);
-            VM.StackPush(bRun ? 1 : 0);
-            VM.StackPush(oFleeFrom);
-            VM.Call(23);
+            NWN.Core.NWScript.ActionMoveAwayFromObject(oFleeFrom, bRun ? 1 : 0, fMoveAwayRange);
         }
 
         /// <summary>
@@ -218,9 +183,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetFacing(uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.Call(28);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.GetFacing(oTarget);
         }
 
         /// <summary>
@@ -230,9 +193,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastAttacker(uint oAttackee = OBJECT_INVALID)
         {
-            VM.StackPush(oAttackee);
-            VM.Call(36);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastAttacker(oAttackee);
         }
 
         /// <summary>
@@ -241,9 +202,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionAttack(uint oAttackee, bool bPassive = false)
         {
-            VM.StackPush(bPassive ? 1 : 0);
-            VM.StackPush(oAttackee);
-            VM.Call(37);
+            NWN.Core.NWScript.ActionAttack(oAttackee, bPassive ? 1 : 0);
         }
 
         /// <summary>
@@ -278,16 +237,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             uint oTarget = OBJECT_INVALID, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1,
             int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
         {
-            VM.StackPush(nThirdCriteriaValue);
-            VM.StackPush(nThirdCriteriaType);
-            VM.StackPush(nSecondCriteriaValue);
-            VM.StackPush(nSecondCriteriaType);
-            VM.StackPush(nNth);
-            VM.StackPush(oTarget);
-            VM.StackPush(nFirstCriteriaValue);
-            VM.StackPush((int)nFirstCriteriaType);
-            VM.Call(38);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetNearestCreature((int)nFirstCriteriaType, nFirstCriteriaValue, oTarget, nNth, nSecondCriteriaType, nSecondCriteriaValue, nThirdCriteriaType, nThirdCriteriaValue);
         }
 
         /// <summary>
@@ -297,9 +247,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionSpeakString(string sStringToSpeak, TalkVolume nTalkVolume = TalkVolume.Talk)
         {
-            VM.StackPush((int)nTalkVolume);
-            VM.StackPush(sStringToSpeak);
-            VM.Call(39);
+            NWN.Core.NWScript.ActionSpeakString(sStringToSpeak, (int)nTalkVolume);
         }
 
         /// <summary>
@@ -311,10 +259,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionPlayAnimation(Animation nAnimation, float fSpeed = 1.0f, float fDurationSeconds = 0.0f)
         {
-            VM.StackPush(fDurationSeconds);
-            VM.StackPush(fSpeed);
-            VM.StackPush((int)nAnimation);
-            VM.Call(40);
+            NWN.Core.NWScript.ActionPlayAnimation((int)nAnimation, fSpeed, fDurationSeconds);
         }
 
         /// <summary>
@@ -338,11 +283,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetCameraFacing(float fDirection, float fDistance = -1.0f, float fPitch = -1.0f,
             CameraTransitionType nTransitionType = CameraTransitionType.Snap)
         {
-            VM.StackPush((int)nTransitionType);
-            VM.StackPush(fPitch);
-            VM.StackPush(fDistance);
-            VM.StackPush(fDirection);
-            VM.Call(45);
+            NWN.Core.NWScript.SetCameraFacing(fDirection, fDistance, fPitch, (int)nTransitionType);
         }
 
         /// <summary>
@@ -352,8 +293,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void PlaySound(string sSoundName)
         {
-            VM.StackPush(sSoundName);
-            VM.Call(46);
+            NWN.Core.NWScript.PlaySound(sSoundName);
         }
 
         /// <summary>
@@ -362,8 +302,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetSpellTargetObject()
         {
-            VM.Call(47);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetSpellTargetObject();
         }
 
         /// <summary>
@@ -383,14 +322,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             bool nCheat = false, int nDomainLevel = 0,
             ProjectilePathType nProjectilePathType = ProjectilePathType.Default, bool bInstantSpell = false)
         {
-            VM.StackPush(bInstantSpell ? 1 : 0);
-            VM.StackPush((int)nProjectilePathType);
-            VM.StackPush(nDomainLevel);
-            VM.StackPush(nCheat ? 1 : 0);
-            VM.StackPush((int)nMetaMagic);
-            VM.StackPush(oTarget);
-            VM.StackPush((int)nSpell);
-            VM.Call(48);
+            NWN.Core.NWScript.ActionCastSpellAtObject((int)nSpell, oTarget, (int)nMetaMagic, nCheat ? 1 : 0, nDomainLevel, (int)nProjectilePathType, bInstantSpell ? 1 : 0);
         }
 
         /// <summary>
@@ -399,10 +331,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetLocalInt(uint oObject, string sVarName)
         {
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(51);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetLocalInt(oObject, sVarName);
         }
 
         /// <summary>
@@ -420,10 +349,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetLocalFloat(uint oObject, string sVarName)
         {
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(52);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.GetLocalFloat(oObject, sVarName);
         }
 
         /// <summary>
@@ -432,10 +358,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetLocalString(uint oObject, string sVarName)
         {
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(53);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetLocalString(oObject, sVarName);
         }
 
         /// <summary>
@@ -444,10 +367,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLocalObject(uint oObject, string sVarName)
         {
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(54);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLocalObject(oObject, sVarName);
         }
 
         /// <summary>
@@ -455,10 +375,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLocalInt(uint oObject, string sVarName, int nValue)
         {
-            VM.StackPush(nValue);
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(55);
+            NWN.Core.NWScript.SetLocalInt(oObject, sVarName, nValue);
         }
 
         /// <summary>
@@ -474,10 +391,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLocalFloat(uint oObject, string sVarName, float fValue)
         {
-            VM.StackPush(fValue);
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(56);
+            NWN.Core.NWScript.SetLocalFloat(oObject, sVarName, fValue);
         }
 
         /// <summary>
@@ -485,10 +399,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLocalString(uint oObject, string sVarName, string sValue)
         {
-            VM.StackPush(sValue);
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(57);
+            NWN.Core.NWScript.SetLocalString(oObject, sVarName, sValue);
         }
 
         /// <summary>
@@ -496,10 +407,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLocalObject(uint oObject, string sVarName, uint oValue)
         {
-            VM.StackPush(oValue);
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(58);
+            NWN.Core.NWScript.SetLocalObject(oObject, sVarName, oValue);
         }
 
         /// <summary>
@@ -508,9 +416,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string IntToString(int nInteger)
         {
-            VM.StackPush(nInteger);
-            VM.Call(92);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.IntToString(nInteger);
         }
 
         /// <summary>
@@ -519,9 +425,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int d2(int nNumDice = 1)
         {
-            VM.StackPush(nNumDice);
-            VM.Call(95);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.d2(nNumDice);
         }
 
         /// <summary>
@@ -530,9 +434,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int d3(int nNumDice = 1)
         {
-            VM.StackPush(nNumDice);
-            VM.Call(96);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.d3(nNumDice);
         }
 
         /// <summary>
@@ -541,9 +443,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int d4(int nNumDice = 1)
         {
-            VM.StackPush(nNumDice);
-            VM.Call(97);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.d4(nNumDice);
         }
 
         /// <summary>
@@ -552,9 +452,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int d6(int nNumDice = 1)
         {
-            VM.StackPush(nNumDice);
-            VM.Call(98);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.d6(nNumDice);
         }
 
         /// <summary>
@@ -563,9 +461,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int d8(int nNumDice = 1)
         {
-            VM.StackPush(nNumDice);
-            VM.Call(99);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.d8(nNumDice);
         }
 
         /// <summary>
@@ -574,9 +470,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int d10(int nNumDice = 1)
         {
-            VM.StackPush(nNumDice);
-            VM.Call(100);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.d10(nNumDice);
         }
 
         /// <summary>
@@ -585,9 +479,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int d12(int nNumDice = 1)
         {
-            VM.StackPush(nNumDice);
-            VM.Call(101);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.d12(nNumDice);
         }
 
         /// <summary>
@@ -596,9 +488,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int d20(int nNumDice = 1)
         {
-            VM.StackPush(nNumDice);
-            VM.Call(102);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.d20(nNumDice);
         }
 
         /// <summary>
@@ -607,9 +497,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int d100(int nNumDice = 1)
         {
-            VM.StackPush(nNumDice);
-            VM.Call(103);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.d100(nNumDice);
         }
 
         /// <summary>
@@ -618,8 +506,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMetaMagicFeat()
         {
-            VM.Call(105);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetMetaMagicFeat();
         }
 
         /// <summary>
@@ -637,12 +524,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static SavingThrowResultType FortitudeSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
             uint oSaveVersus = OBJECT_INVALID)
         {
-            VM.StackPush(oSaveVersus);
-            VM.StackPush((int)nSaveType);
-            VM.StackPush(nDC);
-            VM.StackPush(oCreature);
-            VM.Call(108);
-            return (SavingThrowResultType)VM.StackPopInt();
+            return (SavingThrowResultType)NWN.Core.NWScript.FortitudeSave(oCreature, nDC, (int)nSaveType, oSaveVersus);
         }
 
         /// <summary>
@@ -660,12 +542,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static SavingThrowResultType ReflexSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
             uint oSaveVersus = OBJECT_INVALID)
         {
-            VM.StackPush(oSaveVersus);
-            VM.StackPush((int)nSaveType);
-            VM.StackPush(nDC);
-            VM.StackPush(oCreature);
-            VM.Call(109);
-            return (SavingThrowResultType)VM.StackPopInt();
+            return (SavingThrowResultType)NWN.Core.NWScript.ReflexSave(oCreature, nDC, (int)nSaveType, oSaveVersus);
         }
 
         /// <summary>
@@ -683,12 +560,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static SavingThrowResultType WillSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
             uint oSaveVersus = OBJECT_INVALID)
         {
-            VM.StackPush(oSaveVersus);
-            VM.StackPush((int)nSaveType);
-            VM.StackPush(nDC);
-            VM.StackPush(oCreature);
-            VM.Call(110);
-            return (SavingThrowResultType)VM.StackPopInt();
+            return (SavingThrowResultType)NWN.Core.NWScript.WillSave(oCreature, nDC, (int)nSaveType, oSaveVersus);
         }
 
         /// <summary>
@@ -697,8 +569,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetSpellSaveDC()
         {
-            VM.Call(111);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetSpellSaveDC();
         }
 
         /// <summary>
@@ -731,14 +602,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static uint GetFirstObjectInShape(Shape nShape, float fSize, Location lTarget, bool bLineOfSight = false,
             ObjectType nObjectFilter = ObjectType.Creature, Vector3 vOrigin = default)
         {
-            VM.StackPush(vOrigin);
-            VM.StackPush((int)nObjectFilter);
-            VM.StackPush(bLineOfSight ? 1 : 0);
-            VM.StackPush((int)EngineStructure.Location, lTarget);
-            VM.StackPush(fSize);
-            VM.StackPush((int)nShape);
-            VM.Call(128);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetFirstObjectInShape((int)nShape, fSize, lTarget, bLineOfSight ? 1 : 0, (int)nObjectFilter, vOrigin);
         }
 
         /// <summary>
@@ -770,14 +634,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static uint GetNextObjectInShape(Shape nShape, float fSize, Location lTarget, bool bLineOfSight = false,
             ObjectType nObjectFilter = ObjectType.Creature, Vector3 vOrigin = default)
         {
-            VM.StackPush(vOrigin);
-            VM.StackPush((int)nObjectFilter);
-            VM.StackPush(bLineOfSight ? 1 : 0);
-            VM.StackPush((int)EngineStructure.Location, lTarget);
-            VM.StackPush(fSize);
-            VM.StackPush((int)nShape);
-            VM.Call(129);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetNextObjectInShape((int)nShape, fSize, lTarget, bLineOfSight ? 1 : 0, (int)nObjectFilter, vOrigin);
         }
 
         /// <summary>
@@ -797,9 +654,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SignalEvent(uint oObject, Event evToRun)
         {
-            VM.StackPush((int)EngineStructure.Event, evToRun);
-            VM.StackPush(oObject);
-            VM.Call(131);
+            NWN.Core.NWScript.SignalEvent(oObject, evToRun);
         }
 
         /// <summary>
@@ -818,9 +673,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Event EventUserDefined(int nUserDefinedEventNumber)
         {
-            VM.StackPush(nUserDefinedEventNumber);
-            VM.Call(132);
-            return VM.StackPopStruct((int)EngineStructure.Event);
+            return NWN.Core.NWScript.EventUserDefined(nUserDefinedEventNumber);
         }
 
         /// <summary>
@@ -833,11 +686,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAbilityScore(uint oCreature, AbilityType nAbilityType, bool nBaseAbilityScore = false)
         {
-            VM.StackPush(nBaseAbilityScore ? 1 : 0);
-            VM.StackPush((int)nAbilityType);
-            VM.StackPush(oCreature);
-            VM.Call(139);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetAbilityScore(oCreature, (int)nAbilityType, nBaseAbilityScore ? 1 : 0);
         }
 
         /// <summary>
@@ -845,9 +694,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDead(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(140);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsDead(oCreature) != 0;
         }
 
         /// <summary>
@@ -857,9 +704,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void PrintVector(Vector3 vVector, bool bPrepend = false)
         {
-            VM.StackPush(bPrepend ? 1 : 0);
-            VM.StackPush(vVector);
-            VM.Call(141);
+            NWN.Core.NWScript.PrintVector(vVector, bPrepend ? 1 : 0);
         }
 
         /// <summary>
@@ -867,11 +712,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 Vector3(float x = 0.0f, float y = 0.0f, float z = 0.0f)
         {
-            VM.StackPush(z);
-            VM.StackPush(y);
-            VM.StackPush(x);
-            VM.Call(142);
-            return VM.StackPopVector();
+            return NWN.Core.NWScript.Vector(x, y, z);
         }
 
         /// <summary>
@@ -879,8 +720,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetFacingPoint(Vector3 vTarget)
         {
-            VM.StackPush(vTarget);
-            VM.Call(143);
+            NWN.Core.NWScript.SetFacingPoint(vTarget);
         }
 
         /// <summary>
@@ -891,10 +731,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static TouchAttackReturn TouchAttackMelee(uint oTarget, bool bDisplayFeedback = true)
         {
-            VM.StackPush(bDisplayFeedback ? 1 : 0);
-            VM.StackPush(oTarget);
-            VM.Call(146);
-            return (TouchAttackReturn)VM.StackPopInt();
+            return (TouchAttackReturn)NWN.Core.NWScript.TouchAttackMelee(oTarget, bDisplayFeedback ? 1 : 0);
         }
 
         /// <summary>
@@ -903,10 +740,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static TouchAttackReturn TouchAttackRanged(uint oTarget, bool bDisplayFeedback = true)
         {
-            VM.StackPush(bDisplayFeedback ? 1 : 0);
-            VM.StackPush(oTarget);
-            VM.Call(147);
-            return (TouchAttackReturn)VM.StackPopInt();
+            return (TouchAttackReturn)NWN.Core.NWScript.TouchAttackRanged(oTarget, bDisplayFeedback ? 1 : 0);
         }
 
         /// <summary>
@@ -915,10 +749,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetDistanceBetween(uint oObjectA, uint oObjectB)
         {
-            VM.StackPush(oObjectB);
-            VM.StackPush(oObjectA);
-            VM.Call(151);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.GetDistanceBetween(oObjectA, oObjectB);
         }
 
         /// <summary>
@@ -926,10 +757,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLocalLocation(uint oObject, string sVarName, Location lValue)
         {
-            VM.StackPush((int)EngineStructure.Location, lValue);
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(152);
+            NWN.Core.NWScript.SetLocalLocation(oObject, sVarName, lValue);
         }
 
         /// <summary>
@@ -937,10 +765,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Location GetLocalLocation(uint oObject, string sVarName)
         {
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(153);
-            return VM.StackPopStruct((int)EngineStructure.Location);
+            return NWN.Core.NWScript.GetLocalLocation(oObject, sVarName);
         }
 
         /// <summary>
@@ -948,9 +773,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCommandable(bool nCommandable, uint oTarget = OBJECT_INVALID)
         {
-            VM.StackPush(oTarget);
-            VM.StackPush(nCommandable ? 1 : 0);
-            VM.Call(162);
+            NWN.Core.NWScript.SetCommandable(nCommandable ? 1 : 0, oTarget);
         }
 
         /// <summary>
@@ -958,9 +781,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetCommandable(uint oTarget = OBJECT_INVALID)
         {
-            VM.StackPush(oTarget);
-            VM.Call(163);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetCommandable(oTarget) != 0;
         }
 
         /// <summary>
@@ -969,9 +790,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetHitDice(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(166);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetHitDice(oCreature);
         }
 
         /// <summary>
@@ -982,9 +801,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionForceFollowObject(uint oFollow, float fFollowDistance = 0.0f)
         {
-            VM.StackPush(fFollowDistance);
-            VM.StackPush(oFollow);
-            VM.Call(167);
+            NWN.Core.NWScript.ActionForceFollowObject(oFollow, fFollowDistance);
         }
 
         /// <summary>
@@ -993,9 +810,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetTag(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(168);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetTag(oObject);
         }
 
         /// <summary>
@@ -1009,10 +824,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int ResistSpell(uint oCaster, uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.StackPush(oCaster);
-            VM.Call(169);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.ResistSpell(oCaster, oTarget);
         }
 
         /// <summary>
@@ -1020,9 +832,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsListening(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(174);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsListening(oObject) != 0;
         }
 
         /// <summary>
@@ -1030,9 +840,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetListening(uint oObject, bool bValue)
         {
-            VM.StackPush(bValue ? 1 : 0);
-            VM.StackPush(oObject);
-            VM.Call(175);
+            NWN.Core.NWScript.SetListening(oObject, bValue ? 1 : 0);
         }
 
         /// <summary>
@@ -1041,10 +849,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetListenPattern(uint oObject, string sPattern, int nNumber = 0)
         {
-            VM.StackPush(nNumber);
-            VM.StackPush(sPattern);
-            VM.StackPush(oObject);
-            VM.Call(176);
+            NWN.Core.NWScript.SetListenPattern(oObject, sPattern, nNumber);
         }
 
         /// <summary>
@@ -1062,8 +867,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionSit(uint oChair)
         {
-            VM.StackPush(oChair);
-            VM.Call(194);
+            NWN.Core.NWScript.ActionSit(oChair);
         }
 
         /// <summary>
@@ -1073,8 +877,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetListenPatternNumber()
         {
-            VM.Call(195);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetListenPatternNumber();
         }
 
         /// <summary>
@@ -1082,9 +885,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionJumpToObject(uint oToJumpTo, bool bWalkStraightLineToPoint = true)
         {
-            VM.StackPush(bWalkStraightLineToPoint ? 1 : 0);
-            VM.StackPush(oToJumpTo);
-            VM.Call(196);
+            NWN.Core.NWScript.ActionJumpToObject(oToJumpTo, bWalkStraightLineToPoint ? 1 : 0);
         }
 
         /// <summary>
@@ -1093,9 +894,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetWaypointByTag(string sWaypointTag)
         {
-            VM.StackPush(sWaypointTag);
-            VM.Call(197);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetWaypointByTag(sWaypointTag);
         }
 
         /// <summary>
@@ -1108,9 +907,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetTransitionTarget(uint oTransition)
         {
-            VM.StackPush(oTransition);
-            VM.Call(198);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetTransitionTarget(oTransition);
         }
 
         /// <summary>
@@ -1122,10 +919,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetObjectByTag(string sTag, int nNth = 0)
         {
-            VM.StackPush(nNth);
-            VM.StackPush(sTag);
-            VM.Call(200);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetObjectByTag(sTag, nNth);
         }
 
         /// <summary>
@@ -1133,8 +927,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionWait(float fSeconds)
         {
-            VM.StackPush(fSeconds);
-            VM.Call(202);
+            NWN.Core.NWScript.ActionWait(fSeconds);
         }
 
         /// <summary>
@@ -1148,11 +941,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void ActionStartConversation(uint oObjectToConverseWith, string sDialogResRef = "",
             bool bPrivateConversation = true, bool bPlayHello = true)
         {
-            VM.StackPush(bPlayHello ? 1 : 0);
-            VM.StackPush(bPrivateConversation ? 1 : 0);
-            VM.StackPush(sDialogResRef);
-            VM.StackPush(oObjectToConverseWith);
-            VM.Call(204);
+            NWN.Core.NWScript.ActionStartConversation(oObjectToConverseWith, sDialogResRef, bPrivateConversation ? 1 : 0, bPlayHello ? 1 : 0);
         }
 
         /// <summary>
@@ -1160,7 +949,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionPauseConversation()
         {
-            VM.Call(205);
+            NWN.Core.NWScript.ActionPauseConversation();
         }
 
 
@@ -1169,7 +958,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionResumeConversation()
         {
-            VM.Call(206);
+            NWN.Core.NWScript.ActionResumeConversation();
         }
 
 
@@ -1180,9 +969,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetSittingCreature(uint oChair)
         {
-            VM.StackPush(oChair);
-            VM.Call(210);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetSittingCreature(oChair);
         }
 
         /// <summary>
@@ -1194,9 +981,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetGoingToBeAttackedBy(uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.Call(211);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetGoingToBeAttackedBy(oTarget);
         }
 
         /// <summary>
@@ -1204,9 +989,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsPC(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(217);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsPC(oCreature) != 0;
         }
 
         /// <summary>
@@ -1217,9 +1000,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SpeakString(string sStringToSpeak, TalkVolume nTalkVolume = TalkVolume.Talk)
         {
-            VM.StackPush((int)nTalkVolume);
-            VM.StackPush(sStringToSpeak);
-            VM.Call(221);
+            NWN.Core.NWScript.SpeakString(sStringToSpeak, (int)nTalkVolume);
         }
 
         /// <summary>
@@ -1227,8 +1008,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Location GetSpellTargetLocation()
         {
-            VM.Call(222);
-            return VM.StackPopStruct((int)EngineStructure.Location);
+            return NWN.Core.NWScript.GetSpellTargetLocation();
         }
 
         /// <summary>
@@ -1236,9 +1016,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetFacingFromLocation(Location lLocation)
         {
-            VM.StackPush((int)EngineStructure.Location, lLocation);
-            VM.Call(225);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.GetFacingFromLocation(lLocation);
         }
 
         /// <summary>
@@ -1246,9 +1024,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float IntToFloat(int nInteger)
         {
-            VM.StackPush(nInteger);
-            VM.Call(230);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.IntToFloat(nInteger);
         }
 
         /// <summary>
@@ -1256,9 +1032,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int FloatToInt(float fFloat)
         {
-            VM.StackPush(fFloat);
-            VM.Call(231);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.FloatToInt(fFloat);
         }
 
         /// <summary>
@@ -1266,9 +1040,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int StringToInt(string sNumber)
         {
-            VM.StackPush(sNumber);
-            VM.Call(232);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.StringToInt(sNumber);
         }
 
         /// <summary>
@@ -1276,9 +1048,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float StringToFloat(string sNumber)
         {
-            VM.StackPush(sNumber);
-            VM.Call(233);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.StringToFloat(sNumber);
         }
 
         /// <summary>
@@ -1297,13 +1067,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             MetaMagic nMetaMagic = MetaMagic.Any, bool bCheat = false,
             ProjectilePathType nProjectilePathType = ProjectilePathType.Default, bool bInstantSpell = false)
         {
-            VM.StackPush(bInstantSpell ? 1 : 0);
-            VM.StackPush((int)nProjectilePathType);
-            VM.StackPush(bCheat ? 1 : 0);
-            VM.StackPush((int)nMetaMagic);
-            VM.StackPush((int)EngineStructure.Location, lTargetLocation);
-            VM.StackPush((int)nSpell);
-            VM.Call(234);
+            NWN.Core.NWScript.ActionCastSpellAtLocation((int)nSpell, lTargetLocation, (int)nMetaMagic, bCheat ? 1 : 0, (int)nProjectilePathType, bInstantSpell ? 1 : 0);
         }
 
         /// <summary>
@@ -1312,8 +1076,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPCSpeaker()
         {
-            VM.Call(238);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetPCSpeaker();
         }
 
         /// <summary>
@@ -1321,10 +1084,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetStringByStrRef(int nStrRef, Gender nGender = Gender.Male)
         {
-            VM.StackPush((int)nGender);
-            VM.StackPush(nStrRef);
-            VM.Call(239);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetStringByStrRef(nStrRef, (int)nGender);
         }
 
         /// <summary>
@@ -1334,9 +1094,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionSpeakStringByStrRef(int nStrRef, TalkVolume nTalkVolume = TalkVolume.Talk)
         {
-            VM.StackPush((int)nTalkVolume);
-            VM.StackPush(nStrRef);
-            VM.Call(240);
+            NWN.Core.NWScript.ActionSpeakStringByStrRef(nStrRef, (int)nTalkVolume);
         }
 
         /// <summary>
@@ -1345,8 +1103,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetModule()
         {
-            VM.Call(242);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetModule();
         }
 
         /// <summary>
@@ -1367,11 +1124,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Event EventSpellCastAt(uint oCaster, Spell nSpell, bool bHarmful = true)
         {
-            VM.StackPush(bHarmful ? 1 : 0);
-            VM.StackPush((int)nSpell);
-            VM.StackPush(oCaster);
-            VM.Call(244);
-            return VM.StackPopStruct((int)EngineStructure.Event);
+            return NWN.Core.NWScript.EventSpellCastAt(oCaster, (int)nSpell, bHarmful ? 1 : 0);
         }
 
         /// <summary>
@@ -1381,8 +1134,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastSpellCaster()
         {
-            VM.Call(245);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastSpellCaster();
         }
 
         /// <summary>
@@ -1391,8 +1143,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetLastSpell()
         {
-            VM.Call(246);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetLastSpell();
         }
 
         /// <summary>
@@ -1400,8 +1151,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetUserDefinedEventNumber()
         {
-            VM.Call(247);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetUserDefinedEventNumber();
         }
 
         /// <summary>
@@ -1410,8 +1160,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetSpellId()
         {
-            VM.Call(248);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetSpellId();
         }
 
         /// <summary>
@@ -1420,9 +1169,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string RandomName(Name nNameType = Name.FirstGenericMale)
         {
-            VM.StackPush((int)nNameType);
-            VM.Call(249);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.RandomName((int)nNameType);
         }
 
         /// <summary>
@@ -1436,10 +1183,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetName(uint oObject, bool bOriginalName = false)
         {
-            VM.StackPush(bOriginalName ? 1 : 0);
-            VM.StackPush(oObject);
-            VM.Call(253);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetName(oObject, bOriginalName ? 1 : 0);
         }
 
         /// <summary>
@@ -1448,8 +1192,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastSpeaker()
         {
-            VM.Call(254);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastSpeaker();
         }
 
         /// <summary>
@@ -1460,10 +1203,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int BeginConversation(string sResRef = "", uint oObjectToDialog = OBJECT_INVALID)
         {
-            VM.StackPush(oObjectToDialog);
-            VM.StackPush(sResRef);
-            VM.Call(255);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.BeginConversation(sResRef, oObjectToDialog);
         }
 
         /// <summary>
@@ -1472,8 +1212,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastPerceived()
         {
-            VM.Call(256);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastPerceived();
         }
 
         /// <summary>
@@ -1482,8 +1221,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetLastPerceptionHeard()
         {
-            VM.Call(257);
-            return Convert.ToBoolean(VM.StackPopInt());
+            return NWN.Core.NWScript.GetLastPerceptionHeard() != 0;
         }
 
         /// <summary>
@@ -1492,8 +1230,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetLastPerceptionInaudible()
         {
-            VM.Call(258);
-            return Convert.ToBoolean(VM.StackPopInt());
+            return NWN.Core.NWScript.GetLastPerceptionInaudible() != 0;
         }
 
         /// <summary>
@@ -1502,8 +1239,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetLastPerceptionSeen()
         {
-            VM.Call(259);
-            return Convert.ToBoolean(VM.StackPopInt());
+            return NWN.Core.NWScript.GetLastPerceptionSeen() != 0;
         }
 
         /// <summary>
@@ -1512,8 +1248,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastClosedBy()
         {
-            VM.Call(260);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastClosedBy();
         }
 
         /// <summary>
@@ -1522,8 +1257,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetLastPerceptionVanished()
         {
-            VM.Call(261);
-            return Convert.ToBoolean(VM.StackPopInt());
+            return NWN.Core.NWScript.GetLastPerceptionVanished() != 0;
         }
 
         /// <summary>
@@ -1538,11 +1272,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             ObjectType nResidentObjectType = ObjectType.Creature,
             PersistentZone nPersistentZone = PersistentZone.Active)
         {
-            VM.StackPush((int)nPersistentZone);
-            VM.StackPush((int)nResidentObjectType);
-            VM.StackPush(oPersistentObject);
-            VM.Call(262);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetFirstInPersistentObject(oPersistentObject, (int)nResidentObjectType, (int)nPersistentZone);
         }
 
         /// <summary>
@@ -1557,11 +1287,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             ObjectType nResidentObjectType = ObjectType.Creature,
             PersistentZone nPersistentZone = PersistentZone.Active)
         {
-            VM.StackPush((int)nPersistentZone);
-            VM.StackPush((int)nResidentObjectType);
-            VM.StackPush(oPersistentObject);
-            VM.Call(263);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetNextInPersistentObject(oPersistentObject, (int)nResidentObjectType, (int)nPersistentZone);
         }
 
         /// <summary>
@@ -1570,9 +1296,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetAreaOfEffectCreator(uint oAreaOfEffectObject = OBJECT_INVALID)
         {
-            VM.StackPush(oAreaOfEffectObject);
-            VM.Call(264);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetAreaOfEffectCreator(oAreaOfEffectObject);
         }
 
         /// <summary>
@@ -1580,9 +1304,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DeleteLocalInt(uint oObject, string sVarName)
         {
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(265);
+            NWN.Core.NWScript.DeleteLocalInt(oObject, sVarName);
         }
 
         /// <summary>
@@ -1598,9 +1320,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DeleteLocalFloat(uint oObject, string sVarName)
         {
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(266);
+            NWN.Core.NWScript.DeleteLocalFloat(oObject, sVarName);
         }
 
         /// <summary>
@@ -1608,9 +1328,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DeleteLocalString(uint oObject, string sVarName)
         {
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(267);
+            NWN.Core.NWScript.DeleteLocalString(oObject, sVarName);
         }
 
         /// <summary>
@@ -1618,9 +1336,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DeleteLocalObject(uint oObject, string sVarName)
         {
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(268);
+            NWN.Core.NWScript.DeleteLocalObject(oObject, sVarName);
         }
 
         /// <summary>
@@ -1628,9 +1344,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DeleteLocalLocation(uint oObject, string sVarName)
         {
-            VM.StackPush(sVarName);
-            VM.StackPush(oObject);
-            VM.Call(269);
+            NWN.Core.NWScript.DeleteLocalLocation(oObject, sVarName);
         }
 
         /// <summary>
@@ -1638,9 +1352,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string ObjectToString(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(272);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.ObjectToString(oObject);
         }
 
         /// <summary>
@@ -1652,11 +1364,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsImmune(uint oCreature, ImmunityType nImmunityType, uint oVersus = OBJECT_INVALID)
         {
-            VM.StackPush(oVersus);
-            VM.StackPush((int)nImmunityType);
-            VM.StackPush(oCreature);
-            VM.Call(274);
-            return VM.StackPopInt() == 1;
+            return NWN.Core.NWScript.GetIsImmune(oCreature, (int)nImmunityType, oVersus) == 1;
         }
 
         /// <summary>
@@ -1664,9 +1372,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEncounterActive(uint oEncounter = OBJECT_INVALID)
         {
-            VM.StackPush(oEncounter);
-            VM.Call(276);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetEncounterActive(oEncounter);
         }
 
         /// <summary>
@@ -1676,9 +1382,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetEncounterActive(int nNewValue, uint oEncounter = OBJECT_INVALID)
         {
-            VM.StackPush(oEncounter);
-            VM.StackPush(nNewValue);
-            VM.Call(277);
+            NWN.Core.NWScript.SetEncounterActive(nNewValue, oEncounter);
         }
 
         /// <summary>
@@ -1686,9 +1390,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEncounterSpawnsMax(uint oEncounter = OBJECT_INVALID)
         {
-            VM.StackPush(oEncounter);
-            VM.Call(278);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetEncounterSpawnsMax(oEncounter);
         }
 
         /// <summary>
@@ -1696,9 +1398,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetEncounterSpawnsMax(int nNewValue, uint oEncounter = OBJECT_INVALID)
         {
-            VM.StackPush(oEncounter);
-            VM.StackPush(nNewValue);
-            VM.Call(279);
+            NWN.Core.NWScript.SetEncounterSpawnsMax(nNewValue, oEncounter);
         }
 
         /// <summary>
@@ -1706,9 +1406,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEncounterSpawnsCurrent(uint oEncounter = OBJECT_INVALID)
         {
-            VM.StackPush(oEncounter);
-            VM.Call(280);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetEncounterSpawnsCurrent(oEncounter);
         }
 
         /// <summary>
@@ -1716,9 +1414,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetEncounterSpawnsCurrent(int nNewValue, uint oEncounter = OBJECT_INVALID)
         {
-            VM.StackPush(oEncounter);
-            VM.StackPush(nNewValue);
-            VM.Call(281);
+            NWN.Core.NWScript.SetEncounterSpawnsCurrent(nNewValue, oEncounter);
         }
 
         /// <summary>
@@ -1726,9 +1422,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCustomToken(int nCustomTokenNumber, string sTokenValue)
         {
-            VM.StackPush(sTokenValue);
-            VM.StackPush(nCustomTokenNumber);
-            VM.Call(284);
+            NWN.Core.NWScript.SetCustomToken(nCustomTokenNumber, sTokenValue);
         }
 
         /// <summary>
@@ -1738,10 +1432,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetHasFeat(FeatType nFeat, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush((int)nFeat);
-            VM.Call(285);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetHasFeat((int)nFeat, oCreature) != 0;
         }
 
         /// <summary>
@@ -1751,10 +1442,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetHasSkill(NWNSkillType nSkill, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush((int)nSkill);
-            VM.Call(286);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetHasSkill((int)nSkill, oCreature) != 0;
         }
 
         /// <summary>
@@ -1764,9 +1452,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionUseFeat(FeatType nFeat, uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.StackPush((int)nFeat);
-            VM.Call(287);
+            NWN.Core.NWScript.ActionUseFeat((int)nFeat, oTarget);
         }
 
         /// <summary>
@@ -1780,11 +1466,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void ActionUseSkill(NWNSkillType nSkill, uint oTarget, SubSkill nSubSkill = SubSkill.None,
             uint oItemUsed = OBJECT_INVALID)
         {
-            VM.StackPush(oItemUsed);
-            VM.StackPush((int)nSubSkill);
-            VM.StackPush(oTarget);
-            VM.StackPush((int)nSkill);
-            VM.Call(288);
+            NWN.Core.NWScript.ActionUseSkill((int)nSkill, oTarget, (int)nSubSkill, oItemUsed);
         }
 
         /// <summary>
@@ -1794,10 +1476,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetObjectSeen(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            VM.StackPush(oSource);
-            VM.StackPush(oTarget);
-            VM.Call(289);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetObjectSeen(oTarget, oSource) != 0;
         }
 
         /// <summary>
@@ -1807,10 +1486,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetObjectHeard(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            VM.StackPush(oSource);
-            VM.StackPush(oTarget);
-            VM.Call(290);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetObjectHeard(oTarget, oSource) != 0;
         }
 
         /// <summary>
@@ -1818,8 +1494,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastPlayerDied()
         {
-            VM.Call(291);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastPlayerDied();
         }
 
         /// <summary>
@@ -1828,8 +1503,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetModuleItemLost()
         {
-            VM.Call(292);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetModuleItemLost();
         }
 
         /// <summary>
@@ -1838,8 +1512,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetModuleItemLostBy()
         {
-            VM.Call(293);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetModuleItemLostBy();
         }
 
         /// <summary>
@@ -1850,9 +1523,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetEncounterDifficulty(EncounterDifficulty nEncounterDifficulty,
             uint oEncounter = OBJECT_INVALID)
         {
-            VM.StackPush(oEncounter);
-            VM.StackPush((int)nEncounterDifficulty);
-            VM.Call(296);
+            NWN.Core.NWScript.SetEncounterDifficulty((int)nEncounterDifficulty, oEncounter);
         }
 
         /// <summary>
@@ -1860,9 +1531,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEncounterDifficulty(uint oEncounter = OBJECT_INVALID)
         {
-            VM.StackPush(oEncounter);
-            VM.Call(297);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetEncounterDifficulty(oEncounter);
         }
 
         /// <summary>
@@ -1870,10 +1539,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetDistanceBetweenLocations(Location lLocationA, Location lLocationB)
         {
-            VM.StackPush((int)EngineStructure.Location, lLocationB);
-            VM.StackPush((int)EngineStructure.Location, lLocationA);
-            VM.Call(298);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.GetDistanceBetweenLocations(lLocationA, lLocationB);
         }
 
         /// <summary>
@@ -1888,13 +1554,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static int GetReflexAdjustedDamage(int nDamage, uint oTarget, int nDC,
             SavingThrowType nSaveType = SavingThrowType.All, uint oSaveVersus = OBJECT_INVALID)
         {
-            VM.StackPush(oSaveVersus);
-            VM.StackPush((int)nSaveType);
-            VM.StackPush(nDC);
-            VM.StackPush(oTarget);
-            VM.StackPush(nDamage);
-            VM.Call(299);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetReflexAdjustedDamage(nDamage, oTarget, nDC, (int)nSaveType, oSaveVersus);
         }
 
         /// <summary>
@@ -1905,10 +1565,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void PlayAnimation(Animation nAnimation, float fSpeed = 1.0f, float fSeconds = 0.0f)
         {
-            VM.StackPush(fSeconds);
-            VM.StackPush(fSpeed);
-            VM.StackPush((int)nAnimation);
-            VM.Call(300);
+            NWN.Core.NWScript.PlayAnimation((int)nAnimation, fSpeed, fSeconds);
         }
 
         /// <summary>
@@ -1917,9 +1574,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Talent TalentSpell(Spell nSpell)
         {
-            VM.StackPush((int)nSpell);
-            VM.Call(301);
-            return VM.StackPopStruct((int)EngineStructure.Talent);
+            return NWN.Core.NWScript.TalentSpell((int)nSpell);
         }
 
         /// <summary>
@@ -1928,9 +1583,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Talent TalentFeat(FeatType nFeat)
         {
-            VM.StackPush((int)nFeat);
-            VM.Call(302);
-            return VM.StackPopStruct((int)EngineStructure.Talent);
+            return NWN.Core.NWScript.TalentFeat((int)nFeat);
         }
 
         /// <summary>
@@ -1939,9 +1592,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Talent TalentSkill(NWNSkillType nSkill)
         {
-            VM.StackPush((int)nSkill);
-            VM.Call(303);
-            return VM.StackPopStruct((int)EngineStructure.Talent);
+            return NWN.Core.NWScript.TalentSkill((int)nSkill);
         }
 
         /// <summary>
@@ -1954,10 +1605,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetHasSpellEffect(Spell nSpell, uint oObject = OBJECT_INVALID)
         {
-            VM.StackPush(oObject);
-            VM.StackPush((int)nSpell);
-            VM.Call(304);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetHasSpellEffect((int)nSpell, oObject) != 0;
         }
 
         /// <summary>
@@ -1966,9 +1614,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectSpellId(Effect eSpellEffect)
         {
-            VM.StackPush((int)EngineStructure.Effect, eSpellEffect);
-            VM.Call(305);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetEffectSpellId(eSpellEffect);
         }
 
         /// <summary>
@@ -1976,10 +1622,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetCreatureHasTalent(Talent tTalent, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush((int)EngineStructure.Talent, tTalent);
-            VM.Call(306);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetCreatureHasTalent(tTalent, oCreature) != 0;
         }
 
         /// <summary>
@@ -1989,10 +1632,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Talent GetCreatureTalentRandom(TalentCategory nCategory, uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush((int)nCategory);
-            VM.Call(307);
-            return VM.StackPopStruct((int)EngineStructure.Talent);
+            return NWN.Core.NWScript.GetCreatureTalentRandom((int)nCategory, oCreature);
         }
 
         /// <summary>
@@ -2005,11 +1645,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Talent GetCreatureTalentBest(TalentCategory nCategory, int nCRMax,
             uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush(nCRMax);
-            VM.StackPush((int)nCategory);
-            VM.Call(308);
-            return VM.StackPopStruct((int)EngineStructure.Talent);
+            return NWN.Core.NWScript.GetCreatureTalentBest((int)nCategory, nCRMax, oCreature);
         }
 
         /// <summary>
@@ -2017,9 +1653,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionUseTalentOnObject(Talent tChosenTalent, uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.StackPush((int)EngineStructure.Talent, tChosenTalent);
-            VM.Call(309);
+            NWN.Core.NWScript.ActionUseTalentOnObject(tChosenTalent, oTarget);
         }
 
         /// <summary>
@@ -2027,9 +1661,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionUseTalentAtLocation(Talent tChosenTalent, Location lTargetLocation)
         {
-            VM.StackPush((int)EngineStructure.Location, lTargetLocation);
-            VM.StackPush((int)EngineStructure.Talent, tChosenTalent);
-            VM.Call(310);
+            NWN.Core.NWScript.ActionUseTalentAtLocation(tChosenTalent, lTargetLocation);
         }
 
         /// <summary>
@@ -2037,9 +1669,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsPlayableRacialType(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(312);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsPlayableRacialType(oCreature) != 0;
         }
 
         /// <summary>
@@ -2047,8 +1677,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void JumpToLocation(Location lDestination)
         {
-            VM.StackPush((int)EngineStructure.Location, lDestination);
-            VM.Call(313);
+            NWN.Core.NWScript.JumpToLocation(lDestination);
         }
 
         /// <summary>
@@ -2062,11 +1691,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetSkillRank(NWNSkillType nSkill, uint oTarget = OBJECT_INVALID, bool nBaseSkillRank = false)
         {
-            VM.StackPush(nBaseSkillRank ? 1 : 0);
-            VM.StackPush(oTarget);
-            VM.StackPush((int)nSkill);
-            VM.Call(315);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetSkillRank((int)nSkill, oTarget, nBaseSkillRank ? 1 : 0);
         }
 
         /// <summary>
@@ -2075,9 +1700,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetAttackTarget(uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.Call(316);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetAttackTarget(oCreature);
         }
 
         /// <summary>
@@ -2086,9 +1709,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static SpecialAttack GetLastAttackType(uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.Call(317);
-            return (SpecialAttack)VM.StackPopInt();
+            return (SpecialAttack)NWN.Core.NWScript.GetLastAttackType(oCreature);
         }
 
         /// <summary>
@@ -2097,9 +1718,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static CombatMode GetLastAttackMode(uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.Call(318);
-            return (CombatMode)VM.StackPopInt();
+            return (CombatMode)NWN.Core.NWScript.GetLastAttackMode(oCreature);
         }
 
         /// <summary>
@@ -2111,8 +1730,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetClickingObject()
         {
-            VM.Call(326);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetClickingObject();
         }
 
         /// <summary>
@@ -2120,8 +1738,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetAssociateListenPatterns(uint oTarget = OBJECT_INVALID)
         {
-            VM.StackPush(oTarget);
-            VM.Call(327);
+            NWN.Core.NWScript.SetAssociateListenPatterns(oTarget);
         }
 
         /// <summary>
@@ -2130,9 +1747,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastWeaponUsed(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(328);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastWeaponUsed(oCreature);
         }
 
         /// <summary>
@@ -2140,8 +1755,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionInteractObject(uint oPlaceable)
         {
-            VM.StackPush(oPlaceable);
-            VM.Call(329);
+            NWN.Core.NWScript.ActionInteractObject(oPlaceable);
         }
 
         /// <summary>
@@ -2151,8 +1765,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastUsedBy()
         {
-            VM.Call(330);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastUsedBy();
         }
 
 
@@ -2162,9 +1775,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetDamageDealtByType(DamageType nDamageType)
         {
-            VM.StackPush((int)nDamageType);
-            VM.Call(344);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetDamageDealtByType((int)nDamageType);
         }
 
         /// <summary>
@@ -2172,8 +1783,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTotalDamageDealt()
         {
-            VM.Call(345);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTotalDamageDealt();
         }
 
         /// <summary>
@@ -2182,9 +1792,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastDamager(uint oObject = OBJECT_INVALID)
         {
-            VM.StackPush(oObject);
-            VM.Call(346);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastDamager(oObject);
         }
 
         /// <summary>
@@ -2194,8 +1802,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastDisarmed()
         {
-            VM.Call(347);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastDisarmed();
         }
 
         /// <summary>
@@ -2204,8 +1811,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastDisturbed()
         {
-            VM.Call(348);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastDisturbed();
         }
 
         /// <summary>
@@ -2214,8 +1820,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastLocked()
         {
-            VM.Call(349);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastLocked();
         }
 
         /// <summary>
@@ -2224,8 +1829,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastUnlocked()
         {
-            VM.Call(350);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastUnlocked();
         }
 
         /// <summary>
@@ -2233,9 +1837,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsTalentValid(Talent tTalent)
         {
-            VM.StackPush((int)EngineStructure.Talent, tTalent);
-            VM.Call(359);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsTalentValid(tTalent) != 0;
         }
 
         /// <summary>
@@ -2244,10 +1846,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void ActionMoveAwayFromLocation(Location lMoveAwayFrom, bool bRun = false,
             float fMoveAwayRange = 40.0f)
         {
-            VM.StackPush(fMoveAwayRange);
-            VM.StackPush(bRun ? 1 : 0);
-            VM.StackPush((int)EngineStructure.Location, lMoveAwayFrom);
-            VM.Call(360);
+            NWN.Core.NWScript.ActionMoveAwayFromLocation(lMoveAwayFrom, bRun ? 1 : 0, fMoveAwayRange);
         }
 
         /// <summary>
@@ -2258,8 +1857,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetAttemptedAttackTarget()
         {
-            VM.Call(361);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetAttemptedAttackTarget();
         }
 
         /// <summary>
@@ -2267,9 +1865,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static TalentType GetTypeFromTalent(Talent tTalent)
         {
-            VM.StackPush((int)EngineStructure.Talent, tTalent);
-            VM.Call(362);
-            return (TalentType)VM.StackPopInt();
+            return (TalentType)NWN.Core.NWScript.GetTypeFromTalent(tTalent);
         }
 
         /// <summary>
@@ -2277,9 +1873,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetIdFromTalent(Talent tTalent)
         {
-            VM.StackPush((int)EngineStructure.Talent, tTalent);
-            VM.Call(363);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetIdFromTalent(tTalent);
         }
 
         /// <summary>
@@ -2290,10 +1884,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetPCPublicCDKey(uint oPlayer, bool nSinglePlayerCDKey = false)
         {
-            VM.StackPush(nSinglePlayerCDKey ? 1 : 0);
-            VM.StackPush(oPlayer);
-            VM.Call(369);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetPCPublicCDKey(oPlayer, nSinglePlayerCDKey ? 1 : 0);
         }
 
         /// <summary>
@@ -2301,9 +1892,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetPCIPAddress(uint oPlayer)
         {
-            VM.StackPush(oPlayer);
-            VM.Call(370);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetPCIPAddress(oPlayer);
         }
 
         /// <summary>
@@ -2311,9 +1900,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetPCPlayerName(uint oPlayer)
         {
-            VM.StackPush(oPlayer);
-            VM.Call(371);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetPCPlayerName(oPlayer);
         }
 
         /// <summary>
@@ -2321,9 +1908,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPCLike(uint oPlayer, uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.StackPush(oPlayer);
-            VM.Call(372);
+            NWN.Core.NWScript.SetPCLike(oPlayer, oTarget);
         }
 
         /// <summary>
@@ -2331,9 +1916,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPCDislike(uint oPlayer, uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.StackPush(oPlayer);
-            VM.Call(373);
+            NWN.Core.NWScript.SetPCDislike(oPlayer, oTarget);
         }
 
         /// <summary>
@@ -2341,9 +1924,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SendMessageToPC(uint oPlayer, string szMessage)
         {
-            VM.StackPush(szMessage);
-            VM.StackPush(oPlayer);
-            VM.Call(374);
+            NWN.Core.NWScript.SendMessageToPC(oPlayer, szMessage);
         }
 
         /// <summary>
@@ -2354,8 +1935,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetAttemptedSpellTarget()
         {
-            VM.Call(375);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetAttemptedSpellTarget();
         }
 
         /// <summary>
@@ -2363,9 +1943,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetJournalQuestExperience(string szPlotID)
         {
-            VM.StackPush(szPlotID);
-            VM.Call(384);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetJournalQuestExperience(szPlotID);
         }
 
         /// <summary>
@@ -2373,9 +1951,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void JumpToObject(uint oToJumpTo, bool nWalkStraightLineToPoint = true)
         {
-            VM.StackPush(nWalkStraightLineToPoint ? 1 : 0);
-            VM.StackPush(oToJumpTo);
-            VM.Call(385);
+            NWN.Core.NWScript.JumpToObject(oToJumpTo, nWalkStraightLineToPoint ? 1 : 0);
         }
 
         /// <summary>
@@ -2385,9 +1961,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string IntToHexString(int nInteger)
         {
-            VM.StackPush(nInteger);
-            VM.Call(396);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.IntToHexString(nInteger);
         }
 
         /// <summary>
@@ -2395,8 +1969,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Location GetStartingLocation()
         {
-            VM.Call(411);
-            return VM.StackPopStruct((int)EngineStructure.Location);
+            return NWN.Core.NWScript.GetStartingLocation();
         }
 
         /// <summary>
@@ -2404,10 +1977,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsWeaponEffective(uint oVersus = OBJECT_INVALID, bool bOffHand = false)
         {
-            VM.StackPush(bOffHand ? 1 : 0);
-            VM.StackPush(oVersus);
-            VM.Call(422);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsWeaponEffective(oVersus, bOffHand ? 1 : 0) != 0;
         }
 
         /// <summary>
@@ -2417,8 +1987,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetLastSpellHarmful()
         {
-            VM.Call(423);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetLastSpellHarmful() != 0;
         }
 
         /// <summary>
@@ -2439,12 +2008,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void ActivatePortal(uint oTarget, string sIPaddress = "", string sPassword = "",
             string sWaypointTag = "", bool bSeamless = false)
         {
-            VM.StackPush(bSeamless ? 1 : 0);
-            VM.StackPush(sWaypointTag);
-            VM.StackPush(sPassword);
-            VM.StackPush(sIPaddress);
-            VM.StackPush(oTarget);
-            VM.Call(474);
+            NWN.Core.NWScript.ActivatePortal(oTarget, sIPaddress, sPassword, sWaypointTag, bSeamless ? 1 : 0);
         }
 
         /// <summary>
@@ -2457,10 +2021,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void ActionCastFakeSpellAtObject(Spell nSpell, uint oTarget,
             ProjectilePathType nProjectilePathType = ProjectilePathType.Default)
         {
-            VM.StackPush((int)nProjectilePathType);
-            VM.StackPush(oTarget);
-            VM.StackPush((int)nSpell);
-            VM.Call(501);
+            NWN.Core.NWScript.ActionCastFakeSpellAtObject((int)nSpell, oTarget, (int)nProjectilePathType);
         }
 
         /// <summary>
@@ -2473,10 +2034,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void ActionCastFakeSpellAtLocation(Spell nSpell, Location lTarget,
             ProjectilePathType nProjectilePathType = ProjectilePathType.Default)
         {
-            VM.StackPush((int)nProjectilePathType);
-            VM.StackPush((int)EngineStructure.Location, lTarget);
-            VM.StackPush((int)nSpell);
-            VM.Call(502);
+            NWN.Core.NWScript.ActionCastFakeSpellAtLocation((int)nSpell, lTarget, (int)nProjectilePathType);
         }
 
         /// <summary>
@@ -2485,8 +2043,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void StartNewModule(string sModuleName)
         {
-            VM.StackPush(sModuleName);
-            VM.Call(509);
+            NWN.Core.NWScript.StartNewModule(sModuleName);
         }
 
         /// <summary>
@@ -2494,7 +2051,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DoSinglePlayerAutoSave()
         {
-            VM.Call(512);
+            NWN.Core.NWScript.DoSinglePlayerAutoSave();
         }
 
         /// <summary>
@@ -2502,8 +2059,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetGameDifficulty()
         {
-            VM.Call(513);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetGameDifficulty();
         }
 
         /// <summary>
@@ -2511,9 +2067,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ActionType GetCurrentAction(uint oObject = OBJECT_INVALID)
         {
-            VM.StackPush(oObject);
-            VM.Call(522);
-            return (ActionType)VM.StackPopInt();
+            return (ActionType)NWN.Core.NWScript.GetCurrentAction(oObject);
         }
 
         /// <summary>
@@ -2529,10 +2083,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void FloatingTextStrRefOnCreature(int nStrRefToDisplay, uint oCreatureToFloatAbove,
             bool bBroadcastToFaction = true)
         {
-            VM.StackPush(bBroadcastToFaction ? 1 : 0);
-            VM.StackPush(oCreatureToFloatAbove);
-            VM.StackPush(nStrRefToDisplay);
-            VM.Call(525);
+            NWN.Core.NWScript.FloatingTextStrRefOnCreature(nStrRefToDisplay, oCreatureToFloatAbove, bBroadcastToFaction ? 1 : 0);
         }
 
         /// <summary>
@@ -2548,10 +2099,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void FloatingTextStringOnCreature(string sStringToDisplay, uint oCreatureToFloatAbove,
             bool bBroadcastToFaction = true)
         {
-            VM.StackPush(bBroadcastToFaction ? 1 : 0);
-            VM.StackPush(oCreatureToFloatAbove);
-            VM.StackPush(sStringToDisplay);
-            VM.Call(526);
+            NWN.Core.NWScript.FloatingTextStringOnCreature(sStringToDisplay, oCreatureToFloatAbove, bBroadcastToFaction ? 1 : 0);
         }
 
         /// <summary>
@@ -2559,9 +2107,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetLockKeyRequired(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(537);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetLockKeyRequired(oObject) != 0;
         }
 
         /// <summary>
@@ -2569,9 +2115,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetLockKeyTag(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(538);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetLockKeyTag(oObject);
         }
 
         /// <summary>
@@ -2579,9 +2123,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetLockLockable(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(539);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetLockLockable(oObject) != 0;
         }
 
         /// <summary>
@@ -2589,9 +2131,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetLockUnlockDC(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(540);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetLockUnlockDC(oObject);
         }
 
         /// <summary>
@@ -2599,9 +2139,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetLockLockDC(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(541);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetLockLockDC(oObject);
         }
 
         /// <summary>
@@ -2611,10 +2149,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetHasFeatEffect(int nFeat, uint oObject = OBJECT_INVALID)
         {
-            VM.StackPush(oObject);
-            VM.StackPush(nFeat);
-            VM.Call(543);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetHasFeatEffect(nFeat, oObject);
         }
 
         /// <summary>
@@ -2634,9 +2169,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPlaceableIllumination(uint oPlaceable = OBJECT_INVALID, bool bIlluminate = true)
         {
-            VM.StackPush(bIlluminate ? 1 : 0);
-            VM.StackPush(oPlaceable);
-            VM.Call(544);
+            NWN.Core.NWScript.SetPlaceableIllumination(oPlaceable, bIlluminate ? 1 : 0);
         }
 
         /// <summary>
@@ -2644,9 +2177,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetPlaceableIllumination(uint oPlaceable = OBJECT_INVALID)
         {
-            VM.StackPush(oPlaceable);
-            VM.Call(545);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetPlaceableIllumination(oPlaceable) != 0;
         }
 
         /// <summary>
@@ -2656,10 +2187,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetIsPlaceableObjectActionPossible(uint oPlaceable, int nPlaceableAction)
         {
-            VM.StackPush(nPlaceableAction);
-            VM.StackPush(oPlaceable);
-            VM.Call(546);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetIsPlaceableObjectActionPossible(oPlaceable, nPlaceableAction);
         }
 
         /// <summary>
@@ -2669,9 +2197,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DoPlaceableObjectAction(uint oPlaceable, int nPlaceableAction)
         {
-            VM.StackPush(nPlaceableAction);
-            VM.StackPush(oPlaceable);
-            VM.Call(547);
+            NWN.Core.NWScript.DoPlaceableObjectAction(oPlaceable, nPlaceableAction);
         }
 
         /// <summary>
@@ -2680,7 +2206,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ExportAllCharacters()
         {
-            VM.Call(557);
+            NWN.Core.NWScript.ExportAllCharacters();
         }
 
         /// <summary>
@@ -2688,8 +2214,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void WriteTimestampedLogEntry(string sLogEntry)
         {
-            VM.StackPush(sLogEntry);
-            VM.Call(560);
+            NWN.Core.NWScript.WriteTimestampedLogEntry(sLogEntry);
         }
 
         /// <summary>
@@ -2699,8 +2224,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetModuleName()
         {
-            VM.Call(561);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetModuleName();
         }
 
         /// <summary>
@@ -2709,8 +2233,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void EndGame(string sEndMovie)
         {
-            VM.StackPush(sEndMovie);
-            VM.Call(564);
+            NWN.Core.NWScript.EndGame(sEndMovie);
         }
 
         /// <summary>
@@ -2718,8 +2241,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionCounterSpell(uint oCounterSpellTarget)
         {
-            VM.StackPush(oCounterSpellTarget);
-            VM.Call(566);
+            NWN.Core.NWScript.ActionCounterSpell(oCounterSpellTarget);
         }
 
         /// <summary>
@@ -2728,9 +2250,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetStrRefSoundDuration(int nStrRef)
         {
-            VM.StackPush(nStrRef);
-            VM.Call(571);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.GetStrRefSoundDuration(nStrRef);
         }
 
         /// <summary>
@@ -2745,7 +2265,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SpawnScriptDebugger()
         {
-            VM.Call(578);
+            NWN.Core.NWScript.SpawnScriptDebugger();
         }
 
         /// <summary>
@@ -2757,11 +2277,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetCampaignFloat(string sCampaignName, string sVarName, float flFloat,
             uint oPlayer = OBJECT_INVALID)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush(flFloat);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-            VM.Call(589);
+            NWN.Core.NWScript.SetCampaignFloat(sCampaignName, sVarName, flFloat, oPlayer);
         }
 
         /// <summary>
@@ -2773,11 +2289,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetCampaignInt(string sCampaignName, string sVarName, int nInt,
             uint oPlayer = OBJECT_INVALID)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush(nInt);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-            VM.Call(590);
+            NWN.Core.NWScript.SetCampaignInt(sCampaignName, sVarName, nInt, oPlayer);
         }
 
         /// <summary>
@@ -2789,11 +2301,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetCampaignVector(string sCampaignName, string sVarName, Vector3 vVector,
             uint oPlayer = OBJECT_INVALID)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush(vVector);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-            VM.Call(591);
+            NWN.Core.NWScript.SetCampaignVector(sCampaignName, sVarName, vVector, oPlayer);
         }
 
         /// <summary>
@@ -2805,11 +2313,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetCampaignLocation(string sCampaignName, string sVarName, Location locLocation,
             uint oPlayer = OBJECT_INVALID)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush((int)EngineStructure.Location, locLocation);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-            VM.Call(592);
+            NWN.Core.NWScript.SetCampaignLocation(sCampaignName, sVarName, locLocation, oPlayer);
         }
 
         /// <summary>
@@ -2821,11 +2325,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetCampaignString(string sCampaignName, string sVarName, string sString,
             uint oPlayer = OBJECT_INVALID)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush(sString);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-            VM.Call(593);
+            NWN.Core.NWScript.SetCampaignString(sCampaignName, sVarName, sString, oPlayer);
         }
 
         /// <summary>
@@ -2833,8 +2333,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DestroyCampaignDatabase(string sCampaignName)
         {
-            VM.StackPush(sCampaignName);
-            VM.Call(594);
+            NWN.Core.NWScript.DestroyCampaignDatabase(sCampaignName);
         }
 
         /// <summary>
@@ -2845,11 +2344,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetCampaignFloat(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-            VM.Call(595);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.GetCampaignFloat(sCampaignName, sVarName, oPlayer);
         }
 
         /// <summary>
@@ -2860,11 +2355,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCampaignInt(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-            VM.Call(596);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetCampaignInt(sCampaignName, sVarName, oPlayer);
         }
 
         /// <summary>
@@ -2875,11 +2366,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 GetCampaignVector(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-            VM.Call(597);
-            return VM.StackPopVector();
+            return NWN.Core.NWScript.GetCampaignVector(sCampaignName, sVarName, oPlayer);
         }
 
         /// <summary>
@@ -2890,11 +2377,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Location GetCampaignLocation(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-            VM.Call(598);
-            return VM.StackPopStruct((int)EngineStructure.Location);
+            return NWN.Core.NWScript.GetCampaignLocation(sCampaignName, sVarName, oPlayer);
         }
 
         /// <summary>
@@ -2905,11 +2388,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetCampaignString(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-            VM.Call(599);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetCampaignString(sCampaignName, sVarName, oPlayer);
         }
 
         /// <summary>
@@ -2921,10 +2400,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DeleteCampaignVariable(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-            VM.Call(601);
+            NWN.Core.NWScript.DeleteCampaignVariable(sCampaignName, sVarName, oPlayer);
         }
 
         /// <summary>
@@ -2936,13 +2412,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int StoreCampaignObject(string sCampaignName, string sVarName, uint oObject, uint oPlayer = OBJECT_INVALID, bool bSaveObjectState = false)
         {
-            VM.StackPush(bSaveObjectState ? 1 : 0);
-            VM.StackPush(oPlayer);
-            VM.StackPush(oObject);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-            VM.Call(602);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.StoreCampaignObject(sCampaignName, sVarName, oObject, oPlayer, bSaveObjectState ? 1 : 0);
         }
 
         /// <summary>
@@ -2953,14 +2423,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint RetrieveCampaignObject(string sCampaignName, string sVarName, Location locLocation, uint oOwner = OBJECT_INVALID, uint oPlayer = OBJECT_INVALID, bool bLoadObjectState = false)
         {
-            VM.StackPush(bLoadObjectState ? 1 : 0);
-            VM.StackPush(oPlayer);
-            VM.StackPush(oOwner);
-            VM.StackPush((int)EngineStructure.Location, locLocation);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-            VM.Call(603);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.RetrieveCampaignObject(sCampaignName, sVarName, locLocation, oOwner, oPlayer, bLoadObjectState ? 1 : 0);
         }
 
         /// <summary>
@@ -2973,12 +2436,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCampaignJson(string sCampaignName, string sVarName, Json jValue, uint oPlayer = OBJECT_INVALID)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush((int)EngineStructure.Json, jValue);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-
-            VM.Call(1002);
+            NWN.Core.NWScript.SetCampaignJson(sCampaignName, sVarName, jValue, oPlayer);
         }
 
         /// <summary>
@@ -2991,12 +2449,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json GetCampaignJson(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush(sVarName);
-            VM.StackPush(sCampaignName);
-            VM.Call(1003);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.GetCampaignJson(sCampaignName, sVarName, oPlayer);
         }
 
         /// <summary>
@@ -3005,9 +2458,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetDialogSoundLength(int nStrRef)
         {
-            VM.StackPush(nStrRef);
-            VM.Call(694);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.GetDialogSoundLength(nStrRef);
         }
 
         /// <summary>
@@ -3020,11 +2471,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string Get2DAString(string s2DA, string sColumn, int nRow)
         {
-            VM.StackPush(nRow);
-            VM.StackPush(sColumn);
-            VM.StackPush(s2DA);
-            VM.Call(710);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.Get2DAString(s2DA, sColumn, nRow);
         }
 
         /// <summary>
@@ -3033,8 +2480,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ExportSingleCharacter(uint oPlayer)
         {
-            VM.StackPush(oPlayer);
-            VM.Call(719);
+            NWN.Core.NWScript.ExportSingleCharacter(oPlayer);
         }
 
         /// <summary>
@@ -3044,9 +2490,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void PlaySoundByStrRef(int nStrRef, bool nRunAsAction = true)
         {
-            VM.StackPush(nRunAsAction ? 1 : 0);
-            VM.StackPush(nStrRef);
-            VM.Call(720);
+            NWN.Core.NWScript.PlaySoundByStrRef(nStrRef, nRunAsAction ? 1 : 0);
         }
 
         /// <summary>
@@ -3054,8 +2498,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetModuleXPScale()
         {
-            VM.Call(817);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetModuleXPScale();
         }
 
         /// <summary>
@@ -3064,8 +2507,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetModuleXPScale(int nXPScale)
         {
-            VM.StackPush(nXPScale);
-            VM.Call(818);
+            NWN.Core.NWScript.SetModuleXPScale(nXPScale);
         }
 
         /// <summary>
@@ -3074,8 +2516,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAttackBonusLimit()
         {
-            VM.Call(872);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetAttackBonusLimit();
         }
 
         /// <summary>
@@ -3084,8 +2525,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetDamageBonusLimit()
         {
-            VM.Call(873);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetDamageBonusLimit();
         }
 
         /// <summary>
@@ -3094,8 +2534,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetSavingThrowBonusLimit()
         {
-            VM.Call(874);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetSavingThrowBonusLimit();
         }
 
         /// <summary>
@@ -3104,8 +2543,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAbilityBonusLimit()
         {
-            VM.Call(875);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetAbilityBonusLimit();
         }
 
         /// <summary>
@@ -3114,8 +2552,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAbilityPenaltyLimit()
         {
-            VM.Call(876);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetAbilityPenaltyLimit();
         }
 
         /// <summary>
@@ -3124,8 +2561,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetSkillBonusLimit()
         {
-            VM.Call(877);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetSkillBonusLimit();
         }
 
         /// <summary>
@@ -3134,8 +2570,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetAttackBonusLimit(int nNewLimit)
         {
-            VM.StackPush(nNewLimit);
-            VM.Call(878);
+            NWN.Core.NWScript.SetAttackBonusLimit(nNewLimit);
         }
 
         /// <summary>
@@ -3144,8 +2579,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetDamageBonusLimit(int nNewLimit)
         {
-            VM.StackPush(nNewLimit);
-            VM.Call(879);
+            NWN.Core.NWScript.SetDamageBonusLimit(nNewLimit);
         }
 
         /// <summary>
@@ -3154,8 +2588,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetSavingThrowBonusLimit(int nNewLimit)
         {
-            VM.StackPush(nNewLimit);
-            VM.Call(880);
+            NWN.Core.NWScript.SetSavingThrowBonusLimit(nNewLimit);
         }
 
         /// <summary>
@@ -3164,8 +2597,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetAbilityBonusLimit(int nNewLimit)
         {
-            VM.StackPush(nNewLimit);
-            VM.Call(881);
+            NWN.Core.NWScript.SetAbilityBonusLimit(nNewLimit);
         }
 
         /// <summary>
@@ -3174,8 +2606,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetAbilityPenaltyLimit(int nNewLimit)
         {
-            VM.StackPush(nNewLimit);
-            VM.Call(882);
+            NWN.Core.NWScript.SetAbilityPenaltyLimit(nNewLimit);
         }
 
         /// <summary>
@@ -3184,8 +2615,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetSkillBonusLimit(int nNewLimit)
         {
-            VM.StackPush(nNewLimit);
-            VM.Call(883);
+            NWN.Core.NWScript.SetSkillBonusLimit(nNewLimit);
         }
 
         /// <summary>
@@ -3194,9 +2624,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetIsPlayerConnectionRelayed(uint oPlayer)
         {
-            VM.StackPush(oPlayer);
-            VM.Call(884);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetIsPlayerConnectionRelayed(oPlayer);
         }
 
         /// <summary>
@@ -3206,10 +2634,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetEventScript(uint oObject, EventScript nHandler)
         {
-            VM.StackPush((int)nHandler);
-            VM.StackPush(oObject);
-            VM.Call(885);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetEventScript(oObject, (int)nHandler);
         }
 
         /// <summary>
@@ -3219,11 +2644,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SetEventScript(uint oObject, EventScript nHandler, string sScript)
         {
-            VM.StackPush(sScript);
-            VM.StackPush((int)nHandler);
-            VM.StackPush(oObject);
-            VM.Call(886);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.SetEventScript(oObject, (int)nHandler, sScript);
         }
 
         /// <summary>
@@ -3234,10 +2655,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetObjectVisualTransform(uint oObject, ObjectVisualTransform nTransform)
         {
-            VM.StackPush((int)nTransform);
-            VM.StackPush(oObject);
-            VM.Call(887);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.GetObjectVisualTransform(oObject, (int)nTransform);
         }
 
         /// <summary>
@@ -3251,27 +2669,17 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// Returns the old/previous value.
         /// </summary>
         public static float SetObjectVisualTransform(
-            uint oObject, 
-            ObjectVisualTransform nTransform, 
-            float fValue, 
-            Lerp nLerpType = Lerp.None, 
-            float fLerpDuration = 0.0f, 
-            bool bPauseWithGame = true, 
-            ObjectVisualTransformDataScopeType nScope = ObjectVisualTransformDataScopeType.Base, 
-            ObjectVisualTransformBehaviorType nBehaviorFlags = ObjectVisualTransformBehaviorType.Default , 
+            uint oObject,
+            ObjectVisualTransform nTransform,
+            float fValue,
+            Lerp nLerpType = Lerp.None,
+            float fLerpDuration = 0.0f,
+            bool bPauseWithGame = true,
+            ObjectVisualTransformDataScopeType nScope = ObjectVisualTransformDataScopeType.Base,
+            ObjectVisualTransformBehaviorType nBehaviorFlags = ObjectVisualTransformBehaviorType.Default ,
             int nRepeats = 0)
         {
-            VM.StackPush(nRepeats);
-            VM.StackPush((int)nBehaviorFlags);
-            VM.StackPush((int)nScope);
-            VM.StackPush(bPauseWithGame ? 1 : 0);
-            VM.StackPush(fLerpDuration);
-            VM.StackPush((int)nLerpType);
-            VM.StackPush(fValue);
-            VM.StackPush((int)nTransform);
-            VM.StackPush(oObject);
-            VM.Call(888);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.SetObjectVisualTransform(oObject, (int)nTransform, fValue, (int)nLerpType, fLerpDuration, bPauseWithGame ? 1 : 0, (int)nScope, (int)nBehaviorFlags, nRepeats);
         }
 
         /// <summary>
@@ -3281,11 +2689,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetMaterialShaderUniformInt(uint oObject, string sMaterial, string sParam, int nValue)
         {
-            VM.StackPush(nValue);
-            VM.StackPush(sParam);
-            VM.StackPush(sMaterial);
-            VM.StackPush(oObject);
-            VM.Call(889);
+            NWN.Core.NWScript.SetMaterialShaderUniformInt(oObject, sMaterial, sParam, nValue);
         }
 
         /// <summary>
@@ -3297,14 +2701,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetMaterialShaderUniformVec4(uint oObject, string sMaterial, string sParam, float fValue1,
             float fValue2 = 0.0f, float fValue3 = 0.0f, float fValue4 = 0.0f)
         {
-            VM.StackPush(fValue4);
-            VM.StackPush(fValue3);
-            VM.StackPush(fValue2);
-            VM.StackPush(fValue1);
-            VM.StackPush(sParam);
-            VM.StackPush(sMaterial);
-            VM.StackPush(oObject);
-            VM.Call(890);
+            NWN.Core.NWScript.SetMaterialShaderUniformVec4(oObject, sMaterial, sParam, fValue1, fValue2, fValue3, fValue4);
         }
 
         /// <summary>
@@ -3315,10 +2712,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ResetMaterialShaderUniforms(uint oObject, string sMaterial = "", string sParam = "")
         {
-            VM.StackPush(sParam);
-            VM.StackPush(sMaterial);
-            VM.StackPush(oObject);
-            VM.Call(891);
+            NWN.Core.NWScript.ResetMaterialShaderUniforms(oObject, sMaterial, sParam);
         }
 
         /// <summary>
@@ -3329,11 +2723,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void Vibrate(uint oPlayer, int nMotor, float fStrength, float fSeconds)
         {
-            VM.StackPush(fSeconds);
-            VM.StackPush(fStrength);
-            VM.StackPush(nMotor);
-            VM.StackPush(oPlayer);
-            VM.Call(892);
+            NWN.Core.NWScript.Vibrate(oPlayer, nMotor, fStrength, fSeconds);
         }
 
         /// <summary>
@@ -3346,12 +2736,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void UnlockAchievement(uint oPlayer, string sId, int nLastValue = 0, int nCurValue = 0,
             int nMaxValue = 0)
         {
-            VM.StackPush(nMaxValue);
-            VM.StackPush(nCurValue);
-            VM.StackPush(nLastValue);
-            VM.StackPush(sId);
-            VM.StackPush(oPlayer);
-            VM.Call(893);
+            NWN.Core.NWScript.UnlockAchievement(oPlayer, sId, nLastValue, nCurValue, nMaxValue);
         }
 
         /// <summary>
@@ -3364,11 +2749,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string ExecuteScriptChunk(string sScriptChunk, uint oObject, bool bWrapIntoMain = true)
         {
-            VM.StackPush(bWrapIntoMain ? 1 : 0);
-            VM.StackPush(oObject);
-            VM.StackPush(sScriptChunk);
-            VM.Call(894);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.ExecuteScriptChunk(sScriptChunk, oObject, bWrapIntoMain ? 1 : 0);
         }
 
         /// <summary>
@@ -3377,8 +2758,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetRandomUUID()
         {
-            VM.Call(895);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetRandomUUID();
         }
 
         /// <summary>
@@ -3402,9 +2782,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetObjectUUID(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(896);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetObjectUUID(oObject);
         }
 
         /// <summary>
@@ -3412,8 +2790,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ForceRefreshObjectUUID(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(897);
+            NWN.Core.NWScript.ForceRefreshObjectUUID(oObject);
         }
 
         /// <summary>
@@ -3422,9 +2799,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetObjectByUUID(string sUUID)
         {
-            VM.StackPush(sUUID);
-            VM.Call(898);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetObjectByUUID(sUUID);
         }
 
         /// <summary>
@@ -3432,7 +2807,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void Reserved899()
         {
-            VM.Call(899);
+            NWN.Core.NWScript.Reserved899();
         }
 
         // Makes oPC load texture sNewName instead of sOldName.
@@ -3441,10 +2816,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         // void SetTextureOverride();
         public static void SetTextureOverride(string OldName, string NewName = "", uint PC = OBJECT_INVALID)
         {
-            VM.StackPush(PC);
-            VM.StackPush(NewName);
-            VM.StackPush(OldName);
-            VM.Call(900);
+            NWN.Core.NWScript.SetTextureOverride(OldName, NewName, PC);
         }
 
 
@@ -3477,17 +2849,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void PostString(uint PC, string Msg, int X = 0, int Y = 0, ScreenAnchor anchor = ScreenAnchor.TopLeft,
             float life = 10.0f, int RGBA = 2147418367, int RGBA2 = 2147418367, int ID = 0, string font = "")
         {
-            VM.StackPush(font);
-            VM.StackPush(ID);
-            VM.StackPush(RGBA2);
-            VM.StackPush(RGBA);
-            VM.StackPush(life);
-            VM.StackPush((int)anchor);
-            VM.StackPush(Y);
-            VM.StackPush(X);
-            VM.StackPush(Msg);
-            VM.StackPush(PC);
-            VM.Call(901);
+            NWN.Core.NWScript.PostString(PC, Msg, X, Y, (int)anchor, life, RGBA, RGBA2, ID, font);
         }
 
         // Returns oCreature's spell school specialization in nClass (SPELL_SCHOOL_* constants)
@@ -3495,10 +2857,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         // Returns -1 on error
         public static SpellSchool GetSpecialization(uint creature, ClassType playerClass)
         {
-            VM.StackPush((int)playerClass);
-            VM.StackPush(creature);
-            VM.Call(902);
-            return (SpellSchool)VM.StackPopInt();
+            return (SpellSchool)NWN.Core.NWScript.GetSpecialization(creature, (int)playerClass);
         }
 
         // Returns oCreature's domain in nClass (DOMAIN_* constants)
@@ -3507,10 +2866,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         // Returns -1 on error
         public static ClericDomain GetDomain(uint creature, int DomainIndex = 1, ClassType playerClass = ClassType.Cleric)
         {
-            VM.StackPush((int)playerClass);
-            VM.StackPush(creature);
-            VM.Call(903);
-            return (ClericDomain)VM.StackPopInt();
+            return (ClericDomain)NWN.Core.NWScript.GetDomain(creature, DomainIndex, (int)playerClass);
         }
 
 
@@ -3525,12 +2881,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionUseItemOnObject(uint oItem, IntPtr ip, uint oTarget, int nSubPropertyIndex = 0, bool bDecrementCharges = true)
         {
-            VM.StackPush(bDecrementCharges ? 1 : 0);
-            VM.StackPush(nSubPropertyIndex);
-            VM.StackPush(oTarget);
-            VM.StackPush((int)EngineStructure.ItemProperty, ip);
-            VM.StackPush(oItem);
-            VM.Call(910);
+            NWN.Core.NWScript.ActionUseItemOnObject(oItem, ip, oTarget, nSubPropertyIndex, bDecrementCharges ? 1 : 0);
         }
 
         /// <summary>
@@ -3543,12 +2894,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionUseItemAtLocation(uint oItem, IntPtr ip, IntPtr lTarget, int nSubPropertyIndex = 0, bool bDecrementCharges = true)
         {
-            VM.StackPush(bDecrementCharges ? 1 : 0);
-            VM.StackPush(nSubPropertyIndex);
-            VM.StackPush((int)EngineStructure.Location, lTarget);
-            VM.StackPush((int)EngineStructure.ItemProperty, ip);
-            VM.StackPush(oItem);
-            VM.Call(911);
+            NWN.Core.NWScript.ActionUseItemAtLocation(oItem, ip, lTarget, nSubPropertyIndex, bDecrementCharges ? 1 : 0);
         }
 
         /// <summary>
@@ -3557,11 +2903,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void EnterTargetingMode(uint oPC, ObjectType nValidObjectTypes = ObjectType.All, MouseCursor nMouseCursorId = MouseCursor.Magic, MouseCursor nBadTargetCursor = MouseCursor.NoMagic)
         {
-            VM.StackPush((int)nBadTargetCursor);
-            VM.StackPush((int)nMouseCursorId);
-            VM.StackPush((int)nValidObjectTypes);
-            VM.StackPush(oPC);
-            VM.Call(912);
+            NWN.Core.NWScript.EnterTargetingMode(oPC, (int)nValidObjectTypes, (int)nMouseCursorId, (int)nBadTargetCursor);
         }
 
         /// <summary>
@@ -3570,8 +2912,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetTargetingModeSelectedObject()
         {
-            VM.Call(913);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetTargetingModeSelectedObject();
         }
 
         /// <summary>
@@ -3579,8 +2920,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 GetTargetingModeSelectedPosition()
         {
-            VM.Call(914);
-            return VM.StackPopVector();
+            return NWN.Core.NWScript.GetTargetingModeSelectedPosition();
         }
 
         /// <summary>
@@ -3588,8 +2928,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastPlayerToSelectTarget()
         {
-            VM.Call(915);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastPlayerToSelectTarget();
         }
 
         /// <summary>
@@ -3598,9 +2937,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetObjectHiliteColor(uint oObject, int nColor = -1)
         {
-            VM.StackPush(nColor);
-            VM.StackPush(oObject);
-            VM.Call(916);
+            NWN.Core.NWScript.SetObjectHiliteColor(oObject, nColor);
         }
 
         /// <summary>
@@ -3608,9 +2945,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetObjectMouseCursor(uint oObject, MouseCursor nCursor = MouseCursor.Invalid)
         {
-            VM.StackPush((int)nCursor);
-            VM.StackPush(oObject);
-            VM.Call(917);
+            NWN.Core.NWScript.SetObjectMouseCursor(oObject, (int)nCursor);
         }
 
         /// <summary>
@@ -3619,9 +2954,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTlkOverride(int nStrRef, string sValue = "")
         {
-            VM.StackPush(sValue);
-            VM.StackPush(nStrRef);
-            VM.Call(953);
+            NWN.Core.NWScript.SetTlkOverride(nStrRef, sValue);
         }
 
         /// <summary>
@@ -3630,11 +2963,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string Get2DAColumn(string s2DA, int nColumnIdx)
         {
-            VM.StackPush(nColumnIdx);
-            VM.StackPush(s2DA);
-            VM.Call(1034);
-
-            return VM.StackPopString();
+            return NWN.Core.NWScript.Get2DAColumn(s2DA, nColumnIdx);
         }
 
         /// <summary>
@@ -3642,10 +2971,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int Get2DARowCount(string s2DA)
         {
-            VM.StackPush(s2DA);
-            VM.Call(1035);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.Get2DARowCount(s2DA);
         }
 
         /// <summary>
@@ -3658,13 +2984,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetSpellTargetingData(uint oPlayer, Spell nSpell, int nShape, float fSizeX, float fSizeY, int nFlags)
         {
-            VM.StackPush(nFlags);
-            VM.StackPush(fSizeY);
-            VM.StackPush(fSizeX);
-            VM.StackPush(nShape);
-            VM.StackPush((int)nSpell);
-            VM.StackPush(oPlayer);
-            VM.Call(1041);
+            NWN.Core.NWScript.SetSpellTargetingData(oPlayer, (int)nSpell, nShape, fSizeX, fSizeY, nFlags);
         }
 
         /// <summary>
@@ -3676,24 +2996,16 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// - nFeat: FEAT_* (optional, passed to the shader but does nothing by default, you need to edit the shader to use it)
         /// </summary>
         public static void SetEnterTargetingModeData(
-            uint oPlayer, 
-            int nShape, 
-            float fSizeX, 
-            float fSizeY, 
-            int nFlags, 
-            float fRange = 0.0f, 
-            Spell nSpell = Spell.AllSpells, 
+            uint oPlayer,
+            int nShape,
+            float fSizeX,
+            float fSizeY,
+            int nFlags,
+            float fRange = 0.0f,
+            Spell nSpell = Spell.AllSpells,
             FeatType nFeat = FeatType.Invalid)
         {
-            VM.StackPush((int)nFeat);
-            VM.StackPush((int)nSpell);
-            VM.StackPush(fRange);
-            VM.StackPush(nFlags);
-            VM.StackPush(fSizeY);
-            VM.StackPush(fSizeX);
-            VM.StackPush(nShape);
-            VM.StackPush(oPlayer);
-            VM.Call(1042);
+            NWN.Core.NWScript.SetEnterTargetingModeData(oPlayer, nShape, fSizeX, fSizeY, nFlags, fRange, (int)nSpell, (int)nFeat);
         }
         /// <summary>
         /// Gets the number of memorized spell slots for a given spell level.
@@ -3703,12 +3015,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMemorizedSpellCountByLevel(uint oCreature, ClassType nClassType, int nSpellLevel)
         {
-            VM.StackPush(nSpellLevel);
-            VM.StackPush((int)nClassType);
-            VM.StackPush(oCreature);
-            VM.Call(1043);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetMemorizedSpellCountByLevel(oCreature, (int)nClassType, nSpellLevel);
         }
 
         /// <summary>
@@ -3720,13 +3027,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMemorizedSpellId(uint oCreature, ClassType nClassType, int nSpellLevel, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush(nSpellLevel);
-            VM.StackPush((int)nClassType);
-            VM.StackPush(oCreature);
-            VM.Call(1044);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetMemorizedSpellId(oCreature, (int)nClassType, nSpellLevel, nIndex);
         }
         /// <summary>
         /// Gets the ready state of a memorized spell slot.
@@ -3737,13 +3038,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMemorizedSpellReady(uint oCreature, ClassType nClassType, int nSpellLevel, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush(nSpellLevel);
-            VM.StackPush((int)nClassType);
-            VM.StackPush(oCreature);
-            VM.Call(1045);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetMemorizedSpellReady(oCreature, (int)nClassType, nSpellLevel, nIndex);
         }
         /// <summary>
         /// Gets the metamagic of a memorized spell slot.
@@ -3754,13 +3049,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMemorizedSpellMetaMagic(uint oCreature, ClassType nClassType, int nSpellLevel, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush(nSpellLevel);
-            VM.StackPush((int)nClassType);
-            VM.StackPush(oCreature);
-            VM.Call(1046);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetMemorizedSpellMetaMagic(oCreature, (int)nClassType, nSpellLevel, nIndex);
         }
 
         /// <summary>
@@ -3772,13 +3061,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMemorizedSpellIsDomainSpell(uint oCreature, ClassType nClassType, int nSpellLevel, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush(nSpellLevel);
-            VM.StackPush((int)nClassType);
-            VM.StackPush(oCreature);
-            VM.Call(1047);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetMemorizedSpellIsDomainSpell(oCreature, (int)nClassType, nSpellLevel, nIndex);
         }
 
         /// <summary>
@@ -3792,24 +3075,16 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// - bIsDomainSpell: TRUE for a domain spell.
         /// </summary>
         public static void SetMemorizedSpell(
-            uint oCreature, 
-            ClassType nClassType, 
-            int nSpellLevel, 
-            int nIndex, 
-            Spell nSpellId, 
-            bool bReady = true, 
-            MetaMagic nMetaMagic = MetaMagic.None, 
+            uint oCreature,
+            ClassType nClassType,
+            int nSpellLevel,
+            int nIndex,
+            Spell nSpellId,
+            bool bReady = true,
+            MetaMagic nMetaMagic = MetaMagic.None,
             bool bIsDomainSpell = false)
         {
-            VM.StackPush(bIsDomainSpell ? 1 : 0);
-            VM.StackPush((int)nMetaMagic);
-            VM.StackPush(bReady ? 1 : 0);
-            VM.StackPush((int)nSpellId);
-            VM.StackPush(nIndex);
-            VM.StackPush(nSpellLevel);
-            VM.StackPush((int)nClassType);
-            VM.StackPush(oCreature);
-            VM.Call(1048);
+            NWN.Core.NWScript.SetMemorizedSpell(oCreature, (int)nClassType, nSpellLevel, nIndex, (int)nSpellId, bReady ? 1 : 0, (int)nMetaMagic, bIsDomainSpell ? 1 : 0);
         }
 
         /// <summary>
@@ -3821,12 +3096,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetMemorizedSpellReady(uint oCreature, ClassType nClassType, int nSpellLevel, int nIndex, bool bReady)
         {
-            VM.StackPush(bReady ? 1 : 0);
-            VM.StackPush(nIndex);
-            VM.StackPush(nSpellLevel);
-            VM.StackPush((int)nClassType);
-            VM.StackPush(oCreature);
-            VM.Call(1049);
+            NWN.Core.NWScript.SetMemorizedSpellReady(oCreature, (int)nClassType, nSpellLevel, nIndex, bReady ? 1 : 0);
         }
 
         /// <summary>
@@ -3837,11 +3107,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ClearMemorizedSpell(uint oCreature, ClassType nClassType, int nSpellLevel, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush(nSpellLevel);
-            VM.StackPush((int)nClassType);
-            VM.StackPush(oCreature);
-            VM.Call(1050);
+            NWN.Core.NWScript.ClearMemorizedSpell(oCreature, (int)nClassType, nSpellLevel, nIndex);
         }
 
         /// <summary>
@@ -3851,10 +3117,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ClearMemorizedSpellBySpellId(uint oCreature, ClassType nClassType, int nSpellId)
         {
-            VM.StackPush(nSpellId);
-            VM.StackPush((int)nClassType);
-            VM.StackPush(oCreature);
-            VM.Call(1051);
+            NWN.Core.NWScript.ClearMemorizedSpellBySpellId(oCreature, (int)nClassType, nSpellId);
         }
 
         /// <summary>
@@ -3865,12 +3128,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetKnownSpellCount(uint oCreature, ClassType nClassType, int nSpellLevel)
         {
-            VM.StackPush(nSpellLevel);
-            VM.StackPush((int)nClassType);
-            VM.StackPush(oCreature);
-            VM.Call(1052);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetKnownSpellCount(oCreature, (int)nClassType, nSpellLevel);
         }
 
         /// <summary>
@@ -3882,13 +3140,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetKnownSpellId(uint oCreature, ClassType nClassType, int nSpellLevel, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush(nSpellLevel);
-            VM.StackPush((int)nClassType);
-            VM.StackPush(oCreature);
-            VM.Call(1053);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetKnownSpellId(oCreature, (int)nClassType, nSpellLevel, nIndex);
         }
 
         /// <summary>
@@ -3899,12 +3151,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsInKnownSpellList(uint oCreature, ClassType nClassType, Spell nSpellId)
         {
-            VM.StackPush((int)nSpellId);
-            VM.StackPush((int)nClassType);
-            VM.StackPush(oCreature);
-            VM.Call(1054);
-
-            return VM.StackPopInt() == 1;
+            return NWN.Core.NWScript.GetIsInKnownSpellList(oCreature, (int)nClassType, (int)nSpellId) != 0;
         }
 
         /// <summary>
@@ -3916,20 +3163,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// Returns: the amount of spell uses left.
         /// </summary>
         public static int GetSpellUsesLeft(
-            uint oCreature, 
-            ClassType nClassType, 
-            Spell nSpellId, 
-            MetaMagic nMetaMagic = MetaMagic.None, 
+            uint oCreature,
+            ClassType nClassType,
+            Spell nSpellId,
+            MetaMagic nMetaMagic = MetaMagic.None,
             int nDomainLevel = 0)
         {
-            VM.StackPush(nDomainLevel);
-            VM.StackPush((int)nMetaMagic);
-            VM.StackPush((int)nSpellId);
-            VM.StackPush((int)nClassType);
-            VM.StackPush(oCreature);
-            VM.Call(1055);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetSpellUsesLeft(oCreature, (int)nClassType, (int)nSpellId, (int)nMetaMagic, nDomainLevel);
         }
 
         /// <summary>
@@ -3940,11 +3180,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetSpellLevelByClass(ClassType nClassType, Spell nSpellId)
         {
-            VM.StackPush((int)nSpellId);
-            VM.StackPush((int)nClassType);
-            VM.Call(1056);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetSpellLevelByClass((int)nClassType, (int)nSpellId);
         }
 
         /// <summary>
@@ -3953,10 +3189,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ReplaceObjectAnimation(uint oObject, string sOld, string sNew = "")
         {
-            VM.StackPush(sNew);
-            VM.StackPush(sOld);
-            VM.StackPush(oObject);
-            VM.Call(1057);
+            NWN.Core.NWScript.ReplaceObjectAnimation(oObject, sOld, sNew);
         }
 
         /// <summary>
@@ -3968,9 +3201,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetObjectVisibleDistance(uint oObject, float fDistance = 45.0f)
         {
-            VM.StackPush(fDistance);
-            VM.StackPush(oObject);
-            VM.Call(1058);
+            NWN.Core.NWScript.SetObjectVisibleDistance(oObject, fDistance);
         }
 
         /// <summary>
@@ -3979,10 +3210,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetObjectVisibleDistance(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(1059);
-
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.GetObjectVisibleDistance(oObject);
         }
 
         /// <summary>
@@ -3990,8 +3218,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetGameActivePause(bool bState)
         {
-            VM.StackPush(bState ? 1 : 0);
-            VM.Call(1060);
+            NWN.Core.NWScript.SetGameActivePause(bState ? 1 : 0);
         }
 
         /// <summary>
@@ -4002,9 +3229,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetGamePauseState()
         {
-            VM.Call(1061);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetGamePauseState();
         }
 
         /// <summary>
@@ -4013,9 +3238,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetGender(uint oCreature, Gender nGender)
         {
-            VM.StackPush((int)nGender);
-            VM.StackPush(oCreature);
-            VM.Call(1062);
+            NWN.Core.NWScript.SetGender(oCreature, (int)nGender);
         }
 
         /// <summary>
@@ -4024,10 +3247,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetSoundset(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(1063);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetSoundset(oCreature);
         }
 
         /// <summary>
@@ -4035,9 +3255,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetSoundset(uint oCreature, int nSoundset)
         {
-            VM.StackPush(nSoundset);
-            VM.StackPush(oCreature);
-            VM.Call(1064);
+            NWN.Core.NWScript.SetSoundset(oCreature, nSoundset);
         }
 
         /// <summary>
@@ -4047,10 +3265,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ReadySpellLevel(uint oCreature, int nSpellLevel, ClassType nClassType = ClassType.Invalid)
         {
-            VM.StackPush((int)nClassType);
-            VM.StackPush(nSpellLevel);
-            VM.StackPush(oCreature);
-            VM.Call(1065);
+            NWN.Core.NWScript.ReadySpellLevel(oCreature, nSpellLevel, (int)nClassType);
         }
 
         /// <summary>
@@ -4061,9 +3276,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCommandingPlayer(uint oCreature, uint oPlayer)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush(oCreature);
-            VM.Call(1066);
+            NWN.Core.NWScript.SetCommandingPlayer(oCreature, oPlayer);
         }
 
         /// <summary>
@@ -4072,18 +3285,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// NB: Like all other camera settings, this is not saved when saving the game
         /// </summary>
         public static void SetCameraLimits(
-            uint oPlayer, 
-            float fMinPitch = -1.0f, 
-            float fMaxPitch = -1.0f, 
-            float fMinDist = -1.0f, 
+            uint oPlayer,
+            float fMinPitch = -1.0f,
+            float fMaxPitch = -1.0f,
+            float fMinDist = -1.0f,
             float fMaxDist = -1.0f)
         {
-            VM.StackPush(fMaxDist);
-            VM.StackPush(fMinDist);
-            VM.StackPush(fMaxPitch);
-            VM.StackPush(fMinPitch);
-            VM.StackPush(oPlayer);
-            VM.Call(1067);
+            NWN.Core.NWScript.SetCameraLimits(oPlayer, fMinPitch, fMaxPitch, fMinDist, fMaxDist);
         }
 
         /// <summary>
@@ -4100,10 +3308,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AttachCamera(uint oPlayer, uint oTarget, bool bFindClearView = false)
         {
-            VM.StackPush(bFindClearView ? 1 : 0);
-            VM.StackPush(oTarget);
-            VM.StackPush(oPlayer);
-            VM.Call(1073);
+            NWN.Core.NWScript.AttachCamera(oPlayer, oTarget, bFindClearView ? 1 : 0);
         }
 
         /// <summary>
@@ -4112,10 +3317,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetObjectUiDiscoveryMask(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(1074);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetObjectUiDiscoveryMask(oObject);
         }
 
         /// <summary>
@@ -4127,9 +3329,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetObjectUiDiscoveryMask(uint oObject, ObjectUIDiscoveryType nMask = ObjectUIDiscoveryType.Default)
         {
-            VM.StackPush((int)nMask);
-            VM.StackPush(oObject);
-            VM.Call(1075);
+            NWN.Core.NWScript.SetObjectUiDiscoveryMask(oObject, (int)nMask);
         }
 
         /// <summary>
@@ -4139,10 +3339,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetObjectTextBubbleOverride(uint oObject, ObjectUITextBubbleOverrideType nMode, string sText)
         {
-            VM.StackPush(sText);
-            VM.StackPush((int)nMode);
-            VM.StackPush(oObject);
-            VM.Call(1076);
+            NWN.Core.NWScript.SetObjectTextBubbleOverride(oObject, (int)nMode, sText);
         }
 
         /// <summary>
@@ -4152,11 +3349,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool ClearObjectVisualTransform(uint oObject, ObjectVisualTransformDataScopeType nScope = ObjectVisualTransformDataScopeType.Invalid)
         {
-            VM.StackPush((int)nScope);
-            VM.StackPush(oObject);
-            VM.Call(1077);
-
-            return VM.StackPopInt() == 1;
+            return NWN.Core.NWScript.ClearObjectVisualTransform(oObject, (int)nScope) != 0;
         }
 
         /// <summary>
@@ -4166,9 +3359,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static Vector3 GetLastGuiEventVector()
         {
-            VM.Call(1078);
-
-            return VM.StackPopVector();
+            return NWN.Core.NWScript.GetLastGuiEventVector();
         }
 
         /// <summary>
@@ -4178,9 +3369,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCameraFlags(uint oPlayer, int nFlags = 0)
         {
-            VM.StackPush(nFlags);
-            VM.StackPush(oPlayer);
-            VM.Call(1079);
+            NWN.Core.NWScript.SetCameraFlags(oPlayer, nFlags);
         }
 
         /// <summary>
@@ -4188,8 +3377,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetSpellFeatId()
         {
-            VM.Call(1095);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetSpellFeatId();
         }
 
         /// <summary>
@@ -4200,10 +3388,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFeatRemainingUses(FeatType nFeat, uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.StackPush((int)nFeat);
-            VM.Call(1097);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetFeatRemainingUses((int)nFeat, oCreature);
         }
 
         /// <summary>
@@ -4227,18 +3412,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///           - SETTILE_FLAG_RECOMPUTE_LIGHTING: recomputes the area's lighting and static shadows, use most of time.
         /// </summary>
         public static void SetTile(
-            Location locTile, 
-            int nTileID, 
-            int nOrientation, 
-            int nHeight = 0, 
+            Location locTile,
+            int nTileID,
+            int nOrientation,
+            int nHeight = 0,
             SetTileFlagType nFlags = SetTileFlagType.RecomputeLighting)
         {
-            VM.StackPush((int)nFlags);
-            VM.StackPush(nHeight);
-            VM.StackPush(nOrientation);
-            VM.StackPush(nTileID);
-            VM.StackPush(locTile);
-            VM.Call(1098);
+            NWN.Core.NWScript.SetTile(locTile, nTileID, nOrientation, nHeight, (int)nFlags);
         }
 
         /// <summary>
@@ -4247,9 +3427,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileID(Location locTile)
         {
-            VM.StackPush(locTile);
-            VM.Call(1099);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTileID(locTile);
         }
 
         /// <summary>
@@ -4258,9 +3436,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileOrientation(Location locTile)
         {
-            VM.StackPush(locTile);
-            VM.Call(1100);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTileOrientation(locTile);
         }
 
         /// <summary>
@@ -4269,9 +3445,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileHeight(Location locTile)
         {
-            VM.StackPush(locTile);
-            VM.Call(1101);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTileHeight(locTile);
         }
 
         /// <summary>
@@ -4280,8 +3454,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ReloadAreaGrass(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(1102);
+            NWN.Core.NWScript.ReloadAreaGrass(oArea);
         }
 
         /// <summary>
@@ -4289,11 +3462,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTileAnimationLoops(Location locTile, bool bAnimLoop1, bool bAnimLoop2, bool bAnimLoop3)
         {
-            VM.StackPush(bAnimLoop3 ? 1 : 0);
-            VM.StackPush(bAnimLoop2 ? 1 : 0);
-            VM.StackPush(bAnimLoop1 ? 1 : 0);
-            VM.StackPush(locTile);
-            VM.Call(1103);
+            NWN.Core.NWScript.SetTileAnimationLoops(locTile, bAnimLoop1 ? 1 : 0, bAnimLoop2 ? 1 : 0, bAnimLoop3 ? 1 : 0);
         }
 
         /// <summary>
@@ -4318,16 +3487,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///                      Make sure jTileData changes *all* tiles in the area and to a tile id that's supported by sTileset.
         /// </summary>
         public static void SetTileJson(
-            uint oArea, 
-            Json jTileData, 
-            SetTileFlagType nFlags = SetTileFlagType.RecomputeLighting, 
+            uint oArea,
+            Json jTileData,
+            SetTileFlagType nFlags = SetTileFlagType.RecomputeLighting,
             string sTileset = "")
         {
-            VM.StackPush(sTileset);
-            VM.StackPush((int)nFlags);
-            VM.StackPush(jTileData);
-            VM.StackPush(oArea);
-            VM.Call(1104);
+            NWN.Core.NWScript.SetTileJson(oArea, jTileData, (int)nFlags, sTileset);
         }
 
         /// <summary>
@@ -4336,8 +3501,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ReloadAreaBorder(uint oArea)
         {
-            VM.StackPush(oArea);
-            VM.Call(1105);
+            NWN.Core.NWScript.ReloadAreaBorder(oArea);
         }
 
         /// <summary>
@@ -4351,10 +3515,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetEffectIconFlashing(uint oCreature, int nIconId, bool bFlashing = true)
         {
-            VM.StackPush(bFlashing ? 1 : 0);
-            VM.StackPush(nIconId);
-            VM.StackPush(oCreature);
-            VM.Call(1106);
+            NWN.Core.NWScript.SetEffectIconFlashing(oCreature, nIconId, bFlashing ? 1 : 0);
         }
 
         /// <summary>
@@ -4363,8 +3524,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static InventorySlot GetPCItemLastEquippedSlot()
         {
-            VM.Call(1108);
-            return (InventorySlot)VM.StackPopInt();
+            return (InventorySlot)NWN.Core.NWScript.GetPCItemLastEquippedSlot();
         }
 
         /// <summary>
@@ -4373,8 +3533,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static InventorySlot GetPCItemLastUnequippedSlot()
         {
-            VM.Call(1109);
-            return (InventorySlot)VM.StackPopInt();
+            return (InventorySlot)NWN.Core.NWScript.GetPCItemLastUnequippedSlot();
         }
 
         /// <summary>
@@ -4383,8 +3542,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetSpellCastSpontaneously()
         {
-            VM.Call(1110);
-            return VM.StackPopInt() == 1;
+            return NWN.Core.NWScript.GetSpellCastSpontaneously() != 0;
         }
 
         /// <summary>
@@ -4393,8 +3551,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTickRate()
         {
-            VM.Call(1113);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetTickRate();
         }
 
         /// <summary>
@@ -4402,8 +3559,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetLastSpellLevel()
         {
-            VM.Call(1114);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetLastSpellLevel();
         }
 
         /// <summary>
@@ -4419,15 +3575,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int HashString(string sString)
         {
-            VM.StackPush(sString);
-            VM.Call(1115);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.HashString(sString);
         }
 
         public static int GetMicrosecondCounter()
         {
-            VM.Call(1116);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetMicrosecondCounter();
         }
     }
 }

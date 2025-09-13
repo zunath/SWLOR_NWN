@@ -8,9 +8,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetStoreGold(uint oidStore)
         {
-            VM.StackPush(oidStore);
-            VM.Call(759);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetStoreGold(oidStore);
         }
 
         /// <summary>
@@ -18,9 +16,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetStoreGold(uint oidStore, int nGold)
         {
-            VM.StackPush(nGold);
-            VM.StackPush(oidStore);
-            VM.Call(760);
+            NWN.Core.NWScript.SetStoreGold(oidStore, nGold);
         }
 
         /// <summary>
@@ -29,9 +25,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetStoreMaxBuyPrice(uint oidStore)
         {
-            VM.StackPush(oidStore);
-            VM.Call(761);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetStoreMaxBuyPrice(oidStore);
         }
 
         /// <summary>
@@ -39,9 +33,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetStoreMaxBuyPrice(uint oidStore, int nMaxBuy)
         {
-            VM.StackPush(nMaxBuy);
-            VM.StackPush(oidStore);
-            VM.Call(762);
+            NWN.Core.NWScript.SetStoreMaxBuyPrice(oidStore, nMaxBuy);
         }
 
         /// <summary>
@@ -51,9 +43,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetStoreIdentifyCost(uint oidStore)
         {
-            VM.StackPush(oidStore);
-            VM.Call(763);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetStoreIdentifyCost(oidStore);
         }
 
         /// <summary>
@@ -62,9 +52,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetStoreIdentifyCost(uint oidStore, int nCost)
         {
-            VM.StackPush(nCost);
-            VM.StackPush(oidStore);
-            VM.Call(764);
+            NWN.Core.NWScript.SetStoreIdentifyCost(oidStore, nCost);
         }
 
         /// <summary>
@@ -74,11 +62,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void OpenStore(uint oStore, uint oPC, int nBonusMarkUp = 0, int nBonusMarkDown = 0)
         {
-            VM.StackPush(nBonusMarkDown);
-            VM.StackPush(nBonusMarkUp);
-            VM.StackPush(oPC);
-            VM.StackPush(oStore);
-            VM.Call(378);
+            NWN.Core.NWScript.OpenStore(oStore, oPC, nBonusMarkUp, nBonusMarkDown);
         }
     }
 }

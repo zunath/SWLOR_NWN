@@ -10,9 +10,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float fabs(float fValue)
         {
-            VM.StackPush(fValue);
-            VM.Call(67);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.fabs(fValue);
         }
 
         /// <summary>
@@ -20,9 +18,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float cos(float fValue)
         {
-            VM.StackPush(fValue);
-            VM.Call(68);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.cos(fValue);
         }
 
         /// <summary>
@@ -30,9 +26,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float sin(float fValue)
         {
-            VM.StackPush(fValue);
-            VM.Call(69);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.sin(fValue);
         }
 
         /// <summary>
@@ -40,9 +34,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float tan(float fValue)
         {
-            VM.StackPush(fValue);
-            VM.Call(70);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.tan(fValue);
         }
 
         /// <summary>
@@ -51,9 +43,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float acos(float fValue)
         {
-            VM.StackPush(fValue);
-            VM.Call(71);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.acos(fValue);
         }
 
         /// <summary>
@@ -62,9 +52,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float asin(float fValue)
         {
-            VM.StackPush(fValue);
-            VM.Call(72);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.asin(fValue);
         }
 
         /// <summary>
@@ -72,9 +60,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float atan(float fValue)
         {
-            VM.StackPush(fValue);
-            VM.Call(73);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.atan(fValue);
         }
 
         /// <summary>
@@ -83,9 +69,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float log(float fValue)
         {
-            VM.StackPush(fValue);
-            VM.Call(74);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.log(fValue);
         }
 
         /// <summary>
@@ -94,10 +78,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float pow(float fValue, float fExponent)
         {
-            VM.StackPush(fExponent);
-            VM.StackPush(fValue);
-            VM.Call(75);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.pow(fValue, fExponent);
         }
 
         /// <summary>
@@ -106,9 +87,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float sqrt(float fValue)
         {
-            VM.StackPush(fValue);
-            VM.Call(76);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.sqrt(fValue);
         }
 
         /// <summary>
@@ -117,9 +96,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int abs(int nValue)
         {
-            VM.StackPush(nValue);
-            VM.Call(77);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.abs(nValue);
         }
 
         /// <summary>
@@ -127,9 +104,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 VectorNormalize(Vector3 vVector)
         {
-            VM.StackPush(vVector);
-            VM.Call(137);
-            return VM.StackPopVector();
+            return NWN.Core.NWScript.VectorNormalize(vVector);
         }
 
         /// <summary>
@@ -139,9 +114,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float VectorMagnitude(Vector3 vVector)
         {
-            VM.StackPush(vVector);
-            VM.Call(104);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.VectorMagnitude(vVector);
         }
 
         /// <summary>
@@ -149,9 +122,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float FeetToMeters(float fFeet)
         {
-            VM.StackPush(fFeet);
-            VM.Call(218);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.FeetToMeters(fFeet);
         }
 
         /// <summary>
@@ -159,9 +130,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float YardsToMeters(float fYards)
         {
-            VM.StackPush(fYards);
-            VM.Call(219);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.YardsToMeters(fYards);
         }
 
         /// <summary>
@@ -170,9 +139,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetDistanceToObject(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(41);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.GetDistanceToObject(oObject);
         }
 
         /// <summary>
@@ -183,10 +150,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool LineOfSightObject(uint oSource, uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.StackPush(oSource);
-            VM.Call(752);
-            return VM.StackPopInt() == 1;
+            return NWN.Core.NWScript.LineOfSightObject(oSource, oTarget) != 0;
         }
 
         /// <summary>
@@ -199,10 +163,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool LineOfSightVector(Vector3 vSource, Vector3 vTarget)
         {
-            VM.StackPush(vTarget);
-            VM.StackPush(vSource);
-            VM.Call(753);
-            return VM.StackPopInt() == 1;
+            return NWN.Core.NWScript.LineOfSightVector(vSource, vTarget) != 0;
         }
 
         /// <summary>
@@ -210,9 +171,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 AngleToVector(float fAngle)
         {
-            VM.StackPush(fAngle);
-            VM.Call(144);
-            return VM.StackPopVector();
+            return NWN.Core.NWScript.AngleToVector(fAngle);
         }
 
         /// <summary>
@@ -220,9 +179,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float VectorToAngle(Vector3 vVector)
         {
-            VM.StackPush(vVector);
-            VM.Call(145);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.VectorToAngle(vVector);
         }
     }
 }

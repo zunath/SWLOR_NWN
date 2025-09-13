@@ -9,9 +9,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsOpen(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(443);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetIsOpen(oObject) != 0;
         }
 
         /// <summary>
@@ -20,8 +18,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionUnlockObject(uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.Call(483);
+            NWN.Core.NWScript.ActionUnlockObject(oTarget);
         }
 
         /// <summary>
@@ -30,8 +27,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionLockObject(uint oTarget)
         {
-            VM.StackPush(oTarget);
-            VM.Call(484);
+            NWN.Core.NWScript.ActionLockObject(oTarget);
         }
 
 
@@ -40,8 +36,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionOpenDoor(uint oDoor)
         {
-            VM.StackPush(oDoor);
-            VM.Call(43);
+            NWN.Core.NWScript.ActionOpenDoor(oDoor);
         }
 
         /// <summary>
@@ -49,8 +44,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionCloseDoor(uint oDoor)
         {
-            VM.StackPush(oDoor);
-            VM.Call(44);
+            NWN.Core.NWScript.ActionCloseDoor(oDoor);
         }
 
         /// <summary>
@@ -59,8 +53,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetBlockingDoor()
         {
-            VM.Call(336);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetBlockingDoor();
         }
 
         /// <summary>
@@ -70,10 +63,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDoorActionPossible(uint oTargetDoor, DoorAction nDoorAction)
         {
-            VM.StackPush((int)nDoorAction);
-            VM.StackPush(oTargetDoor);
-            VM.Call(337);
-            return VM.StackPopInt() == 1;
+            return NWN.Core.NWScript.GetIsDoorActionPossible(oTargetDoor, (int)nDoorAction) == 1;
         }
 
         /// <summary>
@@ -81,9 +71,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DoDoorAction(uint oTargetDoor, DoorAction nDoorAction)
         {
-            VM.StackPush((int)nDoorAction);
-            VM.StackPush(oTargetDoor);
-            VM.Call(338);
+            NWN.Core.NWScript.DoDoorAction(oTargetDoor, (int)nDoorAction);
         }
     }
 }

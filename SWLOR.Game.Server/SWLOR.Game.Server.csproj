@@ -29,6 +29,10 @@
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
+  </ItemGroup>
+
   <Target Name="NWN" AfterTargets="Build">
     <ItemGroup>
       <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).dll" />

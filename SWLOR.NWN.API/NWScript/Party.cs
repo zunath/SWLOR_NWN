@@ -9,9 +9,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AddToParty(uint oPC, uint oPartyLeader)
         {
-            VM.StackPush(oPartyLeader);
-            VM.StackPush(oPC);
-            VM.Call(572);
+            NWN.Core.NWScript.AddToParty(oPC, oPartyLeader);
         }
 
         /// <summary>
@@ -20,8 +18,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RemoveFromParty(uint oPC)
         {
-            VM.StackPush(oPC);
-            VM.Call(573);
+            NWN.Core.NWScript.RemoveFromParty(oPC);
         }
 
         /// <summary>
@@ -34,10 +31,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPanelButtonFlash(uint oPlayer, int nButton, int nEnableFlash)
         {
-            VM.StackPush(nEnableFlash);
-            VM.StackPush(nButton);
-            VM.StackPush(oPlayer);
-            VM.Call(521);
+            NWN.Core.NWScript.SetPanelButtonFlash(oPlayer, nButton, nEnableFlash);
         }
     }
 }

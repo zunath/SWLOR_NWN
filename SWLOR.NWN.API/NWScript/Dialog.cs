@@ -7,9 +7,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool IsInConversation(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(445);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.IsInConversation(oObject) != 0;
         }
     }
 }

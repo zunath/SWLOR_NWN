@@ -18,8 +18,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlDestroyDatabase(uint oObject)
         {
-            VM.StackPush(oObject);
-            VM.Call(921);
+            NWN.Core.NWScript.SqlDestroyDatabase(oObject);
         }
 
         /// <summary>
@@ -28,9 +27,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string SqlGetError(IntPtr sqlQuery)
         {
-            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
-            VM.Call(922);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.SqlGetError(sqlQuery);
         }
 
         /// <summary>
@@ -47,10 +44,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static IntPtr SqlPrepareQueryCampaign(string sDatabase, string sQuery)
         {
-            VM.StackPush(sQuery);
-            VM.StackPush(sDatabase);
-            VM.Call(923);
-            return VM.StackPopStruct((int)EngineStructure.SQLQuery);
+            return NWN.Core.NWScript.SqlPrepareQueryCampaign(sDatabase, sQuery);
         }
 
         /// <summary>
@@ -73,10 +67,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static IntPtr SqlPrepareQueryObject(uint oObject, string sQuery)
         {
-            VM.StackPush(sQuery);
-            VM.StackPush(oObject);
-            VM.Call(924);
-            return VM.StackPopStruct((int)EngineStructure.SQLQuery);
+            return NWN.Core.NWScript.SqlPrepareQueryObject(oObject, sQuery);
         }
 
         /// <summary>
@@ -88,10 +79,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindInt(IntPtr sqlQuery, string sParam, int nValue)
         {
-            VM.StackPush(nValue);
-            VM.StackPush(sParam);
-            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
-            VM.Call(925);
+            NWN.Core.NWScript.SqlBindInt(sqlQuery, sParam, nValue);
         }
 
         /// <summary>
@@ -99,10 +87,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindFloat(IntPtr sqlQuery, string sParam, float fFloat)
         {
-            VM.StackPush(fFloat);
-            VM.StackPush(sParam);
-            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
-            VM.Call(926);
+            NWN.Core.NWScript.SqlBindFloat(sqlQuery, sParam, fFloat);
         }
 
         /// <summary>
@@ -110,10 +95,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindString(IntPtr sqlQuery, string sParam, string sString)
         {
-            VM.StackPush(sString);
-            VM.StackPush(sParam);
-            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
-            VM.Call(927);
+            NWN.Core.NWScript.SqlBindString(sqlQuery, sParam, sString);
         }
 
         /// <summary>
@@ -121,10 +103,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindVector(IntPtr sqlQuery, string sParam, Vector3 vVector)
         {
-            VM.StackPush(vVector);
-            VM.StackPush(sParam);
-            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
-            VM.Call(928);
+            NWN.Core.NWScript.SqlBindVector(sqlQuery, sParam, vVector);
         }
 
         /// <summary>
@@ -136,11 +115,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindObject(IntPtr sqlQuery, string sParam, uint oObject, bool bSaveObjectState = false)
         {
-            VM.StackPush(bSaveObjectState ? 1 : 0);
-            VM.StackPush(oObject);
-            VM.StackPush(sParam);
-            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
-            VM.Call(929);
+            NWN.Core.NWScript.SqlBindObject(sqlQuery, sParam, oObject, bSaveObjectState ? 1 : 0);
         }
 
         /// <summary>
@@ -153,11 +128,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   while (SqlStep(n))
         ///     SendMessageToPC(GetFirstPC(), "Found widget: " + SqlGetString(n, 0));
         /// </summary>
-        public static int SqlStep(IntPtr sqlQuery)
+        public static bool SqlStep(IntPtr sqlQuery)
         {
-            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
-            VM.Call(930);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.SqlStep(sqlQuery) != 0;
         }
 
         /// <summary>
@@ -168,10 +141,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SqlGetInt(IntPtr sqlQuery, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
-            VM.Call(931);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.SqlGetInt(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -182,10 +152,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float SqlGetFloat(IntPtr sqlQuery, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
-            VM.Call(932);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.SqlGetFloat(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -196,10 +163,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string SqlGetString(IntPtr sqlQuery, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
-            VM.Call(933);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.SqlGetString(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -210,10 +174,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 SqlGetVector(IntPtr sqlQuery, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
-            VM.Call(934);
-            return VM.StackPopVector();
+            return NWN.Core.NWScript.SqlGetVector(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -228,13 +189,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint SqlGetObject(IntPtr sqlQuery, int nIndex, IntPtr lSpawnAt, uint oInventory = OBJECT_INVALID, bool bLoadObjectState = false)
         {
-            VM.StackPush(bLoadObjectState ? 1 : 0);
-            VM.StackPush(oInventory);
-            VM.StackPush((int)EngineStructure.Location, lSpawnAt);
-            VM.StackPush(nIndex);
-            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
-            VM.Call(935);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.SqlGetObject(sqlQuery, nIndex, lSpawnAt, oInventory, bLoadObjectState ? 1 : 0);
         }
 
         /// <summary>
@@ -247,10 +202,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindJson(SQLQuery sqlQuery, string sParam, Json jValue)
         {
-            VM.StackPush((int)EngineStructure.Json, jValue);
-            VM.StackPush(sParam);
-            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
-            VM.Call(1000);
+            NWN.Core.NWScript.SqlBindJson(sqlQuery, sParam, jValue);
         }
 
         /// <summary>
@@ -261,11 +213,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json SqlGetJson(SQLQuery sqlQuery, int nIndex)
         {
-            VM.StackPush(nIndex);
-            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
-            VM.Call(1001);
-
-            return VM.StackPopStruct((int)EngineStructure.Json);
+            return NWN.Core.NWScript.SqlGetJson(sqlQuery, nIndex);
         }
 
         /// <summary>
@@ -275,9 +223,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlResetQuery(SQLQuery sqlQuery, bool bClearBinds = false)
         {
-            VM.StackPush(bClearBinds ? 1 : 0);
-            VM.StackPush(sqlQuery);
-            VM.Call(1111);
+            NWN.Core.NWScript.SqlResetQuery(sqlQuery, bClearBinds ? 1 : 0);
         }
     }
 }

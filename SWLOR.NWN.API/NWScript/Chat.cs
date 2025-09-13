@@ -12,8 +12,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPCChatSpeaker()
         {
-            VM.Call(838);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetPCChatSpeaker();
         }
 
         /// <summary>
@@ -21,8 +20,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SendMessageToAllDMs(string szMessage)
         {
-            VM.StackPush(szMessage);
-            VM.Call(563);
+            NWN.Core.NWScript.SendMessageToAllDMs(szMessage);
         }
 
         /// <summary>
@@ -33,8 +31,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetPCChatMessage()
         {
-            VM.Call(839);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetPCChatMessage();
         }
 
         /// <summary>
@@ -52,8 +49,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static TalkVolume GetPCChatVolume()
         {
-            VM.Call(840);
-            return (TalkVolume)VM.StackPopInt();
+            return (TalkVolume)NWN.Core.NWScript.GetPCChatVolume();
         }
 
         /// <summary>
@@ -66,8 +62,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPCChatMessage(string sNewChatMessage = "")
         {
-            VM.StackPush(sNewChatMessage);
-            VM.Call(841);
+            NWN.Core.NWScript.SetPCChatMessage(sNewChatMessage);
         }
 
         /// <summary>
@@ -83,8 +78,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPCChatVolume(TalkVolume nTalkVolume = TalkVolume.Talk)
         {
-            VM.StackPush((int)nTalkVolume);
-            VM.Call(842);
+            NWN.Core.NWScript.SetPCChatVolume((int)nTalkVolume);
         }
     }
 }

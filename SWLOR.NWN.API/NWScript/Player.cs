@@ -11,11 +11,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Returns FALSE if the player is not in cutscene mode, or on an error
         ///   (such as specifying a non creature object).
         /// </summary>
-        public static bool GetIsInCutsceneMode(uint oCreature = OBJECT_INVALID)
+        public static bool GetCutsceneMode(uint oCreature = OBJECT_INVALID)
         {
-            VM.StackPush(oCreature);
-            VM.Call(781);
-            return VM.StackPopInt() != 0;
+            return NWN.Core.NWScript.GetCutsceneMode(oCreature) != 0;
         }
 
         /// <summary>
@@ -24,9 +22,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCameraHeight(uint oPlayer, float fHeight = 0.0f)
         {
-            VM.StackPush(fHeight);
-            VM.StackPush(oPlayer);
-            VM.Call(776);
+            NWN.Core.NWScript.SetCameraHeight(oPlayer, fHeight);
         }
 
         /// <summary>
@@ -36,9 +32,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DayToNight(uint oPlayer, float fTransitionTime = 0.0f)
         {
-            VM.StackPush(fTransitionTime);
-            VM.StackPush(oPlayer);
-            VM.Call(750);
+            NWN.Core.NWScript.DayToNight(oPlayer, fTransitionTime);
         }
 
         /// <summary>
@@ -48,9 +42,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void NightToDay(uint oPlayer, float fTransitionTime = 0.0f)
         {
-            VM.StackPush(fTransitionTime);
-            VM.StackPush(oPlayer);
-            VM.Call(751);
+            NWN.Core.NWScript.NightToDay(oPlayer, fTransitionTime);
         }
 
         /// <summary>
@@ -60,9 +52,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetCutsceneCameraMoveRate(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(742);
-            return VM.StackPopFloat();
+            return NWN.Core.NWScript.GetCutsceneCameraMoveRate(oCreature);
         }
 
         /// <summary>
@@ -72,9 +62,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCutsceneCameraMoveRate(uint oCreature, float fRate)
         {
-            VM.StackPush(fRate);
-            VM.StackPush(oCreature);
-            VM.Call(743);
+            NWN.Core.NWScript.SetCutsceneCameraMoveRate(oCreature, fRate);
         }
 
         /// <summary>
@@ -83,8 +71,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionExamine(uint oExamine)
         {
-            VM.StackPush(oExamine);
-            VM.Call(738);
+            NWN.Core.NWScript.ActionExamine(oExamine);
         }
 
         /// <summary>
@@ -92,8 +79,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPCItemLastEquipped()
         {
-            VM.Call(727);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetPCItemLastEquipped();
         }
 
         /// <summary>
@@ -101,8 +87,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPCItemLastEquippedBy()
         {
-            VM.Call(728);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetPCItemLastEquippedBy();
         }
 
         /// <summary>
@@ -110,8 +95,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPCItemLastUnequipped()
         {
-            VM.Call(729);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetPCItemLastUnequipped();
         }
 
         /// <summary>
@@ -119,8 +103,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPCItemLastUnequippedBy()
         {
-            VM.Call(730);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetPCItemLastUnequippedBy();
         }
 
         /// <summary>
@@ -128,9 +111,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SendMessageToPCByStrRef(uint oPlayer, int nStrRef)
         {
-            VM.StackPush(nStrRef);
-            VM.StackPush(oPlayer);
-            VM.Call(717);
+            NWN.Core.NWScript.SendMessageToPCByStrRef(oPlayer, nStrRef);
         }
 
         /// <summary>
@@ -142,9 +123,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void OpenInventory(uint oCreature, uint oPlayer)
         {
-            VM.StackPush(oPlayer);
-            VM.StackPush(oCreature);
-            VM.Call(701);
+            NWN.Core.NWScript.OpenInventory(oCreature, oPlayer);
         }
 
         /// <summary>
@@ -153,7 +132,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void StoreCameraFacing()
         {
-            VM.Call(702);
+            NWN.Core.NWScript.StoreCameraFacing();
         }
 
         /// <summary>
@@ -163,7 +142,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RestoreCameraFacing()
         {
-            VM.Call(703);
+            NWN.Core.NWScript.RestoreCameraFacing();
         }
 
         /// <summary>
@@ -172,9 +151,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void FadeFromBlack(uint oCreature, float fSpeed = FadeSpeed.Medium)
         {
-            VM.StackPush(fSpeed);
-            VM.StackPush(oCreature);
-            VM.Call(695);
+            NWN.Core.NWScript.FadeFromBlack(oCreature, fSpeed);
         }
 
         /// <summary>
@@ -183,9 +160,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void FadeToBlack(uint oCreature, float fSpeed = FadeSpeed.Medium)
         {
-            VM.StackPush(fSpeed);
-            VM.StackPush(oCreature);
-            VM.Call(696);
+            NWN.Core.NWScript.FadeToBlack(oCreature, fSpeed);
         }
 
         /// <summary>
@@ -194,8 +169,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void StopFade(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(697);
+            NWN.Core.NWScript.StopFade(oCreature);
         }
 
         /// <summary>
@@ -205,8 +179,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void BlackScreen(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(698);
+            NWN.Core.NWScript.BlackScreen(oCreature);
         }
 
         /// <summary>
@@ -222,10 +195,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCutsceneMode(uint oCreature, bool nInCutscene = true, bool nLeftClickingEnabled = false)
         {
-            VM.StackPush(nLeftClickingEnabled ? 1 : 0);
-            VM.StackPush(nInCutscene ? 1 : 0);
-            VM.StackPush(oCreature);
-            VM.Call(692);
+            NWN.Core.NWScript.SetCutsceneMode(oCreature, nInCutscene ? 1 : 0, nLeftClickingEnabled ? 1 : 0);
         }
 
         /// <summary>
@@ -233,8 +203,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastPCToCancelCutscene()
         {
-            VM.Call(693);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastPCToCancelCutscene();
         }
 
         /// <summary>
@@ -243,9 +212,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void BootPC(uint oPlayer, string sReason = "")
         {
-            VM.StackPush(sReason);
-            VM.StackPush(oPlayer);
-            VM.Call(565);
+            NWN.Core.NWScript.BootPC(oPlayer, sReason);
         }
 
         /// <summary>
@@ -264,12 +231,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void PopUpDeathGUIPanel(uint oPC, bool bRespawnButtonEnabled = true,
             bool bWaitForHelpButtonEnabled = true, int nHelpStringReference = 0, string sHelpString = "")
         {
-            VM.StackPush(sHelpString);
-            VM.StackPush(nHelpStringReference);
-            VM.StackPush(bWaitForHelpButtonEnabled ? 1 : 0);
-            VM.StackPush(bRespawnButtonEnabled ? 1 : 0);
-            VM.StackPush(oPC);
-            VM.Call(554);
+            NWN.Core.NWScript.PopUpDeathGUIPanel(oPC, bRespawnButtonEnabled ? 1 : 0, bWaitForHelpButtonEnabled ? 1 : 0, nHelpStringReference, sHelpString);
         }
 
         /// <summary>
@@ -278,8 +240,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFirstPC()
         {
-            VM.Call(548);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetFirstPC();
         }
 
         /// <summary>
@@ -288,8 +249,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNextPC()
         {
-            VM.Call(549);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetNextPC();
         }
 
         /// <summary>
@@ -297,8 +257,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPCLevellingUp()
         {
-            VM.Call(542);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetPCLevellingUp();
         }
 
         /// <summary>
@@ -310,9 +269,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCameraMode(uint oPlayer, int nCameraMode)
         {
-            VM.StackPush(nCameraMode);
-            VM.StackPush(oPlayer);
-            VM.Call(504);
+            NWN.Core.NWScript.SetCameraMode(oPlayer, nCameraMode);
         }
 
         /// <summary>
@@ -320,8 +277,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastPlayerDying()
         {
-            VM.Call(410);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastPlayerDying();
         }
 
         /// <summary>
@@ -333,9 +289,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void PopUpGUIPanel(uint oPC, GuiPanel nGUIPanel)
         {
-            VM.StackPush((int)nGUIPanel);
-            VM.StackPush(oPC);
-            VM.Call(388);
+            NWN.Core.NWScript.PopUpGUIPanel(oPC, (int)nGUIPanel);
         }
 
 
@@ -345,9 +299,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetPlayerBuildVersionMajor(uint oPlayer)
         {
-            VM.StackPush(oPlayer);
-            VM.Call(904);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetPlayerBuildVersionMajor(oPlayer);
         }
 
         /// <summary>
@@ -356,9 +308,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetPlayerBuildVersionMinor(uint oPlayer)
         {
-            VM.StackPush(oPlayer);
-            VM.Call(905);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetPlayerBuildVersionMinor(oPlayer);
         }
 
 
@@ -367,11 +317,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// gained through a player login (as opposed to the DM client).
         /// Note: GetIsDM() also returns TRUE for player creature DMs.
         /// </summary>
-        public static int GetIsPlayerDM(uint oCreature)
+        public static bool GetIsPlayerDM(uint oCreature)
         {
-            VM.StackPush(oCreature);
-            VM.Call(918);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetIsPlayerDM(oCreature) != 0;
         }
 
         /// <summary>
@@ -380,8 +328,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static uint GetLastGuiEventPlayer()
         {
-            VM.Call(960);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastGuiEventPlayer();
         }
 
         /// <summary>
@@ -390,8 +337,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static GuiEventType GetLastGuiEventType()
         {
-            VM.Call(961);
-            return (GuiEventType)VM.StackPopInt();
+            return (GuiEventType)NWN.Core.NWScript.GetLastGuiEventType();
         }
 
         /// <summary>
@@ -408,8 +354,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static int GetLastGuiEventInteger()
         {
-            VM.Call(962);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetLastGuiEventInteger();
         }
 
         /// <summary>
@@ -423,8 +368,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static uint GetLastGuiEventObject()
         {
-            VM.Call(963);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastGuiEventObject();
         }
 
         /// <summary>
@@ -438,11 +382,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetGuiPanelDisabled(uint oPlayer, GuiPanel nGuiPanel, bool bDisabled, uint oTarget = OBJECT_INVALID)
         {
-            VM.StackPush(oTarget);
-            VM.StackPush(bDisabled ? 1 : 0);
-            VM.StackPush((int)nGuiPanel);
-            VM.StackPush(oPlayer);
-            VM.Call(964);
+            NWN.Core.NWScript.SetGuiPanelDisabled(oPlayer, (int)nGuiPanel, bDisabled ? 1 : 0, oTarget);
         }
 
         /// <summary>
@@ -451,8 +391,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static int GetLastTileActionId()
         {
-            VM.Call(965);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetLastTileActionId();
         }
 
         /// <summary>
@@ -461,8 +400,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static Vector3 GetLastTileActionPosition()
         {
-            VM.Call(966);
-            return VM.StackPopVector();
+            return NWN.Core.NWScript.GetLastTileActionPosition();
         }
 
         /// <summary>
@@ -471,8 +409,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static uint GetLastPlayerToDoTileAction()
         {
-            VM.Call(967);
-            return VM.StackPopObject();
+            return NWN.Core.NWScript.GetLastPlayerToDoTileAction();
         }
 
         /// <summary>
@@ -486,11 +423,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetPlayerDeviceProperty(uint oPlayer, string sProperty)
         {
-            VM.StackPush(sProperty);
-            VM.StackPush(oPlayer);
-            VM.Call(1004);
-
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetPlayerDeviceProperty(oPlayer, sProperty);
         }
 
         /// <summary>
@@ -498,10 +431,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static PlayerLanguageType GetPlayerLanguage(uint oPlayer)
         {
-            VM.StackPush(oPlayer);
-            VM.Call(1005);
-
-            return (PlayerLanguageType)VM.StackPopInt();
+            return (PlayerLanguageType)NWN.Core.NWScript.GetPlayerLanguage(oPlayer);
         }
 
         /// <summary>
@@ -509,10 +439,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static PlayerDevicePlatformType GetPlayerDevicePlatform(uint oPlayer)
         {
-            VM.StackPush(oPlayer);
-            VM.Call(1006);
-
-            return (PlayerDevicePlatformType)VM.StackPopInt();
+            return (PlayerDevicePlatformType)NWN.Core.NWScript.GetPlayerDevicePlatform(oPlayer);
         }
 
         /// <summary>
@@ -522,9 +449,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetPlayerBuildVersionPostfix(uint oPlayer)
         {
-            VM.StackPush(oPlayer);
-            VM.Call(1093);
-            return VM.StackPopInt();
+            return NWN.Core.NWScript.GetPlayerBuildVersionPostfix(oPlayer);
         }
 
         /// <summary>
@@ -534,9 +459,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetPlayerBuildVersionCommitSha1(uint oPlayer)
         {
-            VM.StackPush(oPlayer);
-            VM.Call(1094);
-            return VM.StackPopString();
+            return NWN.Core.NWScript.GetPlayerBuildVersionCommitSha1(oPlayer);
         }
     }
 }

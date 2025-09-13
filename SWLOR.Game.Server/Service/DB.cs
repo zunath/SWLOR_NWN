@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
             LoadEntities();
 
             // Runs at the end of every main loop. Clears out all data retrieved during this cycle.
-            Internal.OnScriptContextEnd += () =>
+            ServerManager.OnScriptContextEnd += () =>
             {
                 _cachedEntities.Clear();
             };

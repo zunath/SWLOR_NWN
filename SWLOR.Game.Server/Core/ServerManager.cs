@@ -1,17 +1,19 @@
+using SWLOR.Game.Server.Core.Async;
+using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
+using SWLOR.NWN.API.Core;
+using SWLOR.NWN.API.NWNX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SWLOR.Game.Server.Core.Async;
-using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.NWN.API.NWNX;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace SWLOR.Game.Server.Core
 {
-    public static class Internal
+    public static unsafe class ServerManager
     {
         private class ActionScript
         {
@@ -25,103 +27,153 @@ namespace SWLOR.Game.Server.Core
             public string Name { get; set; }
         }
 
+        private static ClosureManager _closureManager;
+        private static readonly Encoding _encoding;
+
         private const int MaxCharsInScriptName = 16;
         private const int ScriptHandled = 0;
         private const int ScriptNotHandled = -1;
 
         private delegate bool ConditionalScriptDelegate();
+        public static event Action OnScriptContextBegin;
+        public static event Action OnScriptContextEnd;
 
         private static Dictionary<string, List<ActionScript>> _scripts;
         private static Dictionary<string, List<ConditionalScript>> _conditionalScripts;
 
-        public static event Action OnScriptContextBegin;
-        public static event Action OnScriptContextEnd;
-        
-        private static CoreGameManager _coreGameManager;
-
-        /// <summary>
-        /// New initialization method called by the new bootstrap
-        /// </summary>
-        public static void Initialize()
+        static ServerManager()
         {
-            Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "true");
-
-            Console.WriteLine("Initializing script context...");
-            _coreGameManager = new CoreGameManager();
-            
-            // Initialize NWN.Core library
-            global::NWN.Core.NWNCore.Init(_coreGameManager);
-            Console.WriteLine("NWN.Core library initialized successfully.");
-            
-            Console.WriteLine("Script context initialized successfully.");
-
-            Console.WriteLine("Registering loggers...");
-            Log.Register();
-            Console.WriteLine("Loggers registered successfully.");
-
-            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-
-            Console.WriteLine("Registering scripts...");
-            LoadHandlersFromAssembly();
-            Console.WriteLine("Scripts registered successfully.");
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            _encoding = Encoding.GetEncoding("windows-1252");
         }
 
         /// <summary>
-        /// Legacy bootstrap method - deprecated, kept for compatibility
+        /// New bootstrap method called by NWNX DotNET plugin
         /// </summary>
-        [Obsolete("Use Initialize() instead - called by new Bootstrap.Bootstrap()")]
-        public static int Bootstrap(IntPtr nativeHandlesPtr, int nativeHandlesLength)
+        public static void Bootstrap()
         {
-            // This method is deprecated and should not be used with the new NWNX DotNET plugin
-            throw new InvalidOperationException("Legacy bootstrap method is no longer supported. Use the new Bootstrap class.");
-        }
-
-        private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs ex)
-        {
-            Log.Write(LogGroup.Error, ((Exception)ex.ExceptionObject).ToMessageAndCompleteStacktrace());
-        }
-
-        /// <summary>
-        /// Directly executes a script. This bypasses the NWScript round-trip.
-        /// </summary>
-        /// <param name="scriptName">Name of the script.</param>
-        /// <param name="objectSelf">The object to execute the script upon.</param>
-        public static void DirectRunScript(string scriptName, uint objectSelf)
-        {
-            // With the new bootstrap approach, directly call the script processing
-            ProcessRunScript(scriptName, objectSelf);
-        }
-
-        /// <summary>
-        /// Main loop processing called by the new bootstrap
-        /// </summary>
-        public static void ProcessMainLoop(ulong frame)
-        {
-            OnScriptContextBegin?.Invoke();
-
             try
             {
-                NwTask.MainThreadSynchronizationContext.Update();
-                Scheduler.Process();
-            }
-            catch (Exception ex)
-            {
-                Log.Write(LogGroup.Error, ex.ToMessageAndCompleteStacktrace());
-            }
+                Console.WriteLine("SWLOR Server starting with new bootstrap method...");
 
-            OnScriptContextEnd?.Invoke();
+                _closureManager = new ClosureManager();
+
+                // Initialize NWN.Core library
+                global::NWN.Core.NWNCore.Init(_closureManager);
+                Console.WriteLine("NWN.Core library initialized successfully.");
+
+                // Register all handlers with the new NWNX API
+                NWNXPInvoke.RegisterMainLoopHandler(&OnMainLoop);
+                NWNXPInvoke.RegisterRunScriptHandler(&OnRunScript);
+                NWNXPInvoke.RegisterClosureHandler(&OnClosure);
+                NWNXPInvoke.RegisterSignalHandler(&OnSignal);
+
+                // Initialize the SWLOR internal systems
+                Console.WriteLine("Initializing SWLOR internal systems...");
+                Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "true");
+
+                Console.WriteLine("Registering loggers...");
+                Log.Register();
+                Console.WriteLine("Loggers registered successfully.");
+
+                AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+
+                Console.WriteLine("Registering scripts...");
+                LoadHandlersFromAssembly();
+                Console.WriteLine("Scripts registered successfully.");
+                Console.WriteLine("SWLOR Server bootstrap complete.");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Bootstrap failed: {e}");
+                throw;
+            }
+        }
+
+        [UnmanagedCallersOnly]
+        private static void OnMainLoop(ulong frame)
+        {
+            try
+            {
+                ProcessMainLoop(frame);
+            }
+            catch (Exception e)
+            {
+                Log.Write(LogGroup.Error, $"MainLoop exception: {e}");
+            }
+        }
+
+        [UnmanagedCallersOnly]
+        private static int OnRunScript(byte* pScript, uint oidSelf)
+        {
+            try
+            {
+                string scriptName = ReadNullTerminatedString(pScript);
+                return ProcessRunScript(scriptName, oidSelf);
+            }
+            catch (Exception e)
+            {
+                Log.Write(LogGroup.Error, $"RunScript exception: {e}");
+                return -1; // Script not handled
+            }
+        }
+
+        [UnmanagedCallersOnly]
+        private static void OnSignal(byte* pSignal)
+        {
+            try
+            {
+                string signal = ReadNullTerminatedString(pSignal);
+                ProcessSignal(signal);
+            }
+            catch (Exception e)
+            {
+                Log.Write(LogGroup.Error, $"Signal processing exception: {e}");
+            }
+        }
+
+        [UnmanagedCallersOnly]
+        private static void OnClosure(ulong eid, uint oidSelf)
+        {
+            try
+            {
+                _closureManager.OnClosure(eid, oidSelf);
+            }
+            catch (Exception e)
+            {
+                Log.Write(LogGroup.Error, $"Closure processing exception: {e}");
+            }
+        }
+
+        private static string ReadNullTerminatedString(byte* ptr)
+        {
+            if (ptr == null)
+                return string.Empty;
+
+            int length = 0;
+            while (ptr[length] != 0)
+                length++;
+
+            if (length == 0)
+                return string.Empty;
+
+            var bytes = new byte[length];
+            for (int i = 0; i < length; i++)
+                bytes[i] = ptr[i];
+
+            return _encoding.GetString(bytes);
         }
 
         /// <summary>
         /// Script execution processing called by the new bootstrap
         /// </summary>
-        public static int ProcessRunScript(string scriptName, uint objectSelf)
+        private static int ProcessRunScript(string scriptName, uint objectSelf)
         {
             // Set the script execution context
-            var oldObjectSelf = (_coreGameManager as CoreGameManager)?.ObjectSelf ?? 0x7F000000; // OBJECT_INVALID
-            if (_coreGameManager is CoreGameManager manager)
+            var oldObjectSelf = _closureManager?.ObjectSelf ?? 0x7F000000; // OBJECT_INVALID
+            if (_closureManager is ClosureManager manager)
                 manager.ObjectSelf = objectSelf;
-            
+
             try
             {
                 var retVal = RunScripts(scriptName);
@@ -130,42 +182,10 @@ namespace SWLOR.Game.Server.Core
             finally
             {
                 // Restore the previous script context
-                if (_coreGameManager is CoreGameManager coreManager)
+                if (_closureManager is ClosureManager coreManager)
                     coreManager.ObjectSelf = oldObjectSelf;
             }
         }
-
-        /// <summary>
-        /// Signal processing called by the new bootstrap
-        /// </summary>
-        public static void ProcessSignal(string signal)
-        {
-            // SWLOR doesn't currently handle signals, but this preserves the interface
-            // for future expansion if needed
-        }
-
-        #region Legacy Methods (Deprecated)
-        
-        [Obsolete("Use ProcessRunScript instead")]
-        private static void OnRunScript(string scriptName, uint objectSelf, out int scriptHandlerResult)
-        {
-            var retVal = RunScripts(scriptName);
-            scriptHandlerResult = retVal == -1 ? ScriptNotHandled : retVal;
-        }
-
-        [Obsolete("Use ProcessSignal instead")]
-        private static void OnSignal(string signal)
-        {
-            ProcessSignal(signal);
-        }
-
-        [Obsolete("Use ProcessMainLoop instead")]
-        private static void OnServerLoop(ulong frame)
-        {
-            ProcessMainLoop(frame);
-        }
-        
-        #endregion
 
 
         private static int RunScripts(string script)
@@ -276,5 +296,42 @@ namespace SWLOR.Game.Server.Core
                 }
             }
         }
+
+
+        private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs ex)
+        {
+            Log.Write(LogGroup.Error, ((Exception)ex.ExceptionObject).ToMessageAndCompleteStacktrace());
+        }
+
+        /// <summary>
+        /// Main loop processing called by the new bootstrap
+        /// </summary>
+        public static void ProcessMainLoop(ulong frame)
+        {
+            OnScriptContextBegin?.Invoke();
+
+            try
+            {
+                NwTask.MainThreadSynchronizationContext.Update();
+                Scheduler.Process();
+            }
+            catch (Exception ex)
+            {
+                Log.Write(LogGroup.Error, ex.ToMessageAndCompleteStacktrace());
+            }
+
+            OnScriptContextEnd?.Invoke();
+        }
+
+
+        /// <summary>
+        /// Signal processing called by the new bootstrap
+        /// </summary>
+        public static void ProcessSignal(string signal)
+        {
+            // SWLOR doesn't currently handle signals, but this preserves the interface
+            // for future expansion if needed
+        }
+
     }
 }

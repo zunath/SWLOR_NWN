@@ -48,7 +48,6 @@ namespace SWLOR.Game.Server.Core
 
             Console.WriteLine("Initializing script context...");
             _coreGameManager = new CoreGameManager();
-            NWNCore.FunctionHandler = _coreGameManager;
             
             // Initialize NWN.Core library
             global::NWN.Core.NWNCore.Init(_coreGameManager);

@@ -114,11 +114,6 @@
       "CompileModels": false
     },
     {
-      "Name":  "swlor2_parts",
-      "Path": "../SWLOR_Haks/swlor2_parts/",
-      "CompileModels": false
-    },
-    {
       "Name":  "swlor2_plt",
       "Path": "../SWLOR_Haks/swlor2_plt/",
       "CompileModels": false
@@ -166,6 +161,111 @@
     {
       "Name":  "swlor2_wok",
       "Path": "../SWLOR_Haks/swlor2_wok/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_belt",
+      "Path": "../SWLOR_Haks/swlor2_pt_belt/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_bicepl",
+      "Path": "../SWLOR_Haks/swlor2_pt_bicepl/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_bicepr",
+      "Path": "../SWLOR_Haks/swlor2_pt_bicepr/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_chest",
+      "Path": "../SWLOR_Haks/swlor2_pt_chest/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_cloak",
+      "Path": "../SWLOR_Haks/swlor2_pt_cloak/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_footl",
+      "Path": "../SWLOR_Haks/swlor2_pt_footl/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_footr",
+      "Path": "../SWLOR_Haks/swlor2_pt_footr/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_forel",
+      "Path": "../SWLOR_Haks/swlor2_pt_forel/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_forer",
+      "Path": "../SWLOR_Haks/swlor2_pt_forer/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_handl",
+      "Path": "../SWLOR_Haks/swlor2_pt_handl/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_handr",
+      "Path": "../SWLOR_Haks/swlor2_pt_handr/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_head",
+      "Path": "../SWLOR_Haks/swlor2_pt_head/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_legl",
+      "Path": "../SWLOR_Haks/swlor2_pt_legl/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_legr",
+      "Path": "../SWLOR_Haks/swlor2_pt_legr/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_neck",
+      "Path": "../SWLOR_Haks/swlor2_pt_neck/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_pelvis",
+      "Path": "../SWLOR_Haks/swlor2_pt_pelvis/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_robe",
+      "Path": "../SWLOR_Haks/swlor2_pt_robe/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_shinl",
+      "Path": "../SWLOR_Haks/swlor2_pt_shinl/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_shinr",
+      "Path": "../SWLOR_Haks/swlor2_pt_shinr/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_shol",
+      "Path": "../SWLOR_Haks/swlor2_pt_shol/",
+      "CompileModels": false
+    },
+    {
+      "Name":  "swlor2_pt_shor",
+      "Path": "../SWLOR_Haks/swlor2_pt_shor/",
       "CompileModels": false
     }
   ]

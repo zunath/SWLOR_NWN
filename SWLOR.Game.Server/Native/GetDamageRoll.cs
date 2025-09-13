@@ -254,9 +254,10 @@ namespace SWLOR.Game.Server.Native
                     // Apply NWN mechanics to damage reduction - physical only
                     if (damageType == CombatDamageType.Physical)
                     {
+                        var bRangedAttack = attackType == (uint) AttackType.Ranged ? 1 : 0;
                         damage = target.DoDamageImmunity(attacker, damage, damageFlags, 0, 1);
-                        damage = target.DoDamageResistance(attacker, damage, damageFlags, 0, 1, 1);
-                        damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1);
+                        damage = target.DoDamageResistance(attacker, damage, damageFlags, 0, 1, 1, bRangedAttack);
+                        damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1, bRangedAttack);
                     }
                 }
                 else if (targetObject.m_nObjectType == (int)ObjectType.Placeable)

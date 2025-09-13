@@ -619,5 +619,17 @@ namespace SWLOR.Game.Server.Core.NWNX
             NWNCore.NativeFunctions.nwnxPushObject(oPlayer);
             NWNCore.NativeFunctions.nwnxCallFunction();
         }
+
+        /// <summary>
+        /// Get the current open store of player.
+        /// Returns OBJECT_INVALID if no store is open.
+        /// </summary>
+        public static uint GetOpenStore(uint player)
+        {
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetOpenStore");
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopObject();
+        }
     }
 }

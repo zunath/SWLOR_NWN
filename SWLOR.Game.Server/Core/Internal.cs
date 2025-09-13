@@ -36,18 +36,12 @@ namespace SWLOR.Game.Server.Core
         public static event Action OnScriptContextBegin;
         public static event Action OnScriptContextEnd;
 
-        private static ICoreEventHandler _coreGameManager;
-
-        public static int Bootstrap(IntPtr nativeHandlesPtr, int nativeHandlesLength)
+        /// <summary>
+        /// New initialization method called by the new bootstrap
+        /// </summary>
+        public static void Initialize()
         {
-
             Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "true");
-
-            var retVal = NWNCore.Init(nativeHandlesPtr, nativeHandlesLength, out CoreGameManager coreGameManager);
-            coreGameManager.OnSignal += OnSignal;
-            coreGameManager.OnServerLoop += OnServerLoop;
-            coreGameManager.OnRunScript += OnRunScript;
-            _coreGameManager = coreGameManager;
 
             Console.WriteLine("Registering loggers...");
             Log.Register();
@@ -58,8 +52,16 @@ namespace SWLOR.Game.Server.Core
             Console.WriteLine("Registering scripts...");
             LoadHandlersFromAssembly();
             Console.WriteLine("Scripts registered successfully.");
+        }
 
-            return retVal;
+        /// <summary>
+        /// Legacy bootstrap method - deprecated, kept for compatibility
+        /// </summary>
+        [Obsolete("Use Initialize() instead - called by new Bootstrap.Bootstrap()")]
+        public static int Bootstrap(IntPtr nativeHandlesPtr, int nativeHandlesLength)
+        {
+            // This method is deprecated and should not be used with the new NWNX DotNET plugin
+            throw new InvalidOperationException("Legacy bootstrap method is no longer supported. Use the new Bootstrap class.");
         }
 
         private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs ex)
@@ -74,22 +76,14 @@ namespace SWLOR.Game.Server.Core
         /// <param name="objectSelf">The object to execute the script upon.</param>
         public static void DirectRunScript(string scriptName, uint objectSelf)
         {
-            _coreGameManager.OnRunScript(scriptName, objectSelf);
+            // With the new bootstrap approach, directly call the script processing
+            ProcessRunScript(scriptName, objectSelf);
         }
 
-        private static void OnRunScript(string scriptName, uint objectSelf, out int scriptHandlerResult)
-        {
-            var retVal = RunScripts(scriptName);
-
-            scriptHandlerResult = retVal == -1 ? ScriptNotHandled : retVal;
-        }
-
-        private static void OnSignal(string signal)
-        {
-
-        }
-
-        private static void OnServerLoop(ulong frame)
+        /// <summary>
+        /// Main loop processing called by the new bootstrap
+        /// </summary>
+        public static void ProcessMainLoop(ulong frame)
         {
             OnScriptContextBegin?.Invoke();
 
@@ -105,6 +99,47 @@ namespace SWLOR.Game.Server.Core
 
             OnScriptContextEnd?.Invoke();
         }
+
+        /// <summary>
+        /// Script execution processing called by the new bootstrap
+        /// </summary>
+        public static int ProcessRunScript(string scriptName, uint objectSelf)
+        {
+            var retVal = RunScripts(scriptName);
+            return retVal == -1 ? ScriptNotHandled : retVal;
+        }
+
+        /// <summary>
+        /// Signal processing called by the new bootstrap
+        /// </summary>
+        public static void ProcessSignal(string signal)
+        {
+            // SWLOR doesn't currently handle signals, but this preserves the interface
+            // for future expansion if needed
+        }
+
+        #region Legacy Methods (Deprecated)
+        
+        [Obsolete("Use ProcessRunScript instead")]
+        private static void OnRunScript(string scriptName, uint objectSelf, out int scriptHandlerResult)
+        {
+            var retVal = RunScripts(scriptName);
+            scriptHandlerResult = retVal == -1 ? ScriptNotHandled : retVal;
+        }
+
+        [Obsolete("Use ProcessSignal instead")]
+        private static void OnSignal(string signal)
+        {
+            ProcessSignal(signal);
+        }
+
+        [Obsolete("Use ProcessMainLoop instead")]
+        private static void OnServerLoop(ulong frame)
+        {
+            ProcessMainLoop(frame);
+        }
+        
+        #endregion
 
 
         private static int RunScripts(string script)

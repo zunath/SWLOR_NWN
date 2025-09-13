@@ -1214,7 +1214,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
-        public static int GetBypassEffectImmunity(uint oCreature, int nImmunityType)
+        public static int GetBypassEffectImmunity(uint oCreature, int nImmunityType)        
         {
             NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBypassEffectImmunity");
 
@@ -1223,6 +1223,40 @@ namespace SWLOR.Game.Server.Core.NWNX
             NWNCore.NativeFunctions.nwnxCallFunction();
 
             return NWNCore.NativeFunctions.nwnxPopInt();
+        }
+
+        /// <summary>
+        /// Gets the creature's number of bonus spells.
+        /// </summary>
+        /// <param name="creature">The creature object.</param>
+        /// <param name="multiClass">The character class position, starting at 0.</param>
+        /// <param name="spellLevel">The spell level, 0 to 9.</param>
+        /// <returns>The number of bonus spells.</returns>
+        public static int GetNumberOfBonusSpells(uint creature, int multiClass, int spellLevel)
+        {
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNumberOfBonusSpells");
+            NWNCore.NativeFunctions.nwnxPushInt(spellLevel);
+            NWNCore.NativeFunctions.nwnxPushInt(multiClass);
+            NWNCore.NativeFunctions.nwnxPushObject(creature);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
+        }
+
+        /// <summary>
+        /// Modifies the creature's number of bonus spells.
+        /// </summary>
+        /// <param name="creature">The creature object.</param>
+        /// <param name="multiClass">The character class position, starting at 0.</param>
+        /// <param name="spellLevel">The spell level, 0 to 9.</param>
+        /// <param name="delta">The value to change the number of bonus spells by. Can be negative.</param>
+        public static void ModifyNumberBonusSpells(uint creature, int multiClass, int spellLevel, int delta)
+        {
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ModifyNumberBonusSpells");
+            NWNCore.NativeFunctions.nwnxPushInt(delta);
+            NWNCore.NativeFunctions.nwnxPushInt(spellLevel);
+            NWNCore.NativeFunctions.nwnxPushInt(multiClass);
+            NWNCore.NativeFunctions.nwnxPushObject(creature);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
     }
 }

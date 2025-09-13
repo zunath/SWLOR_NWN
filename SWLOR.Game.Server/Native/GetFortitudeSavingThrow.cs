@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Native
 {
     public static unsafe class GetFortitudeSavingThrow
     {
+        // Hash constants for ruleset entries (computed using djb2 hash algorithm)
+        private const uint LUCKOFHEROES_SAVE_BONUS_HASH = 0x390339C3; // djb2 hash of "LUCKOFHEROES_SAVE_BONUS"
         internal delegate sbyte GetFortitudeSavingThrowHook(void* thisPtr, int bExcludeEffectBonus);
 
         // ReSharper disable once NotAccessedField.Local
@@ -42,7 +44,7 @@ namespace SWLOR.Game.Server.Native
                         (int)SavingThrow.Fortitude);
 
             if (stats.HasFeat((ushort)FeatType.LuckOfHeroes) == 1)
-                modifier += (sbyte)rules.GetRulesetIntEntry(new CExoString("LUCKOFHEROES_SAVE_BONUS"), 1);
+                modifier += (sbyte)rules.GetRulesetIntEntry(LUCKOFHEROES_SAVE_BONUS_HASH, 1);
 
             if (stats.HasFeat((ushort)FeatType.PrestigeDarkBlessing) == 1)
                 modifier += (sbyte)stats.m_nCharismaModifier;

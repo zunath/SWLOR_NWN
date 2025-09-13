@@ -12,82 +12,74 @@ namespace SWLOR.Game.Server.Core
 
         static VM()
         {
-            if (NWNCore.FunctionHandler == null)
-            {
-                throw new InvalidOperationException("Attempted to call a VM function before NWN.Core was initialised. Initialise NWN.Core first using NWNCore.Init()");
-            }
-
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Cp1252Encoding = Encoding.GetEncoding("windows-1252");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static void StackPush(int value) => NWNCore.NativeFunctions.StackPushInteger(value);
+        public static void StackPush(int value) => NWNXPInvoke.StackPushInteger(value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static void StackPush(float value) => NWNCore.NativeFunctions.StackPushFloat(value);
+        public static void StackPush(float value) => NWNXPInvoke.StackPushFloat(value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void StackPush(string value)
         {
             IntPtr charPtr = GetNullTerminatedString(value);
-            NWNCore.NativeFunctions.StackPushRawString(charPtr);
+            NWNXPInvoke.StackPushRawString(charPtr);
             Marshal.FreeHGlobal(charPtr);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static void StackPush(uint value) => NWNCore.NativeFunctions.StackPushObject(value);
+        public static void StackPush(uint value) => NWNXPInvoke.StackPushObject(value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static void StackPush(Vector3 vector) => NWNCore.NativeFunctions.StackPushVector(vector);
+        public static void StackPush(Vector3 vector) => NWNXPInvoke.StackPushVector(vector);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static void StackPush(int engineType, IntPtr refValue) => NWNCore.NativeFunctions.StackPushGameDefinedStructure(engineType, refValue);
+        public static void StackPush(int engineType, IntPtr refValue) => NWNXPInvoke.StackPushGameDefinedStructure(engineType, refValue);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static void Call(int functionId) => NWNCore.NativeFunctions.CallBuiltIn(functionId);
+        public static void Call(int functionId) => NWNXPInvoke.CallBuiltIn(functionId);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static int StackPopInt() => NWNCore.NativeFunctions.StackPopInteger();
+        public static int StackPopInt() => NWNXPInvoke.StackPopInteger();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static float StackPopFloat() => NWNCore.NativeFunctions.StackPopFloat();
+        public static float StackPopFloat() => NWNXPInvoke.StackPopFloat();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static string? StackPopString() => ReadNullTerminatedString(NWNCore.NativeFunctions.StackPopRawString());
+        public static string? StackPopString() => ReadNullTerminatedString(NWNXPInvoke.StackPopRawString());
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static uint StackPopObject() => NWNCore.NativeFunctions.StackPopObject();
+        public static uint StackPopObject() => NWNXPInvoke.StackPopObject();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static Vector3 StackPopVector() => NWNCore.NativeFunctions.StackPopVector();
+        public static Vector3 StackPopVector() => NWNXPInvoke.StackPopVector();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static IntPtr StackPopStruct(int engineType) => NWNCore.NativeFunctions.StackPopGameDefinedStructure(engineType);
+        public static IntPtr StackPopStruct(int engineType) => NWNXPInvoke.StackPopGameDefinedStructure(engineType);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static void FreeGameDefinedStructure(int type, IntPtr str) => NWNCore.NativeFunctions.FreeGameDefinedStructure(type, str);
+        public static void FreeGameDefinedStructure(int type, IntPtr str) => NWNXPInvoke.FreeGameDefinedStructure(type, str);
+
+        // Legacy methods - these are no longer available in the new NWNX DotNET API
+        // GetFunctionPointer and GetNWNXExportedGlobals are not available in the new bootstrap approach
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static IntPtr GetFunctionPointer(string name) => NWNCore.NativeFunctions.GetFunctionPointer(name);
+        public static int ClosureAssignCommand(uint oid, ulong eventId) => NWNXPInvoke.ClosureAssignCommand(oid, eventId);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static NWNCore.NWNXExportedGlobals GetNWNXExportedGlobals() => NWNCore.NativeFunctions.GetNWNXExportedGlobals();
+        public static int ClosureDelayCommand(uint oid, float duration, ulong eventId) => NWNXPInvoke.ClosureDelayCommand(oid, duration, eventId);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static int ClosureAssignCommand(uint oid, ulong eventId) => NWNCore.NativeFunctions.ClosureAssignCommand(oid, eventId);
+        public static int ClosureActionDoCommand(uint oid, ulong eventId) => NWNXPInvoke.ClosureActionDoCommand(oid, eventId);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static int ClosureDelayCommand(uint oid, float duration, ulong eventId) => NWNCore.NativeFunctions.ClosureDelayCommand(oid, duration, eventId);
+        public static IntPtr RequestHook(IntPtr address, IntPtr managedFuncPtr, int priority) => NWNXPInvoke.RequestHook(address, managedFuncPtr, priority);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static int ClosureActionDoCommand(uint oid, ulong eventId) => NWNCore.NativeFunctions.ClosureActionDoCommand(oid, eventId);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static IntPtr RequestHook(IntPtr address, IntPtr managedFuncPtr, int priority) => NWNCore.NativeFunctions.RequestHook(address, managedFuncPtr, priority);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static void ReturnHook(IntPtr funcPtr) => NWNCore.NativeFunctions.ReturnHook(funcPtr);
+        public static void ReturnHook(IntPtr funcPtr) => NWNXPInvoke.ReturnHook(funcPtr);
 
         public static IntPtr GetNullTerminatedString(string? value)
         {

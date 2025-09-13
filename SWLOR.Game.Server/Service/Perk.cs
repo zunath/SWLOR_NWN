@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all perk and character type information.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             CachePerks();
@@ -579,7 +579,7 @@ namespace SWLOR.Game.Server.Service
         /// When a skill receives decay, any perks tied to that skill should be checked.
         /// If the player no longer meets the requirements for those perks, they should be reduced in level.
         /// </summary>
-        [NWNEventHandler("swlor_lose_skill")]
+        [NWNEventHandler(ScriptName.OnSwlorLoseSkill)]
         public static void RemovePerkLevelOnSkillDecay()
         {
             var skillType = (SkillType)Convert.ToInt32(EventsPlugin.GetEventData("SKILL_TYPE_ID"));

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the skill cache has finished loading, recipe and category data is cached.
         /// </summary>
-        [NWNEventHandler("swlor_skl_cache")]
+        [NWNEventHandler(ScriptName.OnSwlorSkillCache)]
         public static void CacheData()
         {
             CacheCategories();
@@ -351,7 +351,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a crafting device is used, display the recipe menu.
         /// </summary>
-        [NWNEventHandler("craft_on_used")]
+        [NWNEventHandler(ScriptName.OnCraftUsed)]
         public static void UseCraftingDevice()
         {
             var player = GetLastUsedBy();
@@ -715,14 +715,14 @@ namespace SWLOR.Game.Server.Service
             throw new Exception("Unsupported enhancement type.");
         }
 
-        [NWNEventHandler("refinery_used")]
+        [NWNEventHandler(ScriptName.OnRefineryUsed)]
         public static void UseRefinery()
         {
             var player = GetLastUsedBy();
             Gui.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
         }
 
-        [NWNEventHandler("research_term")]
+        [NWNEventHandler(ScriptName.OnResearchTerminal)]
         public static void UseResearchTerminal()
         {
             var player = GetLastUsedBy();
@@ -920,7 +920,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a property is removed, also remove any associated research jobs.
         /// </summary>
-        [NWNEventHandler("swlor_del_prop")]
+        [NWNEventHandler(ScriptName.OnSwlorDeleteProperty)]
         public static void OnRemoveProperty()
         {
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");

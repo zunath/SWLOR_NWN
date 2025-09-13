@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -48,13 +49,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindSelectedIndex(model => model.SelectedCategoryId)
                             .BindOptions(model => model.Categories)
                             .BindIsEnabled(model => model.IsSkillSelected)
-                        .SetWidth(200f);
+                            .SetWidth(200f);
                         
                         row.AddButton()
                             .SetText("Select Blueprint")
                             .BindIsVisible(model => model.ShowSelectBlueprint)
                             .SetHeight(35f)
                             .BindOnClicked(model => model.OnClickSelectBlueprint());
+
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddComboBox()
+                            .BindSelectedIndex(model => model.SelectedLevelId)
+                            .AddOption("<All Levels>", 0)
+                            .AddOption("Level 0-9", 1)
+                            .AddOption("Level 10-19", 2)
+                            .AddOption("Level 20-29", 3)
+                            .AddOption("Level 30-39", 4)
+                            .AddOption("Level 40-49", 5)
+                            .AddOption("Level 50+", 6)
+                            .SetWidth(200f);
+                        
+                        row.AddCheckBox()
+                            .SetText("Show Only Craftable")
+                            .BindIsChecked(model => model.ShowOnlyCraftableRecipes)
+                            .SetWidth(200f);
 
                         row.AddSpacer();
                     });

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache planet climates and other pertinent data.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadData()
         {
             _planetClimates = WeatherPlanetDefinitions.GetPlanetClimates();
@@ -639,7 +639,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        [NWNEventHandler("area_enter")]
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void OnAreaEnter()
         {
             SetWeather();
@@ -700,7 +700,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        [NWNEventHandler("swlor_heartbeat")]
+        [NWNEventHandler(ScriptName.OnSwlorHeartbeat)]
         public static void OnModuleHeartbeat()
         {
             var oMod = GetModule();

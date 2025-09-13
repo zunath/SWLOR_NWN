@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service
             NReJSONSerializer.SerializerProxy = new JsonSerializer();
         }
 
-        [NWNEventHandler("mod_preload")]
+        [NWNEventHandler(ScriptName.OnModulePreload)]
         public static void Load()
         {
             _appSettings = ApplicationSettings.Get();

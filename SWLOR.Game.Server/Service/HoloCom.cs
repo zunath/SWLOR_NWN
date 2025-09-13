@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
@@ -7,7 +7,19 @@ namespace SWLOR.Game.Server.Service
 {
     public static class HoloCom
     {
-        [NWNEventHandler("mod_death")]
+        // Local variable name constants
+        private const string HolocomCallConnected = "HOLOCOM_CALL_CONNECTED";
+        private const string HolocomCallConnectedWith = "HOLOCOM_CALL_CONNECTED_WITH";
+        private const string HolocomCallSender = "HOLOCOM_CALL_SENDER";
+        private const string HolocomCallReceiver = "HOLOCOM_CALL_RECEIVER";
+        private const string HolocomCallSenderObject = "HOLOCOM_CALL_SENDER_OBJECT";
+        private const string HolocomCallReceiverObject = "HOLOCOM_CALL_RECEIVER_OBJECT";
+        private const string HolocomCallAttempt = "HOLOCOM_CALL_ATTEMPT";
+        private const string HolocomHologram = "HOLOCOM_HOLOGRAM";
+        private const string HologramOwner = "HOLOGRAM_OWNER";
+        private const string HolocomCallImmobilize = "HOLOCOM_CALL_IMMOBILIZE";
+
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void OnModuleDeath()
         {
             var player = GetLastPlayerDied();
@@ -16,23 +28,22 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnModuleEnter()
         {
             var player = GetEnteringObject();
-            RemoveEffectByTag(player, "HOLOCOM_CALL_IMMOBILIZE");
+            RemoveEffectByTag(player, HolocomCallImmobilize);
         }
 
-        [NWNEventHandler("mod_exit")]
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void OnModuleLeave()
         {
             var player = GetExitingObject();
-            if (IsInCall(player)) 
-                SetIsInCall(player, GetTargetForActiveCall(player), false);
 
+            CleanupAllHoloComState(player);
         }
 
-        [NWNEventHandler("mod_chat")]
+        [NWNEventHandler(ScriptName.OnModuleChat)]
         public static void OnModuleChat()
         {
             var sender = GetPCChatSpeaker();
@@ -76,24 +87,24 @@ namespace SWLOR.Game.Server.Service
 
         public static bool IsInCall(uint player)
         {
-            if (GetLocalBool(player, "HOLOCOM_CALL_CONNECTED") == true) return true;
+            if (GetLocalBool(player, HolocomCallConnected) == true) return true;
             else return false;
         }
         public static void SetIsInCall(uint sender, uint receiver, bool value = true)
         {
             if (value) // START CALL
             {
-                SetLocalBool(sender, "HOLOCOM_CALL_CONNECTED", true);
-                SetLocalBool(receiver, "HOLOCOM_CALL_CONNECTED", true);
+                SetLocalBool(sender, HolocomCallConnected, true);
+                SetLocalBool(receiver, HolocomCallConnected, true);
 
-                SetLocalObject(sender, "HOLOCOM_CALL_CONNECTED_WITH", receiver);
-                SetLocalObject(receiver, "HOLOCOM_CALL_CONNECTED_WITH", sender);
+                SetLocalObject(sender, HolocomCallConnectedWith, receiver);
+                SetLocalObject(receiver, HolocomCallConnectedWith, sender);
 
                 var message = "Call Connected. (Use the HoloCom or the chat command /endcall to terminate the call)";
                 SendMessageToPC(sender, message);
                 SendMessageToPC(receiver, message);
                 var effectImmobilized = EffectCutsceneImmobilize();
-                TagEffect(effectImmobilized, "HOLOCOM_CALL_IMMOBILIZE");
+                TagEffect(effectImmobilized, HolocomCallImmobilize);
                 ApplyEffectToObject(DurationType.Permanent, effectImmobilized, sender);
                 ApplyEffectToObject(DurationType.Permanent, effectImmobilized, receiver);
 
@@ -109,11 +120,11 @@ namespace SWLOR.Game.Server.Service
                 ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), holoReceiver);
                 SetPlotFlag(holoReceiver, true);
                 SetPlotFlag(holoSender, true);
-                SetLocalObject(sender, "HOLOCOM_HOLOGRAM", holoSender);
-                SetLocalObject(receiver, "HOLOCOM_HOLOGRAM", holoReceiver);
+                SetLocalObject(sender, HolocomHologram, holoSender);
+                SetLocalObject(receiver, HolocomHologram, holoReceiver);
 
-                SetLocalObject(holoSender, "HOLOGRAM_OWNER", sender);
-                SetLocalObject(holoReceiver, "HOLOGRAM_OWNER", receiver);
+                SetLocalObject(holoSender, HologramOwner, sender);
+                SetLocalObject(holoReceiver, HologramOwner, receiver);
 
                 AssignCommand(sender, () =>
                 {
@@ -159,90 +170,193 @@ namespace SWLOR.Game.Server.Service
                     PlaySound("hologram_off");
                 });
 
-                DestroyObject(GetHoloGram(sender));
-                DestroyObject(GetHoloGram(receiver));
+                // Destroy holograms if they are valid
+                var senderHologram = GetHoloGram(sender);
+                var receiverHologram = GetHoloGram(receiver);
+                
+                if (GetIsObjectValid(senderHologram))
+                {
+                    DestroyObject(senderHologram);
+                }
+                if (GetIsObjectValid(receiverHologram))
+                {
+                    DestroyObject(receiverHologram);
+                }
 
-                DeleteLocalInt(sender, "HOLOCOM_CALL_CONNECTED");
-                DeleteLocalInt(receiver, "HOLOCOM_CALL_CONNECTED");
+                DeleteLocalInt(sender, HolocomCallConnected);
+                DeleteLocalInt(receiver, HolocomCallConnected);
 
-                DeleteLocalInt(sender, "HOLOCOM_CALL_SENDER");
-                DeleteLocalInt(receiver, "HOLOCOM_CALL_SENDER");
+                DeleteLocalInt(sender, HolocomCallSender);
+                DeleteLocalInt(receiver, HolocomCallSender);
 
-                DeleteLocalInt(sender, "HOLOCOM_CALL_RECEIVER");
-                DeleteLocalInt(receiver, "HOLOCOM_CALL_RECEIVER");
+                DeleteLocalInt(sender, HolocomCallReceiver);
+                DeleteLocalInt(receiver, HolocomCallReceiver);
 
-                DeleteLocalObject(sender, "HOLOCOM_CALL_CONNECTED_WITH");
-                DeleteLocalObject(receiver, "HOLOCOM_CALL_CONNECTED_WITH");
+                DeleteLocalObject(sender, HolocomCallConnectedWith);
+                DeleteLocalObject(receiver, HolocomCallConnectedWith);
 
-                DeleteLocalObject(sender, "HOLOCOM_HOLOGRAM");
-                DeleteLocalObject(receiver, "HOLOCOM_HOLOGRAM");
+                DeleteLocalObject(sender, HolocomHologram);
+                DeleteLocalObject(receiver, HolocomHologram);
 
-                DeleteLocalInt(sender, "HOLOCOM_CALL_ATTEMPT");
-                DeleteLocalInt(receiver, "HOLOCOM_CALL_ATTEMPT");
+                DeleteLocalInt(sender, HolocomCallAttempt);
+                DeleteLocalInt(receiver, HolocomCallAttempt);
 
-                DeleteLocalObject(sender, "HOLOCOM_CALL_RECEIVER_OBJECT");
-                DeleteLocalObject(receiver, "HOLOCOM_CALL_RECEIVER_OBJECT");
+                DeleteLocalObject(sender, HolocomCallReceiverObject);
+                DeleteLocalObject(receiver, HolocomCallReceiverObject);
 
-                DeleteLocalObject(sender, "HOLOCOM_CALL_SENDER_OBJECT");
-                DeleteLocalObject(receiver, "HOLOCOM_CALL_SENDER_OBJECT");
+                DeleteLocalObject(sender, HolocomCallSenderObject);
+                DeleteLocalObject(receiver, HolocomCallSenderObject);
             }
         }
         public static uint GetHoloGram(uint player)
         {
-            return GetLocalObject(player, "HOLOCOM_HOLOGRAM");
+            return GetLocalObject(player, HolocomHologram);
         }
         public static uint GetHoloGramOwner(uint hologram)
         {
-            return GetLocalObject(hologram, "HOLOGRAM_OWNER");
+            return GetLocalObject(hologram, HologramOwner);
         }
         public static uint GetTargetForActiveCall(uint player)
         {
-            return GetLocalObject(player, "HOLOCOM_CALL_CONNECTED_WITH");
+            return GetLocalObject(player, HolocomCallConnectedWith);
         }
         public static bool IsCallSender(uint player)
         {
-            if (GetLocalBool(player, "HOLOCOM_CALL_SENDER") == true) return true;
+            if (GetLocalBool(player, HolocomCallSender) == true) return true;
             else return false;
         }
         public static void SetIsCallSender(uint player, bool value = true)
         {
-            if (value) SetLocalBool(player, "HOLOCOM_CALL_SENDER", true);
-            else SetLocalBool(player, "HOLOCOM_CALL_SENDER", false);
+            if (value) SetLocalBool(player, HolocomCallSender, true);
+            else SetLocalBool(player, HolocomCallSender, false);
         }
         public static uint GetCallSender(uint player)
         {
-            return GetLocalObject(player, "HOLOCOM_CALL_SENDER_OBJECT");
+            return GetLocalObject(player, HolocomCallSenderObject);
         }
         public static void SetCallSender(uint player, uint sender)
         {
-            SetLocalObject(player, "HOLOCOM_CALL_SENDER_OBJECT", sender);
+            SetLocalObject(player, HolocomCallSenderObject, sender);
         }
 
         public static bool IsCallReceiver(uint player)
         {
-            if (GetLocalBool(player, "HOLOCOM_CALL_RECEIVER") == true) return true;
+            if (GetLocalBool(player, HolocomCallReceiver) == true) return true;
             else return false;
         }
         public static void SetIsCallReceiver(uint player, bool value = true)
         {
-            if (value) SetLocalBool(player, "HOLOCOM_CALL_RECEIVER", true);
-            else SetLocalBool(player, "HOLOCOM_CALL_RECEIVER", false);
+            if (value) SetLocalBool(player, HolocomCallReceiver, true);
+            else SetLocalBool(player, HolocomCallReceiver, false);
         }
         public static uint GetCallReceiver(uint player)
         {
-            return GetLocalObject(player, "HOLOCOM_CALL_RECEIVER_OBJECT");
+            return GetLocalObject(player, HolocomCallReceiverObject);
         }
         public static void SetCallReceiver(uint player, uint receiver)
         {
-            SetLocalObject(player, "HOLOCOM_CALL_RECEIVER_OBJECT", receiver);
+            SetLocalObject(player, HolocomCallReceiverObject, receiver);
         }
         public static int GetCallAttempt(uint player)
         {
-            return GetLocalInt(player, "HOLOCOM_CALL_ATTEMPT");
+            return GetLocalInt(player, HolocomCallAttempt);
         }
         public static void SetCallAttempt(uint player, int value = 0)
         {
-            SetLocalInt(player, "HOLOCOM_CALL_ATTEMPT", value);
+            SetLocalInt(player, HolocomCallAttempt, value);
+        }
+
+        /// <summary>
+        /// Cleans up call attempt state for both sender and receiver
+        /// </summary>
+        /// <param name="sender">The player who initiated the call</param>
+        /// <param name="receiver">The player who was being called</param>
+        public static void CleanupCallAttempt(uint sender, uint receiver)
+        {
+            if (GetIsObjectValid(receiver))
+            {
+                // Clean up the receiver's call state
+                SetIsCallReceiver(receiver, false);
+                DeleteLocalObject(receiver, HolocomCallReceiverObject);
+                DeleteLocalObject(receiver, HolocomCallSenderObject);
+                DeleteLocalInt(receiver, HolocomCallAttempt);
+            }
+            
+            // Clean up the sender's call state
+            SetIsCallSender(sender, false);
+            DeleteLocalObject(sender, HolocomCallSenderObject);
+            DeleteLocalObject(sender, HolocomCallReceiverObject);
+            DeleteLocalInt(sender, HolocomCallAttempt);
+        }
+
+        /// <summary>
+        /// Comprehensive cleanup of all HoloCom state for a player
+        /// </summary>
+        /// <param name="player">The player to clean up</param>
+        public static void CleanupAllHoloComState(uint player)
+        {
+            // Clean up call sender state
+            if (IsCallSender(player))
+            {
+                var receiver = GetCallReceiver(player);
+                if (GetIsObjectValid(receiver))
+                {
+                    // Notify the receiver that the call attempt has ended
+                    SendMessageToPC(receiver, "Your HoloCom stops buzzing.");
+                    
+                    // Clean up receiver's state
+                    SetIsCallReceiver(receiver, false);
+                    DeleteLocalObject(receiver, HolocomCallReceiverObject);
+                    DeleteLocalObject(receiver, HolocomCallSenderObject);
+                    DeleteLocalInt(receiver, HolocomCallAttempt);
+                }
+                
+                // Clean up sender's state
+                SetIsCallSender(player, false);
+                DeleteLocalObject(player, HolocomCallSenderObject);
+                DeleteLocalObject(player, HolocomCallReceiverObject);
+                DeleteLocalInt(player, HolocomCallAttempt);
+            }
+            
+            // Clean up call receiver state
+            if (IsCallReceiver(player))
+            {
+                var sender = GetCallSender(player);
+                if (GetIsObjectValid(sender))
+                {
+                    // Notify the sender that the call attempt has ended
+                    SendMessageToPC(sender, "Your HoloCom call went unanswered.");
+                    
+                    // Clean up sender's state
+                    SetIsCallSender(sender, false);
+                    DeleteLocalObject(sender, HolocomCallSenderObject);
+                    DeleteLocalObject(sender, HolocomCallReceiverObject);
+                    DeleteLocalInt(sender, HolocomCallAttempt);
+                }
+                
+                // Clean up receiver's state
+                SetIsCallReceiver(player, false);
+                DeleteLocalObject(player, HolocomCallReceiverObject);
+                DeleteLocalObject(player, HolocomCallSenderObject);
+                DeleteLocalInt(player, HolocomCallAttempt);
+            }
+            
+            // Clean up active call state
+            if (IsInCall(player))
+            {
+                var callTarget = GetTargetForActiveCall(player);
+                if (GetIsObjectValid(callTarget))
+                {
+                    SetIsInCall(player, callTarget, false);
+                }
+                else
+                {
+                    // If target is no longer valid, just clean up this player's state
+                    DeleteLocalInt(player, HolocomCallConnected);
+                    DeleteLocalObject(player, HolocomCallConnectedWith);
+                    DeleteLocalObject(player, HolocomHologram);
+                }
+            }
         }
     }
 }

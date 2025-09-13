@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, cache all faction details into memory.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadFactions()
         {
             var factionTypes = Enum.GetValues(typeof(FactionType)).Cast<FactionType>();

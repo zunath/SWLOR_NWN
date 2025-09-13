@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -33,11 +33,28 @@ namespace SWLOR.Game.Server.Feature
         private const string ActiveAbilityEffectivePerkLevelName = "ACTIVE_ABILITY_EFFECTIVE_PERK_LEVEL";
 
         /// <summary>
+        /// Breaks stealth and invisibility effects if the ability is configured to do so.
+        /// </summary>
+        /// <param name="activator">The creature using the ability</param>
+        /// <param name="ability">The ability details</param>
+        private static void HandleStealthBreaking(uint activator, AbilityDetail ability)
+        {
+            if (!ability.BreaksStealth) return;
+
+            // If activator is in stealth mode, force them out of stealth mode.
+            if (GetActionMode(activator, ActionMode.Stealth))
+                SetActionMode(activator, ActionMode.Stealth, false);
+
+            // Remove invisibility effects (stealth generator)
+            RemoveEffect(activator, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility);
+        }
+
+        /// <summary>
         /// When a creature uses any feat, this will check and see if the feat is registered with the perk system.
         /// If it is, requirements to use the feat will be checked and then the ability will activate.
         /// If there are errors at any point in this process, the creature will be notified and the execution will end.
         /// </summary>
-        [NWNEventHandler("feat_use_bef")]
+        [NWNEventHandler(ScriptName.OnFeatUseBefore)]
         public static void UseFeat()
         {
             var activator = OBJECT_SELF;
@@ -248,6 +265,7 @@ namespace SWLOR.Game.Server.Feature
                 DeleteLocalInt(activator, activationId);
 
                 ApplyRequirementEffects(activator, ability);
+                HandleStealthBreaking(activator, ability);
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
 
@@ -362,7 +380,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player's weapon hits a target, if an ability is queued, that ability will be executed.
         /// </summary>
-        [NWNEventHandler("item_on_hit")]
+        [NWNEventHandler(ScriptName.OnItemHit)]
         public static void ProcessQueuedWeaponAbility()
         {
             var activator = OBJECT_SELF;
@@ -381,6 +399,7 @@ namespace SWLOR.Game.Server.Feature
             if (!Ability.IsFeatRegistered(activeWeaponAbility)) return;
 
             var abilityDetail = Ability.GetAbilityDetail(activeWeaponAbility);
+            HandleStealthBreaking(activator, abilityDetail);
             abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
 
             DeleteLocalString(activator, ActiveAbilityIdName);
@@ -392,7 +411,7 @@ namespace SWLOR.Game.Server.Feature
         /// Whenever a player enters the server, any temporary variables related to ability execution
         /// will be removed from their PC.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ClearTemporaryQueuedVariables()
         {
             var player = GetEnteringObject();
@@ -403,7 +422,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Whenever a player starts resting, clear any queued abilities.
         /// </summary>
-        [NWNEventHandler("rest_started")]
+        [NWNEventHandler(ScriptName.OnRestStarted)]
         public static void ClearTemporaryQueuedVariablesOnRest()
         {
             ClearQueuedAbility(OBJECT_SELF);
@@ -412,7 +431,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Whenever a player equips an item, clear any queued abilities.
         /// </summary>
-        [NWNEventHandler("item_eqp_bef")]
+        [NWNEventHandler(ScriptName.OnItemEquipBefore)]
         public static void ClearTemporaryQueuedVariablesOnEquip()
         {
             ClearQueuedAbility(OBJECT_SELF);

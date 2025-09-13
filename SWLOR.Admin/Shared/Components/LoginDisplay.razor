@@ -1,0 +1,39 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
+
+<AuthorizeView>
+    <Authorized>
+        <div class="navbar-text d-flex align-items-center">
+            <span class="me-2">Hello, @GetDisplayName(context.User)!</span>
+            <form method="post" action="/logout" class="d-inline-block">
+                <button type="submit" class="btn btn-link navbar-btn navbar-link p-0 text-nowrap">Logout</button>
+            </form>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <a class="nav-link btn btn-link" href="/login">
+            <i class="fas fa-sign-in-alt"></i> Login with Discord
+        </a>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private string GetDisplayName(ClaimsPrincipal user)
+    {
+        var username = user.FindFirst(ClaimTypes.Name)?.Value;
+        var discriminator = user.FindFirst("urn:discord:discriminator")?.Value;
+        
+        if (!string.IsNullOrEmpty(username))
+        {
+            if (!string.IsNullOrEmpty(discriminator) && discriminator != "0")
+            {
+                return $"{username}#{discriminator}";
+            }
+            return username;
+        }
+        
+        return "Unknown User";
+    }
+}

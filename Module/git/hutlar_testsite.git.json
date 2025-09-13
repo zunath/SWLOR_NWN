@@ -12959,21 +12959,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placable.WarpDevice.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "VISUAL_EFFECT"
               },
               "Type": {

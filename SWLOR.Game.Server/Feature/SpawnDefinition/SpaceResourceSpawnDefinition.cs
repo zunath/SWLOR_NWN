@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void ViscaraOrbit()
         {
             _builder.Create("SPACE_RESOURCES_VISCARA_ORBIT", "Space Resources - Viscara Orbit")
+                .ResourceDespawnDelay(180) // 3 hours for basic space asteroids
                 .AddSpawn(ObjectType.Placeable, "spc_asteroid_til")
                 .WithFrequency(50)
 
@@ -33,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void MonCalaOrbit()
         {
             _builder.Create("SPACE_RESOURCES_MONCALA_ORBIT", "Space Resources - Mon Cala Orbit")
+                .ResourceDespawnDelay(150) // 2.5 hours for mid-tier space asteroids
                 .AddSpawn(ObjectType.Placeable, "spc_asteroid_til")
                 .WithFrequency(50)
 
@@ -46,6 +48,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void HutlarOrbit()
         {
             _builder.Create("SPACE_RESOURCES_HUTLAR_ORBIT", "Space Resources - Hutlar Orbit")
+                .ResourceDespawnDelay(120) // 2 hours for higher-tier space asteroids
                 .AddSpawn(ObjectType.Placeable, "asteroid_currian")
                 .WithFrequency(50)
 
@@ -59,6 +62,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void TatooineOrbit()
         {
             _builder.Create("SPACE_RESOURCES_TATOOINE_ORBIT", "Space Resources - Tatooine Orbit")
+                .ResourceDespawnDelay(90) // 1.5 hours for high-tier space asteroids
                 .AddSpawn(ObjectType.Placeable, "asteroid_idailia")
                 .WithFrequency(50)
 
@@ -72,6 +76,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void KorribanOrbit()
         {
             _builder.Create("SPACE_RESOURCES_KORRIBAN_ORBIT", "Space Resources - Korriban Orbit")
+                .ResourceDespawnDelay(60) // 1 hour for rare top-tier space asteroids
                 .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
                 .WithFrequency(25)
 
@@ -82,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void DathomirOrbit()
         {
             _builder.Create("SPACE_RESOURCES_DATHOMIR_ORBIT", "Space Resources - Dathomir Orbit")
+                .ResourceDespawnDelay(75) // 1.25 hours for very high-tier space asteroids
                 
                 .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
                 .WithFrequency(37)
@@ -95,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void DantooineOrbit()
         { 
             _builder.Create("SPACE_RESOURCES_DANTOOINE_ORBIT", "Space Resources - Dantooine Orbit")
+                .ResourceDespawnDelay(90) // 1.5 hours for high-tier space asteroids
 
                 .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
                 .WithFrequency(50)

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cycle through every area and every object to identify the visibility objects.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadVisibilityObjects()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, toggle visibility on all objects
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void LoadPlayerVisibilityObjects()
         {
             var player = GetEnteringObject();

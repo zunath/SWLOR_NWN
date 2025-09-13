@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <summary>
         /// When a bank placeable is used, display this UI view.
         /// </summary>
-        [NWNEventHandler("open_bank")]
+        [NWNEventHandler(ScriptName.OnOpenBank)]
         public static void ShowBank()
         {
             var player = GetLastUsedBy();

@@ -41871,7 +41871,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -41985,21 +41985,6 @@
               "Value": {
                 "type": "int",
                 "value": 478
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "script_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
               }
             }
           ]
@@ -42558,7 +42543,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",
@@ -42672,21 +42657,6 @@
               "Value": {
                 "type": "int",
                 "value": 478
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "script_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
               }
             }
           ]
@@ -42818,7 +42788,7 @@
         },
         "OnHeartbeat": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnInvDisturbed": {
           "type": "resref",

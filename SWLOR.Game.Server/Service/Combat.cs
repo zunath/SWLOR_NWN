@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NWN.Native.API;
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, add all valid damage types to the cache.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void LoadDamageTypes()
         {
             var allValues = Enum.GetValues(typeof(CombatDamageType)).Cast<CombatDamageType>();
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, apply any defenses towards damage types they don't already have.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void AddDamageTypeDefenses()
         {
             var player = GetEnteringObject();
@@ -246,7 +246,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// On module heartbeat, clear a PC's saved combat facing if they are no longer in combat.
         /// </summary>
-        [NWNEventHandler("interval_pc_6s")]
+        [NWNEventHandler(ScriptName.OnIntervalPC6Seconds)]
         public static void ClearCombatState()
         {
             uint player = OBJECT_SELF;

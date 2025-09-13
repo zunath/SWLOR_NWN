@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     var effect = EffectAccuracyDecrease(5);
                     effect = EffectLinkEffects(effect, EffectACDecrease(5));
-                    effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
+                    effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight1);
                     ApplyEffectToObject(DurationType.Temporary, effect, source, 6f);
 
                     var party = Party.GetAllPartyMembersWithinRange(source, RadiusSize.Medium);
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                         effect = EffectAccuracyIncrease(3);
                         effect = EffectLinkEffects(effect, EffectACIncrease(3));
-                        effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
+                        effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight1);
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }
 

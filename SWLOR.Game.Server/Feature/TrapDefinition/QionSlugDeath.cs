@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When this creature dies, he'll spawn more creatures - for example, a large worm exploding into swarms of small bugs.
         /// </summary>
-        [NWNEventHandler("crea_death_bef")]
+        [NWNEventHandler(ScriptName.OnCreatureDeathBefore)]
         public static void CreatureDeath()
         {
             if (GetTag(OBJECT_SELF) != "qion_hive_slug")
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature
         /// When the creatures spawn, this will broadcasts an environmental message describing the narrative circumstances of that spawn in.
         /// It has to be ChatChannel.DMTalk - it won't work if it's ChatChannel.PlayerTalk.
         /// </summary>
-        [NWNEventHandler("crea_spawn_aft")]
+        [NWNEventHandler(ScriptName.OnCreatureSpawnAfter)]
         public static void MessageOnDeath()
         {
             if (GetTag(OBJECT_SELF) != "qion_hive_larvae")

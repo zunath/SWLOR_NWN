@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -170,12 +170,19 @@ namespace SWLOR.Game.Server.Service
             { EffectIconType.DamageImmunityNegativeDecrease, EffectTypeScript.DamageImmunityDecrease },
             { EffectIconType.DamageImmunityPositiveDecrease, EffectTypeScript.DamageImmunityDecrease },
             { EffectIconType.DamageImmunitySonicDecrease, EffectTypeScript.DamageImmunityDecrease },
+            { EffectIconType.Charge, EffectTypeScript.MovementSpeedIncrease },
+            { EffectIconType.Dedication, EffectTypeScript.Invalideffect },
+            { EffectIconType.FrenziedShout, EffectTypeScript.Invalideffect },
+            { EffectIconType.Rejuvenation, EffectTypeScript.Regenerate },
+            { EffectIconType.SoldiersPrecision, EffectTypeScript.AttackIncrease },
+            { EffectIconType.SoldiersSpeed, EffectTypeScript.MovementSpeedIncrease },
+            { EffectIconType.SoldiersStrike, EffectTypeScript.DamageIncrease },
         };
 
         /// <summary>
         /// When the module loads, cache all status effects.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheStatusEffects()
         {
             // Organize perks to make later reads quicker.
@@ -297,7 +304,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, if any of their status effects in limbo, re-add them to the
         /// dictionary for processing.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void PlayerEnter()
         {
             var player = GetEnteringObject();
@@ -317,7 +324,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player leaves the server, move their status effects to a different dictionary
         /// so they aren't processed unnecessarily.  
         /// </summary>
-        [NWNEventHandler("mod_exit")]
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void PlayerExit()
         {
             var player = GetExitingObject();
@@ -334,7 +341,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module heartbeat runs, execute and clean up status effects on all creatures.
         /// </summary>
-        [NWNEventHandler("swlor_heartbeat")]
+        [NWNEventHandler(ScriptName.OnSwlorHeartbeat)]
         public static void TickStatusEffects()
         {
             var now = DateTime.UtcNow;
@@ -393,7 +400,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player dies, remove any status effects which are present.
         /// </summary>
-        [NWNEventHandler("mod_death")]
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void OnPlayerDeath()
         {
             var player = GetLastPlayerDied();

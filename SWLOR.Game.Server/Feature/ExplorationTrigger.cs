@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 
@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class ExplorationTrigger
     {
-        [NWNEventHandler("explore_trigger")]
+        [NWNEventHandler(ScriptName.OnExploreTrigger)]
         public static void EnterExplorationTrigger()
         {
             var player = GetEnteringObject();

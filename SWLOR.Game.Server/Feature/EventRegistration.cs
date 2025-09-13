@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature
         /// Fires on the module PreLoad event. This event should be specified in the environment variables.
         /// This will hook all module/global events.
         /// </summary>
-        [NWNEventHandler("mod_preload")]
+        [NWNEventHandler(ScriptName.OnModulePreload)]
         public static void OnModulePreload()
         {
             var serverConfig = DB.Get<ModuleCache>("SWLOR_CACHE") ?? new ModuleCache();
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature
             ExecuteScript("mod_cache_aft", GetModule());
         }
 
-        [NWNEventHandler("swlor_heartbeat")]
+        [NWNEventHandler(ScriptName.OnSwlorHeartbeat)]
         public static void ExecuteHeartbeatEvent()
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a player enters the server, hook their event scripts.
         /// Also add them to a UI processor list.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void EnterServer()
         {
             HookPlayerEvents();
@@ -591,7 +591,7 @@ namespace SWLOR.Game.Server.Feature
         /// A handful of NWNX functions require special calls to load persistence.
         /// When the module loads, run those methods here.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void TriggerNWNXPersistence()
         {
             var firstObject = GetFirstObjectInArea(GetFirstArea());

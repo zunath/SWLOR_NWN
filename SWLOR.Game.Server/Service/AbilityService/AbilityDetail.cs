@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
         public bool DisplaysActivationMessage { get; set; }
+        public bool BreaksStealth { get; set; }
         public int AbilityLevel { get; set; }
 
         public AbilityDetail()
@@ -44,6 +45,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             MaxRange = 5.0f;
             IsHostileAbility = false;
             DisplaysActivationMessage = true;
+            BreaksStealth = false;
             AbilityLevel = 1;
         }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Native
         // ReSharper disable once NotAccessedField.Local
         private static GetFortitudeSavingThrowHook _callOriginal;
 
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, int, sbyte> pHook = &OnGetFortitudeSavingThrow;

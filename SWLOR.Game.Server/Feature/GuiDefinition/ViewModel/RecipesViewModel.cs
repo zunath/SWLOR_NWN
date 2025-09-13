@@ -186,6 +186,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<string>();
             set => Set(value);
         }
+
+        public int SelectedLevelId
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                if (!_skipPaginationSearch)
+                    Search();
+            }
+        }
+
+        public bool ShowOnlyCraftableRecipes
+        {
+            get => Get<bool>();
+            set
+            {
+                Set(value);
+                if (!_skipPaginationSearch)
+                    Search();
+            }
+        }
         protected override void Initialize(RecipesPayload initialPayload)
         {
             _mode = initialPayload?.Mode ?? RecipesUIMode.Recipes;
@@ -219,6 +241,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedPageIndex = 0;
             SelectedSkillId = (int)_craftingFilter;
             SelectedCategoryId = 0;
+            SelectedLevelId = 0;
+            ShowOnlyCraftableRecipes = false;
             _currentRecipeIndex = -1;
 
             LoadSkills();
@@ -228,6 +252,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.SelectedSkillId);
             WatchOnClient(model => model.SelectedCategoryId);
+            WatchOnClient(model => model.SelectedLevelId);
+            WatchOnClient(model => model.ShowOnlyCraftableRecipes);
             WatchOnClient(model => model.SelectedPageIndex);
             _skipPaginationSearch = false;
         }
@@ -268,6 +294,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             Categories = categories;
+        }
+
+        public static bool IsLevelInRange(int recipeLevel, int selectedLevelId)
+        {
+            return selectedLevelId switch
+            {
+                1 => recipeLevel >= 0 && recipeLevel <= 9,
+                2 => recipeLevel >= 10 && recipeLevel <= 19,
+                3 => recipeLevel >= 20 && recipeLevel <= 29,
+                4 => recipeLevel >= 30 && recipeLevel <= 39,
+                5 => recipeLevel >= 40 && recipeLevel <= 49,
+                6 => recipeLevel >= 50,
+                _ => false
+            };
         }
 
         private void Search()
@@ -323,6 +363,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Cache.GetItemNameByResref(x.Value.Resref)
                             .ToLower()
                             .Contains(SearchText.ToLower()))
+                    .ToDictionary(x => x.Key, y => y.Value);
+            }
+
+            // Level filter
+            if (SelectedLevelId > 0)
+            {
+                recipes = recipes
+                    .Where(x => 
+                    {
+                        var level = x.Value.Level;
+                        return SelectedLevelId switch
+                        {
+                            1 => level >= 0 && level <= 10,
+                            2 => level >= 11 && level <= 20,
+                            3 => level >= 21 && level <= 30,
+                            4 => level >= 31 && level <= 40,
+                            5 => level >= 41 && level <= 50,
+                            6 => level >= 51,
+                            _ => false
+                        };
+                    })
+                    .ToDictionary(x => x.Key, y => y.Value);
+            }
+
+            // Craftable filter
+            if (ShowOnlyCraftableRecipes)
+            {
+                recipes = recipes
+                    .Where(x => _mode == RecipesUIMode.Research
+                        ? Craft.CanPlayerResearchRecipe(Player, x.Key)
+                        : Craft.CanPlayerCraftRecipe(Player, x.Key))
                     .ToDictionary(x => x.Key, y => y.Value);
             }
             

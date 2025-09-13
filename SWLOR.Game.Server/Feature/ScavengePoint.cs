@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// 
         /// </summary>
-        [NWNEventHandler("scav_opened")]
+        [NWNEventHandler(ScriptName.OnScavengeOpened)]
         public static void OnOpened()
         {
             var user = GetLastOpenedBy();
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is added to a scavenge point, return it to the user.
         /// When an item is removed from a scavenge point, if there are no more items in the inventory, destroy the placeable.
         /// </summary>
-        [NWNEventHandler("scav_disturbed")]
+        [NWNEventHandler(ScriptName.OnScavengeDisturbed)]
         public static void OnDisturbed()
         {
             var user = GetLastDisturbed();
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a scavenge site is closed by a player, if there are no more items in the inventory, destroy the scavenge point.
         /// </summary>
-        [NWNEventHandler("scav_closed")]
+        [NWNEventHandler(ScriptName.OnScavengeClosed)]
         public static void OnClosed()
         {
             var placeable = OBJECT_SELF;

@@ -21999,21 +21999,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "DESTINATION"
               },
               "Type": {
@@ -22334,21 +22319,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
             {
               "__struct_id": 0,
               "Name": {
@@ -22898,21 +22868,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
             {
               "__struct_id": 0,
               "Name": {
@@ -40194,21 +40149,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "DESTINATION"
               },
               "Type": {
@@ -41091,7 +41031,7 @@
         },
         "OnClosed": {
           "type": "resref",
-          "value": "script_2"
+          "value": ""
         },
         "OnDamaged": {
           "type": "resref",
@@ -41111,7 +41051,7 @@
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnLock": {
           "type": "resref",
@@ -41212,22 +41152,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.StructureRubble.OnDisturbed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_2"
+                "value": ""
               },
               "Type": {
                 "type": "dword",
@@ -41355,7 +41280,7 @@
         },
         "OnClosed": {
           "type": "resref",
-          "value": "script_2"
+          "value": ""
         },
         "OnDamaged": {
           "type": "resref",
@@ -41375,7 +41300,7 @@
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnLock": {
           "type": "resref",
@@ -41476,22 +41401,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.StructureRubble.OnDisturbed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_2"
+                "value": ""
               },
               "Type": {
                 "type": "dword",
@@ -41619,7 +41529,7 @@
         },
         "OnClosed": {
           "type": "resref",
-          "value": "script_2"
+          "value": ""
         },
         "OnDamaged": {
           "type": "resref",
@@ -41639,7 +41549,7 @@
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnLock": {
           "type": "resref",
@@ -41740,22 +41650,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.StructureRubble.OnDisturbed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_2"
+                "value": ""
               },
               "Type": {
                 "type": "dword",
@@ -41883,7 +41778,7 @@
         },
         "OnClosed": {
           "type": "resref",
-          "value": "script_2"
+          "value": ""
         },
         "OnDamaged": {
           "type": "resref",
@@ -41903,7 +41798,7 @@
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnLock": {
           "type": "resref",
@@ -42004,22 +41899,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.StructureRubble.OnDisturbed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_2"
+                "value": ""
               },
               "Type": {
                 "type": "dword",
@@ -45284,7 +45164,7 @@
         },
         "OnClosed": {
           "type": "resref",
-          "value": "script_2"
+          "value": ""
         },
         "OnDamaged": {
           "type": "resref",
@@ -45304,7 +45184,7 @@
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnLock": {
           "type": "resref",
@@ -45405,22 +45285,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.StructureRubble.OnDisturbed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_2"
+                "value": ""
               },
               "Type": {
                 "type": "dword",
@@ -45548,7 +45413,7 @@
         },
         "OnClosed": {
           "type": "resref",
-          "value": "script_2"
+          "value": ""
         },
         "OnDamaged": {
           "type": "resref",
@@ -45568,7 +45433,7 @@
         },
         "OnInvDisturbed": {
           "type": "resref",
-          "value": "script_1"
+          "value": ""
         },
         "OnLock": {
           "type": "resref",
@@ -45669,22 +45534,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.StructureRubble.OnDisturbed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_2"
+                "value": ""
               },
               "Type": {
                 "type": "dword",
@@ -53163,21 +53013,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
             {
               "__struct_id": 0,
               "Name": {
@@ -70931,21 +70766,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "DESTINATION"
               },
               "Type": {
@@ -72393,21 +72213,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.WarpDevice.OnUsed"
-              }
-            },
             {
               "__struct_id": 0,
               "Name": {

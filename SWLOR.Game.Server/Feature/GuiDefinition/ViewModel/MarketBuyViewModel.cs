@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -23,12 +23,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _skipPaginationSearch;
         private readonly List<int> _activeCategoryIdFilters = new();
         private MarketRegionType _regionType;
+        private bool _sortByPriceAscending;
 
         /// <summary>
         /// When the module loads, set up the category lists so they don't need
         /// to be initialized for every player.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void LoadCategories()
         {
             foreach (var (type, category) in PlayerMarket.GetActiveCategories())
@@ -113,6 +114,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string SortByPriceText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         private void LoadData()
         {
             var categoryToggles = new GuiBindingList<bool>();
@@ -135,6 +142,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedPageIndex = 0;
             SearchText = string.Empty;
             WindowTitle = $"{regionDetail.Name} Market";
+            
+            // Always default to lowest price first
+            _sortByPriceAscending = true;
+            SortByPriceText = "Price: Low-High";
+            
             LoadData();
             Search();
 
@@ -158,6 +170,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 query.AddFieldSearch(nameof(MarketItem.Category), _activeCategoryIdFilters);
             }
+
+            // Add sorting by price
+            query.OrderBy(nameof(MarketItem.Price), _sortByPriceAscending);
 
             query.AddPaging(ListingsPerPage, ListingsPerPage * SelectedPageIndex);
 
@@ -237,6 +252,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SelectedPageIndex = newPage;
             _skipPaginationSearch = false;
+            Search();
         };
 
         public Action OnClickNextPage() => () =>
@@ -248,6 +264,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SelectedPageIndex = newPage;
             _skipPaginationSearch = false;
+            Search();
         };
 
         public Action OnClickExamine() => () =>
@@ -347,6 +364,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (!CategoryToggles[index] && _activeCategoryIdFilters.Contains(categoryType))
                 _activeCategoryIdFilters.Remove(categoryType);
 
+            Search();
+        };
+
+        public Action OnClickSortByPrice() => () =>
+        {
+            _sortByPriceAscending = !_sortByPriceAscending;
+            SortByPriceText = _sortByPriceAscending ? "Price: Low-High" : "Price: High-Low";
+            
+            _skipPaginationSearch = true;
+            SelectedPageIndex = 0;
+            _skipPaginationSearch = false;
             Search();
         };
 

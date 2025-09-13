@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
@@ -23,14 +23,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             ApplyEffectToObject(DurationType.Temporary, eKolto, creature, 6f);
         }
 
-        [NWNEventHandler("grenade_kolt1_en")]
+        [NWNEventHandler(ScriptName.OnGrenadeKolto1Enable)]
         public static void KoltoBomb1Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 4);
         }
 
-        [NWNEventHandler("grenade_kolt1_hb")]
+        [NWNEventHandler(ScriptName.OnGrenadeKolto1Heartbeat)]
         public static void KoltoBomb1Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
@@ -41,14 +41,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        [NWNEventHandler("grenade_kolt2_en")]
+        [NWNEventHandler(ScriptName.OnGrenadeKolto2Enable)]
         public static void KoltoBomb2Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 12);
         }
 
-        [NWNEventHandler("grenade_kolt2_hb")]
+        [NWNEventHandler(ScriptName.OnGrenadeKolto2Heartbeat)]
         public static void KoltoBomb2Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
@@ -59,14 +59,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        [NWNEventHandler("grenade_kolt3_en")]
+        [NWNEventHandler(ScriptName.OnGrenadeKolto3Enable)]
         public static void KoltoBomb3Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 20);
         }
 
-        [NWNEventHandler("grenade_kolt3_hb")]
+        [NWNEventHandler(ScriptName.OnGrenadeKolto3Heartbeat)]
         public static void KoltoBomb3Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);

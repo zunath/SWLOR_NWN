@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module is loaded, the assembly will be searched for conversations.
         /// These will be added to the cache for use at a later time.
         /// </summary>
-        [NWNEventHandler("mod_cache_bef")]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void RegisterConversations()
         {
             // Use reflection to get all of the conversation implementations.
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_conversations.Count} conversations.");
         }
 
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void InitializeDialogs()
         {
             for (var x = 1; x <= NumberOfDialogs; x++)
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles when a dialog is started.
         /// </summary>
-        [NWNEventHandler("dialog_start")]
+        [NWNEventHandler(ScriptName.OnDialogStart)]
         public static void Start()
         {
             var eventScript = GetCurrentlyRunningEvent();
@@ -108,187 +108,187 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        [NWNEventHandler("dialog_action_0")]
+        [NWNEventHandler(ScriptName.OnDialogAction0)]
         public static void NodeAction0()
         {
             ActionsTaken(0);
         }
 
-        [NWNEventHandler("dialog_action_1")]
+        [NWNEventHandler(ScriptName.OnDialogAction1)]
         public static void NodeAction1()
         {
             ActionsTaken(1);
         }
 
-        [NWNEventHandler("dialog_action_2")]
+        [NWNEventHandler(ScriptName.OnDialogAction2)]
         public static void NodeAction2()
         {
             ActionsTaken(2);
         }
 
-        [NWNEventHandler("dialog_action_3")]
+        [NWNEventHandler(ScriptName.OnDialogAction3)]
         public static void NodeAction3()
         {
             ActionsTaken(3);
         }
 
-        [NWNEventHandler("dialog_action_4")]
+        [NWNEventHandler(ScriptName.OnDialogAction4)]
         public static void NodeAction4()
         {
             ActionsTaken(4);
         }
 
-        [NWNEventHandler("dialog_action_5")]
+        [NWNEventHandler(ScriptName.OnDialogAction5)]
         public static void NodeAction5()
         {
             ActionsTaken(5);
         }
 
-        [NWNEventHandler("dialog_action_6")]
+        [NWNEventHandler(ScriptName.OnDialogAction6)]
         public static void NodeAction6()
         {
             ActionsTaken(6);
         }
 
-        [NWNEventHandler("dialog_action_7")]
+        [NWNEventHandler(ScriptName.OnDialogAction7)]
         public static void NodeAction7()
         {
             ActionsTaken(7);
         }
 
-        [NWNEventHandler("dialog_action_8")]
+        [NWNEventHandler(ScriptName.OnDialogAction8)]
         public static void NodeAction8()
         {
             ActionsTaken(8);
         }
 
-        [NWNEventHandler("dialog_action_9")]
+        [NWNEventHandler(ScriptName.OnDialogAction9)]
         public static void NodeAction9()
         {
             ActionsTaken(9);
         }
 
-        [NWNEventHandler("dialog_action_10")]
+        [NWNEventHandler(ScriptName.OnDialogAction10)]
         public static void NodeAction10()
         {
             ActionsTaken(10);
         }
 
-        [NWNEventHandler("dialog_action_11")]
+        [NWNEventHandler(ScriptName.OnDialogAction11)]
         public static void NodeAction11()
         {
             ActionsTaken(11);
         }
 
-        [NWNEventHandler("dialog_appears_0")]
+        [NWNEventHandler(ScriptName.OnDialogAppears0)]
         public static bool NodeAppears0()
         {
             return AppearsWhen(2, 0);
         }
 
-        [NWNEventHandler("dialog_appears_1")]
+        [NWNEventHandler(ScriptName.OnDialogAppears1)]
         public static bool NodeAppears1()
         {
             return AppearsWhen(2, 1);
         }
 
-        [NWNEventHandler("dialog_appears_2")]
+        [NWNEventHandler(ScriptName.OnDialogAppears2)]
         public static bool NodeAppears2()
         {
             return AppearsWhen(2, 2);
         }
 
-        [NWNEventHandler("dialog_appears_3")]
+        [NWNEventHandler(ScriptName.OnDialogAppears3)]
         public static bool NodeAppears3()
         {
             return AppearsWhen(2, 3);
         }
 
-        [NWNEventHandler("dialog_appears_4")]
+        [NWNEventHandler(ScriptName.OnDialogAppears4)]
         public static bool NodeAppears4()
         {
             return AppearsWhen(2, 4);
         }
 
-        [NWNEventHandler("dialog_appears_5")]
+        [NWNEventHandler(ScriptName.OnDialogAppears5)]
         public static bool NodeAppears5()
         {
             return AppearsWhen(2, 5);
         }
 
-        [NWNEventHandler("dialog_appears_6")]
+        [NWNEventHandler(ScriptName.OnDialogAppears6)]
         public static bool NodeAppears6()
         {
             return AppearsWhen(2, 6);
         }
 
-        [NWNEventHandler("dialog_appears_7")]
+        [NWNEventHandler(ScriptName.OnDialogAppears7)]
         public static bool NodeAppears7()
         {
             return AppearsWhen(2, 7);
         }
 
-        [NWNEventHandler("dialog_appears_8")]
+        [NWNEventHandler(ScriptName.OnDialogAppears8)]
         public static bool NodeAppears8()
         {
             return AppearsWhen(2, 8);
         }
 
-        [NWNEventHandler("dialog_appears_9")]
+        [NWNEventHandler(ScriptName.OnDialogAppears9)]
         public static bool NodeAppears9()
         {
             return AppearsWhen(2, 9);
         }
 
-        [NWNEventHandler("dialog_appears10")]
+        [NWNEventHandler(ScriptName.OnDialogAppears10)]
         public static bool NodeAppears10()
         {
             return AppearsWhen(2, 10);
         }
 
-        [NWNEventHandler("dialog_appears11")]
+        [NWNEventHandler(ScriptName.OnDialogAppears11)]
         public static bool NodeAppears11()
         {
             return AppearsWhen(2, 11);
         }
 
-        [NWNEventHandler("dialog_appears_h")]
+        [NWNEventHandler(ScriptName.OnDialogAppearsH)]
         public static bool HeaderAppearsWhen()
         {
             return AppearsWhen(1, 0);
         }
 
-        [NWNEventHandler("dialog_appears_n")]
+        [NWNEventHandler(ScriptName.OnDialogAppearsN)]
         public static bool NextAppearsWhen()
         {
             return AppearsWhen(3, 12);
         }
 
-        [NWNEventHandler("dialog_action_n")]
+        [NWNEventHandler(ScriptName.OnDialogActionN)]
         public static void NextAction()
         {
             ActionsTaken(12);
         }
 
-        [NWNEventHandler("dialog_appears_p")]
+        [NWNEventHandler(ScriptName.OnDialogAppearsP)]
         public static bool PreviousAppearsWhen()
         {
             return AppearsWhen(4, 13);
         }
 
-        [NWNEventHandler("dialog_action_p")]
+        [NWNEventHandler(ScriptName.OnDialogActionP)]
         public static void PreviousAction()
         {
             ActionsTaken(13);
         }
 
-        [NWNEventHandler("dialog_appears_b")]
+        [NWNEventHandler(ScriptName.OnDialogAppearsB)]
         public static bool BackAppearsWhen()
         {
             return AppearsWhen(5, 14);
         }
 
-        [NWNEventHandler("dialog_action_b")]
+        [NWNEventHandler(ScriptName.OnDialogActionB)]
         public static void BackAction()
         {
             ActionsTaken(14);
@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Fires when the "End Dialog" node is clicked.
         /// </summary>
-        [NWNEventHandler("dialog_end")]
+        [NWNEventHandler(ScriptName.OnDialogEnd)]
         public static void End()
         {
             var player = GetPCSpeaker();
@@ -489,7 +489,7 @@ namespace SWLOR.Game.Server.Service
         /// When an object executes this script, the custom dialog specified on their local variables
         /// will be started.
         /// </summary>
-        [NWNEventHandler("start_convo")]
+        [NWNEventHandler(ScriptName.OnDialogStartConversation)]
         public static void StartConversationEvent()
         {
             var self = OBJECT_SELF;

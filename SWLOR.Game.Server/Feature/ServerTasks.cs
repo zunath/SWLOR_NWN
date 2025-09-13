@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature
         /// The server application is expected to restart the server when it sees it's down.
         /// This isn't handled by the C# code and should be set up on your server.
         /// </summary>
-        [NWNEventHandler("swlor_heartbeat")]
+        [NWNEventHandler(ScriptName.OnSwlorHeartbeat)]
         public static void ProcessAutoRestart()
         {
             var now = DateTime.UtcNow.TimeOfDay;
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the server starts up, a log message will be written.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ProcessBootUp()
         {
             Log.Write(LogGroup.Server, "Server is starting up.");
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player enters the server, send them a greeting and a link to the Discord server.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void WelcomeMessage()
         {
             var player = GetEnteringObject();

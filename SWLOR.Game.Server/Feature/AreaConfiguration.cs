@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, load the tile magic configured on every area.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ApplyAreaConfiguration()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())

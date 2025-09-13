@@ -1,176 +1,143 @@
 ﻿@page "/viewplayer/{PlayerId}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = "DiscordAdmin")]
 @using SWLOR.Game.Server.Service.CurrencyService
+@using SWLOR.Game.Server.Enumeration
+@using SWLOR.Game.Server.Core.NWScript.Enum
+@using SWLOR.Game.Server.Service.SkillService
+@using SWLOR.Game.Server.Service.PerkService
+@using SWLOR.Admin.Services
+@using System.Linq
+@using System.Reflection
+@using SWLOR.Game.Server.Extension
+@using SWLOR.Admin.Shared.Components
 
 @if (!PlayerExists())
 {
-    <label>Player Id not found</label>
-
+    <div class="alert alert-danger">
+        <h4>Player Not Found</h4>
+        <p>Player ID @PlayerId was not found in the database.</p>
+        <a href="/player" class="btn btn-primary">Back to Players</a>
+    </div>
     return;
 }
 
-<div class="row">
-    <div class="col">
-        <label class="form-label">Version: @ActivePlayer!.Version</label>
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>Player Details: @ActivePlayer!.Name</h2>
+            <p class="text-muted">ID: @PlayerId | Version: @ActivePlayer.Version</p>
+        </div>
+        <div class="col-auto">
+            <a href="/player" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Players
+            </a>
+        </div>
     </div>
-    <div class="col">
-        <label class="form-label">Name: @ActivePlayer.Name</label>
-    </div>
-    <div class="col">
-        <label class="form-label">
-            <input type="checkbox" disabled="disabled" class="form-check-input disabled" @bind="ActivePlayer.IsDeleted" />
-            Is Deleted
-        </label>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col">
-        <label class="form-label">Max HP: @ActivePlayer.MaxHP</label>
-    </div>
-    <div class="col">
-        <label class="form-label">Max FP: @ActivePlayer.MaxFP</label>
-    </div>
-    <div class="col">
-        <label class="form-label">Max STM: @ActivePlayer.MaxStamina</label>
-    </div>
-</div>
+    <!-- Debug Information -->
+    @* Debug info and button removed as per request *@
 
-<div class="row">
-    <div class="col">
-        <label class="form-label">HP: @ActivePlayer.HP</label>
+    <!-- Status Badge -->
+    <div class="row mb-3">
+        <div class="col">
+            @if (ActivePlayer.IsDeleted)
+            {
+                <span class="badge bg-danger">Deleted</span>
+            }
+            else
+            {
+                <span class="badge bg-success">Active</span>
+            }
+            <span class="badge bg-info">@ActivePlayer.CharacterType</span>
+            @if (ActivePlayer.RebuildComplete)
+            {
+                <span class="badge bg-warning">Rebuild Complete</span>
+            }
+        </div>
     </div>
-    <div class="col">
-        <label class="form-label">FP: @ActivePlayer.FP</label>
-    </div>
-    <div class="col">
-        <label class="form-label">STM: @ActivePlayer.Stamina</label>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col">
-        <label class="form-label">Temp. Food HP: @ActivePlayer.TemporaryFoodHP</label>
-    </div>
-    <div class="col">
-        <label class="form-label">BAB: @ActivePlayer.BAB</label>
-    </div>
-    <div class="col">
-        <label class="form-label">Regeneration Tick: @ActivePlayer.RegenerationTick</label>
-    </div>
-</div>
+    <!-- Custom Tab Navigation -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(ActiveTab == "overview" ? "active" : "")" @onclick="@(() => SetActiveTab("overview"))" type="button">
+                <i class="fas fa-info-circle"></i> Overview
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(ActiveTab == "stats" ? "active" : "")" @onclick="@(() => SetActiveTab("stats"))" type="button">
+                <i class="fas fa-heart"></i> Stats
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(ActiveTab == "skills" ? "active" : "")" @onclick="@(() => SetActiveTab("skills"))" type="button">
+                <i class="fas fa-graduation-cap"></i> Skills
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(ActiveTab == "perks" ? "active" : "")" @onclick="@(() => SetActiveTab("perks"))" type="button">
+                <i class="fas fa-star"></i> Perks
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(ActiveTab == "location" ? "active" : "")" @onclick="@(() => SetActiveTab("location"))" type="button">
+                <i class="fas fa-map-marker-alt"></i> Location & Travel
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link @(ActiveTab == "advanced" ? "active" : "")" @onclick="@(() => SetActiveTab("advanced"))" type="button">
+                <i class="fas fa-database"></i> Advanced Data
+            </button>
+        </li>
+    </ul>
 
-<div class="row">
-    <div class="col">
-        <label class="form-label">Location: @ActivePlayer.LocationAreaResref (@ActivePlayer.LocationX, @ActivePlayer.LocationY, @ActivePlayer.LocationZ) @ActivePlayer.LocationOrientation°</label>
-    </div>
-    <div class="col">
-        <label class="form-label">Respawn: @ActivePlayer.RespawnAreaResref (@ActivePlayer.RespawnLocationX, @ActivePlayer.RespawnLocationY, @ActivePlayer.RespawnLocationZ) @ActivePlayer.RespawnLocationOrientation°</label>
-    </div>
-</div>
+    <!-- Tab Content -->
+    <div class="tab-content mt-3">
+        @if (ActiveTab == "overview")
+        {
+            <!-- Overview Tab -->
+            <PlayerOverview Player="@ActivePlayer" />
+        }
 
-<div class="row">
-    
-    <div class="col">
-        <label class="form-label">Unallocated XP: @ActivePlayer.UnallocatedXP</label>
-    </div>
-    <div class="col">
-        <label class="form-label">Unallocated XP: @ActivePlayer.UnallocatedSP</label>
-    </div>
-    <div class="col">
-        <label class="form-label">Unallocated XP: @ActivePlayer.UnallocatedAP</label>
-    </div>
-</div>
+        @if (ActiveTab == "stats")
+        {
+            <!-- Stats & Combat Tab -->
+            <PlayerStats Player="@ActivePlayer" />
+        }
 
-<div class="row">
-    
-    <div class="col">
-        <label class="form-label">Total SP: @ActivePlayer.TotalSPAcquired</label>
-    </div>
-    <div class="col">
-        <label class="form-label">Total AP: @ActivePlayer.TotalAPAcquired</label>
-    </div>
-    <div class="col">
-        <label class="form-label">DM XP Bonus: @ActivePlayer.DMXPBonus</label>
-    </div>
-</div>
+        @if (ActiveTab == "skills")
+        {
+            <!-- Skills & Perks Tab -->
+            <PlayerSkills Player="@ActivePlayer" />
+        }
 
+        @if (ActiveTab == "perks")
+        {
+            <!-- Perks Tab -->
+            <PlayerPerks Player="@ActivePlayer" />
+        }
 
-<div class="row">
-    <div class="col">
-        <label class="form-label">HP Regen: @ActivePlayer.HPRegen</label>
-    </div>
-    <div class="col">
-        <label class="form-label">FP Regen: @ActivePlayer.FPRegen</label>
-    </div>
-    <div class="col">
-        <label class="form-label">STM Regen: @ActivePlayer.STMRegen</label>
-    </div>
-</div>
+        @if (ActiveTab == "location")
+        {
+            <!-- Location & Travel Tab -->
+            <PlayerLocation Player="@ActivePlayer" />
+        }
 
-<div class="row">
-    <div class="col">
-        <label class="form-label"># Perk Resets: @ActivePlayer.Currencies[CurrencyType.PerkRefundToken]</label>
-    </div>
-    <div class="col">
-        <label class="form-label"># Rebuilds: @ActivePlayer.Currencies[CurrencyType.RebuildToken]</label>
-    </div>
-    <div class="col">
+        @if (ActiveTab == "advanced")
+        {
+            <!-- Advanced Data Tab -->
+            <PlayerAdvanced Player="@ActivePlayer" />
+        }
     </div>
 </div>
-<div class="row">
-    <div class="col">
-        <label class="form-label">Date Perk Refund Available: @ActivePlayer.DatePerkRefundAvailable</label>
-    </div>
-    <div class="col">
-        <label>Character Type:</label>
-        <label>@ActivePlayer.CharacterType</label>
-    </div>
-    <div class="col">
-        <label>Emote Style:</label>
-        <label>@ActivePlayer.EmoteStyle</label>
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <label>Appearance ID: @ActivePlayer.OriginalAppearanceType.ToString()</label>
-    </div>
-    <div class="col">
-        <label>Movement Rate: @ActivePlayer.MovementRate</label>
-    </div>
-    <div class="col">
-        <label>Recast Reduction: @ActivePlayer.AbilityRecastReduction</label>
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <label>Market Till: @ActivePlayer.MarketTill</label>
-    </div>
-    <div class="col">
-        <label>Taxes Owed: @ActivePlayer.PropertyOwedTaxes</label>
-    </div>
-    <div class="col">
-        <label>Attack: @ActivePlayer.Attack</label>
-    </div>
-</div>
-<div class="row">
-    <div class="col">
-        <label>Force Attack: @ActivePlayer.ForceAttack</label>
-    </div>
-    <div class="col">
-        <label>Evasion: @ActivePlayer.Evasion</label>
-    </div>
-    <div class="col">
-        <label>Rebuild Complete: @ActivePlayer.RebuildComplete</label>
-    </div>
-</div>
-
 
 @code {
-    
     [Parameter]
     public string? PlayerId { get; set; }
 
     protected Player? ActivePlayer;
+    protected string ActiveTab = "overview";
+    // ShowDebugInfo and related methods removed
 
     protected override void OnInitialized()
     {
@@ -181,5 +148,23 @@
     protected bool PlayerExists()
     {
         return ActivePlayer != null;
+    }
+
+    protected void SetActiveTab(string tabName)
+    {
+        ActiveTab = tabName;
+        StateHasChanged();
+    }
+
+    protected string GetRebuildStatus()
+    {
+        if (ActivePlayer == null) return "Unknown";
+        
+        if (ActivePlayer.RebuildComplete)
+        {
+            return "Rebuild Complete - Stats may have been reset";
+        }
+        
+        return "No rebuild detected";
     }
 }

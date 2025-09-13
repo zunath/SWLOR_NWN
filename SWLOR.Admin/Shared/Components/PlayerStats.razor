@@ -1,0 +1,117 @@
+@namespace SWLOR.Admin.Shared.Components
+@using SWLOR.Game.Server.Service.SkillService
+@using SWLOR.Game.Server.Enumeration
+@using SWLOR.Admin.Services
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-heart"></i> Health & Resources</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>HP:</strong></td>
+                        <td>@Player.HP / @StatCalculationService.CalculateMaxHP(Player)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>FP:</strong></td>
+                        <td>@Player.FP / @StatCalculationService.CalculateMaxFP(Player)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stamina:</strong></td>
+                        <td>@Player.Stamina / @StatCalculationService.CalculateMaxStamina(Player)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HP Regen:</strong></td>
+                        <td>@Player.HPRegen</td>
+                    </tr>
+                    <tr>
+                        <td><strong>FP Regen:</strong></td>
+                        <td>@Player.FPRegen</td>
+                    </tr>
+                    <tr>
+                        <td><strong>STM Regen:</strong></td>
+                        <td>@Player.STMRegen</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-sword"></i> Combat Stats</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>BAB:</strong></td>
+                        <td>@Player.BAB</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Attack:</strong></td>
+                        <td>@Player.Attack</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Force Attack:</strong></td>
+                        <td>@Player.ForceAttack</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Evasion:</strong></td>
+                        <td>@Player.Evasion</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Recast Reduction:</strong></td>
+                        <td>@Player.AbilityRecastReduction</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-shield-alt"></i> Base Stats</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @foreach (var stat in Player.BaseStats)
+                    {
+                        <div class="col-md-4 col-lg-2 mb-2">
+                            <strong>@stat.Key:</strong> @stat.Value@(Player.RacialStat == stat.Key ? " (+1)" : "")
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-shield-alt"></i> Upgraded Stats</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @foreach (var stat in Player.UpgradedStats)
+                    {
+                        <div class="col-md-4 col-lg-2 mb-2">
+                            <strong>@stat.Key:</strong> @stat.Value
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Player Player { get; set; } = null!;
+} 

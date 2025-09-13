@@ -11,12 +11,14 @@ namespace SWLOR.Game.Server.Service.SpawnService
     {
         public string Name { get; set; }
         public int RespawnDelayMinutes { get; set; }
+        public int ResourceDespawnMinutes { get; set; }
         public List<SpawnObject> Spawns { get; set; }
 
         public SpawnTable(string name)
         {
             Name = name;
             RespawnDelayMinutes = Spawn.DefaultRespawnMinutes;
+            ResourceDespawnMinutes = 180; // Default: 3 hours for resources
             Spawns = new List<SpawnObject>();
         }
 
@@ -50,6 +52,11 @@ namespace SWLOR.Game.Server.Service.SpawnService
 
             var weights = filteredList.Select(s => s.Weight).ToArray();
             var index = Random.GetRandomWeightedIndex(weights);
+            
+            // If GetRandomWeightedIndex returns -1 (no valid weights), return null
+            if (index == -1 || index >= filteredList.Count)
+                return null;
+                
             return filteredList.ElementAt(index);
         }
 

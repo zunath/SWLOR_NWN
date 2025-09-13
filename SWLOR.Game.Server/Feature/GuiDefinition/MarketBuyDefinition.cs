@@ -34,6 +34,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Search")
                             .SetHeight(35f)
                             .BindOnClicked(model => model.OnClickSearch());
+
+                        // Text-based sort button (current implementation)
+                        row.AddButton()
+                            .BindText(model => model.SortByPriceText)
+                            .SetHeight(35f)
+                            .SetWidth(120f)
+                            .BindOnClicked(model => model.OnClickSortByPrice());
                     });
 
                     col.AddRow(row =>

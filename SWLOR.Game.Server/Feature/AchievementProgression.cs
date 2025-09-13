@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AchievementService;
@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player enters the mod, increase their number of logins
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void LogIn()
         {
             var player = GetEnteringObject();
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player enters an area, if an achievement is assigned to the area grant it to them.
         /// </summary>
-        [NWNEventHandler("area_enter")]
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void EnterArea()
         {
             var area = OBJECT_SELF;
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handles the Kill Enemy line of achievements.
         /// </summary>
-        [NWNEventHandler("crea_death_bef")]
+        [NWNEventHandler(ScriptName.OnCreatureDeathBefore)]
         public static void KillEnemy()
         {
             var killer = GetLastKiller();
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handles the Buy Perk line of achievements.
         /// </summary>
-        [NWNEventHandler("swlor_buy_perk")]
+        [NWNEventHandler(ScriptName.OnSwlorBuyPerk)]
         public static void BuyPerk()
         {
             var player = OBJECT_SELF;
@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handles the Gain Skill line of achievements.
         /// </summary>
-        [NWNEventHandler("swlor_gain_skill")]
+        [NWNEventHandler(ScriptName.OnSwlorGainSkill)]
         public static void GainSkillPoint()
         {
             var player = OBJECT_SELF;
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handles the Complete Quests line of achievements.
         /// </summary>
-        [NWNEventHandler("swlor_comp_qst")]
+        [NWNEventHandler(ScriptName.OnSwlorCompleteQuest)]
         public static void CompleteQuests()
         {
             var player = OBJECT_SELF;
@@ -226,7 +226,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handles the Craft Item line of achievements
         /// </summary>
-        [NWNEventHandler("craft_success")]
+        [NWNEventHandler(ScriptName.OnCraftSuccess)]
         public static void CompleteCraftSuccessfully()
         {
             var player = OBJECT_SELF;

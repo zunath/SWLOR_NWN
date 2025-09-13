@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, place all stores inside the cache and schedule the cleanup process.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ProcessStores()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a store item is acquired, destroy the local flag indicating it's a store item.
         /// </summary>
-        [NWNEventHandler("mod_acquire")]
+        [NWNEventHandler(ScriptName.OnModuleAcquire)]
         public static void AcquireItem()
         {
             ClearStoreServiceItemFlag();
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Destroys items sold to NPC stores immediately.
         /// </summary>
-        [NWNEventHandler("store_sell_aft")]
+        [NWNEventHandler(ScriptName.OnStoreSellAfter)]
         public static void DestroySoldItem()
         {
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Prevents items from being sold from a henchman's inventory.
         /// </summary>
-        [NWNEventHandler("store_sell_bef")]
+        [NWNEventHandler(ScriptName.OnStoreSellBefore)]
         public static void PreventSalesFromHenchmenInventory()
         {
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));

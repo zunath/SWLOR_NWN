@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,8 +11,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NRediSearch" Version="2.2.79" />
     <PackageReference Include="NReJSON" Version="4.0.0" />
-    <PackageReference Include="StackExchange.Redis" Version="2.7.33" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.41" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.7" />
   </ItemGroup>
 
   <ItemGroup>

@@ -378,6 +378,12 @@ namespace SWLOR.Game.Server.Service.GuiService
                 _callerCancelAction();
         };
 
+        /// <summary>
+        /// Default implementation for OnWindowClosed.
+        /// Override in derived classes to provide custom cleanup logic.
+        /// </summary>
+        public virtual Action OnWindowClosed() => () => { };
+
         // The following method works around a NUI issue where the new partial view won't display on screen until the window resizes.
         // We force a change to the geometry of the window to ensure it redraws appropriately.
         // If/when a fix is implemented by Beamdog, this can be removed.

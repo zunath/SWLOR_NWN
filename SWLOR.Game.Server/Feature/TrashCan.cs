@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a player attempts to drop an item, prevent them from doing so and send a message to use the trash can.
         /// DMs are exempt from this rule.
         /// </summary>
-        [NWNEventHandler("item_drop_bef")]
+        [NWNEventHandler(ScriptName.OnItemDropBefore)]
         public static void PreventItemDrops()
         {
             var player = OBJECT_SELF;
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the trash can is opened, the player is notified anything placed inside will be destroyed.
         /// </summary>
-        [NWNEventHandler("trash_opened")]
+        [NWNEventHandler(ScriptName.OnTrashOpened)]
         public static void AlertPlayer()
         {
             var player = GetLastOpenedBy();
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the trash can is closed, any items inside will be destroyed and then the placeable will be destroyed.
         /// </summary>
-        [NWNEventHandler("trash_closed")]
+        [NWNEventHandler(ScriptName.OnTrashClosed)]
         public static void CleanUp()
         {
             var container = OBJECT_SELF;
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When an item is added to the trash can, it will be destroyed.
         /// </summary>
-        [NWNEventHandler("trash_disturbed")]
+        [NWNEventHandler(ScriptName.OnTrashDisturbed)]
         public static void DestroyItem()
         {
             var item = GetInventoryDisturbItem();

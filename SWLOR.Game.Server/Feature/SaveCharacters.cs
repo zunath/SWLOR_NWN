@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 
 namespace SWLOR.Game.Server.Feature
@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Saves characters every minute unless they're currently preoccupied (barter)
         /// </summary>
-        [NWNEventHandler("pc_heartbeat")]
+        [NWNEventHandler(ScriptName.OnPlayerHeartbeat)]
         public static void HandleSaveCharacters()
         {
             var player = OBJECT_SELF;
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Marks players as bartering. This is used to ensure the PCs are not exported during this process.
         /// </summary>
-        [NWNEventHandler("bart_start_bef")]
+        [NWNEventHandler(ScriptName.OnBartenderStartBefore)]
         public static void SetBarteringFlag()
         {
             var player1 = OBJECT_SELF;
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Removes the bartering flag from PCs involved in a trade. This will ensure their files are exported on the next save occurrence.
         /// </summary>
-        [NWNEventHandler("bart_end_bef")]
+        [NWNEventHandler(ScriptName.OnBartenderEndBefore)]
         public static void RemoveBarteringFlag()
         {
             var player1 = OBJECT_SELF;

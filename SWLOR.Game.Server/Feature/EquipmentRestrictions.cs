@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is equipped, check the custom rules to see if the item can be equipped by the player.
         /// If not able to be used, an error message will be sent and item will not be equipped.
         /// </summary>
-        [NWNEventHandler("item_eqpval_bef")]
+        [NWNEventHandler(ScriptName.OnItemEquipValueBefore)]
         public static void ValidateItemEquip()
         {
             var creature = OBJECT_SELF;
@@ -246,7 +246,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When an item is equipped, if any of a player's perks has an Equipped Trigger, run those actions now.
         /// </summary>
-        [NWNEventHandler("item_eqp_bef")]
+        [NWNEventHandler(ScriptName.OnItemEquipBefore)]
         public static void ApplyEquipTriggers()
         {
             var player = OBJECT_SELF;
@@ -294,7 +294,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When an item is unequipped, if any of a player's perks has an Unequipped Trigger, run those actions now.
         /// </summary>
-        [NWNEventHandler("item_uneqp_bef")]
+        [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
         public static void ApplyUnequipTriggers()
         {
             var player = OBJECT_SELF;

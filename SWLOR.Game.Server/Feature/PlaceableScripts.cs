@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a teleport placeable is used, send the user to the configured waypoint.
         /// Checks are made for required key items, if specified as local variables on the placeable.
         /// </summary>
-        [NWNEventHandler("teleport")]
+        [NWNEventHandler(ScriptName.OnPlaceableTeleport)]
         public static void UseTeleportDevice()
         {
             var user = GetLastUsedBy();
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Applies a permanent VFX on a placeable or creature on heartbeat, then removes the heartbeat script.
         /// </summary>
-        [NWNEventHandler("permanent_vfx")]
+        [NWNEventHandler(ScriptName.OnPlaceablePermanentVfx)]
         public static void ApplyPermanentVisualEffect()
         {
             var target = OBJECT_SELF;
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handles starting a generic conversation when a placeable is clicked or used by a player or DM.
         /// </summary>
-        [NWNEventHandler("generic_convo")]
+        [NWNEventHandler(ScriptName.OnPlaceableGenericConversation)]
         public static void GenericConversation()
         {
             var placeable = OBJECT_SELF;
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handle sitting on an object.        
         /// </summary>
-        [NWNEventHandler("sit")]
+        [NWNEventHandler(ScriptName.OnPlaceableSit)]
         public static void Sit()
         {
             var user = GetLastUsedBy();
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature
         /// Whenever a player purchases a rebuild from the training terminal,
         /// make them spend a rebuild token and send them to the rebuild area.
         /// </summary>
-        [NWNEventHandler("buy_rebuild")]
+        [NWNEventHandler(ScriptName.OnPlaceableBuyRebuild)]
         public static void PurchaseRebuild()
         {
             var player = GetPCSpeaker();

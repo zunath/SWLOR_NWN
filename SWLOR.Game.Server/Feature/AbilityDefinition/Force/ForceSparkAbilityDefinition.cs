@@ -82,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
+                .BreaksStealth()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
@@ -100,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
+                .BreaksStealth()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
@@ -118,6 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsCastedAbility()
                 .HasMaxRange(10f)
                 .IsHostileAbility()
+                .BreaksStealth()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>

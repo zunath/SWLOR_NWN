@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
         /// </summary>
-        [NWNEventHandler("swlor_skl_cache")]
+        [NWNEventHandler(ScriptName.OnSwlorSkillCache)]
         public static void CacheData()
         {
             LoadWindowTemplates();
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, create instances of every window if they have not already been created this session.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void CreatePlayerWindows()
         {
             var player = GetEnteringObject();
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player exits the server, save the geometry positions of any open windows.
         /// </summary>
-        [NWNEventHandler("mod_exit")]
+        [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void SavePlayerWindowGeometry()
         {
             var player = GetExitingObject();
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Service
         /// When a NUI event is fired, look for an associated event on the specified element
         /// and execute the cached action.
         /// </summary>
-        [NWNEventHandler("mod_nui_event")]
+        [NWNEventHandler(ScriptName.OnModuleNuiEvent)]
         public static void HandleNuiEvents()
         {
             var player = NuiGetEventPlayer();
@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a NUI event is fired, if it was a watch event, update the associated player's view model.
         /// </summary>
-        [NWNEventHandler("mod_nui_event")]
+        [NWNEventHandler(ScriptName.OnModuleNuiEvent)]
         public static void HandleNuiWatchEvent()
         {
             var player = NuiGetEventPlayer();
@@ -258,6 +258,9 @@ namespace SWLOR.Game.Server.Service
             var propertyName = NuiGetEventElement();
 
             if (eventType != "watch")
+                return;
+
+            if (string.IsNullOrWhiteSpace(windowId))
                 return;
 
             if (!_playerWindows.ContainsKey(playerId))
@@ -343,6 +346,9 @@ namespace SWLOR.Game.Server.Service
             {
                 SaveWindowGeometry(playerId, type, playerWindow.ViewModel.Geometry);
                 NuiDestroy(player, playerWindow.WindowToken);
+                
+                // Call OnWindowClosed to ensure proper cleanup (like returning items to player)
+                playerWindow.ViewModel.OnWindowClosed()?.Invoke();
             }
         }
 
@@ -375,7 +381,7 @@ namespace SWLOR.Game.Server.Service
         /// Skips the default NWN window open events and shows the SWLOR windows instead.
         /// Applies to the Journal and Character Sheet.
         /// </summary>
-        [NWNEventHandler("mod_gui_event")]
+        [NWNEventHandler(ScriptName.OnModuleGuiEvent)]
         public static void ReplaceNWNGuis()
         {
             var player = GetLastGuiEventPlayer();
@@ -430,7 +436,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters an area, close all NUI windows.
         /// </summary>
-        [NWNEventHandler("area_enter")]
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void CloseAllWindows()
         {
             var player = GetEnteringObject();
@@ -622,7 +628,7 @@ namespace SWLOR.Game.Server.Service
             return (windowX + (windowWidth / 2)) - ((text.Length + 2) / 2);
         }
 
-        [NWNEventHandler("mod_equip")]
+        [NWNEventHandler(ScriptName.OnModuleEquip)]
         public static void RefreshOnEquip()
         {
             var player = GetPCItemLastEquippedBy();
@@ -632,7 +638,7 @@ namespace SWLOR.Game.Server.Service
             DelayCommand(0.1f, () => PublishRefreshEvent(player, new EquipItemRefreshEvent()));
         }
 
-        [NWNEventHandler("mod_unequip")]
+        [NWNEventHandler(ScriptName.OnModuleUnequip)]
         public static void RefreshOnUnequip()
         {
             var player = GetPCItemLastUnequippedBy();

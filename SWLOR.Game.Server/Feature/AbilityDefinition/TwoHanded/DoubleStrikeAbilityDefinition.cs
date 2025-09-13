@@ -38,9 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
-            // If activator is in stealth mode, force them out of stealth mode.
-            if (GetActionMode(activator, ActionMode.Stealth) == true)
-                SetActionMode(activator, ActionMode.Stealth, false);
+
 
             switch (level)
             {
@@ -95,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
@@ -113,6 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
@@ -131,6 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .BreaksStealth()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {

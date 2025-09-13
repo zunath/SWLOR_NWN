@@ -1,10 +1,10 @@
-﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class GameWorldEntry
     {
-        [NWNEventHandler("enter_world")]
+        [NWNEventHandler(ScriptName.OnEnterWorld)]
         public static void EnterGameWorld()
         {
             var player = GetPCSpeaker();

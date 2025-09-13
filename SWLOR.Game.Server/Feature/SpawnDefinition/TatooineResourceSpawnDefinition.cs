@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void AridHillyDesert()
         {
             _builder.Create("TATOOINE_RESOURCE_ARID_HILLY_DESERT")
+                .ResourceDespawnDelay(90) // 1.5 hours for higher tier desert resources
                 .AddSpawn(ObjectType.Placeable, "plagionite_vein")
                 .WithFrequency(40)
 
@@ -52,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void TatooineResources()
         {
             _builder.Create("TATOOINE_RESOURCE_GENERAL")
+                .ResourceDespawnDelay(120) // 2 hours for standard higher tier resources
                 .AddSpawn(ObjectType.Placeable, "plagionite_vein")
                 .WithFrequency(40)
 
@@ -68,6 +70,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void TuskenCamp()
         {
             _builder.Create("TATTOOINE_TUSKEN_CAMP")
+                .ResourceDespawnDelay(90) // 1.5 hours for special enemy camp loot
                 .AddSpawn(ObjectType.Placeable, "t_tusk_cmp");
         }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, create translators for every language and store them into cache.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void LoadTranslators()
         {
             _translators = new Dictionary<SkillType, ITranslator>
@@ -76,9 +76,9 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (!GetIsPC(listener) || GetIsDM(listener))
+            if (!GetIsPC(listener) || GetIsDM(listener) || GetIsDMPossessed(listener))
             {
-                // Short circuit for a DM or NPC - they will always understand the text.
+                // Short circuit for a DM, NPC, or DM-possessed creature - they will always understand the text.
                 return snippet;
             }
 

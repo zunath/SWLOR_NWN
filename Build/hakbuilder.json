@@ -1,6 +1,7 @@
 {
   "TlkPath": "../SWLOR_Haks/swlor2_tlk/swlor2_tlk.tlk",
   "OutputPath": "../debugserver/",
+  "EnableChecksumChecking": true,
   "HakList": [
     {
       "Name":  "swlor2_2da",
@@ -166,6 +167,6 @@
       "Name":  "swlor2_wok",
       "Path": "../SWLOR_Haks/swlor2_wok/",
       "CompileModels": false
-    },
+    }
   ]
 }

@@ -3587,5 +3587,9 @@ namespace SWLOR.NWN.API.NWScript
         {
             return global::NWN.Core.NWScript.GetMicrosecondCounter();
         }
+        public static void ExecuteScript(string sScript, uint oTarget)
+        {
+            global::NWN.Core.NWScript.ExecuteScript(sScript, oTarget);
+        }
     }
 }

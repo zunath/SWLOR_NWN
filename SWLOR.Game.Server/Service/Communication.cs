@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleChat)]
         public static void ProcessNativeChatMessage()
         {
-            ExecuteScriptNWScript("dmfi_onplychat", OBJECT_SELF);
+            ExecuteScript("dmfi_onplychat", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnNWNXChat)]

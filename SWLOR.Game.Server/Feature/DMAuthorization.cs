@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             LogDMAuthorization(true);
-            ExecuteScriptNWScript("dmfi_onclienter", OBJECT_SELF);
+            ExecuteScript("dmfi_onclienter", OBJECT_SELF);
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.AchievementService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service
@@ -63,7 +64,7 @@ namespace SWLOR.Game.Server.Service
 
             var achievement = _activeAchievements[achievementType];
             DisplayAchievementNotificationWindow(player, achievement.Name);
-            Core.NWNX.PlayerPlugin.PlaySound(player, "gui_prompt", OBJECT_INVALID);
+            PlayerPlugin.PlaySound(player, "gui_prompt", OBJECT_INVALID);
         }
 
         /// <summary>

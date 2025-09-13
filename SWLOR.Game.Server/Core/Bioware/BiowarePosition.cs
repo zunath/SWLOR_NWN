@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Numerics;
-using SWLOR.NWN.API;
+using SWLOR.NWN.API.Core.Engine;
 
 namespace SWLOR.Game.Server.Core.Bioware
 {

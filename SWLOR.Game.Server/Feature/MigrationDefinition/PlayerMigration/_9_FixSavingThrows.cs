@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration

@@ -1,4 +1,6 @@
-﻿namespace SWLOR.NWN.API.NWScript
+﻿using SWLOR.NWN.API.Core.Engine;
+
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Player = SWLOR.Game.Server.Entity.Player;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;

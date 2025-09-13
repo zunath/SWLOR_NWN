@@ -2,6 +2,7 @@
 using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API;
+using SWLOR.NWN.API.Core.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {

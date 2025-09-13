@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using SWLOR.NWN.API.Core.Engine;
+using System.Numerics;
 
 namespace SWLOR.NWN.API.NWScript
 {

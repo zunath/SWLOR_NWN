@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -797,7 +798,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         BootPC(player, "The server is restarting.");
                         player = GetNextPC();
                     }
-                    Core.NWNX.AdministrationPlugin.ShutdownServer();
+                    AdministrationPlugin.ShutdownServer();
                 });
         }
 

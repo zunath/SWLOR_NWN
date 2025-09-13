@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SpawnService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 

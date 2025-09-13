@@ -1,4 +1,5 @@
 using System.Numerics;
+using SWLOR.NWN.API.Core.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;

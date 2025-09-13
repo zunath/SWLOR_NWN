@@ -2,9 +2,10 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Core;
-using SWLOR.NWN.API;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.Core.Engine;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {

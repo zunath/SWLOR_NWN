@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {

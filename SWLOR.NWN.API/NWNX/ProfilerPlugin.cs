@@ -1,13 +1,10 @@
-﻿using System;
+﻿using NWN.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.NWN.API.Core;
 
-namespace SWLOR.Game.Server.Core.NWNX
+namespace SWLOR.NWN.API.NWNX
 {
     public static class ProfilerPlugin
     {
-        private const string PLUGIN_NAME = "NWNX_Profiler";
-
         /// <summary>
         /// Push a timing metric scope - note that every push must be matched by a corresponding pop.
         ///
@@ -31,6 +28,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// <param name="name">The name to use for your metric</param>
         /// <param name="tag0_tag">An optional tag to filter your metrics</param>
         /// <param name="tag0_value">The tag's value for which to filter.</param>
+        /// <param name="tag1_tag">An optional second tag to filter your metrics</param>
+        /// <param name="tag1_value">The second tag's value for which to filter.</param>
+        /// <param name="tag2_tag">An optional third tag to filter your metrics</param>
+        /// <param name="tag2_value">The third tag's value for which to filter.</param>
         public static void PushPerfScope(
             string name, 
             string tag0_tag = "", 
@@ -40,29 +41,27 @@ namespace SWLOR.Game.Server.Core.NWNX
             string tag2_tag = "",
             string tag2_value = "")
         {
-            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "PushPerfScope");
-
+            // The core plugin only supports one tag pair, so we'll use the first non-empty tag pair
+            string primaryTag = "";
+            string primaryValue = "";
+            
             if (!string.IsNullOrWhiteSpace(tag0_value) && !string.IsNullOrWhiteSpace(tag0_tag))
             {
-                NWNXPInvoke.NWNXPushString(tag0_value);
-                NWNXPInvoke.NWNXPushString(tag0_tag);
+                primaryTag = tag0_tag;
+                primaryValue = tag0_value;
+            }
+            else if (!string.IsNullOrWhiteSpace(tag1_value) && !string.IsNullOrWhiteSpace(tag1_tag))
+            {
+                primaryTag = tag1_tag;
+                primaryValue = tag1_value;
+            }
+            else if (!string.IsNullOrWhiteSpace(tag2_value) && !string.IsNullOrWhiteSpace(tag2_tag))
+            {
+                primaryTag = tag2_tag;
+                primaryValue = tag2_value;
             }
             
-            if (!string.IsNullOrWhiteSpace(tag1_value) && !string.IsNullOrWhiteSpace(tag1_tag))
-            {
-                NWNXPInvoke.NWNXPushString(tag1_value);
-                NWNXPInvoke.NWNXPushString(tag1_tag);
-            }
-
-            if (!string.IsNullOrWhiteSpace(tag2_value) && !string.IsNullOrWhiteSpace(tag2_tag))
-            {
-                NWNXPInvoke.NWNXPushString(tag2_value);
-                NWNXPInvoke.NWNXPushString(tag2_tag);
-            }
-
-            NWNXPInvoke.NWNXPushString(name);
-
-            NWNXPInvoke.NWNXCallFunction();
+            global::NWN.Core.NWNX.ProfilerPlugin.PushPerfScope(name, primaryTag, primaryValue);
         }
 
         /// <summary>
@@ -72,7 +71,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// <param name="scriptName">The name of the script</param>
         public static void PushPerfScope(uint target, string scriptName)
         {
-            var internalObjectType = GetIsObjectValid(target) 
+            var internalObjectType = GetIsObjectValid(target) == 1
                 ? ObjectPlugin.GetInternalObjectType(target) 
                 : InternalObjectType.Invalid;
             var objectTypeName = internalObjectType == InternalObjectType.Invalid 
@@ -97,13 +96,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         }
 
         /// <summary>
-        /// Pops a timing metric
-        /// A metric must already be pushed.
+        /// Pops a timing metric.
         /// </summary>
+        /// <remarks>A metric must already be pushed.</remarks>
         public static void PopPerfScope()
         {
-            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "PopPerfScope");
-            NWNXPInvoke.NWNXCallFunction();
+            global::NWN.Core.NWNX.ProfilerPlugin.PopPerfScope();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Core.NWNX
+﻿namespace SWLOR.NWN.API.NWNX
 {
     public class JournalEntry
     {

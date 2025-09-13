@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.NWN.API.NWScript.Enum
 {
-    public enum EngineStructure
+    public enum EngineStructureType
     {
         Count = 8,
 

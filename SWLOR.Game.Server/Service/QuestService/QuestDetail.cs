@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.NWN.API.NWNX;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service.QuestService
@@ -252,7 +253,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             }
 
             // Add the journal entry to the player.
-            Core.NWNX.PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+            PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
             {
                 Name = quest.Name,
                 Text = state.JournalText,
@@ -328,7 +329,7 @@ namespace SWLOR.Game.Server.Service.QuestService
                 var nextState = GetState(playerQuest.CurrentState);
 
                 // Update the player's journal
-                Core.NWNX.PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
+                PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
                 {
                     Name = quest.Name,
                     Text = currentState.JournalText,

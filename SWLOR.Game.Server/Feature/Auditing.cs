@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Feature
 {

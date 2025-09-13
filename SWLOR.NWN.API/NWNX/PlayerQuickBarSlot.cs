@@ -1,7 +1,7 @@
 ﻿using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Core.NWNX
+namespace SWLOR.NWN.API.NWNX
 {
     public static class PlayerQuickBarSlot
     {

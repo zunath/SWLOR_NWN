@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.NWN.API.NWNX;
 using Exception = System.Exception;
 
 namespace SWLOR.Game.Server.Service

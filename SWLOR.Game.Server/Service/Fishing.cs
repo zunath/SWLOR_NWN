@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service

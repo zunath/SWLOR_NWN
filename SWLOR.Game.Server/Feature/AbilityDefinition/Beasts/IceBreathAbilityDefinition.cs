@@ -6,9 +6,9 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
-using SWLOR.NWN.API;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.NWN.API.Core.Engine;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {

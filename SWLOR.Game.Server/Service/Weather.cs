@@ -5,11 +5,11 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.WeatherService;
 using SWLOR.Game.Server.Extension;
-using SWLOR.NWN.API;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.NWN.API.Core.Engine;
 
 namespace SWLOR.Game.Server.Service
 {

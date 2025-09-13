@@ -10,6 +10,7 @@ using Player = SWLOR.Game.Server.Entity.Player;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.NPCService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 

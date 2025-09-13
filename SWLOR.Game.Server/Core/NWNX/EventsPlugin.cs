@@ -9,37 +9,37 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Others can be signalled via script code (see NWNX_Events_SignalEvent).
         public static void SubscribeEvent(string evt, string script)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SubscribeEvent");
-            NWNCore.NativeFunctions.nwnxPushString(script);
-            NWNCore.NativeFunctions.nwnxPushString(evt);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SubscribeEvent");
+            NWNXPInvoke.NWNXPushString(script);
+            NWNXPInvoke.NWNXPushString(evt);
+            NWNXPInvoke.NWNXCallFunction();
         }
         public static void UnsubscribeEvent(string evt, string script)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "UnsubscribeEvent");
-            NWNCore.NativeFunctions.nwnxPushString(script);
-            NWNCore.NativeFunctions.nwnxPushString(evt);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "UnsubscribeEvent");
+            NWNXPInvoke.NWNXPushString(script);
+            NWNXPInvoke.NWNXPushString(evt);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Pushes event data at the provided tag, which subscribers can access with GetEventData.
         // This should be called BEFORE SignalEvent.
         public static void PushEventData(string tag, string data)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PushEventData");
-            NWNCore.NativeFunctions.nwnxPushString(data);
-            NWNCore.NativeFunctions.nwnxPushString(tag);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "PushEventData");
+            NWNXPInvoke.NWNXPushString(data);
+            NWNXPInvoke.NWNXPushString(tag);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Signals an event. This will dispatch a notification to all subscribed handlers.
         // Returns true if anyone was subscribed to the event, false otherwise.
         public static int SignalEvent(string evt, uint target)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SignalEvent");
-            NWNCore.NativeFunctions.nwnxPushObject(target);
-            NWNCore.NativeFunctions.nwnxPushString(evt);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SignalEvent");
+            NWNXPInvoke.NWNXPushObject(target);
+            NWNXPInvoke.NWNXPushString(evt);
+            NWNXPInvoke.NWNXCallFunction();
             return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
@@ -47,10 +47,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
         public static string GetEventData(string tag)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEventData");
-            NWNCore.NativeFunctions.nwnxPushString(tag);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopString();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetEventData");
+            NWNXPInvoke.NWNXPushString(tag);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopString();
         }
 
         // Skips execution of the currently executing event.
@@ -81,8 +81,8 @@ namespace SWLOR.Game.Server.Core.NWNX
         // - Sticky Player Name event
         public static void SkipEvent()
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SkipEvent");
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SkipEvent");
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Set the return value of the event.
@@ -96,74 +96,74 @@ namespace SWLOR.Game.Server.Core.NWNX
         // - Sticky Player Name event -> "1" or "0"
         public static void SetEventResult(string data)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEventResult");
-            NWNCore.NativeFunctions.nwnxPushString(data);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetEventResult");
+            NWNXPInvoke.NWNXPushString(data);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Returns the current event name
         // THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
         public static string GetCurrentEvent()
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentEvent");
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopString();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetCurrentEvent");
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopString();
         }
 
         // Toggles DispatchListMode for sEvent+sScript
         // If enabled, sEvent for sScript will only be signalled if the target object is on its dispatch list.
         public static void ToggleDispatchListMode(string sEvent, string sScript, int bEnable)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ToggleDispatchListMode");
-            NWNCore.NativeFunctions.nwnxPushInt(bEnable);
-            NWNCore.NativeFunctions.nwnxPushString(sScript);
-            NWNCore.NativeFunctions.nwnxPushString(sEvent);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "ToggleDispatchListMode");
+            NWNXPInvoke.NWNXPushInt(bEnable);
+            NWNXPInvoke.NWNXPushString(sScript);
+            NWNXPInvoke.NWNXPushString(sEvent);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Add oObject to the dispatch list for sEvent+sScript.
         public static void AddObjectToDispatchList(string sEvent, string sScript, uint oObject)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddObjectToDispatchList");
-            NWNCore.NativeFunctions.nwnxPushObject(oObject);
-            NWNCore.NativeFunctions.nwnxPushString(sScript);
-            NWNCore.NativeFunctions.nwnxPushString(sEvent);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "AddObjectToDispatchList");
+            NWNXPInvoke.NWNXPushObject(oObject);
+            NWNXPInvoke.NWNXPushString(sScript);
+            NWNXPInvoke.NWNXPushString(sEvent);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Remove oObject from the dispatch list for sEvent+sScript.
         public static void RemoveObjectFromDispatchList(string sEvent, string sScript, uint oObject)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveObjectFromDispatchList");
-            NWNCore.NativeFunctions.nwnxPushObject(oObject);
-            NWNCore.NativeFunctions.nwnxPushString(sScript);
-            NWNCore.NativeFunctions.nwnxPushString(sEvent);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "RemoveObjectFromDispatchList");
+            NWNXPInvoke.NWNXPushObject(oObject);
+            NWNXPInvoke.NWNXPushString(sScript);
+            NWNXPInvoke.NWNXPushString(sEvent);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
 
         public static void ToggleIDWhitelist(string sEvent, bool bEnable)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ToggleIDWhitelist");
-            NWNCore.NativeFunctions.nwnxPushInt(bEnable ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushString(sEvent);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "ToggleIDWhitelist");
+            NWNXPInvoke.NWNXPushInt(bEnable ? 1 : 0);
+            NWNXPInvoke.NWNXPushString(sEvent);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static void AddIDToWhitelist(string sEvent, int nID)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddIDToWhitelist");
-            NWNCore.NativeFunctions.nwnxPushInt(nID);
-            NWNCore.NativeFunctions.nwnxPushString(sEvent);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "AddIDToWhitelist");
+            NWNXPInvoke.NWNXPushInt(nID);
+            NWNXPInvoke.NWNXPushString(sEvent);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static void RemoveIDFromWhitelist(string sEvent, int nID)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveIDFromWhitelist");
-            NWNCore.NativeFunctions.nwnxPushInt(nID);
-            NWNCore.NativeFunctions.nwnxPushString(sEvent);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "RemoveIDFromWhitelist");
+            NWNXPInvoke.NWNXPushInt(nID);
+            NWNXPInvoke.NWNXPushString(sEvent);
+            NWNXPInvoke.NWNXCallFunction();
         }
     }
 }

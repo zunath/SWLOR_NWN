@@ -14,10 +14,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         // If used on a placeable in a different area than the player, the portait will not be shown.
         public static void ForcePlaceableExamineWindow(uint player, uint placeable)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ForcePlaceableExamineWindow");
-            NWNCore.NativeFunctions.nwnxPushObject(placeable);
-            NWNCore.NativeFunctions.nwnxPushObject(player);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "ForcePlaceableExamineWindow");
+            NWNXPInvoke.NWNXPushObject(placeable);
+            NWNXPInvoke.NWNXPushObject(player);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Force opens the target object's inventory for the player.
@@ -30,10 +30,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         // - Walking will close the placeable automatically.
         public static void ForcePlaceableInventoryWindow(uint player, uint placeable)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ForcePlaceableInventoryWindow");
-            NWNCore.NativeFunctions.nwnxPushObject(placeable);
-            NWNCore.NativeFunctions.nwnxPushObject(player);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "ForcePlaceableInventoryWindow");
+            NWNXPInvoke.NWNXPushObject(placeable);
+            NWNXPInvoke.NWNXPushObject(player);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Starts displaying a timing bar.
@@ -42,11 +42,11 @@ namespace SWLOR.Game.Server.Core.NWNX
             TimingBarType type = TimingBarType.Custom)
         {
             if (GetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1) return;
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "StartGuiTimingBar");
-            NWNCore.NativeFunctions.nwnxPushInt((int)type);
-            NWNCore.NativeFunctions.nwnxPushFloat(seconds);
-            NWNCore.NativeFunctions.nwnxPushObject(player);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "StartGuiTimingBar");
+            NWNXPInvoke.NWNXPushInt((int)type);
+            NWNXPInvoke.NWNXPushFloat(seconds);
+            NWNXPInvoke.NWNXPushObject(player);
+            NWNXPInvoke.NWNXCallFunction();
 
             var id = GetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ID") + 1;
             SetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ACTIVE", id);
@@ -65,9 +65,9 @@ namespace SWLOR.Game.Server.Core.NWNX
             // If id != -1, we ended up here through DelayCommand. Make sure it's for the right ID
             if (id != -1 && id != activeId) return;
             DeleteLocalInt(creature, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "StopGuiTimingBar");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "StopGuiTimingBar");
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
             if (!string.IsNullOrWhiteSpace(script)) ExecuteScript(script, creature);
         }
 
@@ -82,10 +82,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         // If true, clicking on the ground or using WASD will trigger walking instead of running.
         public static void SetAlwaysWalk(uint player, bool walk)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAlwaysWalk");
-            NWNCore.NativeFunctions.nwnxPushInt(walk ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushObject(player);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetAlwaysWalk");
+            NWNXPInvoke.NWNXPushInt(walk ? 1 : 0);
+            NWNXPInvoke.NWNXPushObject(player);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Gets the player's quickbar slot info
@@ -626,10 +626,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// </summary>
         public static uint GetOpenStore(uint player)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetOpenStore");
-            NWNCore.NativeFunctions.nwnxPushObject(player);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopObject();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetOpenStore");
+            NWNXPInvoke.NWNXPushObject(player);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopObject();
         }
     }
 }

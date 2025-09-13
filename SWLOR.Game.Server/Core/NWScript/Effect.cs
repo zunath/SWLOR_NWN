@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush((int)EngineStructure.Effect, eEffect);
             VM.Call(849);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>

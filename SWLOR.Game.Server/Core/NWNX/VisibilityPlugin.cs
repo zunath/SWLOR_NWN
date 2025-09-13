@@ -22,10 +22,10 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         public static VisibilityType GetVisibilityOverride(uint player, uint target)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetVisibilityOverride");
-            NWNCore.NativeFunctions.nwnxPushObject(target);
-            NWNCore.NativeFunctions.nwnxPushObject(player);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetVisibilityOverride");
+            NWNXPInvoke.NWNXPushObject(target);
+            NWNXPInvoke.NWNXPushObject(player);
+            NWNXPInvoke.NWNXCallFunction();
             return (VisibilityType)NWNCore.NativeFunctions.nwnxPopInt();
         }
 
@@ -49,11 +49,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         // set to NWNX_VISIBILITY_VISIBLE for the target, the object will be visible to the player
         public static void SetVisibilityOverride(uint player, uint target, VisibilityType @override)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetVisibilityOverride");
-            NWNCore.NativeFunctions.nwnxPushInt((int)@override);
-            NWNCore.NativeFunctions.nwnxPushObject(target);
-            NWNCore.NativeFunctions.nwnxPushObject(player);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetVisibilityOverride");
+            NWNXPInvoke.NWNXPushInt((int)@override);
+            NWNXPInvoke.NWNXPushObject(target);
+            NWNXPInvoke.NWNXPushObject(player);
+            NWNXPInvoke.NWNXCallFunction();
         }
     }
 }

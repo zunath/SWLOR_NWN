@@ -1066,7 +1066,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush((int)EngineStructure.ItemProperty, nProperty);
             VM.Call(854);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>

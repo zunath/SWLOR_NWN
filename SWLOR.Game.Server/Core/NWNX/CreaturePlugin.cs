@@ -13,346 +13,346 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Gives the provided creature the provided feat.
         public static void AddFeat(uint creature, FeatType feat)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddFeat");
-            NWNCore.NativeFunctions.nwnxPushInt((int)feat);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "AddFeat");
+            NWNXPInvoke.NWNXPushInt((int)feat);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Gives the provided creature the provided feat.
         // Adds the feat to the stat list at the provided level.
         public static void AddFeatByLevel(uint creature, FeatType feat, int level)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddFeatByLevel");
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushInt((int)feat);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "AddFeatByLevel");
+            NWNXPInvoke.NWNXPushInt(level);
+            NWNXPInvoke.NWNXPushInt((int)feat);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Removes from the provided creature the provided feat.
         public static void RemoveFeat(uint creature, FeatType feat)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveFeat");
-            NWNCore.NativeFunctions.nwnxPushInt((int)feat);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "RemoveFeat");
+            NWNXPInvoke.NWNXPushInt((int)feat);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static bool GetKnowsFeat(uint creature, FeatType feat)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetKnowsFeat");
-            NWNCore.NativeFunctions.nwnxPushInt((int)feat);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt() != 0;
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetKnowsFeat");
+            NWNXPInvoke.NWNXPushInt((int)feat);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt() != 0;
         }
 
         // Returns the count of feats learned at the provided level.
         public static int GetFeatCountByLevel(uint creature, int level)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFeatCountByLevel");
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetFeatCountByLevel");
+            NWNXPInvoke.NWNXPushInt(level);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Returns the feat learned at the provided level at the provided index.
         // Index bounds: 0 <= index < GetFeatCountByLevel(creature, level).
         public static FeatType GetFeatByLevel(uint creature, int level, int index)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFeatByLevel");
-            NWNCore.NativeFunctions.nwnxPushInt(index);
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return (FeatType)NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetFeatByLevel");
+            NWNXPInvoke.NWNXPushInt(index);
+            NWNXPInvoke.NWNXPushInt(level);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return (FeatType)NWNXPInvoke.NWNXPopInt();
         }
 
         // Returns the total number of feats known by creature
         public static int GetFeatCount(uint creature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFeatCount");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetFeatCount");
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Returns the creature's feat at a given index
         // Index bounds: 0 <= index < GetFeatCount(creature);
         public static FeatType GetFeatByIndex(uint creature, int index)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFeatByIndex");
-            NWNCore.NativeFunctions.nwnxPushInt(index);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return (FeatType)NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetFeatByIndex");
+            NWNXPInvoke.NWNXPushInt(index);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return (FeatType)NWNXPInvoke.NWNXPopInt();
         }
 
         // Returns TRUE if creature meets all requirements to take given feat
         public static bool GetMeetsFeatRequirements(uint creature, FeatType feat)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMeetsFeatRequirements");
-            NWNCore.NativeFunctions.nwnxPushInt((int)feat);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt() != 0;
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetMeetsFeatRequirements");
+            NWNXPInvoke.NWNXPushInt((int)feat);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt() != 0;
         }
 
         // Returns the special ability of the provided creature at the provided index.
         // Index bounds: 0 <= index < GetSpecialAbilityCount(creature).
         public static SpecialAbilitySlot GetSpecialAbility(uint creature, int index)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSpecialAbility");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetSpecialAbility");
             var ability = new SpecialAbilitySlot();
-            NWNCore.NativeFunctions.nwnxPushInt(index);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            ability.Level = NWNCore.NativeFunctions.nwnxPopInt();
-            ability.Ready = NWNCore.NativeFunctions.nwnxPopInt();
-            ability.ID = NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXPushInt(index);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            ability.Level = NWNXPInvoke.NWNXPopInt();
+            ability.Ready = NWNXPInvoke.NWNXPopInt();
+            ability.ID = NWNXPInvoke.NWNXPopInt();
             return ability;
         }
 
         // Returns the count of special ability count of the provided creature.
         public static int GetSpecialAbilityCount(uint creature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSpecialAbilityCount");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetSpecialAbilityCount");
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Adds the provided special ability to the provided creature.
         public static void AddSpecialAbility(uint creature, SpecialAbilitySlot ability)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddSpecialAbility");
-            NWNCore.NativeFunctions.nwnxPushInt(ability.ID);
-            NWNCore.NativeFunctions.nwnxPushInt(ability.Ready);
-            NWNCore.NativeFunctions.nwnxPushInt(ability.Level);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "AddSpecialAbility");
+            NWNXPInvoke.NWNXPushInt(ability.ID);
+            NWNXPInvoke.NWNXPushInt(ability.Ready);
+            NWNXPInvoke.NWNXPushInt(ability.Level);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Removes the provided special ability from the provided creature.
         // Index bounds: 0 <= index < GetSpecialAbilityCount(creature).
         public static void RemoveSpecialAbility(uint creature, int index)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveSpecialAbility");
-            NWNCore.NativeFunctions.nwnxPushInt(index);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "RemoveSpecialAbility");
+            NWNXPInvoke.NWNXPushInt(index);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Sets the special ability at the provided index for the provided creature to the provided ability.
         // Index bounds: 0 <= index < GetSpecialAbilityCount(creature).
         public static void SetSpecialAbility(uint creature, int index, SpecialAbilitySlot ability)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSpecialAbility");
-            NWNCore.NativeFunctions.nwnxPushInt(ability.ID);
-            NWNCore.NativeFunctions.nwnxPushInt(ability.Ready);
-            NWNCore.NativeFunctions.nwnxPushInt(ability.Level);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetSpecialAbility");
+            NWNXPInvoke.NWNXPushInt(ability.ID);
+            NWNXPInvoke.NWNXPushInt(ability.Ready);
+            NWNXPInvoke.NWNXPushInt(ability.Level);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Returns the classId taken by the provided creature at the provided level.
         public static ClassType GetClassByLevel(uint creature, int level)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetClassByLevel");
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return (ClassType)NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetClassByLevel");
+            NWNXPInvoke.NWNXPushInt(level);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return (ClassType)NWNXPInvoke.NWNXPopInt();
         }
 
         // Sets the base AC for the provided creature.
         public static void SetBaseAC(uint creature, int ac)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetBaseAC");
-            NWNCore.NativeFunctions.nwnxPushInt(ac);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetBaseAC");
+            NWNXPInvoke.NWNXPushInt(ac);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Returns the base AC for the provided creature.
         public static int GetBaseAC(uint creature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBaseAC");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetBaseAC");
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Sets the provided ability score of provided creature to the provided value. Does not apply racial bonuses/penalties.
         public static void SetRawAbilityScore(uint creature, AbilityType ability, int value)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetRawAbilityScore");
-            NWNCore.NativeFunctions.nwnxPushInt(value);
-            NWNCore.NativeFunctions.nwnxPushInt((int)ability);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetRawAbilityScore");
+            NWNXPInvoke.NWNXPushInt(value);
+            NWNXPInvoke.NWNXPushInt((int)ability);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Gets the provided ability score of provided creature. Does not apply racial bonuses/penalties.
         public static int GetRawAbilityScore(uint creature, AbilityType ability)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetRawAbilityScore");
-            NWNCore.NativeFunctions.nwnxPushInt((int)ability);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetRawAbilityScore");
+            NWNXPInvoke.NWNXPushInt((int)ability);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Adjusts the provided ability score of a provided creature. Does not apply racial bonuses/penalties.
         public static void ModifyRawAbilityScore(uint creature, AbilityType ability, int modifier)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ModifyRawAbilityScore");
-            NWNCore.NativeFunctions.nwnxPushInt(modifier);
-            NWNCore.NativeFunctions.nwnxPushInt((int)ability);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "ModifyRawAbilityScore");
+            NWNXPInvoke.NWNXPushInt(modifier);
+            NWNXPInvoke.NWNXPushInt((int)ability);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Gets the raw ability score a polymorphed creature had prior to polymorphing. Str/Dex/Con only.
         public static int GetPrePolymorphAbilityScore(uint creature, AbilityType ability)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetPrePolymorphAbilityScore");
-            NWNCore.NativeFunctions.nwnxPushInt((int)ability);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetPrePolymorphAbilityScore");
+            NWNXPInvoke.NWNXPushInt((int)ability);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Gets the remaining spell slots (innate casting) for the provided creature for the provided classId and level.
         public static int GetRemainingSpellSlots(uint creature, ClassType classId, int level)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetRemainingSpellSlots");
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushInt((int)classId);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetRemainingSpellSlots");
+            NWNXPInvoke.NWNXPushInt(level);
+            NWNXPInvoke.NWNXPushInt((int)classId);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Sets the remaining spell slots (innate casting) for the provided creature for the provided classId and level.
         public static void SetRemainingSpellSlots(uint creature, ClassType classId, int level, int slots)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetRemainingSpellSlots");
-            NWNCore.NativeFunctions.nwnxPushInt(slots);
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushInt((int)classId);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetRemainingSpellSlots");
+            NWNXPInvoke.NWNXPushInt(slots);
+            NWNXPInvoke.NWNXPushInt(level);
+            NWNXPInvoke.NWNXPushInt((int)classId);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Remove a spell from creature's spellbook for class.
         public static void RemoveKnownSpell(uint creature, ClassType classId, int level, int spellId)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveKnownSpell");
-            NWNCore.NativeFunctions.nwnxPushInt(spellId);
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushInt((int)classId);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "RemoveKnownSpell");
+            NWNXPInvoke.NWNXPushInt(spellId);
+            NWNXPInvoke.NWNXPushInt(level);
+            NWNXPInvoke.NWNXPushInt((int)classId);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Add a new spell to creature's spellbook for class.
         public static void AddKnownSpell(uint creature, ClassType classId, int level, int spellId)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddKnownSpell");
-            NWNCore.NativeFunctions.nwnxPushInt(spellId);
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushInt((int)classId);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "AddKnownSpell");
+            NWNXPInvoke.NWNXPushInt(spellId);
+            NWNXPInvoke.NWNXPushInt(level);
+            NWNXPInvoke.NWNXPushInt((int)classId);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Gets the maximum count of spell slots for the proivded creature for the provided classId and level.
         public static int GetMaxSpellSlots(uint creature, ClassType classId, int level)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMaxSpellSlots");
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushInt((int)classId);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetMaxSpellSlots");
+            NWNXPInvoke.NWNXPushInt(level);
+            NWNXPInvoke.NWNXPushInt((int)classId);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Gets the maximum hit points for creature for level.
         public static int GetMaxHitPointsByLevel(uint creature, int level)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMaxHitPointsByLevel");
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetMaxHitPointsByLevel");
+            NWNXPInvoke.NWNXPushInt(level);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Sets the maximum hit points for creature for level to nValue.
         public static void SetMaxHitPointsByLevel(uint creature, int level, int value)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetMaxHitPointsByLevel");
-            NWNCore.NativeFunctions.nwnxPushInt(value);
-            NWNCore.NativeFunctions.nwnxPushInt(level);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetMaxHitPointsByLevel");
+            NWNXPInvoke.NWNXPushInt(value);
+            NWNXPInvoke.NWNXPushInt(level);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Set creature's movement rate.
         public static void SetMovementRate(uint creature, MovementRate rate)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetMovementRate");
-            NWNCore.NativeFunctions.nwnxPushInt((int)rate);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetMovementRate");
+            NWNXPInvoke.NWNXPushInt((int)rate);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Returns the creature's current movement rate factor (base = 1.0)
         public static float GetMovementRateFactor(uint creature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMovementRateFactor");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopFloat();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetMovementRateFactor");
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopFloat();
         }
 
         // Sets the creature's current movement rate factor (base = 1.0)
         public static void SetMovementRateFactor(uint creature, float factor)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetMovementRateFactor");
-            NWNCore.NativeFunctions.nwnxPushFloat(factor);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetMovementRateFactor");
+            NWNXPInvoke.NWNXPushFloat(factor);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Set creature's raw good/evil alignment value.
         public static void SetAlignmentGoodEvil(uint creature, int value)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAlignmentGoodEvil");
-            NWNCore.NativeFunctions.nwnxPushInt(value);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetAlignmentGoodEvil");
+            NWNXPInvoke.NWNXPushInt(value);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Set creature's raw law/chaos alignment value.
         public static void SetAlignmentLawChaos(uint creature, int value)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAlignmentLawChaos");
-            NWNCore.NativeFunctions.nwnxPushInt(value);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetAlignmentLawChaos");
+            NWNXPInvoke.NWNXPushInt(value);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Set the base ranks in a skill for creature
         public static void SetSkillRank(uint creature, NWNSkillType skill, int rank)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSkillRank");
-            NWNCore.NativeFunctions.nwnxPushInt(rank);
-            NWNCore.NativeFunctions.nwnxPushInt((int)skill);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetSkillRank");
+            NWNXPInvoke.NWNXPushInt(rank);
+            NWNXPInvoke.NWNXPushInt((int)skill);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Set the classId ID in a particular position for a creature.
@@ -360,12 +360,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         // ClassID should be a valid ID number in classes.2da and be between 0 and 255.
         public static void SetClassByPosition(uint creature, int position, ClassType classId, bool updateLevels = true)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetClassByPosition");
-            NWNCore.NativeFunctions.nwnxPushInt(updateLevels ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushInt((int)classId);
-            NWNCore.NativeFunctions.nwnxPushInt(position);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetClassByPosition");
+            NWNXPInvoke.NWNXPushInt(updateLevels ? 1 : 0);
+            NWNXPInvoke.NWNXPushInt((int)classId);
+            NWNXPInvoke.NWNXPushInt(position);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Set creature's base attack bonus (BAB)
@@ -378,10 +378,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         //       the bonus attacks per round for a creature, not the BAB.
         public static void SetBaseAttackBonus(uint creature, int bab)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetBaseAttackBonus");
-            NWNCore.NativeFunctions.nwnxPushInt(bab);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetBaseAttackBonus");
+            NWNXPInvoke.NWNXPushInt(bab);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Gets the creatures current attacks per round (using equipped weapon)
@@ -390,81 +390,81 @@ namespace SWLOR.Game.Server.Core.NWNX
         //            calls to SetBaseAttackBonus() builtin function.
         public static int GetAttacksPerRound(uint creature, bool bBaseAPR)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAttacksPerRound");
-            NWNCore.NativeFunctions.nwnxPushInt(bBaseAPR ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetAttacksPerRound");
+            NWNXPInvoke.NWNXPushInt(bBaseAPR ? 1 : 0);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Restore all creature feat uses
         public static void RestoreFeats(uint creature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RestoreFeats");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "RestoreFeats");
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Restore all creature special ability uses
         public static void RestoreSpecialAbilities(uint creature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RestoreSpecialAbilities");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "RestoreSpecialAbilities");
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Restore uses for all items carried by the creature
         public static void RestoreItems(uint creature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RestoreItems");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "RestoreItems");
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Sets the creature size. Use CREATURE_SIZE_* constants
         public static void SetSize(uint creature, CreatureSize creatureSize)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSize");
-            NWNCore.NativeFunctions.nwnxPushInt((int)creatureSize);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetSize");
+            NWNXPInvoke.NWNXPushInt((int)creatureSize);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Gets the creature's remaining unspent skill points
         public static int GetSkillPointsRemaining(uint creature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSkillPointsRemaining");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetSkillPointsRemaining");
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
 
         // Sets the creature's remaining unspent skill points
         public static void SetSkillPointsRemaining(uint creature, int skillpoints)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSkillPointsRemaining");
-            NWNCore.NativeFunctions.nwnxPushInt(skillpoints);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetSkillPointsRemaining");
+            NWNXPInvoke.NWNXPushInt(skillpoints);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Sets the creature's racial type
         public static void SetRacialType(uint creature, RacialType racialtype)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetRacialType");
-            NWNCore.NativeFunctions.nwnxPushInt((int)racialtype);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetRacialType");
+            NWNXPInvoke.NWNXPushInt((int)racialtype);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Returns the creature's current movement type (MOVEMENT_TYPE_*)
         public static MovementType GetMovementType(uint creature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMovementType");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return (MovementType)NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetMovementType");
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return (MovementType)NWNXPInvoke.NWNXPopInt();
         }
 
         // Sets the maximum movement rate a creature can have while walking (not running)
@@ -473,78 +473,78 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Default value is 2000.0, which is the base human walk speed.
         public static void SetWalkRateCap(uint creature, float fWalkRate)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWalkRateCap");
-            NWNCore.NativeFunctions.nwnxPushFloat(fWalkRate);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetWalkRateCap");
+            NWNXPInvoke.NWNXPushFloat(fWalkRate);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Sets the creature's gold without sending a feedback message
         public static void SetGold(uint creature, int gold)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetGold");
-            NWNCore.NativeFunctions.nwnxPushInt(gold);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetGold");
+            NWNXPInvoke.NWNXPushInt(gold);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Sets corpse decay time in milliseconds
         public static void SetCorpseDecayTime(uint creature, int decayTimeMs)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCorpseDecayTime");
-            NWNCore.NativeFunctions.nwnxPushInt(decayTimeMs);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetCorpseDecayTime");
+            NWNXPInvoke.NWNXPushInt(decayTimeMs);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Returns the creature's base save and any modifiers set in the toolset
         public static int GetBaseSavingThrow(uint creature, int which)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBaseSavingThrow");
-            NWNCore.NativeFunctions.nwnxPushInt(which);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetBaseSavingThrow");
+            NWNXPInvoke.NWNXPushInt(which);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Sets the base saving throw of the creature
         public static void SetBaseSavingThrow(uint creature, SavingThrow which, int value)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetBaseSavingThrow");
-            NWNCore.NativeFunctions.nwnxPushInt(value);
-            NWNCore.NativeFunctions.nwnxPushInt((int)which);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetBaseSavingThrow");
+            NWNXPInvoke.NWNXPushInt(value);
+            NWNXPInvoke.NWNXPushInt((int)which);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Add count levels of class to the creature, bypassing all validation
         // This will not work on player characters
         public static void LevelUp(uint creature, ClassType classId, int count = 1)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "LevelUp");
-            NWNCore.NativeFunctions.nwnxPushInt(count);
-            NWNCore.NativeFunctions.nwnxPushInt((int)classId);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "LevelUp");
+            NWNXPInvoke.NWNXPushInt(count);
+            NWNXPInvoke.NWNXPushInt((int)classId);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Remove last count levels from a creature
         // This will not work on player characters
         public static void LevelDown(uint creature, int count = 1)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "LevelDown");
-            NWNCore.NativeFunctions.nwnxPushInt(count);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "LevelDown");
+            NWNXPInvoke.NWNXPushInt(count);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Sets the creature's challenge rating
         public static void SetChallengeRating(uint creature, float fCR)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetChallengeRating");
-            NWNCore.NativeFunctions.nwnxPushFloat(fCR);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetChallengeRating");
+            NWNXPInvoke.NWNXPushFloat(fCR);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Returns the creature's highest attack bonus based on its own stats
@@ -556,54 +556,54 @@ namespace SWLOR.Game.Server.Core.NWNX
         public static int GetAttackBonus(uint creature, bool isMelee = true, bool isTouchAttack = false,
             bool isOffhand = false, bool includeBaseAttackBonus = true)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAttackBonus");
-            NWNCore.NativeFunctions.nwnxPushInt(includeBaseAttackBonus ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushInt(isOffhand ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushInt(isTouchAttack ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushInt(isMelee ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetAttackBonus");
+            NWNXPInvoke.NWNXPushInt(includeBaseAttackBonus ? 1 : 0);
+            NWNXPInvoke.NWNXPushInt(isOffhand ? 1 : 0);
+            NWNXPInvoke.NWNXPushInt(isTouchAttack ? 1 : 0);
+            NWNXPInvoke.NWNXPushInt(isMelee ? 1 : 0);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Get highest level version of feat posessed by creature (e.g. for barbarian rage)
         public static int GetHighestLevelOfFeat(uint creature, int feat)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetHighestLevelOfFeat");
-            NWNCore.NativeFunctions.nwnxPushInt(feat);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetHighestLevelOfFeat");
+            NWNXPInvoke.NWNXPushInt(feat);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Get feat remaining uses of a creature
         public static int GetFeatRemainingUses(uint creature, FeatType feat)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFeatRemainingUses");
-            NWNCore.NativeFunctions.nwnxPushInt((int)feat);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetFeatRemainingUses");
+            NWNXPInvoke.NWNXPushInt((int)feat);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Get feat total uses of a creature
         public static int GetFeatTotalUses(uint creature, FeatType feat)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFeatTotalUses");
-            NWNCore.NativeFunctions.nwnxPushInt((int)feat);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetFeatTotalUses");
+            NWNXPInvoke.NWNXPushInt((int)feat);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Set feat remaining uses of a creature
         public static void SetFeatRemainingUses(uint creature, FeatType feat, int uses)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetFeatRemainingUses");
-            NWNCore.NativeFunctions.nwnxPushInt(uses);
-            NWNCore.NativeFunctions.nwnxPushInt((int)feat);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetFeatRemainingUses");
+            NWNXPInvoke.NWNXPushInt(uses);
+            NWNXPInvoke.NWNXPushInt((int)feat);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Get total effect bonus
@@ -612,19 +612,19 @@ namespace SWLOR.Game.Server.Core.NWNX
             bool isForceMax = false, int saveType = -1, int saveSpecificType = -1, NWNSkillType skill = NWNSkillType.Invalid,
             int abilityScore = -1, bool isOffhand = false)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetTotalEffectBonus");
-            NWNCore.NativeFunctions.nwnxPushInt(isOffhand ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushInt(abilityScore);
-            NWNCore.NativeFunctions.nwnxPushInt((int)skill);
-            NWNCore.NativeFunctions.nwnxPushInt(saveSpecificType);
-            NWNCore.NativeFunctions.nwnxPushInt(saveType);
-            NWNCore.NativeFunctions.nwnxPushInt(isForceMax ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushInt(isElemental ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushObject(target);
-            NWNCore.NativeFunctions.nwnxPushInt((int)bonusType);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetTotalEffectBonus");
+            NWNXPInvoke.NWNXPushInt(isOffhand ? 1 : 0);
+            NWNXPInvoke.NWNXPushInt(abilityScore);
+            NWNXPInvoke.NWNXPushInt((int)skill);
+            NWNXPInvoke.NWNXPushInt(saveSpecificType);
+            NWNXPInvoke.NWNXPushInt(saveType);
+            NWNXPInvoke.NWNXPushInt(isForceMax ? 1 : 0);
+            NWNXPInvoke.NWNXPushInt(isElemental ? 1 : 0);
+            NWNXPInvoke.NWNXPushObject(target);
+            NWNXPInvoke.NWNXPushInt((int)bonusType);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         // Set the original first or last name of creature
@@ -632,30 +632,30 @@ namespace SWLOR.Game.Server.Core.NWNX
         // For PCs this will persist to the .bic file if saved. Requires a relog to update.
         public static void SetOriginalName(uint creature, string name, bool isLastName)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetOriginalName");
-            NWNCore.NativeFunctions.nwnxPushInt(isLastName ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushString(name);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetOriginalName");
+            NWNXPInvoke.NWNXPushInt(isLastName ? 1 : 0);
+            NWNXPInvoke.NWNXPushString(name);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         // Get the original first or last name of creature
         public static string GetOriginalName(uint creature, bool isLastName)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetOriginalName");
-            NWNCore.NativeFunctions.nwnxPushInt(isLastName ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopString();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetOriginalName");
+            NWNXPInvoke.NWNXPushInt(isLastName ? 1 : 0);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopString();
         }
 
         // Set creature's spell resistance
         public static void SetSpellResistance(uint creature, int sr)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSpellResistance");
-            NWNCore.NativeFunctions.nwnxPushInt(sr);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetSpellResistance");
+            NWNXPInvoke.NWNXPushInt(sr);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         /// @brief Set creature's animal companion's name
@@ -663,10 +663,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param name The name to give their animal companion.
         public static void SetAnimalCompanionName(uint creature, string name)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAnimalCompanionCreatureType");
-            NWNCore.NativeFunctions.nwnxPushString(name);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetAnimalCompanionCreatureType");
+            NWNXPInvoke.NWNXPushString(name);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         /// @brief Set creature's familiar's name
@@ -674,10 +674,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param name The name to give their familiar.
         public static void SetFamiliarName(uint creature, string name)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetFamiliarCreatureType");
-            NWNCore.NativeFunctions.nwnxPushString(name);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetFamiliarCreatureType");
+            NWNXPInvoke.NWNXPushString(name);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         /// @brief Get whether the creature can be disarmed.
@@ -685,10 +685,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return TRUE if the creature can be disarmed.
         public static int GetDisarmable(uint creature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetDisarmable");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetDisarmable");
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         /// @brief Set whether a creature can be disarmed.
@@ -696,10 +696,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param disarmable Set to TRUE if the creature can be disarmed.
         public static void SetDisarmable(uint creature, bool isDisarmable)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDisarmable");
-            NWNCore.NativeFunctions.nwnxPushInt(isDisarmable ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetDisarmable");
+            NWNXPInvoke.NWNXPushInt(isDisarmable ? 1 : 0);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         /// @brief Sets one of creature's domains.
@@ -709,12 +709,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param domain The domain constant to set.
         public static void SetDomain(uint creature, ClassType @class, int index, int domain)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDomain");
-            NWNCore.NativeFunctions.nwnxPushInt(domain);
-            NWNCore.NativeFunctions.nwnxPushInt(index);
-            NWNCore.NativeFunctions.nwnxPushInt((int)@class);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetDomain");
+            NWNXPInvoke.NWNXPushInt(domain);
+            NWNXPInvoke.NWNXPushInt(index);
+            NWNXPInvoke.NWNXPushInt((int)@class);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         /// @brief Sets creature's specialist school.
@@ -723,11 +723,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param school The school constant.
         public static void SetSpecialization(uint creature, ClassType @class, int school)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSpecialization");
-            NWNCore.NativeFunctions.nwnxPushInt(school);
-            NWNCore.NativeFunctions.nwnxPushInt((int)@class);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetSpecialization");
+            NWNXPInvoke.NWNXPushInt(school);
+            NWNXPInvoke.NWNXPushInt((int)@class);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         /// @brief Sets oCreatures faction to be the faction with id nFactionId.
@@ -735,10 +735,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param nFactionId The faction id we want the creature to join.
         public static void SetFaction(uint creature, int factionId)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetFaction");
-            NWNCore.NativeFunctions.nwnxPushInt(factionId);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetFaction");
+            NWNXPInvoke.NWNXPushInt(factionId);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         /// @brief Gets the faction id from oCreature
@@ -746,10 +746,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return faction id as an integer, -1 when used against invalid creature or invalid object.
         public static int GetFaction(uint creature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFaction");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetFaction");
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         /// @brief Get whether a creature is flat-footed.
@@ -757,10 +757,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return TRUE if the creature is flat-footed.
         public static bool GetFlatFooted(uint creature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFlatFooted");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt() == 1;
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetFlatFooted");
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt() == 1;
         }
 
         /// @brief Serialize oCreature's quickbar to a base64 string
@@ -768,10 +768,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return A base64 string representation of oCreature's quickbar.
         public static string SerializeQuickbar(uint creature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SerializeQuickbar");
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopString();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SerializeQuickbar");
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopString();
         }
 
         /// @brief Deserialize sSerializedQuickbar for oCreature
@@ -780,11 +780,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return TRUE on success
         public static bool DeserializeQuickbar(uint creature, string serializedQuickbar)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "DeserializeQuickbar");
-            NWNCore.NativeFunctions.nwnxPushString(serializedQuickbar);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt() == 1;
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "DeserializeQuickbar");
+            NWNXPInvoke.NWNXPushString(serializedQuickbar);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt() == 1;
         }
 
 
@@ -793,11 +793,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param oEncounter The source encounter
         public static void SetEncounter(uint oCreature, uint oEncounter)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEncounter");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetEncounter");
 
-            NWNCore.NativeFunctions.nwnxPushObject(oEncounter);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushObject(oEncounter);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         /// @brief Get the encounter source of oCreature.
@@ -805,12 +805,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return The encounter, OBJECT_INVALID if not part of an encounter or on error
         public static uint GetEncounter(uint oCreature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEncounter");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetEncounter");
 
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopObject();
+            return NWNXPInvoke.NWNXPopObject();
         }
 
 
@@ -820,11 +820,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param nDamageLevel A damage level, see damagelevels.2da. Allowed values: 0-255 or -1 to remove the override.
         public static void OverrideDamageLevel(uint oCreature, int nDamageLevel)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "OverrideDamageLevel");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "OverrideDamageLevel");
 
-            NWNCore.NativeFunctions.nwnxPushInt(nDamageLevel);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushInt(nDamageLevel);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
 
@@ -833,12 +833,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return TRUE if oCreature is bartering, FALSE if not or on error.
         public static bool GetIsBartering(uint oCreature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetIsBartering");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetIsBartering");
 
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopInt() == 1;
+            return NWNXPInvoke.NWNXPopInt() == 1;
         }
 
 
@@ -847,11 +847,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param nCasterLvl the desired caster level.
         public static void SetLastItemCasterLevel(uint oCreature, int nCasterLvl)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetLastItemCasterLevel");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetLastItemCasterLevel");
 
-            NWNCore.NativeFunctions.nwnxPushInt(nCasterLvl);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushInt(nCasterLvl);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         /// @brief Gets the caster level of the last item used.
@@ -859,11 +859,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return returns the creatures last used item's level.
         public static int GetLastItemCasterLevel(uint oCreature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetLastItemCasterLevel");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetLastItemCasterLevel");
 
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         /// @brief Gets the Armor classed of attacked against versus
@@ -873,23 +873,23 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return -255 on Error, Flat footed AC if oVersus is invalid or the Attacked AC versus oVersus.
         public static int GetArmorClassVersus(uint oAttacked, uint oVersus, bool nTouch = false)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetArmorClassVersus");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetArmorClassVersus");
 
-            NWNCore.NativeFunctions.nwnxPushInt(nTouch ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushObject(oVersus);
-            NWNCore.NativeFunctions.nwnxPushObject(oAttacked);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushInt(nTouch ? 1 : 0);
+            NWNXPInvoke.NWNXPushObject(oVersus);
+            NWNXPInvoke.NWNXPushObject(oAttacked);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         /// @brief Move a creature to limbo.
         /// @param oCreature The creature object.
         public static void JumpToLimbo(uint oCreature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "JumpToLimbo");
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "JumpToLimbo");
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         /// @brief Sets the critical hit multiplier modifier for the creature
@@ -900,15 +900,15 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @note Persistence is activated each server reset by first use of either 'SetCriticalMultiplier*' functions. Recommended to trigger on a dummy target OnModuleLoad to enable persistence.
         public static void SetCriticalMultiplierModifier(uint oCreature, int nModifier, int nHand = 0, bool bPersist = false, BaseItem baseItemType = BaseItem.Invalid)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCriticalMultiplierModifier");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetCriticalMultiplierModifier");
 
-            NWNCore.NativeFunctions.nwnxPushInt((int)baseItemType);
-            NWNCore.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushInt(nHand);
-            NWNCore.NativeFunctions.nwnxPushInt(nModifier);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
+            NWNXPInvoke.NWNXPushInt((int)baseItemType);
+            NWNXPInvoke.NWNXPushInt(bPersist ? 1 : 0);
+            NWNXPInvoke.NWNXPushInt(nHand);
+            NWNXPInvoke.NWNXPushInt(nModifier);
+            NWNXPInvoke.NWNXPushObject(oCreature);
 
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         /// @brief Gets the critical hit multiplier modifier for the Creature
@@ -917,312 +917,312 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return the current critical hit multiplier modifier for the creature
         public static int GetCriticalMultiplierModifier(uint oCreature, int nHand = 0, BaseItem baseItemType = BaseItem.Invalid)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCriticalMultiplierModifier");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetCriticalMultiplierModifier");
 
-            NWNCore.NativeFunctions.nwnxPushInt((int)baseItemType);
-            NWNCore.NativeFunctions.nwnxPushInt(nHand);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushInt((int)baseItemType);
+            NWNXPInvoke.NWNXPushInt(nHand);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         public static void SetCriticalMultiplierOverride(uint oCreature, int nOverride, int nHand = 0, bool bPersist = false, BaseItem baseItemType = BaseItem.Invalid)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCriticalMultiplierOverride");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetCriticalMultiplierOverride");
 
-            NWNCore.NativeFunctions.nwnxPushInt((int)baseItemType);
-            NWNCore.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushInt(nHand);
-            NWNCore.NativeFunctions.nwnxPushInt(nOverride);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
+            NWNXPInvoke.NWNXPushInt((int)baseItemType);
+            NWNXPInvoke.NWNXPushInt(bPersist ? 1 : 0);
+            NWNXPInvoke.NWNXPushInt(nHand);
+            NWNXPInvoke.NWNXPushInt(nOverride);
+            NWNXPInvoke.NWNXPushObject(oCreature);
 
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static int GetCriticalMultiplierOverride(uint oCreature, int nHand = 0, BaseItem baseItemType = BaseItem.Invalid)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCriticalMultiplierOverride");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetCriticalMultiplierOverride");
 
-            NWNCore.NativeFunctions.nwnxPushInt((int)baseItemType);
-            NWNCore.NativeFunctions.nwnxPushInt(nHand);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushInt((int)baseItemType);
+            NWNXPInvoke.NWNXPushInt(nHand);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         public static void SetCriticalRangeModifier(uint oCreature, int nModifier, int nHand = 0, bool bPersist = false, BaseItem baseItemType  = BaseItem.Invalid)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCriticalRangeModifier");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetCriticalRangeModifier");
 
-            NWNCore.NativeFunctions.nwnxPushInt((int)baseItemType);
-            NWNCore.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushInt(nHand);
-            NWNCore.NativeFunctions.nwnxPushInt(nModifier);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
+            NWNXPInvoke.NWNXPushInt((int)baseItemType);
+            NWNXPInvoke.NWNXPushInt(bPersist ? 1 : 0);
+            NWNXPInvoke.NWNXPushInt(nHand);
+            NWNXPInvoke.NWNXPushInt(nModifier);
+            NWNXPInvoke.NWNXPushObject(oCreature);
 
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static int GetCriticalRangeModifier(uint oCreature, int nHand = 0, BaseItem baseItemType = BaseItem.Invalid)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCriticalRangeModifier");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetCriticalRangeModifier");
 
-            NWNCore.NativeFunctions.nwnxPushInt((int)baseItemType);
-            NWNCore.NativeFunctions.nwnxPushInt(nHand);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushInt((int)baseItemType);
+            NWNXPInvoke.NWNXPushInt(nHand);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         public static void SetCriticalRangeOverride(uint oCreature, int nOverride, int nHand = 0, bool bPersist = false, BaseItem baseItemType = BaseItem.Invalid)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCriticalRangeOverride");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetCriticalRangeOverride");
 
-            NWNCore.NativeFunctions.nwnxPushInt((int)baseItemType);
-            NWNCore.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushInt(nHand);
-            NWNCore.NativeFunctions.nwnxPushInt(nOverride);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
+            NWNXPInvoke.NWNXPushInt((int)baseItemType);
+            NWNXPInvoke.NWNXPushInt(bPersist ? 1 : 0);
+            NWNXPInvoke.NWNXPushInt(nHand);
+            NWNXPInvoke.NWNXPushInt(nOverride);
+            NWNXPInvoke.NWNXPushObject(oCreature);
 
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static int GetCriticalRangeOverride(uint oCreature, int nHand = 0, BaseItem baseItemType = BaseItem.Invalid)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCriticalRangeOverride");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetCriticalRangeOverride");
 
-            NWNCore.NativeFunctions.nwnxPushInt((int)baseItemType);
-            NWNCore.NativeFunctions.nwnxPushInt(nHand);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushInt((int)baseItemType);
+            NWNXPInvoke.NWNXPushInt(nHand);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         public static void AddAssociate(uint oCreature, uint oAssociate, int nAssociateType)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddAssociate");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "AddAssociate");
 
-            NWNCore.NativeFunctions.nwnxPushInt(nAssociateType);
-            NWNCore.NativeFunctions.nwnxPushObject(oAssociate);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
+            NWNXPInvoke.NWNXPushInt(nAssociateType);
+            NWNXPInvoke.NWNXPushObject(oAssociate);
+            NWNXPInvoke.NWNXPushObject(oCreature);
 
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static int GetWalkAnimation(uint oCreature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetWalkAnimation");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetWalkAnimation");
 
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         public static void SetWalkAnimation(uint oCreature, int nAnimation)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWalkAnimation");
-            NWNCore.NativeFunctions.nwnxPushInt(nAnimation);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetWalkAnimation");
+            NWNXPInvoke.NWNXPushInt(nAnimation);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static void SetAttackRollOverride(uint oCreature, int nRoll, int nModifier)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAttackRollOverride");
-            NWNCore.NativeFunctions.nwnxPushInt(nModifier);
-            NWNCore.NativeFunctions.nwnxPushInt(nRoll);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetAttackRollOverride");
+            NWNXPInvoke.NWNXPushInt(nModifier);
+            NWNXPInvoke.NWNXPushInt(nRoll);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static void SetParryAllAttacks(uint oCreature, bool bParry)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetParryAllAttacks");
-            NWNCore.NativeFunctions.nwnxPushInt(bParry ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetParryAllAttacks");
+            NWNXPInvoke.NWNXPushInt(bParry ? 1 : 0);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static bool GetNoPermanentDeath(uint oCreature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNoPermanentDeath");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetNoPermanentDeath");
 
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopInt() == 1;
+            return NWNXPInvoke.NWNXPopInt() == 1;
         }
 
         public static void SetNoPermanentDeath(uint oCreature, bool bNoPermanentDeath)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetNoPermanentDeath");
-            NWNCore.NativeFunctions.nwnxPushInt(bNoPermanentDeath ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetNoPermanentDeath");
+            NWNXPInvoke.NWNXPushInt(bNoPermanentDeath ? 1 : 0);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static Vector3 ComputeSafeLocation(uint oCreature, Vector3 vPosition, float fRadius = 20.0f, bool bWalkStraightLineRequired = true)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ComputeSafeLocation"); 
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "ComputeSafeLocation"); 
             
-            NWNCore.NativeFunctions.nwnxPushInt(bWalkStraightLineRequired ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushFloat(fRadius);
-            NWNCore.NativeFunctions.nwnxPushFloat(vPosition.X);
-            NWNCore.NativeFunctions.nwnxPushFloat(vPosition.Y);
-            NWNCore.NativeFunctions.nwnxPushFloat(vPosition.Z);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushInt(bWalkStraightLineRequired ? 1 : 0);
+            NWNXPInvoke.NWNXPushFloat(fRadius);
+            NWNXPInvoke.NWNXPushFloat(vPosition.X);
+            NWNXPInvoke.NWNXPushFloat(vPosition.Y);
+            NWNXPInvoke.NWNXPushFloat(vPosition.Z);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
             return new Vector3
             {
-                Z = NWNCore.NativeFunctions.nwnxPopFloat(),
-                Y = NWNCore.NativeFunctions.nwnxPopFloat(),
-                X = NWNCore.NativeFunctions.nwnxPopFloat()
+                Z = NWNXPInvoke.NWNXPopFloat(),
+                Y = NWNXPInvoke.NWNXPopFloat(),
+                X = NWNXPInvoke.NWNXPopFloat()
             };
         }
 
         public static void DoPerceptionUpdateOnCreature(uint oCreature, uint oTargetCreature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "DoPerceptionUpdateOnCreature");
-            NWNCore.NativeFunctions.nwnxPushObject(oTargetCreature);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "DoPerceptionUpdateOnCreature");
+            NWNXPInvoke.NWNXPushObject(oTargetCreature);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static float GetPersonalSpace(uint oCreature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetPersonalSpace");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetPersonalSpace");
 
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopFloat();
+            return NWNXPInvoke.NWNXPopFloat();
         }
 
         public static void SetPersonalSpace(uint oCreature, float fPerspace)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPersonalSpace");
-            NWNCore.NativeFunctions.nwnxPushFloat(fPerspace);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetPersonalSpace");
+            NWNXPInvoke.NWNXPushFloat(fPerspace);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static float GetCreaturePersonalSpace(uint oCreature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCreaturePersonalSpace");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetCreaturePersonalSpace");
 
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopFloat();
+            return NWNXPInvoke.NWNXPopFloat();
         }
 
         public static void SetCreaturePersonalSpace(uint oCreature, float fCrePerspace)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCreaturePersonalSpace");
-            NWNCore.NativeFunctions.nwnxPushFloat(fCrePerspace);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetCreaturePersonalSpace");
+            NWNXPInvoke.NWNXPushFloat(fCrePerspace);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static float GetHeight(uint oCreature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetHeight");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetHeight");
 
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopFloat();
+            return NWNXPInvoke.NWNXPopFloat();
         }
 
         public static void SetHeight(uint oCreature, float fHeight)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetHeight");
-            NWNCore.NativeFunctions.nwnxPushFloat(fHeight);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetHeight");
+            NWNXPInvoke.NWNXPushFloat(fHeight);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static float GetHitDistance(uint oCreature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetHitDistance");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetHitDistance");
 
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopFloat();
+            return NWNXPInvoke.NWNXPopFloat();
         }
 
         public static void SetHitDistance(uint oCreature, float fHitDist)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetHitDistance");
-            NWNCore.NativeFunctions.nwnxPushFloat(fHitDist);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetHitDistance");
+            NWNXPInvoke.NWNXPushFloat(fHitDist);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static float GetPreferredAttackDistance(uint oCreature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetPreferredAttackDistance");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetPreferredAttackDistance");
 
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopFloat();
+            return NWNXPInvoke.NWNXPopFloat();
         }
 
         public static void SetPreferredAttackDistance(uint oCreature, float fPrefAtckDist)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPreferredAttackDistance");
-            NWNCore.NativeFunctions.nwnxPushFloat(fPrefAtckDist);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetPreferredAttackDistance");
+            NWNXPInvoke.NWNXPushFloat(fPrefAtckDist);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static int GetArmorCheckPenalty(uint oCreature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetArmorCheckPenalty");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetArmorCheckPenalty");
 
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         public static int GetShieldCheckPenalty(uint oCreature)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetShieldCheckPenalty");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetShieldCheckPenalty");
 
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         public static void SetBypassEffectImmunity(uint oCreature, int nImmunityType, int nChance = 100, bool bPersist = false)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetBypassEffectImmunity");
-            NWNCore.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
-            NWNCore.NativeFunctions.nwnxPushInt(nChance);
-            NWNCore.NativeFunctions.nwnxPushInt(nImmunityType);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetBypassEffectImmunity");
+            NWNXPInvoke.NWNXPushInt(bPersist ? 1 : 0);
+            NWNXPInvoke.NWNXPushInt(nChance);
+            NWNXPInvoke.NWNXPushInt(nImmunityType);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         public static int GetBypassEffectImmunity(uint oCreature, int nImmunityType)        
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBypassEffectImmunity");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetBypassEffectImmunity");
 
-            NWNCore.NativeFunctions.nwnxPushInt(nImmunityType);
-            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXPushInt(nImmunityType);
+            NWNXPInvoke.NWNXPushObject(oCreature);
+            NWNXPInvoke.NWNXCallFunction();
 
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         /// <summary>
@@ -1234,12 +1234,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// <returns>The number of bonus spells.</returns>
         public static int GetNumberOfBonusSpells(uint creature, int multiClass, int spellLevel)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNumberOfBonusSpells");
-            NWNCore.NativeFunctions.nwnxPushInt(spellLevel);
-            NWNCore.NativeFunctions.nwnxPushInt(multiClass);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
-            return NWNCore.NativeFunctions.nwnxPopInt();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetNumberOfBonusSpells");
+            NWNXPInvoke.NWNXPushInt(spellLevel);
+            NWNXPInvoke.NWNXPushInt(multiClass);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
+            return NWNXPInvoke.NWNXPopInt();
         }
 
         /// <summary>
@@ -1251,12 +1251,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// <param name="delta">The value to change the number of bonus spells by. Can be negative.</param>
         public static void ModifyNumberBonusSpells(uint creature, int multiClass, int spellLevel, int delta)
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ModifyNumberBonusSpells");
-            NWNCore.NativeFunctions.nwnxPushInt(delta);
-            NWNCore.NativeFunctions.nwnxPushInt(spellLevel);
-            NWNCore.NativeFunctions.nwnxPushInt(multiClass);
-            NWNCore.NativeFunctions.nwnxPushObject(creature);
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "ModifyNumberBonusSpells");
+            NWNXPInvoke.NWNXPushInt(delta);
+            NWNXPInvoke.NWNXPushInt(spellLevel);
+            NWNXPInvoke.NWNXPushInt(multiClass);
+            NWNXPInvoke.NWNXPushObject(creature);
+            NWNXPInvoke.NWNXCallFunction();
         }
     }
 }

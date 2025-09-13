@@ -35,6 +35,8 @@ namespace SWLOR.Game.Server.Core
 
         public static event Action OnScriptContextBegin;
         public static event Action OnScriptContextEnd;
+        
+        private static CoreGameManager _coreGameManager;
 
         /// <summary>
         /// New initialization method called by the new bootstrap
@@ -42,6 +44,11 @@ namespace SWLOR.Game.Server.Core
         public static void Initialize()
         {
             Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "true");
+
+            Console.WriteLine("Initializing script context...");
+            _coreGameManager = new CoreGameManager();
+            NWNCore.FunctionHandler = _coreGameManager;
+            Console.WriteLine("Script context initialized successfully.");
 
             Console.WriteLine("Registering loggers...");
             Log.Register();
@@ -105,8 +112,22 @@ namespace SWLOR.Game.Server.Core
         /// </summary>
         public static int ProcessRunScript(string scriptName, uint objectSelf)
         {
-            var retVal = RunScripts(scriptName);
-            return retVal == -1 ? ScriptNotHandled : retVal;
+            // Set the script execution context
+            var oldObjectSelf = NWNCore.FunctionHandler?.ObjectSelf ?? 0x7F000000; // OBJECT_INVALID
+            if (NWNCore.FunctionHandler != null)
+                NWNCore.FunctionHandler.ObjectSelf = objectSelf;
+            
+            try
+            {
+                var retVal = RunScripts(scriptName);
+                return retVal == -1 ? ScriptNotHandled : retVal;
+            }
+            finally
+            {
+                // Restore the previous script context
+                if (NWNCore.FunctionHandler != null)
+                    NWNCore.FunctionHandler.ObjectSelf = oldObjectSelf;
+            }
         }
 
         /// <summary>

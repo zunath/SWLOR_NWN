@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush(oTarget);
             VM.Call(833);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush(oObject);
             VM.Call(819);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -460,7 +460,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush(oObject);
             VM.Call(582);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>

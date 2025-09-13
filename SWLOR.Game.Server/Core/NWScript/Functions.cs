@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.StackPush(nWidth);
             VM.StackPush(fFloat);
             VM.Call(3);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -510,7 +510,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush(nInteger);
             VM.Call(92);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -995,7 +995,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush(oObject);
             VM.Call(168);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -1422,7 +1422,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush((int)nNameType);
             VM.Call(249);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -1640,7 +1640,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush(oObject);
             VM.Call(272);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -2293,7 +2293,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.StackPush(nSinglePlayerCDKey ? 1 : 0);
             VM.StackPush(oPlayer);
             VM.Call(369);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -2303,7 +2303,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush(oPlayer);
             VM.Call(370);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -2387,7 +2387,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush(nInteger);
             VM.Call(396);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -2571,7 +2571,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush(oObject);
             VM.Call(538);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -3024,7 +3024,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.StackPush(sColumn);
             VM.StackPush(s2DA);
             VM.Call(710);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -3209,7 +3209,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.StackPush((int)nHandler);
             VM.StackPush(oObject);
             VM.Call(885);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -3368,7 +3368,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             VM.StackPush(oObject);
             VM.StackPush(sScriptChunk);
             VM.Call(894);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -3378,7 +3378,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static string GetRandomUUID()
         {
             VM.Call(895);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -3404,7 +3404,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush(oObject);
             VM.Call(896);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>

@@ -227,7 +227,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush(oTrapObject);
             VM.Call(534);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>

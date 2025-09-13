@@ -12,9 +12,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ExecuteScriptNWScript(string sScript, uint oTarget)
         {
-            NWNCore.NativeFunctions.StackPushObject(oTarget);
-            NWNCore.NativeFunctions.StackPushStringUTF8(sScript);
-            NWNCore.NativeFunctions.CallBuiltIn(8);
+            NWNXPInvoke.StackPushObject(oTarget);
+            NWNXPInvoke.StackPushString(sScript);
+            NWNXPInvoke.CallBuiltIn(8);
         }
 
         /// <summary>

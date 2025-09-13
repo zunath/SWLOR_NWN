@@ -39,29 +39,29 @@ namespace SWLOR.Game.Server.Core.NWNX
             string tag2_tag = "",
             string tag2_value = "")
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PushPerfScope");
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "PushPerfScope");
 
             if (!string.IsNullOrWhiteSpace(tag0_value) && !string.IsNullOrWhiteSpace(tag0_tag))
             {
-                NWNCore.NativeFunctions.nwnxPushString(tag0_value);
-                NWNCore.NativeFunctions.nwnxPushString(tag0_tag);
+                NWNXPInvoke.NWNXPushString(tag0_value);
+                NWNXPInvoke.NWNXPushString(tag0_tag);
             }
             
             if (!string.IsNullOrWhiteSpace(tag1_value) && !string.IsNullOrWhiteSpace(tag1_tag))
             {
-                NWNCore.NativeFunctions.nwnxPushString(tag1_value);
-                NWNCore.NativeFunctions.nwnxPushString(tag1_tag);
+                NWNXPInvoke.NWNXPushString(tag1_value);
+                NWNXPInvoke.NWNXPushString(tag1_tag);
             }
 
             if (!string.IsNullOrWhiteSpace(tag2_value) && !string.IsNullOrWhiteSpace(tag2_tag))
             {
-                NWNCore.NativeFunctions.nwnxPushString(tag2_value);
-                NWNCore.NativeFunctions.nwnxPushString(tag2_tag);
+                NWNXPInvoke.NWNXPushString(tag2_value);
+                NWNXPInvoke.NWNXPushString(tag2_tag);
             }
 
-            NWNCore.NativeFunctions.nwnxPushString(name);
+            NWNXPInvoke.NWNXPushString(name);
 
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXCallFunction();
         }
 
         /// <summary>
@@ -101,8 +101,8 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// </summary>
         public static void PopPerfScope()
         {
-            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PopPerfScope");
-            NWNCore.NativeFunctions.nwnxCallFunction();
+            NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "PopPerfScope");
+            NWNXPInvoke.NWNXCallFunction();
         }
     }
 }

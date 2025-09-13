@@ -413,7 +413,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             VM.StackPush(oArea);
             VM.Call(814);
-            return NWNCore.NativeFunctions.StackPopStringUTF8();
+            return VM.StackPopString();
         }
 
         /// <summary>

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./move_all_parts.sh)",
+      "Bash(./move_textures.sh:*)",
+      "Bash(./move_additional_files.sh:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

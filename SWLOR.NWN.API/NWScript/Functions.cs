@@ -7,6 +7,12 @@ namespace SWLOR.NWN.API.NWScript
     public partial class NWScript
     {
         /// <summary>
+        ///   Gets the current OBJECT_SELF value from the NWN.Core engine.
+        ///   This represents the object that the current script is running on.
+        /// </summary>
+        // ReSharper disable once InconsistentNaming
+        public static uint OBJECT_SELF => global::NWN.Core.NWScript.OBJECT_SELF;
+        /// <summary>
         ///   Assign aActionToAssign to oActionSubject.
         ///   * No return value, but if an error occurs, the log file will contain
         ///   "AssignCommand failed."

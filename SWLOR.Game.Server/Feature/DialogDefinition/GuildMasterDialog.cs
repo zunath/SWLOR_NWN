@@ -1,10 +1,10 @@
 ﻿using System.Linq;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.NWN.API.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {

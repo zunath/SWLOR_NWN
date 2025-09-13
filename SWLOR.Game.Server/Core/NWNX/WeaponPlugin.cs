@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.NWN.API.Core;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;

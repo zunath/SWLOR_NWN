@@ -1,5 +1,7 @@
-﻿// ReSharper disable once CheckNamespace
-namespace SWLOR.Game.Server.Core.NWScript
+﻿using SWLOR.NWN.API.Core;
+
+// ReSharper disable once CheckNamespace
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
@@ -26,15 +28,18 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ExecuteScript(string sScript, uint oTarget)
         {
+            // todo: conversion to using NWN.Core needed here.
+
+
             // A workaround for adjusting OBJECT_SELF is needed here because without it,
             // it will occasionally become invalid causing a cascading chain of errors to occur.
             // This likely has to do with the execution chain of C# -> NWScript -> C# -> C#
             // somewhere along the way, OBJECT_SELF gets out of whack.
-            var oldObjectSelf = OBJECT_SELF;
-            OBJECT_SELF = oTarget;
+            //var oldObjectSelf = OBJECT_SELF;
+            //OBJECT_SELF = oTarget;
             // Note: Bypass the NWScript round-trip and directly call the script execution.
-            Internal.DirectRunScript(sScript, oTarget);
-            OBJECT_SELF = oldObjectSelf;
+            //Internal.DirectRunScript(sScript, oTarget);
+            //OBJECT_SELF = oldObjectSelf;
         }
     }
 }

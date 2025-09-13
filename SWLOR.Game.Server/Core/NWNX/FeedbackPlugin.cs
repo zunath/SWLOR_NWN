@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.NWN.API.Core;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
@@ -8,7 +9,7 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         public static int GetFeedbackMessageHidden(FeedbackMessageTypes messageType, uint? player = null)
         {
-            if (player == null) player = NWScript.NWScript.OBJECT_INVALID;
+            if (player == null) player = OBJECT_INVALID;
             NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetMessageHidden");
             NWNXPInvoke.NWNXPushInt((int)messageType);
             NWNXPInvoke.NWNXPushInt(0);
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         public static void SetFeedbackMessageHidden(FeedbackMessageTypes messageType, bool hide, uint? player = null)
         {
-            if (player == null) player = NWScript.NWScript.OBJECT_INVALID;
+            if (player == null) player = OBJECT_INVALID;
             NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetMessageHidden");
             NWNXPInvoke.NWNXPushInt(hide ? 1 : 0);
             NWNXPInvoke.NWNXPushInt((int)messageType);
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         public static bool GetCombatLogMessageHidden(FeedbackMessageTypes messageType, uint? player = null)
         {
-            if (player == null) player = NWScript.NWScript.OBJECT_INVALID;
+            if (player == null) player = OBJECT_INVALID;
             NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetMessageHidden");
             NWNXPInvoke.NWNXPushInt((int)messageType);
             NWNXPInvoke.NWNXPushInt(1);
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         public static void SetCombatLogMessageHidden(CombatLogMessageType messageType, bool hide, uint? player = null)
         {
-            if (player == null) player = NWScript.NWScript.OBJECT_INVALID;
+            if (player == null) player = OBJECT_INVALID;
             NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "SetMessageHidden");
             NWNXPInvoke.NWNXPushInt(hide ? 1 : 0);
             NWNXPInvoke.NWNXPushInt((int)messageType);
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         public static int GetJournalUpdatedMessageHidden(uint? player = null)
         {
-            if (player == null) player = NWScript.NWScript.OBJECT_INVALID;
+            if (player == null) player = OBJECT_INVALID;
             NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "GetMessageHidden");
             NWNXPInvoke.NWNXPushInt(0);
             NWNXPInvoke.NWNXPushInt(2);

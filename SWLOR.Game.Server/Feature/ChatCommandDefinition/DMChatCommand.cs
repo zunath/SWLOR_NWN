@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -14,6 +13,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
+using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -237,7 +237,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     var variableName = Convert.ToString(args[0]);
-                    var value = NWScript.GetLocalFloat(target, variableName);
+                    var value = GetLocalFloat(target, variableName);
 
                     SendMessageToPC(user, variableName + " = " + value);
                 });

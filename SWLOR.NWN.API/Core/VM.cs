@@ -1,10 +1,9 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.NWN.API.Core
 {
     public static partial class VM
     {

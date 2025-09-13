@@ -1,8 +1,7 @@
-using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.NWN.API.Core
 {
     public static unsafe class NWNXPInvoke
     {

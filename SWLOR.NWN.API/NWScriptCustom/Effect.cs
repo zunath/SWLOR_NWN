@@ -3,7 +3,7 @@ using System.Linq;
 using SWLOR.NWN.API.NWScript.Enum;
 
 // ReSharper disable once CheckNamespace
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {

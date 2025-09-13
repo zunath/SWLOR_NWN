@@ -1,3 +1,5 @@
+using SWLOR.NWN.API.Core;
+
 namespace SWLOR.Game.Server.Core.NWNX
 {
     public static class EventsPlugin

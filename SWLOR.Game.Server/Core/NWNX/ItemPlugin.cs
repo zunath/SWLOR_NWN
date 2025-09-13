@@ -1,3 +1,4 @@
+using SWLOR.NWN.API.Core;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Core.NWNX

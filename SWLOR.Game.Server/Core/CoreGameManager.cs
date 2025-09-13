@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SWLOR.NWN.API.Core;
 
 namespace SWLOR.Game.Server.Core
 {

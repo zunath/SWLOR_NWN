@@ -1,5 +1,6 @@
 using System.Numerics;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.NWN.API.Core;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -608,7 +609,7 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         // Get total effect bonus
         public static int GetTotalEffectBonus(uint creature, BonusType bonusType = BonusType.Attack,
-            uint target = NWScript.NWScript.OBJECT_INVALID, bool isElemental = false,
+            uint target = OBJECT_INVALID, bool isElemental = false,
             bool isForceMax = false, int saveType = -1, int saveSpecificType = -1, NWNSkillType skill = NWNSkillType.Invalid,
             int abilityScore = -1, bool isOffhand = false)
         {

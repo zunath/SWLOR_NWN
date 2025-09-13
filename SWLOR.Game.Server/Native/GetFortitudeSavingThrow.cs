@@ -2,6 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.NWN.API.Core;
 using SWLOR.NWN.API.NWScript.Enum;
 using SavingThrow = NWN.Native.API.SavingThrow;
 

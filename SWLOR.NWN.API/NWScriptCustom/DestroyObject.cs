@@ -1,7 +1,7 @@
-﻿
+﻿using SWLOR.NWN.API.Core;
 
 // ReSharper disable once CheckNamespace
-namespace SWLOR.Game.Server.Core.NWScript
+namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {

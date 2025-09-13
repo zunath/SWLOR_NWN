@@ -1,6 +1,7 @@
 using System;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.NWN.API;
+using SWLOR.NWN.API.Core;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
@@ -175,14 +176,14 @@ namespace SWLOR.Game.Server.Core.NWNX
         {
             NWNXPInvoke.NWNXSetFunction(PLUGIN_NAME, "CreateDoor");
 
-            var vPosition = NWScript.NWScript.GetPositionFromLocation(locLocation);
+            var vPosition = GetPositionFromLocation(locLocation);
 
             NWNXPInvoke.NWNXPushString(sNewTag);
-            NWNCore.NativeFunctions.nwnxPushFloat(NWScript.NWScript.GetFacingFromLocation(locLocation));
+            NWNCore.NativeFunctions.nwnxPushFloat(GetFacingFromLocation(locLocation));
             NWNCore.NativeFunctions.nwnxPushFloat(vPosition.Z);
             NWNCore.NativeFunctions.nwnxPushFloat(vPosition.Y);
             NWNCore.NativeFunctions.nwnxPushFloat(vPosition.X);
-            NWNXPInvoke.NWNXPushObject(NWScript.NWScript.GetAreaFromLocation(locLocation));
+            NWNXPInvoke.NWNXPushObject(GetAreaFromLocation(locLocation));
             NWNXPInvoke.NWNXPushString(sResRef);
             NWNXPInvoke.NWNXCallFunction();
 

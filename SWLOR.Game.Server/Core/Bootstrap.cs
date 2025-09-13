@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.NWN.API.Core;
 
 namespace SWLOR.Game.Server.Core
 {

@@ -68188,6 +68188,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dantooine Herbs"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dant_starwort"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Desert Shrub"
                     },
                     "RESREF": {
@@ -68853,17 +68864,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_pickup"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Pile of Herbs"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "dantooine_herb"
                     }
                   },
                   {

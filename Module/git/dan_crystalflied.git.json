@@ -9955,6 +9955,128 @@
           "type": "float",
           "value": 0.3500003814697266
         }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dantooine Herbs"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DANTOOINE_HERB"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dantooine_herb"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.7409509420394898
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 97.83172607421875
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.6715591549873352
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 118.005859375
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 3
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Dantooine Herbs"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "DANTOOINE_HERB"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "dantooine_herb"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": -0.7409509420394898
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 69.86482238769531
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.6715591549873352
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 115.8321151733398
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
       }
     ]
   }

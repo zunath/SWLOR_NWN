@@ -443,6 +443,7 @@
         BolRifle = 406,
         WeaponSubmissionTokenSmithery = 407,
         ArmorSubmissionTokenSmithery = 408,
+        AlchemizedSpear = 409,
 
         #endregion
 
@@ -1021,6 +1022,7 @@
         DathomirPie = 2204,
 
         FoodSubmissionTokenAgriculture = 2205,
+        ForbiddenGumbo = 2206,
 
         #endregion
 

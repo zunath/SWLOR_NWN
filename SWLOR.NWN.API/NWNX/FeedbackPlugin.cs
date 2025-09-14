@@ -58,7 +58,7 @@ namespace SWLOR.NWN.API.NWNX
         /// If player is null or OBJECT_INVALID, it returns the global setting for all players.
         /// Personal settings override global settings when both are configured.
         /// </remarks>
-        public static bool GetCombatLogMessageHidden(FeedbackMessageTypes messageType, uint? player = null)
+        public static bool GetCombatLogMessageHidden(CombatLogMessageType messageType, uint? player = null)
         {
             uint playerValue = player ?? OBJECT_INVALID;
             var result = global::NWN.Core.NWNX.FeedbackPlugin.GetCombatLogMessageHidden((int)messageType, playerValue);
@@ -78,7 +78,7 @@ namespace SWLOR.NWN.API.NWNX
         /// but the player's personal setting shows it, the message will be visible to that player.
         /// Changes take effect immediately and persist until modified again.
         /// </remarks>
-        public static void SetCombatLogMessageHidden(FeedbackMessageTypes messageType, bool hide, uint? player = null)
+        public static void SetCombatLogMessageHidden(CombatLogMessageType messageType, bool hide, uint? player = null)
         {
             uint playerValue = player ?? OBJECT_INVALID;
             global::NWN.Core.NWNX.FeedbackPlugin.SetCombatLogMessageHidden((int)messageType, hide ? 1 : 0, playerValue);

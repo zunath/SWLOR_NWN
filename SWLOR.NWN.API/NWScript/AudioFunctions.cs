@@ -41,5 +41,57 @@ namespace SWLOR.NWN.API.NWScript
         {
             global::NWN.Core.NWScript.PlaySound(sSoundName);
         }
+
+        /// <summary>
+        /// Un/pauses the given audio stream.
+        /// fFadeTime is in seconds to gradually fade the audio out/in instead of pausing/resuming directly.
+        /// Only one type of fading can be active at once, for example:
+        /// If you call StartAudioStream() with fFadeInTime = 10.0f, any other audio stream functions with a fade time > 0.0f will have no effect
+        /// until StartAudioStream() is done fading.
+        /// Will do nothing if the stream is currently not in use.
+        /// </summary>
+        /// <param name="oPlayer">The player to set audio stream pause for</param>
+        /// <param name="nStreamIdentifier">The stream identifier</param>
+        /// <param name="bPaused">Whether the stream should be paused</param>
+        /// <param name="fFadeTime">The fade time in seconds (default: 0.0f)</param>
+        public static void SetAudioStreamPaused(uint oPlayer, int nStreamIdentifier, bool bPaused, float fFadeTime = 0.0f)
+        {
+            global::NWN.Core.NWScript.SetAudioStreamPaused(oPlayer, nStreamIdentifier, bPaused ? 1 : 0, fFadeTime);
+        }
+
+        /// <summary>
+        /// Changes volume of audio stream.
+        /// Volume is from 0.0 to 1.0.
+        /// fFadeTime is in seconds to gradually change the volume.
+        /// Only one type of fading can be active at once, for example:
+        /// If you call StartAudioStream() with fFadeInTime = 10.0f, any other audio stream functions with a fade time > 0.0f will have no effect
+        /// until StartAudioStream() is done fading.
+        /// Subsequent calls to this function with fFadeTime > 0.0f while already fading the volume
+        /// will start the new fade with the previous fade's progress as starting point.
+        /// Will do nothing if the stream is currently not in use.
+        /// </summary>
+        /// <param name="oPlayer">The player to set audio stream volume for</param>
+        /// <param name="nStreamIdentifier">The stream identifier</param>
+        /// <param name="fVolume">The volume level (0.0 to 1.0) (default: 1.0f)</param>
+        /// <param name="fFadeTime">The fade time in seconds (default: 0.0f)</param>
+        public static void SetAudioStreamVolume(uint oPlayer, int nStreamIdentifier, float fVolume = 1.0f, float fFadeTime = 0.0f)
+        {
+            global::NWN.Core.NWScript.SetAudioStreamVolume(oPlayer, nStreamIdentifier, fVolume, fFadeTime);
+        }
+
+        /// <summary>
+        /// Seeks the audio stream to the given offset.
+        /// When seeking at or beyond the end of a stream, the seek offset will wrap around, even if the file is configured not to loop.
+        /// Will do nothing if the stream is currently not in use.
+        /// Will do nothing if the stream is in ended state (reached end of file and looping is off). In this
+        /// case, you need to restart the stream.
+        /// </summary>
+        /// <param name="oPlayer">The player to seek audio stream for</param>
+        /// <param name="nStreamIdentifier">The stream identifier</param>
+        /// <param name="fSeconds">The offset in seconds to seek to</param>
+        public static void SeekAudioStream(uint oPlayer, int nStreamIdentifier, float fSeconds)
+        {
+            global::NWN.Core.NWScript.SeekAudioStream(oPlayer, nStreamIdentifier, fSeconds);
+        }
     }
 }

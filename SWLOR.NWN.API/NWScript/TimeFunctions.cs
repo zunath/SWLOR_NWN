@@ -71,5 +71,41 @@ namespace SWLOR.NWN.API.NWScript
         {
             return global::NWN.Core.NWScript.TurnsToSeconds(nTurns);
         }
+
+        /// <summary>
+        /// Gets the current hour (0-23).
+        /// </summary>
+        /// <returns>The current hour</returns>
+        public static int GetTimeHour()
+        {
+            return global::NWN.Core.NWScript.GetTimeHour();
+        }
+
+        /// <summary>
+        /// Gets the current minute (0-59).
+        /// </summary>
+        /// <returns>The current minute</returns>
+        public static int GetTimeMinute()
+        {
+            return global::NWN.Core.NWScript.GetTimeMinute();
+        }
+
+        /// <summary>
+        /// Gets the current second (0-59).
+        /// </summary>
+        /// <returns>The current second</returns>
+        public static int GetTimeSecond()
+        {
+            return global::NWN.Core.NWScript.GetTimeSecond();
+        }
+
+        /// <summary>
+        /// Gets the current millisecond (0-999).
+        /// </summary>
+        /// <returns>The current millisecond</returns>
+        public static int GetTimeMillisecond()
+        {
+            return global::NWN.Core.NWScript.GetTimeMillisecond();
+        }
     }
 }

@@ -274,5 +274,36 @@ namespace SWLOR.NWN.API.NWScript
         {
             global::NWN.Core.NWScript.SqlResetQuery(sqlQuery, bClearBinds ? 1 : 0);
         }
+
+        /// <summary>
+        /// Retrieves the column count of a prepared query.
+        /// sqlQuery must be prepared before this function is called, but can be called before or after parameters are bound.
+        /// If the prepared query contains no columns (such as with an UPDATE or INSERT query), 0 is returned.
+        /// If a non-SELECT query contains a RETURNING clause, the number of columns in the RETURNING clause will be returned.
+        /// A returned value greater than 0 does not guarantee the query will return rows.
+        /// </summary>
+        /// <param name="sqlQuery">The prepared SQL query</param>
+        /// <returns>The number of columns in the query result</returns>
+        public static int SqlGetColumnCount(IntPtr sqlQuery)
+        {
+            return global::NWN.Core.NWScript.SqlGetColumnCount(sqlQuery);
+        }
+
+        /// <summary>
+        /// Retrieves the column name of the Nth column of a prepared query.
+        /// sqlQuery must be prepared before this function is called, but can be called before or after parameters are bound.
+        /// If the prepared query contains no columns (such as with an UPDATE or INSERT query), an empty string is returned.
+        /// If a non-SELECT query contains a RETURNING clause, the name of the nNth column in the RETURNING clause is returned.
+        /// If nNth is out of range, an sqlite error is broadcast and an empty string is returned.
+        /// The value of the AS clause will be returned, if the clause exists for the nNth column.
+        /// A returned non-empty string does not guarantee the query will return rows.
+        /// </summary>
+        /// <param name="sqlQuery">The prepared SQL query</param>
+        /// <param name="nNth">The column index (0-based)</param>
+        /// <returns>The column name, or empty string on error</returns>
+        public static string SqlGetColumnName(IntPtr sqlQuery, int nNth)
+        {
+            return global::NWN.Core.NWScript.SqlGetColumnName(sqlQuery, nNth);
+        }
     }
 }

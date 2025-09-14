@@ -71,42 +71,6 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the current hour.
-        /// </summary>
-        /// <returns>The current hour</returns>
-        public static int GetTimeHour()
-        {
-            return global::NWN.Core.NWScript.GetTimeHour();
-        }
-
-        /// <summary>
-        /// Gets the current minute.
-        /// </summary>
-        /// <returns>The current minute</returns>
-        public static int GetTimeMinute()
-        {
-            return global::NWN.Core.NWScript.GetTimeMinute();
-        }
-
-        /// <summary>
-        /// Gets the current second.
-        /// </summary>
-        /// <returns>The current second</returns>
-        public static int GetTimeSecond()
-        {
-            return global::NWN.Core.NWScript.GetTimeSecond();
-        }
-
-        /// <summary>
-        /// Gets the current millisecond.
-        /// </summary>
-        /// <returns>The current millisecond</returns>
-        public static int GetTimeMillisecond()
-        {
-            return global::NWN.Core.NWScript.GetTimeMillisecond();
-        }
-
-        /// <summary>
         /// Sets whether or not the creature has detected the trapped object.
         /// </summary>
         /// <param name="oTrap">A trapped trigger, placeable or door object</param>

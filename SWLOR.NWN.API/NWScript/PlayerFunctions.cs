@@ -634,5 +634,38 @@ namespace SWLOR.NWN.API.NWScript
         {
             return (InventorySlot)global::NWN.Core.NWScript.GetPCItemLastUnequippedSlot();
         }
+
+        /// <summary>
+        /// Returns the network latency of the given player in milliseconds.
+        /// Returns -1 if the player is not connected or the information is unavailable.
+        /// </summary>
+        /// <param name="oPlayer">The player to get the network latency for</param>
+        /// <returns>The network latency in milliseconds, or -1 if unavailable</returns>
+        public static int GetPlayerNetworkLatency(uint oPlayer)
+        {
+            return global::NWN.Core.NWScript.GetPlayerNetworkLatency(oPlayer);
+        }
+
+        /// <summary>
+        /// Gets the body bag object for the given creature.
+        /// Returns OBJECT_INVALID if the creature has no body bag or is not dead.
+        /// </summary>
+        /// <param name="oCreature">The creature to get the body bag for</param>
+        /// <returns>The body bag object, or OBJECT_INVALID if none exists</returns>
+        public static int GetBodyBag(uint oCreature)
+        {
+            return global::NWN.Core.NWScript.GetBodyBag(oCreature);
+        }
+
+        /// <summary>
+        /// Sets the body bag object for the given creature.
+        /// This is typically used when a creature dies to create a body bag for loot.
+        /// </summary>
+        /// <param name="oCreature">The creature to set the body bag for</param>
+        /// <param name="oBodyBag">The body bag object to set</param>
+        public static void SetBodyBag(uint oCreature, int oBodyBag)
+        {
+            global::NWN.Core.NWScript.SetBodyBag(oCreature, oBodyBag);
+        }
     }
 }

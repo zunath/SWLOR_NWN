@@ -427,5 +427,64 @@ namespace SWLOR.NWN.API.NWScript
         {
             return global::NWN.Core.NWScript.GetSpellLevelByClass((int)nClassType, (int)nSpellId);
         }
+
+        /// <summary>
+        /// Performs a spell resistance check. The roll is 1d20 + nCasterLevel + nCasterBonus vs. nSpellResistance.
+        /// </summary>
+        /// <param name="oTarget">The target of the spell</param>
+        /// <param name="oCaster">The caster of the spell</param>
+        /// <param name="nSpellId">The spell ID to use if other variables are not set. If -1 it will attempt to be auto-detected (default: -1)</param>
+        /// <param name="nCasterLevel">The caster level. If -1 it attempts to find it automatically from oCaster (default: -1)</param>
+        /// <param name="nSpellResistance">The spell resistance to penetrate. If -1 it will use the spell resistance of oTarget (default: -1)</param>
+        /// <param name="bFeedback">If true displays feedback automatically, false suppresses it (default: true)</param>
+        /// <returns>True if the target resists the caster's spell resistance roll, false if failed or an error occurred</returns>
+        public static bool SpellResistanceCheck(uint oTarget, uint oCaster, Spell nSpellId = (Spell)(-1), int nCasterLevel = -1, int nSpellResistance = -1, bool bFeedback = true)
+        {
+            return global::NWN.Core.NWScript.SpellResistanceCheck(oTarget, oCaster, (int)nSpellId, nCasterLevel, nSpellResistance, bFeedback ? 1 : 0) != 0;
+        }
+
+        /// <summary>
+        /// Performs a spell immunity check. This checks for EffectSpellImmunity and related item properties.
+        /// </summary>
+        /// <param name="oTarget">The target of the spell</param>
+        /// <param name="oCaster">The caster of the spell</param>
+        /// <param name="nSpellId">The spell ID to check immunity of. If -1 it will attempt to be auto-detected (default: -1)</param>
+        /// <param name="bFeedback">If true displays feedback automatically, false suppresses it (default: true)</param>
+        /// <returns>True if the target is immune to the spell, false if failed or an error occurred</returns>
+        public static bool SpellImmunityCheck(uint oTarget, uint oCaster, Spell nSpellId = (Spell)(-1), bool bFeedback = true)
+        {
+            return global::NWN.Core.NWScript.SpellImmunityCheck(oTarget, oCaster, (int)nSpellId, bFeedback ? 1 : 0) != 0;
+        }
+
+        /// <summary>
+        /// Performs a spell absorption check that checks limited absorption effects (e.g. Spell Mantle).
+        /// </summary>
+        /// <param name="oTarget">The target of the spell</param>
+        /// <param name="oCaster">The caster of the spell</param>
+        /// <param name="nSpellId">The spell ID. If -1 it will attempt to be auto-detected (default: -1)</param>
+        /// <param name="nSpellSchool">The spell school to check for. If -1 uses the spell's school (default: -1)</param>
+        /// <param name="nSpellLevel">The spell level. If -1 uses the spell's level (given the caster's last spell cast class) (default: -1)</param>
+        /// <param name="bRemoveLevels">If true this removes spell levels from the effect that would stop it (and remove it if 0 or less remain), but if false they will not be removed (default: true)</param>
+        /// <param name="bFeedback">If true displays feedback automatically, false suppresses it (default: true)</param>
+        /// <returns>True if the target absorbs the caster's spell, false if failed or an error occurred</returns>
+        public static bool SpellAbsorptionLimitedCheck(uint oTarget, uint oCaster, Spell nSpellId = (Spell)(-1), SpellSchool nSpellSchool = (SpellSchool)(-1), int nSpellLevel = -1, bool bRemoveLevels = true, bool bFeedback = true)
+        {
+            return global::NWN.Core.NWScript.SpellAbsorptionLimitedCheck(oTarget, oCaster, (int)nSpellId, (int)nSpellSchool, nSpellLevel, bRemoveLevels ? 1 : 0, bFeedback ? 1 : 0) != 0;
+        }
+
+        /// <summary>
+        /// Performs a spell absorption check that checks unlimited spell absorption effects (e.g. Globes).
+        /// </summary>
+        /// <param name="oTarget">The target of the spell</param>
+        /// <param name="oCaster">The caster of the spell</param>
+        /// <param name="nSpellId">The spell ID. If -1 it will attempt to be auto-detected (default: -1)</param>
+        /// <param name="nSpellSchool">The spell school to check for. If -1 uses the spell's school (default: -1)</param>
+        /// <param name="nSpellLevel">The spell level. If -1 uses the spell's level (given the caster's last spell cast class) (default: -1)</param>
+        /// <param name="bFeedback">If true displays feedback automatically, false suppresses it. As per existing ResistSpell convention it defaults to false (default: false)</param>
+        /// <returns>True if the target absorbs the caster's spell, false if failed or an error occurred</returns>
+        public static bool SpellAbsorptionUnlimitedCheck(uint oTarget, uint oCaster, Spell nSpellId = (Spell)(-1), SpellSchool nSpellSchool = (SpellSchool)(-1), int nSpellLevel = -1, bool bFeedback = false)
+        {
+            return global::NWN.Core.NWScript.SpellAbsorptionUnlimitedCheck(oTarget, oCaster, (int)nSpellId, (int)nSpellSchool, nSpellLevel, bFeedback ? 1 : 0) != 0;
+        }
     }
 }

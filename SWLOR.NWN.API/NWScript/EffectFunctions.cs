@@ -1448,5 +1448,38 @@ namespace SWLOR.NWN.API.NWScript
         {
             return global::NWN.Core.NWScript.EffectForceWalk();
         }
+
+        /// <summary>
+        /// Sets the effect creator.
+        /// </summary>
+        /// <param name="eEffect">The effect to modify</param>
+        /// <param name="oCreator">The creator of the effect. Can be OBJECT_INVALID</param>
+        /// <returns>The modified effect</returns>
+        public static Effect SetEffectCreator(Effect eEffect, uint oCreator)
+        {
+            return global::NWN.Core.NWScript.SetEffectCreator(eEffect, oCreator);
+        }
+
+        /// <summary>
+        /// Sets the effect caster level.
+        /// </summary>
+        /// <param name="eEffect">The effect to modify</param>
+        /// <param name="nCasterLevel">The caster level of the effect for the purposes of dispel magic and GetEffectCasterLevel. Must be >= 0</param>
+        /// <returns>The modified effect</returns>
+        public static Effect SetEffectCasterLevel(Effect eEffect, int nCasterLevel)
+        {
+            return global::NWN.Core.NWScript.SetEffectCasterLevel(eEffect, nCasterLevel);
+        }
+
+        /// <summary>
+        /// Sets the effect spell ID.
+        /// </summary>
+        /// <param name="eEffect">The effect to modify</param>
+        /// <param name="nSpellId">The spell ID for the purposes of effect stacking, dispel magic and GetEffectSpellId. Must be >= -1 (-1 being invalid/no spell)</param>
+        /// <returns>The modified effect</returns>
+        public static Effect SetEffectSpellId(Effect eEffect, Spell nSpellId)
+        {
+            return global::NWN.Core.NWScript.SetEffectSpellId(eEffect, (int)nSpellId);
+        }
     }
 }

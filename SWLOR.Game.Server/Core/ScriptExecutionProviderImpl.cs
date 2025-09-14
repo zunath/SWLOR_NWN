@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API;
-using static SWLOR.NWN.API.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Core
 {

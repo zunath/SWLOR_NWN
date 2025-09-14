@@ -1,7 +1,6 @@
 using System;
 using System.Globalization;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;

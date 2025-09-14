@@ -2,7 +2,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using System;
 using System.Runtime.InteropServices;
-using System.Text;
 using NWNX.NET;
 using NWNX.NET.Native;
 

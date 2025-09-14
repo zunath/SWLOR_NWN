@@ -1,15 +1,5 @@
 ﻿@page "/viewplayer/{PlayerId}"
-@using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Policy = "DiscordAdmin")]
-@using SWLOR.Game.Server.Service.CurrencyService
-@using SWLOR.Game.Server.Enumeration
-@using SWLOR.Game.Server.Service.SkillService
-@using SWLOR.Game.Server.Service.PerkService
-@using SWLOR.Admin.Services
-@using System.Linq
-@using System.Reflection
-@using SWLOR.Game.Server.Extension
-@using SWLOR.Admin.Shared.Components
 
 @if (!PlayerExists())
 {

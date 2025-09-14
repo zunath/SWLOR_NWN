@@ -11,7 +11,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
-using SavingThrowType = SWLOR.NWN.API.NWScript.Enum.SavingThrowType;
 
 namespace SWLOR.Game.Server.Service
 {

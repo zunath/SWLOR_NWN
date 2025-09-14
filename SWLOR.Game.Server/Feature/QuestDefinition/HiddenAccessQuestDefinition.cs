@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 

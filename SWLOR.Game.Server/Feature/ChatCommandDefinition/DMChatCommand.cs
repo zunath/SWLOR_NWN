@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
 using Faction = SWLOR.Game.Server.Service.Faction;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
-using SWLOR.Game.Server.Core.NWNX;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;

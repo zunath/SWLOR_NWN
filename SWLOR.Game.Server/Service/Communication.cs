@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;

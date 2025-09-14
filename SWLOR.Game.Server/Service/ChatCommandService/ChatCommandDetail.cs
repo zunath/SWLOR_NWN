@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 

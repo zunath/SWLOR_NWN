@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using SWLOR.Game.Server.Core.NWNX;
+﻿using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;

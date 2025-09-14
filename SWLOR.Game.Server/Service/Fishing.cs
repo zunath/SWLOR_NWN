@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.ActivityService;

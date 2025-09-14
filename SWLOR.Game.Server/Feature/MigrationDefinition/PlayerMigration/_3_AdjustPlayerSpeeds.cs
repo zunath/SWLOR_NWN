@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Service;
+﻿using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWNX;

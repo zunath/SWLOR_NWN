@@ -1,6 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
-using SWLOR.NWN.API;
-using SWLOR.NWN.API.Engine;
+﻿using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {

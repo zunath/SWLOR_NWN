@@ -906,5 +906,260 @@ namespace SWLOR.NWN.API.NWScript
         {
             return (RacialType)global::NWN.Core.NWScript.GetRacialType(oCreature);
         }
+
+        /// <summary>
+        ///   Get the creature nearest to oTarget, subject to all the criteria specified.
+        ///   - nFirstCriteriaType: CREATURE_TYPE_*
+        ///   - nFirstCriteriaValue:
+        ///   -> CLASS_TYPE_* if nFirstCriteriaType was CREATURE_TYPE_CLASS
+        ///   -> SPELL_* if nFirstCriteriaType was CREATURE_TYPE_DOES_NOT_HAVE_SPELL_EFFECT
+        ///   or CREATURE_TYPE_HAS_SPELL_EFFECT
+        ///   -> TRUE or FALSE if nFirstCriteriaType was CREATURE_TYPE_IS_ALIVE
+        ///   -> PERCEPTION_* if nFirstCriteriaType was CREATURE_TYPE_PERCEPTION
+        ///   -> PLAYER_CHAR_IS_PC or PLAYER_CHAR_NOT_PC if nFirstCriteriaType was
+        ///   CREATURE_TYPE_PLAYER_CHAR
+        ///   -> RACIAL_TYPE_* if nFirstCriteriaType was CREATURE_TYPE_RACIAL_TYPE
+        ///   -> REPUTATION_TYPE_* if nFirstCriteriaType was CREATURE_TYPE_REPUTATION
+        ///   For example, to get the nearest PC, use:
+        ///   (CREATURE_TYPE_PLAYER_CHAR, PLAYER_CHAR_IS_PC)
+        ///   - oTarget: We're trying to find the creature of the specified type that is
+        ///   nearest to oTarget
+        ///   - nNth: We don't have to find the first nearest: we can find the Nth nearest...
+        ///   - nSecondCriteriaType: This is used in the same way as nFirstCriteriaType to
+        ///   further specify the type of creature that we are looking for.
+        ///   - nSecondCriteriaValue: This is used in the same way as nFirstCriteriaValue
+        ///   to further specify the type of creature that we are looking for.
+        ///   - nThirdCriteriaType: This is used in the same way as nFirstCriteriaType to
+        ///   further specify the type of creature that we are looking for.
+        ///   - nThirdCriteriaValue: This is used in the same way as nFirstCriteriaValue to
+        ///   further specify the type of creature that we are looking for.
+        ///   * Return value on error: OBJECT_INVALID
+        /// </summary>
+        public static uint GetNearestCreature(CreatureType nFirstCriteriaType, int nFirstCriteriaValue,
+            uint oTarget = OBJECT_INVALID, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1,
+            int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
+        {
+            return global::NWN.Core.NWScript.GetNearestCreature((int)nFirstCriteriaType, nFirstCriteriaValue, oTarget, nNth, nSecondCriteriaType, nSecondCriteriaValue, nThirdCriteriaType, nThirdCriteriaValue);
+        }
+
+        /// <summary>
+        ///   Get the ability score of type nAbility for a creature (otherwise 0)
+        ///   - oCreature: the creature whose ability score we wish to find out
+        ///   - nAbilityType: ABILITY_*
+        ///   - nBaseAbilityScore: if set to true will return the base ability score without
+        ///   bonuses (e.g. ability bonuses granted from equipped items).
+        ///   Return value on error: 0
+        /// </summary>
+        public static int GetAbilityScore(uint oCreature, AbilityType nAbilityType, bool nBaseAbilityScore = false)
+        {
+            return global::NWN.Core.NWScript.GetAbilityScore(oCreature, (int)nAbilityType, nBaseAbilityScore ? 1 : 0);
+        }
+
+        /// <summary>
+        ///   * Returns TRUE if oCreature is a dead NPC, dead PC or a dying PC.
+        /// </summary>
+        public static bool GetIsDead(uint oCreature)
+        {
+            return global::NWN.Core.NWScript.GetIsDead(oCreature) != 0;
+        }
+
+        /// <summary>
+        ///   Get the number of hitdice for oCreature.
+        ///   * Return value if oCreature is not a valid creature: 0
+        /// </summary>
+        public static int GetHitDice(uint oCreature)
+        {
+            return global::NWN.Core.NWScript.GetHitDice(oCreature);
+        }
+
+        /// <summary>
+        ///   Get the creature that is going to attack oTarget.
+        ///   Note: This value is cleared out at the end of every combat round and should
+        ///   not be used in any case except when getting a "going to be attacked" shout
+        ///   from the master creature (and this creature is a henchman)
+        ///   * Returns OBJECT_INVALID if oTarget is not a valid creature.
+        /// </summary>
+        public static uint GetGoingToBeAttackedBy(uint oTarget)
+        {
+            return global::NWN.Core.NWScript.GetGoingToBeAttackedBy(oTarget);
+        }
+
+        /// <summary>
+        ///   * Returns TRUE if oCreature is a Player Controlled character.
+        /// </summary>
+        public static bool GetIsPC(uint oCreature)
+        {
+            return global::NWN.Core.NWScript.GetIsPC(oCreature) != 0;
+        }
+
+        /// <summary>
+        ///   - oCreature
+        ///   - nImmunityType: IMMUNITY_TYPE_*
+        ///   - oVersus: if this is specified, then we also check for the race and
+        ///   alignment of oVersus
+        ///   * Returns TRUE if oCreature has immunity of type nImmunity versus oVersus.
+        /// </summary>
+        public static bool GetIsImmune(uint oCreature, ImmunityType nImmunityType, uint oVersus = OBJECT_INVALID)
+        {
+            return global::NWN.Core.NWScript.GetIsImmune(oCreature, (int)nImmunityType, oVersus) == 1;
+        }
+
+        /// <summary>
+        ///   Determine whether oCreature has nFeat, and nFeat is useable.
+        ///   - nFeat: FEAT_*
+        ///   - oCreature
+        /// </summary>
+        public static bool GetHasFeat(FeatType nFeat, uint oCreature = OBJECT_INVALID)
+        {
+            return global::NWN.Core.NWScript.GetHasFeat((int)nFeat, oCreature) != 0;
+        }
+
+        /// <summary>
+        ///   Determine whether oCreature has nSkill, and nSkill is useable.
+        ///   - nSkill: SKILL_*
+        ///   - oCreature
+        /// </summary>
+        public static bool GetHasSkill(NWNSkillType nSkill, uint oCreature = OBJECT_INVALID)
+        {
+            return global::NWN.Core.NWScript.GetHasSkill((int)nSkill, oCreature) != 0;
+        }
+
+        /// <summary>
+        ///   Determine whether oSource sees oTarget.
+        ///   NOTE: This *only* works on creatures, as visibility lists are not
+        ///   maintained for non-creature objects.
+        /// </summary>
+        public static bool GetObjectSeen(uint oTarget, uint oSource = OBJECT_INVALID)
+        {
+            return global::NWN.Core.NWScript.GetObjectSeen(oTarget, oSource) != 0;
+        }
+
+        /// <summary>
+        ///   Determine whether oSource hears oTarget.
+        ///   NOTE: This *only* works on creatures, as visibility lists are not
+        ///   maintained for non-creature objects.
+        /// </summary>
+        public static bool GetObjectHeard(uint oTarget, uint oSource = OBJECT_INVALID)
+        {
+            return global::NWN.Core.NWScript.GetObjectHeard(oTarget, oSource) != 0;
+        }
+
+        /// <summary>
+        ///   * Returns TRUE if oCreature is of a playable racial type.
+        /// </summary>
+        public static bool GetIsPlayableRacialType(uint oCreature)
+        {
+            return global::NWN.Core.NWScript.GetIsPlayableRacialType(oCreature) != 0;
+        }
+
+        /// <summary>
+        ///   Get the number of ranks that oTarget has in nSkill.
+        ///   - nSkill: SKILL_*
+        ///   - oTarget
+        ///   - nBaseSkillRank: if set to true returns the number of base skill ranks the target
+        ///   has (i.e. not including any bonuses from ability scores, feats, etc).
+        ///   * Returns -1 if oTarget doesn't have nSkill.
+        ///   * Returns 0 if nSkill is untrained.
+        /// </summary>
+        public static int GetSkillRank(NWNSkillType nSkill, uint oTarget = OBJECT_INVALID, bool nBaseSkillRank = false)
+        {
+            return global::NWN.Core.NWScript.GetSkillRank((int)nSkill, oTarget, nBaseSkillRank ? 1 : 0);
+        }
+
+        /// <summary>
+        ///   Get the attack target of oCreature.
+        ///   This only works when oCreature is in combat.
+        /// </summary>
+        public static uint GetAttackTarget(uint oCreature = OBJECT_INVALID)
+        {
+            return global::NWN.Core.NWScript.GetAttackTarget(oCreature);
+        }
+
+        /// <summary>
+        ///   Get the attack type (SPECIAL_ATTACK_*) of oCreature's last attack.
+        ///   This only works when oCreature is in combat.
+        /// </summary>
+        public static SpecialAttack GetLastAttackType(uint oCreature = OBJECT_INVALID)
+        {
+            return (SpecialAttack)global::NWN.Core.NWScript.GetLastAttackType(oCreature);
+        }
+
+        /// <summary>
+        /// Set the gender of oCreature.
+        /// - nGender: a GENDER_* constant.
+        /// </summary>
+        public static void SetGender(uint oCreature, Gender nGender)
+        {
+            global::NWN.Core.NWScript.SetGender(oCreature, (int)nGender);
+        }
+
+        /// <summary>
+        /// Get the soundset of oCreature.
+        /// Returns -1 on error.
+        /// </summary>
+        public static int GetSoundset(uint oCreature)
+        {
+            return global::NWN.Core.NWScript.GetSoundset(oCreature);
+        }
+
+        /// <summary>
+        /// Set the soundset of oCreature, see soundset.2da for possible values.
+        /// </summary>
+        public static void SetSoundset(uint oCreature, int nSoundset)
+        {
+            global::NWN.Core.NWScript.SetSoundset(oCreature, nSoundset);
+        }
+
+        /// <summary>
+        /// Ready a spell level for oCreature.
+        /// - nSpellLevel: 0-9
+        /// - nClassType: a CLASS_TYPE_* constant or CLASS_TYPE_INVALID to ready the spell level for all classes.
+        /// </summary>
+        public static void ReadySpellLevel(uint oCreature, int nSpellLevel, ClassType nClassType = ClassType.Invalid)
+        {
+            global::NWN.Core.NWScript.ReadySpellLevel(oCreature, nSpellLevel, (int)nClassType);
+        }
+
+        /// <summary>
+        /// Makes oCreature controllable by oPlayer, if player party control is enabled
+        /// Setting oPlayer=OBJECT_INVALID removes the override and reverts to regular party control behavior
+        /// NB: A creature is only controllable by one player, so if you set oPlayer to a non-Player object
+        ///    (e.g. the module) it will disable regular party control for this creature
+        /// </summary>
+        public static void SetCommandingPlayer(uint oCreature, uint oPlayer)
+        {
+            global::NWN.Core.NWScript.SetCommandingPlayer(oCreature, oPlayer);
+        }
+
+        /// <summary>
+        /// Get the current discoverability mask of oObject.
+        /// Returns -1 if oObject cannot have a discovery mask.
+        /// </summary>
+        public static int GetObjectUiDiscoveryMask(uint oObject)
+        {
+            return global::NWN.Core.NWScript.GetObjectUiDiscoveryMask(oObject);
+        }
+
+        /// <summary>
+        /// Sets the discoverability mask on oObject.
+        /// This allows toggling areahilite (TAB key by default) and mouseover discovery in the area view.
+        /// * nMask is a mask of OBJECT_UI_DISCOVERY_MODE_*
+        /// Will currently only work on Creatures, Doors (Hilite only), Items and Useable Placeables.
+        /// Does not affect inventory items.
+        /// </summary>
+        public static void SetObjectUiDiscoveryMask(uint oObject, ObjectUIDiscoveryType nMask = ObjectUIDiscoveryType.Default)
+        {
+            global::NWN.Core.NWScript.SetObjectUiDiscoveryMask(oObject, (int)nMask);
+        }
+
+        /// <summary>
+        /// Sets a text override for the mouseover/tab-highlight text bubble of oObject.
+        /// Will currently only work on Creatures, Items and Useable Placeables.
+        /// * nMode is one of OBJECT_UI_TEXT_BUBBLE_OVERRIDE_*.
+        /// </summary>
+        public static void SetObjectTextBubbleOverride(uint oObject, ObjectUITextBubbleOverrideType nMode, string sText)
+        {
+            global::NWN.Core.NWScript.SetObjectTextBubbleOverride(oObject, (int)nMode, sText);
+        }
     }
 }

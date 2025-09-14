@@ -181,5 +181,136 @@ namespace SWLOR.NWN.API.NWScript
         {
             return global::NWN.Core.NWScript.VectorToAngle(vVector);
         }
+
+        /// <summary>
+        ///   Get the total from rolling (nNumDice x d2 dice).
+        ///   - nNumDice: If this is less than 1, the value 1 will be used.
+        /// </summary>
+        public static int d2(int nNumDice = 1)
+        {
+            return global::NWN.Core.NWScript.d2(nNumDice);
+        }
+
+        /// <summary>
+        ///   Get the total from rolling (nNumDice x d3 dice).
+        ///   - nNumDice: If this is less than 1, the value 1 will be used.
+        /// </summary>
+        public static int d3(int nNumDice = 1)
+        {
+            return global::NWN.Core.NWScript.d3(nNumDice);
+        }
+
+        /// <summary>
+        ///   Get the total from rolling (nNumDice x d4 dice).
+        ///   - nNumDice: If this is less than 1, the value 1 will be used.
+        /// </summary>
+        public static int d4(int nNumDice = 1)
+        {
+            return global::NWN.Core.NWScript.d4(nNumDice);
+        }
+
+        /// <summary>
+        ///   Get the total from rolling (nNumDice x d6 dice).
+        ///   - nNumDice: If this is less than 1, the value 1 will be used.
+        /// </summary>
+        public static int d6(int nNumDice = 1)
+        {
+            return global::NWN.Core.NWScript.d6(nNumDice);
+        }
+
+        /// <summary>
+        ///   Get the total from rolling (nNumDice x d8 dice).
+        ///   - nNumDice: If this is less than 1, the value 1 will be used.
+        /// </summary>
+        public static int d8(int nNumDice = 1)
+        {
+            return global::NWN.Core.NWScript.d8(nNumDice);
+        }
+
+        /// <summary>
+        ///   Get the total from rolling (nNumDice x d10 dice).
+        ///   - nNumDice: If this is less than 1, the value 1 will be used.
+        /// </summary>
+        public static int d10(int nNumDice = 1)
+        {
+            return global::NWN.Core.NWScript.d10(nNumDice);
+        }
+
+        /// <summary>
+        ///   Get the total from rolling (nNumDice x d12 dice).
+        ///   - nNumDice: If this is less than 1, the value 1 will be used.
+        /// </summary>
+        public static int d12(int nNumDice = 1)
+        {
+            return global::NWN.Core.NWScript.d12(nNumDice);
+        }
+
+        /// <summary>
+        ///   Get the total from rolling (nNumDice x d20 dice).
+        ///   - nNumDice: If this is less than 1, the value 1 will be used.
+        /// </summary>
+        public static int d20(int nNumDice = 1)
+        {
+            return global::NWN.Core.NWScript.d20(nNumDice);
+        }
+
+        /// <summary>
+        ///   Get the total from rolling (nNumDice x d100 dice).
+        ///   - nNumDice: If this is less than 1, the value 1 will be used.
+        /// </summary>
+        public static int d100(int nNumDice = 1)
+        {
+            return global::NWN.Core.NWScript.d100(nNumDice);
+        }
+
+        /// <summary>
+        ///   Output vVector to the logfile.
+        ///   - vVector
+        ///   - bPrepend: if this is TRUE, the message will be prefixed with "PRINTVECTOR:"
+        /// </summary>
+        public static void PrintVector(Vector3 vVector, bool bPrepend = false)
+        {
+            global::NWN.Core.NWScript.PrintVector(vVector, bPrepend ? 1 : 0);
+        }
+
+        /// <summary>
+        ///   Create a vector with the specified values for x, y and z
+        /// </summary>
+        public static Vector3 Vector3(float x = 0.0f, float y = 0.0f, float z = 0.0f)
+        {
+            return global::NWN.Core.NWScript.Vector(x, y, z);
+        }
+
+        /// <summary>
+        ///   Convert nInteger into a floating point number.
+        /// </summary>
+        public static float IntToFloat(int nInteger)
+        {
+            return global::NWN.Core.NWScript.IntToFloat(nInteger);
+        }
+
+        /// <summary>
+        ///   Convert fFloat into the nearest integer.
+        /// </summary>
+        public static int FloatToInt(float fFloat)
+        {
+            return global::NWN.Core.NWScript.FloatToInt(fFloat);
+        }
+
+        /// <summary>
+        ///   Convert sNumber into an integer.
+        /// </summary>
+        public static int StringToInt(string sNumber)
+        {
+            return global::NWN.Core.NWScript.StringToInt(sNumber);
+        }
+
+        /// <summary>
+        ///   Convert sNumber into a floating point number.
+        /// </summary>
+        public static float StringToFloat(string sNumber)
+        {
+            return global::NWN.Core.NWScript.StringToFloat(sNumber);
+        }
     }
 }

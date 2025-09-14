@@ -51,6 +51,14 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
+        ///   Initialise oTarget to listen for the standard Associates commands.
+        /// </summary>
+        public static void SetAssociateListenPatterns(uint oTarget = OBJECT_INVALID)
+        {
+            global::NWN.Core.NWScript.SetAssociateListenPatterns(oTarget);
+        }
+
+        /// <summary>
         ///   Removes oAssociate from the service of oMaster, returning them to their
         ///   original faction.
         /// </summary>

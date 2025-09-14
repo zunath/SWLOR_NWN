@@ -84,6 +84,55 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
+        ///   Use this in a trigger's OnClick event script to get the object that last
+        ///   clicked on it.
+        ///   This is identical to GetEnteringObject.
+        ///   GetClickingObject() should not be called from a placeable's OnClick event,
+        ///   instead use GetPlaceableLastClickedBy();
+        /// </summary>
+        public static uint GetClickingObject()
+        {
+            return global::NWN.Core.NWScript.GetClickingObject();
+        }
+
+        /// <summary>
+        ///   Get the last object that disarmed the trap on the caller.
+        ///   * Returns OBJECT_INVALID if the caller is not a valid placeable, trigger or
+        ///   door.
+        /// </summary>
+        public static uint GetLastDisarmed()
+        {
+            return global::NWN.Core.NWScript.GetLastDisarmed();
+        }
+
+        /// <summary>
+        ///   Get the last object that disturbed the inventory of the caller.
+        ///   * Returns OBJECT_INVALID if the caller is not a valid creature or placeable.
+        /// </summary>
+        public static uint GetLastDisturbed()
+        {
+            return global::NWN.Core.NWScript.GetLastDisturbed();
+        }
+
+        /// <summary>
+        ///   Get the last object that locked the caller.
+        ///   * Returns OBJECT_INVALID if the caller is not a valid door or placeable.
+        /// </summary>
+        public static uint GetLastLocked()
+        {
+            return global::NWN.Core.NWScript.GetLastLocked();
+        }
+
+        /// <summary>
+        ///   Get the last object that unlocked the caller.
+        ///   * Returns OBJECT_INVALID if the caller is not a valid door or placeable.
+        /// </summary>
+        public static uint GetLastUnlocked()
+        {
+            return global::NWN.Core.NWScript.GetLastUnlocked();
+        }
+
+        /// <summary>
         ///   Change the portrait of oTarget to use the Portrait ResRef specified.
         ///   - oTarget: the object for which you are changing the portrait.
         ///   - sPortraitResRef: The ResRef of the new portrait to use.
@@ -715,6 +764,222 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetCurrentHitPoints(uint oObject, int nHitPoints)
         {
             global::NWN.Core.NWScript.SetCurrentHitPoints(oObject, nHitPoints);
+        }
+
+        /// <summary>
+        ///   Get the first object in nShape
+        ///   - nShape: SHAPE_*
+        ///   - fSize:
+        ///   -> If nShape == SHAPE_SPHERE, this is the radius of the sphere
+        ///   -> If nShape == SHAPE_SPELLCYLINDER, this is the length of the cylinder
+        ///   Spell Cylinder's always have a radius of 1.5m.
+        ///   -> If nShape == SHAPE_CONE, this is the widest radius of the cone
+        ///   -> If nShape == SHAPE_SPELLCONE, this is the length of the cone in the
+        ///   direction of lTarget. Spell cones are always 60 degrees with the origin
+        ///   at OBJECT_SELF.
+        ///   -> If nShape == SHAPE_CUBE, this is half the length of one of the sides of
+        ///   the cube
+        ///   - lTarget: This is the centre of the effect, usually GetSpellTargetLocation(),
+        ///   or the end of a cylinder or cone.
+        ///   - bLineOfSight: This controls whether to do a line-of-sight check on the
+        ///   object returned. Line of sight check is done from origin to target object
+        ///   at a height 1m above the ground
+        ///   (This can be used to ensure that spell effects do not go through walls.)
+        ///   - nObjectFilter: This allows you to filter out undesired object types, using
+        ///   bitwise "or".
+        ///   For example, to return only creatures and doors, the value for this
+        ///   parameter would be OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR
+        ///   - vOrigin: This is only used for cylinders and cones, and specifies the
+        ///   origin of the effect(normally the spell-caster's position).
+        ///   Return value on error: OBJECT_INVALID
+        /// </summary>
+        public static uint GetFirstObjectInShape(Shape nShape, float fSize, Location lTarget, bool bLineOfSight = false,
+            ObjectType nObjectFilter = ObjectType.Creature, Vector3 vOrigin = default)
+        {
+            return global::NWN.Core.NWScript.GetFirstObjectInShape((int)nShape, fSize, lTarget, bLineOfSight ? 1 : 0, (int)nObjectFilter, vOrigin);
+        }
+
+        /// <summary>
+        ///   Get the next object in nShape
+        ///   - nShape: SHAPE_*
+        ///   - fSize:
+        ///   -> If nShape == SHAPE_SPHERE, this is the radius of the sphere
+        ///   -> If nShape == SHAPE_SPELLCYLINDER, this is the length of the cylinder.
+        ///   Spell Cylinder's always have a radius of 1.5m.
+        ///   -> If nShape == SHAPE_CONE, this is the widest radius of the cone
+        ///   -> If nShape == SHAPE_SPELLCONE, this is the length of the cone in the
+        ///   direction of lTarget. Spell cones are always 60 degrees with the origin
+        ///   at OBJECT_SELF.
+        ///   -> If nShape == SHAPE_CUBE, this is half the length of one of the sides of
+        ///   the cube
+        ///   - lTarget: This is the centre of the effect, usually GetSpellTargetLocation(),
+        ///   or the end of a cylinder or cone.
+        ///   - bLineOfSight: This controls whether to do a line-of-sight check on the
+        ///   object returned. (This can be used to ensure that spell effects do not go
+        ///   through walls.) Line of sight check is done from origin to target object
+        ///   at a height 1m above the ground
+        ///   - nObjectFilter: This allows you to filter out undesired object types, using
+        ///   bitwise "or". For example, to return only creatures and doors, the value for
+        ///   this parameter would be OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR
+        ///   - vOrigin: This is only used for cylinders and cones, and specifies the origin
+        ///   of the effect (normally the spell-caster's position).
+        ///   Return value on error: OBJECT_INVALID
+        /// </summary>
+        public static uint GetNextObjectInShape(Shape nShape, float fSize, Location lTarget, bool bLineOfSight = false,
+            ObjectType nObjectFilter = ObjectType.Creature, Vector3 vOrigin = default)
+        {
+            return global::NWN.Core.NWScript.GetNextObjectInShape((int)nShape, fSize, lTarget, bLineOfSight ? 1 : 0, (int)nObjectFilter, vOrigin);
+        }
+
+        /// <summary>
+        ///   Cause the caller to face vTarget
+        /// </summary>
+        public static void SetFacingPoint(Vector3 vTarget)
+        {
+            global::NWN.Core.NWScript.SetFacingPoint(vTarget);
+        }
+
+        /// <summary>
+        ///   Get the distance in metres between oObjectA and oObjectB.
+        ///   * Return value if either object is invalid: 0.0f
+        /// </summary>
+        public static float GetDistanceBetween(uint oObjectA, uint oObjectB)
+        {
+            return global::NWN.Core.NWScript.GetDistanceBetween(oObjectA, oObjectB);
+        }
+
+        /// <summary>
+        ///   Set whether oTarget's action stack can be modified
+        /// </summary>
+        public static void SetCommandable(bool nCommandable, uint oTarget = OBJECT_INVALID)
+        {
+            global::NWN.Core.NWScript.SetCommandable(nCommandable ? 1 : 0, oTarget);
+        }
+
+        /// <summary>
+        ///   Determine whether oTarget's action stack can be modified.
+        /// </summary>
+        public static bool GetCommandable(uint oTarget = OBJECT_INVALID)
+        {
+            return global::NWN.Core.NWScript.GetCommandable(oTarget) != 0;
+        }
+
+        /// <summary>
+        ///   Get the Tag of oObject
+        ///   * Return value if oObject is not a valid object: ""
+        /// </summary>
+        public static string GetTag(uint oObject)
+        {
+            return global::NWN.Core.NWScript.GetTag(oObject);
+        }
+
+        /// <summary>
+        ///   * Returns TRUE if oObject is listening for something
+        /// </summary>
+        public static bool GetIsListening(uint oObject)
+        {
+            return global::NWN.Core.NWScript.GetIsListening(oObject) != 0;
+        }
+
+        /// <summary>
+        ///   Set whether oObject is listening.
+        /// </summary>
+        public static void SetListening(uint oObject, bool bValue)
+        {
+            global::NWN.Core.NWScript.SetListening(oObject, bValue ? 1 : 0);
+        }
+
+        /// <summary>
+        ///   Set the string for oObject to listen for.
+        ///   Note: this does not set oObject to be listening.
+        /// </summary>
+        public static void SetListenPattern(uint oObject, string sPattern, int nNumber = 0)
+        {
+            global::NWN.Core.NWScript.SetListenPattern(oObject, sPattern, nNumber);
+        }
+
+        /// <summary>
+        ///   In an onConversation script this gets the number of the string pattern
+        ///   matched (the one that triggered the script).
+        ///   * Returns -1 if no string matched
+        /// </summary>
+        public static int GetListenPatternNumber()
+        {
+            return global::NWN.Core.NWScript.GetListenPatternNumber();
+        }
+
+        /// <summary>
+        ///   Get the first waypoint with the specified tag.
+        ///   * Returns OBJECT_INVALID if the waypoint cannot be found.
+        /// </summary>
+        public static uint GetWaypointByTag(string sWaypointTag)
+        {
+            return global::NWN.Core.NWScript.GetWaypointByTag(sWaypointTag);
+        }
+
+        /// <summary>
+        ///   Get the destination object for the given object.
+        ///   All objects can hold a transition target, but only Doors and Triggers
+        ///   will be made clickable by the game engine (This may change in the
+        ///   future). You can set and query transition targets on other objects for
+        ///   your own scripted purposes.
+        ///   * Returns OBJECT_INVALID if oTransition does not hold a target.
+        /// </summary>
+        public static uint GetTransitionTarget(uint oTransition)
+        {
+            return global::NWN.Core.NWScript.GetTransitionTarget(oTransition);
+        }
+
+        /// <summary>
+        ///   Get the nNth object with the specified tag.
+        ///   - sTag
+        ///   - nNth: the nth object with this tag may be requested
+        ///   * Returns OBJECT_INVALID if the object cannot be found.
+        ///   Note: The module cannot be retrieved by GetObjectByTag(), use GetModule() instead.
+        /// </summary>
+        public static uint GetObjectByTag(string sTag, int nNth = 0)
+        {
+            return global::NWN.Core.NWScript.GetObjectByTag(sTag, nNth);
+        }
+
+        /// <summary>
+        ///   Get the creature that is currently sitting on the specified object.
+        ///   - oChair
+        ///   * Returns OBJECT_INVALID if oChair is not a valid placeable.
+        /// </summary>
+        public static uint GetSittingCreature(uint oChair)
+        {
+            return global::NWN.Core.NWScript.GetSittingCreature(oChair);
+        }
+
+        /// <summary>
+        ///   The caller will immediately speak sStringToSpeak (this is different from
+        ///   ActionSpeakString)
+        ///   - sStringToSpeak
+        ///   - nTalkVolume: TALKVOLUME_*
+        /// </summary>
+        public static void SpeakString(string sStringToSpeak, TalkVolume nTalkVolume = TalkVolume.Talk)
+        {
+            global::NWN.Core.NWScript.SpeakString(sStringToSpeak, (int)nTalkVolume);
+        }
+
+        /// <summary>
+        ///   Get the name of oObject.
+        ///   - oObject: the object from which you are obtaining the name (area, creature, placeable, item, or door).
+        ///   - bOriginalName: if set to true returns the name that the object had when the module was loaded (i.e. the original name)
+        ///   * Return value on error: ""
+        /// </summary>
+        public static string GetName(uint oObject, bool bOriginalName = false)
+        {
+            return global::NWN.Core.NWScript.GetName(oObject, bOriginalName ? 1 : 0);
+        }
+
+        /// <summary>
+        ///   Convert oObject into a hexadecimal string.
+        /// </summary>
+        public static string ObjectToString(uint oObject)
+        {
+            return global::NWN.Core.NWScript.ObjectToString(oObject);
         }
     }
 }

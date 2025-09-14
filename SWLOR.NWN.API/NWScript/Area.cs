@@ -830,5 +830,164 @@ namespace SWLOR.NWN.API.NWScript
             global::NWN.Core.NWScript.SetAreaLightDirection((int)nLightType, vDirection, oArea, fFadeTime);
         }
 
+        /// <summary>
+        ///   Get the first object within oPersistentObject.
+        ///   - oPersistentObject
+        ///   - nResidentObjectType: OBJECT_TYPE_*
+        ///   - nPersistentZone: PERSISTENT_ZONE_ACTIVE. [This could also take the value
+        ///   PERSISTENT_ZONE_FOLLOW, but this is no longer used.]
+        ///   * Returns OBJECT_INVALID if no object is found.
+        /// </summary>
+        public static uint GetFirstInPersistentObject(uint oPersistentObject = OBJECT_INVALID,
+            ObjectType nResidentObjectType = ObjectType.Creature,
+            PersistentZone nPersistentZone = PersistentZone.Active)
+        {
+            return global::NWN.Core.NWScript.GetFirstInPersistentObject(oPersistentObject, (int)nResidentObjectType, (int)nPersistentZone);
+        }
+
+        /// <summary>
+        ///   Get the next object within oPersistentObject.
+        ///   - oPersistentObject
+        ///   - nResidentObjectType: OBJECT_TYPE_*
+        ///   - nPersistentZone: PERSISTENT_ZONE_ACTIVE. [This could also take the value
+        ///   PERSISTENT_ZONE_FOLLOW, but this is no longer used.]
+        ///   * Returns OBJECT_INVALID if no object is found.
+        /// </summary>
+        public static uint GetNextInPersistentObject(uint oPersistentObject = OBJECT_INVALID,
+            ObjectType nResidentObjectType = ObjectType.Creature,
+            PersistentZone nPersistentZone = PersistentZone.Active)
+        {
+            return global::NWN.Core.NWScript.GetNextInPersistentObject(oPersistentObject, (int)nResidentObjectType, (int)nPersistentZone);
+        }
+
+        /// <summary>
+        ///   This returns the creator of oAreaOfEffectObject.
+        ///   * Returns OBJECT_INVALID if oAreaOfEffectObject is not a valid Area of Effect object.
+        /// </summary>
+        public static uint GetAreaOfEffectCreator(uint oAreaOfEffectObject = OBJECT_INVALID)
+        {
+            return global::NWN.Core.NWScript.GetAreaOfEffectCreator(oAreaOfEffectObject);
+        }
+
+        /// <summary>
+        ///   Get the distance between lLocationA and lLocationB.
+        /// </summary>
+        public static float GetDistanceBetweenLocations(Location lLocationA, Location lLocationB)
+        {
+            return global::NWN.Core.NWScript.GetDistanceBetweenLocations(lLocationA, lLocationB);
+        }
+
+        /// <summary>
+        /// Change a tile in an area, it will also update the tile for all players in the area.
+        /// * Notes:
+        ///   - For optimal use you should be familiar with how tilesets / .set files work.
+        ///   - Will not update the height of non-creature objects.
+        ///   - Creatures may get stuck on non-walkable terrain.
+        ///
+        /// - locTile: The location of the tile.
+        /// - nTileID: the ID of the tile, for values see the .set file of the tileset.
+        /// - nOrientation: the orientation of the tile, 0-3.
+        ///                 0 = Normal orientation
+        ///                 1 = 90 degrees counterclockwise
+        ///                 2 = 180 degrees counterclockwise
+        ///                 3 = 270 degrees counterclockwise
+        /// - nHeight: the height of the tile.
+        /// - nFlags: a bitmask of SETTILE_FLAG_* constants.
+        ///           - SETTILE_FLAG_RELOAD_GRASS: reloads the area's grass, use if your tile used to have grass or should have grass now.
+        ///           - SETTILE_FLAG_RELOAD_BORDER: reloads the edge tile border, use if you changed a tile on the edge of the area.
+        ///           - SETTILE_FLAG_RECOMPUTE_LIGHTING: recomputes the area's lighting and static shadows, use most of time.
+        /// </summary>
+        public static void SetTile(
+            Location locTile,
+            int nTileID,
+            int nOrientation,
+            int nHeight = 0,
+            SetTileFlagType nFlags = SetTileFlagType.RecomputeLighting)
+        {
+            global::NWN.Core.NWScript.SetTile(locTile, nTileID, nOrientation, nHeight, (int)nFlags);
+        }
+
+        /// <summary>
+        ///  Get the ID of the tile at location locTile.
+        /// Returns -1 on error.
+        /// </summary>
+        public static int GetTileID(Location locTile)
+        {
+            return global::NWN.Core.NWScript.GetTileID(locTile);
+        }
+
+        /// <summary>
+        /// Get the orientation of the tile at location locTile.
+        /// Returns -1 on error.
+        /// </summary>
+        public static int GetTileOrientation(Location locTile)
+        {
+            return global::NWN.Core.NWScript.GetTileOrientation(locTile);
+        }
+
+        /// <summary>
+        /// Get the height of the tile at location locTile.
+        /// Returns -1 on error.
+        /// </summary>
+        public static int GetTileHeight(Location locTile)
+        {
+            return global::NWN.Core.NWScript.GetTileHeight(locTile);
+        }
+
+        /// <summary>
+        /// All clients in oArea will reload the area's grass.
+        /// This can be used to update the grass of an area after changing a tile with SetTile() that will have or used to have grass.
+        /// </summary>
+        public static void ReloadAreaGrass(uint oArea)
+        {
+            global::NWN.Core.NWScript.ReloadAreaGrass(oArea);
+        }
+
+        /// <summary>
+        /// Set the state of the tile animation loops of the tile at location locTile.
+        /// </summary>
+        public static void SetTileAnimationLoops(Location locTile, bool bAnimLoop1, bool bAnimLoop2, bool bAnimLoop3)
+        {
+            global::NWN.Core.NWScript.SetTileAnimationLoops(locTile, bAnimLoop1 ? 1 : 0, bAnimLoop2 ? 1 : 0, bAnimLoop3 ? 1 : 0);
+        }
+
+        /// <summary>
+        /// Change multiple tiles in an area, it will also update the tiles for all players in the area.
+        /// Note: See SetTile() for additional information.
+        /// - oArea: the area to change one or more tiles of.
+        /// - jTileData: a JsonArray() with one or more JsonObject()s with the following keys:
+        ///               - index: the index of the tile as a JsonInt()
+        ///                        For example, a 3x3 area has the following tile indexes:
+        ///                        6 7 8
+        ///                        3 4 5
+        ///                        0 1 2
+        ///               - tileid: the ID of the tile as a JsonInt(), defaults to 0 if not set
+        ///               - orientation: the orientation of the tile as JsonInt(), defaults to 0 if not set
+        ///               - height: the height of the tile as JsonInt(), defaults to 0 if not set
+        ///               - animloop1: the state of a tile animation, 1/0 as JsonInt(), defaults to the current value if not set
+        ///               - animloop2: the state of a tile animation, 1/0 as JsonInt(), defaults to the current value if not set
+        ///               - animloop3: the state of a tile animation, 1/0 as JsonInt(), defaults to the current value if not set
+        /// - nFlags: a bitmask of SETTILE_FLAG_* constants.
+        /// - sTileset: if not empty, it will also change the area's tileset
+        ///             Warning: only use this if you really know what you're doing, it's very easy to break things badly.
+        ///                      Make sure jTileData changes *all* tiles in the area and to a tile id that's supported by sTileset.
+        /// </summary>
+        public static void SetTileJson(
+            uint oArea,
+            Json jTileData,
+            SetTileFlagType nFlags = SetTileFlagType.RecomputeLighting,
+            string sTileset = "")
+        {
+            global::NWN.Core.NWScript.SetTileJson(oArea, jTileData, (int)nFlags, sTileset);
+        }
+
+        /// <summary>
+        /// All clients in oArea will reload the inaccesible border tiles.
+        /// This can be used to update the edge tiles after changing a tile with SetTile().
+        /// </summary>
+        public static void ReloadAreaBorder(uint oArea)
+        {
+            global::NWN.Core.NWScript.ReloadAreaBorder(oArea);
+        }
     }
 }

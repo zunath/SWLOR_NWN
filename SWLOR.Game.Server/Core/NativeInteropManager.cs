@@ -1,6 +1,5 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
-using SWLOR.NWN.API.Core;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;

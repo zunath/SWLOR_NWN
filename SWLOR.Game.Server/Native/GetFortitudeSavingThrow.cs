@@ -1,7 +1,6 @@
 using NWN.Native.API;
 using NWNX.NET;
 using SWLOR.Game.Server.Core;
-using SWLOR.NWN.API.Core;
 using SWLOR.NWN.API.NWScript.Enum;
 using System;
 using System.Runtime.InteropServices;

@@ -461,5 +461,136 @@ namespace SWLOR.NWN.API.NWScript
         {
             return global::NWN.Core.NWScript.GetPlayerBuildVersionCommitSha1(oPlayer);
         }
+
+        /// <summary>
+        ///   Get the PC that is involved in the conversation.
+        ///   * Returns OBJECT_INVALID on error.
+        /// </summary>
+        public static uint GetPCSpeaker()
+        {
+            return global::NWN.Core.NWScript.GetPCSpeaker();
+        }
+
+        /// <summary>
+        ///   Use this in an OnPlayerDeath module script to get the last player that died.
+        /// </summary>
+        public static uint GetLastPlayerDied()
+        {
+            return global::NWN.Core.NWScript.GetLastPlayerDied();
+        }
+
+        /// <summary>
+        ///   Use this in an OnItemLost script to get the item that was lost/dropped.
+        ///   * Returns OBJECT_INVALID if the module is not valid.
+        /// </summary>
+        public static uint GetModuleItemLost()
+        {
+            return global::NWN.Core.NWScript.GetModuleItemLost();
+        }
+
+        /// <summary>
+        ///   Use this in an OnItemLost script to get the creature that lost the item.
+        ///   * Returns OBJECT_INVALID if the module is not valid.
+        /// </summary>
+        public static uint GetModuleItemLostBy()
+        {
+            return global::NWN.Core.NWScript.GetModuleItemLostBy();
+        }
+
+        /// <summary>
+        ///   Get the public part of the CD Key that oPlayer used when logging in.
+        ///   - nSinglePlayerCDKey: If set to TRUE, the player's public CD Key will
+        ///   be returned when the player is playing in single player mode
+        ///   (otherwise returns an empty string in single player mode).
+        /// </summary>
+        public static string GetPCPublicCDKey(uint oPlayer, bool nSinglePlayerCDKey = false)
+        {
+            return global::NWN.Core.NWScript.GetPCPublicCDKey(oPlayer, nSinglePlayerCDKey ? 1 : 0);
+        }
+
+        /// <summary>
+        ///   Get the IP address from which oPlayer has connected.
+        /// </summary>
+        public static string GetPCIPAddress(uint oPlayer)
+        {
+            return global::NWN.Core.NWScript.GetPCIPAddress(oPlayer);
+        }
+
+        /// <summary>
+        ///   Get the name of oPlayer.
+        /// </summary>
+        public static string GetPCPlayerName(uint oPlayer)
+        {
+            return global::NWN.Core.NWScript.GetPCPlayerName(oPlayer);
+        }
+
+        /// <summary>
+        ///   Sets oPlayer and oTarget to like each other.
+        /// </summary>
+        public static void SetPCLike(uint oPlayer, uint oTarget)
+        {
+            global::NWN.Core.NWScript.SetPCLike(oPlayer, oTarget);
+        }
+
+        /// <summary>
+        ///   Sets oPlayer and oTarget to dislike each other.
+        /// </summary>
+        public static void SetPCDislike(uint oPlayer, uint oTarget)
+        {
+            global::NWN.Core.NWScript.SetPCDislike(oPlayer, oTarget);
+        }
+
+        /// <summary>
+        ///   Send a server message (szMessage) to the oPlayer.
+        /// </summary>
+        public static void SendMessageToPC(uint oPlayer, string szMessage)
+        {
+            global::NWN.Core.NWScript.SendMessageToPC(oPlayer, szMessage);
+        }
+
+        /// <summary>
+        ///   Get if oPlayer is currently connected over a relay (instead of directly).
+        ///   Returns FALSE for any other object, including OBJECT_INVALID.
+        /// </summary>
+        public static int GetIsPlayerConnectionRelayed(uint oPlayer)
+        {
+            return global::NWN.Core.NWScript.GetIsPlayerConnectionRelayed(oPlayer);
+        }
+
+        /// <summary>
+        ///   Force all the characters of the players who are currently in the game to
+        ///   be exported to their respective directories i.e. LocalVault/ServerVault/ etc.
+        /// </summary>
+        public static void ExportAllCharacters()
+        {
+            global::NWN.Core.NWScript.ExportAllCharacters();
+        }
+
+        /// <summary>
+        ///   Force the character of the player specified to be exported to its respective directory
+        ///   i.e. LocalVault/ServerVault/ etc.
+        /// </summary>
+        public static void ExportSingleCharacter(uint oPlayer)
+        {
+            global::NWN.Core.NWScript.ExportSingleCharacter(oPlayer);
+        }
+
+        /// <summary>
+        /// Returns the INVENTORY_SLOT_* constant of the last item equipped.  Can only be used in the
+        /// module's OnPlayerEquip event.  Returns -1 on error.
+        /// </summary>
+        public static InventorySlot GetPCItemLastEquippedSlot()
+        {
+            return (InventorySlot)global::NWN.Core.NWScript.GetPCItemLastEquippedSlot();
+        }
+
+        /// <summary>
+        /// Returns the INVENTORY_SLOT_* constant of the last item unequipped.  Can only be used in the
+        /// module's OnPlayerUnequip event.  Returns -1 on error.
+        /// </summary>
+        public static InventorySlot GetPCItemLastUnequippedSlot()
+        {
+            return (InventorySlot)global::NWN.Core.NWScript.GetPCItemLastUnequippedSlot();
+        }
     }
 }

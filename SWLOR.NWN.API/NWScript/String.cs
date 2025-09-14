@@ -1,9 +1,11 @@
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
+
         /// <summary>
         ///   Get the length of sString
         ///   * Return value on error: -1
@@ -127,6 +129,59 @@ namespace SWLOR.NWN.API.NWScript
             RegularExpressionFormatType nMatchFlags = RegularExpressionFormatType.Default)
         {
             return global::NWN.Core.NWScript.RegExpReplace(sRegExp, sValue, sReplacement, (int)nSyntaxFlags, (int)nMatchFlags);
+        }
+
+        /// <summary>
+        /// Overrides a given strref to always return sValue instead of what is in the TLK file.
+        /// Setting sValue to "" will delete the override
+        /// </summary>
+        public static void SetTlkOverride(int nStrRef, string sValue = "")
+        {
+            global::NWN.Core.NWScript.SetTlkOverride(nStrRef, sValue);
+        }
+
+        /// <summary>
+        ///   Convert fFloat into a string.
+        ///   - nWidth should be a value from 0 to 18 inclusive.
+        ///   - nDecimals should be a value from 0 to 9 inclusive.
+        /// </summary>
+        public static string FloatToString(float fFloat, int nWidth = 18, int nDecimals = 9)
+        {
+            return global::NWN.Core.NWScript.FloatToString(fFloat, nWidth, nDecimals);
+        }
+
+        /// <summary>
+        ///   Convert nInteger into a string.
+        ///   * Return value on error: ""
+        /// </summary>
+        public static string IntToString(int nInteger)
+        {
+            return global::NWN.Core.NWScript.IntToString(nInteger);
+        }
+
+        /// <summary>
+        ///   Get a string from the talk table using nStrRef.
+        /// </summary>
+        public static string GetStringByStrRef(int nStrRef, Gender nGender = Gender.Male)
+        {
+            return global::NWN.Core.NWScript.GetStringByStrRef(nStrRef, (int)nGender);
+        }
+
+        /// <summary>
+        ///   Generate a random name.
+        ///   nNameType: The type of random name to be generated (NAME_*)
+        /// </summary>
+        public static string RandomName(Name nNameType = Name.FirstGenericMale)
+        {
+            return global::NWN.Core.NWScript.RandomName((int)nNameType);
+        }
+
+        /// <summary>
+        ///   Set the value for a custom token.
+        /// </summary>
+        public static void SetCustomToken(int nCustomTokenNumber, string sTokenValue)
+        {
+            global::NWN.Core.NWScript.SetCustomToken(nCustomTokenNumber, sTokenValue);
         }
     }
 }

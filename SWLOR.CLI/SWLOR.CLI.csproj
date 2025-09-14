@@ -11,8 +11,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NRediSearch" Version="2.2.79" />
     <PackageReference Include="NReJSON" Version="4.0.0" />
-    <PackageReference Include="StackExchange.Redis" Version="2.8.41" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.7" />
+    <PackageReference Include="StackExchange.Redis" Version="2.9.17" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.9" />
   </ItemGroup>
 
   <ItemGroup>

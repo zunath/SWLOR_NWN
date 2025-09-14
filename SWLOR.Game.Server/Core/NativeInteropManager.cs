@@ -4,6 +4,8 @@ using SWLOR.NWN.API.Core;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using NWNX.NET;
+using NWNX.NET.Native;
 
 namespace SWLOR.Game.Server.Core
 {
@@ -19,10 +21,10 @@ namespace SWLOR.Game.Server.Core
 
         public void RegisterHandlers()
         {
-            NWNXPInvoke.RegisterMainLoopHandler(&OnMainLoop);
-            NWNXPInvoke.RegisterRunScriptHandler(&OnRunScript);
-            NWNXPInvoke.RegisterClosureHandler(&OnClosure);
-            NWNXPInvoke.RegisterSignalHandler(&OnSignal);
+            NWNXAPI.RegisterMainLoopHandler(&OnMainLoop);
+            NWNXAPI.RegisterRunScriptHandler(&OnRunScript);
+            NWNXAPI.RegisterClosureHandler(&OnClosure);
+            NWNXAPI.RegisterSignalHandler(&OnSignal);
         }
 
         [UnmanagedCallersOnly]
@@ -39,11 +41,11 @@ namespace SWLOR.Game.Server.Core
         }
 
         [UnmanagedCallersOnly]
-        private static int OnRunScript(byte* pScript, uint oidSelf)
+        private static int OnRunScript(IntPtr scriptPtr, uint oidSelf)
         {
             try
             {
-                string scriptName = ReadNullTerminatedString(pScript);
+                var scriptName = scriptPtr.ReadNullTerminatedString();
                 return ServerManager.Executor.ProcessRunScript(scriptName, oidSelf);
             }
             catch (Exception e)
@@ -54,11 +56,11 @@ namespace SWLOR.Game.Server.Core
         }
 
         [UnmanagedCallersOnly]
-        private static void OnSignal(byte* pSignal)
+        private static void OnSignal(IntPtr signalPtr)
         {
             try
             {
-                string signal = ReadNullTerminatedString(pSignal);
+                var signal = signalPtr.ReadNullTerminatedString();
                 ProcessSignal(signal);
             }
             catch (Exception e)
@@ -80,24 +82,6 @@ namespace SWLOR.Game.Server.Core
             }
         }
 
-        private static string ReadNullTerminatedString(byte* ptr)
-        {
-            if (ptr == null)
-                return string.Empty;
-
-            int length = 0;
-            while (ptr[length] != 0)
-                length++;
-
-            if (length == 0)
-                return string.Empty;
-
-            var bytes = new byte[length];
-            for (int i = 0; i < length; i++)
-                bytes[i] = ptr[i];
-
-            return _encoding.GetString(bytes);
-        }
 
         private static void ProcessSignal(string signal)
         {

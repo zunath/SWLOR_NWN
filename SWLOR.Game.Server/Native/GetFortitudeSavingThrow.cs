@@ -1,9 +1,10 @@
-using System;
-using System.Runtime.InteropServices;
 using NWN.Native.API;
+using NWNX.NET;
 using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.Core;
 using SWLOR.NWN.API.NWScript.Enum;
+using System;
+using System.Runtime.InteropServices;
 using SavingThrow = NWN.Native.API.SavingThrow;
 
 namespace SWLOR.Game.Server.Native
@@ -21,10 +22,13 @@ namespace SWLOR.Game.Server.Native
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, int, sbyte> pHook = &OnGetFortitudeSavingThrow;
-            var hookPtr = VM.RequestHook(NativeLibrary.GetExport(
-                    NativeLibrary.GetMainProgramHandle(), "_ZN17CNWSCreatureStats18GetFortSavingThrowEi"),
-                (IntPtr)pHook, -1000000);
-            _callOriginal = Marshal.GetDelegateForFunctionPointer<GetFortitudeSavingThrowHook>(hookPtr);
+            var functionPtr = NativeLibrary.GetExport(
+                NativeLibrary.GetMainProgramHandle(), "_ZN17CNWSCreatureStats18GetFortSavingThrowEi");
+            var hookPtr = NWNXAPI.RequestFunctionHook(
+                functionPtr,
+                (IntPtr)pHook,
+                -1000000);
+            _callOriginal = Marshal.GetDelegateForFunctionPointer<GetFortitudeSavingThrowHook>((IntPtr)hookPtr);
         }
 
         [UnmanagedCallersOnly]

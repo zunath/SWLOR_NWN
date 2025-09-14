@@ -1,9 +1,9 @@
-﻿using SWLOR.NWN.API.Core;
-using System;
-using System.Collections.Generic;
+﻿using NWNX.NET;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
+using System;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Core
 {
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Core
 
         void global::NWN.Core.ICoreFunctionHandler.ClosureAssignCommand(uint obj, Action func)
         {
-            if (NWNXPInvoke.ClosureAssignCommand(obj, _nextEventId) != 0)
+            if (NWNXAPI.ClosureAssignCommand(obj, _nextEventId) != 0)
             {
                 _closures.Add(_nextEventId++, func);
             }
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Core
 
         void global::NWN.Core.ICoreFunctionHandler.ClosureDelayCommand(uint obj, float duration, Action func)
         {
-            if (NWNXPInvoke.ClosureDelayCommand(obj, duration, _nextEventId) != 0)
+            if (NWNXAPI.ClosureDelayCommand(obj, duration, _nextEventId) != 0)
             {
                 _closures.Add(_nextEventId++, func);
             }
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Core
 
         void global::NWN.Core.ICoreFunctionHandler.ClosureActionDoCommand(uint obj, Action func)
         {
-            if (NWNXPInvoke.ClosureActionDoCommand(obj, _nextEventId) != 0)
+            if (NWNXAPI.ClosureActionDoCommand(obj, _nextEventId) != 0)
             {
                 _closures.Add(_nextEventId++, func);
             }

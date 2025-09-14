@@ -1,6 +1,5 @@
-using System;
-using System.Runtime.InteropServices;
 using NWN.Native.API;
+using NWNX.NET;
 using Pipelines.Sockets.Unofficial.Arenas;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -10,6 +9,8 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.Core;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using System;
+using System.Runtime.InteropServices;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
@@ -24,17 +25,20 @@ namespace SWLOR.Game.Server.Native
     {
         internal delegate void ResolveAttackRollHook(void* thisPtr, void* pTarget);
 
-        // ReSharper disable once NotAccessField.Local
+        // ReSharper disable once NotAccessedField.Local
         private static ResolveAttackRollHook _callOriginal;
 
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, void*, void> pHook = &OnResolveAttackRoll;
-            var hookPtr = VM.RequestHook(NativeLibrary.GetExport(
-                    NativeLibrary.GetMainProgramHandle(), "_ZN12CNWSCreature17ResolveAttackRollEP10CNWSObject"),
-                (IntPtr)pHook, -1000000);
-            _callOriginal = Marshal.GetDelegateForFunctionPointer<ResolveAttackRollHook>(hookPtr);
+            var functionPtr = NativeLibrary.GetExport(
+                NativeLibrary.GetMainProgramHandle(), "_ZN12CNWSCreature17ResolveAttackRollEP10CNWSObject");
+            var hookPtr = NWNXAPI.RequestFunctionHook(
+                functionPtr,
+                (IntPtr)pHook,
+                -1000000);
+            _callOriginal = Marshal.GetDelegateForFunctionPointer<ResolveAttackRollHook>((IntPtr)hookPtr);
         }
 
         [UnmanagedCallersOnly]

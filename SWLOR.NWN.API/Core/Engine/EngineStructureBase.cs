@@ -1,4 +1,6 @@
-﻿namespace SWLOR.NWN.API.Core.Engine
+﻿using NWNX.NET;
+
+namespace SWLOR.NWN.API.Core.Engine
 {
     public abstract class EngineStructureBase
     {
@@ -13,7 +15,7 @@
 
         ~EngineStructureBase()
         {
-            VM.FreeGameDefinedStructure(StructureId, Handle);
+            NWNXAPI.FreeGameDefinedStructure(StructureId, Handle);
         }
 
         public static implicit operator nint(EngineStructureBase engineStructure) => engineStructure.Handle;

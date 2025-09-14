@@ -1,24 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using NWN.Native.API;
+using NWNX.NET;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
-using SWLOR.NWN.API.Core;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
+using DamageType = NWN.Native.API.DamageType;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using ObjectType = NWN.Native.API.ObjectType;
 using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
-using DamageType = NWN.Native.API.DamageType;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -32,11 +31,14 @@ namespace SWLOR.Game.Server.Native
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, void*, int, int, int, int, int, int> pHook = &OnGetDamageRoll;
-            var hookPtr = VM.RequestHook(NativeLibrary.GetExport(
-                NativeLibrary.GetMainProgramHandle(), "_ZN17CNWSCreatureStats13GetDamageRollEP10CNWSObjectiiiii"),
-                (IntPtr)pHook, -1000000);
-                
-            _callOriginal = Marshal.GetDelegateForFunctionPointer<GetDamageRollHook>(hookPtr);
+            var functionPtr = NativeLibrary.GetExport(
+                NativeLibrary.GetMainProgramHandle(), "_ZN17CNWSCreatureStats13GetDamageRollEP10CNWSObjectiiiii");
+            var hookPtr = NWNXAPI.RequestFunctionHook(
+                functionPtr,
+                (IntPtr)pHook,
+                -1000000);
+
+            _callOriginal = Marshal.GetDelegateForFunctionPointer<GetDamageRollHook>((IntPtr)hookPtr);
         }
 
         [UnmanagedCallersOnly]

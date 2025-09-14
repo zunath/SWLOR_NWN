@@ -154,12 +154,6 @@ namespace SWLOR.NWN.API.NWScript
             return global::NWN.Core.NWScript.GetMicrosecondCounter();
         }
 
-        public static void ExecuteScript(string sScript, uint oTarget = OBJECT_INVALID)
-        {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
-            global::NWN.Core.NWScript.ExecuteScript(sScript, oTarget);
-        }
 
         /// <summary>
         ///   Try to send oTarget to a new server defined by sIPaddress.

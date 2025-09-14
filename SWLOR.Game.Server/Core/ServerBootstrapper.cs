@@ -1,6 +1,8 @@
+using SWLOR.Game.Server.Core.Extensions;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.NWN.API;
 using System;
 
 namespace SWLOR.Game.Server.Core
@@ -56,6 +58,10 @@ namespace SWLOR.Game.Server.Core
             Console.WriteLine("Registering loggers...");
             Log.Register();
             Console.WriteLine("Loggers registered successfully.");
+
+            Console.WriteLine("Registering script execution provider...");
+            ScriptExecutionProvider.SetProvider(new ScriptExecutionProviderImpl());
+            Console.WriteLine("Script execution provider registered successfully.");
         }
 
         private void RegisterEventHandlers()

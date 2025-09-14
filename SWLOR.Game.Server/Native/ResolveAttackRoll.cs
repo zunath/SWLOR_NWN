@@ -1,8 +1,6 @@
 using NWN.Native.API;
 using NWNX.NET;
-using Pipelines.Sockets.Unofficial.Arenas;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.LogService;
@@ -10,7 +8,6 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;

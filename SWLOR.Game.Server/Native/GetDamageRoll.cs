@@ -11,7 +11,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;

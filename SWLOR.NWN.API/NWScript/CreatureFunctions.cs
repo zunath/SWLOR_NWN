@@ -615,25 +615,21 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Makes the creature equip the melee weapon in its possession that can do the most damage.
         /// </summary>
-        /// <param name="oVersus">You can try to get the most damaging weapon against this target (default: OBJECT_SELF)</param>
+        /// <param name="oVersus">You can try to get the most damaging weapon against this target (default: OBJECT_INVALID)</param>
         /// <param name="bOffHand">Whether to equip in the off-hand (default: false)</param>
         /// <remarks>If no valid melee weapon is found, it will equip the most damaging range weapon. This function should only ever be called in the EndOfCombatRound scripts, because otherwise it would have to stop the combat round to run simulation.</remarks>
         public static void ActionEquipMostDamagingMelee(uint oVersus = OBJECT_INVALID, bool bOffHand = false)
         {
-            if (oVersus == OBJECT_INVALID)
-                oVersus = OBJECT_SELF;
             global::NWN.Core.NWScript.ActionEquipMostDamagingMelee(oVersus, bOffHand ? 1 : 0);
         }
 
         /// <summary>
         /// Makes the creature equip the range weapon in its possession that can do the most damage.
         /// </summary>
-        /// <param name="oVersus">You can try to get the most damaging weapon against this target (default: OBJECT_SELF)</param>
+        /// <param name="oVersus">You can try to get the most damaging weapon against this target (default: OBJECT_INVALID)</param>
         /// <remarks>If no valid range weapon can be found, it will equip the most damaging melee weapon.</remarks>
         public static void ActionEquipMostDamagingRanged(uint oVersus = OBJECT_INVALID)
         {
-            if (oVersus == OBJECT_INVALID)
-                oVersus = OBJECT_SELF;
             global::NWN.Core.NWScript.ActionEquipMostDamagingRanged(oVersus);
         }
 
@@ -947,12 +943,10 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to check immunity for</param>
         /// <param name="nImmunityType">The immunity type (IMMUNITY_TYPE_* constants)</param>
-        /// <param name="oVersus">If specified, also checks for the race and alignment of this target (default: OBJECT_SELF)</param>
+        /// <param name="oVersus">If specified, also checks for the race and alignment of this target (default: OBJECT_INVALID)</param>
         /// <returns>True if the creature has immunity of the specified type</returns>
         public static bool GetIsImmune(uint oCreature, ImmunityType nImmunityType, uint oVersus = OBJECT_INVALID)
         {
-            if (oVersus == OBJECT_INVALID)
-                oVersus = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetIsImmune(oCreature, (int)nImmunityType, oVersus) == 1;
         }
 

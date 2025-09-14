@@ -403,11 +403,9 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPlayer">The player to disable the GUI panel for</param>
         /// <param name="nGuiPanel">A GUI_PANEL_* constant, except GUI_PANEL_PLAYER_DEATH</param>
         /// <param name="bDisabled">Whether to disable the panel</param>
-        /// <param name="oTarget">The target object (defaults to OBJECT_SELF)</param>
+        /// <param name="oTarget">The target object</param>
         public static void SetGuiPanelDisabled(uint oPlayer, GuiPanel nGuiPanel, bool bDisabled, uint oTarget = OBJECT_INVALID)
         {
-            if (oTarget == OBJECT_INVALID)
-                oTarget = OBJECT_SELF;
             global::NWN.Core.NWScript.SetGuiPanelDisabled(oPlayer, (int)nGuiPanel, bDisabled ? 1 : 0, oTarget);
         }
 

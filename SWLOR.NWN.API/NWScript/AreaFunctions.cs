@@ -422,26 +422,22 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Gets the first object in the specified area.
         /// </summary>
-        /// <param name="oArea">The area to get the first object from. If no valid area is specified, uses the caller's area (default: OBJECT_SELF)</param>
+        /// <param name="oArea">The area to get the first object from. If no valid area is specified, uses the caller's area (default: OBJECT_INVALID)</param>
         /// <param name="nObjectFilter">Allows filtering out undesired object types using bitwise "or". For example, to return only creatures and doors, use OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR (default: ObjectType.All)</param>
         /// <returns>The first object in the area. Returns OBJECT_INVALID on error</returns>
         public static uint GetFirstObjectInArea(uint oArea = OBJECT_INVALID, ObjectType nObjectFilter = ObjectType.All)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetFirstObjectInArea(oArea, (int)nObjectFilter);
         }
 
         /// <summary>
         /// Gets the next object in the specified area.
         /// </summary>
-        /// <param name="oArea">The area to get the next object from. If no valid area is specified, uses the caller's area (default: OBJECT_SELF)</param>
+        /// <param name="oArea">The area to get the next object from. If no valid area is specified, uses the caller's area (default: OBJECT_INVALID)</param>
         /// <param name="nObjectFilter">Allows filtering out undesired object types using bitwise "or". For example, to return only creatures and doors, use OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR (default: ObjectType.All)</param>
         /// <returns>The next object in the area. Returns OBJECT_INVALID on error</returns>
         public static uint GetNextObjectInArea(uint oArea = OBJECT_INVALID, ObjectType nObjectFilter = ObjectType.All)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetNextObjectInArea(oArea, (int)nObjectFilter);
         }
 

@@ -485,12 +485,14 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nVisualEffectId">The visual effect ID (VFX_* constants) (default: VisualEffect.Vfx_Com_Sparks_Parry)</param>
         /// <param name="fDelaySeconds">Delay between the visual effect being played and the creature being added to the area (default: 0.0f)</param>
         /// <param name="nUseAppearAnimation">Whether the creature should play its "appear" animation when summoned (default: false)</param>
+        /// <param name="nUnsummonVisualEffectId">The visual effect ID for unsummoning (default: VisualEffect.Vfx_Imp_Unsummon)</param>
+        /// <param name="oSummonToAdd">The object to add the summoned creature to (default: OBJECT_INVALID)</param>
         /// <returns>The Summon Creature effect</returns>
         /// <remarks>The creature is created and placed into the caller's party/faction. If nUseAppearAnimation is zero, it will just fade in somewhere near the target. If the value is 1 it will use the appear animation, and if it's 2 it will use appear2 (which doesn't exist for most creatures).</remarks>
         public static Effect EffectSummonCreature(string sCreatureResref, VisualEffect nVisualEffectId = VisualEffect.Vfx_Com_Sparks_Parry,
-            float fDelaySeconds = 0.0f, bool nUseAppearAnimation = false)
+            float fDelaySeconds = 0.0f, bool nUseAppearAnimation = false, VisualEffect nUnsummonVisualEffectId = VisualEffect.Vfx_Imp_Unsummon, uint oSummonToAdd = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.EffectSummonCreature(sCreatureResref, (int)nVisualEffectId, fDelaySeconds, nUseAppearAnimation ? 1 : 0);
+            return global::NWN.Core.NWScript.EffectSummonCreature(sCreatureResref, (int)nVisualEffectId, fDelaySeconds, nUseAppearAnimation ? 1 : 0, (int)nUnsummonVisualEffectId, oSummonToAdd);
         }
 
         /// <summary>

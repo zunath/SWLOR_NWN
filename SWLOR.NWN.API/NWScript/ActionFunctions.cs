@@ -215,12 +215,10 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nSkill">The skill to use (SKILL_* constant)</param>
         /// <param name="oTarget">The target to use the skill on</param>
         /// <param name="nSubSkill">The subskill to use (SUBSKILL_* constant) (default: SubSkill.None)</param>
-        /// <param name="oItemUsed">Item to use in conjunction with the skill (default: OBJECT_SELF)</param>
+        /// <param name="oItemUsed">Item to use in conjunction with the skill (default: OBJECT_INVALID)</param>
         public static void ActionUseSkill(NWNSkillType nSkill, uint oTarget, SubSkill nSubSkill = SubSkill.None,
             uint oItemUsed = OBJECT_INVALID)
         {
-            if (oItemUsed == OBJECT_INVALID)
-                oItemUsed = OBJECT_SELF;
             global::NWN.Core.NWScript.ActionUseSkill((int)nSkill, oTarget, (int)nSubSkill, oItemUsed);
         }
 

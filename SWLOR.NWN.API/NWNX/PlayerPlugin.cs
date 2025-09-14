@@ -64,29 +64,9 @@ namespace SWLOR.NWN.API.NWNX
         /// The timing bar provides visual feedback for timed actions, spell casting, or other time-based mechanics.
         /// Use StopGuiTimingBar() to cancel the timing bar before it completes.
         /// </remarks>
-        public static void StartGuiTimingBar(uint player, float seconds, string script = "",
-            TimingBarType type = TimingBarType.Custom)
+        public static void StartGuiTimingBar(uint player, float seconds, string script = "", TimingBarType type = TimingBarType.Custom)
         {
-            if (GetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1) return;
             global::NWN.Core.NWNX.PlayerPlugin.StartGuiTimingBar(player, seconds, script, (int)type);
-        }
-
-        /// <summary>
-        /// Stops displaying a timing bar.
-        /// </summary>
-        /// <param name="creature">The player object.</param>
-        /// <param name="script">The script to run when stopped.</param>
-        /// <param name="id">Internal ID for tracking.</param>
-        /// <remarks>Runs a script if specified.</remarks>
-        private static void StopGuiTimingBar(uint creature, string script, int id)
-        {
-            var activeId = GetLocalInt(creature, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
-            // Either the timing event was never started, or it already finished.
-            if (activeId == 0) return;
-            // If id != -1, we ended up here through DelayCommand. Make sure it's for the right ID
-            if (id != -1 && id != activeId) return;
-            DeleteLocalInt(creature, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
-            global::NWN.Core.NWNX.PlayerPlugin.StopGuiTimingBar(creature, script);
         }
 
         /// <summary>
@@ -97,7 +77,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Runs a script if specified.</remarks>
         public static void StopGuiTimingBar(uint player, string script = "")
         {
-            StopGuiTimingBar(player, script, -1);
+            global::NWN.Core.NWNX.PlayerPlugin.StopGuiTimingBar(player, script);
         }
 
         /// <summary>

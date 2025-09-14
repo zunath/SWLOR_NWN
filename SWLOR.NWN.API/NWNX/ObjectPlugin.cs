@@ -247,9 +247,10 @@ namespace SWLOR.NWN.API.NWNX
         /// </summary>
         /// <param name="oObject">The object to export. Valid object types: Creature, Item, Placeable, Waypoint, Door, Store, Trigger.</param>
         /// <param name="sFileName">The filename without extension, 16 or less characters.</param>
-        public static void Export(uint oObject, string sFileName)
+        /// <param name="sAlias">The alias of the resource directory to add the .git file to. Default: UserDirectory/nwnx.</param>
+        public static void Export(uint oObject, string sFileName, string sAlias = "NWNX")
         {
-            global::NWN.Core.NWNX.ObjectPlugin.Export(oObject, sFileName);
+            global::NWN.Core.NWNX.ObjectPlugin.Export(oObject, sFileName, sAlias);
         }
 
         /// <summary>
@@ -545,6 +546,176 @@ namespace SWLOR.NWN.API.NWNX
         public static void SetMapNote(uint oObject, string sMapNote, int nID = 0, int nGender = 0)
         {
             global::NWN.Core.NWNX.ObjectPlugin.SetMapNote(oObject, sMapNote, nID, nGender);
+        }
+
+        /// <summary>
+        /// Gets the last spell cast feat of the object.
+        /// </summary>
+        /// <param name="oObject">The object.</param>
+        /// <returns>The feat ID, or 65535 when not cast by a feat, or -1 on error.</returns>
+        /// <remarks>Should be called in a spell script.</remarks>
+        public static int GetLastSpellCastFeat(uint oObject)
+        {
+            return global::NWN.Core.NWNX.ObjectPlugin.GetLastSpellCastFeat(oObject);
+        }
+
+        /// <summary>
+        /// Sets the last object that triggered door or placeable trap.
+        /// </summary>
+        /// <param name="oObject">Door or placeable object.</param>
+        /// <param name="oLast">Object that last triggered trap.</param>
+        /// <remarks>Should be retrieved with GetEnteringObject.</remarks>
+        public static void SetLastTriggered(uint oObject, uint oLast)
+        {
+            global::NWN.Core.NWNX.ObjectPlugin.SetLastTriggered(oObject, oLast);
+        }
+
+        /// <summary>
+        /// Gets the remaining duration of the AoE object.
+        /// </summary>
+        /// <param name="oAoE">The AreaOfEffect object.</param>
+        /// <returns>The remaining duration, in seconds, or zero on failure.</returns>
+        public static float GetAoEObjectDurationRemaining(uint oAoE)
+        {
+            return global::NWN.Core.NWNX.ObjectPlugin.GetAoEObjectDurationRemaining(oAoE);
+        }
+
+        /// <summary>
+        /// Sets conversations started by the object to be private or not.
+        /// </summary>
+        /// <param name="oObject">The object.</param>
+        /// <param name="bPrivate">True/False.</param>
+        /// <remarks>ActionStartConversation()'s bPrivateConversation parameter will overwrite this flag.</remarks>
+        public static void SetConversationPrivate(uint oObject, bool bPrivate)
+        {
+            global::NWN.Core.NWNX.ObjectPlugin.SetConversationPrivate(oObject, bPrivate ? 1 : 0);
+        }
+
+        /// <summary>
+        /// Sets the radius of a circle AoE object.
+        /// </summary>
+        /// <param name="oAoE">The AreaOfEffect object.</param>
+        /// <param name="fRadius">The radius, must be bigger than 0.0f.</param>
+        public static void SetAoEObjectRadius(uint oAoE, float fRadius)
+        {
+            global::NWN.Core.NWNX.ObjectPlugin.SetAoEObjectRadius(oAoE, fRadius);
+        }
+
+        /// <summary>
+        /// Gets the radius of a circle AoE object.
+        /// </summary>
+        /// <param name="oAoE">The AreaOfEffect object.</param>
+        /// <returns>The radius or 0.0f on error.</returns>
+        public static float GetAoEObjectRadius(uint oAoE)
+        {
+            return global::NWN.Core.NWNX.ObjectPlugin.GetAoEObjectRadius(oAoE);
+        }
+
+        /// <summary>
+        /// Gets whether the last spell cast of the object was spontaneous.
+        /// </summary>
+        /// <param name="oObject">The object.</param>
+        /// <returns>True if the last spell was cast spontaneously.</returns>
+        /// <remarks>Should be called in a spell script.</remarks>
+        public static bool GetLastSpellCastSpontaneous(uint oObject)
+        {
+            return global::NWN.Core.NWNX.ObjectPlugin.GetLastSpellCastSpontaneous(oObject) != 0;
+        }
+
+        /// <summary>
+        /// Gets the last spell cast domain level.
+        /// </summary>
+        /// <param name="oObject">The object.</param>
+        /// <returns>Domain level of the cast spell, 0 if not a domain spell.</returns>
+        /// <remarks>Should be called in a spell script.</remarks>
+        public static int GetLastSpellCastDomainLevel(uint oObject)
+        {
+            return global::NWN.Core.NWNX.ObjectPlugin.GetLastSpellCastDomainLevel(oObject);
+        }
+
+        /// <summary>
+        /// Force the given object to carry the given UUID. Any other object currently owning the UUID is stripped of it.
+        /// </summary>
+        /// <param name="oObject">The object.</param>
+        /// <param name="sUUID">The UUID to force.</param>
+        public static void ForceAssignUUID(uint oObject, string sUUID)
+        {
+            global::NWN.Core.NWNX.ObjectPlugin.ForceAssignUUID(oObject, sUUID);
+        }
+
+        /// <summary>
+        /// Returns how many items are in the object's inventory.
+        /// </summary>
+        /// <param name="oObject">A creature, placeable, item or store.</param>
+        /// <returns>Returns a count of how many items are in the object's inventory.</returns>
+        public static int GetInventoryItemCount(uint oObject)
+        {
+            return global::NWN.Core.NWNX.ObjectPlugin.GetInventoryItemCount(oObject);
+        }
+
+        /// <summary>
+        /// Override the projectile visual effect of ranged/throwing weapons and spells.
+        /// </summary>
+        /// <param name="oCreature">The creature.</param>
+        /// <param name="nProjectileType">A projectile type constant or -1 to remove the override.</param>
+        /// <param name="nProjectilePathType">A projectile path type constant or -1 to ignore.</param>
+        /// <param name="nSpellID">A spell constant. -1 to ignore.</param>
+        /// <param name="bPersist">Whether the override should persist to the .bic file (for PCs).</param>
+        /// <remarks>
+        /// Persistence is enabled after a server reset by the first use of this function. Recommended to trigger on a dummy target OnModuleLoad to enable persistence.
+        /// This will override all spell projectile VFX from the creature until the override is removed.
+        /// </remarks>
+        public static void OverrideSpellProjectileVFX(uint oCreature, int nProjectileType = -1, int nProjectilePathType = -1, int nSpellID = -1, bool bPersist = false)
+        {
+            global::NWN.Core.NWNX.ObjectPlugin.OverrideSpellProjectileVFX(oCreature, nProjectileType, nProjectilePathType, nSpellID, bPersist ? 1 : 0);
+        }
+
+        /// <summary>
+        /// Returns true if the last spell was cast instantly. This function should only be called in a spell script.
+        /// </summary>
+        /// <returns>True if the last spell was instant.</returns>
+        /// <remarks>To initialize the hooks used by this function it is recommended to call this function once in your module load script.</remarks>
+        public static bool GetLastSpellInstant()
+        {
+            return global::NWN.Core.NWNX.ObjectPlugin.GetLastSpellInstant() != 0;
+        }
+
+        /// <summary>
+        /// Sets the creator of a trap on door, placeable, or trigger. Also changes trap Faction to that of the new Creator.
+        /// </summary>
+        /// <param name="oObject">Door, placeable or trigger (trap) object.</param>
+        /// <param name="oCreator">The new creator of the trap. Any non-creature creator will assign OBJECT_INVALID (similar to toolset-laid traps).</param>
+        /// <remarks>
+        /// Triggers (ground traps) will instantly update colour (Green/Red). Placeable/doors will not change if client has already seen them.
+        /// </remarks>
+        public static void SetTrapCreator(uint oObject, uint oCreator)
+        {
+            global::NWN.Core.NWNX.ObjectPlugin.SetTrapCreator(oObject, oCreator);
+        }
+
+        /// <summary>
+        /// Return the name of the object for the specified language.
+        /// </summary>
+        /// <param name="oObject">An object.</param>
+        /// <param name="nLanguage">A PLAYER_LANGUAGE constant.</param>
+        /// <param name="nGender">Gender to use, 0 or 1.</param>
+        /// <returns>The localized string.</returns>
+        public static string GetLocalizedName(uint oObject, int nLanguage, int nGender = 0)
+        {
+            return global::NWN.Core.NWNX.ObjectPlugin.GetLocalizedName(oObject, nLanguage, nGender);
+        }
+
+        /// <summary>
+        /// Set the name of the object as set in the toolset for the specified language.
+        /// </summary>
+        /// <param name="oObject">An object.</param>
+        /// <param name="sName">New value to set.</param>
+        /// <param name="nLanguage">A PLAYER_LANGUAGE constant.</param>
+        /// <param name="nGender">Gender to use, 0 or 1.</param>
+        /// <remarks>You may have to SetName(oObject, "") for the translated string to show.</remarks>
+        public static void SetLocalizedName(uint oObject, string sName, int nLanguage, int nGender = 0)
+        {
+            global::NWN.Core.NWNX.ObjectPlugin.SetLocalizedName(oObject, sName, nLanguage, nGender);
         }
     }
 }

@@ -357,5 +357,31 @@ namespace SWLOR.NWN.API.NWNX
         {
             AdminPlugin.SetMaxLevel(nLevel);
         }
+
+        /// <summary>
+        /// Retrieves the current server name as displayed in the server browser.
+        /// </summary>
+        /// <returns>The current server name as a string.</returns>
+        /// <remarks>
+        /// This returns the server name that is visible to players when browsing available servers.
+        /// Use SetServerName() to modify this value.
+        /// </remarks>
+        public static string GetServerName()
+        {
+            return AdminPlugin.GetServerName();
+        }
+
+        /// <summary>
+        /// Reloads the server rules from the configuration files.
+        /// </summary>
+        /// <remarks>
+        /// This causes the server to re-read its configuration files and apply any changes.
+        /// Useful for applying configuration changes without restarting the server.
+        /// The reload affects all server settings and rules.
+        /// </remarks>
+        public static void ReloadRules()
+        {
+            AdminPlugin.ReloadRules();
+        }
     }
 }

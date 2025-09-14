@@ -68,7 +68,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <summary>
         /// Sets the visibility state of a specific combat log message for a player.
         /// </summary>
-        /// <param name="messageType">The combat log message type to modify. See CombatLogMessageType enum for available types.</param>
+        /// <param name="messageType">The combat log message type to modify. See FeedbackMessageTypes enum for available types.</param>
         /// <param name="hide">True to hide the message, false to show it.</param>
         /// <param name="player">The player object to modify, or null/OBJECT_INVALID for global setting.</param>
         /// <remarks>
@@ -78,7 +78,7 @@ namespace SWLOR.NWN.API.NWNX
         /// but the player's personal setting shows it, the message will be visible to that player.
         /// Changes take effect immediately and persist until modified again.
         /// </remarks>
-        public static void SetCombatLogMessageHidden(CombatLogMessageType messageType, bool hide, uint? player = null)
+        public static void SetCombatLogMessageHidden(FeedbackMessageTypes messageType, bool hide, uint? player = null)
         {
             uint playerValue = player ?? OBJECT_INVALID;
             global::NWN.Core.NWNX.FeedbackPlugin.SetCombatLogMessageHidden((int)messageType, hide ? 1 : 0, playerValue);

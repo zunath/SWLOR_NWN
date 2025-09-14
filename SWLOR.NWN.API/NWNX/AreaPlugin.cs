@@ -611,5 +611,120 @@ namespace SWLOR.NWN.API.NWNX
         {
             return global::NWN.Core.NWNX.AreaPlugin.CreateSoundObject(oArea, vPosition, sResRef);
         }
+
+
+        /// <summary>
+        /// Rotates the entire area by the specified number of 90-degree increments.
+        /// </summary>
+        /// <param name="oArea">The area object to rotate. Must be a valid area object.</param>
+        /// <param name="nRotation">How many 90 degrees clockwise to rotate (1-3).</param>
+        /// <remarks>
+        /// This rotates all objects and tiles in the area around the Z-axis.
+        /// Functions while clients are in the area, but not recommended as tiles/walkmesh only updates on area load, and this may result in unexpected clientside results.
+        /// The rotation affects the visual appearance and object positions in the area.
+        /// </remarks>
+        public static void RotateArea(uint oArea, int nRotation)
+        {
+            global::NWN.Core.NWNX.AreaPlugin.RotateArea(oArea, nRotation);
+        }
+
+        /// <summary>
+        /// Retrieves detailed information about a tile by its index in the area.
+        /// </summary>
+        /// <param name="oArea">The area object to query. Must be a valid area object.</param>
+        /// <param name="nTileIndex">The index of the tile to examine. Must be within the area's tile range.</param>
+        /// <returns>A TileInfo struct containing detailed information about the tile.</returns>
+        /// <remarks>
+        /// This provides an alternative way to access tile information using an index instead of coordinates.
+        /// Useful for iterating through all tiles in an area or accessing tiles by their position in the tile array.
+        /// The tile index should be within the valid range for the area's tile grid.
+        /// </remarks>
+        public static TileInfo GetTileInfoByTileIndex(uint oArea, int nTileIndex)
+        {
+            return global::NWN.Core.NWNX.AreaPlugin.GetTileInfoByTileIndex(oArea, nTileIndex);
+        }
+
+        /// <summary>
+        /// Checks if a path exists between two points in the area.
+        /// </summary>
+        /// <param name="oArea">The area object to test in. Must be a valid area object.</param>
+        /// <param name="vStart">The starting position for the path test.</param>
+        /// <param name="vEnd">The ending position for the path test.</param>
+        /// <param name="nMaxDepth">The max depth of the DFS tree. A good value is AreaWidth * AreaHeight.</param>
+        /// <returns>True if a path exists between the points, false if no path is available.</returns>
+        /// <remarks>
+        /// This function checks if a creature can navigate from one point to another in the area.
+        /// Does not care about doors or placeables, only checks tile path nodes.
+        /// Useful for pathfinding validation, movement restrictions, or AI navigation systems.
+        /// </remarks>
+        public static bool GetPathExists(uint oArea, Vector3 vStart, Vector3 vEnd, int nMaxDepth)
+        {
+            int result = global::NWN.Core.NWNX.AreaPlugin.GetPathExists(oArea, vStart, vEnd, nMaxDepth);
+            return result != 0;
+        }
+
+        /// <summary>
+        /// Retrieves the current area flags for the specified area.
+        /// </summary>
+        /// <param name="oArea">The area object to query. Must be a valid area object.</param>
+        /// <returns>The area flags as a bitmask. See AREA_FLAG_* constants for flag meanings.</returns>
+        /// <remarks>
+        /// Area flags control various properties and behaviors of the area.
+        /// These flags affect lighting, weather, visibility, and other area characteristics.
+        /// Use SetAreaFlags() to modify these values.
+        /// </remarks>
+        public static int GetAreaFlags(uint oArea)
+        {
+            return global::NWN.Core.NWNX.AreaPlugin.GetAreaFlags(oArea);
+        }
+
+        /// <summary>
+        /// Sets the area flags for the specified area.
+        /// </summary>
+        /// <param name="oArea">The area object to modify. Must be a valid area object.</param>
+        /// <param name="nFlags">The area flags to set as a bitmask. See AREA_FLAG_* constants for flag meanings.</param>
+        /// <remarks>
+        /// Area flags control various properties and behaviors of the area.
+        /// Changes take effect immediately and affect all creatures in the area.
+        /// These flags affect lighting, weather, visibility, and other area characteristics.
+        /// Use bitwise operations to combine multiple flags.
+        /// </remarks>
+        public static void SetAreaFlags(uint oArea, int nFlags)
+        {
+            global::NWN.Core.NWNX.AreaPlugin.SetAreaFlags(oArea, nFlags);
+        }
+
+        /// <summary>
+        /// Retrieves the current wind settings for the specified area.
+        /// </summary>
+        /// <param name="oArea">The area object to query. Must be a valid area object.</param>
+        /// <returns>An AreaWind struct containing the wind direction, magnitude, and other wind properties.</returns>
+        /// <remarks>
+        /// Wind settings control the visual and atmospheric effects of wind in the area.
+        /// This includes wind direction, strength, and other wind-related properties.
+        /// Use SetAreaWind() to modify these values.
+        /// </remarks>
+        public static AreaWind GetAreaWind(uint oArea)
+        {
+            return global::NWN.Core.NWNX.AreaPlugin.GetAreaWind(oArea);
+        }
+
+        /// <summary>
+        /// Sets the default object UI discovery mask for the specified area.
+        /// </summary>
+        /// <param name="oArea">The area object to modify, or OBJECT_INVALID to set a global mask for all areas. Per area masks will override the global mask.</param>
+        /// <param name="nObjectTypes">A mask of OBJECT_TYPE_* constants or OBJECT_TYPE_ALL for all suitable object types. Currently only works on Creatures, Doors (Hilite only), Items and Useable Placeables.</param>
+        /// <param name="nMask">The UI discovery mask to set. See OBJECT_UI_DISCOVERY_* constants for mask values.</param>
+        /// <param name="bForceUpdate">If true, will update the discovery mask of ALL objects in the area or module (if oArea == OBJECT_INVALID), according to the current mask. Use with care.</param>
+        /// <remarks>
+        /// The UI discovery mask controls which UI elements are visible to players in the area.
+        /// This affects the display of various game interface elements and information.
+        /// Changes take effect immediately and affect all players in the area.
+        /// Use bitwise operations to combine multiple discovery flags.
+        /// </remarks>
+        public static void SetDefaultObjectUiDiscoveryMask(uint oArea, int nObjectTypes, int nMask, bool bForceUpdate = false)
+        {
+            global::NWN.Core.NWNX.AreaPlugin.SetDefaultObjectUiDiscoveryMask(oArea, nObjectTypes, nMask, bForceUpdate ? 1 : 0);
+        }
     }
 }

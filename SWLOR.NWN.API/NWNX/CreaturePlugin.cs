@@ -1846,5 +1846,69 @@ namespace SWLOR.NWN.API.NWNX
         {
             global::NWN.Core.NWNX.CreaturePlugin.ModifyNumberBonusSpells(creature, multiClass, spellLevel, delta);
         }
+
+        /// <summary>
+        /// Sets a caster level modifier for the creature.
+        /// </summary>
+        /// <param name="creature">The target creature object to modify. Must be a valid creature.</param>
+        /// <param name="classId">The class that this modifier will apply to. See ClassType enum for available classes.</param>
+        /// <param name="modifier">The modifier to apply to the caster level. Can be positive or negative.</param>
+        /// <param name="persist">Whether the modifier should persist to the .bic file if applicable. Default is false.</param>
+        /// <remarks>
+        /// This sets a caster level modifier for the creature's specified class.
+        /// The modifier is added to the creature's base caster level for that class.
+        /// This affects spell power, duration, and other caster level dependent effects.
+        /// </remarks>
+        public static void SetCasterLevelModifier(uint creature, ClassType classId, int modifier, bool persist = false)
+        {
+            global::NWN.Core.NWNX.CreaturePlugin.SetCasterLevelModifier(creature, (int)classId, modifier, persist ? 1 : 0);
+        }
+
+        /// <summary>
+        /// Gets the current caster level modifier for the creature.
+        /// </summary>
+        /// <param name="creature">The target creature object to query. Must be a valid creature.</param>
+        /// <param name="classId">The creature caster class. See ClassType enum for available classes.</param>
+        /// <returns>The current caster level modifier for the creature.</returns>
+        /// <remarks>
+        /// This returns the current caster level modifier for the creature's specified class.
+        /// Returns 0 if no modifier is set or if there's an error.
+        /// </remarks>
+        public static int GetCasterLevelModifier(uint creature, ClassType classId)
+        {
+            return global::NWN.Core.NWNX.CreaturePlugin.GetCasterLevelModifier(creature, (int)classId);
+        }
+
+        /// <summary>
+        /// Sets a caster level override for the creature.
+        /// </summary>
+        /// <param name="creature">The target creature object to modify. Must be a valid creature.</param>
+        /// <param name="classId">The class that this override will apply to. See ClassType enum for available classes.</param>
+        /// <param name="casterLevel">The caster level override to apply. Must be positive.</param>
+        /// <param name="persist">Whether the override should persist to the .bic file if applicable. Default is false.</param>
+        /// <remarks>
+        /// This sets a caster level override for the creature's specified class.
+        /// Unlike modifiers, overrides completely replace the creature's base caster level for that class.
+        /// This affects spell power, duration, and other caster level dependent effects.
+        /// </remarks>
+        public static void SetCasterLevelOverride(uint creature, ClassType classId, int casterLevel, bool persist = false)
+        {
+            global::NWN.Core.NWNX.CreaturePlugin.SetCasterLevelOverride(creature, (int)classId, casterLevel, persist ? 1 : 0);
+        }
+
+        /// <summary>
+        /// Gets the current caster level override for the creature.
+        /// </summary>
+        /// <param name="creature">The target creature object to query. Must be a valid creature.</param>
+        /// <param name="classId">The creature caster class. See ClassType enum for available classes.</param>
+        /// <returns>The current caster level override for the creature, or -1 if not set.</returns>
+        /// <remarks>
+        /// This returns the current caster level override for the creature's specified class.
+        /// Returns -1 if no override is set or if there's an error.
+        /// </remarks>
+        public static int GetCasterLevelOverride(uint creature, ClassType classId)
+        {
+            return global::NWN.Core.NWNX.CreaturePlugin.GetCasterLevelOverride(creature, (int)classId);
+        }
     }
 }

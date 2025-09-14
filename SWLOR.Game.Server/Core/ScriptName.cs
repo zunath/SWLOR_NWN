@@ -122,7 +122,8 @@ namespace SWLOR.Game.Server.Core
         public const string OnDialogAction = "action";
         public const string OnDialogActions = "actions";
 
-        // DM events
+        // DMFI events
+        public const string OnDMFIClientEnter = "dmfi_onclienter";
 
         // Player events
         public const string OnPlayerDamaged = "pc_damaged";

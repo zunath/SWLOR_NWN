@@ -5,26 +5,28 @@ namespace SWLOR.NWN.API.NWScript
     public partial class NWScript
     {
         /// <summary>
-        ///   * Returns TRUE if oObject (which is a placeable or a door) is currently open.
+        /// Returns true if the object (which is a placeable or a door) is currently open.
         /// </summary>
+        /// <param name="oObject">The object to check</param>
+        /// <returns>True if the object is open, false otherwise</returns>
         public static bool GetIsOpen(uint oObject)
         {
             return global::NWN.Core.NWScript.GetIsOpen(oObject) != 0;
         }
 
         /// <summary>
-        ///   The action subject will unlock oTarget, which can be a door or a placeable
-        ///   object.
+        /// Makes the action subject unlock the target object.
         /// </summary>
+        /// <param name="oTarget">The target object to unlock (can be a door or a placeable object)</param>
         public static void ActionUnlockObject(uint oTarget)
         {
             global::NWN.Core.NWScript.ActionUnlockObject(oTarget);
         }
 
         /// <summary>
-        ///   The action subject will lock oTarget, which can be a door or a placeable
-        ///   object.
+        /// Makes the action subject lock the target object.
         /// </summary>
+        /// <param name="oTarget">The target object to lock (can be a door or a placeable object)</param>
         public static void ActionLockObject(uint oTarget)
         {
             global::NWN.Core.NWScript.ActionLockObject(oTarget);
@@ -32,43 +34,48 @@ namespace SWLOR.NWN.API.NWScript
 
 
         /// <summary>
-        ///   Cause the action subject to open oDoor
+        /// Makes the action subject open the specified door.
         /// </summary>
+        /// <param name="oDoor">The door to open</param>
         public static void ActionOpenDoor(uint oDoor)
         {
             global::NWN.Core.NWScript.ActionOpenDoor(oDoor);
         }
 
         /// <summary>
-        ///   Cause the action subject to close oDoor
+        /// Makes the action subject close the specified door.
         /// </summary>
+        /// <param name="oDoor">The door to close</param>
         public static void ActionCloseDoor(uint oDoor)
         {
             global::NWN.Core.NWScript.ActionCloseDoor(oDoor);
         }
 
         /// <summary>
-        ///   Get the last blocking door encountered by the caller of this function.
-        ///   * Returns OBJECT_INVALID if the caller is not a valid creature.
+        /// Gets the last blocking door encountered by the caller of this function.
         /// </summary>
+        /// <returns>The last blocking door. Returns OBJECT_INVALID if the caller is not a valid creature</returns>
         public static uint GetBlockingDoor()
         {
             return global::NWN.Core.NWScript.GetBlockingDoor();
         }
 
         /// <summary>
-        ///   - oTargetDoor
-        ///   - nDoorAction: DOOR_ACTION_*
-        ///   * Returns TRUE if nDoorAction can be performed on oTargetDoor.
+        /// Returns true if the specified door action can be performed on the target door.
         /// </summary>
+        /// <param name="oTargetDoor">The target door</param>
+        /// <param name="nDoorAction">The door action to check (DOOR_ACTION_* constants)</param>
+        /// <returns>True if the door action can be performed, false otherwise</returns>
         public static bool GetIsDoorActionPossible(uint oTargetDoor, DoorAction nDoorAction)
         {
             return global::NWN.Core.NWScript.GetIsDoorActionPossible(oTargetDoor, (int)nDoorAction) == 1;
         }
 
         /// <summary>
-        ///   Perform nDoorAction on oTargetDoor.
+        /// Performs the specified door action on the target door.
         /// </summary>
+        /// <param name="oTargetDoor">The target door</param>
+        /// <param name="nDoorAction">The door action to perform (DOOR_ACTION_* constants)</param>
         public static void DoDoorAction(uint oTargetDoor, DoorAction nDoorAction)
         {
             global::NWN.Core.NWScript.DoDoorAction(oTargetDoor, (int)nDoorAction);

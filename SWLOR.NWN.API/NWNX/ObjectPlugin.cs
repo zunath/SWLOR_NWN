@@ -3,13 +3,23 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 
 namespace SWLOR.NWN.API.NWNX
 {
+    /// <summary>
+    /// Provides comprehensive object management functionality including local variable manipulation,
+    /// object positioning, serialization, and advanced object properties. This plugin allows for
+    /// detailed control over object behavior and state management throughout the game.
+    /// </summary>
     public static class ObjectPlugin
     {
         /// <summary>
-        /// Gets the count of all local variables on the provided object.
+        /// Retrieves the total number of local variables stored on the specified object.
         /// </summary>
-        /// <param name="obj">The object.</param>
-        /// <returns>The count.</returns>
+        /// <param name="obj">The object to query. Must be a valid object with local variables.</param>
+        /// <returns>The number of local variables on the object. Returns 0 if no variables exist.</returns>
+        /// <remarks>
+        /// This function counts all local variables that have been set on the object.
+        /// Variables with default values (0, 0.0, "", OBJECT_INVALID) are not counted as they are considered "not set".
+        /// Use GetLocalVariable() to retrieve individual variables by index.
+        /// </remarks>
         public static int GetLocalVariableCount(uint obj)
         {
             return global::NWN.Core.NWNX.ObjectPlugin.GetLocalVariableCount(obj);
@@ -17,18 +27,19 @@ namespace SWLOR.NWN.API.NWNX
 
 
         /// <summary>
-        /// Gets the local variable at the provided index of the provided object.
+        /// Retrieves a local variable from the specified object by its index position.
         /// </summary>
-        /// <param name="obj">The object.</param>
-        /// <param name="index">The index.</param>
-        /// <returns>An LocalVariable struct.</returns>
+        /// <param name="obj">The object to query. Must be a valid object with local variables.</param>
+        /// <param name="index">The zero-based index of the variable to retrieve. Must be between 0 and GetLocalVariableCount() - 1.</param>
+        /// <returns>A LocalVariable struct containing the variable's key and type information.</returns>
         /// <remarks>
-        /// Index bounds: 0 >= index < GetLocalVariableCount().
-        /// As of build 8193.14 local variables no longer have strict ordering.
-        /// This means that any change to the variables can result in drastically different order when iterating.
-        /// As of build 8193.14, this function takes O(n) time, where n is the number of locals on the object. Individual variable access with GetLocalXxx() is now O(1) though.
-        /// As of build 8193.14, this function will not return a variable if the value is the default (0/0.0/""/OBJECT_INVALID) for the type. They are considered not set.
+        /// This function retrieves local variables by their position in the object's variable list.
+        /// Index bounds: 0 <= index < GetLocalVariableCount().
+        /// As of build 8193.14, local variables no longer have strict ordering, so iteration order may change when variables are modified.
+        /// This function takes O(n) time complexity, where n is the number of locals on the object.
+        /// Variables with default values (0/0.0/""/OBJECT_INVALID) are not returned as they are considered "not set".
         /// Will return type UNKNOWN for cassowary variables.
+        /// For better performance, use individual GetLocalXxx() functions which are O(1) time complexity.
         /// </remarks>
         public static LocalVariable GetLocalVariable(uint obj, int index)
         {
@@ -41,11 +52,17 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
-        /// Set the provided object's position to the provided vector.
+        /// Sets the position of the specified object to the provided 3D coordinates.
         /// </summary>
-        /// <param name="obj">The object.</param>
-        /// <param name="pos">A vector position.</param>
-        /// <param name="updateSubareas">If true and obj is a creature, any triggers/traps at pos will fire their events.</param>
+        /// <param name="obj">The object to move. Must be a valid object that can be positioned.</param>
+        /// <param name="pos">The new 3D position vector (x, y, z coordinates).</param>
+        /// <param name="updateSubareas">If true and obj is a creature, any triggers/traps at the new position will fire their events.</param>
+        /// <remarks>
+        /// This function immediately moves the object to the specified position in the world.
+        /// If updateSubareas is true and the object is a creature, it will trigger any area effects (triggers, traps) at the new location.
+        /// The object must be in a valid area for positioning to work correctly.
+        /// Use with caution as this can bypass normal movement restrictions and collision detection.
+        /// </remarks>
         public static void SetPosition(uint obj, Vector3 pos, bool updateSubareas = true)
         {
             global::NWN.Core.NWNX.ObjectPlugin.SetPosition(obj, pos, updateSubareas ? 1 : 0);

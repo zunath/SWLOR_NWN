@@ -3,17 +3,14 @@ namespace SWLOR.NWN.API.NWScript
     public partial class NWScript
     {
         /// <summary>
-        ///   Add a journal quest entry to oCreature.
-        ///   - szPlotID: the plot identifier used in the toolset's Journal Editor
-        ///   - nState: the state of the plot as seen in the toolset's Journal Editor
-        ///   - oCreature
-        ///   - bAllPartyMembers: If this is TRUE, the entry will show up in the journal of
-        ///   everyone in the party
-        ///   - bAllPlayers: If this is TRUE, the entry will show up in the journal of
-        ///   everyone in the world
-        ///   - bAllowOverrideHigher: If this is TRUE, you can set the state to a lower
-        ///   number than the one it is currently on
+        /// Adds a journal quest entry to the creature.
         /// </summary>
+        /// <param name="szPlotID">The plot identifier used in the toolset's Journal Editor</param>
+        /// <param name="nState">The state of the plot as seen in the toolset's Journal Editor</param>
+        /// <param name="oCreature">The creature to add the journal entry to</param>
+        /// <param name="bAllPartyMembers">If TRUE, the entry will show up in the journal of everyone in the party</param>
+        /// <param name="bAllPlayers">If TRUE, the entry will show up in the journal of everyone in the world</param>
+        /// <param name="bAllowOverrideHigher">If TRUE, you can set the state to a lower number than the one it is currently on</param>
         public static void AddJournalQuestEntry(string szPlotID, int nState, uint oCreature,
             bool bAllPartyMembers = true, bool bAllPlayers = false, bool bAllowOverrideHigher = false)
         {
@@ -21,14 +18,12 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        ///   Remove a journal quest entry from oCreature.
-        ///   - szPlotID: the plot identifier used in the toolset's Journal Editor
-        ///   - oCreature
-        ///   - bAllPartyMembers: If this is TRUE, the entry will be removed from the
-        ///   journal of everyone in the party
-        ///   - bAllPlayers: If this is TRUE, the entry will be removed from the journal of
-        ///   everyone in the world
+        /// Removes a journal quest entry from the creature.
         /// </summary>
+        /// <param name="szPlotID">The plot identifier used in the toolset's Journal Editor</param>
+        /// <param name="oCreature">The creature to remove the journal entry from</param>
+        /// <param name="bAllPartyMembers">If TRUE, the entry will be removed from the journal of everyone in the party</param>
+        /// <param name="bAllPlayers">If TRUE, the entry will be removed from the journal of everyone in the world</param>
         public static void RemoveJournalQuestEntry(string szPlotID, uint oCreature, bool bAllPartyMembers = true,
             bool bAllPlayers = false)
         {

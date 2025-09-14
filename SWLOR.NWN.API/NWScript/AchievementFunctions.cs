@@ -3,23 +3,25 @@ namespace SWLOR.NWN.API.NWScript
     public partial class NWScript
     {
         /// <summary>
-        ///   Vibrate the player's device or controller. Does nothing if vibration is not supported.
-        ///   - nMotor is one of VIBRATOR_MOTOR_*
-        ///   - fStrength is between 0.0 and 1.0
-        ///   - fSeconds is the number of seconds to vibrate
+        /// Vibrates the player's device or controller. Does nothing if vibration is not supported.
         /// </summary>
+        /// <param name="oPlayer">The player whose device should vibrate</param>
+        /// <param name="nMotor">One of the VIBRATOR_MOTOR_* constants</param>
+        /// <param name="fStrength">Vibration strength between 0.0 and 1.0</param>
+        /// <param name="fSeconds">Number of seconds to vibrate</param>
         public static void Vibrate(uint oPlayer, int nMotor, float fStrength, float fSeconds)
         {
             global::NWN.Core.NWScript.Vibrate(oPlayer, nMotor, fStrength, fSeconds);
         }
 
         /// <summary>
-        ///   Unlock an achievement for the given player who must be logged in.
-        ///   - sId is the achievement ID on the remote server
-        ///   - nLastValue is the previous value of the associated achievement stat
-        ///   - nCurValue is the current value of the associated achievement stat
-        ///   - nMaxValue is the maximum value of the associate achievement stat
+        /// Unlocks an achievement for the given player who must be logged in.
         /// </summary>
+        /// <param name="oPlayer">The player for whom to unlock the achievement</param>
+        /// <param name="sId">The achievement ID on the remote server</param>
+        /// <param name="nLastValue">The previous value of the associated achievement stat (default: 0)</param>
+        /// <param name="nCurValue">The current value of the associated achievement stat (default: 0)</param>
+        /// <param name="nMaxValue">The maximum value of the associated achievement stat (default: 0)</param>
         public static void UnlockAchievement(uint oPlayer, string sId, int nLastValue = 0, int nCurValue = 0,
             int nMaxValue = 0)
         {

@@ -7,30 +7,43 @@ using QuickBarSlot = SWLOR.Game.Server.Core.NWNX.Enum.QuickBarSlot;
 
 namespace SWLOR.NWN.API.NWNX
 {
+    /// <summary>
+    /// Provides comprehensive player interface and interaction functionality including GUI controls,
+    /// timing bars, quickbar management, and advanced player-specific features. This plugin allows
+    /// for detailed control over the player experience and interface customization.
+    /// </summary>
     public static class PlayerPlugin
     {
         /// <summary>
-        /// Force display placeable examine window for player.
+        /// Forces the display of a placeable's examine window for the specified player.
         /// </summary>
-        /// <param name="player">The player object.</param>
-        /// <param name="placeable">The placeable object.</param>
-        /// <remarks>If used on a placeable in a different area than the player, the portrait will not be shown.</remarks>
+        /// <param name="player">The player object to show the examine window to. Must be a valid player character.</param>
+        /// <param name="placeable">The placeable object to examine. Must be a valid placeable object.</param>
+        /// <remarks>
+        /// This function programmatically opens the examine window for a placeable, as if the player had right-clicked on it.
+        /// The examine window will display the placeable's description, properties, and other relevant information.
+        /// If the placeable is in a different area than the player, the portrait will not be displayed in the examine window.
+        /// This is useful for creating custom interactions or providing information about distant objects.
+        /// </remarks>
         public static void ForcePlaceableExamineWindow(uint player, uint placeable)
         {
             global::NWN.Core.NWNX.PlayerPlugin.ForcePlaceableExamineWindow(player, placeable);
         }
 
         /// <summary>
-        /// Force opens the target object's inventory for the player.
+        /// Forces the opening of a placeable's inventory window for the specified player.
         /// </summary>
-        /// <param name="player">The player object.</param>
-        /// <param name="placeable">The placeable object.</param>
+        /// <param name="player">The player object to open the inventory for. Must be a valid player character.</param>
+        /// <param name="placeable">The placeable object whose inventory to open. Must be a valid placeable object.</param>
         /// <remarks>
-        /// A few notes about this function:
+        /// This function programmatically opens a placeable's inventory window, as if the player had clicked on it.
+        /// The player can then interact with items stored in the placeable's inventory.
+        /// Important behavior notes:
         /// - If the placeable is in a different area than the player, the portrait will not be shown
-        /// - The placeable's open/close animations will be played
-        /// - Clicking the 'close' button will cause the player to walk to the placeable; If the placeable is in a different area, the player will just walk to the edge of the current area and stop. This action can be cancelled manually.
-        /// - Walking will close the placeable automatically.
+        /// - The placeable's open/close animations will be played automatically
+        /// - Clicking the 'close' button will cause the player to walk to the placeable
+        /// - If the placeable is in a different area, the player will walk to the edge of the current area and stop (can be cancelled manually)
+        /// - Walking will automatically close the placeable inventory window
         /// </remarks>
         public static void ForcePlaceableInventoryWindow(uint player, uint placeable)
         {
@@ -38,13 +51,19 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
-        /// Starts displaying a timing bar.
+        /// Starts displaying a timing bar for the specified player.
         /// </summary>
-        /// <param name="player">The player object.</param>
-        /// <param name="seconds">The length of time the timing bar will complete.</param>
-        /// <param name="script">The script to run at the bar's completion.</param>
-        /// <param name="type">The Timing Bar Type.</param>
-        /// <remarks>Only one timing bar can be ran at the same time. Will run a script at the end of the timing bar, if specified.</remarks>
+        /// <param name="player">The player object to show the timing bar to. Must be a valid player character.</param>
+        /// <param name="seconds">The duration in seconds for the timing bar to complete. Must be a positive value.</param>
+        /// <param name="script">Optional script to execute when the timing bar completes. Can be empty string for no script.</param>
+        /// <param name="type">The type of timing bar to display. See TimingBarType enum for available options.</param>
+        /// <remarks>
+        /// This function displays a visual timing bar to the player that fills up over the specified duration.
+        /// Only one timing bar can be active at a time per player - starting a new one will replace the current one.
+        /// When the timing bar completes, the specified script will be executed automatically.
+        /// The timing bar provides visual feedback for timed actions, spell casting, or other time-based mechanics.
+        /// Use StopGuiTimingBar() to cancel the timing bar before it completes.
+        /// </remarks>
         public static void StartGuiTimingBar(uint player, float seconds, string script = "",
             TimingBarType type = TimingBarType.Custom)
         {

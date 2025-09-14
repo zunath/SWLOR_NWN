@@ -1,45 +1,72 @@
 namespace SWLOR.NWN.API.NWNX
 {
+    /// <summary>
+    /// Provides comprehensive event system functionality for subscribing to, managing, and dispatching
+    /// custom events throughout the game. This plugin enables script-to-script communication,
+    /// event-driven programming patterns, and advanced event filtering and management capabilities.
+    /// </summary>
     public static class EventsPlugin
     {
         /// <summary>
-        /// Scripts can subscribe to events.
+        /// Subscribes a script to receive notifications when a specific event occurs.
         /// </summary>
-        /// <param name="evt">The event name.</param>
-        /// <param name="script">The script to call when the event fires.</param>
-        /// <remarks>Some events are dispatched via the NWNX plugin (see NWNX_EVENTS_EVENT_* constants). Others can be signalled via script code via SignalEvent().</remarks>
+        /// <param name="evt">The name of the event to subscribe to. Can be custom events or NWNX system events.</param>
+        /// <param name="script">The name of the script to execute when the event fires. Must be a valid script resource.</param>
+        /// <remarks>
+        /// This function registers a script to be called whenever the specified event occurs.
+        /// Events can be dispatched by the NWNX plugin (see NWNX_EVENTS_EVENT_* constants) or by custom script code using SignalEvent().
+        /// Multiple scripts can subscribe to the same event and will all be called when it fires.
+        /// The script will receive the event target as OBJECT_SELF and can access event data using GetEventData().
+        /// </remarks>
         public static void SubscribeEvent(string evt, string script)
         {
             global::NWN.Core.NWNX.EventsPlugin.SubscribeEvent(evt, script);
         }
         /// <summary>
-        /// Unsubscribe a script from an event.
+        /// Removes a script's subscription to a specific event.
         /// </summary>
-        /// <param name="evt">The event name.</param>
-        /// <param name="script">The script.</param>
+        /// <param name="evt">The name of the event to unsubscribe from. Must match the event name used in SubscribeEvent().</param>
+        /// <param name="script">The name of the script to remove from the event subscription. Must match the script name used in SubscribeEvent().</param>
+        /// <remarks>
+        /// This function removes a previously registered script from receiving notifications for the specified event.
+        /// The script will no longer be called when this event occurs.
+        /// If the script was not subscribed to the event, this function has no effect.
+        /// Other scripts subscribed to the same event will continue to receive notifications.
+        /// </remarks>
         public static void UnsubscribeEvent(string evt, string script)
         {
             global::NWN.Core.NWNX.EventsPlugin.UnsubscribeEvent(evt, script);
         }
 
         /// <summary>
-        /// Pushes event data at the provided tag, which subscribers can access with GetEventData.
+        /// Stores event data that can be accessed by event handler scripts.
         /// </summary>
-        /// <param name="tag">The tag for the event data.</param>
-        /// <param name="data">The data to push.</param>
-        /// <remarks>This should be called BEFORE SignalEvent.</remarks>
+        /// <param name="tag">The unique identifier for the event data. Used by GetEventData() to retrieve the data.</param>
+        /// <param name="data">The data to store. Can be any string value including JSON, delimited data, or simple values.</param>
+        /// <remarks>
+        /// This function stores data that will be available to all scripts handling the next event.
+        /// The data persists only for the duration of the next event dispatch and is automatically cleared afterward.
+        /// This must be called BEFORE calling SignalEvent() for the data to be available to event handlers.
+        /// Multiple data entries can be stored with different tags for the same event.
+        /// </remarks>
         public static void PushEventData(string tag, string data)
         {
             global::NWN.Core.NWNX.EventsPlugin.PushEventData(tag, data);
         }
 
         /// <summary>
-        /// Signals an event. This will dispatch a notification to all subscribed handlers.
+        /// Dispatches an event to all subscribed scripts and handlers.
         /// </summary>
-        /// <param name="evt">The event name.</param>
-        /// <param name="target">The target object.</param>
-        /// <returns>True if anyone was subscribed to the event, false otherwise.</returns>
-        /// <remarks>target will be available as OBJECT_SELF in subscribed event scripts.</remarks>
+        /// <param name="evt">The name of the event to dispatch. Must match an event that has active subscribers.</param>
+        /// <param name="target">The target object for the event. This becomes OBJECT_SELF in all event handler scripts.</param>
+        /// <returns>True if any scripts were subscribed to the event and were called, false if no subscribers exist.</returns>
+        /// <remarks>
+        /// This function triggers the event and calls all scripts that have subscribed to it.
+        /// The target object becomes available as OBJECT_SELF in all event handler scripts.
+        /// Event data pushed with PushEventData() will be available to all handlers via GetEventData().
+        /// All subscribed scripts are called in the order they were subscribed.
+        /// If no scripts are subscribed to the event, this function returns false and no scripts are executed.
+        /// </remarks>
         public static bool SignalEvent(string evt, uint target)
         {
             var result = global::NWN.Core.NWNX.EventsPlugin.SignalEvent(evt, target);
@@ -47,11 +74,16 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
-        /// Retrieves the event data for the currently executing script.
+        /// Retrieves event data that was stored for the currently executing event handler.
         /// </summary>
-        /// <param name="tag">The tag for the event data.</param>
-        /// <returns>The event data.</returns>
-        /// <remarks>THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.</remarks>
+        /// <param name="tag">The unique identifier for the event data. Must match a tag used in PushEventData().</param>
+        /// <returns>The event data as a string, or empty string if no data exists for the specified tag.</returns>
+        /// <remarks>
+        /// This function retrieves data that was stored using PushEventData() before the event was dispatched.
+        /// THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER SCRIPT.
+        /// The data is only available during the execution of event handler scripts and is automatically cleared afterward.
+        /// If the specified tag does not exist, an empty string is returned.
+        /// </remarks>
         public static string GetEventData(string tag)
         {
             return global::NWN.Core.NWNX.EventsPlugin.GetEventData(tag);

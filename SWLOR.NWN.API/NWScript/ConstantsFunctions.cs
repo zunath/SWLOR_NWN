@@ -2,14 +2,34 @@ namespace SWLOR.NWN.API.NWScript
 {
     public partial class NWScript
     {
+        /// <summary>
+        /// Invalid object constant.
+        /// </summary>
         public const uint OBJECT_INVALID = 0x7F000000;
 
-        //  Constants
+        /// <summary>
+        /// Number of inventory slots available.
+        /// </summary>
         public const int NumberOfInventorySlots = 18;
+        
+        /// <summary>
+        /// Mathematical constant Pi.
+        /// </summary>
         public const float PI = 3.141592f;
+        
+        /// <summary>
+        /// Event constant for spell cast at.
+        /// </summary>
         public const int EVENT_SPELL_CAST_AT = 1011;
+        
+        /// <summary>
+        /// Invalid portrait constant.
+        /// </summary>
         public const int PORTRAIT_INVALID = 65535;
 
+        /// <summary>
+        /// Use creature level constant.
+        /// </summary>
         public const int USE_CREATURE_LEVEL = 0;
 
         //  The following resrefs must match those in the tileset's set file.

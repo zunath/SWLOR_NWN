@@ -6,137 +6,142 @@ namespace SWLOR.NWN.API.NWScript
     public partial class NWScript
     {
         /// <summary>
-        ///   Get the starting location of the module.
+        /// Gets the starting location of the module.
         /// </summary>
+        /// <returns>The starting location of the module</returns>
         public static Location GetStartingLocation()
         {
             return global::NWN.Core.NWScript.GetStartingLocation();
         }
 
         /// <summary>
-        ///   Get the module's name in the language of the server that's running it.
-        ///   * If there is no entry for the language of the server, it will return an
-        ///   empty string
+        /// Gets the module's name in the language of the server that's running it.
         /// </summary>
+        /// <returns>The module's name. Returns an empty string if there is no entry for the language of the server</returns>
         public static string GetModuleName()
         {
             return global::NWN.Core.NWScript.GetModuleName();
         }
 
         /// <summary>
-        ///   Shut down the currently loaded module and start a new one (moving all
-        ///   currently-connected players to the starting point.
+        /// Shuts down the currently loaded module and starts a new one.
         /// </summary>
+        /// <param name="sModuleName">The name of the new module to start</param>
+        /// <remarks>Moves all currently-connected players to the starting point.</remarks>
         public static void StartNewModule(string sModuleName)
         {
             global::NWN.Core.NWScript.StartNewModule(sModuleName);
         }
 
         /// <summary>
-        ///   Only if we are in a single player game, AutoSave the game.
+        /// Auto-saves the game if we are in a single player game.
         /// </summary>
+        /// <remarks>Only works in single player games.</remarks>
         public static void DoSinglePlayerAutoSave()
         {
             global::NWN.Core.NWScript.DoSinglePlayerAutoSave();
         }
 
         /// <summary>
-        ///   Get the game difficulty (GAME_DIFFICULTY_*).
+        /// Gets the game difficulty.
         /// </summary>
+        /// <returns>The game difficulty (GAME_DIFFICULTY_* constants)</returns>
         public static int GetGameDifficulty()
         {
             return global::NWN.Core.NWScript.GetGameDifficulty();
         }
 
         /// <summary>
-        ///   End the currently running game, play sEndMovie then return all players to the
-        ///   game's main menu.
+        /// Ends the currently running game and returns all players to the main menu.
         /// </summary>
+        /// <param name="sEndMovie">The movie to play before ending the game</param>
         public static void EndGame(string sEndMovie)
         {
             global::NWN.Core.NWScript.EndGame(sEndMovie);
         }
 
         /// <summary>
-        ///   Get the XP scale being used for the module.
+        /// Gets the XP scale being used for the module.
         /// </summary>
+        /// <returns>The XP scale being used for the module</returns>
         public static int GetModuleXPScale()
         {
             return global::NWN.Core.NWScript.GetModuleXPScale();
         }
 
         /// <summary>
-        ///   Set the XP scale used by the module.
-        ///   - nXPScale: The XP scale to be used. Must be between 0 and 200.
+        /// Sets the XP scale used by the module.
         /// </summary>
+        /// <param name="nXPScale">The XP scale to be used (must be between 0 and 200)</param>
         public static void SetModuleXPScale(int nXPScale)
         {
             global::NWN.Core.NWScript.SetModuleXPScale(nXPScale);
         }
 
         /// <summary>
-        ///   Write sLogEntry as a timestamped entry into the log file
+        /// Writes a timestamped entry into the log file.
         /// </summary>
+        /// <param name="sLogEntry">The log entry to write</param>
         public static void WriteTimestampedLogEntry(string sLogEntry)
         {
             global::NWN.Core.NWScript.WriteTimestampedLogEntry(sLogEntry);
         }
 
         /// <summary>
-        ///   Get the current action (ACTION_*) that oObject is executing.
+        /// Gets the current action that the specified object is executing.
         /// </summary>
+        /// <param name="oObject">The object to get the current action for (default: OBJECT_INVALID)</param>
+        /// <returns>The current action (ACTION_* constants)</returns>
         public static ActionType GetCurrentAction(uint oObject = OBJECT_INVALID)
         {
             return (ActionType)global::NWN.Core.NWScript.GetCurrentAction(oObject);
         }
 
         /// <summary>
-        ///   Sets the active game pause state - same as if the player requested pause.
+        /// Sets the active game pause state.
         /// </summary>
+        /// <param name="bState">The pause state to set</param>
+        /// <remarks>Same as if the player requested pause.</remarks>
         public static void SetGameActivePause(bool bState)
         {
             global::NWN.Core.NWScript.SetGameActivePause(bState ? 1 : 0);
         }
 
         /// <summary>
-        ///   Returns >0 if the game is currently paused:
-        ///   - 0: Game is not paused.
-        ///   - 1: Timestop
-        ///   - 2: Active Player Pause (optionally on top of timestop)
+        /// Returns a value greater than 0 if the game is currently paused.
         /// </summary>
+        /// <returns>0: Game is not paused, 1: Timestop, 2: Active Player Pause (optionally on top of timestop)</returns>
         public static int GetGamePauseState()
         {
             return global::NWN.Core.NWScript.GetGamePauseState();
         }
 
         /// <summary>
-        /// Return the current game tick rate (mainloop iterations per second).
-        /// This is equivalent to graphics frames per second when the module is running inside a client.
+        /// Returns the current game tick rate.
         /// </summary>
+        /// <returns>The current game tick rate (mainloop iterations per second)</returns>
+        /// <remarks>This is equivalent to graphics frames per second when the module is running inside a client.</remarks>
         public static int GetTickRate()
         {
             return global::NWN.Core.NWScript.GetTickRate();
         }
 
         /// <summary>
-        ///   Get the experience assigned in the journal editor for szPlotID.
+        /// Gets the experience assigned in the journal editor for the specified plot ID.
         /// </summary>
+        /// <param name="szPlotID">The plot ID to get the experience for</param>
+        /// <returns>The experience assigned for the plot ID</returns>
         public static int GetJournalQuestExperience(string szPlotID)
         {
             return global::NWN.Core.NWScript.GetJournalQuestExperience(szPlotID);
         }
 
         /// <summary>
-        /// Returns the 32bit integer hash of sString
-        /// This hash is stable and will always have the same value for same input string, regardless of platform.
-        /// The hash algorithm is the same as the one used internally for strings in case statements, so you can do:
-        ///    switch (HashString(sString))
-        ///    {
-        ///         case "AAA":    HandleAAA(); break;
-        ///         case "BBB":    HandleBBB(); break;
-        ///    }
-        /// NOTE: The exact algorithm used is XXH32(sString) ^ XXH32(""). This means that HashString("") is 0.
+        /// Returns the 32-bit integer hash of the specified string.
         /// </summary>
+        /// <param name="sString">The string to hash</param>
+        /// <returns>The 32-bit integer hash of the string</returns>
+        /// <remarks>This hash is stable and will always have the same value for same input string, regardless of platform. The hash algorithm is the same as the one used internally for strings in case statements, so you can do: switch (HashString(sString)) { case "AAA": HandleAAA(); break; case "BBB": HandleBBB(); break; } The exact algorithm used is XXH32(sString) ^ XXH32(""). This means that HashString("") is 0.</remarks>
         public static int HashString(string sString)
         {
             return global::NWN.Core.NWScript.HashString(sString);

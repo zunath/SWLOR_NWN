@@ -6,10 +6,10 @@ namespace SWLOR.NWN.API.NWNX
     public static class PlayerQuickBarSlot
     {
         /// <summary>
-        /// Create an empty QBS of given type
+        /// Creates an empty QuickBarSlot of the specified type.
         /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <param name="type">The type of QuickBarSlot to create</param>
+        /// <returns>An empty QuickBarSlot with the specified type</returns>
         public static QuickBarSlot Empty(QuickBarSlotType type)
         {
             var qbs = new QuickBarSlot
@@ -33,11 +33,11 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
-        /// Create a QBS for using an item
+        /// Creates a QuickBarSlot for using an item.
         /// </summary>
-        /// <param name="oItem"></param>
-        /// <param name="nPropertyID"></param>
-        /// <returns></returns>
+        /// <param name="oItem">The item to use</param>
+        /// <param name="nPropertyID">The property ID of the item</param>
+        /// <returns>A QuickBarSlot configured for item usage</returns>
         public static QuickBarSlot UseItem(uint oItem, int nPropertyID)
         {
             var qbs = Empty(QuickBarSlotType.Item);
@@ -49,11 +49,11 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
-        /// Create a QBS for equipping an item
+        /// Creates a QuickBarSlot for equipping an item.
         /// </summary>
-        /// <param name="oItem"></param>
-        /// <param name="oSecondaryItem"></param>
-        /// <returns></returns>
+        /// <param name="oItem">The primary item to equip</param>
+        /// <param name="oSecondaryItem">The secondary item to equip (e.g., off-hand weapon)</param>
+        /// <returns>A QuickBarSlot configured for item equipping</returns>
         public static QuickBarSlot EquipItem(uint oItem, uint oSecondaryItem)
         {
             var qbs = Empty(QuickBarSlotType.Item);
@@ -65,13 +65,13 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
-        /// Create a QBS for casting a spell
+        /// Creates a QuickBarSlot for casting a spell.
         /// </summary>
-        /// <param name="nSpell"></param>
-        /// <param name="nClassIndex"></param>
-        /// <param name="nMetamagic"></param>
-        /// <param name="nDomainLevel"></param>
-        /// <returns></returns>
+        /// <param name="nSpell">The spell ID to cast</param>
+        /// <param name="nClassIndex">The class index for the spell</param>
+        /// <param name="nMetamagic">The metamagic type to apply</param>
+        /// <param name="nDomainLevel">The domain level for the spell</param>
+        /// <returns>A QuickBarSlot configured for spell casting</returns>
         public static QuickBarSlot CastSpell(int nSpell, int nClassIndex, int nMetamagic, int nDomainLevel)
         {
             var qbs = Empty(QuickBarSlotType.Spell);
@@ -85,10 +85,10 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
-        /// Create a QBS for using a skill
+        /// Creates a QuickBarSlot for using a skill.
         /// </summary>
-        /// <param name="nSkill"></param>
-        /// <returns></returns>
+        /// <param name="nSkill">The skill ID to use</param>
+        /// <returns>A QuickBarSlot configured for skill usage</returns>
         public static QuickBarSlot UseSkill(int nSkill)
         {
             var qbs = Empty(QuickBarSlotType.Skill);
@@ -99,10 +99,10 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
-        /// Create a QBS for using a feat
+        /// Creates a QuickBarSlot for using a feat.
         /// </summary>
-        /// <param name="nFeat"></param>
-        /// <returns></returns>
+        /// <param name="nFeat">The feat type to use</param>
+        /// <returns>A QuickBarSlot configured for feat usage</returns>
         public static QuickBarSlot UseFeat(FeatType nFeat)
         {
             var qbs = Empty(QuickBarSlotType.Feat);
@@ -113,28 +113,28 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
-        /// Create a QBS for starting a dialog
+        /// Creates a QuickBarSlot for starting a dialog.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A QuickBarSlot configured for dialog interaction</returns>
         public static QuickBarSlot StartDialog()
         {
             return Empty(QuickBarSlotType.Dialog);
         }
 
         /// <summary>
-        /// Create a QBS for attacking
+        /// Creates a QuickBarSlot for attacking.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A QuickBarSlot configured for attack action</returns>
         public static QuickBarSlot Attack()
         {
             return Empty(QuickBarSlotType.Attack);
         }
 
         /// <summary>
-        /// Create a QBS for emoting
+        /// Creates a QuickBarSlot for emoting.
         /// </summary>
-        /// <param name="nEmote"></param>
-        /// <returns></returns>
+        /// <param name="nEmote">The emote ID to perform</param>
+        /// <returns>A QuickBarSlot configured for emote action</returns>
         public static QuickBarSlot Emote(int nEmote)
         {
             var qbs = Empty(QuickBarSlotType.Emote);
@@ -145,10 +145,10 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
-        /// Create a QBS for toggling a mode
+        /// Creates a QuickBarSlot for toggling a mode.
         /// </summary>
-        /// <param name="nMode"></param>
-        /// <returns></returns>
+        /// <param name="nMode">The mode ID to toggle</param>
+        /// <returns>A QuickBarSlot configured for mode toggling</returns>
         public static QuickBarSlot ToggleMode(int nMode)
         {
             var qbs = Empty(QuickBarSlotType.ModeToggle);
@@ -159,28 +159,28 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
-        /// Create a QBS for examining
+        /// Creates a QuickBarSlot for examining objects.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A QuickBarSlot configured for examine action</returns>
         public static QuickBarSlot Examine()
         {
             return Empty(QuickBarSlotType.Examine);
         }
 
         /// <summary>
-        /// Create a QBS for bartering
+        /// Creates a QuickBarSlot for bartering with merchants.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A QuickBarSlot configured for barter action</returns>
         public static QuickBarSlot Barter()
         {
             return Empty(QuickBarSlotType.Barter);
         }
 
         /// <summary>
-        /// Create a QBS for quickchat command
+        /// Creates a QuickBarSlot for quickchat commands.
         /// </summary>
-        /// <param name="nCommand"></param>
-        /// <returns></returns>
+        /// <param name="nCommand">The quickchat command ID</param>
+        /// <returns>A QuickBarSlot configured for quickchat command</returns>
         public static QuickBarSlot QuickChat(int nCommand)
         {
             var qbs = Empty(QuickBarSlotType.QuickChat);
@@ -191,20 +191,20 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
-        /// Create a QBS for possessing a familiar
+        /// Creates a QuickBarSlot for possessing a familiar.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A QuickBarSlot configured for familiar possession</returns>
         public static QuickBarSlot PossessFamiliar()
         {
             return Empty(QuickBarSlotType.PossessFamiliar);
         }
 
         /// <summary>
-        /// Create a QBS for casting a spell
+        /// Creates a QuickBarSlot for using a special ability.
         /// </summary>
-        /// <param name="nSpell"></param>
-        /// <param name="nCasterLevel"></param>
-        /// <returns></returns>
+        /// <param name="nSpell">The spell/ability ID to use</param>
+        /// <param name="nCasterLevel">The caster level for the ability</param>
+        /// <returns>A QuickBarSlot configured for special ability usage</returns>
         public static QuickBarSlot UseSpecialAbility(int nSpell, int nCasterLevel)
         {
             var qbs = Empty(QuickBarSlotType.Spell);
@@ -216,11 +216,11 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
-        /// Create a QBS for running a command
+        /// Creates a QuickBarSlot for running a custom command.
         /// </summary>
-        /// <param name="sCommandLabel"></param>
-        /// <param name="sCommandLine"></param>
-        /// <returns></returns>
+        /// <param name="sCommandLabel">The display label for the command</param>
+        /// <param name="sCommandLine">The command line to execute</param>
+        /// <returns>A QuickBarSlot configured for custom command execution</returns>
         public static QuickBarSlot Command(string sCommandLabel, string sCommandLine)
         {
             var qbs = Empty(QuickBarSlotType.Command);

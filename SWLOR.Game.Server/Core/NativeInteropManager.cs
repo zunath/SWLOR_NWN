@@ -10,14 +10,6 @@ namespace SWLOR.Game.Server.Core
 {
     public unsafe class NativeInteropManager
     {
-        private static readonly Encoding _encoding;
-
-        static NativeInteropManager()
-        {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            _encoding = Encoding.GetEncoding("windows-1252");
-        }
-
         public void RegisterHandlers()
         {
             NWNXAPI.RegisterMainLoopHandler(&OnMainLoop);
@@ -84,8 +76,12 @@ namespace SWLOR.Game.Server.Core
 
         private static void ProcessSignal(string signal)
         {
-            // SWLOR doesn't currently handle signals, but this preserves the interface
-            // for future expansion if needed
+            switch (signal)
+            {
+                case "ON_MODULE_LOAD_FINISH":
+                    ServerManager.Executor.Initialize();
+                    break;
+            }
         }
     }
 }

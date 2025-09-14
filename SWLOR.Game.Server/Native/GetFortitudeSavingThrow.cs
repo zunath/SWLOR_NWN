@@ -33,31 +33,34 @@ namespace SWLOR.Game.Server.Native
         [UnmanagedCallersOnly]
         private static sbyte OnGetFortitudeSavingThrow(void* thisPtr, int bExcludeEffectBonus)
         {
-            var stats = CNWSCreatureStats.FromPointer(thisPtr);
-            var rules = NWNXLib.Rules();
+            return ServerManager.Executor.ExecuteInScriptContext(() =>
+            {
+                var stats = CNWSCreatureStats.FromPointer(thisPtr);
+                var rules = NWNXLib.Rules();
 
-            var effectBonus = 0;
-            sbyte modifier = 0;
+                var effectBonus = 0;
+                sbyte modifier = 0;
 
-            if (bExcludeEffectBonus == 0)
-                effectBonus = stats.m_pBaseCreature
-                    .GetTotalEffectBonus(3, // 3 = EFFECT_TYPE_SAVING_THROW
-                        null, 
-                        0, 
-                        0, 
-                        (int)SavingThrow.Fortitude);
+                if (bExcludeEffectBonus == 0)
+                    effectBonus = stats.m_pBaseCreature
+                        .GetTotalEffectBonus(3, // 3 = EFFECT_TYPE_SAVING_THROW
+                            null,
+                            0,
+                            0,
+                            (int)SavingThrow.Fortitude);
 
-            if (stats.HasFeat((ushort)FeatType.LuckOfHeroes) == 1)
-                modifier += (sbyte)rules.GetRulesetIntEntry(LUCKOFHEROES_SAVE_BONUS_HASH, 1);
+                if (stats.HasFeat((ushort)FeatType.LuckOfHeroes) == 1)
+                    modifier += (sbyte)rules.GetRulesetIntEntry(LUCKOFHEROES_SAVE_BONUS_HASH, 1);
 
-            if (stats.HasFeat((ushort)FeatType.PrestigeDarkBlessing) == 1)
-                modifier += (sbyte)stats.m_nCharismaModifier;
+                if (stats.HasFeat((ushort)FeatType.PrestigeDarkBlessing) == 1)
+                    modifier += (sbyte)stats.m_nCharismaModifier;
 
-            return (sbyte)(stats.m_nStrengthModifier + 
-                           stats.GetBaseFortSavingThrow() + 
-                           stats.m_nFortSavingThrowMisc + 
-                           effectBonus + 
-                           modifier);
+                return (sbyte)(stats.m_nStrengthModifier +
+                               stats.GetBaseFortSavingThrow() +
+                               stats.m_nFortSavingThrowMisc +
+                               effectBonus +
+                               modifier);
+            });
         }
     }
 }

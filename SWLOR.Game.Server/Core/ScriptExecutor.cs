@@ -1,3 +1,5 @@
+using NWN.Native.API;
+using SWLOR.Game.Server.Core.Extensions;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
@@ -8,8 +10,16 @@ namespace SWLOR.Game.Server.Core
 {
     public class ScriptExecutor
     {
+        private CVirtualMachine _virtualMachine;
+
         private const int ScriptHandled = 0;
         private const int ScriptNotHandled = -1;
+
+        internal void Initialize()
+        {
+            _virtualMachine = NWNXLib.VirtualMachine();
+            Console.WriteLine($"{nameof(ScriptExecutor)} initialized.");
+        }
 
         public int ProcessRunScript(string scriptName, uint objectSelf)
         {
@@ -83,6 +93,82 @@ namespace SWLOR.Game.Server.Core
             }
 
             return ScriptHandled;
+        }
+
+        public void ExecuteInScriptContext(Action action, uint objectId = OBJECT_INVALID, int scriptEventId = 0)
+        {
+            var spBefore = PushScriptContext(objectId, scriptEventId);
+            try
+            {
+                action();
+            }
+            finally
+            {
+                var spAfter = PopScriptContext();
+                if (spAfter != spBefore)
+                {
+                    Log.Write(LogGroup.Error, $"VM stack is invalid ({spBefore} != {spAfter}) after script context invocation: {action.Method.GetFullName()}");
+                }
+            }
+        }
+        public T ExecuteInScriptContext<T>(Func<T> action, uint objectId = OBJECT_INVALID, int scriptEventId = 0)
+        {
+            var spBefore = PushScriptContext(objectId, scriptEventId);
+
+            try
+            {
+                return action();
+            }
+            finally
+            {
+                var spAfter = PopScriptContext();
+                if (spAfter != spBefore)
+                {
+                    Log.Write(LogGroup.Error, $"VM stack is invalid ({spBefore} != {spAfter}) after script context invocation: {action.Method.GetFullName()}");
+                }
+            }
+        }
+
+        private int PopScriptContext()
+        {
+            var cmd = CNWSVirtualMachineCommands.FromPointer(_virtualMachine.m_pCmdImplementer.Pointer);
+
+            if (--_virtualMachine.m_nRecursionLevel != -1)
+            {
+                cmd.m_oidObjectRunScript = _virtualMachine.m_oidObjectRunScript[_virtualMachine.m_nRecursionLevel];
+                cmd.m_bValidObjectRunScript = _virtualMachine.m_bValidObjectRunScript[_virtualMachine.m_nRecursionLevel];
+            }
+
+            return _virtualMachine.m_cRunTimeStack.GetStackPointer();
+        }
+
+        private int PushScriptContext(uint oid, int scriptEventId)
+        {
+            if(_virtualMachine == null)
+                Console.WriteLine($"VM is null!!!");
+
+            var cmd = CNWSVirtualMachineCommands.FromPointer(_virtualMachine.m_pCmdImplementer.Pointer);
+            var valid = NWNXUtils.GetGameObject(oid) != IntPtr.Zero;
+
+            if (_virtualMachine.m_nRecursionLevel++ == -1)
+            {
+                _virtualMachine.m_cRunTimeStack.InitializeStack();
+                _virtualMachine.m_cRunTimeStack.m_pVMachine = _virtualMachine;
+                _virtualMachine.m_nInstructPtrLevel = 0;
+                _virtualMachine.m_nInstructionsExecuted = 0;
+            }
+
+            _virtualMachine.m_oidObjectRunScript[_virtualMachine.m_nRecursionLevel] = oid;
+            _virtualMachine.m_bValidObjectRunScript[_virtualMachine.m_nRecursionLevel] = valid ? 1 : 0;
+
+            var script = _virtualMachine.m_pVirtualMachineScript[_virtualMachine.m_nRecursionLevel];
+            script.m_nScriptEventID = scriptEventId;
+
+            _virtualMachine.m_pVirtualMachineScript[_virtualMachine.m_nRecursionLevel] = script;
+            cmd.m_oidObjectRunScript = _virtualMachine.m_oidObjectRunScript[_virtualMachine.m_nRecursionLevel];
+            cmd.m_bValidObjectRunScript = _virtualMachine.m_bValidObjectRunScript[_virtualMachine.m_nRecursionLevel];
+
+            return _virtualMachine.m_cRunTimeStack.GetStackPointer();
         }
     }
 }

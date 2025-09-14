@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.LogService;
@@ -25,8 +24,9 @@ namespace SWLOR.Game.Server.Service
         public static void RegisterConversations()
         {
             // Use reflection to get all of the conversation implementations.
-            var classes = Assembly.GetCallingAssembly().GetTypes()
-                .Where(p => typeof(IConversation).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+            var classes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(IConversation).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
             foreach (var type in classes)
             {
                 var instance = Activator.CreateInstance(type) as IConversation;

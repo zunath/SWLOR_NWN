@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -70,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                     dbShip.Status = nearbyStatus;
                                     DB.Set(dbShip);
 
-                                    ExecuteScript("pc_target_upd", nearby);
+                                    ExecuteScript(ScriptName.OnPlayerTargetUpdated, nearby);
                                 }
                             }
 

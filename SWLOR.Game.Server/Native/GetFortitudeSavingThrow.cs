@@ -12,6 +12,13 @@ namespace SWLOR.Game.Server.Native
     {
         // Hash constants for ruleset entries (computed using djb2 hash algorithm)
         private const uint LUCKOFHEROES_SAVE_BONUS_HASH = 0x390339C3; // djb2 hash of "LUCKOFHEROES_SAVE_BONUS"
+
+        // Effect type constants
+        private const int EffectTypeSavingThrow = 3;
+
+        // Default values
+        private const int DefaultLuckOfHeroesBonus = 1;
+        private const int ExcludeEffectBonus = 0;
         internal delegate sbyte GetFortitudeSavingThrowHook(void* thisPtr, int bExcludeEffectBonus);
 
         // ReSharper disable once NotAccessedField.Local
@@ -36,31 +43,58 @@ namespace SWLOR.Game.Server.Native
             return ServerManager.Executor.ExecuteInScriptContext(() =>
             {
                 var stats = CNWSCreatureStats.FromPointer(thisPtr);
-                var rules = NWNXLib.Rules();
 
-                var effectBonus = 0;
-                sbyte modifier = 0;
+                var effectBonus = CalculateEffectBonus(stats, bExcludeEffectBonus);
+                var featModifiers = CalculateFeatModifiers(stats);
 
-                if (bExcludeEffectBonus == 0)
-                    effectBonus = stats.m_pBaseCreature
-                        .GetTotalEffectBonus(3, // 3 = EFFECT_TYPE_SAVING_THROW
-                            null,
-                            0,
-                            0,
-                            (int)SavingThrow.Fortitude);
-
-                if (stats.HasFeat((ushort)FeatType.LuckOfHeroes) == 1)
-                    modifier += (sbyte)rules.GetRulesetIntEntry(LUCKOFHEROES_SAVE_BONUS_HASH, 1);
-
-                if (stats.HasFeat((ushort)FeatType.PrestigeDarkBlessing) == 1)
-                    modifier += (sbyte)stats.m_nCharismaModifier;
-
-                return (sbyte)(stats.m_nStrengthModifier +
-                               stats.GetBaseFortSavingThrow() +
-                               stats.m_nFortSavingThrowMisc +
-                               effectBonus +
-                               modifier);
+                return CalculateTotal(stats, effectBonus, featModifiers);
             });
+        }
+
+        private static int CalculateEffectBonus(CNWSCreatureStats stats, int bExcludeEffectBonus)
+        {
+            if (bExcludeEffectBonus != ExcludeEffectBonus)
+                return 0;
+
+            return stats.m_pBaseCreature.GetTotalEffectBonus(
+                EffectTypeSavingThrow,
+                null,
+                0,
+                0,
+                (int)SavingThrow.Fortitude);
+        }
+
+        private static sbyte CalculateFeatModifiers(CNWSCreatureStats stats)
+        {
+            sbyte modifier = 0;
+
+            modifier += CalculateLuckOfHeroesBonus(stats);
+            modifier += CalculatePrestigeDarkBlessingBonus(stats);
+
+            return modifier;
+        }
+
+        private static sbyte CalculateLuckOfHeroesBonus(CNWSCreatureStats stats)
+        {
+            return stats.HasFeat((ushort)FeatType.LuckOfHeroes) == 1
+                ? (sbyte)NWNXLib.Rules().GetRulesetIntEntry(LUCKOFHEROES_SAVE_BONUS_HASH, DefaultLuckOfHeroesBonus)
+                : (sbyte)0;
+        }
+
+        private static sbyte CalculatePrestigeDarkBlessingBonus(CNWSCreatureStats stats)
+        {
+            return stats.HasFeat((ushort)FeatType.PrestigeDarkBlessing) == 1
+                ? (sbyte)stats.m_nCharismaModifier
+                : (sbyte)0;
+        }
+
+        private static sbyte CalculateTotal(CNWSCreatureStats stats, int effectBonus, sbyte featModifiers)
+        {
+            return (sbyte)(stats.m_nStrengthModifier +
+                          stats.GetBaseFortSavingThrow() +
+                          stats.m_nFortSavingThrowMisc +
+                          effectBonus +
+                          featModifiers);
         }
     }
 }

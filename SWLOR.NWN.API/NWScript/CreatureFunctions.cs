@@ -9,11 +9,13 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Returns the footstep type of the specified creature.
         /// </summary>
-        /// <param name="oCreature">The creature to get the footstep type for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to get the footstep type for (default: OBJECT_SELF)</param>
         /// <returns>The footstep type. Returns FOOTSTEP_TYPE_INVALID if used on a non-creature object, or if used on creature that has no footstep sounds by default (e.g., Will-O'-Wisp)</returns>
         /// <remarks>The footstep type determines what the creature's footsteps sound like whenever they take a step.</remarks>
         public static FootstepType GetFootstepType(uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return (FootstepType)global::NWN.Core.NWScript.GetFootstepType(oCreature);
         }
 
@@ -21,21 +23,25 @@ namespace SWLOR.NWN.API.NWScript
         /// Sets the footstep type of the specified creature.
         /// </summary>
         /// <param name="nFootstepType">The footstep type (FOOTSTEP_TYPE_* constants)</param>
-        /// <param name="oCreature">The creature to change the footstep sound for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to change the footstep sound for (default: OBJECT_SELF)</param>
         /// <remarks>Changing a creature's footstep type will change the sound that its feet make whenever the creature takes a step. By default a creature's footsteps are determined by the appearance type of the creature. SetFootstepType() allows you to make a creature use a different footstep type than it would use by default for its given appearance. Possible values: FOOTSTEP_TYPE_NORMAL, FOOTSTEP_TYPE_LARGE, FOOTSTEP_TYPE_DRAGON, FOOTSTEP_TYPE_SOFT, FOOTSTEP_TYPE_HOOF, FOOTSTEP_TYPE_HOOF_LARGE, FOOTSTEP_TYPE_BEETLE, FOOTSTEP_TYPE_SPIDER, FOOTSTEP_TYPE_SKELETON, FOOTSTEP_TYPE_LEATHER_WING, FOOTSTEP_TYPE_FEATHER_WING, FOOTSTEP_TYPE_DEFAULT (makes the creature use its original default footstep sounds), FOOTSTEP_TYPE_NONE</remarks>
         public static void SetFootstepType(FootstepType nFootstepType, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             global::NWN.Core.NWScript.SetFootstepType((int)nFootstepType, oCreature);
         }
 
         /// <summary>
         /// Returns the wing type of the specified creature.
         /// </summary>
-        /// <param name="oCreature">The creature to get the wing type for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to get the wing type for (default: OBJECT_SELF)</param>
         /// <returns>The wing type. Returns CREATURE_WING_TYPE_NONE if used on a non-creature object, if the creature has no wings, or if the creature cannot have its wing type changed in the toolset</returns>
         /// <remarks>Possible values: CREATURE_WING_TYPE_NONE, CREATURE_WING_TYPE_DEMON, CREATURE_WING_TYPE_ANGEL, CREATURE_WING_TYPE_BAT, CREATURE_WING_TYPE_DRAGON, CREATURE_WING_TYPE_BUTTERFLY, CREATURE_WING_TYPE_BIRD</remarks>
         public static WingType GetCreatureWingType(uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return (WingType)global::NWN.Core.NWScript.GetCreatureWingType(oCreature);
         }
 
@@ -47,6 +53,8 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Only two creature model types will support wings. The MODELTYPE for the part based (playable races) 'P' and MODELTYPE 'W' in the appearance.2da. Possible values: CREATURE_WING_TYPE_NONE, CREATURE_WING_TYPE_DEMON, CREATURE_WING_TYPE_ANGEL, CREATURE_WING_TYPE_BAT, CREATURE_WING_TYPE_DRAGON, CREATURE_WING_TYPE_BUTTERFLY, CREATURE_WING_TYPE_BIRD</remarks>
         public static void SetCreatureWingType(WingType nWingType, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             global::NWN.Core.NWScript.SetCreatureWingType((int)nWingType, oCreature);
         }
 
@@ -54,11 +62,13 @@ namespace SWLOR.NWN.API.NWScript
         /// Returns the model number being used for the specified body part and creature.
         /// </summary>
         /// <param name="nPart">The body part (CREATURE_PART_* constants)</param>
-        /// <param name="oCreature">The creature to get the body part for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to get the body part for (default: OBJECT_SELF)</param>
         /// <returns>The model number for the body part. Returns CREATURE_PART_INVALID if used on a non-creature object, or if the creature does not use a part based model</returns>
         /// <remarks>The model number returned is for the body part when the creature is not wearing armor (i.e. whether or not the creature is wearing armor does not affect the return value). Only works on part based creatures, which is typically restricted to the playable races (unless some new part based custom content has been added to the module). Possible body parts: CREATURE_PART_RIGHT_FOOT, CREATURE_PART_LEFT_FOOT, CREATURE_PART_RIGHT_SHIN, CREATURE_PART_LEFT_SHIN, CREATURE_PART_RIGHT_THIGH, CREATURE_PART_LEFT_THIGH, CREATURE_PART_PELVIS, CREATURE_PART_TORSO, CREATURE_PART_BELT, CREATURE_PART_NECK, CREATURE_PART_RIGHT_FOREARM, CREATURE_PART_LEFT_FOREARM, CREATURE_PART_RIGHT_BICEP, CREATURE_PART_LEFT_BICEP, CREATURE_PART_RIGHT_SHOULDER, CREATURE_PART_LEFT_SHOULDER, CREATURE_PART_RIGHT_HAND, CREATURE_PART_LEFT_HAND, CREATURE_PART_HEAD</remarks>
         public static int GetCreatureBodyPart(CreaturePart nPart, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetCreatureBodyPart((int)nPart, oCreature);
         }
 
@@ -67,21 +77,25 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nPart">The body part (CREATURE_PART_* constants)</param>
         /// <param name="nModelNumber">The model number (CREATURE_MODEL_TYPE_* constants)</param>
-        /// <param name="oCreature">The creature to change the body part for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to change the body part for (default: OBJECT_SELF)</param>
         /// <remarks>The model names for parts need to be in the following format: p&lt;m/f&gt;&lt;race letter&gt;&lt;phenotype&gt;_&lt;body part&gt;&lt;model number&gt;.mdl. Only part based creature appearance types are supported (i.e. The model types for the playable races ('P') in the appearance.2da). Possible body parts: CREATURE_PART_RIGHT_FOOT, CREATURE_PART_LEFT_FOOT, CREATURE_PART_RIGHT_SHIN, CREATURE_PART_LEFT_SHIN, CREATURE_PART_RIGHT_THIGH, CREATURE_PART_LEFT_THIGH, CREATURE_PART_PELVIS, CREATURE_PART_TORSO, CREATURE_PART_BELT, CREATURE_PART_NECK, CREATURE_PART_RIGHT_FOREARM, CREATURE_PART_LEFT_FOREARM, CREATURE_PART_RIGHT_BICEP, CREATURE_PART_LEFT_BICEP, CREATURE_PART_RIGHT_SHOULDER, CREATURE_PART_LEFT_SHOULDER, CREATURE_PART_RIGHT_HAND, CREATURE_PART_LEFT_HAND, CREATURE_PART_HEAD. Possible model types: CREATURE_MODEL_TYPE_NONE, CREATURE_MODEL_TYPE_SKIN (not for use on shoulders, pelvis or head), CREATURE_MODEL_TYPE_TATTOO (for body parts that support tattoos, i.e. not heads/feet/hands), CREATURE_MODEL_TYPE_UNDEAD (undead model only exists for the right arm parts).</remarks>
         public static void SetCreatureBodyPart(CreaturePart nPart, int nModelNumber, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             global::NWN.Core.NWScript.SetCreatureBodyPart((int)nPart, nModelNumber, oCreature);
         }
 
         /// <summary>
         /// Returns the tail type of the specified creature.
         /// </summary>
-        /// <param name="oCreature">The creature to get the tail type for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to get the tail type for (default: OBJECT_SELF)</param>
         /// <returns>The tail type. Returns CREATURE_TAIL_TYPE_NONE if used on a non-creature object, if the creature has no tail, or if the creature cannot have its tail type changed in the toolset</returns>
         /// <remarks>Possible values: CREATURE_TAIL_TYPE_NONE, CREATURE_TAIL_TYPE_LIZARD, CREATURE_TAIL_TYPE_BONE, CREATURE_TAIL_TYPE_DEVIL</remarks>
         public static TailType GetCreatureTailType(uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return (TailType)global::NWN.Core.NWScript.GetCreatureTailType(oCreature);
         }
 
@@ -89,10 +103,12 @@ namespace SWLOR.NWN.API.NWScript
         /// Sets the tail type of the specified creature.
         /// </summary>
         /// <param name="nTailType">The tail type (CREATURE_TAIL_TYPE_* constants)</param>
-        /// <param name="oCreature">The creature to change the tail type for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to change the tail type for (default: OBJECT_SELF)</param>
         /// <remarks>Only two creature model types will support tails. The MODELTYPE for the part based (playable) races 'P' and MODELTYPE 'T' in the appearance.2da. Possible values: CREATURE_TAIL_TYPE_NONE, CREATURE_TAIL_TYPE_LIZARD, CREATURE_TAIL_TYPE_BONE, CREATURE_TAIL_TYPE_DEVIL</remarks>
         public static void SetCreatureTailType(TailType nTailType, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             global::NWN.Core.NWScript.SetCreatureTailType((int)nTailType, oCreature);
         }
 
@@ -110,10 +126,12 @@ namespace SWLOR.NWN.API.NWScript
         /// Sets the creature's phenotype (body type) to the specified type.
         /// </summary>
         /// <param name="nPhenoType">The phenotype type to set</param>
-        /// <param name="oCreature">The creature to change the phenotype for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to change the phenotype for (default: OBJECT_SELF)</param>
         /// <remarks>SetPhenoType will only work on part based creatures (i.e. the starting default playable races). Possible values: PHENOTYPE_NORMAL, PHENOTYPE_BIG, PHENOTYPE_CUSTOM* (custom phenotypes should only be used if you have specifically created your own custom content that requires the use of a new phenotype and you have specified the appropriate custom phenotype in your custom content)</remarks>
         public static void SetPhenoType(PhenoType nPhenoType, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             global::NWN.Core.NWScript.SetPhenoType((int)nPhenoType, oCreature);
         }
 
@@ -129,7 +147,7 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Returns the class that the spellcaster cast the spell as.
+        /// Returns the class that the specified spellcaster cast the spell as.
         /// </summary>
         /// <returns>The class type. Returns CLASS_TYPE_INVALID if the caster has no valid class (placeables, etc.)</returns>
         public static ClassType GetLastSpellCastClass()
@@ -141,19 +159,23 @@ namespace SWLOR.NWN.API.NWScript
         /// Sets the number of base attacks for the specified creature.
         /// </summary>
         /// <param name="nBaseAttackBonus">The number of base attacks (range: 1 to 6)</param>
-        /// <param name="oCreature">The creature to set the base attack bonus for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to set the base attack bonus for (default: OBJECT_SELF)</param>
         /// <remarks>This function does not work on Player Characters.</remarks>
         public static void SetBaseAttackBonus(int nBaseAttackBonus, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             global::NWN.Core.NWScript.SetBaseAttackBonus(nBaseAttackBonus, oCreature);
         }
 
         /// <summary>
         /// Restores the number of base attacks back to its original state.
         /// </summary>
-        /// <param name="oCreature">The creature to restore the base attack bonus for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to restore the base attack bonus for (default: OBJECT_SELF)</param>
         public static void RestoreBaseAttackBonus(uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             global::NWN.Core.NWScript.RestoreBaseAttackBonus(oCreature);
         }
 
@@ -286,10 +308,12 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Gets the current AI level that the creature is running at.
         /// </summary>
-        /// <param name="oTarget">The creature to get the AI level for (default: OBJECT_INVALID)</param>
+        /// <param name="oTarget">The creature to get the AI level for (default: OBJECT_SELF)</param>
         /// <returns>One of the following: AI_LEVEL_INVALID, AI_LEVEL_VERY_LOW, AI_LEVEL_LOW, AI_LEVEL_NORMAL, AI_LEVEL_HIGH, AI_LEVEL_VERY_HIGH</returns>
         public static AILevel GetAILevel(uint oTarget = OBJECT_INVALID)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return (AILevel)global::NWN.Core.NWScript.GetAILevel(oTarget);
         }
 
@@ -327,10 +351,12 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Gets the immortal flag on a creature.
         /// </summary>
-        /// <param name="oTarget">The creature to check the immortal flag for (default: OBJECT_INVALID)</param>
+        /// <param name="oTarget">The creature to check the immortal flag for (default: OBJECT_SELF)</param>
         /// <returns>True if the creature is immortal, false otherwise</returns>
         public static bool GetImmortal(uint oTarget = OBJECT_INVALID)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetImmortal(oTarget) != 0;
         }
 
@@ -441,22 +467,26 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Gets the last object that was sent as a GetLastAttacker(), GetLastDamager(), GetLastSpellCaster() (for a hostile spell), or GetLastDisturbed() (when a creature is pickpocketed).
         /// </summary>
-        /// <param name="oVictim">The victim object (default: OBJECT_INVALID)</param>
+        /// <param name="oVictim">The victim object (default: OBJECT_SELF)</param>
         /// <returns>The last hostile actor</returns>
         /// <remarks>Return values may only ever be: 1) A Creature, 2) Plot Characters will never have this value set, 3) Area of Effect Objects will return the AOE creator if they are registered as this value, otherwise they will return INVALID_OBJECT_ID, 4) Traps will not return the creature that set the trap, 5) This value will never be overwritten by another non-creature object, 6) This value will never be a dead/destroyed creature</remarks>
         public static uint GetLastHostileActor(uint oVictim = OBJECT_INVALID)
         {
+            if (oVictim == OBJECT_INVALID)
+                oVictim = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetLastHostileActor(oVictim);
         }
 
         /// <summary>
         /// Gets the number of hit dice worth of Turn Resistance that the undead creature may have.
         /// </summary>
-        /// <param name="oUndead">The undead creature to check (default: OBJECT_INVALID)</param>
+        /// <param name="oUndead">The undead creature to check (default: OBJECT_SELF)</param>
         /// <returns>The number of hit dice of turn resistance</returns>
         /// <remarks>This will only work on undead creatures.</remarks>
         public static int GetTurnResistanceHD(uint oUndead = OBJECT_INVALID)
         {
+            if (oUndead == OBJECT_INVALID)
+                oUndead = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetTurnResistanceHD(oUndead);
         }
 
@@ -483,11 +513,13 @@ namespace SWLOR.NWN.API.NWScript
         /// Determines whether the source has a friendly reaction towards the target.
         /// </summary>
         /// <param name="oTarget">The target to check the reaction for</param>
-        /// <param name="oSource">The source to check the reaction from (default: OBJECT_INVALID)</param>
+        /// <param name="oSource">The source to check the reaction from (default: OBJECT_SELF)</param>
         /// <returns>True if the source has a friendly reaction towards the target</returns>
         /// <remarks>This depends on the reputation, PVP setting and (if both oSource and oTarget are PCs), oSource's Like/Dislike setting for oTarget. If you just want to know how two objects feel about each other in terms of faction and personal reputation, use GetIsFriend() instead.</remarks>
         public static int GetIsReactionTypeFriendly(uint oTarget, uint oSource = OBJECT_INVALID)
         {
+            if (oSource == OBJECT_INVALID)
+                oSource = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetIsReactionTypeFriendly(oTarget, oSource);
         }
 
@@ -495,11 +527,13 @@ namespace SWLOR.NWN.API.NWScript
         /// Determines whether the source has a neutral reaction towards the target.
         /// </summary>
         /// <param name="oTarget">The target to check the reaction for</param>
-        /// <param name="oSource">The source to check the reaction from (default: OBJECT_INVALID)</param>
+        /// <param name="oSource">The source to check the reaction from (default: OBJECT_SELF)</param>
         /// <returns>True if the source has a neutral reaction towards the target</returns>
         /// <remarks>This depends on the reputation, PVP setting and (if both oSource and oTarget are PCs), oSource's Like/Dislike setting for oTarget. If you just want to know how two objects feel about each other in terms of faction and personal reputation, use GetIsNeutral() instead.</remarks>
         public static int GetIsReactionTypeNeutral(uint oTarget, uint oSource = OBJECT_INVALID)
         {
+            if (oSource == OBJECT_INVALID)
+                oSource = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetIsReactionTypeNeutral(oTarget, oSource);
         }
 
@@ -507,11 +541,13 @@ namespace SWLOR.NWN.API.NWScript
         /// Determines whether the source has a hostile reaction towards the target.
         /// </summary>
         /// <param name="oTarget">The target to check the reaction for</param>
-        /// <param name="oSource">The source to check the reaction from (default: OBJECT_INVALID)</param>
+        /// <param name="oSource">The source to check the reaction from (default: OBJECT_SELF)</param>
         /// <returns>True if the source has a hostile reaction towards the target</returns>
         /// <remarks>This depends on the reputation, PVP setting and (if both oSource and oTarget are PCs), oSource's Like/Dislike setting for oTarget. If you just want to know how two objects feel about each other in terms of faction and personal reputation, use GetIsEnemy() instead.</remarks>
         public static bool GetIsReactionTypeHostile(uint oTarget, uint oSource = OBJECT_INVALID)
         {
+            if (oSource == OBJECT_INVALID)
+                oSource = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetIsReactionTypeHostile(oTarget, oSource) == 1;
         }
 
@@ -527,9 +563,9 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the object that killed the caller.
+        /// Gets the object that killed the specified object.
         /// </summary>
-        /// <returns>The object that killed the caller</returns>
+        /// <returns>The object that killed the specified object</returns>
         public static uint GetLastKiller()
         {
             return global::NWN.Core.NWScript.GetLastKiller();
@@ -567,31 +603,37 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Returns true if the creature was spawned from an encounter.
         /// </summary>
-        /// <param name="oCreature">The creature to check (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to check (default: OBJECT_SELF)</param>
         /// <returns>True if the creature was spawned from an encounter, false otherwise</returns>
         public static int GetIsEncounterCreature(uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetIsEncounterCreature(oCreature);
         }
 
         /// <summary>
         /// Makes the creature equip the melee weapon in its possession that can do the most damage.
         /// </summary>
-        /// <param name="oVersus">You can try to get the most damaging weapon against this target (default: OBJECT_INVALID)</param>
+        /// <param name="oVersus">You can try to get the most damaging weapon against this target (default: OBJECT_SELF)</param>
         /// <param name="bOffHand">Whether to equip in the off-hand (default: false)</param>
         /// <remarks>If no valid melee weapon is found, it will equip the most damaging range weapon. This function should only ever be called in the EndOfCombatRound scripts, because otherwise it would have to stop the combat round to run simulation.</remarks>
         public static void ActionEquipMostDamagingMelee(uint oVersus = OBJECT_INVALID, bool bOffHand = false)
         {
+            if (oVersus == OBJECT_INVALID)
+                oVersus = OBJECT_SELF;
             global::NWN.Core.NWScript.ActionEquipMostDamagingMelee(oVersus, bOffHand ? 1 : 0);
         }
 
         /// <summary>
         /// Makes the creature equip the range weapon in its possession that can do the most damage.
         /// </summary>
-        /// <param name="oVersus">You can try to get the most damaging weapon against this target (default: OBJECT_INVALID)</param>
+        /// <param name="oVersus">You can try to get the most damaging weapon against this target (default: OBJECT_SELF)</param>
         /// <remarks>If no valid range weapon can be found, it will equip the most damaging melee weapon.</remarks>
         public static void ActionEquipMostDamagingRanged(uint oVersus = OBJECT_INVALID)
         {
+            if (oVersus == OBJECT_INVALID)
+                oVersus = OBJECT_SELF;
             global::NWN.Core.NWScript.ActionEquipMostDamagingRanged(oVersus);
         }
 
@@ -650,22 +692,27 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the last creature that opened the caller.
+        /// Gets the last creature that opened the specified object.
         /// </summary>
-        /// <returns>The last creature that opened the caller. Returns OBJECT_INVALID if the caller is not a valid door, placeable or store</returns>
-        public static uint GetLastOpenedBy()
+        /// <param name="oObject">The object to check (defaults to OBJECT_SELF)</param>
+        /// <returns>The last creature that opened the object. Returns OBJECT_INVALID if the object is not a valid door, placeable or store</returns>
+        public static uint GetLastOpenedBy(uint oObject = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetLastOpenedBy();
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
+            return global::NWN.Core.NWScript.GetLastOpenedBy(oObject);
         }
 
         /// <summary>
         /// Determines the number of times that the creature has the specified spell memorized.
         /// </summary>
         /// <param name="nSpell">The spell to check (SPELL_* constants)</param>
-        /// <param name="oCreature">The creature to check the spell for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to check the spell for (default: OBJECT_SELF)</param>
         /// <returns>The number of times the creature has the spell memorized</returns>
         public static int GetHasSpell(Spell nSpell, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetHasSpell((int)nSpell, oCreature);
         }
 
@@ -680,33 +727,41 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the type of disturbance that caused the caller's OnInventoryDisturbed script to fire.
+        /// Gets the type of disturbance that caused the specified object's OnInventoryDisturbed script to fire.
         /// </summary>
+        /// <param name="oObject">The object to get the inventory disturb type for (defaults to OBJECT_SELF)</param>
         /// <returns>The type of disturbance (INVENTORY_DISTURB_* constants)</returns>
         /// <remarks>This will only work for creatures and placeables.</remarks>
-        public static DisturbType GetInventoryDisturbType()
+        public static DisturbType GetInventoryDisturbType(uint oObject = OBJECT_INVALID)
         {
-            return (DisturbType)global::NWN.Core.NWScript.GetInventoryDisturbType();
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
+            return (DisturbType)global::NWN.Core.NWScript.GetInventoryDisturbType(oObject);
         }
 
         /// <summary>
-        /// Gets the item that caused the caller's OnInventoryDisturbed script to fire.
+        /// Gets the item that caused the specified object's OnInventoryDisturbed script to fire.
         /// </summary>
+        /// <param name="oObject">The object to get the inventory disturb item for (defaults to OBJECT_SELF)</param>
         /// <returns>The item that caused the disturbance. Returns OBJECT_INVALID if the caller is not a valid object</returns>
-        public static uint GetInventoryDisturbItem()
+        public static uint GetInventoryDisturbItem(uint oObject = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetInventoryDisturbItem();
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
+            return global::NWN.Core.NWScript.GetInventoryDisturbItem(oObject);
         }
 
         /// <summary>
         /// Determines the creature's class based on the class position.
         /// </summary>
         /// <param name="nClassPosition">The class position (1, 2, or 3)</param>
-        /// <param name="oCreature">The creature to get the class for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to get the class for (default: OBJECT_SELF)</param>
         /// <returns>The creature's class (CLASS_TYPE_* constants). Returns CLASS_TYPE_INVALID if the creature does not have a class in the specified position or if the creature is not valid</returns>
         /// <remarks>A creature can have up to three classes. A single-class creature will only have a value in nClassPosition=1.</remarks>
         public static ClassType GetClassByPosition(int nClassPosition, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return (ClassType)global::NWN.Core.NWScript.GetClassByPosition(nClassPosition, oCreature);
         }
 
@@ -714,11 +769,13 @@ namespace SWLOR.NWN.API.NWScript
         /// Determines the creature's class level based on the class position.
         /// </summary>
         /// <param name="nClassPosition">The class position (1, 2, or 3)</param>
-        /// <param name="oCreature">The creature to get the class level for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to get the class level for (default: OBJECT_SELF)</param>
         /// <returns>The creature's class level. Returns 0 if the creature does not have a class in the specified position or if the creature is not valid</returns>
         /// <remarks>A creature can have up to three classes. A single-class creature will only have a value in nClassPosition=1.</remarks>
         public static int GetLevelByPosition(int nClassPosition, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetLevelByPosition(nClassPosition, oCreature);
         }
 
@@ -726,10 +783,12 @@ namespace SWLOR.NWN.API.NWScript
         /// Determines the levels that the creature holds in the specified class type.
         /// </summary>
         /// <param name="nClassType">The class type (CLASS_TYPE_* constants)</param>
-        /// <param name="oCreature">The creature to get the class level for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to get the class level for (default: OBJECT_SELF)</param>
         /// <returns>The number of levels the creature has in the specified class</returns>
         public static int GetLevelByClass(ClassType nClassType, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetLevelByClass((int)nClassType, oCreature);
         }
 
@@ -737,20 +796,24 @@ namespace SWLOR.NWN.API.NWScript
         /// Returns the ability modifier for the specified ability.
         /// </summary>
         /// <param name="nAbility">The ability type (ABILITY_* constants)</param>
-        /// <param name="oCreature">The creature to get the ability modifier for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to get the ability modifier for (default: OBJECT_SELF)</param>
         /// <returns>The ability modifier for the specified ability</returns>
         public static int GetAbilityModifier(AbilityType nAbility, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetAbilityModifier((int)nAbility, oCreature);
         }
 
         /// <summary>
         /// Returns true if the creature is in combat.
         /// </summary>
-        /// <param name="oCreature">The creature to check (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to check (default: OBJECT_SELF)</param>
         /// <returns>True if the creature is in combat, false otherwise</returns>
         public static bool GetIsInCombat(uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetIsInCombat(oCreature) != 0;
         }
 
@@ -809,7 +872,7 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nFirstCriteriaType">The first criteria type (CREATURE_TYPE_* constants)</param>
         /// <param name="nFirstCriteriaValue">The first criteria value</param>
-        /// <param name="oTarget">The target to find the nearest creature to (default: OBJECT_INVALID)</param>
+        /// <param name="oTarget">The target to find the nearest creature to (default: OBJECT_SELF)</param>
         /// <param name="nNth">The Nth nearest creature to find (default: 1)</param>
         /// <param name="nSecondCriteriaType">The second criteria type (default: -1)</param>
         /// <param name="nSecondCriteriaValue">The second criteria value (default: -1)</param>
@@ -821,6 +884,8 @@ namespace SWLOR.NWN.API.NWScript
             uint oTarget = OBJECT_INVALID, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1,
             int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetNearestCreature((int)nFirstCriteriaType, nFirstCriteriaValue, oTarget, nNth, nSecondCriteriaType, nSecondCriteriaValue, nThirdCriteriaType, nThirdCriteriaValue);
         }
 
@@ -882,10 +947,12 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oCreature">The creature to check immunity for</param>
         /// <param name="nImmunityType">The immunity type (IMMUNITY_TYPE_* constants)</param>
-        /// <param name="oVersus">If specified, also checks for the race and alignment of this target (default: OBJECT_INVALID)</param>
+        /// <param name="oVersus">If specified, also checks for the race and alignment of this target (default: OBJECT_SELF)</param>
         /// <returns>True if the creature has immunity of the specified type</returns>
         public static bool GetIsImmune(uint oCreature, ImmunityType nImmunityType, uint oVersus = OBJECT_INVALID)
         {
+            if (oVersus == OBJECT_INVALID)
+                oVersus = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetIsImmune(oCreature, (int)nImmunityType, oVersus) == 1;
         }
 
@@ -893,10 +960,12 @@ namespace SWLOR.NWN.API.NWScript
         /// Determines whether the creature has the specified feat and it is usable.
         /// </summary>
         /// <param name="nFeat">The feat to check (FEAT_* constants)</param>
-        /// <param name="oCreature">The creature to check the feat for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to check the feat for (default: OBJECT_SELF)</param>
         /// <returns>True if the creature has the feat and it is usable, false otherwise</returns>
         public static bool GetHasFeat(FeatType nFeat, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetHasFeat((int)nFeat, oCreature) != 0;
         }
 
@@ -904,10 +973,12 @@ namespace SWLOR.NWN.API.NWScript
         /// Determines whether the creature has the specified skill and it is usable.
         /// </summary>
         /// <param name="nSkill">The skill to check (SKILL_* constants)</param>
-        /// <param name="oCreature">The creature to check the skill for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to check the skill for (default: OBJECT_SELF)</param>
         /// <returns>True if the creature has the skill and it is usable, false otherwise</returns>
         public static bool GetHasSkill(NWNSkillType nSkill, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetHasSkill((int)nSkill, oCreature) != 0;
         }
 
@@ -915,11 +986,13 @@ namespace SWLOR.NWN.API.NWScript
         /// Determines whether the source sees the target.
         /// </summary>
         /// <param name="oTarget">The target to check visibility for</param>
-        /// <param name="oSource">The source to check visibility from (default: OBJECT_INVALID)</param>
+        /// <param name="oSource">The source to check visibility from (default: OBJECT_SELF)</param>
         /// <returns>True if the source sees the target, false otherwise</returns>
         /// <remarks>This only works on creatures, as visibility lists are not maintained for non-creature objects.</remarks>
         public static bool GetObjectSeen(uint oTarget, uint oSource = OBJECT_INVALID)
         {
+            if (oSource == OBJECT_INVALID)
+                oSource = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetObjectSeen(oTarget, oSource) != 0;
         }
 
@@ -927,11 +1000,13 @@ namespace SWLOR.NWN.API.NWScript
         /// Determines whether the source hears the target.
         /// </summary>
         /// <param name="oTarget">The target to check hearing for</param>
-        /// <param name="oSource">The source to check hearing from (default: OBJECT_INVALID)</param>
+        /// <param name="oSource">The source to check hearing from (default: OBJECT_SELF)</param>
         /// <returns>True if the source hears the target, false otherwise</returns>
         /// <remarks>This only works on creatures, as visibility lists are not maintained for non-creature objects.</remarks>
         public static bool GetObjectHeard(uint oTarget, uint oSource = OBJECT_INVALID)
         {
+            if (oSource == OBJECT_INVALID)
+                oSource = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetObjectHeard(oTarget, oSource) != 0;
         }
 
@@ -949,33 +1024,39 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the number of ranks that the target has in the specified skill.
         /// </summary>
         /// <param name="nSkill">The skill to check (SKILL_* constants)</param>
-        /// <param name="oTarget">The target to get the skill rank for (default: OBJECT_INVALID)</param>
+        /// <param name="oTarget">The target to get the skill rank for (default: OBJECT_SELF)</param>
         /// <param name="nBaseSkillRank">If set to true, returns the number of base skill ranks the target has (i.e., not including any bonuses from ability scores, feats, etc.) (default: false)</param>
         /// <returns>The number of skill ranks. Returns -1 if the target doesn't have the skill, 0 if the skill is untrained</returns>
         public static int GetSkillRank(NWNSkillType nSkill, uint oTarget = OBJECT_INVALID, bool nBaseSkillRank = false)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetSkillRank((int)nSkill, oTarget, nBaseSkillRank ? 1 : 0);
         }
 
         /// <summary>
         /// Gets the attack target of the specified creature.
         /// </summary>
-        /// <param name="oCreature">The creature to get the attack target for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to get the attack target for (default: OBJECT_SELF)</param>
         /// <returns>The attack target of the creature</returns>
         /// <remarks>This only works when the creature is in combat.</remarks>
         public static uint GetAttackTarget(uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetAttackTarget(oCreature);
         }
 
         /// <summary>
         /// Gets the attack type of the creature's last attack.
         /// </summary>
-        /// <param name="oCreature">The creature to get the last attack type for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to get the last attack type for (default: OBJECT_SELF)</param>
         /// <returns>The attack type (SPECIAL_ATTACK_* constants)</returns>
         /// <remarks>This only works when the creature is in combat.</remarks>
         public static SpecialAttack GetLastAttackType(uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return (SpecialAttack)global::NWN.Core.NWScript.GetLastAttackType(oCreature);
         }
 

@@ -19,7 +19,7 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the object that last entered the caller.
+        /// Gets the object that last entered the specified object.
         /// </summary>
         /// <returns>The entering object. Returns OBJECT_INVALID on error</returns>
         /// <remarks>The value returned depends on the object type of the caller: 1) If the caller is a door, it returns the object that last triggered it. 2) If the caller is a trigger, area of effect, module, area or encounter, it returns the object that last entered it. When used for doors, this should only be called from the OnAreaTransitionClick event. Otherwise, it should only be called in OnEnter scripts.</remarks>
@@ -29,7 +29,7 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the object that last left the caller.
+        /// Gets the object that last left the specified object.
         /// </summary>
         /// <returns>The exiting object. Returns OBJECT_INVALID on error</returns>
         /// <remarks>This function works on triggers, areas of effect, modules, areas and encounters. Should only be called in OnExit scripts.</remarks>
@@ -225,10 +225,12 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Returns true if the area is flagged as either interior or underground.
         /// </summary>
-        /// <param name="oArea">The area to check (default: OBJECT_INVALID)</param>
+        /// <param name="oArea">The area to check (default: OBJECT_SELF)</param>
         /// <returns>True if the area is interior or underground</returns>
         public static bool GetIsAreaInterior(uint oArea = OBJECT_INVALID)
         {
+            if (oArea == OBJECT_INVALID)
+                oArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetIsAreaInterior(oArea) != 0;
         }
 
@@ -267,9 +269,11 @@ namespace SWLOR.NWN.API.NWScript
         /// Changes the sky that is displayed in the specified area.
         /// </summary>
         /// <param name="nSkyBox">The skybox to set (SKYBOX_* constants associated with skyboxes.2da)</param>
-        /// <param name="oArea">The area to change the sky for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_INVALID)</param>
+        /// <param name="oArea">The area to change the sky for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         public static void SetSkyBox(Skybox nSkyBox, uint oArea = OBJECT_INVALID)
         {
+            if (oArea == OBJECT_INVALID)
+                oArea = OBJECT_SELF;
             global::NWN.Core.NWScript.SetSkyBox((int)nSkyBox, oArea);
         }
 
@@ -278,19 +282,23 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nFogType">Specifies whether the Sun, Moon, or both fog types are set (FOG_TYPE_* constants)</param>
         /// <param name="nFogColor">The color to set the fog to (FOG_COLOR_* constants). Can also be represented as a hex RGB number (e.g., 0xFFEEDD where FF=red, EE=green, DD=blue)</param>
-        /// <param name="oArea">The area to set fog color for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_INVALID)</param>
+        /// <param name="oArea">The area to set fog color for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         public static void SetFogColor(FogType nFogType, FogColor nFogColor, uint oArea = OBJECT_INVALID)
         {
+            if (oArea == OBJECT_INVALID)
+                oArea = OBJECT_SELF;
             global::NWN.Core.NWScript.SetFogColor((int)nFogType, (int)nFogColor, oArea);
         }
 
         /// <summary>
         /// Gets the skybox that is currently displayed in the specified area.
         /// </summary>
-        /// <param name="oArea">The area to get the skybox for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_INVALID)</param>
+        /// <param name="oArea">The area to get the skybox for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         /// <returns>The skybox constant (SKYBOX_*)</returns>
         public static Skybox GetSkyBox(uint oArea = OBJECT_INVALID)
         {
+            if (oArea == OBJECT_INVALID)
+                oArea = OBJECT_SELF;
             return (Skybox)global::NWN.Core.NWScript.GetSkyBox(oArea);
         }
 
@@ -298,10 +306,12 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the fog color in the specified area.
         /// </summary>
         /// <param name="nFogType">Specifies whether the Sun or Moon fog type is returned. Valid values are FOG_TYPE_SUN or FOG_TYPE_MOON</param>
-        /// <param name="oArea">The area to get fog color for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_INVALID)</param>
+        /// <param name="oArea">The area to get fog color for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         /// <returns>The fog color constant (FOG_COLOR_*)</returns>
         public static FogColor GetFogColor(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
+            if (oArea == OBJECT_INVALID)
+                oArea = OBJECT_SELF;
             return (FogColor)global::NWN.Core.NWScript.GetFogColor((int)nFogType, oArea);
         }
 
@@ -310,9 +320,11 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nFogType">Specifies whether the Sun, Moon, or both fog types are set (FOG_TYPE_* constants)</param>
         /// <param name="nFogAmount">The density that the fog is being set to</param>
-        /// <param name="oArea">The area to set fog amount for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_INVALID)</param>
+        /// <param name="oArea">The area to set fog amount for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         public static void SetFogAmount(FogType nFogType, int nFogAmount, uint oArea = OBJECT_INVALID)
         {
+            if (oArea == OBJECT_INVALID)
+                oArea = OBJECT_SELF;
             global::NWN.Core.NWScript.SetFogAmount((int)nFogType, nFogAmount, oArea);
         }
 
@@ -320,10 +332,12 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the fog amount in the specified area.
         /// </summary>
         /// <param name="nFogType">Specifies whether the Sun or Moon fog type is returned. Valid values are FOG_TYPE_SUN or FOG_TYPE_MOON</param>
-        /// <param name="oArea">The area to get fog amount for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_INVALID)</param>
+        /// <param name="oArea">The area to get fog amount for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         /// <returns>The fog amount</returns>
         public static int GetFogAmount(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
+            if (oArea == OBJECT_INVALID)
+                oArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetFogAmount((int)nFogType, oArea);
         }
 
@@ -342,10 +356,12 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the size of the specified area.
         /// </summary>
         /// <param name="nAreaDimension">The area dimension to determine (AREA_HEIGHT or AREA_WIDTH)</param>
-        /// <param name="oArea">The area to get the size for. If no valid area is specified, uses the area of the caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_INVALID)</param>
+        /// <param name="oArea">The area to get the size for. If no valid area is specified, uses the area of the caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         /// <returns>The number of tiles that the area is wide/high, or zero on error</returns>
         public static int GetAreaSize(Dimension nAreaDimension, uint oArea = OBJECT_INVALID)
         {
+            if (oArea == OBJECT_INVALID)
+                oArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetAreaSize((int)nAreaDimension, oArea);
         }
 
@@ -406,22 +422,26 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Gets the first object in the specified area.
         /// </summary>
-        /// <param name="oArea">The area to get the first object from. If no valid area is specified, uses the caller's area (default: OBJECT_INVALID)</param>
+        /// <param name="oArea">The area to get the first object from. If no valid area is specified, uses the caller's area (default: OBJECT_SELF)</param>
         /// <param name="nObjectFilter">Allows filtering out undesired object types using bitwise "or". For example, to return only creatures and doors, use OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR (default: ObjectType.All)</param>
         /// <returns>The first object in the area. Returns OBJECT_INVALID on error</returns>
         public static uint GetFirstObjectInArea(uint oArea = OBJECT_INVALID, ObjectType nObjectFilter = ObjectType.All)
         {
+            if (oArea == OBJECT_INVALID)
+                oArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetFirstObjectInArea(oArea, (int)nObjectFilter);
         }
 
         /// <summary>
         /// Gets the next object in the specified area.
         /// </summary>
-        /// <param name="oArea">The area to get the next object from. If no valid area is specified, uses the caller's area (default: OBJECT_INVALID)</param>
+        /// <param name="oArea">The area to get the next object from. If no valid area is specified, uses the caller's area (default: OBJECT_SELF)</param>
         /// <param name="nObjectFilter">Allows filtering out undesired object types using bitwise "or". For example, to return only creatures and doors, use OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR (default: ObjectType.All)</param>
         /// <returns>The next object in the area. Returns OBJECT_INVALID on error</returns>
         public static uint GetNextObjectInArea(uint oArea = OBJECT_INVALID, ObjectType nObjectFilter = ObjectType.All)
         {
+            if (oArea == OBJECT_INVALID)
+                oArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetNextObjectInArea(oArea, (int)nObjectFilter);
         }
 
@@ -576,11 +596,13 @@ namespace SWLOR.NWN.API.NWScript
         /// Returns whether the creature is in the given subarea (trigger, area of effect object, etc.).
         /// </summary>
         /// <param name="oCreature">The creature to check</param>
-        /// <param name="oSubArea">The subarea to check (default: OBJECT_INVALID)</param>
+        /// <param name="oSubArea">The subarea to check (default: OBJECT_SELF)</param>
         /// <returns>True if the creature is in the subarea, false otherwise</returns>
         /// <remarks>This function will tell you if the creature has triggered an onEnter event, not if it is physically within the space of the subarea</remarks>
         public static bool GetIsInSubArea(uint oCreature, uint oSubArea = OBJECT_INVALID)
         {
+            if (oSubArea == OBJECT_INVALID)
+                oSubArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetIsInSubArea(oCreature, oSubArea) != 0;
         }
 
@@ -708,10 +730,12 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the light color in the specified area.
         /// </summary>
         /// <param name="nColorType">The color type to return (AREA_LIGHT_COLOR_* values)</param>
-        /// <param name="oArea">The area to get light color for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_INVALID)</param>
+        /// <param name="oArea">The area to get light color for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         /// <returns>The light color</returns>
         public static int GetAreaLightColor(AreaLightColorType nColorType, uint oArea = OBJECT_INVALID)
         {
+            if (oArea == OBJECT_INVALID)
+                oArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetAreaLightColor((int)nColorType, oArea);
         }
 
@@ -720,14 +744,16 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nColorType">The color type (AREA_LIGHT_COLOR_* constants)</param>
         /// <param name="nColor">The color to set (FOG_COLOR_* constants). Can also be represented as a hex RGB number (e.g., 0xFFEEDD where FF=red, EE=green, DD=blue)</param>
-        /// <param name="oArea">The area to set light color for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_INVALID)</param>
+        /// <param name="oArea">The area to set light color for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         /// <param name="fFadeTime">If above 0.0, it will fade to the new color in the amount of seconds specified (default: 0.0)</param>
         public static void SetAreaLightColor(
-            AreaLightColorType nColorType, 
-            FogColor nColor, 
-            uint oArea = OBJECT_INVALID, 
+            AreaLightColorType nColorType,
+            FogColor nColor,
+            uint oArea = OBJECT_INVALID,
             float fFadeTime = 0.0f)
         {
+            if (oArea == OBJECT_INVALID)
+                oArea = OBJECT_SELF;
             global::NWN.Core.NWScript.SetAreaLightColor((int)nColorType, (int)nColor, oArea, fFadeTime);
         }
 
@@ -735,10 +761,12 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the light direction of origin in the specified area.
         /// </summary>
         /// <param name="nLightType">Specifies whether the Moon or Sun light direction is returned (AREA_LIGHT_DIRECTION_* values)</param>
-        /// <param name="oArea">The area to get light direction for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_INVALID)</param>
+        /// <param name="oArea">The area to get light direction for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         /// <returns>The light direction vector</returns>
         public static Vector3 GetAreaLightDirection(AreaLightDirectionType nLightType, uint oArea = OBJECT_INVALID)
         {
+            if (oArea == OBJECT_INVALID)
+                oArea = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetAreaLightDirection((int)nLightType, oArea);
         }
 
@@ -747,21 +775,23 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="nLightType">The light type (AREA_LIGHT_DIRECTION_* constants)</param>
         /// <param name="vDirection">The direction of origin of the light type, i.e. the direction the sun/moon is in from the area</param>
-        /// <param name="oArea">The area to set light direction for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_INVALID)</param>
+        /// <param name="oArea">The area to set light direction for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         /// <param name="fFadeTime">If above 0.0, it will fade to the new direction in the amount of seconds specified (default: 0.0)</param>
         public static void SetAreaLightDirection(
-            AreaLightDirectionType nLightType, 
-            Vector3 vDirection, 
-            uint oArea = OBJECT_INVALID, 
+            AreaLightDirectionType nLightType,
+            Vector3 vDirection,
+            uint oArea = OBJECT_INVALID,
             float fFadeTime = 0.0f)
         {
+            if (oArea == OBJECT_INVALID)
+                oArea = OBJECT_SELF;
             global::NWN.Core.NWScript.SetAreaLightDirection((int)nLightType, vDirection, oArea, fFadeTime);
         }
 
         /// <summary>
         /// Gets the first object within the specified persistent object.
         /// </summary>
-        /// <param name="oPersistentObject">The persistent object to search within (default: OBJECT_INVALID)</param>
+        /// <param name="oPersistentObject">The persistent object to search within (default: OBJECT_SELF)</param>
         /// <param name="nResidentObjectType">The type of objects to find (OBJECT_TYPE_* constants) (default: ObjectType.Creature)</param>
         /// <param name="nPersistentZone">The persistent zone (PERSISTENT_ZONE_ACTIVE. PERSISTENT_ZONE_FOLLOW is no longer used) (default: PersistentZone.Active)</param>
         /// <returns>The first object found. Returns OBJECT_INVALID if no object is found</returns>
@@ -769,13 +799,15 @@ namespace SWLOR.NWN.API.NWScript
             ObjectType nResidentObjectType = ObjectType.Creature,
             PersistentZone nPersistentZone = PersistentZone.Active)
         {
+            if (oPersistentObject == OBJECT_INVALID)
+                oPersistentObject = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetFirstInPersistentObject(oPersistentObject, (int)nResidentObjectType, (int)nPersistentZone);
         }
 
         /// <summary>
         /// Gets the next object within the specified persistent object.
         /// </summary>
-        /// <param name="oPersistentObject">The persistent object to search within (default: OBJECT_INVALID)</param>
+        /// <param name="oPersistentObject">The persistent object to search within (default: OBJECT_SELF)</param>
         /// <param name="nResidentObjectType">The type of objects to find (OBJECT_TYPE_* constants) (default: ObjectType.Creature)</param>
         /// <param name="nPersistentZone">The persistent zone (PERSISTENT_ZONE_ACTIVE. PERSISTENT_ZONE_FOLLOW is no longer used) (default: PersistentZone.Active)</param>
         /// <returns>The next object found. Returns OBJECT_INVALID if no object is found</returns>
@@ -783,16 +815,20 @@ namespace SWLOR.NWN.API.NWScript
             ObjectType nResidentObjectType = ObjectType.Creature,
             PersistentZone nPersistentZone = PersistentZone.Active)
         {
+            if (oPersistentObject == OBJECT_INVALID)
+                oPersistentObject = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetNextInPersistentObject(oPersistentObject, (int)nResidentObjectType, (int)nPersistentZone);
         }
 
         /// <summary>
         /// Returns the creator of the specified area of effect object.
         /// </summary>
-        /// <param name="oAreaOfEffectObject">The area of effect object to get the creator for (default: OBJECT_INVALID)</param>
+        /// <param name="oAreaOfEffectObject">The area of effect object to get the creator for (default: OBJECT_SELF)</param>
         /// <returns>The creator of the area of effect object. Returns OBJECT_INVALID if the object is not a valid Area of Effect object</returns>
         public static uint GetAreaOfEffectCreator(uint oAreaOfEffectObject = OBJECT_INVALID)
         {
+            if (oAreaOfEffectObject == OBJECT_INVALID)
+                oAreaOfEffectObject = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetAreaOfEffectCreator(oAreaOfEffectObject);
         }
 

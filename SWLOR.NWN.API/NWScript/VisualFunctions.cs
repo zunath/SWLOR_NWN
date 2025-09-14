@@ -82,9 +82,11 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="OldName">The original texture name to replace</param>
         /// <param name="NewName">The new texture name to load instead. Setting to empty string will clear the override and revert to original</param>
-        /// <param name="PC">The player character to apply the override to. If OBJECT_INVALID, applies to all active players</param>
+        /// <param name="PC">The player character to apply the override to. If OBJECT_SELF, applies to all active players</param>
         public static void SetTextureOverride(string OldName, string NewName = "", uint PC = OBJECT_INVALID)
         {
+            if (PC == OBJECT_INVALID)
+                PC = OBJECT_SELF;
             global::NWN.Core.NWScript.SetTextureOverride(OldName, NewName, PC);
         }
 

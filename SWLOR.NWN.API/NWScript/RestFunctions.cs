@@ -16,10 +16,12 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Returns TRUE if the creature is resting.
         /// </summary>
-        /// <param name="oCreature">The creature to check (defaults to OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to check (defaults to OBJECT_SELF)</param>
         /// <returns>TRUE if the creature is resting</returns>
         public static bool GetIsResting(uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetIsResting(oCreature) != 0;
         }
 

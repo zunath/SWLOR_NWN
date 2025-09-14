@@ -21,8 +21,7 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the last object that default clicked (left clicked) on the placeable object
-        /// that is calling this function.
+        /// Gets the last object that default clicked (left clicked) on the specified placeable object.
         /// Should only be called from a placeable's OnClick event.
         /// </summary>
         /// <returns>The last object that clicked, or OBJECT_INVALID if called by something other than a placeable</returns>
@@ -53,10 +52,12 @@ namespace SWLOR.NWN.API.NWScript
         /// or on an error returns PORTRAIT_INVALID. In these instances
         /// try using GetPortraitResRef() instead.
         /// </summary>
-        /// <param name="oTarget">The object for which you are getting the portrait Id (defaults to OBJECT_INVALID)</param>
+        /// <param name="oTarget">The object for which you are getting the portrait Id (defaults to OBJECT_SELF)</param>
         /// <returns>The Portrait Id number being used for the object</returns>
         public static int GetPortraitId(uint oTarget = OBJECT_INVALID)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetPortraitId(oTarget);
         }
 
@@ -78,10 +79,12 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the Portrait ResRef of the target.
         /// The Portrait ResRef will not include a trailing size letter.
         /// </summary>
-        /// <param name="oTarget">The object for which you are getting the portrait ResRef (defaults to OBJECT_INVALID)</param>
+        /// <param name="oTarget">The object for which you are getting the portrait ResRef (defaults to OBJECT_SELF)</param>
         /// <returns>The Portrait ResRef being used for the object</returns>
         public static string GetPortraitResRef(uint oTarget = OBJECT_INVALID)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetPortraitResRef(oTarget);
         }
 
@@ -98,7 +101,7 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the last object that disarmed the trap on the caller.
+        /// Gets the last object that disarmed the trap on the specified object.
         /// </summary>
         /// <returns>The last object that disarmed the trap, or OBJECT_INVALID if the caller is not a valid placeable, trigger or door</returns>
         public static uint GetLastDisarmed()
@@ -107,7 +110,7 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the last object that disturbed the inventory of the caller.
+        /// Gets the last object that disturbed the inventory of the specified object.
         /// </summary>
         /// <returns>The last object that disturbed the inventory, or OBJECT_INVALID if the caller is not a valid creature or placeable</returns>
         public static uint GetLastDisturbed()
@@ -116,21 +119,27 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the last object that locked the caller.
+        /// Gets the last object that locked the specified object.
         /// </summary>
-        /// <returns>The last object that locked the caller, or OBJECT_INVALID if the caller is not a valid door or placeable</returns>
-        public static uint GetLastLocked()
+        /// <param name="oObject">The object to get the last locker for (defaults to OBJECT_SELF)</param>
+        /// <returns>The last object that locked the specified object, or OBJECT_INVALID if the caller is not a valid door or placeable</returns>
+        public static uint GetLastLocked(uint oObject = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetLastLocked();
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
+            return global::NWN.Core.NWScript.GetLastLocked(oObject);
         }
 
         /// <summary>
-        /// Gets the last object that unlocked the caller.
+        /// Gets the last object that unlocked the specified object.
         /// </summary>
-        /// <returns>The last object that unlocked the caller, or OBJECT_INVALID if the caller is not a valid door or placeable</returns>
-        public static uint GetLastUnlocked()
+        /// <param name="oObject">The object to get the last unlocker for (defaults to OBJECT_SELF)</param>
+        /// <returns>The last object that unlocked the specified object, or OBJECT_INVALID if the caller is not a valid door or placeable</returns>
+        public static uint GetLastUnlocked(uint oObject = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetLastUnlocked();
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
+            return global::NWN.Core.NWScript.GetLastUnlocked(oObject);
         }
 
         /// <summary>
@@ -388,10 +397,12 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the weight of an item, or the total carried weight of a creature in tenths
         /// of pounds (as per the baseitems.2da).
         /// </summary>
-        /// <param name="oTarget">The item or creature for which the weight is needed (defaults to OBJECT_INVALID)</param>
+        /// <param name="oTarget">The item or creature for which the weight is needed (defaults to OBJECT_SELF)</param>
         /// <returns>The weight in tenths of pounds</returns>
         public static int GetWeight(uint oTarget = OBJECT_INVALID)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetWeight(oTarget);
         }
 
@@ -572,10 +583,12 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Gets the amount of gold possessed by the target.
         /// </summary>
-        /// <param name="oTarget">The target to get the gold for (defaults to OBJECT_INVALID)</param>
+        /// <param name="oTarget">The target to get the gold for (defaults to OBJECT_SELF)</param>
         /// <returns>The amount of gold</returns>
         public static int GetGold(uint oTarget = OBJECT_INVALID)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetGold(oTarget);
         }
 
@@ -736,20 +749,24 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Gets the current hitpoints of the object.
         /// </summary>
-        /// <param name="oObject">The object to get hitpoints for (defaults to OBJECT_INVALID)</param>
+        /// <param name="oObject">The object to get hitpoints for (defaults to OBJECT_SELF)</param>
         /// <returns>The current hitpoints, or 0 on error</returns>
         public static int GetCurrentHitPoints(uint oObject = OBJECT_INVALID)
         {
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetCurrentHitPoints(oObject);
         }
 
         /// <summary>
         /// Gets the maximum hitpoints of the object.
         /// </summary>
-        /// <param name="oObject">The object to get max hitpoints for (defaults to OBJECT_INVALID)</param>
+        /// <param name="oObject">The object to get max hitpoints for (defaults to OBJECT_SELF)</param>
         /// <returns>The maximum hitpoints, or 0 on error</returns>
         public static int GetMaxHitPoints(uint oObject = OBJECT_INVALID)
         {
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetMaxHitPoints(oObject);
         }
 
@@ -875,19 +892,23 @@ namespace SWLOR.NWN.API.NWScript
         /// Sets whether the target's action stack can be modified.
         /// </summary>
         /// <param name="nCommandable">Whether the target is commandable</param>
-        /// <param name="oTarget">The target object (defaults to OBJECT_INVALID)</param>
+        /// <param name="oTarget">The target object (defaults to OBJECT_SELF)</param>
         public static void SetCommandable(bool nCommandable, uint oTarget = OBJECT_INVALID)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             global::NWN.Core.NWScript.SetCommandable(nCommandable ? 1 : 0, oTarget);
         }
 
         /// <summary>
         /// Determines whether the target's action stack can be modified.
         /// </summary>
-        /// <param name="oTarget">The target object (defaults to OBJECT_INVALID)</param>
+        /// <param name="oTarget">The target object (defaults to OBJECT_SELF)</param>
         /// <returns>TRUE if the target is commandable</returns>
         public static bool GetCommandable(uint oTarget = OBJECT_INVALID)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetCommandable(oTarget) != 0;
         }
 

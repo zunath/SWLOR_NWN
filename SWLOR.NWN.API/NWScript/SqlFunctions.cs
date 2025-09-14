@@ -225,11 +225,13 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sqlQuery">The SQL query to get the object from</param>
         /// <param name="nIndex">The column index (starts at 0)</param>
         /// <param name="lSpawnAt">The location to spawn the object at</param>
-        /// <param name="oInventory">The inventory to spawn the object into (if it's an item and the receiver can receive it)</param>
+        /// <param name="oInventory">The inventory to spawn the object into (defaults to OBJECT_SELF)</param>
         /// <param name="bLoadObjectState">Whether to load object state (local vars, effects, action queue, etc.)</param>
         /// <returns>The object, or INVALID_OBJECT on error</returns>
         public static uint SqlGetObject(IntPtr sqlQuery, int nIndex, IntPtr lSpawnAt, uint oInventory = OBJECT_INVALID, bool bLoadObjectState = false)
         {
+            if (oInventory == OBJECT_INVALID)
+                oInventory = OBJECT_SELF;
             return global::NWN.Core.NWScript.SqlGetObject(sqlQuery, nIndex, lSpawnAt, oInventory, bLoadObjectState ? 1 : 0);
         }
 

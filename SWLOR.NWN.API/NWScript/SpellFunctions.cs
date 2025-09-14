@@ -12,10 +12,12 @@ namespace SWLOR.NWN.API.NWScript
         /// then the spell id on the effect will be invalid.
         /// </summary>
         /// <param name="nSpell">SPELL_* constant</param>
-        /// <param name="oObject">The object to check (defaults to OBJECT_INVALID)</param>
+        /// <param name="oObject">The object to check (defaults to OBJECT_SELF)</param>
         /// <returns>TRUE if the object has effects from the spell</returns>
         public static bool GetHasSpellEffect(Spell nSpell, uint oObject = OBJECT_INVALID)
         {
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetHasSpellEffect((int)nSpell, oObject) != 0;
         }
 
@@ -46,7 +48,7 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the object at which the caller last cast a spell.
+        /// Gets the object at which the specified caster last cast a spell.
         /// </summary>
         /// <returns>The target object, or OBJECT_INVALID on error</returns>
         public static uint GetSpellTargetObject()
@@ -74,7 +76,7 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the location of the caller's last spell target.
+        /// Gets the location of the specified caster's last spell target.
         /// </summary>
         /// <returns>The location of the last spell target</returns>
         public static Location GetSpellTargetLocation()
@@ -200,7 +202,7 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the target at which the caller attempted to cast a spell.
+        /// Gets the target at which the specified creature attempted to cast a spell.
         /// This value is set every time a spell is cast and is reset at the end of combat.
         /// </summary>
         /// <returns>The attempted spell target, or OBJECT_INVALID if the caller is not a valid creature</returns>

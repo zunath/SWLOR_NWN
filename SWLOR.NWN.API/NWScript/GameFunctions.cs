@@ -90,10 +90,12 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Gets the current action that the specified object is executing.
         /// </summary>
-        /// <param name="oObject">The object to get the current action for (default: OBJECT_INVALID)</param>
+        /// <param name="oObject">The object to get the current action for (default: OBJECT_SELF)</param>
         /// <returns>The current action (ACTION_* constants)</returns>
         public static ActionType GetCurrentAction(uint oObject = OBJECT_INVALID)
         {
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
             return (ActionType)global::NWN.Core.NWScript.GetCurrentAction(oObject);
         }
 
@@ -152,8 +154,10 @@ namespace SWLOR.NWN.API.NWScript
             return global::NWN.Core.NWScript.GetMicrosecondCounter();
         }
 
-        public static void ExecuteScript(string sScript, uint oTarget)
+        public static void ExecuteScript(string sScript, uint oTarget = OBJECT_INVALID)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             global::NWN.Core.NWScript.ExecuteScript(sScript, oTarget);
         }
 

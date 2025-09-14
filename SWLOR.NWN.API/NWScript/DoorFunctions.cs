@@ -52,7 +52,7 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the last blocking door encountered by the caller of this function.
+        /// Gets the last blocking door encountered by the specified creature.
         /// </summary>
         /// <returns>The last blocking door. Returns OBJECT_INVALID if the caller is not a valid creature</returns>
         public static uint GetBlockingDoor()

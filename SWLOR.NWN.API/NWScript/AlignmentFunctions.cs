@@ -65,9 +65,11 @@ namespace SWLOR.NWN.API.NWScript
         /// Clears all personal feelings that the source has about the target.
         /// </summary>
         /// <param name="oTarget">The target to clear personal feelings about</param>
-        /// <param name="oSource">The source whose personal feelings to clear (default: OBJECT_INVALID)</param>
+        /// <param name="oSource">The source whose personal feelings to clear (default: OBJECT_SELF)</param>
         public static void ClearPersonalReputation(uint oTarget, uint oSource = OBJECT_INVALID)
         {
+            if (oSource == OBJECT_INVALID)
+                oSource = OBJECT_SELF;
             global::NWN.Core.NWScript.ClearPersonalReputation(oTarget, oSource);
         }
 
@@ -75,13 +77,15 @@ namespace SWLOR.NWN.API.NWScript
         /// Makes the source temporarily friendly towards the target using personal reputation.
         /// </summary>
         /// <param name="oTarget">The target to befriend</param>
-        /// <param name="oSource">The source to make friendly (default: OBJECT_INVALID)</param>
+        /// <param name="oSource">The source to make friendly (default: OBJECT_SELF)</param>
         /// <param name="bDecays">If true, the friendship decays over the specified duration; otherwise it is indefinite (default: false)</param>
         /// <param name="fDurationInSeconds">The length of time the temporary friendship lasts (default: 180.0)</param>
         /// <remarks>If bDecays is true, the personal reputation amount decreases over time. Friendship will only be in effect as long as (faction reputation + total personal reputation) >= REPUTATION_TYPE_FRIEND.</remarks>
         public static void SetIsTemporaryFriend(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
+            if (oSource == OBJECT_INVALID)
+                oSource = OBJECT_SELF;
             global::NWN.Core.NWScript.SetIsTemporaryFriend(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
         }
 
@@ -89,13 +93,15 @@ namespace SWLOR.NWN.API.NWScript
         /// Makes the source temporarily hostile towards the target using personal reputation.
         /// </summary>
         /// <param name="oTarget">The target to make hostile</param>
-        /// <param name="oSource">The source to make hostile (default: OBJECT_INVALID)</param>
+        /// <param name="oSource">The source to make hostile (default: OBJECT_SELF)</param>
         /// <param name="bDecays">If true, the enmity decays over the specified duration; otherwise it is indefinite (default: false)</param>
         /// <param name="fDurationInSeconds">The length of time the temporary enmity lasts (default: 180.0)</param>
         /// <remarks>If bDecays is true, the personal reputation amount decreases over time. Enmity will only be in effect as long as (faction reputation + total personal reputation) <= REPUTATION_TYPE_ENEMY.</remarks>
         public static void SetIsTemporaryEnemy(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
+            if (oSource == OBJECT_INVALID)
+                oSource = OBJECT_SELF;
             global::NWN.Core.NWScript.SetIsTemporaryEnemy(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
         }
 
@@ -103,13 +109,15 @@ namespace SWLOR.NWN.API.NWScript
         /// Makes the source temporarily neutral towards the target using personal reputation.
         /// </summary>
         /// <param name="oTarget">The target to make neutral</param>
-        /// <param name="oSource">The source to make neutral (default: OBJECT_INVALID)</param>
+        /// <param name="oSource">The source to make neutral (default: OBJECT_SELF)</param>
         /// <param name="bDecays">If true, the neutrality decays over the specified duration; otherwise it is indefinite (default: false)</param>
         /// <param name="fDurationInSeconds">The length of time the temporary neutrality lasts (default: 180.0)</param>
         /// <remarks>If bDecays is true, the personal reputation amount decreases over time. Neutrality will only be in effect as long as (faction reputation + total personal reputation) > REPUTATION_TYPE_ENEMY and (faction reputation + total personal reputation) < REPUTATION_TYPE_FRIEND.</remarks>
         public static void SetIsTemporaryNeutral(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
+            if (oSource == OBJECT_INVALID)
+                oSource = OBJECT_SELF;
             global::NWN.Core.NWScript.SetIsTemporaryNeutral(oTarget, oSource, bDecays ? 1 : 0, fDurationInSeconds);
         }
     }

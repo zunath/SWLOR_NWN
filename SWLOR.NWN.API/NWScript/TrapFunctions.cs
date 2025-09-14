@@ -199,21 +199,25 @@ namespace SWLOR.NWN.API.NWScript
         /// Note: "trap objects" are actually any trigger, placeable or door that is
         /// trapped in the target's area.
         /// </summary>
-        /// <param name="oTarget">The target object</param>
+        /// <param name="oTarget">The target object (defaults to OBJECT_SELF)</param>
         /// <param name="nTrapDetected">If this is TRUE, the trap returned has to have been detected by the target</param>
         /// <returns>The nearest trap to the target</returns>
         public static uint GetNearestTrapToObject(uint oTarget = OBJECT_INVALID, bool nTrapDetected = true)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetNearestTrapToObject(oTarget, nTrapDetected ? 1 : 0);
         }
 
         /// <summary>
         /// Gets the last trap detected by the target.
         /// </summary>
-        /// <param name="oTarget">The target object</param>
+        /// <param name="oTarget">The target object (defaults to OBJECT_SELF)</param>
         /// <returns>The last trap detected by the target, or OBJECT_INVALID on error</returns>
         public static uint GetLastTrapDetected(uint oTarget = OBJECT_INVALID)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetLastTrapDetected(oTarget);
         }
 

@@ -12,7 +12,7 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the last object that used the placeable object that is calling this function.
+        /// Gets the last object that used the specified placeable object.
         /// </summary>
         /// <returns>The last object that used the placeable, or OBJECT_INVALID if called by something other than a placeable or door</returns>
         public static uint GetLastUsedBy()
@@ -31,20 +31,24 @@ namespace SWLOR.NWN.API.NWScript
         /// all the placeable illumination has been set.
         /// If the placeable is not a placeable object, or is a placeable that doesn't have a light, nothing will happen.
         /// </summary>
-        /// <param name="oPlaceable">The placeable object (defaults to OBJECT_INVALID)</param>
+        /// <param name="oPlaceable">The placeable object (defaults to OBJECT_SELF)</param>
         /// <param name="bIlluminate">If TRUE, the placeable's illumination will be turned on. If FALSE, it will be turned off</param>
         public static void SetPlaceableIllumination(uint oPlaceable = OBJECT_INVALID, bool bIlluminate = true)
         {
+            if (oPlaceable == OBJECT_INVALID)
+                oPlaceable = OBJECT_SELF;
             global::NWN.Core.NWScript.SetPlaceableIllumination(oPlaceable, bIlluminate ? 1 : 0);
         }
 
         /// <summary>
         /// Returns TRUE if the illumination for the placeable is on.
         /// </summary>
-        /// <param name="oPlaceable">The placeable object to check (defaults to OBJECT_INVALID)</param>
+        /// <param name="oPlaceable">The placeable object to check (defaults to OBJECT_SELF)</param>
         /// <returns>TRUE if the illumination is on</returns>
         public static bool GetPlaceableIllumination(uint oPlaceable = OBJECT_INVALID)
         {
+            if (oPlaceable == OBJECT_INVALID)
+                oPlaceable = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetPlaceableIllumination(oPlaceable) != 0;
         }
 

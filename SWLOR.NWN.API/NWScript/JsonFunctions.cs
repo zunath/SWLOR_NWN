@@ -309,11 +309,13 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="jObject">The JSON object describing the game object</param>
         /// <param name="locLocation">The location to create the object at</param>
-        /// <param name="oOwner">The owner of the object (defaults to OBJECT_INVALID)</param>
+        /// <param name="oOwner">The owner of the object (defaults to OBJECT_SELF)</param>
         /// <param name="bLoadObjectState">Whether to load object state (defaults to false)</param>
         /// <returns>The created object, or OBJECT_INVALID on error</returns>
         public static uint JsonToObject(Json jObject, Location locLocation, uint oOwner = OBJECT_INVALID, bool bLoadObjectState = false)
         {
+            if (oOwner == OBJECT_INVALID)
+                oOwner = OBJECT_SELF;
             return global::NWN.Core.NWScript.JsonToObject(jObject, locLocation, oOwner, bLoadObjectState ? 1 : 0);
         }
 

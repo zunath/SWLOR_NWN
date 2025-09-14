@@ -157,13 +157,16 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the distance from the caller to the object in metres.
+        /// Gets the distance from the source object to the target object in metres.
         /// </summary>
         /// <param name="oObject">The object to get the distance to</param>
+        /// <param name="oFrom">The object to measure distance from (defaults to OBJECT_SELF)</param>
         /// <returns>The distance in metres, or -1.0f on error</returns>
-        public static float GetDistanceToObject(uint oObject)
+        public static float GetDistanceToObject(uint oObject, uint oFrom = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetDistanceToObject(oObject);
+            if (oFrom == OBJECT_INVALID)
+                oFrom = OBJECT_SELF;
+            return global::NWN.Core.NWScript.GetDistanceToObject(oObject, oFrom);
         }
 
         /// <summary>

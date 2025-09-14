@@ -191,10 +191,12 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Returns true if the placeable object is usable.
         /// </summary>
-        /// <param name="oObject">The object to check (default: OBJECT_INVALID)</param>
+        /// <param name="oObject">The object to check (default: OBJECT_SELF)</param>
         /// <returns>True if the object is usable</returns>
         public static bool GetUseableFlag(uint oObject = OBJECT_INVALID)
         {
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetUseableFlag(oObject) != 0;
         }
 
@@ -297,20 +299,24 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Gets the first item in a target's inventory to start cycling through items.
         /// </summary>
-        /// <param name="oTarget">The target object to check inventory of (default: OBJECT_INVALID)</param>
+        /// <param name="oTarget">The target object to check inventory of (default: OBJECT_SELF)</param>
         /// <returns>The first item in the inventory, or OBJECT_INVALID if the target is not a creature, item, placeable, or store, or if no item is found</returns>
         public static uint GetFirstItemInInventory(uint oTarget = OBJECT_INVALID)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetFirstItemInInventory(oTarget);
         }
 
         /// <summary>
         /// Gets the next item in a target's inventory to continue cycling through items.
         /// </summary>
-        /// <param name="oTarget">The target object to check inventory of (default: OBJECT_INVALID)</param>
+        /// <param name="oTarget">The target object to check inventory of (default: OBJECT_SELF)</param>
         /// <returns>The next item in the inventory, or OBJECT_INVALID if the target is not a creature, item, placeable, or store, or if no more items are found</returns>
         public static uint GetNextItemInInventory(uint oTarget = OBJECT_INVALID)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetNextItemInInventory(oTarget);
         }
 
@@ -366,10 +372,12 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the object in a creature's specified inventory slot.
         /// </summary>
         /// <param name="nInventorySlot">The inventory slot to check (INVENTORY_SLOT_*)</param>
-        /// <param name="oCreature">The creature to check (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to check (default: OBJECT_SELF)</param>
         /// <returns>The item in the specified slot, or OBJECT_INVALID if the creature is not valid or there is no item in the slot</returns>
         public static uint GetItemInSlot(InventorySlot nInventorySlot, uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetItemInSlot((int)nInventorySlot, oCreature);
         }
 

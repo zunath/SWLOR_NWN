@@ -130,13 +130,15 @@ namespace SWLOR.NWN.API.NWScript
         /// Creates an item with the specified template in the target's inventory.
         /// </summary>
         /// <param name="sResRef">The item template to create</param>
-        /// <param name="oTarget">The target to create the item for (default: OBJECT_INVALID)</param>
+        /// <param name="oTarget">The target to create the item for (default: OBJECT_SELF)</param>
         /// <param name="nStackSize">The stack size of the item to be created (default: 1)</param>
         /// <param name="sNewTag">If this string is not empty, it will replace the default tag from the template (default: empty string)</param>
         /// <returns>The object that has been created. Returns OBJECT_INVALID on error. If the item created was merged into an existing stack of similar items, the function will return the merged stack object. If the merged stack overflowed, the function will return the overflowed stack that was created</returns>
         public static uint CreateItemOnObject(string sResRef, uint oTarget = OBJECT_INVALID, int nStackSize = 1,
             string sNewTag = "")
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.CreateItemOnObject(sResRef, oTarget, nStackSize, sNewTag);
         }
 
@@ -900,10 +902,12 @@ namespace SWLOR.NWN.API.NWScript
         /// </summary>
         /// <param name="oItem">The item to activate</param>
         /// <param name="lTarget">The target location</param>
-        /// <param name="oTarget">The target object (default: OBJECT_INVALID)</param>
+        /// <param name="oTarget">The target object (default: OBJECT_SELF)</param>
         /// <returns>The Activate Item event</returns>
         public static Event EventActivateItem(uint oItem, Location lTarget, uint oTarget = OBJECT_INVALID)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.EventActivateItem(oItem, lTarget, oTarget);
         }
 

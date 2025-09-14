@@ -38,11 +38,13 @@ namespace SWLOR.NWN.API.NWScript
         /// Starts up the dialog tree.
         /// </summary>
         /// <param name="sResRef">The dialog file to use. If not specified, the default dialog file will be used (default: empty string)</param>
-        /// <param name="oObjectToDialog">The object to dialog with. If not specified, the person that triggered the event will be used (default: OBJECT_INVALID)</param>
+        /// <param name="oObjectToDialog">The object to dialog with. If not specified, the person that triggered the event will be used (default: OBJECT_SELF)</param>
         /// <returns>The result of beginning the conversation</returns>
         /// <remarks>Use this in an OnDialog script.</remarks>
         public static int BeginConversation(string sResRef = "", uint oObjectToDialog = OBJECT_INVALID)
         {
+            if (oObjectToDialog == OBJECT_INVALID)
+                oObjectToDialog = OBJECT_SELF;
             return global::NWN.Core.NWScript.BeginConversation(sResRef, oObjectToDialog);
         }
     }

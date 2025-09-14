@@ -7,11 +7,13 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Gets the last attacker of the specified target.
         /// </summary>
-        /// <param name="oAttackee">The target that was attacked (default: OBJECT_INVALID)</param>
+        /// <param name="oAttackee">The target that was attacked (default: OBJECT_SELF)</param>
         /// <returns>The last attacker. Returns OBJECT_INVALID on error</returns>
         /// <remarks>This should only be used in the OnAttacked events for creatures, placeables and doors.</remarks>
         public static uint GetLastAttacker(uint oAttackee = OBJECT_INVALID)
         {
+            if (oAttackee == OBJECT_INVALID)
+                oAttackee = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetLastAttacker(oAttackee);
         }
 
@@ -31,12 +33,14 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreature">The creature making the save</param>
         /// <param name="nDC">The difficulty class to beat</param>
         /// <param name="nSaveType">The type of saving throw (SAVING_THROW_TYPE_* constants) (default: SavingThrowType.All)</param>
-        /// <param name="oSaveVersus">The object the save is against (default: OBJECT_INVALID)</param>
+        /// <param name="oSaveVersus">The object the save is against (default: OBJECT_SELF)</param>
         /// <returns>0 if the saving throw roll failed, 1 if the saving throw roll succeeded, 2 if the target was immune to the save type specified</returns>
         /// <remarks>If used within an Area of Effect Object Script (On Enter, OnExit, OnHeartbeat), you MUST pass GetAreaOfEffectCreator() into oSaveVersus!!</remarks>
         public static SavingThrowResultType FortitudeSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
             uint oSaveVersus = OBJECT_INVALID)
         {
+            if (oSaveVersus == OBJECT_INVALID)
+                oSaveVersus = OBJECT_SELF;
             return (SavingThrowResultType)global::NWN.Core.NWScript.FortitudeSave(oCreature, nDC, (int)nSaveType, oSaveVersus);
         }
 
@@ -46,12 +50,14 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreature">The creature making the save</param>
         /// <param name="nDC">The difficulty class to beat</param>
         /// <param name="nSaveType">The type of saving throw (SAVING_THROW_TYPE_* constants) (default: SavingThrowType.All)</param>
-        /// <param name="oSaveVersus">The object the save is against (default: OBJECT_INVALID)</param>
+        /// <param name="oSaveVersus">The object the save is against (default: OBJECT_SELF)</param>
         /// <returns>0 if the saving throw roll failed, 1 if the saving throw roll succeeded, 2 if the target was immune to the save type specified</returns>
         /// <remarks>If used within an Area of Effect Object Script (On Enter, OnExit, OnHeartbeat), you MUST pass GetAreaOfEffectCreator() into oSaveVersus!!</remarks>
         public static SavingThrowResultType ReflexSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
             uint oSaveVersus = OBJECT_INVALID)
         {
+            if (oSaveVersus == OBJECT_INVALID)
+                oSaveVersus = OBJECT_SELF;
             return (SavingThrowResultType)global::NWN.Core.NWScript.ReflexSave(oCreature, nDC, (int)nSaveType, oSaveVersus);
         }
 
@@ -61,12 +67,14 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oCreature">The creature making the save</param>
         /// <param name="nDC">The difficulty class to beat</param>
         /// <param name="nSaveType">The type of saving throw (SAVING_THROW_TYPE_* constants) (default: SavingThrowType.All)</param>
-        /// <param name="oSaveVersus">The object the save is against (default: OBJECT_INVALID)</param>
+        /// <param name="oSaveVersus">The object the save is against (default: OBJECT_SELF)</param>
         /// <returns>0 if the saving throw roll failed, 1 if the saving throw roll succeeded, 2 if the target was immune to the save type specified</returns>
         /// <remarks>If used within an Area of Effect Object Script (On Enter, OnExit, OnHeartbeat), you MUST pass GetAreaOfEffectCreator() into oSaveVersus!!</remarks>
         public static SavingThrowResultType WillSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
             uint oSaveVersus = OBJECT_INVALID)
         {
+            if (oSaveVersus == OBJECT_INVALID)
+                oSaveVersus = OBJECT_SELF;
             return (SavingThrowResultType)global::NWN.Core.NWScript.WillSave(oCreature, nDC, (int)nSaveType, oSaveVersus);
         }
 
@@ -82,36 +90,44 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Makes the caller perform a Melee Touch Attack on the target.
+        /// Makes the attacker perform a Melee Touch Attack on the target.
         /// </summary>
         /// <param name="oTarget">The target to attack</param>
         /// <param name="bDisplayFeedback">Whether to display feedback (default: true)</param>
+        /// <param name="oAttacker">The attacker object (defaults to OBJECT_SELF)</param>
         /// <returns>0 on a miss, 1 on a hit, and 2 on a critical hit</returns>
-        /// <remarks>This is not an action, and it assumes the caller is already within range of the target.</remarks>
-        public static TouchAttackReturn TouchAttackMelee(uint oTarget, bool bDisplayFeedback = true)
+        /// <remarks>This is not an action, and it assumes the attacker is already within range of the target.</remarks>
+        public static TouchAttackReturn TouchAttackMelee(uint oTarget, bool bDisplayFeedback = true, uint oAttacker = OBJECT_INVALID)
         {
-            return (TouchAttackReturn)global::NWN.Core.NWScript.TouchAttackMelee(oTarget, bDisplayFeedback ? 1 : 0);
+            if (oAttacker == OBJECT_INVALID)
+                oAttacker = OBJECT_SELF;
+            return (TouchAttackReturn)global::NWN.Core.NWScript.TouchAttackMelee(oTarget, bDisplayFeedback ? 1 : 0, oAttacker);
         }
 
         /// <summary>
-        /// Makes the caller perform a Ranged Touch Attack on the target.
+        /// Makes the attacker perform a Ranged Touch Attack on the target.
         /// </summary>
         /// <param name="oTarget">The target to attack</param>
         /// <param name="bDisplayFeedback">Whether to display feedback (default: true)</param>
+        /// <param name="oAttacker">The attacker object (defaults to OBJECT_SELF)</param>
         /// <returns>0 on a miss, 1 on a hit, and 2 on a critical hit</returns>
-        public static TouchAttackReturn TouchAttackRanged(uint oTarget, bool bDisplayFeedback = true)
+        public static TouchAttackReturn TouchAttackRanged(uint oTarget, bool bDisplayFeedback = true, uint oAttacker = OBJECT_INVALID)
         {
-            return (TouchAttackReturn)global::NWN.Core.NWScript.TouchAttackRanged(oTarget, bDisplayFeedback ? 1 : 0);
+            if (oAttacker == OBJECT_INVALID)
+                oAttacker = OBJECT_SELF;
+            return (TouchAttackReturn)global::NWN.Core.NWScript.TouchAttackRanged(oTarget, bDisplayFeedback ? 1 : 0, oAttacker);
         }
 
         /// <summary>
         /// Gets the attack mode of the creature's last attack.
         /// </summary>
-        /// <param name="oCreature">The creature to get the attack mode for (default: OBJECT_INVALID)</param>
+        /// <param name="oCreature">The creature to get the attack mode for (default: OBJECT_SELF)</param>
         /// <returns>The attack mode (COMBAT_MODE_* constants)</returns>
         /// <remarks>This only works when the creature is in combat.</remarks>
         public static CombatMode GetLastAttackMode(uint oCreature = OBJECT_INVALID)
         {
+            if (oCreature == OBJECT_INVALID)
+                oCreature = OBJECT_SELF;
             return (CombatMode)global::NWN.Core.NWScript.GetLastAttackMode(oCreature);
         }
 
@@ -136,7 +152,7 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Gets the total amount of damage that has been dealt to the caller.
+        /// Gets the total amount of damage that has been dealt to the specified object.
         /// </summary>
         /// <returns>The total amount of damage dealt</returns>
         public static int GetTotalDamageDealt()
@@ -147,15 +163,17 @@ namespace SWLOR.NWN.API.NWScript
         /// <summary>
         /// Gets the last object that damaged the specified object.
         /// </summary>
-        /// <param name="oObject">The object that was damaged (default: OBJECT_INVALID)</param>
+        /// <param name="oObject">The object that was damaged (default: OBJECT_SELF)</param>
         /// <returns>The last object that damaged the target. Returns OBJECT_INVALID if the passed in object is not a valid object</returns>
         public static uint GetLastDamager(uint oObject = OBJECT_INVALID)
         {
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetLastDamager(oObject);
         }
 
         /// <summary>
-        /// Gets the target that the caller attempted to attack.
+        /// Gets the target that the specified creature attempted to attack.
         /// </summary>
         /// <returns>The attempted attack target. Returns OBJECT_INVALID if the caller is not a valid creature</returns>
         /// <remarks>This should be used in conjunction with GetAttackTarget(). This value is set every time an attack is made, and is reset at the end of combat.</remarks>
@@ -179,10 +197,12 @@ namespace SWLOR.NWN.API.NWScript
         /// Returns true if the object has effects on it originating from the specified feat.
         /// </summary>
         /// <param name="nFeat">The feat to check for (FEAT_* constants)</param>
-        /// <param name="oObject">The object to check (default: OBJECT_INVALID)</param>
+        /// <param name="oObject">The object to check (default: OBJECT_SELF)</param>
         /// <returns>True if the object has effects from the feat</returns>
         public static int GetHasFeatEffect(int nFeat, uint oObject = OBJECT_INVALID)
         {
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetHasFeatEffect(nFeat, oObject);
         }
 

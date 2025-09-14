@@ -39,8 +39,8 @@ namespace SWLOR.Game.Server.Core
             _scripts.Clear();
             _conditionalScripts.Clear();
 
-            var handlers = Assembly.GetExecutingAssembly()
-                .GetTypes()
+            var handlers = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a => a.GetTypes())
                 .SelectMany(t => t.GetMethods())
                 .Where(m => m.GetCustomAttributes(typeof(NWNEventHandler), false).Length > 0)
                 .ToArray();

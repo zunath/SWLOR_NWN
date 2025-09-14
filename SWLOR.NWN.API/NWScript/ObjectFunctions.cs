@@ -641,15 +641,18 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Sets the destroyable status of the caller.
+        /// Sets the destroyable status of the target object.
         /// </summary>
-        /// <param name="bDestroyable">If FALSE, the caller does not fade out on death, but sticks around as a corpse (defaults to true)</param>
-        /// <param name="bRaiseable">If TRUE, the caller can be raised via resurrection (defaults to true)</param>
-        /// <param name="bSelectableWhenDead">If TRUE, the caller is selectable after death (defaults to false)</param>
+        /// <param name="bDestroyable">If FALSE, the target does not fade out on death, but sticks around as a corpse (defaults to true)</param>
+        /// <param name="bRaiseable">If TRUE, the target can be raised via resurrection (defaults to true)</param>
+        /// <param name="bSelectableWhenDead">If TRUE, the target is selectable after death (defaults to false)</param>
+        /// <param name="oObject">The target object (defaults to OBJECT_SELF)</param>
         public static void SetIsDestroyable(bool bDestroyable = true, bool bRaiseable = true,
-            bool bSelectableWhenDead = false)
+            bool bSelectableWhenDead = false, uint oObject = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.SetIsDestroyable(bDestroyable ? 1 : 0, bRaiseable ? 1 : 0, bSelectableWhenDead ? 1 : 0);
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
+            global::NWN.Core.NWScript.SetIsDestroyable(bDestroyable ? 1 : 0, bRaiseable ? 1 : 0, bSelectableWhenDead ? 1 : 0, oObject);
         }
 
         /// <summary>
@@ -692,11 +695,13 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the nth object nearest to the target that is of the specified type.
         /// </summary>
         /// <param name="nObjectType">OBJECT_TYPE_* constant (defaults to ObjectType.All)</param>
-        /// <param name="oTarget">The target object (defaults to OBJECT_INVALID)</param>
+        /// <param name="oTarget">The target object (defaults to OBJECT_SELF)</param>
         /// <param name="nNth">The nth object to find (defaults to 1)</param>
         /// <returns>The nearest object, or OBJECT_INVALID on error</returns>
         public static uint GetNearestObject(ObjectType nObjectType = ObjectType.All, uint oTarget = OBJECT_INVALID, int nNth = 1)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetNearestObject((int)nObjectType, oTarget, nNth);
         }
 
@@ -717,11 +722,13 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the nth object nearest to the target that has the specified tag.
         /// </summary>
         /// <param name="sTag">The tag to search for</param>
-        /// <param name="oTarget">The target object (defaults to OBJECT_INVALID)</param>
+        /// <param name="oTarget">The target object (defaults to OBJECT_SELF)</param>
         /// <param name="nNth">The nth object to find (defaults to 1)</param>
         /// <returns>The nearest object with the tag, or OBJECT_INVALID on error</returns>
         public static uint GetNearestObjectByTag(string sTag, uint oTarget = OBJECT_INVALID, int nNth = 1)
         {
+            if (oTarget == OBJECT_INVALID)
+                oTarget = OBJECT_SELF;
             return global::NWN.Core.NWScript.GetNearestObjectByTag(sTag, oTarget, nNth);
         }
 
@@ -869,12 +876,15 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Causes the caller to face the target point.
+        /// Causes the target object to face the target point.
         /// </summary>
         /// <param name="vTarget">The target point to face</param>
-        public static void SetFacingPoint(Vector3 vTarget)
+        /// <param name="oObject">The target object (defaults to OBJECT_SELF)</param>
+        public static void SetFacingPoint(Vector3 vTarget, uint oObject = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.SetFacingPoint(vTarget);
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
+            global::NWN.Core.NWScript.SetFacingPoint(vTarget, oObject);
         }
 
         /// <summary>

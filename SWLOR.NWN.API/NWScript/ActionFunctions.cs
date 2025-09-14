@@ -37,13 +37,16 @@ namespace SWLOR.NWN.API.NWScript
         }
 
         /// <summary>
-        /// Clears all actions of the caller.
+        /// Clears all actions of the target object.
         /// </summary>
         /// <param name="nClearCombatState">If true, immediately clears the combat state on a creature, stopping combat music and allowing rest, dialog, or other actions</param>
+        /// <param name="oObject">The target object (defaults to OBJECT_SELF)</param>
         /// <remarks>No return value, but if an error occurs, the log file will contain "ClearAllActions failed."</remarks>
-        public static void ClearAllActions(bool nClearCombatState = false)
+        public static void ClearAllActions(bool nClearCombatState = false, uint oObject = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.ClearAllActions(nClearCombatState ? 1 : 0);
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
+            global::NWN.Core.NWScript.ClearAllActions(nClearCombatState ? 1 : 0, oObject);
         }
 
         /// <summary>

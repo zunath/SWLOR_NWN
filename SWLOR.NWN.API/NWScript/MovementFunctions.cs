@@ -5,15 +5,18 @@ namespace SWLOR.NWN.API.NWScript
     public partial class NWScript
     {
         /// <summary>
-        /// Causes the caller to face the specified direction.
+        /// Causes the target object to face the specified direction.
         /// fDirection is expressed as anticlockwise degrees from Due East.
         /// DIRECTION_EAST, DIRECTION_NORTH, DIRECTION_WEST and DIRECTION_SOUTH are
         /// predefined. (0.0f=East, 90.0f=North, 180.0f=West, 270.0f=South)
         /// </summary>
         /// <param name="fDirection">The direction to face in anticlockwise degrees from Due East</param>
-        public static void SetFacing(float fDirection)
+        /// <param name="oObject">The target object (defaults to OBJECT_SELF)</param>
+        public static void SetFacing(float fDirection, uint oObject = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.SetFacing(fDirection);
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
+            global::NWN.Core.NWScript.SetFacing(fDirection, oObject);
         }
 
         /// <summary>

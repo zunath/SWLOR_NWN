@@ -12692,7 +12692,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "anchor_cantina_southdis"
+          "value": ""
         },
         "TemplateResRef": {
           "type": "resref",

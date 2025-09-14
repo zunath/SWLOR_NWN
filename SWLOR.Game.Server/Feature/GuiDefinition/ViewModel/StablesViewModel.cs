@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.NWN.API.Core.Engine;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Item;

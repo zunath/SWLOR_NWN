@@ -1,6 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.NWN.API.Core.Engine
+namespace SWLOR.NWN.API.Engine
 {
     public class SQLQuery : EngineStructureBase
     {

@@ -1,5 +1,5 @@
 ﻿using SWLOR.NWN.API;
-using SWLOR.NWN.API.Core.Engine;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Core.Beamdog
 {

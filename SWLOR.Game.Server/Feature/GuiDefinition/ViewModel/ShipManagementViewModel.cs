@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
-using SWLOR.NWN.API.Core.Engine;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using PlayerShip = SWLOR.Game.Server.Entity.PlayerShip;

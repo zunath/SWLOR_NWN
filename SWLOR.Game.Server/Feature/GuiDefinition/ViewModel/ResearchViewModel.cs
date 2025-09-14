@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.NWN.API.Core.Engine;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using Random = SWLOR.Game.Server.Service.Random;

@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.NWN.API.Core.Engine;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using Random = SWLOR.Game.Server.Service.Random;

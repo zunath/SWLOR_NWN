@@ -13,7 +13,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.NWN.API.Core.Engine;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;

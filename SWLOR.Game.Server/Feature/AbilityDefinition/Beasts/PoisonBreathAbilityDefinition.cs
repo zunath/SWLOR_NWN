@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.NWN.API.Core.Engine;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API;
-using SWLOR.NWN.API.Core.Engine;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {

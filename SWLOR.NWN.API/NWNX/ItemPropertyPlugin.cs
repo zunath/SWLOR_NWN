@@ -1,5 +1,5 @@
 using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.NWN.API.Core.Engine;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.NWN.API.NWNX
 {

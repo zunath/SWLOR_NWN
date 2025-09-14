@@ -9,7 +9,7 @@ using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.NWN.API.Core.Engine;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service
 {

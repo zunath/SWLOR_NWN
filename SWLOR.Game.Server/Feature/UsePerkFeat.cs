@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
-using SWLOR.NWN.API.Core.Engine;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;

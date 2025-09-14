@@ -1,6 +1,6 @@
 ﻿using NWNX.NET;
 
-namespace SWLOR.NWN.API.Core.Engine
+namespace SWLOR.NWN.API.Engine
 {
     public abstract class EngineStructureBase
     {

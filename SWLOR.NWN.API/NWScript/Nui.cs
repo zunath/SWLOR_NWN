@@ -1,4 +1,4 @@
-﻿using SWLOR.NWN.API.Core.Engine;
+﻿using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.NWN.API.NWScript
 {

@@ -113,9 +113,11 @@ namespace SWLOR.NWN.API.NWScript
         /// Gets the last object that disturbed the inventory of the specified object.
         /// </summary>
         /// <returns>The last object that disturbed the inventory, or OBJECT_INVALID if the caller is not a valid creature or placeable</returns>
-        public static uint GetLastDisturbed()
+        public static uint GetLastDisturbed(uint oObject = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetLastDisturbed();
+            if (oObject == OBJECT_INVALID)
+                oObject = OBJECT_SELF;
+            return global::NWN.Core.NWScript.GetLastDisturbed(oObject);
         }
 
         /// <summary>

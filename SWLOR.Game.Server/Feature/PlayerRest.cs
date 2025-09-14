@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature
                 StatusEffect.Apply(henchman, henchman, StatusEffectType.Rest, 0f);
             }
 
-            ExecuteScript("rest_started", player);
+            ExecuteScript(ScriptName.OnRestStarted, player);
         }
 
         /// <summary>

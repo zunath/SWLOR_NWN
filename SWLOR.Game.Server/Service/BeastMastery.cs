@@ -289,19 +289,19 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Scripts
-            SetEventScript(beast, EventScript.Creature_OnBlockedByDoor, "beast_blocked");
-            SetEventScript(beast, EventScript.Creature_OnEndCombatRound, "beast_roundend");
-            SetEventScript(beast, EventScript.Creature_OnDialogue, "beast_convers");
-            SetEventScript(beast, EventScript.Creature_OnDamaged, "beast_damaged");
-            SetEventScript(beast, EventScript.Creature_OnDeath, "beast_death");
-            SetEventScript(beast, EventScript.Creature_OnDisturbed, "beast_disturbed");
-            SetEventScript(beast, EventScript.Creature_OnHeartbeat, "beast_hb");
-            SetEventScript(beast, EventScript.Creature_OnNotice, "beast_perception");
-            SetEventScript(beast, EventScript.Creature_OnMeleeAttacked, "beast_attacked");
-            SetEventScript(beast, EventScript.Creature_OnRested, "beast_rest");
-            SetEventScript(beast, EventScript.Creature_OnSpawnIn, "beast_spawn");
-            SetEventScript(beast, EventScript.Creature_OnSpellCastAt, "beast_spellcast");
-            SetEventScript(beast, EventScript.Creature_OnUserDefined, "beast_userdef");
+            SetEventScript(beast, EventScript.Creature_OnBlockedByDoor, ScriptName.OnBeastBlocked);
+            SetEventScript(beast, EventScript.Creature_OnEndCombatRound, ScriptName.OnBeastRoundEnd);
+            SetEventScript(beast, EventScript.Creature_OnDialogue, ScriptName.OnBeastConversation);
+            SetEventScript(beast, EventScript.Creature_OnDamaged, ScriptName.OnBeastDamaged);
+            SetEventScript(beast, EventScript.Creature_OnDeath, ScriptName.OnBeastDeath);
+            SetEventScript(beast, EventScript.Creature_OnDisturbed, ScriptName.OnBeastDisturbed);
+            SetEventScript(beast, EventScript.Creature_OnHeartbeat, ScriptName.OnBeastHeartbeat);
+            SetEventScript(beast, EventScript.Creature_OnNotice, ScriptName.OnBeastPerception);
+            SetEventScript(beast, EventScript.Creature_OnMeleeAttacked, ScriptName.OnBeastAttacked);
+            SetEventScript(beast, EventScript.Creature_OnRested, ScriptName.OnBeastRest);
+            SetEventScript(beast, EventScript.Creature_OnSpawnIn, ScriptName.OnBeastSpawn);
+            SetEventScript(beast, EventScript.Creature_OnSpellCastAt, ScriptName.OnBeastSpellCast);
+            SetEventScript(beast, EventScript.Creature_OnUserDefined, ScriptName.OnBeastUserDefined);
 
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the beast being created.

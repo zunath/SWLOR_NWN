@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         Skill.GiveSkillXP(user, SkillType.Gathering, deltaXP * itemsGathered, false, false);
                     }
 
-                    ExecuteScript("harvester_used", user);
+                    ExecuteScript(ScriptName.OnHarvesterUsed, user);
                 });
         }
     }

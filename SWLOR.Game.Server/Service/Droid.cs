@@ -635,19 +635,19 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Scripts
-            SetEventScript(droid, EventScript.Creature_OnBlockedByDoor, "droid_blocked");
-            SetEventScript(droid, EventScript.Creature_OnEndCombatRound, "droid_roundend");
-            SetEventScript(droid, EventScript.Creature_OnDialogue, "droid_convers");
-            SetEventScript(droid, EventScript.Creature_OnDamaged, "droid_damaged");
-            SetEventScript(droid, EventScript.Creature_OnDeath, "droid_death");
-            SetEventScript(droid, EventScript.Creature_OnDisturbed, "droid_disturbed");
-            SetEventScript(droid, EventScript.Creature_OnHeartbeat, "droid_hb");
-            SetEventScript(droid, EventScript.Creature_OnNotice, "droid_perception");
-            SetEventScript(droid, EventScript.Creature_OnMeleeAttacked, "droid_attacked");
-            SetEventScript(droid, EventScript.Creature_OnRested, "droid_rest");
-            SetEventScript(droid, EventScript.Creature_OnSpawnIn, "droid_spawn");
-            SetEventScript(droid, EventScript.Creature_OnSpellCastAt, "droid_spellcast");
-            SetEventScript(droid, EventScript.Creature_OnUserDefined, "droid_userdef");
+            SetEventScript(droid, EventScript.Creature_OnBlockedByDoor, ScriptName.OnDroidBlocked);
+            SetEventScript(droid, EventScript.Creature_OnEndCombatRound, ScriptName.OnDroidRoundEnd);
+            SetEventScript(droid, EventScript.Creature_OnDialogue, ScriptName.OnDroidConversation);
+            SetEventScript(droid, EventScript.Creature_OnDamaged, ScriptName.OnDroidDamaged);
+            SetEventScript(droid, EventScript.Creature_OnDeath, ScriptName.OnDroidDeath);
+            SetEventScript(droid, EventScript.Creature_OnDisturbed, ScriptName.OnDroidDisturbed);
+            SetEventScript(droid, EventScript.Creature_OnHeartbeat, ScriptName.OnDroidHeartbeat);
+            SetEventScript(droid, EventScript.Creature_OnNotice, ScriptName.OnDroidPerception);
+            SetEventScript(droid, EventScript.Creature_OnMeleeAttacked, ScriptName.OnDroidAttacked);
+            SetEventScript(droid, EventScript.Creature_OnRested, ScriptName.OnDroidRest);
+            SetEventScript(droid, EventScript.Creature_OnSpawnIn, ScriptName.OnDroidSpawn);
+            SetEventScript(droid, EventScript.Creature_OnSpellCastAt, ScriptName.OnDroidSpellCast);
+            SetEventScript(droid, EventScript.Creature_OnUserDefined, ScriptName.OnDroidUserDefined);
 
             AssignCommand(droid, () => SpeakString(personality.GreetingPhrase()));
 

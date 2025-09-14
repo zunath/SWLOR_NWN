@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     
                     DelayCommand(0.5f, () => CheckMovement(target));
 
-                    ExecuteScript("rest_started", target);
+                    ExecuteScript(ScriptName.OnRestStarted, target);
                 })
                 .TickAction((source, target, effectData) =>
                 {

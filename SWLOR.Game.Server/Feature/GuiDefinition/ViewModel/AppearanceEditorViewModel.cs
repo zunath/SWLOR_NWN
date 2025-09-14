@@ -1657,7 +1657,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
             }
 
-            ExecuteScript("appearance_edit", _target);
+            ExecuteScript(ScriptName.OnAppearanceEdit, _target);
         }
 
         private void LoadArmorPart()

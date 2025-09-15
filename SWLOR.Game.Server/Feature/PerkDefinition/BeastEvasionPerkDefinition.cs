@@ -1,7 +1,7 @@
-﻿using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Service.BeastMasteryService;
+﻿using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {

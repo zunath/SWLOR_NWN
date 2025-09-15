@@ -4,10 +4,10 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Game.Server.Entity.Player;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnModuleChat)]
         public static void ProcessNativeChatMessage()
         {
-            ExecuteScriptNWScript("dmfi_onplychat", OBJECT_SELF);
+            ExecuteScript("dmfi_onplychat", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnNWNXChat)]

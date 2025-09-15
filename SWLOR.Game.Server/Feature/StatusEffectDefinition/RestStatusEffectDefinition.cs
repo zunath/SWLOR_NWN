@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Numerics;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -96,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     
                     DelayCommand(0.5f, () => CheckMovement(target));
 
-                    ExecuteScript("rest_started", target);
+                    ExecuteScript(ScriptName.OnRestStarted, target);
                 })
                 .TickAction((source, target, effectData) =>
                 {

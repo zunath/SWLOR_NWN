@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (string.IsNullOrWhiteSpace(areaResref)) return;
 
-            var progression = Core.NWNX.PlayerPlugin.GetAreaExplorationState(player, area);
+            var progression = PlayerPlugin.GetAreaExplorationState(player, area);
 
             dbPlayer.MapProgressions[areaResref] = progression;
 
@@ -78,7 +79,7 @@ namespace SWLOR.Game.Server.Feature
                 return;
 
             var progression = dbPlayer.MapProgressions[areaResref];
-            Core.NWNX.PlayerPlugin.SetAreaExplorationState(player, area, progression);
+            PlayerPlugin.SetAreaExplorationState(player, area, progression);
         }
     }
 }

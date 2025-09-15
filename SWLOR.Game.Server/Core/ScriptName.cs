@@ -706,5 +706,11 @@ namespace SWLOR.Game.Server.Core
         // NWNX Events - Scroll learn events
         public const string OnItemScrollLearnBefore = "scroll_lrn_bef";
         public const string OnItemScrollLearnAfter = "scroll_lrn_aft";
+
+        // Telegraph events
+        public const string TelegraphEffect = "telegraph_effect";
+        public const string TelegraphApplied = "telegraph_applied";
+        public const string TelegraphTicked = "telegraph_ticked";
+        public const string TelegraphRemoved = "telegraph_removed";
     }
 } 

@@ -2,22 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.TelegraphService;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
-namespace SWLOR.Game.Server.Service.TelegraphService
+namespace SWLOR.Game.Server.Service
 {
     public static class Telegraph
     {
         private const float TargetFPS = 30f;
-        public const int MaxRenderCount = 8;
-        
-        // Color constants for telegraph rendering
-        private static readonly Vector3 _hostileTelegraphColor = new(1.0f, 0.0f, 0.0f); // Red
-        private static readonly Vector3 _selfTelegraphColor = new(0.0f, 0.0f, 1.0f); // Blue
-        private static readonly Vector3 _friendlyTelegraphColor = new(0.0f, 1.0f, 0.0f); // Green
-        private static readonly Vector3 _enemyBeneficialTelegraphColor = new(0.66f, 0.66f, 0.66f); // Gray
+        public const int MaxRenderCount = 16;
         
         private static readonly Dictionary<uint, Dictionary<string, ActiveTelegraph>> _telegraphsByArea = new();
         private static readonly Dictionary<string, ActiveTelegraph> _allTelegraphs = new();
@@ -76,6 +71,7 @@ namespace SWLOR.Game.Server.Service.TelegraphService
             }
 
             _allTelegraphs.Remove(telegraphId);
+            UpdateShadersForAllPlayers();
             // RemoveEffectByLinkId is not available in SWLOR, effects are removed automatically
         }
 
@@ -112,21 +108,22 @@ namespace SWLOR.Game.Server.Service.TelegraphService
             if (!_telegraphsByArea.ContainsKey(area))
                 _telegraphsByArea[area] = new Dictionary<string, ActiveTelegraph>();
 
-            var telegraphId = Guid.NewGuid().ToString();
             var effect = EffectRunScript(
-                TelegraphEvents.TelegraphEffectScript,
-                TelegraphEvents.TelegraphEffectScript,
+                ScriptName.TelegraphEffect,
+                ScriptName.TelegraphEffect,
                 string.Empty);
             
-            OnApply(telegrapher, data, telegraphId);
+            OnApply(telegrapher, data, effect);
             ApplyEffectToObject(DurationType.Temporary, effect, telegrapher, data.Duration);
+            UpdateShadersForAllPlayers();
 
-            return telegraphId;
+            return GetEffectLinkId(effect);
         }
 
-        private static void OnApply(uint telegrapher, TelegraphData data, string telegraphId)
+        private static void OnApply(uint telegrapher, TelegraphData data, Effect effect)
         {
             var area = GetArea(telegrapher);
+            var telegraphId = GetEffectLinkId(effect);
 
             var start = GetMicrosecondCounter();
             var end = (int)(start + data.Duration * 1000 * 1000);
@@ -153,6 +150,7 @@ namespace SWLOR.Game.Server.Service.TelegraphService
 
             _telegraphsByArea[area].Remove(telegraphId);
             _allTelegraphs.Remove(telegraphId);
+            UpdateShadersForAllPlayers();
         }
 
         private static void RunTelegraphAction(uint area, TelegraphData data)
@@ -239,13 +237,13 @@ namespace SWLOR.Game.Server.Service.TelegraphService
             var distance = (float)Math.Sqrt(toPointX * toPointX + toPointY * toPointY + toPointZ * toPointZ);
 
             // Compute the actual cone angle dynamically
-            var halfAngle = (float)Math.Atan((data.Size.Y * 0.5f) / data.Size.X);
+            var halfAngle = (float)Math.Atan(data.Size.Y * 0.5f / data.Size.X);
 
             // Angle between the direction and the point
             var dotProduct = toPointX * directionX + toPointY * directionY + toPointZ * directionZ;
             var angleBetween = (float)Math.Acos(dotProduct / distance);
 
-            return (distance <= data.Size.X) && (angleBetween <= halfAngle);
+            return distance <= data.Size.X && angleBetween <= halfAngle;
         }
 
         private static bool IsCreatureInLine(uint creature, TelegraphData data)
@@ -262,8 +260,8 @@ namespace SWLOR.Game.Server.Service.TelegraphService
             var distAlongLine = rotatedPos.X;
             var distFromCenter = (float)Math.Abs(rotatedPos.Y);
 
-            return (distAlongLine >= 0f && distAlongLine <= data.Size.X) // Within length
-                   && (distFromCenter <= data.Size.Y * 0.5f); // Within width
+            return distAlongLine >= 0f && distAlongLine <= data.Size.X // Within length
+                   && distFromCenter <= data.Size.Y * 0.5f; // Within width
         }
 
         private static TelegraphColorType DetermineTelegraphColorType(uint player, uint telegrapher, bool isHostile)
@@ -272,13 +270,13 @@ namespace SWLOR.Game.Server.Service.TelegraphService
                 return TelegraphColorType.Self;
 
             return isHostile
-                ? (GetIsReactionTypeFriendly(player, telegrapher) == 1 ? TelegraphColorType.Friendly : TelegraphColorType.Hostile)
-                : (GetIsReactionTypeFriendly(player, telegrapher) == 1 ? TelegraphColorType.Friendly : TelegraphColorType.EnemyBeneficial);
+                ? GetIsReactionTypeFriendly(player, telegrapher) == 1 ? TelegraphColorType.Friendly : TelegraphColorType.Hostile
+                : GetIsReactionTypeFriendly(player, telegrapher) == 1 ? TelegraphColorType.Friendly : TelegraphColorType.EnemyBeneficial;
         }
 
         private static int PackShapeAndColor(TelegraphType shapeType, TelegraphColorType colorType)
         {
-            return ((int)shapeType << 8) | (int)colorType;
+            return (int)shapeType << 8 | (int)colorType;
         }
 
         /// <summary>
@@ -383,6 +381,179 @@ namespace SWLOR.Game.Server.Service.TelegraphService
             }
 
             DelayCommand(1.0f / TargetFPS, UpdateShaderLerpTimer);
+        }
+
+
+        /// <summary>
+        /// Creates a simple sphere telegraph.
+        /// </summary>
+        /// <param name="creator">Creature creating the telegraph</param>
+        /// <param name="position">Center position</param>
+        /// <param name="radius">Radius of the sphere</param>
+        /// <param name="duration">Duration in seconds</param>
+        /// <param name="isHostile">Whether this telegraph is hostile</param>
+        /// <param name="action">Action to execute when telegraph completes</param>
+        /// <returns>Telegraph ID</returns>
+        public static string CreateSphereTelegraph(
+            uint creator,
+            Vector3 position,
+            float radius,
+            float duration,
+            bool isHostile,
+            ApplyTelegraphEffect action)
+        {
+            return CreateTelegraph(
+                creator,
+                position,
+                0f,
+                new Vector2(radius, radius),
+                duration,
+                isHostile,
+                TelegraphType.Sphere,
+                action);
+        }
+
+        /// <summary>
+        /// Creates a cone telegraph.
+        /// </summary>
+        /// <param name="creator">Creature creating the telegraph</param>
+        /// <param name="position">Base position of the cone</param>
+        /// <param name="rotation">Direction the cone faces (in radians)</param>
+        /// <param name="length">Length of the cone</param>
+        /// <param name="width">Width of the cone at the end</param>
+        /// <param name="duration">Duration in seconds</param>
+        /// <param name="isHostile">Whether this telegraph is hostile</param>
+        /// <param name="action">Action to execute when telegraph completes</param>
+        /// <returns>Telegraph ID</returns>
+        public static string CreateConeTelegraph(
+            uint creator,
+            Vector3 position,
+            float rotation,
+            float length,
+            float width,
+            float duration,
+            bool isHostile,
+            ApplyTelegraphEffect action)
+        {
+            return CreateTelegraph(
+                creator,
+                position,
+                rotation,
+                new Vector2(length, width),
+                duration,
+                isHostile,
+                TelegraphType.Cone,
+                action);
+        }
+
+        /// <summary>
+        /// Creates a line telegraph.
+        /// </summary>
+        /// <param name="creator">Creature creating the telegraph</param>
+        /// <param name="position">Start position of the line</param>
+        /// <param name="rotation">Direction the line faces (in radians)</param>
+        /// <param name="length">Length of the line</param>
+        /// <param name="width">Width of the line</param>
+        /// <param name="duration">Duration in seconds</param>
+        /// <param name="isHostile">Whether this telegraph is hostile</param>
+        /// <param name="action">Action to execute when telegraph completes</param>
+        /// <returns>Telegraph ID</returns>
+        public static string CreateLineTelegraph(
+            uint creator,
+            Vector3 position,
+            float rotation,
+            float length,
+            float width,
+            float duration,
+            bool isHostile,
+            ApplyTelegraphEffect action)
+        {
+            return CreateTelegraph(
+                creator,
+                position,
+                rotation,
+                new Vector2(length, width),
+                duration,
+                isHostile,
+                TelegraphType.Line,
+                action);
+        }
+
+        /// <summary>
+        /// Creates a telegraph at a creature's position.
+        /// </summary>
+        /// <param name="creator">Creature creating the telegraph</param>
+        /// <param name="target">Target creature to center the telegraph on</param>
+        /// <param name="type">Type of telegraph</param>
+        /// <param name="size">Size of the telegraph</param>
+        /// <param name="duration">Duration in seconds</param>
+        /// <param name="isHostile">Whether this telegraph is hostile</param>
+        /// <param name="action">Action to execute when telegraph completes</param>
+        /// <returns>Telegraph ID</returns>
+        public static string CreateTelegraphAtCreature(
+            uint creator,
+            uint target,
+            TelegraphType type,
+            Vector2 size,
+            float duration,
+            bool isHostile,
+            ApplyTelegraphEffect action)
+        {
+            var position = GetPosition(target);
+            var rotation = GetFacing(target);
+
+            return CreateTelegraph(
+                creator,
+                position,
+                rotation,
+                size,
+                duration,
+                isHostile,
+                type,
+                action);
+        }
+
+        /// <summary>
+        /// Creates a telegraph in front of a creature.
+        /// </summary>
+        /// <param name="creator">Creature creating the telegraph</param>
+        /// <param name="target">Target creature to position the telegraph in front of</param>
+        /// <param name="distance">Distance in front of the target</param>
+        /// <param name="type">Type of telegraph</param>
+        /// <param name="size">Size of the telegraph</param>
+        /// <param name="duration">Duration in seconds</param>
+        /// <param name="isHostile">Whether this telegraph is hostile</param>
+        /// <param name="action">Action to execute when telegraph completes</param>
+        /// <returns>Telegraph ID</returns>
+        public static string CreateTelegraphInFrontOfCreature(
+            uint creator,
+            uint target,
+            float distance,
+            TelegraphType type,
+            Vector2 size,
+            float duration,
+            bool isHostile,
+            ApplyTelegraphEffect action)
+        {
+            var position = GetPosition(target);
+            var rotation = GetFacing(target);
+
+            // Calculate position in front of the creature
+            var frontPosition = new Vector3(
+                position.X + (float)Math.Cos(rotation) * distance,
+                position.Y + (float)Math.Sin(rotation) * distance,
+                position.Z
+            );
+
+            return CreateTelegraph(
+                creator,
+                frontPosition,
+                rotation,
+                size,
+                duration,
+                isHostile,
+                type,
+                action);
         }
     }
 }

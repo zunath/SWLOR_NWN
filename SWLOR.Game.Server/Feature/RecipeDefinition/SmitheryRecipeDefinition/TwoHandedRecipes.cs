@@ -193,6 +193,25 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_scordspar", 5)
                 .Component("ref_plagionite", 5)
                 .Component("ref_keromber", 5);
+
+            // Alchemized Spear
+            _builder.Create(RecipeType.AlchemizedSpear, SkillType.Smithery)
+                .Category(RecipeCategoryType.Spear)
+                .Resref("alc_spear")
+                .Level(52)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
+                .RequirementUnlocked()
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
+                .ResearchCostModifier(0.2f)
+                .Component("ref_arkoxit", 2)
+                .Component("frogguts", 10)
+                .Component("hyphae_wood", 20)
+                .Component("chiro_shard", 2)
+                .Component("stolen_s_artifact", 5)
+                .Component("emerald", 5)
+                .Component("tukata_hide", 5)
+                .Component("froglegs", 2);
         }
 
         private void TwinBlades()

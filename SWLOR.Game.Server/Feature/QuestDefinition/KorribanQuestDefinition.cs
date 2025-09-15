@@ -94,16 +94,14 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText("Warrior Camila has sensed dark alchemical energy emanating from the ancient tombs. She tasks you with investigating the disturbance.")
-
-                .AddState()
-                .SetStateJournalText("You've found the source: a grotesque alchemized frog creature guarding the tomb. Defeat it.")
                 .AddKillObjective(NPCGroupType.Korriban_AlchemizedFrog, 1)
+                .AddState()
 
                 .AddState()
                 .SetStateJournalText("The creature is slain. Return to Dral'kor Keth and report your findings.")
                 .AddXPReward(10000)
-                .AddGoldReward(4000)
-                .AddItemReward("chiro_shard", 1);
+                .AddGoldReward(4000);
+                
         }
         private void EliminateKlorSlug()
         {

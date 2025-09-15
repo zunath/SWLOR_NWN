@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.NWN.API.NWScript.Enum.Associate;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {

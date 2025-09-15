@@ -1901,13 +1901,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "tat_anc_gocorpst"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "tat_anc_hillydes"
         }
       },
@@ -2077,13 +2070,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "tat_rockypasslge"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "tat_smeskspalace"
         }
       },
       {
@@ -2895,7 +2881,25 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
+
           "value": "prefabdarkbase"
+
+          "value": "tat_anc_junix"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "tat_anc_gocorpst"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "tat_smeskspalace"
+
         }
       }
     ]
@@ -3200,7 +3204,7 @@
   },
   "Mod_ID": {
     "type": "void",
-    "value": "����\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+    "value": "ÿÿÿÿ\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
   },
   "Mod_IsSaveGame": {
     "type": "byte",

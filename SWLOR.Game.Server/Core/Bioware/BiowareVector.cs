@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using SWLOR.NWN.API.Engine;
 using static System.Math;
 
 namespace SWLOR.Game.Server.Core.Bioware

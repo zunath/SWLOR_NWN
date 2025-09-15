@@ -1,11 +1,10 @@
-﻿using NRediSearch.Aggregation;
-using SWLOR.Game.Server.Core.Beamdog;
+﻿using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using System.Linq.Expressions;
 using System;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {

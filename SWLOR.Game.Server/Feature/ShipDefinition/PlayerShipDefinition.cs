@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.ShipDefinition
 {

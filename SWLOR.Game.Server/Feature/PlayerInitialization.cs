@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
 using Player = SWLOR.Game.Server.Entity.Player;
 using Race = SWLOR.Game.Server.Service.Race;
 
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature
             // Already been initialized. Don't do it again.
             if (dbPlayer.Version >= 1 || dbPlayer.Version == -1) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
             {
-                ExecuteScript("char_init_after", OBJECT_SELF);
+                ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
                 return;
             }
 
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature
 
             DB.Set(dbPlayer);
 
-            ExecuteScript("char_init_after", OBJECT_SELF);
+            ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
         }
 
         private static void AutoLevelPlayer(uint player)

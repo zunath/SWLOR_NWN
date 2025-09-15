@@ -50593,6 +50593,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Cartel Keycard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cartelkeycard"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Czerka Basic Access Keycard"
                     },
                     "RESREF": {

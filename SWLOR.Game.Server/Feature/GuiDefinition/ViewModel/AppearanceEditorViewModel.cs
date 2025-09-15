@@ -2,11 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -14,6 +10,10 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -1657,7 +1657,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
             }
 
-            ExecuteScript("appearance_edit", _target);
+            ExecuteScript(ScriptName.OnAppearanceEdit, _target);
         }
 
         private void LoadArmorPart()

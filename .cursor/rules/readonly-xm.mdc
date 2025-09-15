@@ -1,0 +1,5 @@
+---
+description:The NWN.Xenomech project should be read-only and changes should not be made to it.
+globs:
+alwaysApply: true
+---

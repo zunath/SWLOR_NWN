@@ -96,7 +96,7 @@ namespace SWLOR.NWN.API.NWScript.Enum.Item
         ProgressPenalty = 95,
         NPCHP = 96,
         AccuracyStat = 97,
-        // 98 is free
+        Delay = 98,
         NPCLevel = 99,
         UseLimitationPerk = 100,
         ArmorEnhancement = 101,

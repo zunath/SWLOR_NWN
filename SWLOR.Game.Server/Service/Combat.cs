@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
@@ -534,6 +535,71 @@ namespace SWLOR.Game.Server.Service
             var modifier = GetAbilityModifier(ability, attacker);
 
             return baseDC + modifier;
+        }
+
+        /// <summary>
+        /// Calculates the attack delay for a creature based on their equipped weapons.
+        /// </summary>
+        /// <param name="attacker">The creature to calculate delay for.</param>
+        /// <returns>Attack delay in milliseconds.</returns>
+        public static int CalculateAttackDelay(uint attacker)
+        {
+            var rightHand = GetItemInSlot(InventorySlot.RightHand, attacker);
+            var leftHand = GetItemInSlot(InventorySlot.LeftHand, attacker);
+            
+            var delay = 0;
+            
+            // Get delay from right hand weapon
+            if (GetIsObjectValid(rightHand))
+            {
+                for(var ip = GetFirstItemProperty(rightHand); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(rightHand))
+                {
+                    if(GetItemPropertyType(ip) == ItemPropertyType.Delay)
+                        delay += GetItemPropertyCostTableValue(ip) * 10;
+                }
+            }
+            
+            // Get delay from left hand weapon
+            if (GetIsObjectValid(leftHand))
+            {
+                for (var ip = GetFirstItemProperty(leftHand); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(leftHand))
+                {
+                    if (GetItemPropertyType(ip) == ItemPropertyType.Delay)
+                        delay += GetItemPropertyCostTableValue(ip) * 10;
+                }
+            }
+
+            return (int)(delay / 60f * 1000);
+        }
+
+        /// <summary>
+        /// Handles paralyze status effect for a creature.
+        /// </summary>
+        /// <param name="attacker">The creature to check for paralyze.</param>
+        /// <returns>True if the creature is paralyzed and cannot act.</returns>
+        public static bool HandleParalyze(uint attacker)
+        {
+            if (!GetIsObjectValid(attacker))
+                return false;
+
+            var hasParalyze = false;
+            for (var effect = GetFirstEffect(attacker); GetIsEffectValid(effect); effect = GetNextEffect(attacker))
+            {
+                if (GetEffectType(effect) == EffectTypeScript.Paralyze)
+                {
+                    hasParalyze = true;
+                    break;
+                }
+            }
+
+            if (hasParalyze)
+            {
+                var creatureName = GetName(attacker);
+                Messaging.SendMessageNearbyToPlayers(attacker, $"{creatureName} is paralyzed and cannot act!");
+                return true;
+            }
+            
+            return false;
         }
     }
 }

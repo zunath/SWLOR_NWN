@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -1100,8 +1101,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             dbPlayerShip.Status.Hull = targetStatus.Hull;
 
                             DB.Set(dbPlayerShip);
-                            ExecuteScript("pc_shld_adjusted", target);
-                            ExecuteScript("pc_hull_adjusted", target);
+                            
+                            // Trigger UI refresh events after database update
+                            ExecuteScript(ScriptName.OnPlayerShieldAdjusted, target);
+                            ExecuteScript(ScriptName.OnPlayerHullAdjusted, target);
+                            ExecuteScript(ScriptName.OnPlayerCapAdjusted, target);
                         }
                     }
                 });

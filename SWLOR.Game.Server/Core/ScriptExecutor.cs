@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Core
 
         public void ExecuteInScriptContext(Action action, uint objectId = OBJECT_INVALID, int scriptEventId = 0)
         {
+            var oldObjectSelf = ServerManager.Bootstrapper.ClosureManager.ObjectSelf;
             var spBefore = PushScriptContext(objectId, scriptEventId);
             try
             {
@@ -105,6 +106,7 @@ namespace SWLOR.Game.Server.Core
             finally
             {
                 var spAfter = PopScriptContext();
+                ServerManager.Bootstrapper.ClosureManager.ObjectSelf = oldObjectSelf;
                 if (spAfter != spBefore)
                 {
                     Log.Write(LogGroup.Error, $"VM stack is invalid ({spBefore} != {spAfter}) after script context invocation: {action.Method.GetFullName()}");
@@ -113,6 +115,7 @@ namespace SWLOR.Game.Server.Core
         }
         public T ExecuteInScriptContext<T>(Func<T> action, uint objectId = OBJECT_INVALID, int scriptEventId = 0)
         {
+            var oldObjectSelf = ServerManager.Bootstrapper.ClosureManager.ObjectSelf;
             var spBefore = PushScriptContext(objectId, scriptEventId);
 
             try
@@ -122,6 +125,7 @@ namespace SWLOR.Game.Server.Core
             finally
             {
                 var spAfter = PopScriptContext();
+                ServerManager.Bootstrapper.ClosureManager.ObjectSelf = oldObjectSelf;
                 if (spAfter != spBefore)
                 {
                     Log.Write(LogGroup.Error, $"VM stack is invalid ({spBefore} != {spAfter}) after script context invocation: {action.Method.GetFullName()}");
@@ -167,6 +171,9 @@ namespace SWLOR.Game.Server.Core
             _virtualMachine.m_pVirtualMachineScript[_virtualMachine.m_nRecursionLevel] = script;
             cmd.m_oidObjectRunScript = _virtualMachine.m_oidObjectRunScript[_virtualMachine.m_nRecursionLevel];
             cmd.m_bValidObjectRunScript = _virtualMachine.m_bValidObjectRunScript[_virtualMachine.m_nRecursionLevel];
+
+            // Update the ClosureManager's ObjectSelf to match the script context
+            ServerManager.Bootstrapper.ClosureManager.ObjectSelf = oid;
 
             return _virtualMachine.m_cRunTimeStack.GetStackPointer();
         }

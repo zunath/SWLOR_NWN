@@ -71,6 +71,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                     dbShip.Status = nearbyStatus;
                                     DB.Set(dbShip);
 
+                                    ExecuteScript(ScriptName.OnPlayerHullAdjusted, nearby);
                                     ExecuteScript(ScriptName.OnPlayerTargetUpdated, nearby);
                                 }
                             }

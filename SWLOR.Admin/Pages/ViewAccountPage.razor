@@ -1,8 +1,6 @@
 @page "/viewaccount/{AccountId}"
-@using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Policy = "DiscordAdmin")]
 @using SWLOR.Game.Server.Service.AchievementService
-@using System.Reflection
 @using SWLOR.Game.Server.Extension
 
 @if (!AccountExists())

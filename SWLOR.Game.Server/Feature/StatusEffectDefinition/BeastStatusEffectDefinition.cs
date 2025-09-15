@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Linq;
-using SWLOR.Game.Server.Core.NWNX;
+﻿using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {

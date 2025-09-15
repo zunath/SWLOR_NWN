@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -12,6 +9,9 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel

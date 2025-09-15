@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
@@ -10,6 +9,7 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using MarketCategoryType = SWLOR.Game.Server.Service.PlayerMarketService.MarketCategoryType;
 
 namespace SWLOR.Game.Server.Service

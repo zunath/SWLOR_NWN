@@ -1,1 +1,1 @@
-﻿global using static SWLOR.Game.Server.Core.NWScript.NWScript;
+﻿global using static SWLOR.NWN.API.NWScript.NWScript;

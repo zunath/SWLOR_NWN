@@ -1,9 +1,9 @@
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Feature
 {

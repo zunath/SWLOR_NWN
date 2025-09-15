@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Associate;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service;
@@ -12,6 +8,10 @@ using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition

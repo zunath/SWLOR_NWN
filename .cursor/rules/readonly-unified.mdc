@@ -1,0 +1,5 @@
+---
+description: The Unified solution should be read-only and changes should not be made to it.
+globs:
+alwaysApply: true
+---

@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
-using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
-using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
-using SavingThrow = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrow;
-using SavingThrowType = SWLOR.Game.Server.Core.NWScript.Enum.SavingThrowType;
+using SWLOR.NWN.API.NWScript.Enum;
+using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
+using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 
 namespace SWLOR.Game.Server.Service
 {

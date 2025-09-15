@@ -4,11 +4,6 @@ using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.DroidService;
@@ -16,6 +11,11 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -635,19 +635,19 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Scripts
-            SetEventScript(droid, EventScript.Creature_OnBlockedByDoor, "droid_blocked");
-            SetEventScript(droid, EventScript.Creature_OnEndCombatRound, "droid_roundend");
-            SetEventScript(droid, EventScript.Creature_OnDialogue, "droid_convers");
-            SetEventScript(droid, EventScript.Creature_OnDamaged, "droid_damaged");
-            SetEventScript(droid, EventScript.Creature_OnDeath, "droid_death");
-            SetEventScript(droid, EventScript.Creature_OnDisturbed, "droid_disturbed");
-            SetEventScript(droid, EventScript.Creature_OnHeartbeat, "droid_hb");
-            SetEventScript(droid, EventScript.Creature_OnNotice, "droid_perception");
-            SetEventScript(droid, EventScript.Creature_OnMeleeAttacked, "droid_attacked");
-            SetEventScript(droid, EventScript.Creature_OnRested, "droid_rest");
-            SetEventScript(droid, EventScript.Creature_OnSpawnIn, "droid_spawn");
-            SetEventScript(droid, EventScript.Creature_OnSpellCastAt, "droid_spellcast");
-            SetEventScript(droid, EventScript.Creature_OnUserDefined, "droid_userdef");
+            SetEventScript(droid, EventScript.Creature_OnBlockedByDoor, ScriptName.OnDroidBlocked);
+            SetEventScript(droid, EventScript.Creature_OnEndCombatRound, ScriptName.OnDroidRoundEnd);
+            SetEventScript(droid, EventScript.Creature_OnDialogue, ScriptName.OnDroidConversation);
+            SetEventScript(droid, EventScript.Creature_OnDamaged, ScriptName.OnDroidDamaged);
+            SetEventScript(droid, EventScript.Creature_OnDeath, ScriptName.OnDroidDeath);
+            SetEventScript(droid, EventScript.Creature_OnDisturbed, ScriptName.OnDroidDisturbed);
+            SetEventScript(droid, EventScript.Creature_OnHeartbeat, ScriptName.OnDroidHeartbeat);
+            SetEventScript(droid, EventScript.Creature_OnNotice, ScriptName.OnDroidPerception);
+            SetEventScript(droid, EventScript.Creature_OnMeleeAttacked, ScriptName.OnDroidAttacked);
+            SetEventScript(droid, EventScript.Creature_OnRested, ScriptName.OnDroidRest);
+            SetEventScript(droid, EventScript.Creature_OnSpawnIn, ScriptName.OnDroidSpawn);
+            SetEventScript(droid, EventScript.Creature_OnSpellCastAt, ScriptName.OnDroidSpellCast);
+            SetEventScript(droid, EventScript.Creature_OnUserDefined, ScriptName.OnDroidUserDefined);
 
             AssignCommand(droid, () => SpeakString(personality.GreetingPhrase()));
 
@@ -787,7 +787,7 @@ namespace SWLOR.Game.Server.Service
 
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the droid being created.
-            ExecuteScriptNWScript(GetEventScript(droid, EventScript.Creature_OnSpawnIn), droid);
+            ExecuteScript(GetEventScript(droid, EventScript.Creature_OnSpawnIn), droid);
 
             AssignCommand(GetModule(), () =>
             {
@@ -955,7 +955,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDroidBlocked)]
         public static void DroidOnBlocked()
         {
-            ExecuteScriptNWScript("x0_ch_hen_block", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_block", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidRoundEnd)]
@@ -964,7 +964,7 @@ namespace SWLOR.Game.Server.Service
             var droid = OBJECT_SELF;
             if (!Activity.IsBusy(droid))
             {
-                ExecuteScriptNWScript("x0_ch_hen_combat", OBJECT_SELF);
+                ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
                 AI.ProcessPerkAI(AIDefinitionType.Droid, droid, false);
             }
         }
@@ -972,13 +972,13 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDroidConversation)]
         public static void DroidOnConversation()
         {
-            ExecuteScriptNWScript("x0_ch_hen_conv", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidDamaged)]
         public static void DroidOnDamaged()
         {
-            ExecuteScriptNWScript("x0_ch_hen_damage", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
 
         }
 
@@ -987,7 +987,7 @@ namespace SWLOR.Game.Server.Service
         {
             var droid = OBJECT_SELF;
             var player = GetMaster(droid);
-            ExecuteScriptNWScript("x2_hen_death", droid);
+            ExecuteScript("x2_hen_death", droid);
 
             var item = GetControllerItem(droid);
             var droidDetail = LoadDroidItemPropertyDetails(item);
@@ -1002,27 +1002,27 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDroidDisturbed)]
         public static void DroidOnDisturbed()
         {
-            ExecuteScriptNWScript("x0_ch_hen_distrb", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidHeartbeat)]
         public static void DroidOnHeartbeat()
         {
-            ExecuteScriptNWScript("x0_ch_hen_heart", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
             Stat.RestoreNPCStats(false);
         }
 
         [NWNEventHandler(ScriptName.OnDroidPerception)]
         public static void DroidOnPerception()
         {
-            ExecuteScriptNWScript("x0_ch_hen_percep", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
 
         }
 
         [NWNEventHandler(ScriptName.OnDroidAttacked)]
         public static void DroidOnPhysicalAttacked()
         {
-            ExecuteScriptNWScript("x0_ch_hen_attack", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
 
         }
 
@@ -1030,7 +1030,7 @@ namespace SWLOR.Game.Server.Service
         public static void DroidOnRested()
         {
             var droid = OBJECT_SELF;
-            ExecuteScriptNWScript("x0_ch_hen_rest", droid);
+            ExecuteScript("x0_ch_hen_rest", droid);
 
             AssignCommand(droid, () => ClearAllActions());
 
@@ -1041,7 +1041,7 @@ namespace SWLOR.Game.Server.Service
         public static void DroidOnSpawn()
         {
             var droid = OBJECT_SELF;
-            ExecuteScriptNWScript("x0_ch_hen_spawn", droid);
+            ExecuteScript("x0_ch_hen_spawn", droid);
             AssignCommand(droid, () =>
             {
                 SetIsDestroyable(true, false, false);
@@ -1052,14 +1052,14 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDroidSpellCast)]
         public static void DroidOnSpellCastAt()
         {
-            ExecuteScriptNWScript("x2_hen_spell", OBJECT_SELF);
+            ExecuteScript("x2_hen_spell", OBJECT_SELF);
 
         }
 
         [NWNEventHandler(ScriptName.OnDroidUserDefined)]
         public static void DroidOnUserDefined()
         {
-            ExecuteScriptNWScript("x0_ch_hen_usrdef", OBJECT_SELF);
+            ExecuteScript("x0_ch_hen_usrdef", OBJECT_SELF);
 
         }
 

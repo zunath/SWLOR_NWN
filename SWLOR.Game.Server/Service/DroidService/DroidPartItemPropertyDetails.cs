@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
+﻿using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Service.DroidService
 {

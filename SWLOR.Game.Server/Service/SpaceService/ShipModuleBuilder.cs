@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {

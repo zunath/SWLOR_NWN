@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Service.MigrationService;
-using SWLOR.Game.Server.Service.PerkService;
+﻿using SWLOR.Game.Server.Service.MigrationService;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {

@@ -1,6 +1,4 @@
 ﻿@page "/account"
-@using SWLOR.Game.Server.Service.AchievementService
-@using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Policy = "DiscordAdmin")]
 
 <h3>Accounts (@_totalRecords)</h3>

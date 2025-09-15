@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {

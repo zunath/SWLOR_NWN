@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>fbf318b6-1c23-4dac-a306-cbedca9c75ca</UserSecretsId>
@@ -10,9 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazorise" Version="1.8.0" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="1.8.0" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.8.0" />
+    <PackageReference Include="Blazorise" Version="1.8.2" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="1.8.2" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.8.2" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
 
   </ItemGroup>

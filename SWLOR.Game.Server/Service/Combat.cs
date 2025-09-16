@@ -6,7 +6,9 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
@@ -582,6 +584,14 @@ namespace SWLOR.Game.Server.Service
             // Convert delay units to milliseconds: 60 delay units = 1 second
             var finalDelay = (int)(delay / 60f * 1000);
             
+            // Apply feat-based delay reduction
+            var reductionPercentage = CalculateAttackDelayReduction(attacker);
+            if (reductionPercentage > 0)
+            {
+                var reductionAmount = (int)(finalDelay * (reductionPercentage / 100f));
+                finalDelay -= reductionAmount;
+            }
+            
             return finalDelay;
         }
 
@@ -613,6 +623,66 @@ namespace SWLOR.Game.Server.Service
             }
             
             return false;
+        }
+
+        /// <summary>
+        /// Gets the Hasten effect level for a creature.
+        /// </summary>
+        /// <param name="creature">The creature to check for Hasten effect.</param>
+        /// <returns>The Hasten effect level (0-3).</returns>
+        private static int GetHastenLevel(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return 0;
+
+            // Check for Hasten status effects using the StatusEffect service
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Hasten3))
+                return 3;
+            else if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Hasten2))
+                return 2;
+            else if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Hasten1))
+                return 1;
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Calculates the attack delay reduction percentage based on creature perks.
+        /// Cumulative reductions are capped at 50% maximum.
+        /// </summary>
+        /// <param name="attacker">The creature to calculate delay reduction for.</param>
+        /// <returns>Attack delay reduction percentage (0-50).</returns>
+        public static int CalculateAttackDelayReduction(uint attacker)
+        {
+            if (!GetIsObjectValid(attacker))
+                return 0;
+
+            var totalReduction = 0;
+
+            // Rapid Shot - 10% per level (up to 2 levels = 20% total)
+            var rapidShotLevel = Perk.GetPerkLevel(attacker, PerkType.RapidShot);
+            if (rapidShotLevel > 0)
+                totalReduction += rapidShotLevel * 10;
+
+            // Flurry Style - 20% reduction
+            if (GetHasFeat(FeatType.FlurryStyle, attacker))
+                totalReduction += 20;
+
+            // Hasten - 10% per level (up to 3 levels = 30% total)
+            var hastenLevel = GetHastenLevel(attacker);
+            if (hastenLevel > 0)
+                totalReduction += hastenLevel * 10;
+
+            // Beast Speed - 10% per level (up to 3 levels = 30% total)
+            var beastSpeedLevel = Perk.GetPerkLevel(attacker, PerkType.BeastSpeed);
+            if (beastSpeedLevel > 0)
+                totalReduction += beastSpeedLevel * 10;
+
+            // Cap the total reduction at 50%
+            if (totalReduction > 50)
+                totalReduction = 50;
+
+            return totalReduction;
         }
     }
 }

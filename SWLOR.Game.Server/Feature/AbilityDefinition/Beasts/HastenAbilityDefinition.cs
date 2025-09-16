@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -21,29 +22,35 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             return _builder.Build();
         }
 
-        private void Impact(uint activator, int numAttacks, bool applyToBeastmaster)
+        private void Impact(uint activator, int hastenLevel, bool applyToBeastmaster)
         {
             var beastmaster = GetMaster(activator);
             var beastmasterStat = GetAbilityModifier(AbilityType.Agility, beastmaster);
             var beastStat = GetAbilityModifier(AbilityType.Agility, activator);
             var bonusDuration = 3f * (beastmasterStat + beastStat);
 
-            var effect = EffectModifyAttacks(numAttacks);
-            effect = TagEffect(effect, HastenEffectTag);
-
-            ApplyEffectToObject(DurationType.Temporary, effect, activator, 30f + bonusDuration);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), activator);
-
-            if (applyToBeastmaster)
+            // Apply StatusEffect based on Hasten level
+            StatusEffectType statusEffectType = hastenLevel switch
             {
-                effect = EffectModifyAttacks(1);
-                effect = TagEffect(effect, HastenEffectTag);
+                1 => StatusEffectType.Hasten1,
+                2 => StatusEffectType.Hasten2,
+                3 => StatusEffectType.Hasten3,
+                _ => StatusEffectType.Invalid
+            };
 
-                ApplyEffectToObject(DurationType.Temporary, effect, beastmaster, 30f + bonusDuration);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), beastmaster);
+            if (statusEffectType != StatusEffectType.Invalid)
+            {
+                StatusEffect.Apply(activator, activator, statusEffectType, 30f + bonusDuration);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), activator);
+
+                if (applyToBeastmaster)
+                {
+                    StatusEffect.Apply(beastmaster, activator, statusEffectType, 30f + bonusDuration);
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), beastmaster);
+                }
             }
 
-            Enmity.ModifyEnmityOnAll(activator, 300 * numAttacks);
+            Enmity.ModifyEnmityOnAll(activator, 300 * hastenLevel);
         }
 
         private void Hasten1()

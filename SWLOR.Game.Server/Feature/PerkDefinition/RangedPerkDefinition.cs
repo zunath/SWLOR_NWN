@@ -21,19 +21,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             WeaponFocusPistols();
             ImprovedCriticalPistols();
             PistolProficiency();
-            PistolMastery();
             QuickDraw();
             DoubleShot();
             WeaponFocusThrowingWeapons();
             ImprovedCriticalThrowingWeapons();
             ThrowingWeaponProficiency();
-            ThrowingWeaponMastery();
             ExplosiveToss();
             PiercingToss();
             WeaponFocusRifles();
             ImprovedCriticalRifles();
             RifleProficiency();
-            RifleMastery();
             TranquilizerShot();
             CripplingShot();
             ZenMarksmanship();
@@ -47,37 +44,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Rapid Shot")
 
                 .AddPerkLevel()
-                .Description("Grants an additional attack with pistols.")
+                .Description("Reduces pistol attack delay by 10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
 
                 .AddPerkLevel()
-                .Description("Grants an additional attack with pistols, for a total of two attacks.")
+                .Description("Reduces pistol attack delay by 20%.")
                 .Price(5)
-                .RequirementSkill(SkillType.Ranged, 40)
-                
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
-                });
+                .RequirementSkill(SkillType.Ranged, 40);
         }
 
         private void DirtyBlow()
@@ -229,46 +203,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PistolProficiency5);
         }
 
-        private void PistolMastery()
-        {
-            _builder.Create(PerkCategoryType.RangedPistol, PerkType.PistolMastery)
-                .Name("Pistol Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Pistol.")
-                .Price(8)
-                .RequirementSkill(SkillType.Ranged, 25)
-                .GrantsFeat(FeatType.PistolMastery1)
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Pistol.")
-                .Price(8)
-                .RequirementSkill(SkillType.Ranged, 50)
-                .GrantsFeat(FeatType.PistolMastery2);
-        }
-
         private void QuickDraw()
         {
             _builder.Create(PerkCategoryType.RangedPistol, PerkType.QuickDraw)
@@ -394,46 +328,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ThrowingWeaponProficiency5);
         }
 
-        private void ThrowingWeaponMastery()
-        {
-            _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ThrowingWeaponMastery)
-                .Name("Throwing Weapon Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Throwing Weapon.")
-                .Price(8)
-                .RequirementSkill(SkillType.Ranged, 25)
-                .GrantsFeat(FeatType.ThrowingWeaponMastery1)
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Throwing Weapon.")
-                .Price(8)
-                .RequirementSkill(SkillType.Ranged, 50)
-                .GrantsFeat(FeatType.ThrowingWeaponMastery2);
-        }
-
         private void ExplosiveToss()
         {
             _builder.Create(PerkCategoryType.RangedThrowing, PerkType.ExplosiveToss)
@@ -557,47 +451,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 40)
                 .GrantsFeat(FeatType.RifleProficiency5);
-        }
-
-        private void RifleMastery()
-        {
-            _builder.Create(PerkCategoryType.RangedRifle, PerkType.RifleMastery)
-                .Name("Rifle Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a rifle.")
-                .Price(8)
-                .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementMustHavePerk(PerkType.RapidReload)
-                .GrantsFeat(FeatType.RifleMastery1)
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a rifle.")
-                .Price(8)
-                .RequirementSkill(SkillType.Ranged, 50)
-                .GrantsFeat(FeatType.RifleMastery2);
         }
 
         private void TranquilizerShot()

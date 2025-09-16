@@ -14,19 +14,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             Knockdown();
-            Furor();
             InnerStrength();
             Chi();
             WeaponFocusKatars();
             ImprovedCriticalKatars();
             KatarProficiency();
-            KatarMastery();
             ElectricFist();
             StrikingCobra();
             WeaponFocusStaves();
             ImprovedCriticalStaves();
             StaffProficiency();
-            StaffMastery();
             Slam();
             LegSweep();
             FlurryStyle();
@@ -46,19 +43,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .DroidAISlots(2)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .GrantsFeat(FeatType.Knockdown);
-        }
-
-        private void Furor()
-        {
-            _builder.Create(PerkCategoryType.MartialArtsGeneral, PerkType.Furor)
-                .Name("Furor")
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack to the user for one minute. [Cross Skill]")
-                .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 25)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.Furor);
         }
 
         private void InnerStrength()
@@ -200,46 +184,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.KatarProficiency5);
         }
 
-        private void KatarMastery()
-        {
-            _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.KatarMastery)
-                .Name("Katar Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Katars.")
-                .Price(8)
-                .RequirementSkill(SkillType.MartialArts, 25)
-                .GrantsFeat(FeatType.KatarMastery1)
-                
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Katars.")
-                .Price(8)
-                .RequirementSkill(SkillType.MartialArts, 50)
-                .GrantsFeat(FeatType.KatarMastery2);
-        }
-
         private void ElectricFist()
         {
             _builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.ElectricFist)
@@ -365,45 +309,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.StaffProficiency5);
         }
 
-        private void StaffMastery()
-        {
-            _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.StaffMastery)
-                .Name("Staff Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
-                .TriggerPurchase((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerRefund((player) =>
-                {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Staff.")
-                .Price(8)
-                .RequirementSkill(SkillType.MartialArts, 25)
-                .GrantsFeat(FeatType.StaffMastery1)
-                
-                .AddPerkLevel()
-                .Description("Grants an additional attack when equipped with a Staff.")
-                .Price(8)
-                .RequirementSkill(SkillType.MartialArts, 50)
-                .GrantsFeat(FeatType.StaffMastery2);
-        }
 
         private void Slam()
         {
@@ -469,30 +374,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             _builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.FlurryStyle)
                 .Name("Flurry Style")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, item);
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
-                })
 
                 .AddPerkLevel()
-                .Description("Your staff attacks now use Agility for accuracy and Perception for damage. In addition, you gain an additional attack with staves, but all staff attacks are made with a -10% to-hit penalty.")
+                .Description("Staves now use AGI to-hit and PER for damage. Attack delays are reduced by 10%.")
                 .Price(1)
                 .RequirementCannotHavePerk(PerkType.CrushingStyle)
-                .GrantsFeat(FeatType.FlurryStyle)
-
-                .AddPerkLevel()
-                .Description("You gain an additional attack with staves, and no longer suffer a to-hit penalty for attacks made with staves.")
-                .Price(4)
-                .RequirementSkill(SkillType.MartialArts, 35)
-                .GrantsFeat(FeatType.FlurryMastery);
+                .GrantsFeat(FeatType.FlurryStyle);
         }
         private void CrushingStyle()
         {

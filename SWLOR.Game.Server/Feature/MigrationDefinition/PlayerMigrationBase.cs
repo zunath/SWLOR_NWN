@@ -79,9 +79,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 DB.Set(dbPlayer);
                 Stat.AdjustPlayerMaxHP(dbPlayer, player, 0);
                 SetCurrentHitPoints(player, GetMaxHitPoints(player));
-
-                // Attacks
-                Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
             });
         }
 

@@ -548,6 +548,8 @@ namespace SWLOR.Game.Server.Service
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, attacker);
             
             var delay = 0;
+            var rightHandDelay = 0;
+            var leftHandDelay = 0;
             
             // Get delay from right hand weapon
             if (GetIsObjectValid(rightHand))
@@ -555,7 +557,10 @@ namespace SWLOR.Game.Server.Service
                 for(var ip = GetFirstItemProperty(rightHand); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(rightHand))
                 {
                     if(GetItemPropertyType(ip) == ItemPropertyType.Delay)
-                        delay += GetItemPropertyCostTableValue(ip) * 10;
+                    {
+                        var costValue = GetItemPropertyCostTableValue(ip);
+                        rightHandDelay += costValue * 10;
+                    }
                 }
             }
             
@@ -565,11 +570,19 @@ namespace SWLOR.Game.Server.Service
                 for (var ip = GetFirstItemProperty(leftHand); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(leftHand))
                 {
                     if (GetItemPropertyType(ip) == ItemPropertyType.Delay)
-                        delay += GetItemPropertyCostTableValue(ip) * 10;
+                    {
+                        var costValue = GetItemPropertyCostTableValue(ip);
+                        leftHandDelay += costValue * 10;
+                    }
                 }
             }
 
-            return (int)(delay / 60f * 1000);
+            delay = rightHandDelay + leftHandDelay;
+
+            // Convert delay units to milliseconds: 60 delay units = 1 second
+            var finalDelay = (int)(delay / 60f * 1000);
+            
+            return finalDelay;
         }
 
         /// <summary>

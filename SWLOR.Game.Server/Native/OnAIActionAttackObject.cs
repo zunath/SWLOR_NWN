@@ -5,6 +5,7 @@ using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using NWNX.NET;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -70,12 +71,12 @@ namespace SWLOR.Game.Server.Native
             {
                 var pCreature = CNWSCreature.FromPointer(creature);
                 var pNode = CNWSObjectActionNode.FromPointer(node);
-
                 var pArea = pCreature.GetArea();
 
-                if (!_creatureAttackDelays.ContainsKey(pCreature.m_idSelf))
+                // Clean up attack delay entry if creature no longer exists
+                if (_creatureAttackDelays.ContainsKey(pCreature.m_idSelf) && !GetIsObjectValid(pCreature.m_idSelf))
                 {
-                    _creatureAttackDelays[pCreature.m_idSelf] = DateTime.MinValue;
+                    _creatureAttackDelays.Remove(pCreature.m_idSelf);
                 }
 
                 // This action was just run... reset
@@ -88,6 +89,12 @@ namespace SWLOR.Game.Server.Native
                     !IsAIState(AISTATE_CREATURE_ABLE_TO_GO_HOSTILE, pCreature) ||
                     !IsAIState(AISTATE_CREATURE_USE_HANDS, pCreature))
                 {
+                    // Clean up attack delay entry when creature can no longer attack
+                    if (_creatureAttackDelays.ContainsKey(pCreature.m_idSelf))
+                    {
+                        _creatureAttackDelays.Remove(pCreature.m_idSelf);
+                    }
+                    
                     pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
                     return ACTION_FAILED;
                 }
@@ -356,6 +363,39 @@ namespace SWLOR.Game.Server.Native
 
                 pCreature.m_vLastAttackPosition = new Vector();
 
+                // Check if target is dead - if so, skip delay and handle immediately
+                var pTargetObject = (CGameObject)NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(oidAttackTarget);
+                var bTargetDead = false;
+                if (pTargetObject != null)
+                {
+                    if (pTargetObject.AsNWSObject() != null && pTargetObject.AsNWSObject().GetDead() == 1)
+                    {
+                        bTargetDead = true;
+                    }
+                    else if (pTargetObject.AsNWSCreature() != null && 
+                             pTargetObject.AsNWSCreature().m_bPlayerCharacter == 1 && 
+                             pTargetObject.AsNWSCreature().GetIsPCDying() == 1)
+                    {
+                        bTargetDead = true;
+                    }
+                }
+
+                // Check attack delay before starting or processing combat
+                // First attack is always instant, subsequent attacks respect delay
+                // Skip delay check if target is dead
+                if (_creatureAttackDelays.ContainsKey(pCreature.m_idSelf) && !bTargetDead)
+                {
+                    var calculatedDelay = Combat.CalculateAttackDelay(pCreature.m_idSelf);
+                    var delay = calculatedDelay + BaseAttackDelay;
+                    var timeSinceLastAttack = (DateTime.UtcNow - _creatureAttackDelays[pCreature.m_idSelf]).TotalMilliseconds;
+                    
+                    if (timeSinceLastAttack < delay)
+                    {
+                        // Still in delay period, return in progress
+                        return ACTION_IN_PROGRESS;
+                    }
+                }
+
                 if (pCreature.m_pcCombatRound.m_bRoundStarted == 0)
                 {
                     pCreature.m_pcCombatRound.StartCombatRound(oidAttackTarget);
@@ -382,6 +422,83 @@ namespace SWLOR.Game.Server.Native
 
                             switch (nActionType)
                             {
+                                case CNWSCOMBATROUND_TYPE_ATTACK:
+                                    {
+                                        var nAnimation = pPendingAction.m_nAnimation;
+                                        var nAttacks = 1; // Always perform exactly one attack with delay-based system
+                                        var bOverrideAction = false;
+
+                                        // Our current target is dead or not active, meaning we should not process the action
+                                        // Since attacking a dead body would be kind of silly...
+                                        if (!bTargetActive &&
+                                            pCreature.m_pcCombatRound.m_oidNewAttackTarget == OBJECT_INVALID)
+                                        {
+                                            nActionType = CNWSCOMBATROUND_TYPE_INVALID;
+                                            bOverrideAction = true;
+                                        }
+
+                                        if (!bOverrideAction)
+                                        {
+                                            pCreature.SetAnimation(nAnimation);
+                                            
+                                            if (oidAttackTarget != oidTarget)
+                                            {
+                                                if (pPendingAction.m_bActionRetargettable == 1)
+                                                {
+                                                    oidTarget = oidAttackTarget;
+                                                }
+                                                else
+                                                {
+                                                    pCreature.m_oidAttemptedAttackTarget = oidTarget;
+                                                }
+                                            }
+
+                                            pCreature.m_pcCombatRound.SetRoundPaused(1, pCreature.m_idSelf);
+                                            
+                                            // Set pause timer for single attack
+                                            pCreature.m_pcCombatRound.SetPauseTimer(nTimeAnimation);
+
+                                            // If the attack was switched somewhere in the combat code ie: Cleave
+                                            // we grab the new target and stick with it
+                                            if (pCreature.m_pcCombatRound.m_oidNewAttackTarget != OBJECT_INVALID)
+                                            {
+                                                var oidNewTarget = pCreature.m_pcCombatRound.m_oidNewAttackTarget;
+                                                pCreature.m_bPassiveAttackBehaviour = 1;
+                                                pCreature.ChangeAttackTarget(pNode, oidNewTarget);
+                                                pCreature.m_pcCombatRound.m_oidNewAttackTarget = OBJECT_INVALID;
+                                                oidTarget = oidNewTarget;
+                                                bTargetActive = true;
+                                            }
+
+                                            // This is just in case we've changed targets in mid round... we want to be sure
+                                            // that we're still locked on to the proper target
+                                            pCreature.SetLockOrientationToObject(oidTarget);
+
+                                            // Process the attack (delay already checked at function start)
+                                            var isParalyzed = Combat.HandleParalyze(pCreature.m_idSelf);
+                                            
+                                            if (isParalyzed)
+                                            {
+                                                Log.Write(LogGroup.Attack, $"Creature {pCreature.m_idSelf:X8} is paralyzed, recomputing round");
+                                                pCreature.m_pcCombatRound.RecomputeRound();
+                                            }
+                                            else
+                                            {
+                                                pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
+                                                bTargetActive = true;
+                                                
+                                                // Set the delay timestamp after the attack resolves
+                                                // This ensures the first attack is instant, subsequent attacks respect delay
+                                                _creatureAttackDelays[pCreature.m_idSelf] = DateTime.UtcNow;
+                                                
+                                                // After resolving attack, ensure the combat round continues
+                                                // This should trigger the next attack action to be generated
+                                                pCreature.m_pcCombatRound.RecomputeRound();
+                                            }
+                                        }
+                                    }
+                                    break;
+
                                 case CNWSCOMBATROUND_TYPE_PARRY:
                                     {
                                         var nWeaponAttackType = pCreature.m_pcCombatRound.GetWeaponAttackType();
@@ -399,7 +516,9 @@ namespace SWLOR.Game.Server.Native
                                 case CNWSCOMBATROUND_TYPE_COMSTEP:
                                 case CNWSCOMBATROUND_TYPE_COMSTEPFB:
                                     {
+                                        // Combat stepping disabled - just pause the round
                                         pCreature.m_pcCombatRound.SetRoundPaused(1, pCreature.m_idSelf);
+                                        pCreature.m_pcCombatRound.SetPauseTimer(nTimeAnimation);
                                     }
                                     break;
 
@@ -433,30 +552,12 @@ namespace SWLOR.Game.Server.Native
                                         }
                                     }
                                     break;
+
                                 default:
-
-                                    var delay = Combat.CalculateAttackDelay(pCreature.m_idSelf) + BaseAttackDelay;
-                                    if ((DateTime.UtcNow - _creatureAttackDelays[pCreature.m_idSelf]).TotalMilliseconds < delay)
                                     {
-                                        return ACTION_IN_PROGRESS;
+                                        // Handle any other action types that might not be explicitly handled
+                                        // This should rarely be hit with the proper action types above
                                     }
-                                    else
-                                    {
-                                        var isParalyzed = Combat.HandleParalyze(pCreature.m_idSelf);
-
-                                        _creatureAttackDelays[pCreature.m_idSelf] = DateTime.UtcNow;
-                                        if (isParalyzed)
-                                        {
-                                            pCreature.m_pcCombatRound.RecomputeRound();
-                                        }
-                                        else
-                                        {
-                                            var result = DoAttack(pPendingAction, pCreature, oidAttackTarget, pNode);
-                                            if (result)
-                                                bTargetActive = true;
-                                        }
-                                    }
-
                                     break;
                             }
 
@@ -488,45 +589,6 @@ namespace SWLOR.Game.Server.Native
             });
         }
 
-        private static bool DoAttack(CNWSCombatRoundAction pPendingAction, CNWSCreature pCreature, uint oidAttackTarget, CNWSObjectActionNode pNode)
-        {
-            var oidTarget = pPendingAction.m_oidTarget;
-            var nAttacks = 1;
-            var nTimeAnimation = 750;
-            var result = false;
-
-            pCreature.SetAnimation(9);
-            if (oidAttackTarget != oidTarget)
-            {
-                if (pPendingAction.m_bActionRetargettable == 1)
-                {
-                    oidTarget = oidAttackTarget;
-                }
-                else
-                {
-                    pCreature.m_oidAttemptedAttackTarget = oidTarget;
-                }
-            }
-
-            pCreature.m_pcCombatRound.SetRoundPaused(1, pCreature.m_idSelf);
-            pCreature.m_pcCombatRound.SetPauseTimer(nTimeAnimation);
-            
-            if (pCreature.m_pcCombatRound.m_oidNewAttackTarget != OBJECT_INVALID)
-            {
-                var oidNewTarget = pCreature.m_pcCombatRound.m_oidNewAttackTarget;
-                pCreature.m_bPassiveAttackBehaviour = 1;
-                pCreature.ChangeAttackTarget(pNode, oidNewTarget);
-                pCreature.m_pcCombatRound.m_oidNewAttackTarget = OBJECT_INVALID;
-                oidTarget = oidNewTarget;
-                result = true;
-            }
-
-            pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
-            // Note: ProcessWeaponAbility is not available in SWLOR, so we'll skip this for now
-            // _ability.ProcessWeaponAbility(pCreature.m_idSelf, oidTarget, 0.75f);
-
-            return result;
-        }
         
         private static float MagnitudeSquared(Vector v)
         {

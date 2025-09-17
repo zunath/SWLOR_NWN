@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is equipped, if it has any custom status, apply them now.
         /// This should be run in the "after" event because any restrictions should be checked first.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnItemEquipBefore)]
+        [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
         public static void ApplyStats()
         {
             var creature = OBJECT_SELF;

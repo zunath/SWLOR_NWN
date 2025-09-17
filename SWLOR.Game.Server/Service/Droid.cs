@@ -282,7 +282,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a droid equips an item, it is removed from its inventory and added to its equipped items.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnItemEquipBefore)]
+        [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
         public static void OnEquipItem()
         {
             var droid = OBJECT_SELF;

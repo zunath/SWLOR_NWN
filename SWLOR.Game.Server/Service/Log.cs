@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Service
         /// Audits are written asynchronously so it's important to flush everything to disk when the server stops.
         /// Ensure this is called one time when the server stops.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnApplicationShutdown)]
+        [NWNEventHandler(ScriptName.OnSWLORApplicationShutdown)]
         public static void OnApplicationShutdown()
         {
             foreach (var logger in _loggers.Values)

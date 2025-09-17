@@ -168,8 +168,8 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_USE_ITEM_AFTER", ScriptName.OnUseItemAfter);
 
             // Item Container events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_INVENTORY_OPEN_BEFORE", ScriptName.OnItemInventoryOpenBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_INVENTORY_OPEN_AFTER", ScriptName.OnItemInventoryOpenAfter);
+            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_INVENTORY_OPEN_BEFORE", ScriptName.OnInventoryOpenBefore);
+            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_INVENTORY_OPEN_AFTER", ScriptName.OnInventoryOpenAfter);
             EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_INVENTORY_CLOSE_BEFORE", ScriptName.OnItemInventoryCloseBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_INVENTORY_CLOSE_AFTER", ScriptName.OnItemInventoryCloseAfter);
 
@@ -186,8 +186,8 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_VALIDATE_ITEM_EQUIP_AFTER", ScriptName.OnValidateItemEquipAfter);
 
             // Item Equip events
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_EQUIP_BEFORE", ScriptName.OnItemEquipBefore);
-            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_EQUIP_AFTER", ScriptName.OnItemEquipAfter);
+            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_EQUIP_BEFORE", ScriptName.OnItemEquipValidateBefore);
+            EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_EQUIP_AFTER", ScriptName.OnItemEquipValidateAfter);
 
             // Item Unequip events
             EventsPlugin.SubscribeEvent("NWNX_ON_ITEM_UNEQUIP_BEFORE", ScriptName.OnItemUnequipBefore);
@@ -489,8 +489,8 @@ namespace SWLOR.Game.Server.Feature
 
             // Input Force Move To events
             // NOTE: These events are disabled because they cause NWServer to crash when a player clicks to move anywhere.
-            //Events.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_BEFORE", "force_move_bef");
-            //Events.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_AFTER", "force_move_aft");
+            //EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_BEFORE", ScriptName.OnInputForceMoveToObjectBefore);
+            //EventsPlugin.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_AFTER", ScriptName.OnInputForceMoveToObjectAfter);
 
             // Object Lock events
             EventsPlugin.SubscribeEvent("NWNX_ON_OBJECT_LOCK_BEFORE", ScriptName.OnObjectLockBefore);
@@ -506,9 +506,9 @@ namespace SWLOR.Game.Server.Feature
 
             // Resource events
             // NOTE: These events are disabled because they cause NWServer to crash when CTRL+C is pressed on a Docker server.
-            //Events.SubscribeEvent("NWNX_ON_RESOURCE_ADDED", "resource_added");
-            //Events.SubscribeEvent("NWNX_ON_RESOURCE_REMOVED", "resource_removed");
-            //Events.SubscribeEvent("NWNX_ON_RESOURCE_MODIFIED", "resource_modified");
+            //EventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_ADDED", ScriptName.OnResourceAdded);
+            //EventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_REMOVED", ScriptName.OnResourceRemoved);
+            //EventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_MODIFIED", ScriptName.OnResourceModified);
 
             // ELC Events
             EventsPlugin.SubscribeEvent("NWNX_ON_ELC_VALIDATE_CHARACTER_BEFORE", ScriptName.OnELCValidateCharacterBefore);
@@ -563,20 +563,20 @@ namespace SWLOR.Game.Server.Feature
         private static void HookApplicationEvents()
         {
             // Application Shutdown events
-            EventsPlugin.SubscribeEvent("APPLICATION_SHUTDOWN", ScriptName.OnApplicationShutdown);
+            EventsPlugin.SubscribeEvent("APPLICATION_SHUTDOWN", ScriptName.OnSWLORApplicationShutdown);
             AppDomain.CurrentDomain.ProcessExit += (sender, args) =>
             {
                 EventsPlugin.SignalEvent("APPLICATION_SHUTDOWN", GetModule());
             };
 
-            EventsPlugin.SubscribeEvent("SWLOR_ITEM_EQUIP_VALID_BEFORE", ScriptName.OnItemEquipValidBefore);
-            EventsPlugin.SubscribeEvent("SWLOR_BUY_PERK", ScriptName.OnBuyPerk);
-            EventsPlugin.SubscribeEvent("SWLOR_GAIN_SKILL_POINT", ScriptName.OnGainSkillPoint);
-            EventsPlugin.SubscribeEvent("SWLOR_COMPLETE_QUEST", ScriptName.OnCompleteQuest);
-            EventsPlugin.SubscribeEvent("SWLOR_CACHE_SKILLS_LOADED", ScriptName.OnCacheSkillsLoaded);
-            EventsPlugin.SubscribeEvent("SWLOR_COMBAT_POINT_DISTRIBUTED", ScriptName.OnCombatPointDistributed);
-            EventsPlugin.SubscribeEvent("SWLOR_SKILL_LOST_BY_DECAY", ScriptName.OnSkillLostByDecay);
-            EventsPlugin.SubscribeEvent("SWLOR_DELETE_PROPERTY", ScriptName.OnDeleteProperty);
+            EventsPlugin.SubscribeEvent("SWLOR_ITEM_EQUIP_VALID_BEFORE", ScriptName.OnSWLORItemEquipValidBefore);
+            EventsPlugin.SubscribeEvent("SWLOR_BUY_PERK", ScriptName.OnSWLORBuyPerk);
+            EventsPlugin.SubscribeEvent("SWLOR_GAIN_SKILL_POINT", ScriptName.OnSWLORGainSkillPoint);
+            EventsPlugin.SubscribeEvent("SWLOR_COMPLETE_QUEST", ScriptName.OnSWLORCompleteQuest);
+            EventsPlugin.SubscribeEvent("SWLOR_CACHE_SKILLS_LOADED", ScriptName.OnSWLORCacheSkillsLoaded);
+            EventsPlugin.SubscribeEvent("SWLOR_COMBAT_POINT_DISTRIBUTED", ScriptName.OnSWLORCombatPointDistributed);
+            EventsPlugin.SubscribeEvent("SWLOR_SKILL_LOST_BY_DECAY", ScriptName.OnSWLORSkillLostByDecay);
+            EventsPlugin.SubscribeEvent("SWLOR_DELETE_PROPERTY", ScriptName.OnSWLORDeleteProperty);
 
             Scheduler.ScheduleRepeating(() =>
             {

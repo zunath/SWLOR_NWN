@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         /// <summary>
         /// When a player attacks, remove the rest effect
         /// </summary>
-        [NWNEventHandler(ScriptName.OnInputAttackAfter)]
+        [NWNEventHandler(ScriptName.OnInputAttackObjectBefore)]
         public static void RemoveRestOnAttack()
         {
             var player = OBJECT_SELF;

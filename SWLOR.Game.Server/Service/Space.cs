@@ -382,7 +382,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles swapping a player's target to the object they attempted to attack using NWN's combat system.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnInputAttackBefore)]
+        [NWNEventHandler(ScriptName.OnInputAttackObjectBefore)]
         public static void SelectTarget()
         {
             var player = OBJECT_SELF;
@@ -993,7 +993,7 @@ namespace SWLOR.Game.Server.Service
         /// When a ship module item is examined,
         /// append the configured description to the item's description and add prerequisite perk item properties.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnExamineBefore)]
+        [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineShipModuleItem()
         {
             var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
@@ -1026,7 +1026,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a ship item is examined, add the prerequisite perk item properties.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnExamineBefore)]
+        [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineShipItem()
         {
             var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
@@ -2112,7 +2112,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player attempts to stealth while in space mode,
         /// exit the stealth mode and send an error message.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnStealthAddBefore)]
+        [NWNEventHandler(ScriptName.OnStealthEnterBefore)]
         public static void PreventSpaceStealth()
         {
             var creature = OBJECT_SELF;

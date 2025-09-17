@@ -32959,7 +32959,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 14
+                      "value": 112
                     },
                     "Cursed": {
                       "type": "byte",
@@ -33013,7 +33013,7 @@
                     },
                     "StackSize": {
                       "type": "word",
-                      "value": 1
+                      "value": 99
                     },
                     "Stolen": {
                       "type": "byte",
@@ -33033,7 +33033,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.10842708528093e-042
                     },
                     "XPosition": {
                       "type": "float",
@@ -33225,7 +33225,7 @@
                     },
                     "StackSize": {
                       "type": "word",
-                      "value": 1
+                      "value": 99
                     },
                     "Stolen": {
                       "type": "byte",
@@ -33415,7 +33415,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.10842708528093e-042
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",

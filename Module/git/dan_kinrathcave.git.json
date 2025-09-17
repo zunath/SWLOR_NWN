@@ -41414,7 +41414,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 5.326541453772885e-039
+                      "value": 2.601683104465175e-036
                     },
                     "XPosition": {
                       "type": "float",
@@ -41521,7 +41521,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.601683104465175e-036
+                      "value": 5.326541453772885e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -41745,14 +41745,14 @@
               "__struct_id": 97869,
               "BaseItem": {
                 "type": "int",
-                "value": 401
+                "value": 400
               }
             },
             {
               "__struct_id": 97869,
               "BaseItem": {
                 "type": "int",
-                "value": 400
+                "value": 401
               }
             },
             {

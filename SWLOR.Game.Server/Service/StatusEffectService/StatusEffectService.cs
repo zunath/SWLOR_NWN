@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.StatusEffectService
@@ -13,10 +14,75 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
         private static readonly Dictionary<uint, CreatureStatusEffect> _creatureEffects = new();
 
-        public static void OnPlayerEnter(uint module)
+        /// <summary>
+        /// When a player enters the server, apply the NWN effect system
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void OnPlayerEnter()
         {
             var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
             ApplyNWNEffect(player);
+        }
+
+        /// <summary>
+        /// When a player exits the server, clean up their status effects
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void OnPlayerExit()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            RemoveAllStatusEffects(player);
+            RemoveCreature(player);
+        }
+
+        /// <summary>
+        /// When a player dies, remove all status effects
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleDeath)]
+        public static void OnPlayerDeath()
+        {
+            var player = GetLastPlayerDied();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            RemoveAllStatusEffects(player);
+            RemoveCreature(player);
+        }
+
+        /// <summary>
+        /// Handle when a status effect is applied (called by NWN script)
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnApplyStatusEffect)]
+        public static void OnApplyStatusEffect()
+        {
+            var player = GetEnteringObject();
+            OnApplyNWNStatusEffect(player);
+        }
+
+        /// <summary>
+        /// Handle when a status effect is removed (called by NWN script)
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnRemoveStatusEffect)]
+        public static void OnRemoveStatusEffect()
+        {
+            var player = GetEnteringObject();
+            OnRemoveNWNStatusEffect(player);
+        }
+
+        /// <summary>
+        /// Handle status effect interval processing (called by NWN script)
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnStatusEffectInterval)]
+        public static void OnStatusEffectInterval()
+        {
+            var creature = GetEnteringObject();
+            OnNWNStatusEffectInterval(creature);
         }
 
         private static void ApplyNWNEffect(uint creature)
@@ -25,9 +91,9 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
                 return;
 
             var effect = EffectRunScript(
-                "status_apply",
-                "status_remove", 
-                "status_interval",
+                ScriptName.OnApplyStatusEffect,
+                ScriptName.OnRemoveStatusEffect, 
+                ScriptName.OnStatusEffectInterval,
                 Interval);
             effect = TagEffect(effect, StatusEffectTag);
             effect = SupernaturalEffect(effect);
@@ -48,6 +114,17 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
         public static void OnNWNStatusEffectInterval(uint creature)
         {
+            // Clean up invalid creatures when we encounter them
+            if (!GetIsObjectValid(creature) || GetIsDead(creature))
+            {
+                if (_creatureEffects.ContainsKey(creature))
+                {
+                    _creatureEffects.Remove(creature);
+                }
+                RemoveEffectByTag(creature, StatusEffectTag);
+                return;
+            }
+
             if (!_creatureEffects.ContainsKey(creature))
             {
                 RemoveEffectByTag(creature, StatusEffectTag);
@@ -99,6 +176,12 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             }
 
             ApplyNWNEffect(creature);
+
+            // Ensure the creature is in the dictionary
+            if (!_creatureEffects.ContainsKey(creature))
+            {
+                _creatureEffects[creature] = new CreatureStatusEffect();
+            }
 
             var statusEffect = (IStatusEffect)Activator.CreateInstance(type);
 
@@ -229,57 +312,6 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             return HasEffect(typeof(T), creature);
         }
 
-        private static void OnChangeJobs(uint player)
-        {
-            if (!_creatureEffects.ContainsKey(player))
-                return;
-
-            foreach (var effect in _creatureEffects[player].GetAllEffects())
-            {
-                if (effect.IsRemovedOnJobChange)
-                {
-                    RemoveStatusEffect(effect.GetType(), player);
-                }
-            }
-        }
-
-        public static void OnCreatureDealtDamage(uint attacker)
-        {
-            var effects = GetCreatureStatusEffects(attacker);
-
-            foreach (var effect in effects.GetAllOnHitEffects())
-            {
-                // For OnHit effects, we need to get the target of the attack
-                // This is a simplified approach - in a real implementation, you'd need to
-                // track the target from the attack event
-                var target = OBJECT_INVALID; // Placeholder - would need proper target tracking
-                if (GetIsObjectValid(target))
-                {
-                    // Get damage amount - this would need to be adapted to SWLOR's damage system
-                    var damage = 0; // Placeholder - would need to get actual damage
-                    effect.OnHitEffect(attacker, target, damage);
-                }
-            }
-        }
-
-        public static void ProcessHeartbeat()
-        {
-            // Process all status effects that need ticking
-            var creaturesToProcess = new List<uint>();
-            
-            foreach (var creature in _creatureEffects.Keys)
-            {
-                if (GetIsObjectValid(creature) && !GetIsDead(creature))
-                {
-                    creaturesToProcess.Add(creature);
-                }
-            }
-
-            foreach (var creature in creaturesToProcess)
-            {
-                OnNWNStatusEffectInterval(creature);
-            }
-        }
 
         public static void RemoveAllStatusEffects(uint creature)
         {
@@ -290,6 +322,32 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             foreach (var effect in effects)
             {
                 RemoveStatusEffect(effect.GetType(), creature);
+            }
+        }
+
+        /// <summary>
+        /// Removes a creature from the status effect system entirely
+        /// </summary>
+        public static void RemoveCreature(uint creature)
+        {
+            if (_creatureEffects.ContainsKey(creature))
+            {
+                _creatureEffects.Remove(creature);
+            }
+        }
+
+        [NWNEventHandler(ScriptName.OnSWLORDamage)]
+        public static void OnDealtDamage()
+        {
+            var attacker = OBJECT_SELF;
+            var defender = StringToObject(EventsPlugin.GetEventData("DEFENDER"));
+            var damage = Convert.ToInt32(EventsPlugin.GetEventData("DAMAGE"));
+
+            var effects = GetCreatureStatusEffects(attacker);
+
+            foreach (var effect in effects.GetAllOnHitEffects())
+            {
+                effect.OnHitEffect(attacker, defender, damage);
             }
         }
     }

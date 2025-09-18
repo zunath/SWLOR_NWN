@@ -577,6 +577,7 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("SWLOR_COMBAT_POINT_DISTRIBUTED", ScriptName.OnSWLORCombatPointDistributed);
             EventsPlugin.SubscribeEvent("SWLOR_SKILL_LOST_BY_DECAY", ScriptName.OnSWLORSkillLostByDecay);
             EventsPlugin.SubscribeEvent("SWLOR_DELETE_PROPERTY", ScriptName.OnSWLORDeleteProperty);
+            EventsPlugin.SubscribeEvent("SWLOR_ON_DAMAGE", ScriptName.OnSWLORDamage);
 
             Scheduler.ScheduleRepeating(() =>
             {

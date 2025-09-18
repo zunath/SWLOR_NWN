@@ -301,6 +301,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnSWLORCombatPointDistributed = "cp_xp_distribute";
         public const string OnSWLORSkillLostByDecay = "swlor_lose_skill";
         public const string OnSWLORDeleteProperty = "swlor_del_prop";
+        public const string OnSWLORDamage = "swlor_damage";
         public const string OnSWLORItemEquipValidBefore = "item_eqp_bef";
 
         // Communication events

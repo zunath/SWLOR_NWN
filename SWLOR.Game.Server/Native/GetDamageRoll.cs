@@ -92,7 +92,14 @@ namespace SWLOR.Game.Server.Native
         }
 
         [UnmanagedCallersOnly]
-        private static int OnGetDamageRoll(void* thisPtr, void* pTarget, int bOffHand, int bCritical, int bSneakAttack, int bDeathAttack, int bForceMax)
+        private static int OnGetDamageRoll(
+            void* thisPtr, 
+            void* pTarget, 
+            int bOffHand, 
+            int bCritical, 
+            int bSneakAttack, 
+            int bDeathAttack, 
+            int bForceMax)
         {
             return ServerManager.Executor.ExecuteInScriptContext(() =>
             {
@@ -105,10 +112,10 @@ namespace SWLOR.Game.Server.Native
                     "Area", area == null ? "Unknown" : area.m_sTag.ToString(),
                     "ObjectType", "Creature");
 
-                var targetObject = CNWSObject.FromPointer(pTarget);
+                var defender = CNWSObject.FromPointer(pTarget);
 
                 // Early exit for invalid targets
-                if (targetObject == null || targetObject.m_idSelf == OBJECT_INVALID)
+                if (defender == null || defender.m_idSelf == OBJECT_INVALID)
                 {
                     ProfilerPlugin.PopPerfScope();
                     return 0;
@@ -121,7 +128,7 @@ namespace SWLOR.Game.Server.Native
 
                 var attackType = attacker.GetRangeWeaponEquipped() == 1 ? (uint)AttackType.Ranged : (uint)AttackType.Melee;
 
-                LogAttackInfo(attacker, targetObject, attackType, weapon);
+                LogAttackInfo(attacker, defender, attackType, weapon);
 
                 // Nothing equipped - check gloves
                 if (weapon == null)
@@ -160,11 +167,16 @@ namespace SWLOR.Game.Server.Native
                 var critical = CalculateCriticalMultiplier(attacker, weapon, bCritical);
                 var attackerAttack = weapon == null ? 0 : Stat.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem);
 
-                var physicalDamage = ProcessDamageTypes(pTarget, attacker, weapon, dmgValues, pAttackData,
-                    attackerAttack, attackerStat, critical, weaponPerkLevel, attackType, damageFlags, bOffHand, targetObject);
+                var damage = ProcessDamageTypes(pTarget, attacker, weapon, dmgValues, pAttackData,
+                    attackerAttack, attackerStat, critical, weaponPerkLevel, attackType, damageFlags, bOffHand, defender);
+
+                if (damage > 0 && defender.m_bPlotObject == 0)
+                {
+                    PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, damage);
+                }
 
                 ProfilerPlugin.PopPerfScope();
-                return physicalDamage;
+                return damage;
             });
         }
 
@@ -512,6 +524,14 @@ namespace SWLOR.Game.Server.Native
             }
 
             return -1;
+        }
+
+        private static void PublishDamageDealtEvent(uint attacker, uint defender, int damage)
+        {
+            EventsPlugin.PushEventData("DEFENDER", ObjectToString(defender));
+            EventsPlugin.PushEventData("DAMAGE", damage.ToString());
+
+            EventsPlugin.SignalEvent("SWLOR_ON_DAMAGE", attacker);
         }
     }
 }

@@ -39,7 +39,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Legion Access Keycode"
+      "0": "Sith ID Codes - Level 3"
     }
   },
   "ModelPart1": {
@@ -68,11 +68,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Key_S_1"
+    "value": "Key_R_3"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "key_sith_01"
+    "value": "key_sith_3"
   },
   "xModelPart1": {
     "type": "word",

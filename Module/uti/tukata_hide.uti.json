@@ -1,0 +1,83 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 0
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 73
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 1000
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Thick and sinewy, this hide was torn from the back of a feral Tuk'ata -- the horned beasts that roam the tombs of ancient Sith Lords. The hide carries a faint, unsettling warmth, as though it still pulses with the dark energy that birthed the creature.\n\nSmugglers, Sith alchemists, and outlaw craftsmen prize Tuk'ata hides for crafting robes, armor linings, or forbidden relic bindings. Rumors whisper that some artisans who work too closely with these hides begin to hear whispers in their sleep..."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {}
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Tukata Hide"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 1
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 64
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 10
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "tukata_hide"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "tukata_hide"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 1
+  }
+}

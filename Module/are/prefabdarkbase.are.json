@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viscara - Legion Base - Basement"
+      "0": "[Prefab] Dark Side Area"
     }
   },
   "NoRest": {
@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "vlegthird"
+    "value": "prefabdarkbase"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "vlegthird"
+    "value": "prefdarkbase"
   },
   "Tile_List": {
     "type": "list",
@@ -4455,13 +4455,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "tii01"
   },
   "Version": {
     "type": "dword",
-    "value": 10
+    "value": 12
   },
   "Width": {
     "type": "int",

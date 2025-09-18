@@ -74,11 +74,11 @@ namespace SWLOR.Game.Server.Core
         // Item events
         public const string OnItemHit = "item_on_hit";
         public const string OnItemUseBefore = "item_use_bef";
-        public const string OnItemEquipBefore = "item_eqp_bef";
         public const string OnItemUnequipBefore = "item_uneqp_bef";
+        public const string OnItemUnequipAfter = "item_uneqp_aft";
         public const string OnItemDecrementBefore = "item_dec_bef";
-        public const string OnItemDropBefore = "item_drop_bef";
-        public const string OnItemEquipValueBefore = "item_eqpval_bef";
+        public const string OnItemEquipValidateBefore = "item_eqpval_bef";
+        public const string OnItemEquipValidateAfter = "item_eqpval_aft";
 
         // Dialog events
         public const string OnDialogStart = "dialog_start";
@@ -146,9 +146,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnPlayerTargetUpdated = "pc_target_upd";
 
         // Party events
-        public const string OnPartyAcceptBefore = "pty_accept_bef";
         public const string OnPartyLeaveBefore = "pty_leave_bef";
-        public const string OnPartyChangeLeaderBefore = "pty_chgldr_bef";
         public const string OnAssociateAddBefore = "asso_add_bef";
         public const string OnAssociateRemoveBefore = "asso_rem_bef";
         public const string OnAssociateStateEffect = "assoc_stateffect";
@@ -157,15 +155,12 @@ namespace SWLOR.Game.Server.Core
         public const string OnHealAfter = "heal_aft";
         public const string OnFeatUseBefore = "feat_use_bef";
         public const string OnRestStarted = "rest_started";
-        public const string OnInputAttackBefore = "input_atk_bef";
-        public const string OnInputAttackAfter = "input_atk_aft";
         public const string OnBroadcastAttackOfOpportunityBefore = "brdcast_aoo_bef";
 
         // Space events
         public const string OnSpaceEnter = "space_enter";
         public const string OnShipComputer = "ship_computer";
         public const string OnSpaceTarget = "spc_target";
-        public const string OnStealthAddBefore = "stlent_add_bef";
 
         // Aura events
         public const string OnAuraEnter = "aura_enter";
@@ -234,18 +229,12 @@ namespace SWLOR.Game.Server.Core
         public const string OnRestTriggerEnter = "rest_trg_enter";
         public const string OnRestTriggerExit = "rest_trg_exit";
 
-        // Map pin events
-        public const string OnMapPinAddBefore = "mappin_add_bef";
-        public const string OnMapPinRemoveBefore = "mappin_rem_bef";
-        public const string OnMapPinChangeBefore = "mappin_chg_bef";
-
         // Placeable events
         public const string OnPlaceableTeleport = "teleport";
         public const string OnPlaceablePermanentVfx = "permanent_vfx";
         public const string OnPlaceableGenericConversation = "generic_convo";
         public const string OnPlaceableSit = "sit";
         public const string OnPlaceableBuyRebuild = "buy_rebuild";
-        public const string OnExamineBefore = "examine_bef";
 
         // Property events
         public const string OnPropertyStarportTerminal = "prop_star_term";
@@ -299,15 +288,15 @@ namespace SWLOR.Game.Server.Core
         public const string OnObjectDestroyed = "object_destroyed";
 
         // Application events
-        public const string OnApplicationShutdown = "app_shutdown";
-        public const string OnItemEquipValidBefore = "item_eqp_bef";
-        public const string OnBuyPerk = "swlor_buy_perk";
-        public const string OnGainSkillPoint = "swlor_gain_skill";
-        public const string OnCompleteQuest = "swlor_comp_qst";
-        public const string OnCacheSkillsLoaded = "swlor_skl_cache";
-        public const string OnCombatPointDistributed = "cp_xp_distribute";
-        public const string OnSkillLostByDecay = "swlor_lose_skill";
-        public const string OnDeleteProperty = "swlor_del_prop";
+        public const string OnSWLORApplicationShutdown = "app_shutdown";
+        public const string OnSWLORBuyPerk = "swlor_buy_perk";
+        public const string OnSWLORGainSkillPoint = "swlor_gain_skill";
+        public const string OnSWLORCompleteQuest = "swlor_comp_qst";
+        public const string OnSWLORCacheSkillsLoaded = "swlor_skl_cache";
+        public const string OnSWLORCombatPointDistributed = "cp_xp_distribute";
+        public const string OnSWLORSkillLostByDecay = "swlor_lose_skill";
+        public const string OnSWLORDeleteProperty = "swlor_del_prop";
+        public const string OnSWLORItemEquipValidBefore = "item_eqp_bef";
 
         // Communication events
         public const string OnNWNXChat = "on_nwnx_chat";
@@ -397,14 +386,10 @@ namespace SWLOR.Game.Server.Core
         public const string OnUseItemAfter = "item_use_aft";
 
         // NWNX Events - Item container events
-        public const string OnItemInventoryOpenBefore = "inv_open_bef";
-        public const string OnItemInventoryOpenAfter = "inv_open_aft";
         public const string OnItemInventoryCloseBefore = "inv_close_bef";
         public const string OnItemInventoryCloseAfter = "inv_close_aft";
 
         // NWNX Events - Item equip/unequip events
-        public const string OnItemEquipAfter = "item_eqpval_aft";
-        public const string OnItemUnequipAfter = "item_uneqp_aft";
 
         // NWNX Events - Item destroy events
         public const string OnItemDestroyObjectBefore = "item_dest_bef";
@@ -505,7 +490,6 @@ namespace SWLOR.Game.Server.Core
         public const string OnDMSetFactionReputationAfter = "dm_setrep_aft";
         public const string OnDMGetFactionReputationBefore = "dm_getrep_bef";
         public const string OnDMGetFactionReputationAfter = "dm_getrep_aft";
-        public const string OnDMPossessFullBefore = "dm_possfull_bef";
 
         // NWNX Events - Client events
         public const string OnClientDisconnectBefore = "client_disc_bef";
@@ -589,8 +573,8 @@ namespace SWLOR.Game.Server.Core
         public const string OnInventoryRemoveItemAfter = "inv_rem_aft";
         public const string OnInventoryAddGoldBefore = "add_gold_bef";
         public const string OnInventoryAddGoldAfter = "add_gold_aft";
-        public const string OnInventoryRemoveGoldBefore = "add_gold_bef";
-        public const string OnInventoryRemoveGoldAfter = "add_gold_aft";
+        public const string OnInventoryRemoveGoldBefore = "rem_gold_bef";
+        public const string OnInventoryRemoveGoldAfter = "rem_gold_aft";
 
         // NWNX Events - Barter events
         public const string OnBarterStartBefore = "bart_start_bef";

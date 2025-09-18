@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition.AdrenalStim;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
-                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim1, 30f);
+                    StatusEffectService.ApplyStatusEffect<AdrenalStim1StatusEffect>(activator, target, 30);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 2), activator, 30f);
                 });
         }
@@ -90,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
-                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim2, 30f);
+                    StatusEffectService.ApplyStatusEffect<AdrenalStim2StatusEffect>(activator, target, 30);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 4), activator, 30f);
                 });
         }
@@ -128,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
-                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim3, 48f);
+                    StatusEffectService.ApplyStatusEffect<AdrenalStim3StatusEffect>(activator, target, 48);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 6), activator, 48f);
                 });
         }

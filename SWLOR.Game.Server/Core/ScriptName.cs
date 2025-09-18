@@ -151,6 +151,11 @@ namespace SWLOR.Game.Server.Core
         public const string OnAssociateRemoveBefore = "asso_rem_bef";
         public const string OnAssociateStateEffect = "assoc_stateffect";
 
+        // Status Effect events
+        public const string OnApplyStatusEffect = "status_apply";
+        public const string OnRemoveStatusEffect = "status_remove";
+        public const string OnStatusEffectInterval = "status_interval";
+
         // Combat events
         public const string OnHealAfter = "heal_aft";
         public const string OnFeatUseBefore = "feat_use_bef";

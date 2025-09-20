@@ -196,7 +196,35 @@ namespace SWLOR.Game.Server.Server
 
         private void RegisterConditionalScript(string script, MethodInfo methodInfo)
         {
-            var del = (ConditionalScriptDelegate)methodInfo.CreateDelegate(typeof(ConditionalScriptDelegate));
+            ConditionalScriptDelegate del;
+            
+            // Check if the method has parameters
+            var parameters = methodInfo.GetParameters();
+            if (parameters.Length == 0)
+            {
+                // No parameters - use the original approach
+                if (methodInfo.IsStatic)
+                {
+                    del = (ConditionalScriptDelegate)methodInfo.CreateDelegate(typeof(ConditionalScriptDelegate));
+                }
+                else
+                {
+                    // For non-static methods, we can't create a delegate without an instance
+                    _logger.Write<ErrorLogGroup>($"Cannot create delegate for non-static method '{methodInfo.Name}' without parameters. Static methods are required for event handlers.");
+                    return;
+                }
+            }
+            else if (parameters.Length == 1)
+            {
+                // One parameter - assume it's the event type and create a wrapper
+                var eventType = parameters[0].ParameterType;
+                del = () => InvokeMethodWithEventBool(methodInfo, eventType);
+            }
+            else
+            {
+                _logger.Write<ErrorLogGroup>($"Method '{methodInfo.Name}' tied to script '{script}' has an invalid number of parameters. Expected 0 or 1, got {parameters.Length}. This script was NOT loaded.");
+                return;
+            }
 
             if (!_conditionalScripts.ContainsKey(script))
                 _conditionalScripts[script] = new List<ConditionalScript>();
@@ -204,13 +232,41 @@ namespace SWLOR.Game.Server.Server
             _conditionalScripts[script].Add(new ConditionalScript
             {
                 Action = del,
-                Name = del.Method.DeclaringType?.Name + "." + del.Method.Name
+                Name = methodInfo.DeclaringType?.Name + "." + methodInfo.Name
             });
         }
 
         private void RegisterActionScript(string script, MethodInfo methodInfo)
         {
-            var del = (Action)methodInfo.CreateDelegate(typeof(Action));
+            Action del;
+            
+            // Check if the method has parameters
+            var parameters = methodInfo.GetParameters();
+            if (parameters.Length == 0)
+            {
+                // No parameters - use the original approach
+                if (methodInfo.IsStatic)
+                {
+                    del = (Action)methodInfo.CreateDelegate(typeof(Action));
+                }
+                else
+                {
+                    // For non-static methods, we can't create a delegate without an instance
+                    _logger.Write<ErrorLogGroup>($"Cannot create delegate for non-static method '{methodInfo.Name}' without parameters. Static methods are required for event handlers.");
+                    return;
+                }
+            }
+            else if (parameters.Length == 1)
+            {
+                // One parameter - assume it's the event type and create a wrapper
+                var eventType = parameters[0].ParameterType;
+                del = () => InvokeMethodWithEvent(methodInfo, eventType);
+            }
+            else
+            {
+                _logger.Write<ErrorLogGroup>($"Method '{methodInfo.Name}' tied to script '{script}' has an invalid number of parameters. Expected 0 or 1, got {parameters.Length}. This script was NOT loaded.");
+                return;
+            }
 
             if (!_scripts.ContainsKey(script))
                 _scripts[script] = new List<ActionScript>();
@@ -218,7 +274,7 @@ namespace SWLOR.Game.Server.Server
             _scripts[script].Add(new ActionScript
             {
                 Action = del,
-                Name = del.Method.DeclaringType?.Name + "." + del.Method.Name
+                Name = methodInfo.DeclaringType?.Name + "." + methodInfo.Name
             });
         }
 
@@ -247,6 +303,54 @@ namespace SWLOR.Game.Server.Server
             {
                 foreach (var script in scripts)
                     yield return (script.Action, script.Name);
+            }
+        }
+
+        private void InvokeMethodWithEvent(MethodInfo methodInfo, Type eventType)
+        {
+            try
+            {
+                // Create an instance of the event type
+                var eventInstance = Activator.CreateInstance(eventType);
+                
+                // Only support static methods for event handlers with parameters
+                if (!methodInfo.IsStatic)
+                {
+                    _logger.Write<ErrorLogGroup>($"Cannot invoke non-static method '{methodInfo.Name}' with event parameter. Static methods are required for event handlers with parameters. Consider making the method static or removing the parameter.");
+                    return;
+                }
+                
+                // Invoke the static method with the event instance
+                methodInfo.Invoke(null, new object[] { eventInstance });
+            }
+            catch (Exception ex)
+            {
+                _logger.Write<ErrorLogGroup>($"Error invoking method '{methodInfo.Name}' with event parameter: {ex.Message}");
+            }
+        }
+
+        private bool InvokeMethodWithEventBool(MethodInfo methodInfo, Type eventType)
+        {
+            try
+            {
+                // Create an instance of the event type
+                var eventInstance = Activator.CreateInstance(eventType);
+                
+                // Only support static methods for event handlers with parameters
+                if (!methodInfo.IsStatic)
+                {
+                    _logger.Write<ErrorLogGroup>($"Cannot invoke non-static method '{methodInfo.Name}' with event parameter. Static methods are required for event handlers with parameters. Consider making the method static or removing the parameter.");
+                    return false;
+                }
+                
+                // Invoke the static method with the event instance and return the result
+                var result = methodInfo.Invoke(null, new object[] { eventInstance });
+                return result is bool boolResult ? boolResult : false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Write<ErrorLogGroup>($"Error invoking method '{methodInfo.Name}' with event parameter: {ex.Message}");
+                return false;
             }
         }
     }

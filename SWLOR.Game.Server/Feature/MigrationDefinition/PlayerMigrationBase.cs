@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             DB.Set(dbPlayer);
 
-            Log.Write(LogGroup.Migration, $"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP for perk '{perkType}'.");
+            LogLegacy.Write(LogGroupType.Migration, $"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP for perk '{perkType}'.");
             SendMessageToPC(player, $"Perk '{perkDetail.Name}' was automatically refunded. You reclaimed {refundAmount} SP.");
         }
     }

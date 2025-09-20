@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature
             var pcName = GetName(player);
 
             var log = $"{pcName} - {account} - {cdKey} - {ipAddress}: Connected to server";
-            Log.Write(LogGroup.Connection, log, true);
+            LogLegacy.Write(LogGroupType.Connection, log, true);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature
             var pcName = GetName(player);
 
             var log = $"{pcName} - {account} - {cdKey} - {ipAddress}: Disconnected from server";
-            Log.Write(LogGroup.Connection, log, true);
+            LogLegacy.Write(LogGroupType.Connection, log, true);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature
                 log = BuildRegularLog();
             }
 
-            Log.Write(LogGroup.Chat, log);
+            LogLegacy.Write(LogGroupType.Chat, log);
         }
     }
 }

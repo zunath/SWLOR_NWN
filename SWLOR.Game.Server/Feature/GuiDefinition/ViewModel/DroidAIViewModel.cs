@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             if (tier <= 0)
                             {
                                 var message = $"Instruction disc '{GetResRef(item)}' has an incorrectly assigned perk/level combination.";
-                                Log.Write(LogGroup.Error, message, true);
+                                LogLegacy.Write(LogGroupType.Error, message, true);
                                 SendMessageToPC(Player, ColorToken.Red(message));
                                 return;
                             }

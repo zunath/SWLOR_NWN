@@ -1037,7 +1037,7 @@ namespace SWLOR.Game.Server.Service
         public static int GetCriticalModifier(BaseItem type)
         {
             var mod = _2daCache[(int)type][1];
-            Log.Write(LogGroup.Attack, "Crit multiplier for item type " + type + " is " + mod);
+            LogLegacy.Write(LogGroupType.Attack, "Crit multiplier for item type " + type + " is " + mod);
 
             return mod;
         }

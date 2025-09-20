@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             if (!Space.IsRegisteredShipModule(shipModuleItemTag))
             {
-                Log.Write(LogGroup.Error, $"Failed to add {shipModuleItemTag} to ship enemy with tag {_creatureTag} as this module is not registered. Please ensure you entered the correct module tag.");
+                LogLegacy.Write(LogGroupType.Error, $"Failed to add {shipModuleItemTag} to ship enemy with tag {_creatureTag} as this module is not registered. Please ensure you entered the correct module tag.");
                 return this;
             }
 

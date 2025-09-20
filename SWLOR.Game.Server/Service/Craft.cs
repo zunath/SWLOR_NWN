@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (_recipes.ContainsKey(recipeType))
                     {
-                        Log.Write(LogGroup.Error, $"ERROR: Duplicate recipe detected: {recipeType}", true);
+                        LogLegacy.Write(LogGroupType.Error, $"ERROR: Duplicate recipe detected: {recipeType}", true);
                         continue;
                     }
 

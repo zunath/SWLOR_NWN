@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     if (type == BeastType.Invalid)
                     {
                         SendMessageToPC(user, $"Unable to use beast egg. Beast Id is invalid. Report to an admin.");
-                        Log.Write(LogGroup.Incubation, $"Player '{GetName(user)}' ({GetObjectUUID(user)}) failed to use beast egg item '{GetName(item)}' because its type is invalid.");
+                        LogLegacy.Write(LogGroupType.Incubation, $"Player '{GetName(user)}' ({GetObjectUUID(user)}) failed to use beast egg item '{GetName(item)}' because its type is invalid.");
                         return;
                     }
 

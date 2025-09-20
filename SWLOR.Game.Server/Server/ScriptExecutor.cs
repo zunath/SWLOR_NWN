@@ -1,27 +1,39 @@
+using System;
 using NWN.Native.API;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Shared.Core.Server
 {
-    public class ScriptExecutor
+    public class ScriptExecutor : IScriptExecutor
     {
-        private CVirtualMachine _virtualMachine;
+        private readonly CVirtualMachine _virtualMachine;
 
         private const int ScriptHandled = 0;
         private const int ScriptNotHandled = -1;
 
-        internal void Initialize()
+        private readonly ILogger _logger;
+        private readonly IClosureManager _closureManager;
+        private readonly IScriptRegistry _scriptRegistry;
+
+        public ScriptExecutor(
+            ILogger logger,
+            IClosureManager closureManager, 
+            IScriptRegistry scriptRegistry)
         {
+            _logger = logger;
+            _closureManager = closureManager;
+            _scriptRegistry = scriptRegistry;
             _virtualMachine = NWNXLib.VirtualMachine();
             Console.WriteLine($"{nameof(ScriptExecutor)} initialized.");
         }
 
         public int ProcessRunScript(string scriptName, uint objectSelf)
         {
-            var oldObjectSelf = ServerManager.Bootstrapper.ClosureManager.ObjectSelf;
-            ServerManager.Bootstrapper.ClosureManager.ObjectSelf = objectSelf;
+            var oldObjectSelf = _closureManager.ObjectSelf;
+            _closureManager.ObjectSelf = objectSelf;
 
             try
             {
@@ -30,17 +42,17 @@ namespace SWLOR.Shared.Core.Server
             }
             finally
             {
-                ServerManager.Bootstrapper.ClosureManager.ObjectSelf = oldObjectSelf;
+                _closureManager.ObjectSelf = oldObjectSelf;
             }
         }
 
         private int RunScripts(string script)
         {
-            if (ServerManager.Scripts.HasConditionalScript(script))
+            if (_scriptRegistry.HasConditionalScript(script))
             {
                 return ExecuteConditionalScripts(script);
             }
-            else if (ServerManager.Scripts.HasScript(script))
+            else if (_scriptRegistry.HasScript(script))
             {
                 return ExecuteActionScripts(script);
             }
@@ -52,7 +64,7 @@ namespace SWLOR.Shared.Core.Server
         {
             var result = true;
 
-            foreach (var (action, name) in ServerManager.Scripts.GetConditionalScripts(script))
+            foreach (var (action, name) in _scriptRegistry.GetConditionalScripts(script))
             {
                 ProfilerPlugin.PushPerfScope(OBJECT_SELF, name);
                 try
@@ -72,7 +84,7 @@ namespace SWLOR.Shared.Core.Server
 
         private int ExecuteActionScripts(string script)
         {
-            foreach (var (action, name) in ServerManager.Scripts.GetActionScripts(script))
+            foreach (var (action, name) in _scriptRegistry.GetActionScripts(script))
             {
                 try
                 {
@@ -81,7 +93,7 @@ namespace SWLOR.Shared.Core.Server
                 }
                 catch (Exception ex)
                 {
-                    Log.Log.Write(LogGroup.Error, $"C# Script '{script}' threw an exception. Details: {Environment.NewLine}{Environment.NewLine}{ex.ToMessageAndCompleteStacktrace()}", true);
+                    _logger.Write<ErrorLogGroup>($"C# Script '{script}' threw an exception. Details: {Environment.NewLine}{Environment.NewLine}{ex.ToMessageAndCompleteStacktrace()}", true);
                 }
                 finally
                 {
@@ -94,7 +106,7 @@ namespace SWLOR.Shared.Core.Server
 
         public void ExecuteInScriptContext(Action action, uint objectId = OBJECT_INVALID, int scriptEventId = 0)
         {
-            var oldObjectSelf = ServerManager.Bootstrapper.ClosureManager.ObjectSelf;
+            var oldObjectSelf = _closureManager.ObjectSelf;
             var spBefore = PushScriptContext(objectId, scriptEventId);
             try
             {
@@ -103,16 +115,16 @@ namespace SWLOR.Shared.Core.Server
             finally
             {
                 var spAfter = PopScriptContext();
-                ServerManager.Bootstrapper.ClosureManager.ObjectSelf = oldObjectSelf;
+                _closureManager.ObjectSelf = oldObjectSelf;
                 if (spAfter != spBefore)
                 {
-                    Log.Log.Write(LogGroup.Error, $"VM stack is invalid ({spBefore} != {spAfter}) after script context invocation: {action.Method.GetFullName()}");
+                    _logger.Write<ErrorLogGroup>($"VM stack is invalid ({spBefore} != {spAfter}) after script context invocation: {action.Method.GetFullName()}", true);
                 }
             }
         }
         public T ExecuteInScriptContext<T>(Func<T> action, uint objectId = OBJECT_INVALID, int scriptEventId = 0)
         {
-            var oldObjectSelf = ServerManager.Bootstrapper.ClosureManager.ObjectSelf;
+            var oldObjectSelf = _closureManager.ObjectSelf;
             var spBefore = PushScriptContext(objectId, scriptEventId);
 
             try
@@ -122,10 +134,10 @@ namespace SWLOR.Shared.Core.Server
             finally
             {
                 var spAfter = PopScriptContext();
-                ServerManager.Bootstrapper.ClosureManager.ObjectSelf = oldObjectSelf;
+                _closureManager.ObjectSelf = oldObjectSelf;
                 if (spAfter != spBefore)
                 {
-                    Log.Log.Write(LogGroup.Error, $"VM stack is invalid ({spBefore} != {spAfter}) after script context invocation: {action.Method.GetFullName()}");
+                    _logger.Write<ErrorLogGroup>($"VM stack is invalid ({spBefore} != {spAfter}) after script context invocation: {action.Method.GetFullName()}", true);
                 }
             }
         }
@@ -170,7 +182,7 @@ namespace SWLOR.Shared.Core.Server
             cmd.m_bValidObjectRunScript = _virtualMachine.m_bValidObjectRunScript[_virtualMachine.m_nRecursionLevel];
 
             // Update the ClosureManager's ObjectSelf to match the script context
-            ServerManager.Bootstrapper.ClosureManager.ObjectSelf = oid;
+            _closureManager.ObjectSelf = oid;
 
             return _virtualMachine.m_cRunTimeStack.GetStackPointer();
         }

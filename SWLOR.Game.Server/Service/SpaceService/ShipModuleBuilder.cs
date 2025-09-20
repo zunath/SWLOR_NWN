@@ -240,12 +240,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             if (requiredLevel < 0)
             {
-                Log.Write(LogGroup.Error, $"Failed to add required perk to {_activeShipModule.Name} because requiredLevel cannot be less than zero.");
+                LogLegacy.Write(LogGroupType.Error, $"Failed to add required perk to {_activeShipModule.Name} because requiredLevel cannot be less than zero.");
                 return this;
             }
             if (requiredLevel > 100)
             {
-                Log.Write(LogGroup.Error, $"Failed to add required perk to {_activeShipModule.Name} because requiredLevel cannot be greater than 100.");
+                LogLegacy.Write(LogGroupType.Error, $"Failed to add required perk to {_activeShipModule.Name} because requiredLevel cannot be greater than 100.");
                 return this;
             }
 

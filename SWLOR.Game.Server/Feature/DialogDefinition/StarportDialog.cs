@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     if (planetType == PlanetType.Invalid)
                     {
                         SendMessageToPC(player, "Unable to continue. The planet could not be determined. Notify an admin.");
-                        Log.Write(LogGroup.Error, $"Unable to determine planet for NPC '{GetName(OBJECT_SELF)}' located in {GetName(area)} ({GetTag(area)} / {GetResRef(area)})");
+                        LogLegacy.Write(LogGroupType.Error, $"Unable to determine planet for NPC '{GetName(OBJECT_SELF)}' located in {GetName(area)} ({GetTag(area)} / {GetResRef(area)})");
                         return;
                     }
 

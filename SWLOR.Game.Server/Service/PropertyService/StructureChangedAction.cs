@@ -183,7 +183,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
                         dbStarship.Positions[PropertyLocationType.DockPosition] = dbStarship.Positions[PropertyLocationType.LastNPCDockPosition];
 
                         DB.Set(dbStarship);
-                        Log.Write(LogGroup.Property, $"Starship '{dbStarship.CustomName}' ({dbStarship.Id}) has been relocated to the last NPC dock it visited because the starport '{dbInterior.CustomName}' ({dbInterior.Id}) has been retrieved.");
+                        LogLegacy.Write(LogGroupType.Property, $"Starship '{dbStarship.CustomName}' ({dbStarship.Id}) has been relocated to the last NPC dock it visited because the starport '{dbInterior.CustomName}' ({dbInterior.Id}) has been retrieved.");
                     }
                 }
 

@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
                     DB.Set(dbPlayer);
 
-                    Log.Write(LogGroup.Migration, $"{dbPlayer.Name} ({dbPlayer.Id}): Replaced recast timer for Grenades.");
+                    LogLegacy.Write(LogGroupType.Migration, $"{dbPlayer.Name} ({dbPlayer.Id}): Replaced recast timer for Grenades.");
                 }
             }
         }

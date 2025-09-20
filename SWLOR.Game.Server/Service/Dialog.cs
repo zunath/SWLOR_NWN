@@ -512,7 +512,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!GetIsPC(player) || !GetIsObjectValid(player))
             {
-                Log.Write(LogGroup.Error, $"Conversation '{@class}' could not be started because player '{GetName(player)}' is not a valid target.");
+                LogLegacy.Write(LogGroupType.Error, $"Conversation '{@class}' could not be started because player '{GetName(player)}' is not a valid target.");
                 return;
             }
 

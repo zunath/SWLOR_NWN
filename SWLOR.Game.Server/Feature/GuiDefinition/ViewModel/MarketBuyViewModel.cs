@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     TakeGoldFromCreature(price, Player, true);
                 });
                 var item = ObjectPlugin.Deserialize(dbItem.Data);
-                Log.Write(LogGroup.PlayerMarket, $"{GetName(Player)} [{GetObjectUUID(Player)}] bought {GetItemStackSize(item)}x {GetName(item)} from {dbItem.SellerName} for {price} credits.");
+                LogLegacy.Write(LogGroupType.PlayerMarket, $"{GetName(Player)} [{GetObjectUUID(Player)}] bought {GetItemStackSize(item)}x {GetName(item)} from {dbItem.SellerName} for {price} credits.");
                 ObjectPlugin.AcquireItem(Player, item);
 
                 // Remove this item from the client's search results.

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.1.32407.343
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11012.119 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Game.Server", "SWLOR.Game.Server\SWLOR.Game.Server.csproj", "{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}"
 EndProject
@@ -59,6 +59,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Space", "SWLOR.Component.Space\SWLOR.Component.Space.csproj", "{13C35133-5A71-4BAE-89F5-764D88A67B6F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.World", "SWLOR.Component.World\SWLOR.Component.World.csproj", "{E0CEFBFD-DA69-458E-87E5-8EA66B4A2F3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Shared.Events", "SWLOR.Shared.Events\SWLOR.Shared.Events.csproj", "{A7DB757C-39E5-ECD9-F949-C38F8EC375A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -138,6 +140,10 @@ Global
 		{E0CEFBFD-DA69-458E-87E5-8EA66B4A2F3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0CEFBFD-DA69-458E-87E5-8EA66B4A2F3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0CEFBFD-DA69-458E-87E5-8EA66B4A2F3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7DB757C-39E5-ECD9-F949-C38F8EC375A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7DB757C-39E5-ECD9-F949-C38F8EC375A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7DB757C-39E5-ECD9-F949-C38F8EC375A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7DB757C-39E5-ECD9-F949-C38F8EC375A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -159,6 +165,7 @@ Global
 		{F4DFE2F6-F3C7-4A35-8A0B-20B280CCF103} = {98BFD8AF-2D9B-4636-919F-4D3FE97E7C69}
 		{13C35133-5A71-4BAE-89F5-764D88A67B6F} = {98BFD8AF-2D9B-4636-919F-4D3FE97E7C69}
 		{E0CEFBFD-DA69-458E-87E5-8EA66B4A2F3B} = {98BFD8AF-2D9B-4636-919F-4D3FE97E7C69}
+		{A7DB757C-39E5-ECD9-F949-C38F8EC375A5} = {8F249160-3FA0-480F-9A90-CE204D9BF2CD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01933D17-C90C-4AB1-AD6C-523F2F4B584D}

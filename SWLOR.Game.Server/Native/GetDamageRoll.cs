@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Native
 
         private static void LogAttackInfo(CNWSCreature attacker, CNWSObject targetObject, uint attackType, CNWSItem weapon)
         {
-            Log.Write(LogGroup.Attack, $"DAMAGE: Attacker: {attacker.GetFirstName().GetSimple()}, PC?: {attacker.m_bPlayerCharacter}, " +
+            LogLegacy.Write(LogGroupType.Attack, $"DAMAGE: Attacker: {attacker.GetFirstName().GetSimple()}, PC?: {attacker.m_bPlayerCharacter}, " +
                                       $"Defender {targetObject.GetFirstName().GetSimple()}, object type {targetObject.m_nObjectType}, " +
                                       $"Attack type: {attackType}, weapon {(weapon == null ? "None" : weapon.GetFirstName().GetSimple())}");
         }
@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Native
             {
                 log += $"{damageType}: {dmgValues[damageType]};";
             }
-            Log.Write(LogGroup.Attack, log);
+            LogLegacy.Write(LogGroupType.Attack, log);
         }
 
         private static int CalculateCriticalMultiplier(CNWSCreature attacker, CNWSItem weapon, int bCritical)
@@ -393,7 +393,7 @@ namespace SWLOR.Game.Server.Native
                     Item.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
                 {
                     var doublehandDMGBonus = Combat.GetDoublehandDMGBonusNative(attacker);
-                    Log.Write(LogGroup.Attack, $"DAMAGE: Applying doublehand damage bonus. (+{doublehandDMGBonus})");
+                    LogLegacy.Write(LogGroupType.Attack, $"DAMAGE: Applying doublehand damage bonus. (+{doublehandDMGBonus})");
                     dmgValues[CombatDamageType.Physical] += doublehandDMGBonus;
                 }
             }
@@ -455,7 +455,7 @@ namespace SWLOR.Game.Server.Native
             var damagePower = attacker.CalculateDamagePower(target, bOffHand);
             var defense = Stat.GetDefenseNative(target, damageType, AbilityType.Vitality);
 
-            Log.Write(LogGroup.Attack, $"DAMAGE: attacker damage attribute: {dmgValues[damageType]} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
+            LogLegacy.Write(LogGroupType.Attack, $"DAMAGE: attacker damage attribute: {dmgValues[damageType]} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
 
             var damage = Combat.CalculateDamage(attackerAttack, dmgValues[damageType], attackerStat,
                 defense, defenderStat, critical, weaponPerkLevel);

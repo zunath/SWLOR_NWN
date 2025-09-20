@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Service
             var hostileName = GetName(hostile);
 
             var log = $"DEATH: {name} - {areaName} - {areaTag} - {areaResref} Killed by: {hostileName}";
-            Log.Write(LogGroup.Death, log);
+            LogLegacy.Write(LogGroupType.Death, log);
         }
 
 
@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Service
             var name = GetName(player);
             var log = $"RESPAWN - {name} - {xpLost} XP lost";
 
-            Log.Write(LogGroup.Death, log);
+            LogLegacy.Write(LogGroupType.Death, log);
         }
     }
 }

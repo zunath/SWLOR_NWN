@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 }
 
                 DB.Set(dbShip);
-                Log.Write(LogGroup.Migration, $"Updated location of ship '{dbShip.CustomName}' ({dbShip.Id}) in Veles Starport.");
+                LogLegacy.Write(LogGroupType.Migration, $"Updated location of ship '{dbShip.CustomName}' ({dbShip.Id}) in Veles Starport.");
             }
         }
     }

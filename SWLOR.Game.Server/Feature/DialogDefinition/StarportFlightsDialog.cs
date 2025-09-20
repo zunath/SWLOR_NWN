@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                         dbCity.Treasury += tax;
                         DB.Set(dbCity);
-                        Log.Write(LogGroup.Property, $"{GetName(player)} paid {tax} credits in tax for their trip to {model.PlanetName}.");
+                        LogLegacy.Write(LogGroupType.Property, $"{GetName(player)} paid {tax} credits in tax for their trip to {model.PlanetName}.");
                     }
 
                 });

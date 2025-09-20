@@ -88,13 +88,13 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (string.IsNullOrWhiteSpace(table.Key))
                     {
-                        Log.Write(LogGroup.Error, $"Spawn table {table.Key} has an invalid key. Values must be greater than zero.");
+                        LogLegacy.Write(LogGroupType.Error, $"Spawn table {table.Key} has an invalid key. Values must be greater than zero.");
                         continue;
                     }
 
                     if (_spawnTables.ContainsKey(table.Key))
                     {
-                        Log.Write(LogGroup.Error, $"Spawn table {table.Key} has already been registered. Please make sure all spawn tables use a unique ID.");
+                        LogLegacy.Write(LogGroupType.Error, $"Spawn table {table.Key} has already been registered. Please make sure all spawn tables use a unique ID.");
                         continue;
                     }
 
@@ -119,14 +119,14 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (!_spawnTables.ContainsKey(spawnTableId))
                     {
-                        Log.Write(LogGroup.Error, $"Area has an invalid spawn table Id. ({spawnTableId}) is not defined. Do you have the right spawn table Id?");
+                        LogLegacy.Write(LogGroupType.Error, $"Area has an invalid spawn table Id. ({spawnTableId}) is not defined. Do you have the right spawn table Id?");
                         return;
                     }
                     
                     var spawnTable = _spawnTables[spawnTableId];
                     if (spawnTable.Spawns == null || spawnTable.Spawns.Count == 0)
                     {
-                        Log.Write(LogGroup.Error, $"Spawn table {spawnTableId} has no spawn objects defined. Skipping area spawn setup.");
+                        LogLegacy.Write(LogGroupType.Error, $"Spawn table {spawnTableId} has no spawn objects defined. Skipping area spawn setup.");
                         return;
                     }
 
@@ -459,7 +459,7 @@ namespace SWLOR.Game.Server.Service
                         // If we've failed too many times (10 attempts), remove this spawn to prevent infinite loops
                         if (queuedSpawn.FailureCount >= 10)
                         {
-                            Log.Write(LogGroup.Error, $"Spawn {queuedSpawn.SpawnDetailId} failed 10 times consecutively. Removing from queue to prevent infinite spawning. Check spawn table configuration.");
+                            LogLegacy.Write(LogGroupType.Error, $"Spawn {queuedSpawn.SpawnDetailId} failed 10 times consecutively. Removing from queue to prevent infinite spawning. Check spawn table configuration.");
                             RemoveQueuedSpawn(queuedSpawn);
                             continue;
                         }

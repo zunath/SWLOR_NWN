@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-any-skill' requires at least two arguments: the first should be the skillId and the second should be the minimum rank required.";
                         SendMessageToPC(player, Error);
-                        Log.Write(LogGroup.Error, Error);
+                        LogLegacy.Write(LogGroupType.Error, Error);
                         return false;
                     }
 
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-any-skill' requires a pair of two arguments for each skill: the first should be the skillId and the second should be the minimum rank required.";
                         SendMessageToPC(player, Error);
-                        Log.Write(LogGroup.Error, Error);
+                        LogLegacy.Write(LogGroupType.Error, Error);
                         return false;
                     }
 
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         {
                             string error = $"'condition-has-any-skill' could not parse the skill at index {index}";
                             SendMessageToPC(player, error);
-                            Log.Write(LogGroup.Error, error);
+                            LogLegacy.Write(LogGroupType.Error, error);
                             return false;
                         }
 
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         {
                             string error = $"'condition-has-any-skill' could not parse the required rank at index {index + 1}";
                             SendMessageToPC(player, error);
-                            Log.Write(LogGroup.Error, error);
+                            LogLegacy.Write(LogGroupType.Error, error);
                             return false;
                         }
 
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-all-skills' requires at least two arguments: the first should be the skillId and the second should be the minimum rank required.";
                         SendMessageToPC(player, Error);
-                        Log.Write(LogGroup.Error, Error);
+                        LogLegacy.Write(LogGroupType.Error, Error);
                         return false;
                     }
 
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-all-skills' requires a pair of two arguments for each skill: the first should be the skillId and the second should be the minimum rank required.";
                         SendMessageToPC(player, Error);
-                        Log.Write(LogGroup.Error, Error);
+                        LogLegacy.Write(LogGroupType.Error, Error);
                         return false;
                     }
 
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         {
                             string error = $"'condition-has-all-skills' could not parse the skill at index {index}";
                             SendMessageToPC(player, error);
-                            Log.Write(LogGroup.Error, error);
+                            LogLegacy.Write(LogGroupType.Error, error);
                             return false;
                         }
 
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         {
                             string error = $"'condition-has-all-skills' could not parse the required rank at index {index + 1}";
                             SendMessageToPC(player, error);
-                            Log.Write(LogGroup.Error, error);
+                            LogLegacy.Write(LogGroupType.Error, error);
                             return false;
                         }
 

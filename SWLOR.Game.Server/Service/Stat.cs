@@ -1278,7 +1278,7 @@ namespace SWLOR.Game.Server.Service
 
             accuracy += GetSoldierPrecisionAccuracyBonus(creature);
 
-            Log.Write(LogGroup.Attack, $"Effect Accuracy: {accuracy}");
+            LogLegacy.Write(LogGroupType.Attack, $"Effect Accuracy: {accuracy}");
 
             return accuracy;
         }
@@ -1305,7 +1305,7 @@ namespace SWLOR.Game.Server.Service
 
             accuracy += GetSoldierPrecisionAccuracyBonus(creature.m_idSelf);
 
-            Log.Write(LogGroup.Attack, $"Native Effect Accuracy: {accuracy}");
+            LogLegacy.Write(LogGroupType.Attack, $"Native Effect Accuracy: {accuracy}");
 
             return accuracy;
         }
@@ -1409,7 +1409,7 @@ namespace SWLOR.Game.Server.Service
             var ac = GetAC(creature) - dexOffset - 10; // Offset by natural 10 AC granted to all characters.
             var skillType = skillOverride == SkillType.Invalid ? SkillType.Armor : skillOverride;
 
-            Log.Write(LogGroup.Attack, $"Evasion regular AC = {ac}");
+            LogLegacy.Write(LogGroupType.Attack, $"Evasion regular AC = {ac}");
 
             if (GetIsPC(creature) && !GetIsDM(creature))
             {
@@ -1428,7 +1428,7 @@ namespace SWLOR.Game.Server.Service
 
             evasionBonus += CalculateEffectEvasion(creature);
 
-            Log.Write(LogGroup.Attack, $"Effect Evasion: {evasionBonus}");
+            LogLegacy.Write(LogGroupType.Attack, $"Effect Evasion: {evasionBonus}");
 
             return GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
         }
@@ -1458,7 +1458,7 @@ namespace SWLOR.Game.Server.Service
                      creature.m_pStats.m_nACShieldMod -
                      creature.m_pStats.m_nACShieldNeg;
 
-            Log.Write(LogGroup.Attack, $"Native Evasion AC = {ac}");
+            LogLegacy.Write(LogGroupType.Attack, $"Native Evasion AC = {ac}");
 
             if (creature.m_bPlayerCharacter == 1)
             {

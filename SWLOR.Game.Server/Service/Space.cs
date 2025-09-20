@@ -222,7 +222,7 @@ namespace SWLOR.Game.Server.Service
                     if (moduleDetail.ShortName.Length > 14 &&
                         moduleDetail.Type != ShipModuleType.Passive)
                     {
-                        Log.Write(LogGroup.Space, $"Ship module with short name {moduleDetail.ShortName} is longer than 14 characters. Short names should be no more than 14 characters so they display on the UI properly.", true);
+                        LogLegacy.Write(LogGroupType.Space, $"Ship module with short name {moduleDetail.ShortName} is longer than 14 characters. Short names should be no more than 14 characters so they display on the UI properly.", true);
                     }
 
                     _shipModules.Add(moduleType, moduleDetail);
@@ -1076,7 +1076,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                Log.Write(LogGroup.Error, $"Failed to locate matching ship module by its feat for player {GetName(activator)}");
+                LogLegacy.Write(LogGroupType.Error, $"Failed to locate matching ship module by its feat for player {GetName(activator)}");
                 SendMessageToPC(activator, "Unable to use that module.");
                 return;
             }

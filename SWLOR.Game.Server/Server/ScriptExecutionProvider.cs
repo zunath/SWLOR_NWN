@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using SWLOR.NWN.API;
 
 namespace SWLOR.Shared.Core.Server
@@ -6,15 +8,29 @@ namespace SWLOR.Shared.Core.Server
     /// Implementation of IScriptExecutionProvider that bridges the NWScript API
     /// with the SWLOR game server's script execution system.
     /// </summary>
-    public class ScriptExecutionProviderImpl : IScriptExecutionProvider
+    public class ScriptExecutionProvider : IScriptExecutionProvider
     {
+        private readonly IClosureManager _closureManager;
+        private readonly IScriptRegistry _scriptRegistry;
+        private readonly IScriptExecutor _scriptExecutor;
+
+        public ScriptExecutionProvider(
+            IClosureManager closureManager, 
+            IScriptRegistry scriptRegistry,
+            IScriptExecutor scriptExecutor)
+        {
+            _closureManager = closureManager;
+            _scriptRegistry = scriptRegistry;
+            _scriptExecutor = scriptExecutor;
+        }
+
         /// <summary>
         /// Gets or sets the current OBJECT_SELF value via the ClosureManager.
         /// </summary>
         public uint ObjectSelf
         {
-            get => ServerManager.Bootstrapper.ClosureManager.ObjectSelf;
-            set => ServerManager.Bootstrapper.ClosureManager.ObjectSelf = value;
+            get => _closureManager.ObjectSelf;
+            set => _closureManager.ObjectSelf = value;
         }
 
         /// <summary>
@@ -24,7 +40,7 @@ namespace SWLOR.Shared.Core.Server
         /// <returns>True if the script exists, false otherwise</returns>
         public bool HasScript(string scriptName)
         {
-            return ServerManager.Scripts.HasScript(scriptName);
+            return _scriptRegistry.HasScript(scriptName);
         }
 
         /// <summary>
@@ -34,7 +50,7 @@ namespace SWLOR.Shared.Core.Server
         /// <returns>Collection of action delegates and their names</returns>
         public IEnumerable<(Action action, string name)> GetActionScripts(string scriptName)
         {
-            return ServerManager.Scripts.GetActionScripts(scriptName);
+            return _scriptRegistry.GetActionScripts(scriptName);
         }
 
         /// <summary>
@@ -45,7 +61,7 @@ namespace SWLOR.Shared.Core.Server
         /// <param name="scriptEventId">The script event ID</param>
         public void ExecuteInScriptContext(Action action, uint objectId = OBJECT_INVALID, int scriptEventId = 0)
         {
-            ServerManager.Executor.ExecuteInScriptContext(action, objectId, scriptEventId);
+            _scriptExecutor.ExecuteInScriptContext(action, objectId, scriptEventId);
         }
     }
 }

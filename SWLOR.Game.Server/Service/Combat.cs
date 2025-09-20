@@ -116,15 +116,15 @@ namespace SWLOR.Game.Server.Service
             var maxDamage = baseDamage * ratio;
             var minDamage = maxDamage * 0.70f;
 
-            Log.Write(LogGroup.Attack, $"attackerAttack = {attackerAttack}, attackerDMG = {attackerDMG}, attackerStat = {attackerStat}, defenderDefense = {defenderDefense}, defenderStat = {defenderStat}, critical = {critical}");
-            Log.Write(LogGroup.Attack, $"statDelta = {statDelta}, baseDamage = {baseDamage}, ratio = {ratio}, minDamage = {minDamage}, maxDamage = {maxDamage}");
+            LogLegacy.Write(LogGroupType.Attack, $"attackerAttack = {attackerAttack}, attackerDMG = {attackerDMG}, attackerStat = {attackerStat}, defenderDefense = {defenderDefense}, defenderStat = {defenderStat}, critical = {critical}");
+            LogLegacy.Write(LogGroupType.Attack, $"statDelta = {statDelta}, baseDamage = {baseDamage}, ratio = {ratio}, minDamage = {minDamage}, maxDamage = {maxDamage}");
 
             // Criticals - 25% bonus to damage range per multiplier point.
             if (critical > 0)
             {
                 minDamage = maxDamage;
                 maxDamage *= ((critical - 1) / 4.0f) + 1.0f;
-                Log.Write(LogGroup.Attack, $"Critical Multiplier: {critical}, minDamage = {minDamage}, maxDamage = {maxDamage}");
+                LogLegacy.Write(LogGroupType.Attack, $"Critical Multiplier: {critical}, minDamage = {minDamage}, maxDamage = {maxDamage}");
             }
 
             return ((int)minDamage, (int)maxDamage);

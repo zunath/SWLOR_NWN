@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Native
                     "Area", area.m_sTag.ToString(),
                     "ObjectType", "Creature");
 
-                Log.Write(LogGroup.Attack, "Running OnResolveAttackRoll");
+                LogLegacy.Write(LogGroupType.Attack, "Running OnResolveAttackRoll");
                 var targetObject = CNWSObject.FromPointer(pTarget);
                 if (targetObject == null)
                 {
@@ -196,14 +196,14 @@ namespace SWLOR.Game.Server.Native
 
                 var pCombatRound = attacker.m_pcCombatRound;
 
-                Log.Write(LogGroup.Attack, "Attacker: " + attacker.GetFirstName().GetSimple(0) + ", defender " + targetObject.GetFirstName().GetSimple(0));
+                LogLegacy.Write(LogGroupType.Attack, "Attacker: " + attacker.GetFirstName().GetSimple(0) + ", defender " + targetObject.GetFirstName().GetSimple(0));
 
                 var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
 
                 if (targetObject.m_nObjectType != (int)ObjectType.Creature)
                 {
                     // Automatically hit non-creature targets.  Do not apply criticals.
-                    Log.Write(LogGroup.Attack, "Placeable target.  Auto hit.");
+                    LogLegacy.Write(LogGroupType.Attack, "Placeable target.  Auto hit.");
                     pAttackData.m_nAttackResult = AttackResultAutomaticHit;
                     ProfilerPlugin.PopPerfScope();
                     return;
@@ -226,7 +226,7 @@ namespace SWLOR.Game.Server.Native
                     attackType = (uint)AttackType.Ranged;
                 }
 
-                Log.Write(LogGroup.Attack, "Selected attack type " + attackType + ", weapon " + (weapon == null ? "none" : weapon.GetFirstName().GetSimple(0)));
+                LogLegacy.Write(LogGroupType.Attack, "Selected attack type " + attackType + ", weapon " + (weapon == null ? "none" : weapon.GetFirstName().GetSimple(0)));
 
                 var weaponStyleAbilityOverride = GetWeaponStyleAbilityType(weapon, attacker);
                 var attackerAccuracy = Stat.GetAccuracyNative(attacker, weapon, weaponStyleAbilityOverride);
@@ -251,14 +251,14 @@ namespace SWLOR.Game.Server.Native
                 // If this is an NPC attacking, Store the attack on the NPC.
                 if (attacker.m_pActionQueue.GetItem(0).oidTarget == NpcActionTargetId)
                 {
-                    Log.Write(LogGroup.Attack, "NPC attacking - storing target " + defender.m_idSelf);
+                    LogLegacy.Write(LogGroupType.Attack, "NPC attacking - storing target " + defender.m_idSelf);
                     attacker.m_ScriptVars.SetInt(new CExoString("I_LAST_ATTACKED"), (int)defender.m_idSelf);
                 }
 
                 // oidTarget will be 0 for a newly spawned NPC who hasn't been attacked yet.  Don't let them get taken by surprise in round 1. 
                 if (oidTarget != 0 && oidTarget != attacker.m_idSelf)
                 {
-                    Log.Write(LogGroup.Attack, "Defender current target (" + oidTarget + ") is not attacker (" + attacker.m_idSelf + "). Assign circumstance bonus");
+                    LogLegacy.Write(LogGroupType.Attack, "Defender current target (" + oidTarget + ") is not attacker (" + attacker.m_idSelf + "). Assign circumstance bonus");
                     accuracyModifiers += CircumstanceBonus;
                 }
 
@@ -279,13 +279,13 @@ namespace SWLOR.Game.Server.Native
                 if (attacker.m_nCombatMode == PowerAttackMode)
                 {
                     accuracyModifiers += PowerAttackPenalty;
-                    Log.Write(LogGroup.Attack, $"Applying Power Attack penalty: {PowerAttackPenalty}");
+                    LogLegacy.Write(LogGroupType.Attack, $"Applying Power Attack penalty: {PowerAttackPenalty}");
                 }
                 // Combat Mode - Improved Power Attack (-10 ACC)
                 else if (attacker.m_nCombatMode == ImprovedPowerAttackMode)
                 {
                     accuracyModifiers += ImprovedPowerAttackPenalty;
-                    Log.Write(LogGroup.Attack, $"Applying Imp. Power Attack penalty: {ImprovedPowerAttackPenalty}");
+                    LogLegacy.Write(LogGroupType.Attack, $"Applying Imp. Power Attack penalty: {ImprovedPowerAttackPenalty}");
                 }
 
                 // End modifiers
@@ -296,8 +296,8 @@ namespace SWLOR.Game.Server.Native
                 var hitRate = Combat.CalculateHitRate(attackerAccuracy + accuracyModifiers, defenderEvasion, percentageModifier);
                 var isHit = attackRoll <= hitRate;
 
-                Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
-                Log.Write(LogGroup.Attack, $"Hit Rate: {hitRate}, Roll = {attackRoll}");
+                LogLegacy.Write(LogGroupType.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
+                LogLegacy.Write(LogGroupType.Attack, $"Hit Rate: {hitRate}, Roll = {attackRoll}");
 
                 // Check for deflection
                 var deflected = CheckDeflection(attackType, isHit, attacker, defender);
@@ -315,7 +315,7 @@ namespace SWLOR.Game.Server.Native
                     // Critical
                     if (criticalRoll <= criticalRate)
                     {
-                        Log.Write(LogGroup.Attack, $"Critical hit");
+                        LogLegacy.Write(LogGroupType.Attack, $"Critical hit");
 
                         // Critical Hit - populate variables for feedback
                         pAttackData.m_bCriticalThreat = 1;
@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Native
 
                         if (defender.m_pStats.GetEffectImmunity((byte)ImmunityType.CriticalHit, attacker) == 1)
                         {
-                            Log.Write(LogGroup.Attack, $"Immune to critical hits");
+                            LogLegacy.Write(LogGroupType.Attack, $"Immune to critical hits");
                             // Immune!
                             var defenderName = (defender.GetFirstName().GetSimple() + " " + defender.GetLastName().GetSimple()).Trim();
                             attacker.SendFeedbackString(new CExoString($"{defenderName} is immune to critical hits!"));
@@ -331,14 +331,14 @@ namespace SWLOR.Game.Server.Native
                         }
                         else
                         {
-                            Log.Write(LogGroup.Attack, $"Not immune to critical hits - dealing crit damage");
+                            LogLegacy.Write(LogGroupType.Attack, $"Not immune to critical hits - dealing crit damage");
                             pAttackData.m_nAttackResult = AttackResultCriticalHit;
                         }
                     }
                     // Regular Hit
                     else
                     {
-                        Log.Write(LogGroup.Attack, $"Regular hit - attack result 1");
+                        LogLegacy.Write(LogGroupType.Attack, $"Regular hit - attack result 1");
                         pAttackData.m_nAttackResult = AttackResultRegularHit;
                     }
                 }
@@ -347,23 +347,23 @@ namespace SWLOR.Game.Server.Native
                 {
                     if (deflected)
                     {
-                        Log.Write(LogGroup.Attack, $"Deflected - setting attack result to 2");
+                        LogLegacy.Write(LogGroupType.Attack, $"Deflected - setting attack result to 2");
                         pAttackData.m_nAttackResult = AttackResultDeflect;
                     }
                     else
                     {
-                        Log.Write(LogGroup.Attack, $"Miss - setting attack result to 4, missed by 0");
+                        LogLegacy.Write(LogGroupType.Attack, $"Miss - setting attack result to 4, missed by 0");
                         pAttackData.m_nAttackResult = AttackResultMiss;
                     }
                     pAttackData.m_nMissedBy = DefaultMissedBy;
                 }
 
-                Log.Write(LogGroup.Attack, $"Resolving NWN defensive effects");
+                LogLegacy.Write(LogGroupType.Attack, $"Resolving NWN defensive effects");
                 // Resolve any defensive effects (like concealment).  Do this after all the above so that the attack data is 
                 // accurate.
                 attacker.ResolveDefensiveEffects(defender, isHit ? 1 : 0);
 
-                Log.Write(LogGroup.Attack, $"Building combat log message");
+                LogLegacy.Write(LogGroupType.Attack, $"Building combat log message");
                 var message = Combat.BuildCombatLogMessageNative(
                     attacker,
                     defender,
@@ -372,11 +372,11 @@ namespace SWLOR.Game.Server.Native
                 attacker.SendFeedbackString(new CExoString(message));
                 defender.SendFeedbackString(new CExoString(message));
 
-                Log.Write(LogGroup.Attack, $"Setting pAttackData results");
+                LogLegacy.Write(LogGroupType.Attack, $"Setting pAttackData results");
                 pAttackData.m_nToHitMod = DefaultToHitMod;
                 pAttackData.m_nToHitRoll = DefaultToHitRoll;
 
-                Log.Write(LogGroup.Attack, $"Finished ResolveAttackRoll");
+                LogLegacy.Write(LogGroupType.Attack, $"Finished ResolveAttackRoll");
 
                 ProfilerPlugin.PopPerfScope();
             });
@@ -395,7 +395,7 @@ namespace SWLOR.Game.Server.Native
                 return attacker.m_pStats.HasFeat((ushort)feat);
             }
 
-            Log.Write(LogGroup.Attack, "No weapon focus feat found.");
+            LogLegacy.Write(LogGroupType.Attack, "No weapon focus feat found.");
             return 0;
         }
 
@@ -412,7 +412,7 @@ namespace SWLOR.Game.Server.Native
                 return attacker.m_pStats.HasFeat((ushort)feat);
             }
 
-            Log.Write(LogGroup.Attack, "No improved critical feat found.");
+            LogLegacy.Write(LogGroupType.Attack, "No improved critical feat found.");
             return 0;
         }
 
@@ -441,7 +441,7 @@ namespace SWLOR.Game.Server.Native
             // Calculate distance using X/Y coordinates only
             var range = Math.Sqrt(Math.Pow(attackerPos.x - defenderPos.x, 2) + Math.Pow(attackerPos.y - defenderPos.y, 2));
 
-            Log.Write(LogGroup.Attack, $"Ranged attack at range {range}");
+            LogLegacy.Write(LogGroupType.Attack, $"Ranged attack at range {range}");
 
             // Close range (under 5.0)
             if (range < CloseRange)
@@ -484,7 +484,7 @@ namespace SWLOR.Game.Server.Native
 
             if (defX == 0.0f && defY == 0.0f)
             {
-                Log.Write(LogGroup.Attack, "Defender has not attacked yet, using pre-combat position.");
+                LogLegacy.Write(LogGroupType.Attack, "Defender has not attacked yet, using pre-combat position.");
                 var defFacing = defender.m_vOrientation;
                 defX = (float)defFacing.x;
                 defY = (float)defFacing.y;
@@ -501,12 +501,12 @@ namespace SWLOR.Game.Server.Native
             // Calculate angle difference
             var delta = Math.Abs(Math.Atan2(attY, attX) - Math.Atan2(defY, defX));
 
-            Log.Write(LogGroup.Attack, $"Attacker facing is {attX}, {attY}");
-            Log.Write(LogGroup.Attack, $"Defender facing is {defX}, {defY}");
+            LogLegacy.Write(LogGroupType.Attack, $"Attacker facing is {attX}, {attY}");
+            LogLegacy.Write(LogGroupType.Attack, $"Defender facing is {defX}, {defY}");
 
             if (delta <= BackstabAngleThreshold)
             {
-                Log.Write(LogGroup.Attack, $"Backstab! Attacker angle (radians): {Math.Atan2(attY, attX)}, " +
+                LogLegacy.Write(LogGroupType.Attack, $"Backstab! Attacker angle (radians): {Math.Atan2(attY, attX)}, " +
                                           $"Defender angle (radians): {Math.Atan2(defY, defX)}");
                 return BackstabBonus;
             }
@@ -535,7 +535,7 @@ namespace SWLOR.Game.Server.Native
                     percentageModifier += TwoWeaponPenalty;
 
                 var logMessage = $"Applying dual wield penalty. Offhand weapon: {(offhand?.GetFirstName().GetSimple() ?? weapon?.GetFirstName().GetSimple())}: {percentageModifier}";
-                Log.Write(LogGroup.Attack, logMessage);
+                LogLegacy.Write(LogGroupType.Attack, logMessage);
             }
 
             // Staff Flurry penalty
@@ -544,7 +544,7 @@ namespace SWLOR.Game.Server.Native
                 attacker.m_pStats.HasFeat((ushort)FeatType.FlurryMastery) == 0)
             {
                 percentageModifier += FlurryStylePenalty;
-                Log.Write(LogGroup.Attack, $"Applying Flurry Style I penalty: {FlurryStylePenalty}%");
+                LogLegacy.Write(LogGroupType.Attack, $"Applying Flurry Style I penalty: {FlurryStylePenalty}%");
             }
 
             // Duelist bonus
@@ -556,7 +556,7 @@ namespace SWLOR.Game.Server.Native
                 if (isDuelistValid)
                 {
                     percentageModifier += DuelistBonus;
-                    Log.Write(LogGroup.Attack, $"Applying Duelist bonus: +{DuelistBonus}%");
+                    LogLegacy.Write(LogGroupType.Attack, $"Applying Duelist bonus: +{DuelistBonus}%");
                 }
             }
 
@@ -597,7 +597,7 @@ namespace SWLOR.Game.Server.Native
 
             attacker.SendFeedbackString(new CExoString(feedbackString));
             defender.SendFeedbackString(new CExoString(feedbackString));
-            Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, Hit: {!deflected}");
+            LogLegacy.Write(LogGroupType.Attack, $"Deflect roll: {deflectRoll}, Hit: {!deflected}");
 
             return deflected;
         }
@@ -605,7 +605,7 @@ namespace SWLOR.Game.Server.Native
         private static int CalculateCriticalHitBonus(CNWSCreature attacker, CNWSItem weapon)
         {
             var criticalBonus = Math.Clamp((20 - attacker.m_pStats.GetCriticalHitRoll()) * 5, 0, 100);
-            Log.Write(LogGroup.Attack, $"Base crit threat identified as: {criticalBonus}");
+            LogLegacy.Write(LogGroupType.Attack, $"Base crit threat identified as: {criticalBonus}");
 
             criticalBonus += HasImprovedCritical(attacker, weapon) == 1 ? ImprovedCriticalBonus : 0;
 

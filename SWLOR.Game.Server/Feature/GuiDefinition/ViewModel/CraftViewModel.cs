@@ -1535,7 +1535,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusText = "Successfully created the item!";
             StatusColor = GuiColor.Green;
             
-            Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{GetName(item)}'.");
+            LogLegacy.Write(LogGroupType.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{GetName(item)}'.");
         }
 
         private void ProcessBlueprintBonuses(uint item)
@@ -1682,7 +1682,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             xp = (int)(xp * 0.15f);
             Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
 
-            Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) failed to craft '{_recipe}'.");
+            LogLegacy.Write(LogGroupType.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) failed to craft '{_recipe}'.");
         }
 
         private void HandleAction(

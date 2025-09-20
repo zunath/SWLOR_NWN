@@ -36,13 +36,13 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (string.IsNullOrWhiteSpace(table.Key))
                     {
-                        Log.Write(LogGroup.Error, $"Loot table {table.Key} has an invalid key. Values must not be null or white space.");
+                        LogLegacy.Write(LogGroupType.Error, $"Loot table {table.Key} has an invalid key. Values must not be null or white space.");
                         continue;
                     }
 
                     if (_lootTables.ContainsKey(table.Key))
                     {
-                        Log.Write(LogGroup.Error, $"Loot table {table.Key} has already been registered. Please make sure all spawn tables use a unique ID.");
+                        LogLegacy.Write(LogGroupType.Error, $"Loot table {table.Key} has already been registered. Please make sure all spawn tables use a unique ID.");
                         continue;
                     }
 
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Service
                 data[1] = data[1].Trim();
                 if (!int.TryParse(data[1], out chance))
                 {
-                    Log.Write(LogGroup.Error, $"Loot Table with arguments '{delimitedString}', 'Chance' variable could not be processed. Must be an integer.");
+                    LogLegacy.Write(LogGroupType.Error, $"Loot Table with arguments '{delimitedString}', 'Chance' variable could not be processed. Must be an integer.");
                 }
             }
 
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Service
                 data[2] = data[2].Trim();
                 if (!int.TryParse(data[2], out attempts))
                 {
-                    Log.Write(LogGroup.Error, $"Loot Table with arguments '{delimitedString}', 'Attempts' variable could not be processed. Must be an integer.");
+                    LogLegacy.Write(LogGroupType.Error, $"Loot Table with arguments '{delimitedString}', 'Attempts' variable could not be processed. Must be an integer.");
                 }
             }
 

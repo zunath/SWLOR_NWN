@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-completed-quest' requires at least one questId argument.";
                         SendMessageToPC(player, Error);
-                        Log.Write(LogGroup.Error, Error);
+                        LogLegacy.Write(LogGroupType.Error, Error);
                         return false;
                     }
 
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-quest' requires a questId argument.";
                         SendMessageToPC(player, Error);
-                        Log.Write(LogGroup.Error, Error);
+                        LogLegacy.Write(LogGroupType.Error, Error);
                         return false;
                     }
 
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-on-quest-state' requires a questId argument and at least one stateNumber argument.";
                         SendMessageToPC(player, Error);
-                        Log.Write(LogGroup.Error, Error);
+                        LogLegacy.Write(LogGroupType.Error, Error);
                         return false;
                     }
 
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         {
                             var error = $"Could not read stateNumber {index + 1} in the 'condition-on-quest-state' snippet.";
                             SendMessageToPC(player, error);
-                            Log.Write(LogGroup.Error, error);
+                            LogLegacy.Write(LogGroupType.Error, error);
 
                             return false;
                         }
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-accept-quest' requires a questId argument.";
                         SendMessageToPC(player, Error);
-                        Log.Write(LogGroup.Error, Error);
+                        LogLegacy.Write(LogGroupType.Error, Error);
                         return;
                     }
 
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-advance-quest' requires a questId argument.";
                         SendMessageToPC(player, Error);
-                        Log.Write(LogGroup.Error, Error);
+                        LogLegacy.Write(LogGroupType.Error, Error);
                         return;
                     }
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-request-quest-items' requires a questId argument.";
                         SendMessageToPC(player, Error);
-                        Log.Write(LogGroup.Error, Error);
+                        LogLegacy.Write(LogGroupType.Error, Error);
                         return;
                     }
 

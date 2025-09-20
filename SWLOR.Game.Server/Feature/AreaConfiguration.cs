@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature
             }
             catch (Exception ex)
             {
-                Log.Write(LogGroup.Error, $"Area {GetName(area)} has an invalid tile magic type. Please fix the local variable. Exception: {ex.ToMessageAndCompleteStacktrace()}", true);
+                LogLegacy.Write(LogGroupType.Error, $"Area {GetName(area)} has an invalid tile magic type. Please fix the local variable. Exception: {ex.ToMessageAndCompleteStacktrace()}", true);
             }
         }
     }

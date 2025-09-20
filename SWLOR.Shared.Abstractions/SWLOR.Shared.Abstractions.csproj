@@ -11,4 +11,8 @@
     <PackageReference Include="NRediSearch" Version="2.2.79" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
+  </ItemGroup>
+
 </Project>

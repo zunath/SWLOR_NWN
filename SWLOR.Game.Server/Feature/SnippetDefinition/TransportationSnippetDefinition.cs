@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-teleport' requires a waypoint tag argument.";
                         SendMessageToPC(player, Error);
-                        Log.Write(LogGroup.Error, Error);
+                        LogLegacy.Write(LogGroupType.Error, Error);
                         return;
                     }
 
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         var error = $"Could not locate waypoint with tag '{waypointTag}' for snippet 'action-teleport'";
                         SendMessageToPC(player, error);
-                        Log.Write(LogGroup.Error, error);
+                        LogLegacy.Write(LogGroupType.Error, error);
                         return;
                     }
 

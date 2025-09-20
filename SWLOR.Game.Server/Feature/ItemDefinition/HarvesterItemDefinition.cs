@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     if (!Loot.LootTableExists(lootTableName))
                     {
-                        Log.Write(LogGroup.Error, $"Loot table '{lootTableName}' assigned to harvesting object '{GetName(target)}' does not exist.");
+                        LogLegacy.Write(LogGroupType.Error, $"Loot table '{lootTableName}' assigned to harvesting object '{GetName(target)}' does not exist.");
                         return $"ERROR: Harvesting loot table misconfigured. Please use /bug to report this issue.";
                     }
 

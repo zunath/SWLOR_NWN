@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature
                 }
                 catch
                 {
-                    Log.Write(LogGroup.Error, $"MAP_KEY_ITEM_ID '{mapKeyItemId}' is misconfigured on area '{GetName(area)}'.");
+                    LogLegacy.Write(LogGroupType.Error, $"MAP_KEY_ITEM_ID '{mapKeyItemId}' is misconfigured on area '{GetName(area)}'.");
                 }
             }
             

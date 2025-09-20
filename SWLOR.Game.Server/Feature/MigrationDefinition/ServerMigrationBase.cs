@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 {
                     dbPlayer.UnallocatedSP += refundAmount;
 
-                    Log.Write(LogGroup.Migration, $"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP.");
+                    LogLegacy.Write(LogGroupType.Migration, $"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP.");
 
                     DB.Set(dbPlayer);
                 }

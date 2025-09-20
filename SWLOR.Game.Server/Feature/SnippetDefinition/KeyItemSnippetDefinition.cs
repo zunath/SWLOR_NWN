@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-all-key-items' requires a keyItemId argument.";
                         SendMessageToPC(player, Error);
-                        Log.Write(LogGroup.Error, Error);
+                        LogLegacy.Write(LogGroupType.Error, Error);
                         return false;
                     }
 
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         // Type is invalid, log an error and end.
                         if (type == KeyItemType.Invalid)
                         {
-                            Log.Write(LogGroup.Error, $"{arg} is not a valid KeyItemType");
+                            LogLegacy.Write(LogGroupType.Error, $"{arg} is not a valid KeyItemType");
                             return false;
                         }
 
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-give-key-items' requires a keyItemId argument.";
                         SendMessageToPC(player, Error);
-                        Log.Write(LogGroup.Error, Error);
+                        LogLegacy.Write(LogGroupType.Error, Error);
                         return;
                     }
 
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         // Type is invalid, log an error and end.
                         if (type == KeyItemType.Invalid)
                         {
-                            Log.Write(LogGroup.Error, $"{arg} is not a valid KeyItemType");
+                            LogLegacy.Write(LogGroupType.Error, $"{arg} is not a valid KeyItemType");
                             return;
                         }
 

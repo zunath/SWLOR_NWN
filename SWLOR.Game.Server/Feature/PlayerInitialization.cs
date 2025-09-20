@@ -361,7 +361,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (!GetIsObjectValid(waypoint))
             {
-                Log.Write(LogGroup.Error, $"Default respawn waypoint could not be located. Did you place a waypoint with the tag 'DTH_DEFAULT_RESPAWN_POINT'?");
+                LogLegacy.Write(LogGroupType.Error, $"Default respawn waypoint could not be located. Did you place a waypoint with the tag 'DTH_DEFAULT_RESPAWN_POINT'?");
                 return;
             }
 

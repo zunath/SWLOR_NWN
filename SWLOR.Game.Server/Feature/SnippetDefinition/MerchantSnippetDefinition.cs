@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 
                     if (!GetIsObjectValid(store))
                     {
-                        Log.Write(LogGroup.Error, $"{GetName(npc)} could not locate a valid store. Check conversation for incorrect snippet parameters.", true);
+                        LogLegacy.Write(LogGroupType.Error, $"{GetName(npc)} could not locate a valid store. Check conversation for incorrect snippet parameters.", true);
                     }
 
                     NWScript.OpenStore(store, player);

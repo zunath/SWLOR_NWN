@@ -1,14 +1,23 @@
-﻿using NWNX.NET;
+﻿using System;
+using System.Collections.Generic;
+using NWNX.NET;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Shared.Core.Server
 {
     /// <summary>
     /// Simple GameManager implementation. Used by default if no manager is specified during bootstrap.
     /// </summary>
-    public class ClosureManager : global::NWN.Core.ICoreFunctionHandler
+    public class ClosureManager : global::NWN.Core.ICoreFunctionHandler, IClosureManager
     {
+        private readonly ILogger _logger;
+        public ClosureManager(ILogger logger)
+        {
+            _logger = logger;
+        }
+
         // Hook-able Events
         public delegate void ServerLoopEvent(ulong frame);
 
@@ -62,7 +71,7 @@ namespace SWLOR.Shared.Core.Server
             }
             catch (Exception ex)
             {
-                Log.Log.Write(LogGroup.Error, ex.ToMessageAndCompleteStacktrace());
+                _logger.Write<ErrorLogGroup>(ex.ToMessageAndCompleteStacktrace());
             }
 
             _closures.Remove(eid);

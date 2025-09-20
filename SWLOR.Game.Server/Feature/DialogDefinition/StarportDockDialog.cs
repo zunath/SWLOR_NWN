@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             if (string.IsNullOrWhiteSpace(spaceWaypointTag))
             {
-                Log.Write(LogGroup.Error, $"{GetName(self)} is missing the local variable 'STARPORT_TELEPORT_WAYPOINT' and cannot be used by players to dock their ships.");
+                LogLegacy.Write(LogGroupType.Error, $"{GetName(self)} is missing the local variable 'STARPORT_TELEPORT_WAYPOINT' and cannot be used by players to dock their ships.");
                 SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
                 EndConversation();
                 return;
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             if (!GetIsObjectValid(spaceWaypoint))
             {
-                Log.Write(LogGroup.Error, $"The waypoint associated with '{GetName(self)}' cannot be found. Did you place it in an area?");
+                LogLegacy.Write(LogGroupType.Error, $"The waypoint associated with '{GetName(self)}' cannot be found. Did you place it in an area?");
                 SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
                 EndConversation();
                 return;
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             if (planetType == PlanetType.Invalid)
             {
-                Log.Write(LogGroup.Error, $"{GetName(self)} is missing the local variable 'PLANET_TYPE_ID' or has an invalid value specified..");
+                LogLegacy.Write(LogGroupType.Error, $"{GetName(self)} is missing the local variable 'PLANET_TYPE_ID' or has an invalid value specified..");
                 SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
                 EndConversation();
                 return;
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                             dbOldStarport.ChildPropertyIds[PropertyChildType.Starship].Remove(dbProperty.Id);
                             DB.Set(dbOldStarport);
 
-                            Log.Write(LogGroup.Property, $"Unregistered player ship '{dbProperty.CustomName}' ({dbProperty.Id}) from old starport '{dbOldStarport.CustomName}' ({dbOldStarport.Id}).");
+                            LogLegacy.Write(LogGroupType.Property, $"Unregistered player ship '{dbProperty.CustomName}' ({dbProperty.Id}) from old starport '{dbOldStarport.CustomName}' ({dbOldStarport.Id}).");
                             
                             // Refresh the starport object we're working with in the event the "old" starport
                             // is actually the current one. This ensures we don't get a duplicate starship property Id in the list.

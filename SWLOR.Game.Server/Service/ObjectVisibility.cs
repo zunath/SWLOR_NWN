@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Service
             var visibilityObjectId = GetLocalString(target, "VISIBILITY_OBJECT_ID");
             if (string.IsNullOrWhiteSpace(visibilityObjectId))
             {
-                Log.Write(LogGroup.Error, $"{GetName(target)} is missing the local variable VISIBILITY_OBJECT_ID. The visibility of this object cannot be modified for player {GetName(player)}", true);
+                LogLegacy.Write(LogGroupType.Error, $"{GetName(target)} is missing the local variable VISIBILITY_OBJECT_ID. The visibility of this object cannot be modified for player {GetName(player)}", true);
                 return;
             }
 
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!_visibilityObjects.ContainsKey(visibilityObjectId))
             {
-                Log.Write(LogGroup.Error, $"No object matching visibility object Id '{visibilityObjectId}' can be found. This is likely due to an object with an Id being created after module load.");
+                LogLegacy.Write(LogGroupType.Error, $"No object matching visibility object Id '{visibilityObjectId}' can be found. This is likely due to an object with an Id being created after module load.");
                 return;
             }
 

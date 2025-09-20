@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             foreach (var vote in toRemove)
                             {
                                 dbElection.VoterSelections.Remove(vote.Key);
-                                Log.Write(LogGroup.Property, $"Removed vote from player '{vote.Key}' because chosen candidate '{playerId}' has dropped out of the race.");
+                                LogLegacy.Write(LogGroupType.Property, $"Removed vote from player '{vote.Key}' because chosen candidate '{playerId}' has dropped out of the race.");
                             }
 
                             DB.Set(dbElection);
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         }
 
                         FloatingTextStringOnCreature("Your citizenship has been revoked!", Player, false);
-                        Log.Write(LogGroup.Property, $"Player '{GetName(Player)}' ({GetPCPlayerName(Player)} / {GetPCPublicCDKey(Player)}) revoked citizenship from city '{dbCity.CustomName}' ({dbCity.Id}).");
+                        LogLegacy.Write(LogGroupType.Property, $"Player '{GetName(Player)}' ({GetPCPlayerName(Player)} / {GetPCPublicCDKey(Player)}) revoked citizenship from city '{dbCity.CustomName}' ({dbCity.Id}).");
                         LoadData();
                     });
             }
@@ -237,7 +237,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         DB.Set(dbPlayer);
 
-                        Log.Write(LogGroup.Property, $"Player '{GetName(Player)}' ({GetPCPlayerName(Player)} / {GetPCPublicCDKey(Player)}) became a citizen of '{dbCity.CustomName}' ({dbCity.Id}).");
+                        LogLegacy.Write(LogGroupType.Property, $"Player '{GetName(Player)}' ({GetPCPlayerName(Player)} / {GetPCPublicCDKey(Player)}) became a citizen of '{dbCity.CustomName}' ({dbCity.Id}).");
                         FloatingTextStringOnCreature($"You became a citizen of {dbCity.CustomName}!", Player, false);
 
                         LoadData();
@@ -265,7 +265,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (gold < dbPlayer.PropertyOwedTaxes)
                 {
                     AssignCommand(Player, () => TakeGoldFromCreature(gold, Player, true));
-                    Log.Write(LogGroup.Property, $"{GetName(Player)} paid {gold} credits towards taxes for property '{_cityPropertyId}'");
+                    LogLegacy.Write(LogGroupType.Property, $"{GetName(Player)} paid {gold} credits towards taxes for property '{_cityPropertyId}'");
                     dbCity.Treasury += gold;
                     dbPlayer.PropertyOwedTaxes -= gold;
                 }
@@ -274,7 +274,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var amount = dbPlayer.PropertyOwedTaxes;
                     AssignCommand(Player, () => TakeGoldFromCreature(amount, Player, true));
-                    Log.Write(LogGroup.Property, $"{GetName(Player)} paid {dbPlayer.PropertyOwedTaxes} credits towards taxes for property '{_cityPropertyId}'.");
+                    LogLegacy.Write(LogGroupType.Property, $"{GetName(Player)} paid {dbPlayer.PropertyOwedTaxes} credits towards taxes for property '{_cityPropertyId}'.");
                     dbCity.Treasury += dbPlayer.PropertyOwedTaxes;
                     dbPlayer.PropertyOwedTaxes = 0;
                 }

@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature
                     count++;
                 }
 
-                Log.Write(LogGroup.StoreCleanup, $"Store cleaned: {GetName(store)}. Items destroyed: {count}");
+                LogLegacy.Write(LogGroupType.StoreCleanup, $"Store cleaned: {GetName(store)}. Items destroyed: {count}");
             }
         }
 

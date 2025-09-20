@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature
                     BootPC(player, "The server is automatically restarting.");
                 }
 
-                Log.Write(LogGroup.Server, "Server shutting down for automated restart.", true);
+                LogLegacy.Write(LogGroupType.Server, "Server shutting down for automated restart.", true);
                 
                 DelayCommand(0.1f, () =>
                 {
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature
         [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void ProcessBootUp()
         {
-            Log.Write(LogGroup.Server, "Server is starting up.");
+            LogLegacy.Write(LogGroupType.Server, "Server is starting up.");
             ConfigureServerSettings();
             ApplyBans();
             ScheduleRestartReminder();
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature
                     var rebootString = Time.GetTimeLongIntervals(delta, false);
                     var message = $"Server will automatically reboot in approximately {rebootString}.";
 
-                    Log.Write(LogGroup.Server, message, true);
+                    LogLegacy.Write(LogGroupType.Server, message, true);
 
                     for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
                     {

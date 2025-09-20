@@ -1023,7 +1023,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 SendMessageToPC(Player, $"Unable to start Incubation Job. Reason: {validationError}");
-                Log.Write(LogGroup.Incubation, $"Job could not be created on incubator Id {_incubatorPropertyId} due to reason: {validationError}");
+                LogLegacy.Write(LogGroupType.Incubation, $"Job could not be created on incubator Id {_incubatorPropertyId} due to reason: {validationError}");
             }
         }
 
@@ -1067,7 +1067,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 DB.Delete<IncubationJob>(dbJob.Id);
                 Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
-                Log.Write(LogGroup.Incubation, $"Player '{GetName(Player)}' ({GetObjectUUID(Player)}) canceled incubation job '{dbJob.Id}' on incubator property Id '{dbJob.ParentPropertyId}'.");
+                LogLegacy.Write(LogGroupType.Incubation, $"Player '{GetName(Player)}' ({GetObjectUUID(Player)}) canceled incubation job '{dbJob.Id}' on incubator property Id '{dbJob.ParentPropertyId}'.");
                 FloatingTextStringOnCreature($"Incubation job cancelled!", Player, false);
 
                 SwitchViews();

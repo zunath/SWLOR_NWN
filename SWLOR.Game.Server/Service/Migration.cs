@@ -94,12 +94,12 @@ namespace SWLOR.Game.Server.Service
                     migration.Migrate();
                     newVersion = migration.Version;
                     sw.Stop();
-                    Log.Write(LogGroup.Migration, $"Server migration ({executionType}) #{migration.Version} completed successfully. (Took {sw.ElapsedMilliseconds}ms)", true);
+                    LogLegacy.Write(LogGroupType.Migration, $"Server migration ({executionType}) #{migration.Version} completed successfully. (Took {sw.ElapsedMilliseconds}ms)", true);
                 }
                 catch (Exception ex)
                 {
                     // It's dangerous to proceed without a successful migration. Shut down the server in this situation.
-                    Log.Write(LogGroup.Error, $"Server migration ({executionType}) #{migration.Version} failed to apply. Exception: {ex.ToMessageAndCompleteStacktrace()}. Shutting down server.", true);
+                    LogLegacy.Write(LogGroupType.Error, $"Server migration ({executionType}) #{migration.Version} failed to apply. Exception: {ex.ToMessageAndCompleteStacktrace()}. Shutting down server.", true);
                     AdministrationPlugin.ShutdownServer();
                     break;
                 }
@@ -148,11 +148,11 @@ namespace SWLOR.Game.Server.Service
                     migration.Migrate(player);
                     newVersion = migration.Version;
                     sw.Stop();
-                    Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} applied to player {GetName(player)} [{playerId}] successfully. (Took {sw.ElapsedMilliseconds}ms)");
+                    LogLegacy.Write(LogGroupType.Migration, $"Player migration #{migration.Version} applied to player {GetName(player)} [{playerId}] successfully. (Took {sw.ElapsedMilliseconds}ms)");
                 }
                 catch (Exception ex)
                 {
-                    Log.Write(LogGroup.Migration, $"Player migration #{migration.Version} failed to apply for player {GetName(player)} [{playerId}]. Exception: {ex.ToMessageAndCompleteStacktrace()}", true);
+                    LogLegacy.Write(LogGroupType.Migration, $"Player migration #{migration.Version} failed to apply for player {GetName(player)} [{playerId}]. Exception: {ex.ToMessageAndCompleteStacktrace()}", true);
                     break;
                 }
             }

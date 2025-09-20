@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 BootPC(_target, $"Your name has been changed to '{newFullName}'. Please reconnect to the server.");
 
                 FloatingTextStringOnCreature($"Target renamed to '{newFullName}'.", Player);
-                Log.Write(LogGroup.DM, $"DM '{dmName}' renamed player '{oldName}' to '{newFullName}'.");
+                LogLegacy.Write(LogGroupType.DM, $"DM '{dmName}' renamed player '{oldName}' to '{newFullName}'.");
             }
             else
             {

@@ -1,10 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using SWLOR.Shared.Abstractions.Delegates;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Shared.Core.Server
 {
-    public class ScriptRegistry
+    public class ScriptRegistry : IScriptRegistry
     {
         private class ActionScript
         {
@@ -18,15 +23,17 @@ namespace SWLOR.Shared.Core.Server
             public string Name { get; set; }
         }
 
-        public delegate bool ConditionalScriptDelegate();
 
         private const int MaxCharsInScriptName = 16;
 
         private readonly Dictionary<string, List<ActionScript>> _scripts;
         private readonly Dictionary<string, List<ConditionalScript>> _conditionalScripts;
 
-        public ScriptRegistry()
+        private readonly ILogger _logger;
+
+        public ScriptRegistry(ILogger logger)
         {
+            _logger = logger;
             _scripts = new Dictionary<string, List<ActionScript>>();
             _conditionalScripts = new Dictionary<string, List<ConditionalScript>>();
         }
@@ -49,7 +56,7 @@ namespace SWLOR.Shared.Core.Server
                     var script = ((ScriptHandler)attr).Script;
                     if (script.Length > MaxCharsInScriptName || script.Length == 0)
                     {
-                        Log.Log.Write(LogGroup.Error, $"Script name '{script}' is invalid on method {mi.Name}.", true);
+                        _logger.Write<ErrorLogGroup>($"Script name '{script}' is invalid on method {mi.Name}.");
                         throw new ApplicationException();
                     }
 
@@ -63,7 +70,7 @@ namespace SWLOR.Shared.Core.Server
                     }
                     else
                     {
-                        Log.Log.Write(LogGroup.Error, $"Method '{mi.Name}' tied to script '{script}' has an invalid return type. This script was NOT loaded.", true);
+                        _logger.Write<ErrorLogGroup>($"Method '{mi.Name}' tied to script '{script}' has an invalid return type. This script was NOT loaded.");
                     }
                 }
             }

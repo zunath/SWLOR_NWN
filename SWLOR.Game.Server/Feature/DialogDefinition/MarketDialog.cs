@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             if (regionType == MarketRegionType.Invalid)
             {
                 FloatingTextStringOnCreature("Notify a DM that this market is improperly configured.", player, false);
-                Log.Write(LogGroup.Error, $"{GetName(terminal)} is improperly configured with an invalid market Id. Area: {GetName(GetArea(terminal))}");
+                LogLegacy.Write(LogGroupType.Error, $"{GetName(terminal)} is improperly configured with an invalid market Id. Area: {GetName(GetArea(terminal))}");
                 return;
             }
 

@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class ChatCommand
     {
-        private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
+        private static readonly AppSettings _appSettings = AppSettings.Get();
 
         private static readonly Dictionary<string, ChatCommandDetail> _chatCommands = new();
         private static readonly Dictionary<string, ChatCommandDetail> _emoteCommands = new();

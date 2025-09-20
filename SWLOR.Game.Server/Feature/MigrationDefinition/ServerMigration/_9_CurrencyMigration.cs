@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
                 DB.Set(dbPlayer);
 
-                Log.Write(LogGroup.Migration, $"Migrated {perkResets} perk resets and {rebuildCount} rebuild tokens for player {dbPlayer.Name} ({dbPlayer.Id})");
+                LogLegacy.Write(LogGroupType.Migration, $"Migrated {perkResets} perk resets and {rebuildCount} rebuild tokens for player {dbPlayer.Name} ({dbPlayer.Id})");
             }
         }
     }

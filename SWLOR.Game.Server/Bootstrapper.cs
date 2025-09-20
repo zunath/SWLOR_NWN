@@ -11,7 +11,8 @@ namespace SWLOR.Game.Server
             InitializeDependencyInjection();
             
             // Bootstrap the server
-            ServerManager.Bootstrap();
+            var serverManager = ServiceContainer.GetService<IServerManager>();
+            serverManager.Bootstrap();
         }
 
         /// <summary>
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server
             var services = new ServiceCollection();
             
             // Register all game services
-            services.AddGameServices();
+            services.AddServices();
             
             // Build the service provider
             var serviceProvider = services.BuildServiceProvider();

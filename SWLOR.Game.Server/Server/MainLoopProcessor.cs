@@ -1,13 +1,22 @@
+using System;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Shared.Core.Server
 {
-    public class MainLoopProcessor
+    public class MainLoopProcessor : IMainLoopProcessor
     {
-        public static event Action OnScriptContextBegin;
-        public static event Action OnScriptContextEnd;
+        private readonly ILogger _logger;
+        
+        public event Action OnScriptContextBegin;
+        public event Action OnScriptContextEnd;
+
+        public MainLoopProcessor(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         public void ProcessMainLoop(ulong frame)
         {
@@ -20,7 +29,7 @@ namespace SWLOR.Shared.Core.Server
             }
             catch (Exception ex)
             {
-                Log.Log.Write(LogGroup.Error, ex.ToMessageAndCompleteStacktrace(), true);
+                _logger.Write<ErrorLogGroup>(ex.ToMessageAndCompleteStacktrace(), true);
             }
 
             OnScriptContextEnd?.Invoke();

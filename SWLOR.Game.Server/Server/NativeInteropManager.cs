@@ -1,12 +1,22 @@
+using System;
 using System.Runtime.InteropServices;
+using NWN.Core;
 using NWNX.NET;
 using NWNX.NET.Native;
+using SWLOR.Game.Server;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Server.Contracts;
 
 namespace SWLOR.Shared.Core.Server
 {
-    public unsafe class NativeInteropManager
+    public unsafe class NativeInteropManager : INativeInteropManager
     {
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IMainLoopProcessor _mainLoopProcessor = ServiceContainer.GetService<IMainLoopProcessor>();
+        private static readonly IScriptExecutor _scriptExecutor = ServiceContainer.GetService<IScriptExecutor>();
+        private static readonly IClosureManager _closureManager = ServiceContainer.GetService<IClosureManager>();
+
         public void RegisterHandlers()
         {
             NWNXAPI.RegisterMainLoopHandler(&OnMainLoop);
@@ -20,11 +30,11 @@ namespace SWLOR.Shared.Core.Server
         {
             try
             {
-                ServerManager.MainLoop.ProcessMainLoop(frame);
+                _mainLoopProcessor.ProcessMainLoop(frame);
             }
             catch (Exception e)
             {
-                Log.Log.Write(LogGroup.Error, $"MainLoop exception: {e}", true);
+                _logger.Write<ErrorLogGroup>($"MainLoop exception: {e}", true);
             }
         }
 
@@ -34,11 +44,11 @@ namespace SWLOR.Shared.Core.Server
             try
             {
                 var scriptName = scriptPtr.ReadNullTerminatedString();
-                return ServerManager.Executor.ProcessRunScript(scriptName, oidSelf);
+                return _scriptExecutor.ProcessRunScript(scriptName, oidSelf);
             }
             catch (Exception e)
             {
-                Log.Log.Write(LogGroup.Error, $"RunScript exception: {e}", true);
+                _logger.Write<ErrorLogGroup>($"RunScript exception: {e}", true);
                 return -1;
             }
         }
@@ -53,7 +63,7 @@ namespace SWLOR.Shared.Core.Server
             }
             catch (Exception e)
             {
-                Log.Log.Write(LogGroup.Error, $"Signal processing exception: {e}", true);
+                _logger.Write<ErrorLogGroup>($"Signal processing exception: {e}", true);
             }
         }
 
@@ -62,11 +72,11 @@ namespace SWLOR.Shared.Core.Server
         {
             try
             {
-                ServerManager.Bootstrapper.ClosureManager.OnClosure(eid, oidSelf);
+                _closureManager.OnClosure(eid, oidSelf);
             }
             catch (Exception e)
             {
-                Log.Log.Write(LogGroup.Error, $"Closure processing exception: {e}", true);
+                _logger.Write<ErrorLogGroup>($"Closure exception: {e}", true);
             }
         }
 
@@ -75,8 +85,7 @@ namespace SWLOR.Shared.Core.Server
         {
             switch (signal)
             {
-                case "ON_MODULE_LOAD_FINISH":
-                    ServerManager.Executor.Initialize();
+                default:
                     break;
             }
         }

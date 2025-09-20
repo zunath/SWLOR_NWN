@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 AdministrationPlugin.RemoveBannedCDKey(dbUser.CDKey);
 
-                Log.Write(LogGroup.Server, $"User deleted from ban list. CDKey: {dbUser.CDKey}, Reason: {dbUser.Reason}");
+                LogLegacy.Write(LogGroupType.Server, $"User deleted from ban list. CDKey: {dbUser.CDKey}, Reason: {dbUser.Reason}");
             });
         };
 
@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusText = "Saved successfully.";
             StatusColor = GuiColor.Green;
 
-            Log.Write(LogGroup.Server, $"User added to ban list. CDKey: {dbUser.CDKey}, Reason: {dbUser.Reason}");
+            LogLegacy.Write(LogGroupType.Server, $"User added to ban list. CDKey: {dbUser.CDKey}, Reason: {dbUser.Reason}");
         };
 
         public Action OnClickDiscardChanges() => () =>

@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     if (keyItemId <= 0)
                     {
-                        Log.Write(LogGroup.Error, $"KEY_ITEM_ID for item '{GetName(item)}' is not set properly.");
+                        LogLegacy.Write(LogGroupType.Error, $"KEY_ITEM_ID for item '{GetName(item)}' is not set properly.");
                         return "KEY_ITEM_ID is not configured properly on the item. Notify an admin.";
                     }
 
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     }
                     catch
                     {
-                        Log.Write(LogGroup.Error, $"KEY_ITEM_ID '{keyItemId}' for item '{GetName(item)}' is not assigned to a valid KeyItemType.");
+                        LogLegacy.Write(LogGroupType.Error, $"KEY_ITEM_ID '{keyItemId}' for item '{GetName(item)}' is not assigned to a valid KeyItemType.");
                         return "KEY_ITEM_ID is not configured properly on the item. Notify an admin.";
                     }
 

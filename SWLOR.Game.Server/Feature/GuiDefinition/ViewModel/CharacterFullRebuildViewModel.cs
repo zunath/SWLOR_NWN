@@ -322,7 +322,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     dbPlayer.UnallocatedSP += refundAmount;
                     dbPlayer.Perks.Remove(type);
-                    Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {level} - PerkID {type}");
+                    LogLegacy.Write(LogGroupType.PerkRefund, $"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {level} - PerkID {type}");
                    
                     // Remove all feats granted by all levels of this perk.
                     var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats);

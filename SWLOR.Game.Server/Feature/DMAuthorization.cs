@@ -47,12 +47,12 @@ namespace SWLOR.Game.Server.Feature
             if (success)
             {
                 var log = $"{pcName} - {account} - {cdKey} - {ipAddress}: Authorization successful";
-                Log.Write(LogGroup.DMAuthorization, log);
+                LogLegacy.Write(LogGroupType.DMAuthorization, log);
             }
             else
             {
                 var log = $"{pcName} - {account} - {cdKey} - {ipAddress}: Authorization UNSUCCESSFUL";
-                Log.Write(LogGroup.DMAuthorization, log);
+                LogLegacy.Write(LogGroupType.DMAuthorization, log);
             }
         }
 

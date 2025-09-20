@@ -1,19 +1,34 @@
+using System;
+using NWN.Core;
 using SWLOR.NWN.API;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Server.Contracts;
 
 namespace SWLOR.Shared.Core.Server
 {
-    public class ServerBootstrapper
+    public class ServerBootstrapper : IServerBootstrapper
     {
-        private readonly ClosureManager _closureManager;
+        private readonly ILogger _logger;
+        private readonly ICoreFunctionHandler _closureManager;
+        private readonly INativeInteropManager _nativeInterop;
+        private readonly IScriptRegistry _scriptRegistry;
+        private readonly IScriptExecutionProvider _executionProvider;
 
-        public ServerBootstrapper()
+        public ServerBootstrapper(
+            ILogger logger,
+            INativeInteropManager nativeInterop,
+            ICoreFunctionHandler closureManager,
+            IScriptRegistry scriptRegistry,
+            IScriptExecutionProvider executionProvider)
         {
-            _closureManager = new ClosureManager();
+            _logger = logger;
+            _nativeInterop = nativeInterop;
+            _closureManager = closureManager;
+            _scriptRegistry = scriptRegistry;
+            _executionProvider = executionProvider;
         }
-
-        public ClosureManager ClosureManager => _closureManager;
 
         public void Bootstrap()
         {
@@ -44,7 +59,7 @@ namespace SWLOR.Shared.Core.Server
 
         private void RegisterNativeHandlers()
         {
-            ServerManager.NativeInterop.RegisterHandlers();
+            _nativeInterop.RegisterHandlers();
         }
 
         private void InitializeSWLORSystems()
@@ -52,12 +67,8 @@ namespace SWLOR.Shared.Core.Server
             Console.WriteLine("Initializing SWLOR internal systems...");
             Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "true");
 
-            Console.WriteLine("Registering loggers...");
-            Log.Log.Register();
-            Console.WriteLine("Loggers registered successfully.");
-
             Console.WriteLine("Registering script execution provider...");
-            ScriptExecutionProvider.SetProvider(new ScriptExecutionProviderImpl());
+            NWN.API.ScriptExecutionProvider.SetProvider(_executionProvider);
             Console.WriteLine("Script execution provider registered successfully.");
         }
 
@@ -69,13 +80,13 @@ namespace SWLOR.Shared.Core.Server
         private void LoadScripts()
         {
             Console.WriteLine("Registering scripts...");
-            ServerManager.Scripts.LoadHandlersFromAssembly();
+            _scriptRegistry.LoadHandlersFromAssembly();
             Console.WriteLine("Scripts registered successfully.");
         }
 
-        private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs ex)
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs ex)
         {
-            Log.Log.Write(LogGroup.Error, ((Exception)ex.ExceptionObject).ToMessageAndCompleteStacktrace(), true);
+            _logger.Write<ErrorLogGroup>(((Exception)ex.ExceptionObject).ToMessageAndCompleteStacktrace(), true);
         }
     }
 }

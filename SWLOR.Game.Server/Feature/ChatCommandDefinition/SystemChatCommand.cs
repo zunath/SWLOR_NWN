@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    var appSettings = ApplicationSettings.Get();
+                    var appSettings = AppSettings.Get();
                     var authorization = Authorization.GetAuthorizationLevel(user);
 
                     if (appSettings.ServerEnvironment == ServerEnvironmentType.Test || 

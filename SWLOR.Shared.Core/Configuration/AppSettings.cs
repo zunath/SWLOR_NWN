@@ -2,22 +2,22 @@
 
 namespace SWLOR.Shared.Core.Configuration
 {
-    public class ApplicationSettings
+    public class AppSettings : IAppSettings
     {
         public string LogDirectory { get; }
         public string RedisIPAddress { get; }
         public ServerEnvironmentType ServerEnvironment { get; }
 
-        private static ApplicationSettings _settings;
-        public static ApplicationSettings Get()
+        private static AppSettings _settings;
+        public static AppSettings Get()
         {
             if (_settings == null)
-                _settings = new ApplicationSettings();
+                _settings = new AppSettings();
 
             return _settings;
         }
 
-        private ApplicationSettings()
+        private AppSettings()
         {
             LogDirectory = Environment.GetEnvironmentVariable("SWLOR_APP_LOG_DIRECTORY");
             RedisIPAddress = Environment.GetEnvironmentVariable("NWNX_REDIS_HOST");

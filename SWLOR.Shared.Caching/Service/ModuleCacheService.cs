@@ -16,7 +16,7 @@ namespace SWLOR.Shared.Caching.Service
             _db = db;
         }
 
-        [ScriptHandler<OnEventsHooked>()]
+        [ScriptHandler<OnEventsHooked>]
         public void OnDatabaseLoaded()
         {
             var serverConfig = _db.Get<ModuleCache>(ModuleCache.DefaultId);

@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, clean up any deleted data, refreshes permissions and then load properties.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void OnModuleLoad()
         {
             RefreshPermissions();

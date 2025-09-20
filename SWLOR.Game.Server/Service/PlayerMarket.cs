@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Marks items as unlisted if they have been sitting on the market for longer than two weeks.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void RemoveOldListings()
         {
             var query = new DBQuery<MarketItem>()

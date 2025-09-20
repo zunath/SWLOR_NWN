@@ -576,7 +576,7 @@ namespace SWLOR.Shared.Events.Service
         /// A handful of NWNX functions require special calls to load persistence.
         /// When the module loads, run those methods here.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public void TriggerNWNXPersistence()
         {
             var firstObject = GetFirstObjectInArea(GetFirstArea());

@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the server starts up, a log message will be written.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void ProcessBootUp()
         {
             _logger.Write<ServerLogGroup>("Server is starting up.");

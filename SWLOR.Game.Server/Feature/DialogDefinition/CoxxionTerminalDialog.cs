@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         /// <summary>
         /// When the module loads, store the doors for the Coxxion Base dungeon into cache.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void LoadDoors()
         {
             var area = Area.GetAreaByResref("v_cox_base");

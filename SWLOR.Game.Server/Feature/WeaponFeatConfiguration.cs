@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, set all of the weapon-related feat and item configurations.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void ConfigureWeaponFeats()
         {
             // Weapon Focus, Specialization, Improved Critical

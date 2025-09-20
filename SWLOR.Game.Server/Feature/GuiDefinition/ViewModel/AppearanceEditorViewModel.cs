@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private AppearanceArmorColor _selectedColorChannel;
         private ColorTarget _colorTarget;
 
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void LoadAppearances()
         {
             LoadRacialAppearances();

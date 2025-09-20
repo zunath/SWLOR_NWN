@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, create translators for every language and store them into cache.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void LoadTranslators()
         {
             _translators = new Dictionary<SkillType, ITranslator>

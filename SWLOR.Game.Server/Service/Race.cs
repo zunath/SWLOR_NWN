@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all default race appearances.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void LoadRaces()
         {
             // Male appearances

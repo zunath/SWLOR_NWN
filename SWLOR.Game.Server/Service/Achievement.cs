@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
         private static Gui.IdReservation _idReservation;
         private static readonly Dictionary<AchievementType, AchievementAttribute> _activeAchievements = new Dictionary<AchievementType, AchievementAttribute>();
 
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void ReserveGuiIds()
         {
             _idReservation = Gui.ReserveIds(nameof(Achievement), 6);

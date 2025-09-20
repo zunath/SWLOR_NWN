@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// When the module loads, set up the category lists so they don't need
         /// to be initialized for every player.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void LoadCategories()
         {
             foreach (var (type, category) in PlayerMarket.GetActiveCategories())

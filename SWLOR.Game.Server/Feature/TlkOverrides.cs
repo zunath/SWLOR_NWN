@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public class TlkOverrides
     {
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void OverrideTlks()
         {
             OverrideAttributeNames();

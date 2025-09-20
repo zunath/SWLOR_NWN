@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, add all valid damage types to the cache.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void LoadDamageTypes()
         {
             var allValues = Enum.GetValues(typeof(CombatDamageType)).Cast<CombatDamageType>();

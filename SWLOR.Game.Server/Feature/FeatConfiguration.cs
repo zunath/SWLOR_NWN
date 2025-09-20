@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, configure all custom feats.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void ConfigureFeats()
         {
             FeatPlugin.SetFeatModifier(FeatType.ShieldConcealment1, FeatModifierType.Concealment, 5);

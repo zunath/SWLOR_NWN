@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, load the tile magic configured on every area.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void ApplyAreaConfiguration()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())

@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Native
         // ReSharper disable once NotAccessedField.Local
         private static ResolveAttackRollHook _callOriginal;
 
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, void*, void> pHook = &OnResolveAttackRoll;

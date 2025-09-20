@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, cache the actions taken for each type of custom item property.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void RegisterStatActions()
         {
             _statChangeActions[ItemPropertyType.HPBonus] = ApplyHPBonus;

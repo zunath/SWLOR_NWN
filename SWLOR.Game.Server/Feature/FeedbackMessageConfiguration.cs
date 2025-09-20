@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, configure the feedback messages.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void ConfigureFeedbackMessages()
         {
             FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.UseItemCantUse, true);

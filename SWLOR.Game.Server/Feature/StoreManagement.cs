@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, place all stores inside the cache and schedule the cleanup process.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void ProcessStores()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())

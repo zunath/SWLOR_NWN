@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_conversations.Count} conversations.");
         }
 
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void InitializeDialogs()
         {
             for (var x = 1; x <= NumberOfDialogs; x++)

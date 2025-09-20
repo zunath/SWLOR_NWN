@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Native
         // ReSharper disable once NotAccessedField.Local
         private static GetFortitudeSavingThrowHook _callOriginal;
 
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, int, sbyte> pHook = &OnGetFortitudeSavingThrow;

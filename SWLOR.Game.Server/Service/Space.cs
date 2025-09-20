@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, 
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler<OnModuleLoad>]
         public static void LoadLandingPoints()
         {
             var count = 0;

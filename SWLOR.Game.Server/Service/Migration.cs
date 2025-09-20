@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostCache = new();
         private static readonly Dictionary<int, IPlayerMigration> _playerMigrations = new();
 
-        [ScriptHandlerAttribute<OnServerLoaded>]
+        [ScriptHandler<OnServerLoaded>]
         public static void AfterDatabaseLoaded()
         {
             var config = GetServerConfiguration();

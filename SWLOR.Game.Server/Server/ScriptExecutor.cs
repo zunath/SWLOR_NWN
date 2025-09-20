@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Server
 {
     public class ScriptExecutor : IScriptExecutor
     {
-        private readonly CVirtualMachine _virtualMachine;
+        private CVirtualMachine _virtualMachine;
 
         private const int ScriptHandled = 0;
         private const int ScriptNotHandled = -1;
@@ -26,8 +26,13 @@ namespace SWLOR.Game.Server.Server
             _logger = logger;
             _closureManager = closureManager;
             _scriptRegistry = scriptRegistry;
-            _virtualMachine = NWNXLib.VirtualMachine();
             Console.WriteLine($"{nameof(ScriptExecutor)} initialized.");
+        }
+
+        public void Initialize()
+        {
+            _virtualMachine = NWNXLib.VirtualMachine();
+            Console.WriteLine($"Virtual machine initialized");
         }
 
         public int ProcessRunScript(string scriptName, uint objectSelf)

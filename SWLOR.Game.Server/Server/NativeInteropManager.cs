@@ -4,6 +4,7 @@ using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Server
 {
@@ -82,7 +83,9 @@ namespace SWLOR.Game.Server.Server
         {
             switch (signal)
             {
-                default:
+                case "ON_MODULE_LOAD_FINISH":
+                    _scriptExecutor.Initialize();
+                    ExecuteScript(ScriptName.OnServerLoaded, GetModule());
                     break;
             }
         }

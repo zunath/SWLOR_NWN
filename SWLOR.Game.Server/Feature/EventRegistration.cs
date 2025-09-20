@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature
         /// Fires on the module PreLoad event. This event should be specified in the environment variables.
         /// This will hook all module/global events.
         /// </summary>
-        [ScriptHandler(ScriptName.OnDatabaseLoaded)]
+        [ScriptHandler(ScriptName.OnServerLoaded)]
         public static void OnDatabaseLoaded()
         {
             ExecuteScript("db_load", OBJECT_SELF);

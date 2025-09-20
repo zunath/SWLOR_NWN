@@ -34,8 +34,8 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnModuleUserDefined = "mod_user_def";
         public const string OnModuleTileEvent = "mod_tile_event";
 
-        // Database events
-        public const string OnDatabaseLoaded = "db_loaded";
+        // Server events
+        public const string OnServerLoaded = "server_loaded";
 
         // Character events
         public const string OnCharacterInitAfter = "char_init_after";

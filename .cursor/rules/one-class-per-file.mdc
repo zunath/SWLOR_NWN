@@ -1,0 +1,5 @@
+---
+description: Stick to one class, interface, etc. per file. Don't put multiple inside unless the classes are private and self-contained.
+globs:
+alwaysApply: true
+---

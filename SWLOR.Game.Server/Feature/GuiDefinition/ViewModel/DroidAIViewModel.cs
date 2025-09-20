@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DroidAIViewModel : GuiViewModelBase<DroidAIViewModel, DroidAIPayload>
     {
-        private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private uint _controller;
         private List<DroidPerk> _availableDroidPerks;
         private List<DroidPerk> _activeDroidPerks;

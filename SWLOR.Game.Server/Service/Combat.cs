@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Combat
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly List<CombatDamageType> _allValidDamageTypes = new();
 

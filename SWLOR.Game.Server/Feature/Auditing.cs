@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public class Auditing
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         /// <summary>
         /// Writes an audit log when a player connects to the server.
         /// </summary>

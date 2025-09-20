@@ -1,31 +1,26 @@
-using System;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Async;
-using SWLOR.Shared.Core.Entity;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Shared.Events.Service
 {
-    public static class EventRegistration
+    public class EventRegistrationService : IEventRegistrationService
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        
-        /// <summary>
-        /// Fires on the module PreLoad event. This event should be specified in the environment variables.
-        /// This will hook all module/global events.
-        /// </summary>
-        [ScriptHandler(ScriptName.OnServerLoaded)]
-        public static void OnDatabaseLoaded()
+        private readonly IDatabaseService _db;
+        private readonly IScheduler _scheduler;
+
+        public EventRegistrationService(
+            IDatabaseService db,
+            IScheduler scheduler)
         {
-            ExecuteScript("db_load", OBJECT_SELF);
+            _db = db;
+            _scheduler = scheduler;
+        }
 
-            var serverConfig = _db.Get<ModuleCache>(ModuleCache.DefaultId) ?? new ModuleCache();
-
+        public void RegisterEvents()
+        {
             Console.WriteLine("Hooking all module events.");
             HookModuleEvents();
 
@@ -38,27 +33,12 @@ namespace SWLOR.Game.Server.Feature
             Console.WriteLine("Hooking all application-specific events");
             HookApplicationEvents();
 
-            // Module has changed since last run.
-            // Run procedures dependent on the module file changing.
-            if (UtilPlugin.GetModuleMTime() != serverConfig.LastModuleMTime)
-            {
-                Console.WriteLine("Module has changed since last boot. Running module changed event.");
-
-                // DB record must be updated before the event fires, as some
-                // events use the server configuration record.
-                serverConfig.LastModuleMTime = UtilPlugin.GetModuleMTime();
-                _db.Set(serverConfig);
-
-                ExecuteScript(ScriptName.OnModuleContentChange, GetModule());
-            }
-
-            // Fire off the mod_cache event which is used for caching data, before mod_load runs.
-            ExecuteScript(ScriptName.OnModuleCacheBefore, GetModule());
-            ExecuteScript(ScriptName.OnModuleCacheAfter, GetModule());
+            ExecuteScript(ScriptName.OnEventsHooked, GetModule());
         }
 
+
         [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
-        public static void ExecuteHeartbeatEvent()
+        public void ExecuteHeartbeatEvent()
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
@@ -71,12 +51,12 @@ namespace SWLOR.Game.Server.Feature
         /// Also add them to a UI processor list.
         /// </summary>
         [ScriptHandler(ScriptName.OnModuleEnter)]
-        public static void EnterServer()
+        public void EnterServer()
         {
             HookPlayerEvents();
         }
 
-        private static void HookPlayerEvents()
+        private void HookPlayerEvents()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) 
@@ -100,7 +80,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Hooks module-wide scripts.
         /// </summary>
-        private static void HookModuleEvents()
+        private void HookModuleEvents()
         {
             var module = GetModule();
 
@@ -130,7 +110,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Hooks area-wide scripts.
         /// </summary>
-        private static void HookAreaEvents()
+        private void HookAreaEvents()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
@@ -144,7 +124,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Hooks NWNX scripts.
         /// </summary>
-        private static void HookNWNXEvents()
+        private void HookNWNXEvents()
         {
             // Chat Plugin Events start here.
             ChatPlugin.RegisterChatScript(ScriptName.OnNWNXChat);
@@ -568,7 +548,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Hooks all application-specific scripts.
         /// </summary>
-        private static void HookApplicationEvents()
+        private void HookApplicationEvents()
         {
             // Application Shutdown events
             EventsPlugin.SubscribeEvent("APPLICATION_SHUTDOWN", ScriptName.OnSWLORApplicationShutdown);
@@ -586,7 +566,7 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("SWLOR_SKILL_LOST_BY_DECAY", ScriptName.OnSWLORSkillLostByDecay);
             EventsPlugin.SubscribeEvent("SWLOR_DELETE_PROPERTY", ScriptName.OnSWLORDeleteProperty);
 
-            Scheduler.ScheduleRepeating(() =>
+            _scheduler.ScheduleRepeating(() =>
             {
                 ExecuteScript(ScriptName.OnSwlorHeartbeat, GetModule());
             }, TimeSpan.FromSeconds(6));
@@ -597,7 +577,7 @@ namespace SWLOR.Game.Server.Feature
         /// When the module loads, run those methods here.
         /// </summary>
         [ScriptHandler(ScriptName.OnModuleLoad)]
-        public static void TriggerNWNXPersistence()
+        public void TriggerNWNXPersistence()
         {
             var firstObject = GetFirstObjectInArea(GetFirstArea());
             CreaturePlugin.SetCriticalRangeModifier(firstObject, 0, 0, true);

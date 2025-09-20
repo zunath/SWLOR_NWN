@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class StarportDockDialog: DialogBase
     {
-        private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         private class Model

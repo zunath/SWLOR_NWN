@@ -30,8 +30,10 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Space
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly IScheduler _scheduler = ServiceContainer.GetService<IScheduler>();
+
         public const int MaxRegisteredShips = 10;
 
         private static readonly Dictionary<string, ShipDetail> _shipTypes = new();
@@ -66,8 +68,8 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_shipModules.Count} ship modules.");
             Console.WriteLine($"Loaded {_spaceObjects.Count} space objects.");
 
-            Scheduler.ScheduleRepeating(ProcessSpaceNPCAI, TimeSpan.FromSeconds(1));
-            Scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(100d));
+            _scheduler.ScheduleRepeating(ProcessSpaceNPCAI, TimeSpan.FromSeconds(1));
+            _scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(100d));
         }
 
         [ScriptHandler(ScriptName.OnModuleEnter)]

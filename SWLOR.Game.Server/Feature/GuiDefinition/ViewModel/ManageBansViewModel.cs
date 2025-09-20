@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageBansViewModel: GuiViewModelBase<ManageBansViewModel, GuiPayloadBase>
     {
-        private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         private int SelectedUserIndex { get; set; }

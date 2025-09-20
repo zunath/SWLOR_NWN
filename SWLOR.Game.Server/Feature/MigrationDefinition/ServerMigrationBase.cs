@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     public abstract class ServerMigrationBase
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         protected static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         protected void GrantRebuildTokenToAllPlayers()
         {

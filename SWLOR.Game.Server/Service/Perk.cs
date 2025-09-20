@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Perk
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         // All categories, including inactive
         private static readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _allCategories = new();

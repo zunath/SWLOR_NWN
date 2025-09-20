@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
 {
     public class Stat
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public const int BaseHP = 70;
         public const int BaseFP = 10;

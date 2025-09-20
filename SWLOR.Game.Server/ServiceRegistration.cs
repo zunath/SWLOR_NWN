@@ -7,6 +7,8 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Events;
+using SWLOR.Shared.Events.Service;
 using ScriptExecutionProvider = SWLOR.Game.Server.Server.ScriptExecutionProvider;
 
 namespace SWLOR.Game.Server
@@ -58,6 +60,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IScriptExecutor, ScriptExecutor>();
             services.AddSingleton<IServerBootstrapper, ServerBootstrapper>();
             services.AddSingleton<IServerManager, ServerManager>();
+            services.AddSingleton<IEventRegistrationService, EventRegistrationService>();
         }
 
         private static void AddGameServices(IServiceCollection services)

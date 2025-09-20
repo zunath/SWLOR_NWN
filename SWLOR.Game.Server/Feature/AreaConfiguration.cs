@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class AreaConfiguration
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         /// <summary>
         /// When the module loads, load the tile magic configured on every area.
         /// </summary>

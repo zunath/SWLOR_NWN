@@ -5,7 +5,7 @@ namespace SWLOR.Admin
 {
     public class WebSettings
     {
-        private IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public const string Section = "Web";
 
         public string RedisIP { get; set; }

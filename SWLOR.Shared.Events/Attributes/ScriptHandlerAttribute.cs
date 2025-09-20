@@ -1,3 +1,5 @@
+using SWLOR.Shared.Abstractions.Contracts;
+
 namespace SWLOR.Shared.Events.Attributes
 {
     /// <summary>
@@ -20,5 +22,15 @@ namespace SWLOR.Shared.Events.Attributes
         {
             Script = script ?? throw new ArgumentNullException(nameof(script));
         }
+    }
+
+    /// <summary>
+    /// Legacy attribute for marking methods as script handlers for backwards compatibility.
+    /// This provides a migration path from the old script-based event system.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    public class ScriptHandlerAttribute<T> : Attribute
+        where T: IEvent
+    {
     }
 }

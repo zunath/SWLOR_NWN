@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public class PersistentMapProgression
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         /// <summary>
         /// Saves a player's area map progression when exiting an area.

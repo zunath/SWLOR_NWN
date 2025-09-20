@@ -9,13 +9,17 @@ namespace SWLOR.Game.Server.Server
     public class MainLoopProcessor : IMainLoopProcessor
     {
         private readonly ILogger _logger;
-        
+        private readonly IScheduler _scheduler;
+
         public event Action OnScriptContextBegin;
         public event Action OnScriptContextEnd;
 
-        public MainLoopProcessor(ILogger logger)
+        public MainLoopProcessor(
+            ILogger logger,
+            IScheduler scheduler)
         {
             _logger = logger;
+            _scheduler = scheduler;
         }
 
         public void ProcessMainLoop(ulong frame)
@@ -42,7 +46,7 @@ namespace SWLOR.Game.Server.Server
 
         private void ProcessScheduledTasks()
         {
-            Scheduler.Process();
+            _scheduler.Process();
         }
     }
 }

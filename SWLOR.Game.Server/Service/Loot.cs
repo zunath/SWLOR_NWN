@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service
 {
     public class Loot
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly Dictionary<string, LootTable> _lootTables = new();
 
         private const float CorpseLifespanSeconds = 360f;

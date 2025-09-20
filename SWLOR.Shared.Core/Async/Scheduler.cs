@@ -1,18 +1,19 @@
 ﻿using System.Diagnostics;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Shared.Core.Async
 {
-    public static class Scheduler
+    public class Scheduler : IScheduler
     {
-        private static double Time { get; set; }
-        private static double DeltaTime { get; set; }
+        private double Time { get; set; }
+        private double DeltaTime { get; set; }
 
-        private static readonly Stopwatch _stopwatch = new Stopwatch();
-        private static readonly List<ScheduledItem> _scheduledItems = new List<ScheduledItem>(1024);
-        private static readonly IComparer<ScheduledItem> _comparer = new ScheduledItem.SortedByExecutionTime();
+        private readonly Stopwatch _stopwatch = new Stopwatch();
+        private readonly List<ScheduledItem> _scheduledItems = new List<ScheduledItem>(1024);
+        private readonly IComparer<ScheduledItem> _comparer = new ScheduledItem.SortedByExecutionTime();
 
-        public static IDisposable Schedule(Action task, TimeSpan delay)
+        public IDisposable Schedule(Action task, TimeSpan delay)
         {
             if (delay < TimeSpan.Zero)
             {
@@ -24,12 +25,12 @@ namespace SWLOR.Shared.Core.Async
                 throw new ArgumentNullException(nameof(task));
             }
 
-            var item = new ScheduledItem(task, Time + delay.TotalSeconds);
+            var item = new ScheduledItem(task, Time + delay.TotalSeconds, Unschedule);
             _scheduledItems.InsertOrdered(item, _comparer);
             return item;
         }
 
-        public static IDisposable ScheduleRepeating(Action task, TimeSpan schedule, TimeSpan delay = default)
+        public IDisposable ScheduleRepeating(Action task, TimeSpan schedule, TimeSpan delay = default)
         {
             if (schedule <= TimeSpan.Zero)
             {
@@ -41,29 +42,29 @@ namespace SWLOR.Shared.Core.Async
                 throw new ArgumentNullException(nameof(task));
             }
 
-            var item = new ScheduledItem(task, Time + delay.TotalSeconds + schedule.TotalSeconds, schedule.TotalSeconds);
+            var item = new ScheduledItem(task, Time + delay.TotalSeconds + schedule.TotalSeconds, schedule.TotalSeconds, Unschedule);
             _scheduledItems.InsertOrdered(item, _comparer);
             return item;
         }
 
-        internal static void Unschedule(ScheduledItem scheduledItem)
+        internal void Unschedule(ScheduledItem scheduledItem)
         {
             _scheduledItems.Remove(scheduledItem);
         }
 
-        public static void Process()
+        public void Process()
         {
             ProcessTime();
             ProcessScheduledItems();
         }
-        private static void ProcessTime()
+        private void ProcessTime()
         {
             DeltaTime = _stopwatch.Elapsed.TotalSeconds;
             Time += DeltaTime;
             _stopwatch.Restart();
         }
 
-        private static void ProcessScheduledItems()
+        private void ProcessScheduledItems()
         {
             int i;
             for (i = 0; i < _scheduledItems.Count; i++)

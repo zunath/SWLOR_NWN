@@ -36,6 +36,7 @@ namespace SWLOR.Shared.Events.Constants
 
         // Server events
         public const string OnServerLoaded = "server_loaded";
+        public const string OnEventsHooked = "events_hooked";
 
         // Character events
         public const string OnCharacterInitAfter = "char_init_after";

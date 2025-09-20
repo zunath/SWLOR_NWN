@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class MarketDialog: DialogBase
     {
-        private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private const string MainPageId = "MAIN_PAGE";
 
         public override PlayerDialog SetUp(uint player)

@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
     public class PropertyLayoutBuilder
     {
         private PropertyLayout _currentLayout;
-        private Dictionary<PropertyLayoutType, PropertyLayout> _layouts = new();
+        private readonly Dictionary<PropertyLayoutType, PropertyLayout> _layouts = new();
 
         /// <summary>
         /// Creates a new layout definition.

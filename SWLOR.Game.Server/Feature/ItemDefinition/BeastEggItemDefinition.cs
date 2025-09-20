@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class BeastEggItemDefinition: IItemListDefinition
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly ItemBuilder _builder = new();
 

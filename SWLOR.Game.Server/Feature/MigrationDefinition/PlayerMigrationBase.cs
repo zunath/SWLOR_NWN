@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     public abstract class PlayerMigrationBase: IPlayerMigration
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         protected static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public abstract int Version { get; }
         public abstract void Migrate(uint player);

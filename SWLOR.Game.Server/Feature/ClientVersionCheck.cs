@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class ClientVersionCheck
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         /// <summary>
         /// When a player connects to the server, perform a version check on their client.
         /// All of the NUI window features require version 8193.33 or higher but we restrict to 8193.34 or higher

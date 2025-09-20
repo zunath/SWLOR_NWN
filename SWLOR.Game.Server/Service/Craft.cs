@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Craft
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public const int MaxResearchLevel = 10;
 

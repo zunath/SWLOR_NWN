@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -9,11 +9,8 @@
   <ItemGroup>
     <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
     <ProjectReference Include="..\SWLOR.Shared.Abstractions\SWLOR.Shared.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Events\Combat\" />
-    <Folder Include="Events\Player\" />
+    <ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
+    <ProjectReference Include="..\SWLOR.Shared.Events\SWLOR.Shared.Events.csproj" />
   </ItemGroup>
 
 </Project>

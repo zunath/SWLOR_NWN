@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         
         private const int MaxOutfits = 25;
 
-        private List<string> _outfitIds = new();
+        private readonly List<string> _outfitIds = new();
 
         public GuiBindingList<string> SlotNames
         {

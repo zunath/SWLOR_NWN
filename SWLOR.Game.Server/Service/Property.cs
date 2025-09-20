@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Property
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
         private static readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();

@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Item
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly Dictionary<string, ItemDetail> _items = new();
         private static readonly Dictionary<int, int[]> _2daCache = new();
         private static readonly Dictionary<BaseItem, AbilityType> _itemToDamageAbilityMapping = new();

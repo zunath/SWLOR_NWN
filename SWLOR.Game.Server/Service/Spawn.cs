@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Spawn
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         public const int DespawnMinutes = 20;
         public const int DefaultRespawnMinutes = 5;
 

@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature
 {
     public class StoreManagement
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IScheduler _scheduler = ServiceContainer.GetService<IScheduler>();
         private const int IntervalHours = 1; // Determines the interval at which stores are cleaned. 1 = 1 hour
         private static readonly List<uint> _stores = new();
         private const string StoreServiceItem = "STORE_SERVICE_IS_STORE_ITEM";
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Feature
                 }
             }
 
-            Scheduler.ScheduleRepeating(DoCleanStores, TimeSpan.FromHours(IntervalHours));
+            _scheduler.ScheduleRepeating(DoCleanStores, TimeSpan.FromHours(IntervalHours));
         }
 
         /// <summary>

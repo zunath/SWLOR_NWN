@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageCitizenshipViewModel: GuiViewModelBase<ManageCitizenshipViewModel, GuiPayloadBase>
     {
-        private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         private string _cityPropertyId;

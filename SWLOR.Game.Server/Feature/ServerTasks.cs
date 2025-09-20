@@ -18,8 +18,10 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class ServerTasks
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly IScheduler _scheduler = ServiceContainer.GetService<IScheduler>();
+
         // This determines what time the server will restart.
         // Restarts happen within a range of 30 seconds of this specified time. 
         // All times are in UTC.
@@ -94,7 +96,7 @@ namespace SWLOR.Game.Server.Feature
             _nextNotification = new DateTime(bootNow.Year, bootNow.Month, bootNow.Day, bootNow.Hour, 0, 0)
                 .AddMinutes(1);
 
-            Scheduler.ScheduleRepeating(() =>
+            _scheduler.ScheduleRepeating(() =>
             {
                 var now = DateTime.UtcNow;
                 var restartDate = new DateTime(now.Year, now.Month, now.Day, RestartTime.Hours, RestartTime.Minutes, RestartTime.Seconds);

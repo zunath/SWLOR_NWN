@@ -3,24 +3,27 @@
     internal class ScheduledItem : IDisposable
     {
         private readonly Action _task;
+        private readonly Action<ScheduledItem> _unscheduleCallback;
 
         public double ExecutionTime { get; private set; }
 
         public readonly bool Repeating;
         public readonly double Schedule;
 
-        public ScheduledItem(Action task, double executionTime)
+        public ScheduledItem(Action task, double executionTime, Action<ScheduledItem> unscheduleCallback)
         {
             _task = task;
             ExecutionTime = executionTime;
+            _unscheduleCallback = unscheduleCallback;
             Repeating = false;
         }
 
-        public ScheduledItem(Action task, double executionTime, double schedule)
+        public ScheduledItem(Action task, double executionTime, double schedule, Action<ScheduledItem> unscheduleCallback)
         {
             _task = task;
             ExecutionTime = executionTime;
             Schedule = schedule;
+            _unscheduleCallback = unscheduleCallback;
             Repeating = true;
         }
 
@@ -36,7 +39,7 @@
 
         public void Dispose()
         {
-            Scheduler.Unschedule(this);
+            _unscheduleCallback?.Invoke(this);
         }
 
         public sealed class SortedByExecutionTime : IComparer<ScheduledItem>

@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public class DMAuthorization
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         /// <summary>
         /// Verifies that a logging in player is an authorized DM.
         /// The player will be booted if they are not authorized.

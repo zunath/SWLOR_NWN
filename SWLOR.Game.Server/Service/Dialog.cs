@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Dialog
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private const int NumberOfDialogs = 255;
         private const int NumberOfResponsesPerPage = 12;
         private static Dictionary<string, PlayerDialog> PlayerDialogs { get; } = new Dictionary<string, PlayerDialog>();

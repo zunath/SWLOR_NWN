@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private uint _blueprintItem;
         private RecipeType _recipeType;
 
-        private static BlueprintBonuses _blueprintBonuses = new();
+        private static readonly BlueprintBonuses _blueprintBonuses = new();
 
         public string RecipeName
         {

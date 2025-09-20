@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CharacterFullRebuildViewModel: GuiViewModelBase<CharacterFullRebuildViewModel, GuiPayloadBase>
     {
-        private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         [ScriptHandler(ScriptName.OnCharacterRebuild)]
         public static void LoadCharacterMigrationWindow()

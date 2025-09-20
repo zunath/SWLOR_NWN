@@ -19,11 +19,9 @@ namespace SWLOR.Game.Server
             // Register database services
             services.AddDatabaseServices();
             
-            // Register other game services here as they are created
-            // services.AddScoped<IPlayerService, PlayerService>();
-            // services.AddScoped<ICombatService, CombatService>();
-            // services.AddScoped<IAreaService, AreaService>();
-            // etc.
+            // Register script handler services
+            //services.AddScoped<SWLOR.Shared.Core.Event.EventRegistration>();
+            
             
             return services;
         }

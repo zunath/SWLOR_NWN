@@ -6,6 +6,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
+using SWLOR.Shared.Core.Entity;
 using SWLOR.Shared.Core.Event;
 using Vector3 = System.Numerics.Vector3;
 

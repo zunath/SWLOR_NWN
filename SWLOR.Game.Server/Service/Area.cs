@@ -4,7 +4,7 @@ using System.Linq;
 
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.DBService;
+
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
 

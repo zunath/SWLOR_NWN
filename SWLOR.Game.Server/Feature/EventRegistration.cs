@@ -1,10 +1,9 @@
 using System;
-
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Async;
+using SWLOR.Shared.Core.Entity;
 using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature
@@ -18,7 +17,7 @@ namespace SWLOR.Game.Server.Feature
         [ScriptHandler(ScriptName.OnModulePreload)]
         public static void OnModulePreload()
         {
-            var serverConfig = DB.Get<ModuleCache>("SWLOR_CACHE") ?? new ModuleCache();
+            var serverConfig = DB.Get<ModuleCache>(ModuleCache.DefaultId) ?? new ModuleCache();
 
             Console.WriteLine("Hooking all module events.");
             HookModuleEvents();

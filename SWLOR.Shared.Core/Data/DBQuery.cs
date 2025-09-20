@@ -2,8 +2,9 @@ using System.Text;
 using NRediSearch;
 using SWLOR.Shared.Abstractions;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Data;
 
-namespace SWLOR.Shared.Core.Data
+namespace SWLOR.Game.Server
 {
     /// <summary>
     /// Query builder for database search operations using Redis/RediSearch.

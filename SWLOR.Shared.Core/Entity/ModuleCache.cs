@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
+﻿using System.Numerics;
 using SWLOR.Shared.Abstractions;
 
-namespace SWLOR.Game.Server.Entity
+namespace SWLOR.Shared.Core.Entity
 {
     public class ModuleCache: EntityBase
     {
+        public const string DefaultId = "SWLOR_CACHE";
+
         public ModuleCache()
         {
-            Id = "SWLOR_CACHE";
+            Id = DefaultId;
             WalkmeshesByArea = new Dictionary<string, List<Vector3>>();
         }
 

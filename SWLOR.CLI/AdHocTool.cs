@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Game.Server;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
+
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.CLI
@@ -18,7 +19,7 @@ namespace SWLOR.CLI
             // Cleans up orphaned property records
             var query = new DBQuery<WorldProperty>();
             var count = DB.SearchCount(query);
-            query = query
+            query = (DBQuery<WorldProperty>)query
                 .AddPaging((int)count, 0);
 
             var entities = DB.Search(query).ToList();

@@ -7,9 +7,10 @@ using Newtonsoft.Json;
 using NRediSearch;
 using NReJSON;
 using StackExchange.Redis;
-using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Shared.Abstractions;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Configuration;
+using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Server;
@@ -343,7 +344,7 @@ namespace SWLOR.Game.Server.Service
         /// <typeparam name="T">The type of entity to retrieve.</typeparam>
         /// <param name="query">The query to run.</param>
         /// <returns>An enumerable of entities matching the criteria.</returns>
-        public static IEnumerable<T> Search<T>(DBQuery<T> query)
+        public static IEnumerable<T> Search<T>(IDBQuery<T> query)
             where T: EntityBase
         {
             var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery());
@@ -362,7 +363,7 @@ namespace SWLOR.Game.Server.Service
         /// <typeparam name="T">The type of entity to retrieve.</typeparam>
         /// <param name="query">The query to run.</param>
         /// <returns>An enumerable of raw json values matching the criteria.</returns>
-        public static IEnumerable<string> SearchRawJson<T>(DBQuery<T> query)
+        public static IEnumerable<string> SearchRawJson<T>(IDBQuery<T> query)
             where T: EntityBase
         {
             var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery());
@@ -382,7 +383,7 @@ namespace SWLOR.Game.Server.Service
         /// <typeparam name="T">The type of entity to retrieve.</typeparam>
         /// <param name="query">The query to run.</param>
         /// <returns>The number of records matching the query criteria.</returns>
-        public static long SearchCount<T>(DBQuery<T> query)
+        public static long SearchCount<T>(IDBQuery<T> query)
             where T: EntityBase
         {
             var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery(true));

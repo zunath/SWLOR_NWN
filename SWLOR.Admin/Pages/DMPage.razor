@@ -1,5 +1,6 @@
 ﻿@page "/dm"
 @attribute [Authorize(Policy = "DiscordAdmin")]
+@using SWLOR.Game.Server
 @using SWLOR.Game.Server.Enumeration
 
 <h3>DMs (@_totalRecords)</h3>

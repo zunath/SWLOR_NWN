@@ -1,14 +1,6 @@
-using System.Reflection;
-using Newtonsoft.Json;
-using NRediSearch;
-using NReJSON;
-using StackExchange.Redis;
+using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Abstractions;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Configuration;
-using SWLOR.Shared.Core.Event;
-using SWLOR.Shared.Core.Extension;
-using SWLOR.Shared.Core.Server;
 
 namespace SWLOR.Shared.Core.Data
 {
@@ -18,353 +10,44 @@ namespace SWLOR.Shared.Core.Data
     /// </summary>
     public class DatabaseService: IDatabaseService
     {
-        internal class JsonSerializer: ISerializerProxy
+        public void Set<T>(T entity) where T : EntityBase
         {
-            public TResult Deserialize<TResult>(RedisResult serializedValue)
-            {
-                return JsonConvert.DeserializeObject<TResult>(serializedValue.ToString());
-            }
-
-            public string Serialize<TObjectType>(TObjectType obj)
-            {
-                return JsonConvert.SerializeObject(obj);
-            }
+            DB.Set(entity);
         }
 
-        private ApplicationSettings _appSettings;
-        private readonly Dictionary<Type, string> _keyPrefixByType = new();
-        private readonly Dictionary<Type, Client> _searchClientsByType = new();
-        private readonly Dictionary<Type, List<string>> _indexedPropertiesByName = new();
-        private ConnectionMultiplexer _multiplexer;
-        private readonly Dictionary<string, EntityBase> _cachedEntities = new();
-
-        public DatabaseService()
+        public T Get<T>(string id) where T : EntityBase
         {
-            NReJSONSerializer.SerializerProxy = new JsonSerializer();
+            return DB.Get<T>(id);
         }
 
-        public void Load()
-        {
-            _appSettings = ApplicationSettings.Get();
-
-            var options = new ConfigurationOptions
-            {
-                AbortOnConnectFail = false,
-                EndPoints = { _appSettings.RedisIPAddress }
-            };
-
-            _multiplexer = ConnectionMultiplexer.Connect(options);
-
-            Console.WriteLine($"Waiting for database connection. If this takes longer than 10 minutes, there's a problem.");
-            while (!_multiplexer.IsConnected)
-            {
-                // Spin
-                Thread.Sleep(100);
-            }
-            Console.WriteLine($"Database connection established.");
-
-            LoadEntities();
-
-            // Runs at the end of every main loop. Clears out all data retrieved during this cycle.
-            ServerManager.OnScriptContextEnd += () =>
-            {
-                _cachedEntities.Clear();
-            };
-
-            // CLI tools also use this class and don't have access to the NWN context.
-            // Perform an environment variable check to ensure we're in the game server context before executing the event.
-            var context = Environment.GetEnvironmentVariable("GAME_SERVER_CONTEXT");
-            if (!string.IsNullOrWhiteSpace(context) && context.ToLower() == "true")
-                ExecuteScript("db_loaded", OBJECT_SELF);
-        }
-
-        /// <summary>
-        /// Processes the Redis Search index with the latest changes.
-        /// </summary>
-        /// <param name="entity"></param>
-        private void ProcessIndex(EntityBase entity)
-        {
-            var type = entity.GetType();
-
-            // Drop any existing index
-            try
-            {
-                // FT.DROPINDEX is used here in lieu of DropIndex() as it does not cause all documents to be lost.
-                _multiplexer.GetDatabase().Execute("FT.DROPINDEX", type.Name);
-                Console.WriteLine($"Dropped index for {type}");
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.Contains("Unknown Index name", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    Console.WriteLine($"Index does not exist for type {type}.");
-                }
-                else
-                {
-                    Console.WriteLine($"Issue dropping index for type {type}. Exception: {ex.ToMessageAndCompleteStacktrace()}");
-                }
-
-            }
-
-            // Build the schema based on the IndexedAttribute associated to properties.
-            var schema = new Schema();
-            var indexedProperties = new List<string>();
-
-            foreach (var prop in type.GetProperties())
-            {
-                var attribute = prop.GetCustomAttribute(typeof(IndexedAttribute));
-                if (attribute != null)
-                {
-                    if (prop.PropertyType == typeof(int) ||
-                        prop.PropertyType == typeof(int?) ||
-                        prop.PropertyType == typeof(ulong) ||
-                        prop.PropertyType == typeof(ulong?) ||
-                        prop.PropertyType == typeof(long) ||
-                        prop.PropertyType == typeof(long?))
-                    {
-                        schema.AddNumericField(prop.Name);
-                    }
-                    else
-                    {
-                        schema.AddTextField(prop.Name);
-                    }
-
-                    indexedProperties.Add(prop.Name);
-                }
-
-            }
-
-            // Cache the indexed properties for quick look-up later.
-            _indexedPropertiesByName[type] = indexedProperties;
-
-            _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
-            Console.WriteLine($"Created index for {type}");
-            WaitForReindexing(type);
-        }
-
-        private void WaitForReindexing(Type type)
-        {
-            string indexing;
-
-            Console.WriteLine($"Waiting for Redis to complete indexing of: {type}");
-            do
-            {
-                Thread.Sleep(100);
-
-                try
-                {
-                    // If there is a lot of data or the machine is slow, this command can time out.
-                    // Ignore when this happens and retry the command in 100ms.
-                    var info = _searchClientsByType[type].GetInfo();
-                    indexing = info["percent_indexed"];
-                }
-                catch (Exception ex)
-                {
-                    indexing = "0";
-                    Console.WriteLine($"Error during indexing: {ex.ToMessageAndCompleteStacktrace()}");
-                }
-
-            } while (indexing != "1");
-        }
-
-        /// <summary>
-        /// When initialized, the assembly will be searched for all implementations of the EntityBase object.
-        /// The KeyPrefix value of each of these will be stored into a dictionary for quick retrievals later.
-        /// This is intended to abstract key building away from the consumer of this class.
-        /// </summary>
-        private void LoadEntities()
-        {
-            var entityInstances = typeof(EntityBase)
-                .Assembly.GetTypes()
-                .Where(t => t.IsSubclassOf(typeof(EntityBase)) && !t.IsAbstract && !t.IsGenericType)
-                .Select(t => (EntityBase)Activator.CreateInstance(t));
-
-            foreach (var entity in entityInstances)
-            {
-                var type = entity.GetType();
-                // Register the type by itself first.
-                _keyPrefixByType[type] = type.Name;
-                
-                // Register the search client.
-                _searchClientsByType[type] = new Client(type.Name, _multiplexer.GetDatabase());
-                ProcessIndex(entity);
-
-                Console.WriteLine($"Registered type '{entity.GetType()}' using key prefix {type.Name}");
-            }
-        }
-
-        /// <summary>
-        /// Stores a specific object in the database by its Id.
-        /// </summary>
-        /// <typeparam name="T">The type of data to store</typeparam>
-        /// <param name="entity">The data to store.</param>
-        public void Set<T>(T entity)
-            where T : EntityBase
-        {
-            var type = typeof(T);
-            var data = JsonConvert.SerializeObject(entity);
-
-            var keyPrefix = _keyPrefixByType[type];
-            var indexKey = $"Index:{keyPrefix}:{entity.Id}";
-            var indexData = new Dictionary<string, RedisValue>();
-
-            foreach (var prop in _indexedPropertiesByName[type])
-            {
-                var property = type.GetProperty(prop);
-                var value = property?.GetValue(entity);
-
-                if (value != null)
-                {
-                    // Convert enums to numeric values
-                    if (property.PropertyType.IsEnum)
-                        value = (int) value;
-
-                    if (property.PropertyType == typeof(Guid))
-                    {
-                        value = DatabaseTokenHelper.EscapeTokens(((Guid) value).ToString());
-                    }
-
-                    if (property.PropertyType == typeof(string))
-                    {
-                        value = DatabaseTokenHelper.EscapeTokens((string) value);
-                    }
-
-                    indexData[prop] = (dynamic)value;
-                }
-            }
-            _searchClientsByType[type].ReplaceDocument(indexKey, indexData);
-            _multiplexer.GetDatabase().JsonSet($"{keyPrefix}:{entity.Id}", data);
-            _cachedEntities[entity.Id] = entity;
-        }
-
-        /// <summary>
-        /// Retrieves a specific object in the database by an arbitrary key.
-        /// </summary>
-        /// <typeparam name="T">The type of data to retrieve</typeparam>
-        /// <param name="id">The arbitrary key the data is stored under</param>
-        /// <returns>The object stored in the database under the specified key</returns>
-        public T Get<T>(string id)
-            where T: EntityBase
-        {
-            var keyPrefix = _keyPrefixByType[typeof(T)];
-            if (_cachedEntities.ContainsKey(id))
-            {
-                return (T)_cachedEntities[id];
-            }
-            else
-            {
-                RedisValue data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
-                
-                if (string.IsNullOrWhiteSpace(data))
-                    return default;
-
-                var entity = JsonConvert.DeserializeObject<T>(data);
-                _cachedEntities[id] = entity;
-
-                return entity;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves the raw JSON of the object in the database by a given prefix and key.
-        /// This can be useful for data migrations and one-time actions at server load.
-        /// Do not use this for normal game play as it is slow.
-        /// </summary>
-        /// <param name="id">The arbitrary key the data is stored under</param>
-        /// <returns>The raw json stored in the database under the specified key</returns>
         public string GetRawJson<T>(string id)
         {
-            var keyPrefix = _keyPrefixByType[typeof(T)];
-            RedisValue data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
-
-            if (string.IsNullOrWhiteSpace(data))
-                return string.Empty;
-
-            return data.ToString();
+            return DB.GetRawJson<T>(id);
         }
 
-        /// <summary>
-        /// Returns true if an entry with the specified key exists.
-        /// Returns false if not.
-        /// </summary>
-        /// <param name="id">The key of the entity.</param>
-        /// <returns>true if found, false otherwise.</returns>
-        public bool Exists<T>(string id)
-            where T : EntityBase
+        public bool Exists<T>(string id) where T : EntityBase
         {
-            var keyPrefix = _keyPrefixByType[typeof(T)];
-            if (_cachedEntities.ContainsKey(id))
-                return true;
-            else
-                return _multiplexer.GetDatabase().KeyExists($"{keyPrefix}:{id}");
+            return DB.Exists<T>(id);
         }
 
-        /// <summary>
-        /// Deletes an entry by a specified key.
-        /// </summary>
-        /// <typeparam name="T">The type of entity to delete.</typeparam>
-        /// <param name="id">The key of the entity</param>
-        public void Delete<T>(string id)
-            where T: EntityBase
+        public void Delete<T>(string id) where T : EntityBase
         {
-            var keyPrefix = _keyPrefixByType[typeof(T)];
-            var indexKey = $"Index:{keyPrefix}:{id}";
-            _searchClientsByType[typeof(T)].DeleteDocument(indexKey);
-            _multiplexer.GetDatabase().JsonDelete($"{keyPrefix}:{id}");
-            _cachedEntities.Remove(id);
+            DB.Delete<T>(id);
         }
 
-        /// <summary>
-        /// Searches the Redis DB for records matching the query criteria.
-        /// </summary>
-        /// <typeparam name="T">The type of entity to retrieve.</typeparam>
-        /// <param name="query">The query to run.</param>
-        /// <returns>An enumerable of entities matching the criteria.</returns>
-        public IEnumerable<T> Search<T>(IDBQuery<T> query)
-            where T: EntityBase
+        public IEnumerable<T> Search<T>(IDBQuery<T> query) where T : EntityBase
         {
-            var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery());
-
-            foreach (var doc in result.Documents)
-            {
-                // Remove the 'Index:' prefix.
-                var recordId = doc.Id.Remove(0, 6);
-                yield return _multiplexer.GetDatabase().JsonGet<T>(recordId);
-            }
+            return DB.Search(query);
         }
 
-        /// <summary>
-        /// Searches the Redis DB for raw JSON records matching the query criteria.
-        /// </summary>
-        /// <typeparam name="T">The type of entity to retrieve.</typeparam>
-        /// <param name="query">The query to run.</param>
-        /// <returns>An enumerable of raw json values matching the criteria.</returns>
-        public IEnumerable<string> SearchRawJson<T>(IDBQuery<T> query)
-            where T: EntityBase
+        public IEnumerable<string> SearchRawJson<T>(IDBQuery<T> query) where T : EntityBase
         {
-            var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery());
-
-            foreach (var doc in result.Documents)
-            {
-                // Remove the 'Index:' prefix.
-                var recordId = doc.Id.Remove(0, 6);
-                yield return _multiplexer.GetDatabase().JsonGet(recordId).ToString();
-            }
+            return DB.SearchRawJson(query);
         }
 
-        /// <summary>
-        /// Searches the Redis DB for the number of records matching the query criteria.
-        /// This only retrieves the number of records. Use Search() if you need the actual results.
-        /// </summary>
-        /// <typeparam name="T">The type of entity to retrieve.</typeparam>
-        /// <param name="query">The query to run.</param>
-        /// <returns>The number of records matching the query criteria.</returns>
-        public long SearchCount<T>(IDBQuery<T> query)
-            where T: EntityBase
+        public long SearchCount<T>(IDBQuery<T> query) where T : EntityBase
         {
-            var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery(true));
-
-            return result.TotalResults;
+            return DB.SearchCount(query);
         }
     }
 }

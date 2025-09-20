@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Delegates;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -15,12 +16,16 @@ namespace SWLOR.Game.Server.Server
         {
             public Action Action { get; set; }
             public string Name { get; set; }
+            public MethodInfo MethodInfo { get; set; }
+            public bool IsStatic { get; set; }
         }
 
         private class ConditionalScript
         {
             public ConditionalScriptDelegate Action { get; set; }
             public string Name { get; set; }
+            public MethodInfo MethodInfo { get; set; }
+            public bool IsStatic { get; set; }
         }
 
 
@@ -30,10 +35,12 @@ namespace SWLOR.Game.Server.Server
         private readonly Dictionary<string, List<ConditionalScript>> _conditionalScripts;
 
         private readonly ILogger _logger;
+        private readonly IServiceProvider _serviceProvider;
 
-        public ScriptRegistry(ILogger logger)
+        public ScriptRegistry(ILogger logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
+            _serviceProvider = serviceProvider;
             _scripts = new Dictionary<string, List<ActionScript>>();
             _conditionalScripts = new Dictionary<string, List<ConditionalScript>>();
         }
@@ -196,23 +203,18 @@ namespace SWLOR.Game.Server.Server
 
         private void RegisterConditionalScript(string script, MethodInfo methodInfo)
         {
-            ConditionalScriptDelegate del;
+            ConditionalScriptDelegate del = null;
             
             // Check if the method has parameters
             var parameters = methodInfo.GetParameters();
             if (parameters.Length == 0)
             {
-                // No parameters - use the original approach
+                // No parameters - use the original approach for static methods
                 if (methodInfo.IsStatic)
                 {
                     del = (ConditionalScriptDelegate)methodInfo.CreateDelegate(typeof(ConditionalScriptDelegate));
                 }
-                else
-                {
-                    // For non-static methods, we can't create a delegate without an instance
-                    _logger.Write<ErrorLogGroup>($"Cannot create delegate for non-static method '{methodInfo.Name}' without parameters. Static methods are required for event handlers.");
-                    return;
-                }
+                // For non-static methods, we'll handle them differently
             }
             else if (parameters.Length == 1)
             {
@@ -232,29 +234,26 @@ namespace SWLOR.Game.Server.Server
             _conditionalScripts[script].Add(new ConditionalScript
             {
                 Action = del,
-                Name = methodInfo.DeclaringType?.Name + "." + methodInfo.Name
+                Name = methodInfo.DeclaringType?.Name + "." + methodInfo.Name,
+                MethodInfo = methodInfo,
+                IsStatic = methodInfo.IsStatic
             });
         }
 
         private void RegisterActionScript(string script, MethodInfo methodInfo)
         {
-            Action del;
+            Action del = null;
             
             // Check if the method has parameters
             var parameters = methodInfo.GetParameters();
             if (parameters.Length == 0)
             {
-                // No parameters - use the original approach
+                // No parameters - use the original approach for static methods
                 if (methodInfo.IsStatic)
                 {
                     del = (Action)methodInfo.CreateDelegate(typeof(Action));
                 }
-                else
-                {
-                    // For non-static methods, we can't create a delegate without an instance
-                    _logger.Write<ErrorLogGroup>($"Cannot create delegate for non-static method '{methodInfo.Name}' without parameters. Static methods are required for event handlers.");
-                    return;
-                }
+                // For non-static methods, we'll handle them differently
             }
             else if (parameters.Length == 1)
             {
@@ -274,7 +273,9 @@ namespace SWLOR.Game.Server.Server
             _scripts[script].Add(new ActionScript
             {
                 Action = del,
-                Name = methodInfo.DeclaringType?.Name + "." + methodInfo.Name
+                Name = methodInfo.DeclaringType?.Name + "." + methodInfo.Name,
+                MethodInfo = methodInfo,
+                IsStatic = methodInfo.IsStatic
             });
         }
 
@@ -293,7 +294,18 @@ namespace SWLOR.Game.Server.Server
             if (_scripts.TryGetValue(scriptName, out var scripts))
             {
                 foreach (var script in scripts)
-                    yield return (script.Action, script.Name);
+                {
+                    if (script.IsStatic)
+                    {
+                        // Static method - use the delegate directly
+                        yield return (script.Action, script.Name);
+                    }
+                    else
+                    {
+                        // Instance method - create a wrapper that instantiates the class and calls the method
+                        yield return (() => InvokeInstanceMethod(script.MethodInfo), script.Name);
+                    }
+                }
             }
         }
 
@@ -302,7 +314,18 @@ namespace SWLOR.Game.Server.Server
             if (_conditionalScripts.TryGetValue(scriptName, out var scripts))
             {
                 foreach (var script in scripts)
-                    yield return (script.Action, script.Name);
+                {
+                    if (script.IsStatic)
+                    {
+                        // Static method - use the delegate directly
+                        yield return (script.Action, script.Name);
+                    }
+                    else
+                    {
+                        // Instance method - create a wrapper that instantiates the class and calls the method
+                        yield return (() => InvokeInstanceMethodBool(script.MethodInfo), script.Name);
+                    }
+                }
             }
         }
 
@@ -352,6 +375,69 @@ namespace SWLOR.Game.Server.Server
                 _logger.Write<ErrorLogGroup>($"Error invoking method '{methodInfo.Name}' with event parameter: {ex.Message}");
                 return false;
             }
+        }
+
+        private void InvokeInstanceMethod(MethodInfo methodInfo)
+        {
+            try
+            {
+                // Get the instance from the dependency injection container
+                var instance = GetServiceInstance(methodInfo.DeclaringType);
+                if (instance == null)
+                {
+                    _logger.Write<ErrorLogGroup>($"Could not resolve instance of type '{methodInfo.DeclaringType.Name}' from dependency injection container for method '{methodInfo.Name}'.");
+                    return;
+                }
+                
+                // Invoke the method on the instance
+                methodInfo.Invoke(instance, null);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write<ErrorLogGroup>($"Error invoking instance method '{methodInfo.Name}': {ex.Message}");
+            }
+        }
+
+        private bool InvokeInstanceMethodBool(MethodInfo methodInfo)
+        {
+            try
+            {
+                // Get the instance from the dependency injection container
+                var instance = GetServiceInstance(methodInfo.DeclaringType);
+                if (instance == null)
+                {
+                    _logger.Write<ErrorLogGroup>($"Could not resolve instance of type '{methodInfo.DeclaringType.Name}' from dependency injection container for method '{methodInfo.Name}'.");
+                    return false;
+                }
+                
+                // Invoke the method on the instance and return the result
+                var result = methodInfo.Invoke(instance, null);
+                return result is bool boolResult ? boolResult : false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Write<ErrorLogGroup>($"Error invoking instance method '{methodInfo.Name}': {ex.Message}");
+                return false;
+            }
+        }
+
+        private object GetServiceInstance(Type serviceType)
+        {
+            // First try to get the service by its concrete type
+            var instance = _serviceProvider.GetService(serviceType);
+            if (instance != null)
+                return instance;
+
+            // If not found, try to get it by any interfaces it implements
+            var interfaces = serviceType.GetInterfaces();
+            foreach (var interfaceType in interfaces)
+            {
+                instance = _serviceProvider.GetService(interfaceType);
+                if (instance != null && serviceType.IsAssignableFrom(instance.GetType()))
+                    return instance;
+            }
+
+            return null;
         }
     }
 }

@@ -20,7 +20,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SWLOR.Component.Admin\SWLOR.Component.Admin.csproj" />
+    <ProjectReference Include="..\SWLOR.Component.Associate\SWLOR.Component.Associate.csproj" />
+    <ProjectReference Include="..\SWLOR.Component.Combat\SWLOR.Component.Combat.csproj" />
+    <ProjectReference Include="..\SWLOR.Component.Communication\SWLOR.Component.Communication.csproj" />
+    <ProjectReference Include="..\SWLOR.Component.Crafting\SWLOR.Component.Crafting.csproj" />
+    <ProjectReference Include="..\SWLOR.Component.Language\SWLOR.Component.Language.csproj" />
+    <ProjectReference Include="..\SWLOR.Component.Market\SWLOR.Component.Market.csproj" />
+    <ProjectReference Include="..\SWLOR.Component.Player\SWLOR.Component.Player.csproj" />
+    <ProjectReference Include="..\SWLOR.Component.Properties\SWLOR.Component.Properties.csproj" />
+    <ProjectReference Include="..\SWLOR.Component.Space\SWLOR.Component.Space.csproj" />
+    <ProjectReference Include="..\SWLOR.Component.World\SWLOR.Component.World.csproj" />
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
+    <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
+    <ProjectReference Include="..\SWLOR.Shared.Abstractions\SWLOR.Shared.Abstractions.csproj" />
+    <ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

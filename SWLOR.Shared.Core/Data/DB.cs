@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<Type, List<string>> _indexedPropertiesByName = new();
         private static ConnectionMultiplexer _multiplexer;
         private static readonly Dictionary<string, EntityBase> _cachedEntities = new();
+        private static volatile bool _isLoaded = false;
 
         static DB()
         {
@@ -47,6 +48,7 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler(ScriptName.OnModulePreload)]
         public static void Load()
         {
+            Console.WriteLine("DB.Load() starting...");
             _appSettings = ApplicationSettings.Get();
 
             var options = new ConfigurationOptions
@@ -66,6 +68,9 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Database connection established.");
 
             LoadEntities();
+
+            _isLoaded = true;
+            Console.WriteLine("DB.Load() completed - entities loaded.");
 
             // Runs at the end of every main loop. Clears out all data retrieved during this cycle.
             ServerManager.OnScriptContextEnd += () =>
@@ -170,14 +175,14 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When initialized, the assembly will be searched for all implementations of the EntityBase object.
+        /// When initialized, all loaded assemblies will be searched for all implementations of the EntityBase object.
         /// The KeyPrefix value of each of these will be stored into a dictionary for quick retrievals later.
         /// This is intended to abstract key building away from the consumer of this class.
         /// </summary>
         private static void LoadEntities()
         {
-            var entityInstances = typeof(EntityBase)
-                .Assembly.GetTypes()
+            var entityInstances = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(assembly => assembly.GetTypes())
                 .Where(t => t.IsSubclassOf(typeof(EntityBase)) && !t.IsAbstract && !t.IsGenericType)
                 .Select(t => (EntityBase)Activator.CreateInstance(t));
 

@@ -14,9 +14,11 @@ namespace SWLOR.Game.Server.Feature
         /// Fires on the module PreLoad event. This event should be specified in the environment variables.
         /// This will hook all module/global events.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModulePreload)]
-        public static void OnModulePreload()
+        [ScriptHandler(ScriptName.OnDatabaseLoaded)]
+        public static void OnDatabaseLoaded()
         {
+            ExecuteScript("db_load", OBJECT_SELF);
+
             var serverConfig = DB.Get<ModuleCache>(ModuleCache.DefaultId) ?? new ModuleCache();
 
             Console.WriteLine("Hooking all module events.");

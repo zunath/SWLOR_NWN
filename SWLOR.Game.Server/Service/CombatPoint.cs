@@ -11,6 +11,7 @@ using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
@@ -190,7 +191,7 @@ namespace SWLOR.Game.Server.Service
         /// that may be referenced to their character.
         /// </summary>
         [ScriptHandler<OnModuleExit>]
-        [ScriptHandler(ScriptName.OnAreaExit)]
+        [ScriptHandler<OnAreaExit>]
         public static void OnPlayerExit()
         {
             var player = GetExitingObject();

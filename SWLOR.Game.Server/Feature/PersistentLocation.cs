@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
@@ -47,7 +48,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Saves a player's location on area enter.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler<OnAreaEnter>]
         public static void SaveLocationOnAreaEnter()
         {
             var player = GetEnteringObject();
@@ -70,7 +71,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Loads a player's location if they enter an area with the tag "ooc_area".
         /// </summary>
-        [ScriptHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler<OnAreaEnter>]
         public static void LoadLocationOnEnter()
         {
             var player = GetEnteringObject();

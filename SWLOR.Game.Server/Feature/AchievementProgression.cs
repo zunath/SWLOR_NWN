@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
@@ -32,7 +33,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player enters an area, if an achievement is assigned to the area grant it to them.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler<OnAreaEnter>]
         public static void EnterArea()
         {
             var area = OBJECT_SELF;

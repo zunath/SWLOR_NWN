@@ -10,6 +10,7 @@ using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Area;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -95,7 +96,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player or DM enters an area, add them to the cache.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler<OnAreaEnter>]
         public static void EnterArea()
         {
             var player = GetEnteringObject();
@@ -135,7 +136,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player or DM leaves an area, remove them from the cache.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAreaExit)]
+        [ScriptHandler<OnAreaExit>]
         public static void ExitArea()
         {
             var player = GetExitingObject();

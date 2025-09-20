@@ -23,6 +23,7 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Area;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
@@ -427,7 +428,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters a space area, update the property's space position.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler<OnAreaEnter>]
         public static void UpdateSpacePosition()
         {
             var player = GetEnteringObject();
@@ -457,7 +458,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature leaves an area, their current target is cleared.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAreaExit)]
+        [ScriptHandler<OnAreaExit>]
         public static void ClearTargetOnAreaExit()
         {
             var player = GetExitingObject();

@@ -12,6 +12,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
@@ -441,7 +442,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters an area, close all NUI windows.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler<OnAreaEnter>]
         public static void CloseAllWindows()
         {
             var player = GetEnteringObject();

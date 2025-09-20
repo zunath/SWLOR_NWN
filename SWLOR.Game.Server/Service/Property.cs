@@ -21,6 +21,7 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -1729,7 +1730,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters a property instance, add them to the list of players.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler<OnAreaEnter>]
         public static void EnterPropertyInstance()
         {
             var player = GetExitingObject();
@@ -1748,7 +1749,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player exits a property instance, remove them from the list of players.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAreaExit)]
+        [ScriptHandler<OnAreaExit>]
         public static void ExitPropertyInstance()
         {
             var player = GetExitingObject();

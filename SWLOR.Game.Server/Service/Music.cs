@@ -6,6 +6,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
@@ -66,7 +67,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, if a battle theme has been selected by the player,
         /// apply the battle theme to the player.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler<OnAreaEnter>]
         public static void ApplyBattleThemeToPlayer()
         {
             var player = GetEnteringObject();

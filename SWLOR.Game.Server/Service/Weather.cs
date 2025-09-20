@@ -12,6 +12,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
@@ -643,7 +644,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        [ScriptHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler<OnAreaEnter>]
         public static void OnAreaEnter()
         {
             SetWeather();

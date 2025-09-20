@@ -13,6 +13,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
@@ -291,7 +292,7 @@ namespace SWLOR.Game.Server.Service
             return count;
         }
 
-        [ScriptHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler<OnAreaEnter>]
         public static void SpawnArea()
         {
             var player = GetEnteringObject();
@@ -326,7 +327,7 @@ namespace SWLOR.Game.Server.Service
         /// When the last player in an area leaves, a despawn request is queued up.
         /// The heartbeat processor will despawn all objects when this happens
         /// </summary>
-        [ScriptHandler(ScriptName.OnAreaExit)]
+        [ScriptHandler<OnAreaExit>]
         public static void QueueDespawnArea()
         {
             var player = GetExitingObject();

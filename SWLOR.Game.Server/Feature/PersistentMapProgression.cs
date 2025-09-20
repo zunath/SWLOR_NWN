@@ -7,6 +7,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Saves a player's area map progression when exiting an area.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAreaExit)]
+        [ScriptHandler<OnAreaExit>]
         [ScriptHandler<OnModuleExit>]
         public static void SaveMapProgression()
         {
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Loads a player's area map progression when entering an area for the first time after a reboot.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler<OnAreaEnter>]
         public static void LoadMapProgression()
         {
             var player = GetEnteringObject();

@@ -21,5 +21,11 @@ namespace SWLOR.Shared.Core.Log
         /// <param name="printToConsole">If true, the details will be printed to the console.</param>
         void Write<T>(string details, bool printToConsole = false)
             where T: ILogGroup;
+
+        /// <summary>
+        /// Writes a log message to the audit log for the error log group.
+        /// </summary>
+        /// <param name="details">The details about the entry which will be written to disk.</param>
+        void WriteError(string details);
     }
 }

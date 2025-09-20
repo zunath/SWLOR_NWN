@@ -1,9 +1,10 @@
 using SWLOR.Shared.Events.EventAggregator;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Shared.Events.Events.Module
 {
     public class OnModuleEquip : BaseEvent
     {
-        public override string ScriptName => "mod_equip";
+        public override string Script => ScriptName.OnModuleEquip;
     }
 }

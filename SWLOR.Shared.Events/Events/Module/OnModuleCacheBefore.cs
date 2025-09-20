@@ -1,9 +1,10 @@
 using SWLOR.Shared.Events.EventAggregator;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Shared.Events.Events.Module
 {
     public class OnModuleCacheBefore : BaseEvent
     {
-        public override string ScriptName => "mod_cache_bef";
+        public override string Script => ScriptName.OnModuleCacheBefore;
     }
 }

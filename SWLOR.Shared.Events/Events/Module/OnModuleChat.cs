@@ -1,9 +1,10 @@
 using SWLOR.Shared.Events.EventAggregator;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Shared.Events.Events.Module
 {
     public class OnModuleChat : BaseEvent
     {
-        public override string ScriptName => "mod_chat";
+        public override string Script => ScriptName.OnModuleChat;
     }
 }

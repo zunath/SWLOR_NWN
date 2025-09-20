@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Delegates;
-using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Game.Server.Server
 {

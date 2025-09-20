@@ -19,6 +19,6 @@ namespace SWLOR.Shared.Abstractions.Contracts
         /// The script name associated with this event type.
         /// This is used by the ScriptRegistry to map events to their corresponding scripts.
         /// </summary>
-        string ScriptName { get; }
+        string Script { get; }
     }
 }

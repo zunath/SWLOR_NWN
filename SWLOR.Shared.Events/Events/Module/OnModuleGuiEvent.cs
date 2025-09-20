@@ -1,9 +1,10 @@
 using SWLOR.Shared.Events.EventAggregator;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Shared.Events.Events.Module
 {
     public class OnModuleGuiEvent : BaseEvent
     {
-        public override string ScriptName => "mod_guievent";
+        public override string Script => ScriptName.OnModuleGuiEvent;
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Shared.Events.EventAggregator

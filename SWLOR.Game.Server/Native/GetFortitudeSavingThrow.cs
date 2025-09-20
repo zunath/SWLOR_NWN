@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Shared.Events.Constants;
 using SavingThrow = NWN.Native.API.SavingThrow;
 
 namespace SWLOR.Game.Server.Native

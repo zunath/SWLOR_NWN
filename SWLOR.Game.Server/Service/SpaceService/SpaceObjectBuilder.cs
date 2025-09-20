@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {

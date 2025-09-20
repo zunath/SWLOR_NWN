@@ -1,7 +1,6 @@
 ﻿using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {

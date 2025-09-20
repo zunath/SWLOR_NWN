@@ -1,6 +1,3 @@
-using System;
-using SWLOR.Shared.Abstractions.Contracts;
-
 namespace SWLOR.Shared.Abstractions.Contracts
 {
     /// <summary>

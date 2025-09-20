@@ -24,9 +24,9 @@ namespace SWLOR.Game.Server.Server
             {
                 // Create an instance of the event type to get its ScriptName
                 var eventInstance = Activator.CreateInstance(eventType) as IEvent;
-                if (eventInstance?.ScriptName != null)
+                if (eventInstance?.Script != null)
                 {
-                    var scriptName = eventInstance.ScriptName;
+                    var scriptName = eventInstance.Script;
                     
                     // Ensure it's within the 16-character limit
                     if (scriptName.Length > MaxCharsInScriptName)

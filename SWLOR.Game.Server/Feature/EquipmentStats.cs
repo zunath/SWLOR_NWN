@@ -12,7 +12,6 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Bioware;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-
-using SWLOR.Game.Server.Entity;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -10,9 +8,6 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Entity;
-using SWLOR.Shared.Core.Service;
-using SWLOR.Shared.Events.Constants;
-using SWLOR.Shared.Events.Events.Module;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service

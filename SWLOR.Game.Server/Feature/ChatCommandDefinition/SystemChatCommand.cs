@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Core.Configuration;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {

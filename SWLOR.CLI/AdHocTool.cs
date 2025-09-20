@@ -2,9 +2,6 @@
 using System.Linq;
 using SWLOR.Game.Server;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Shared.Core.Service;
-
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;

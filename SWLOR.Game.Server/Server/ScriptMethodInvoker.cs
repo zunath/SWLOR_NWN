@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 

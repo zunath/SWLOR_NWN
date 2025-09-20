@@ -1,9 +1,10 @@
 using SWLOR.Shared.Events.EventAggregator;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Shared.Events.Events.Module
 {
     public class OnModulePreload : BaseEvent
     {
-        public override string ScriptName => "mod_preload";
+        public override string Script => ScriptName.OnModulePreload;
     }
 }

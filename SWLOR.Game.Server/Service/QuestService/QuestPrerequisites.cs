@@ -2,7 +2,6 @@
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {

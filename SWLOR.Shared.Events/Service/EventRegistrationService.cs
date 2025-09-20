@@ -17,13 +17,7 @@ namespace SWLOR.Shared.Events.Service
             _scheduler = scheduler;
         }
 
-        [ScriptHandler(ScriptName.OnServerLoaded)]
-        public static void RegisterEventsStatic()
-        {
-            Console.WriteLine($"static register events running");
-        }
-
-        [ScriptHandler(ScriptName.OnServerLoaded)]
+        [ScriptHandler<OnServerLoaded>]
         public void RegisterEvents()
         {
             Console.WriteLine("Hooking all module events.");
@@ -45,8 +39,6 @@ namespace SWLOR.Shared.Events.Service
         [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
         public static void ExecuteHeartbeatEvent()
         {
-            Console.WriteLine($"running swlor heartbeat");
-
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
                 ExecuteScript(ScriptName.OnIntervalPC6Seconds, player);

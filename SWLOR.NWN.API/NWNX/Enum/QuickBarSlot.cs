@@ -1,6 +1,6 @@
 ﻿
 
-namespace SWLOR.Game.Server.Core.NWNX.Enum
+namespace SWLOR.NWN.API.NWNX.Enum
 {
     public class QuickBarSlot
     {

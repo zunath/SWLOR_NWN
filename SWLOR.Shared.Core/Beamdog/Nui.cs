@@ -1,6 +1,6 @@
 ﻿using SWLOR.NWN.API.Engine;
 
-namespace SWLOR.Game.Server.Core.Beamdog
+namespace SWLOR.Shared.Core.Beamdog
 {
     public static class Nui
     {

@@ -1,9 +1,9 @@
 ﻿using System.Numerics;
-using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using QuickBarSlot = SWLOR.Game.Server.Core.NWNX.Enum.QuickBarSlot;
+using QuickBarSlot = SWLOR.NWN.API.NWNX.Enum.QuickBarSlot;
 
 namespace SWLOR.NWN.API.NWNX
 {

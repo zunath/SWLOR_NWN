@@ -318,7 +318,7 @@ ApplyEffectToObject(DurationType.Instant,
 **Usage**:
 ```csharp
 // Automatically available throughout the project
-using SWLOR.Game.Server.Core;
+
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 ```

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.Engine;
+using SWLOR.Shared.Core.Beamdog;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {

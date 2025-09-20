@@ -1,7 +1,7 @@
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.Bioware;
+
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Service

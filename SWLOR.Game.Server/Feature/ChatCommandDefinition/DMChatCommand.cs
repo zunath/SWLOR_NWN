@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Core;
+
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
 using Faction = SWLOR.Game.Server.Service.Faction;
-using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
+using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;

@@ -1,7 +1,6 @@
 using System;
 using System.Numerics;
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.Bioware;
+
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -13,6 +12,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Event;
 using Item = SWLOR.Game.Server.Service.Item;
 

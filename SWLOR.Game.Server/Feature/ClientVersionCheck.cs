@@ -1,5 +1,5 @@
 using System;
-using SWLOR.Game.Server.Core;
+
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Core.Event;

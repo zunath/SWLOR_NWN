@@ -2,7 +2,7 @@
 using SWLOR.NWN.API.Engine;
 using static System.Math;
 
-namespace SWLOR.Game.Server.Core.Bioware
+namespace SWLOR.Shared.Core.Bioware
 {
     public static class BiowareVector
     {

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using SWLOR.NWN.API.Engine;
 
-namespace SWLOR.Game.Server.Core.Bioware
+namespace SWLOR.Shared.Core.Bioware
 {
     public static class BiowarePosition
     {

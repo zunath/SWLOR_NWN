@@ -1,5 +1,5 @@
 ﻿using System;
-using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Shared.Core.Beamdog;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {

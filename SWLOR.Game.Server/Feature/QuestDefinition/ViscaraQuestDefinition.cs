@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX.Enum;
+
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition

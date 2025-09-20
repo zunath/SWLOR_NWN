@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Core;
+
 using SWLOR.Game.Server.Entity;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;

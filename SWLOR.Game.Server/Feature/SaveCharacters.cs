@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Core;
+
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Core.Event;
 

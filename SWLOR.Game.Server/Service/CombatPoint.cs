@@ -11,6 +11,7 @@ using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
@@ -74,7 +75,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature dies, skill XP is given to all players who contributed during battle.
         /// Then, those combat points are cleared out.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCreatureDeathAfter)]
+        [ScriptHandler<OnCreatureDeathAfter>]
         public static void OnCreatureDeath()
         {
             // Clears the combat point cache information for an NPC and all player associated.

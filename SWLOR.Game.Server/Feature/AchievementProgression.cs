@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
@@ -49,7 +50,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handles the Kill Enemy line of achievements.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCreatureDeathBefore)]
+        [ScriptHandler<OnCreatureDeathBefore>]
         public static void KillEnemy()
         {
             var killer = GetLastKiller();

@@ -6,6 +6,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCreatureDamagedBefore)]
+        [ScriptHandler<OnCreatureDamagedBefore>]
         public static void CreatureDamaged()
         {
             var enemy = OBJECT_SELF;
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature attacks an enemy, increase enmity by 1.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCreatureAttackBefore)]
+        [ScriptHandler<OnCreatureAttackBefore>]
         public static void CreatureAttacked()
         {
             var enemy = OBJECT_SELF;
@@ -47,7 +48,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature dies, remove all enmity tables it is associated with.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCreatureDeathAfter)]
+        [ScriptHandler<OnCreatureDeathAfter>]
         public static void CreatureDeath()
         {
             var enemy = OBJECT_SELF;

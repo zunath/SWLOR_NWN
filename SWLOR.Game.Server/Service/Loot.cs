@@ -10,6 +10,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
@@ -59,7 +60,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature spawns, items which can be stolen are spawned and marked as undroppable.
         /// These items are only available with the Thief ability "Steal" and related perks.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCreatureSpawnBefore)]
+        [ScriptHandler<OnCreatureSpawnBefore>]
         public static void SpawnStealLoot()
         {
             var creature = OBJECT_SELF;
@@ -177,7 +178,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature dies, loot tables are spawned based on local variables.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCreatureDeathBefore)]
+        [ScriptHandler<OnCreatureDeathBefore>]
         public static void SpawnLootOnCreatureDeath()
         {
             SpawnLoot(OBJECT_SELF, OBJECT_SELF, "LOOT_TABLE_");
@@ -290,7 +291,7 @@ namespace SWLOR.Game.Server.Service
         /// Handles creating a corpse placeable on a creature's death, copying its inventory to the placeable,
         /// and changing the name of the placeable to match the creature.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCreatureDeathBefore)]
+        [ScriptHandler<OnCreatureDeathBefore>]
         public static void ProcessCorpse()
         {
             var self = OBJECT_SELF;

@@ -13,6 +13,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
@@ -410,7 +411,7 @@ namespace SWLOR.Game.Server.Service
         /// via DestroyObject.  Call this method directly if you need to use DestroyObject
         /// on a respawning object.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCreatureDeathAfter)]
+        [ScriptHandler<OnCreatureDeathAfter>]
         [ScriptHandler(ScriptName.OnPlaceableDeath)]
         public static void QueueRespawn()
         {

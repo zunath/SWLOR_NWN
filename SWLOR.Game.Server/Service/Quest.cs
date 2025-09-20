@@ -14,6 +14,7 @@ using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
@@ -237,7 +238,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an NPC is killed, any objectives for quests a player currently has active will be updated.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCreatureDeathBefore)]
+        [ScriptHandler<OnCreatureDeathBefore>]
         public static void ProgressKillTargetObjectives()
         {
             var creature = OBJECT_SELF;

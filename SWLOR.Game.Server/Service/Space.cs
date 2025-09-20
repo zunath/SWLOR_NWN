@@ -23,6 +23,7 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Area;
 using Vector3 = System.Numerics.Vector3;
 
@@ -1302,7 +1303,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature spawns, track it in the cache.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCreatureSpawnBefore)]
+        [ScriptHandler<OnCreatureSpawnBefore>]
         public static void CreatureSpawn()
         {
             var creature = OBJECT_SELF;
@@ -1381,7 +1382,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature dies, remove it from the cache.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCreatureDeathAfter)]
+        [ScriptHandler<OnCreatureDeathAfter>]
         public static void CreatureDeath()
         {
             var creature = OBJECT_SELF;

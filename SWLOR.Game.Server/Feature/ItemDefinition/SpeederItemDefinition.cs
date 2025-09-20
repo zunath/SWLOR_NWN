@@ -7,6 +7,7 @@ using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Creature;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -61,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         /// Play a matching animation that lasts the duration of the stun.
         /// Set pheno to normal, tailtype to none and movement rate back to normal after.
         /// </summary>
-        [ScriptHandler(ScriptName.OnCreatureDamagedBefore)]
+        [ScriptHandler<OnCreatureDamagedBefore>]
         public static void AttackedDismount()
         {
             var player = OBJECT_SELF; ;

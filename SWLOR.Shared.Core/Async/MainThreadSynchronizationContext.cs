@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using SWLOR.Game.Server.Core.Async.Awaiters;
-using SWLOR.Game.Server.Extension;
+﻿using SWLOR.Shared.Core.Async.Awaiters;
+using SWLOR.Shared.Core.Extension;
 
-namespace SWLOR.Game.Server.Core.Async
+namespace SWLOR.Shared.Core.Async
 {
     public sealed class MainThreadSynchronizationContext : SynchronizationContext, IAwaitable
     {

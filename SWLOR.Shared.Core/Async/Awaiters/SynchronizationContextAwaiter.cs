@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace SWLOR.Game.Server.Core.Async.Awaiters
+﻿namespace SWLOR.Shared.Core.Async.Awaiters
 {
     public readonly struct SynchronizationContextAwaiter : IAwaiter
     {

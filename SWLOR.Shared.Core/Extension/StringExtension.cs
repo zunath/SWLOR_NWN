@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Extension
+﻿namespace SWLOR.Shared.Core.Extension
 {
     public static class StringExtension
     {

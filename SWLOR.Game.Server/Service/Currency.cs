@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Game.Server.Service
 {

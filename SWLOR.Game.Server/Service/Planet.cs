@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Extension;
+using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Game.Server.Service
 {

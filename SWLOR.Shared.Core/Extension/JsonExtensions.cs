@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 
-namespace SWLOR.Game.Server.Extension
+namespace SWLOR.Shared.Core.Extension
 {
     public static class JsonExtensions
     {

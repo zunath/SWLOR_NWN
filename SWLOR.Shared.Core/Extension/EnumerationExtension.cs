@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Reflection;
 
-namespace SWLOR.Game.Server.Extension
+namespace SWLOR.Shared.Core.Extension
 {
     public static class EnumerationExtension
     {

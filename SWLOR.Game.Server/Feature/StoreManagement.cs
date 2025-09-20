@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Core.Async;
 
 namespace SWLOR.Game.Server.Feature
 {

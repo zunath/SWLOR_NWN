@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Async;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service

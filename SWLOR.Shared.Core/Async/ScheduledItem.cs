@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SWLOR.Game.Server.Core
+﻿namespace SWLOR.Shared.Core.Async
 {
     internal class ScheduledItem : IDisposable
     {

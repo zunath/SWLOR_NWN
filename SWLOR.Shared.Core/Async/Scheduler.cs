@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using SWLOR.Game.Server.Core.Extensions;
+﻿using System.Diagnostics;
+using SWLOR.Shared.Core.Extension;
 
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.Shared.Core.Async
 {
     public static class Scheduler
     {

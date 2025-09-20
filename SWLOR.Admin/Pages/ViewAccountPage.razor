@@ -1,7 +1,7 @@
 @page "/viewaccount/{AccountId}"
 @attribute [Authorize(Policy = "DiscordAdmin")]
 @using SWLOR.Game.Server.Service.AchievementService
-@using SWLOR.Game.Server.Extension
+@using SWLOR.Shared.Core.Extension
 
 @if (!AccountExists())
 {

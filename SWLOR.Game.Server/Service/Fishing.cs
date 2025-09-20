@@ -5,12 +5,12 @@ using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Game.Server.Service
 {

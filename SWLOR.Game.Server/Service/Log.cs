@@ -5,8 +5,8 @@ using Serilog;
 using Serilog.Core;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Game.Server.Service
 {

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using SWLOR.Game.Server.Core.Async.Awaiters;
-using SWLOR.Game.Server.Extension;
+﻿using System.Diagnostics;
+using SWLOR.Shared.Core.Async.Awaiters;
+using SWLOR.Shared.Core.Extension;
 
-namespace SWLOR.Game.Server.Core.Async
+namespace SWLOR.Shared.Core.Async
 {
     /// <summary>
     /// Awaiters for running NWN code in an async context.

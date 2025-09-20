@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="3.18.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NRediSearch" Version="2.2.79" />
     <PackageReference Include="NReJSON" Version="4.0.0" />
     <PackageReference Include="NWN.Core" Version="8193.37.3" />
@@ -32,6 +32,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
+    <ProjectReference Include="..\SWLOR.Shared.Abstractions\SWLOR.Shared.Abstractions.csproj" />
+    <ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
   </ItemGroup>
 
   <Target Name="NWN" AfterTargets="Build">

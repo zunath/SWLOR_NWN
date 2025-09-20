@@ -5,7 +5,7 @@ using Ductus.FluentDocker.Extensions;
 using System.Runtime.InteropServices;
 using EnvDTE;
 using Microsoft.VisualStudio.OLE.Interop;
-using SWLOR.Game.Server.Extension;
+using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Runner
 {

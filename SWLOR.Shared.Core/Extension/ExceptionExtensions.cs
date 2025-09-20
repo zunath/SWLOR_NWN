@@ -1,7 +1,6 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
-namespace SWLOR.Game.Server.Extension
+namespace SWLOR.Shared.Core.Extension
 {
     public static class ExceptionExtensions
     {

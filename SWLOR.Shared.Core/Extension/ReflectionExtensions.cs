@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 
-namespace SWLOR.Game.Server.Core.Extensions
+namespace SWLOR.Shared.Core.Extension
 {
-    internal static class ReflectionExtensions
+    public static class ReflectionExtensions
     {
         public static string GetFullName(this MemberInfo member)
         {

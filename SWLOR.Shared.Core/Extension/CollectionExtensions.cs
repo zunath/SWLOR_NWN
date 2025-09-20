@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SWLOR.Game.Server.Core.Extensions
+﻿namespace SWLOR.Shared.Core.Extension
 {
     internal static class CollectionExtensions
     {

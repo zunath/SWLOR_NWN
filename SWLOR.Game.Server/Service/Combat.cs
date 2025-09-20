@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
@@ -18,6 +19,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Combat
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly List<CombatDamageType> _allValidDamageTypes = new();
 
         /// <summary>
@@ -116,15 +118,15 @@ namespace SWLOR.Game.Server.Service
             var maxDamage = baseDamage * ratio;
             var minDamage = maxDamage * 0.70f;
 
-            LogLegacy.Write(LogGroupType.Attack, $"attackerAttack = {attackerAttack}, attackerDMG = {attackerDMG}, attackerStat = {attackerStat}, defenderDefense = {defenderDefense}, defenderStat = {defenderStat}, critical = {critical}");
-            LogLegacy.Write(LogGroupType.Attack, $"statDelta = {statDelta}, baseDamage = {baseDamage}, ratio = {ratio}, minDamage = {minDamage}, maxDamage = {maxDamage}");
+            _logger.Write<AttackLogGroup>($"attackerAttack = {attackerAttack}, attackerDMG = {attackerDMG}, attackerStat = {attackerStat}, defenderDefense = {defenderDefense}, defenderStat = {defenderStat}, critical = {critical}");
+            _logger.Write<AttackLogGroup>($"statDelta = {statDelta}, baseDamage = {baseDamage}, ratio = {ratio}, minDamage = {minDamage}, maxDamage = {maxDamage}");
 
             // Criticals - 25% bonus to damage range per multiplier point.
             if (critical > 0)
             {
                 minDamage = maxDamage;
                 maxDamage *= ((critical - 1) / 4.0f) + 1.0f;
-                LogLegacy.Write(LogGroupType.Attack, $"Critical Multiplier: {critical}, minDamage = {minDamage}, maxDamage = {maxDamage}");
+                _logger.Write<AttackLogGroup>($"Critical Multiplier: {critical}, minDamage = {minDamage}, maxDamage = {maxDamage}");
             }
 
             return ((int)minDamage, (int)maxDamage);

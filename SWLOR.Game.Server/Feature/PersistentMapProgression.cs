@@ -5,11 +5,14 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class PersistentMapProgression
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         /// <summary>
         /// Saves a player's area map progression when exiting an area.
         /// </summary>
@@ -61,7 +64,7 @@ namespace SWLOR.Game.Server.Feature
                 }
                 catch
                 {
-                    LogLegacy.Write(LogGroupType.Error, $"MAP_KEY_ITEM_ID '{mapKeyItemId}' is misconfigured on area '{GetName(area)}'.");
+                    _logger.Write<ErrorLogGroup>($"MAP_KEY_ITEM_ID '{mapKeyItemId}' is misconfigured on area '{GetName(area)}'.");
                 }
             }
             

@@ -3,11 +3,13 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
     public class QuestSnippetDefinition: ISnippetListDefinition
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private readonly SnippetBuilder _builder = new SnippetBuilder();
 
         public Dictionary<string, SnippetDetail> BuildSnippets()
@@ -35,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-completed-quest' requires at least one questId argument.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return false;
                     }
 
@@ -66,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-quest' requires a questId argument.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return false;
                     }
 
@@ -88,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-on-quest-state' requires a questId argument and at least one stateNumber argument.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return false;
                     }
 
@@ -114,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         {
                             var error = $"Could not read stateNumber {index + 1} in the 'condition-on-quest-state' snippet.";
                             SendMessageToPC(player, error);
-                            LogLegacy.Write(LogGroupType.Error, error);
+                            _logger.Write<ErrorLogGroup>(error);
 
                             return false;
                         }
@@ -135,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-accept-quest' requires a questId argument.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 
@@ -154,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-advance-quest' requires a questId argument.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 
@@ -175,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-request-quest-items' requires a questId argument.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 

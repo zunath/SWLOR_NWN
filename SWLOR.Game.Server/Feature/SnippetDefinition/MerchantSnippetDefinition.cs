@@ -4,11 +4,13 @@ using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
     public class MerchantSnippetDefinition: ISnippetListDefinition
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private readonly SnippetBuilder _builder = new SnippetBuilder();
 
         public Dictionary<string, SnippetDetail> BuildSnippets()
@@ -38,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 
                     if (!GetIsObjectValid(store))
                     {
-                        LogLegacy.Write(LogGroupType.Error, $"{GetName(npc)} could not locate a valid store. Check conversation for incorrect snippet parameters.", true);
+                        _logger.Write<ErrorLogGroup>($"{GetName(npc)} could not locate a valid store. Check conversation for incorrect snippet parameters.");
                     }
 
                     NWScript.OpenStore(store, player);

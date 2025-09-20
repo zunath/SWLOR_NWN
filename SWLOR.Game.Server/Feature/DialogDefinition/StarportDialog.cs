@@ -6,12 +6,14 @@ using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class StarportDialog: DialogBase
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private const string MainPageId = "MAIN_PAGE";
 
         public override PlayerDialog SetUp(uint player)
@@ -70,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     if (planetType == PlanetType.Invalid)
                     {
                         SendMessageToPC(player, "Unable to continue. The planet could not be determined. Notify an admin.");
-                        LogLegacy.Write(LogGroupType.Error, $"Unable to determine planet for NPC '{GetName(OBJECT_SELF)}' located in {GetName(area)} ({GetTag(area)} / {GetResRef(area)})");
+                        _logger.Write<ErrorLogGroup>($"Unable to determine planet for NPC '{GetName(OBJECT_SELF)}' located in {GetName(area)} ({GetTag(area)} / {GetResRef(area)})");
                         return;
                     }
 

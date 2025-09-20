@@ -8,11 +8,14 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageCitizenshipViewModel: GuiViewModelBase<ManageCitizenshipViewModel, GuiPayloadBase>
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private string _cityPropertyId;
         private string _electionId;
 
@@ -165,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             foreach (var vote in toRemove)
                             {
                                 dbElection.VoterSelections.Remove(vote.Key);
-                                LogLegacy.Write(LogGroupType.Property, $"Removed vote from player '{vote.Key}' because chosen candidate '{playerId}' has dropped out of the race.");
+                                _logger.Write<PropertyLogGroup>( $"Removed vote from player '{vote.Key}' because chosen candidate '{playerId}' has dropped out of the race.");
                             }
 
                             DB.Set(dbElection);
@@ -201,7 +204,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         }
 
                         FloatingTextStringOnCreature("Your citizenship has been revoked!", Player, false);
-                        LogLegacy.Write(LogGroupType.Property, $"Player '{GetName(Player)}' ({GetPCPlayerName(Player)} / {GetPCPublicCDKey(Player)}) revoked citizenship from city '{dbCity.CustomName}' ({dbCity.Id}).");
+                        _logger.Write<PropertyLogGroup>( $"Player '{GetName(Player)}' ({GetPCPlayerName(Player)} / {GetPCPublicCDKey(Player)}) revoked citizenship from city '{dbCity.CustomName}' ({dbCity.Id}).");
                         LoadData();
                     });
             }
@@ -237,7 +240,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         DB.Set(dbPlayer);
 
-                        LogLegacy.Write(LogGroupType.Property, $"Player '{GetName(Player)}' ({GetPCPlayerName(Player)} / {GetPCPublicCDKey(Player)}) became a citizen of '{dbCity.CustomName}' ({dbCity.Id}).");
+                        _logger.Write<PropertyLogGroup>( $"Player '{GetName(Player)}' ({GetPCPlayerName(Player)} / {GetPCPublicCDKey(Player)}) became a citizen of '{dbCity.CustomName}' ({dbCity.Id}).");
                         FloatingTextStringOnCreature($"You became a citizen of {dbCity.CustomName}!", Player, false);
 
                         LoadData();
@@ -265,7 +268,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (gold < dbPlayer.PropertyOwedTaxes)
                 {
                     AssignCommand(Player, () => TakeGoldFromCreature(gold, Player, true));
-                    LogLegacy.Write(LogGroupType.Property, $"{GetName(Player)} paid {gold} credits towards taxes for property '{_cityPropertyId}'");
+                    _logger.Write<PropertyLogGroup>( $"{GetName(Player)} paid {gold} credits towards taxes for property '{_cityPropertyId}'");
                     dbCity.Treasury += gold;
                     dbPlayer.PropertyOwedTaxes -= gold;
                 }
@@ -274,7 +277,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var amount = dbPlayer.PropertyOwedTaxes;
                     AssignCommand(Player, () => TakeGoldFromCreature(amount, Player, true));
-                    LogLegacy.Write(LogGroupType.Property, $"{GetName(Player)} paid {dbPlayer.PropertyOwedTaxes} credits towards taxes for property '{_cityPropertyId}'.");
+                    _logger.Write<PropertyLogGroup>( $"{GetName(Player)} paid {dbPlayer.PropertyOwedTaxes} credits towards taxes for property '{_cityPropertyId}'.");
                     dbCity.Treasury += dbPlayer.PropertyOwedTaxes;
                     dbPlayer.PropertyOwedTaxes = 0;
                 }

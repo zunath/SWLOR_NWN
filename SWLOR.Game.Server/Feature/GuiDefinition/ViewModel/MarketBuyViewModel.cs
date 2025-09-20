@@ -11,11 +11,14 @@ using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class MarketBuyViewModel: GuiViewModelBase<MarketBuyViewModel, MarketPayload>
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private const int ListingsPerPage = 20;
 
         private static readonly List<MarketCategoryType> _categoryTypes = new();
@@ -323,7 +326,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     TakeGoldFromCreature(price, Player, true);
                 });
                 var item = ObjectPlugin.Deserialize(dbItem.Data);
-                LogLegacy.Write(LogGroupType.PlayerMarket, $"{GetName(Player)} [{GetObjectUUID(Player)}] bought {GetItemStackSize(item)}x {GetName(item)} from {dbItem.SellerName} for {price} credits.");
+                _logger.Write<PlayerMarketLogGroup>($"{GetName(Player)} [{GetObjectUUID(Player)}] bought {GetItemStackSize(item)}x {GetName(item)} from {dbItem.SellerName} for {price} credits.");
                 ObjectPlugin.AcquireItem(Player, item);
 
                 // Remove this item from the client's search results.

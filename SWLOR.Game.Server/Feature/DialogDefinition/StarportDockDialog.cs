@@ -7,12 +7,14 @@ using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class StarportDockDialog: DialogBase
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private class Model
         {
             public PlanetType Planet { get; set; }
@@ -41,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             if (string.IsNullOrWhiteSpace(spaceWaypointTag))
             {
-                LogLegacy.Write(LogGroupType.Error, $"{GetName(self)} is missing the local variable 'STARPORT_TELEPORT_WAYPOINT' and cannot be used by players to dock their ships.");
+                _logger.Write<ErrorLogGroup>($"{GetName(self)} is missing the local variable 'STARPORT_TELEPORT_WAYPOINT' and cannot be used by players to dock their ships.");
                 SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
                 EndConversation();
                 return;
@@ -51,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             if (!GetIsObjectValid(spaceWaypoint))
             {
-                LogLegacy.Write(LogGroupType.Error, $"The waypoint associated with '{GetName(self)}' cannot be found. Did you place it in an area?");
+                _logger.Write<ErrorLogGroup>($"The waypoint associated with '{GetName(self)}' cannot be found. Did you place it in an area?");
                 SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
                 EndConversation();
                 return;
@@ -59,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             if (planetType == PlanetType.Invalid)
             {
-                LogLegacy.Write(LogGroupType.Error, $"{GetName(self)} is missing the local variable 'PLANET_TYPE_ID' or has an invalid value specified..");
+                _logger.Write<ErrorLogGroup>($"{GetName(self)} is missing the local variable 'PLANET_TYPE_ID' or has an invalid value specified..");
                 SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
                 EndConversation();
                 return;
@@ -149,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                             dbOldStarport.ChildPropertyIds[PropertyChildType.Starship].Remove(dbProperty.Id);
                             DB.Set(dbOldStarport);
 
-                            LogLegacy.Write(LogGroupType.Property, $"Unregistered player ship '{dbProperty.CustomName}' ({dbProperty.Id}) from old starport '{dbOldStarport.CustomName}' ({dbOldStarport.Id}).");
+                            _logger.Write<PropertyLogGroup>($"Unregistered player ship '{dbProperty.CustomName}' ({dbProperty.Id}) from old starport '{dbOldStarport.CustomName}' ({dbOldStarport.Id}).");
                             
                             // Refresh the starport object we're working with in the event the "old" starport
                             // is actually the current one. This ensures we don't get a duplicate starship property Id in the list.

@@ -8,6 +8,8 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 using Player = SWLOR.Game.Server.Entity.Player;
 using Race = SWLOR.Game.Server.Service.Race;
 
@@ -15,6 +17,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public class PlayerInitialization
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         /// <summary>
         /// Handles 
         /// </summary>
@@ -361,7 +364,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (!GetIsObjectValid(waypoint))
             {
-                LogLegacy.Write(LogGroupType.Error, $"Default respawn waypoint could not be located. Did you place a waypoint with the tag 'DTH_DEFAULT_RESPAWN_POINT'?");
+                _logger.Write<ErrorLogGroup>($"Default respawn waypoint could not be located. Did you place a waypoint with the tag 'DTH_DEFAULT_RESPAWN_POINT'?");
                 return;
             }
 

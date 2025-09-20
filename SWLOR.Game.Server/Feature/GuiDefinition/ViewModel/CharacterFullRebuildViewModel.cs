@@ -10,6 +10,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using ClassType = SWLOR.NWN.API.NWScript.Enum.ClassType;
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CharacterFullRebuildViewModel: GuiViewModelBase<CharacterFullRebuildViewModel, GuiPayloadBase>
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         [ScriptHandler(ScriptName.OnCharacterRebuild)]
         public static void LoadCharacterMigrationWindow()
         {
@@ -322,7 +324,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     dbPlayer.UnallocatedSP += refundAmount;
                     dbPlayer.Perks.Remove(type);
-                    LogLegacy.Write(LogGroupType.PerkRefund, $"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {level} - PerkID {type}");
+                    _logger.Write<PerkRefundLogGroup>($"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {level} - PerkID {type}");
                    
                     // Remove all feats granted by all levels of this perk.
                     var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats);

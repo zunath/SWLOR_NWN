@@ -7,11 +7,13 @@ using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _10_SPAdjustmentsMigration : ServerMigrationBase, IServerMigration
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private readonly Dictionary<(PerkType, int), int> _refundMap = new()
         {
             // Force - Universal Price Changes
@@ -121,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
                     DB.Set(dbPlayer);
 
-                    LogLegacy.Write(LogGroupType.Migration, $"{dbPlayer.Name} ({dbPlayer.Id}): Replaced recast timer for Grenades.");
+                    _logger.Write<MigrationLogGroup>($"{dbPlayer.Name} ({dbPlayer.Id}): Replaced recast timer for Grenades.");
                 }
             }
         }

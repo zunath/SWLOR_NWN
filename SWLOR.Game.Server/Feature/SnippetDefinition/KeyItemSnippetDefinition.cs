@@ -3,11 +3,13 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
     public class KeyItemSnippetDefinition: ISnippetListDefinition
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private readonly SnippetBuilder _builder = new SnippetBuilder();
 
         public Dictionary<string, SnippetDetail> BuildSnippets()
@@ -31,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-all-key-items' requires a keyItemId argument.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return false;
                     }
 
@@ -53,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         // Type is invalid, log an error and end.
                         if (type == KeyItemType.Invalid)
                         {
-                            LogLegacy.Write(LogGroupType.Error, $"{arg} is not a valid KeyItemType");
+                            _logger.Write<ErrorLogGroup>($"{arg} is not a valid KeyItemType");
                             return false;
                         }
 
@@ -79,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-give-key-items' requires a keyItemId argument.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 
@@ -101,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         // Type is invalid, log an error and end.
                         if (type == KeyItemType.Invalid)
                         {
-                            LogLegacy.Write(LogGroupType.Error, $"{arg} is not a valid KeyItemType");
+                            _logger.Write<ErrorLogGroup>($"{arg} is not a valid KeyItemType");
                             return;
                         }
 

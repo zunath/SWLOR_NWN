@@ -4,12 +4,14 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class StarportFlightsDialog: DialogBase
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private class Model
         {
             public int Price { get; set; }
@@ -126,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                         dbCity.Treasury += tax;
                         DB.Set(dbCity);
-                        LogLegacy.Write(LogGroupType.Property, $"{GetName(player)} paid {tax} credits in tax for their trip to {model.PlanetName}.");
+                        _logger.Write<PropertyLogGroup>($"{GetName(player)} paid {tax} credits in tax for their trip to {model.PlanetName}.");
                     }
 
                 });

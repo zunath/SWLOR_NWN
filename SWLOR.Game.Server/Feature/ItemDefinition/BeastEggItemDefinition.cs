@@ -9,11 +9,14 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class BeastEggItemDefinition: IItemListDefinition
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         private readonly ItemBuilder _builder = new();
 
         public Dictionary<string, ItemDetail> BuildItems()
@@ -148,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     if (type == BeastType.Invalid)
                     {
                         SendMessageToPC(user, $"Unable to use beast egg. Beast Id is invalid. Report to an admin.");
-                        LogLegacy.Write(LogGroupType.Incubation, $"Player '{GetName(user)}' ({GetObjectUUID(user)}) failed to use beast egg item '{GetName(item)}' because its type is invalid.");
+                        _logger.Write<IncubationLogGroup>($"Player '{GetName(user)}' ({GetObjectUUID(user)}) failed to use beast egg item '{GetName(item)}' because its type is invalid.");
                         return;
                     }
 

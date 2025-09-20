@@ -2,11 +2,14 @@
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
     public class ShipModuleBuilder
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         private readonly Dictionary<string, ShipModuleDetail> _shipModules = new Dictionary<string, ShipModuleDetail>();
         private ShipModuleDetail _activeShipModule;
 
@@ -240,12 +243,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             if (requiredLevel < 0)
             {
-                LogLegacy.Write(LogGroupType.Error, $"Failed to add required perk to {_activeShipModule.Name} because requiredLevel cannot be less than zero.");
+                _logger.Write<ErrorLogGroup>($"Failed to add required perk to {_activeShipModule.Name} because requiredLevel cannot be less than zero.");
                 return this;
             }
             if (requiredLevel > 100)
             {
-                LogLegacy.Write(LogGroupType.Error, $"Failed to add required perk to {_activeShipModule.Name} because requiredLevel cannot be greater than 100.");
+                _logger.Write<ErrorLogGroup>($"Failed to add required perk to {_activeShipModule.Name} because requiredLevel cannot be greater than 100.");
                 return this;
             }
 

@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using Random = SWLOR.Game.Server.Service.Random;
 using Skill = SWLOR.Game.Server.Service.Skill;
@@ -26,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class CraftViewModel: GuiViewModelBase<CraftViewModel, CraftPayload>,
         IGuiRefreshable<SkillXPRefreshEvent>
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         public const string ViewName = "CraftView";
         public const string SetUpPartialName = "SetUpPartial";
         public const string CraftPartialName = "CraftPartial";
@@ -1535,7 +1537,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusText = "Successfully created the item!";
             StatusColor = GuiColor.Green;
             
-            LogLegacy.Write(LogGroupType.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{GetName(item)}'.");
+            _logger.Write<CraftingLogGroup>($"{GetName(Player)} ({GetObjectUUID(Player)}) successfully crafted '{GetName(item)}'.");
         }
 
         private void ProcessBlueprintBonuses(uint item)
@@ -1682,7 +1684,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             xp = (int)(xp * 0.15f);
             Skill.GiveSkillXP(Player, recipe.Skill, xp, false, false);
 
-            LogLegacy.Write(LogGroupType.Crafting, $"{GetName(Player)} ({GetObjectUUID(Player)}) failed to craft '{_recipe}'.");
+            _logger.Write<CraftingLogGroup>($"{GetName(Player)} ({GetObjectUUID(Player)}) failed to craft '{_recipe}'.");
         }
 
         private void HandleAction(

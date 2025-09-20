@@ -5,11 +5,13 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
     public class SkillSnippetDefinition: ISnippetListDefinition
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private readonly SnippetBuilder _builder = new SnippetBuilder();
         public Dictionary<string, SnippetDetail> BuildSnippets()
         {
@@ -32,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-any-skill' requires at least two arguments: the first should be the skillId and the second should be the minimum rank required.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return false;
                     }
 
@@ -41,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-any-skill' requires a pair of two arguments for each skill: the first should be the skillId and the second should be the minimum rank required.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return false;
                     }
 
@@ -57,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         {
                             string error = $"'condition-has-any-skill' could not parse the skill at index {index}";
                             SendMessageToPC(player, error);
-                            LogLegacy.Write(LogGroupType.Error, error);
+                            _logger.Write<ErrorLogGroup>(error);
                             return false;
                         }
 
@@ -71,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         {
                             string error = $"'condition-has-any-skill' could not parse the required rank at index {index + 1}";
                             SendMessageToPC(player, error);
-                            LogLegacy.Write(LogGroupType.Error, error);
+                            _logger.Write<ErrorLogGroup>(error);
                             return false;
                         }
 
@@ -101,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-all-skills' requires at least two arguments: the first should be the skillId and the second should be the minimum rank required.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return false;
                     }
 
@@ -110,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-all-skills' requires a pair of two arguments for each skill: the first should be the skillId and the second should be the minimum rank required.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return false;
                     }
 
@@ -126,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         {
                             string error = $"'condition-has-all-skills' could not parse the skill at index {index}";
                             SendMessageToPC(player, error);
-                            LogLegacy.Write(LogGroupType.Error, error);
+                            _logger.Write<ErrorLogGroup>(error);
                             return false;
                         }
 
@@ -140,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         {
                             string error = $"'condition-has-all-skills' could not parse the required rank at index {index + 1}";
                             SendMessageToPC(player, error);
-                            LogLegacy.Write(LogGroupType.Error, error);
+                            _logger.Write<ErrorLogGroup>(error);
                             return false;
                         }
 

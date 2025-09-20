@@ -7,11 +7,13 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageDMsViewModel: GuiViewModelBase<ManageDMsViewModel, GuiPayloadBase>
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private int SelectedUserIndex { get; set; }
         private readonly List<string> _userIds = new List<string>();
 
@@ -167,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 StatusText = "User deleted successfully.";
                 StatusColor = GuiColor.Green;
 
-                LogLegacy.Write(LogGroupType.DM, $"User deleted from authorized DM list. Name: {dbUser.Name}, CDKey: {dbUser.CDKey}, Role: {dbUser.Authorization}");
+                _logger.Write<DMLogGroup>($"User deleted from authorized DM list. Name: {dbUser.Name}, CDKey: {dbUser.CDKey}, Role: {dbUser.Authorization}");
             });
         };
 
@@ -197,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusText = "Saved successfully.";
             StatusColor = GuiColor.Green;
 
-            LogLegacy.Write(LogGroupType.DM, $"User updated on authorized DM list. Name: {dbUser.Name}, CDKey: {dbUser.CDKey}, Role: {dbUser.Authorization}");
+            _logger.Write<DMLogGroup>($"User updated on authorized DM list. Name: {dbUser.Name}, CDKey: {dbUser.CDKey}, Role: {dbUser.Authorization}");
         };
 
         public Action OnClickDiscardChanges() => () =>

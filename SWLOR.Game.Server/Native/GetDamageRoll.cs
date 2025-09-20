@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Server;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
@@ -25,6 +26,7 @@ namespace SWLOR.Game.Server.Native
 {
     public static unsafe class GetDamageRoll
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         private const int PowerAttackDamageBonus = 3;
         private const int ImprovedPowerAttackDamageBonus = 6;
         private const int DefaultPhysicalDamage = 1;
@@ -172,7 +174,7 @@ namespace SWLOR.Game.Server.Native
 
         private static void LogAttackInfo(CNWSCreature attacker, CNWSObject targetObject, uint attackType, CNWSItem weapon)
         {
-            LogLegacy.Write(LogGroupType.Attack, $"DAMAGE: Attacker: {attacker.GetFirstName().GetSimple()}, PC?: {attacker.m_bPlayerCharacter}, " +
+            _logger.Write<AttackLogGroup>($"DAMAGE: Attacker: {attacker.GetFirstName().GetSimple()}, PC?: {attacker.m_bPlayerCharacter}, " +
                                       $"Defender {targetObject.GetFirstName().GetSimple()}, object type {targetObject.m_nObjectType}, " +
                                       $"Attack type: {attackType}, weapon {(weapon == null ? "None" : weapon.GetFirstName().GetSimple())}");
         }
@@ -184,7 +186,7 @@ namespace SWLOR.Game.Server.Native
             {
                 log += $"{damageType}: {dmgValues[damageType]};";
             }
-            LogLegacy.Write(LogGroupType.Attack, log);
+            _logger.Write<AttackLogGroup>(log);
         }
 
         private static int CalculateCriticalMultiplier(CNWSCreature attacker, CNWSItem weapon, int bCritical)
@@ -393,7 +395,7 @@ namespace SWLOR.Game.Server.Native
                     Item.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
                 {
                     var doublehandDMGBonus = Combat.GetDoublehandDMGBonusNative(attacker);
-                    LogLegacy.Write(LogGroupType.Attack, $"DAMAGE: Applying doublehand damage bonus. (+{doublehandDMGBonus})");
+                    _logger.Write<AttackLogGroup>($"DAMAGE: Applying doublehand damage bonus. (+{doublehandDMGBonus})");
                     dmgValues[CombatDamageType.Physical] += doublehandDMGBonus;
                 }
             }
@@ -455,7 +457,7 @@ namespace SWLOR.Game.Server.Native
             var damagePower = attacker.CalculateDamagePower(target, bOffHand);
             var defense = Stat.GetDefenseNative(target, damageType, AbilityType.Vitality);
 
-            LogLegacy.Write(LogGroupType.Attack, $"DAMAGE: attacker damage attribute: {dmgValues[damageType]} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
+            _logger.Write<AttackLogGroup>($"DAMAGE: attacker damage attribute: {dmgValues[damageType]} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
 
             var damage = Combat.CalculateDamage(attackerAttack, dmgValues[damageType], attackerStat,
                 defense, defenderStat, critical, weaponPerkLevel);

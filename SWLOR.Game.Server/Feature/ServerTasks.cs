@@ -8,12 +8,14 @@ using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
     public static class ServerTasks
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         // This determines what time the server will restart.
         // Restarts happen within a range of 30 seconds of this specified time. 
         // All times are in UTC.
@@ -42,7 +44,7 @@ namespace SWLOR.Game.Server.Feature
                     BootPC(player, "The server is automatically restarting.");
                 }
 
-                LogLegacy.Write(LogGroupType.Server, "Server shutting down for automated restart.", true);
+                _logger.Write<ServerLogGroup>("Server shutting down for automated restart.");
                 
                 DelayCommand(0.1f, () =>
                 {
@@ -57,7 +59,7 @@ namespace SWLOR.Game.Server.Feature
         [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void ProcessBootUp()
         {
-            LogLegacy.Write(LogGroupType.Server, "Server is starting up.");
+            _logger.Write<ServerLogGroup>("Server is starting up.");
             ConfigureServerSettings();
             ApplyBans();
             ScheduleRestartReminder();
@@ -104,7 +106,7 @@ namespace SWLOR.Game.Server.Feature
                     var rebootString = Time.GetTimeLongIntervals(delta, false);
                     var message = $"Server will automatically reboot in approximately {rebootString}.";
 
-                    LogLegacy.Write(LogGroupType.Server, message, true);
+                    _logger.Write<ServerLogGroup>(message);
 
                     for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
                     {

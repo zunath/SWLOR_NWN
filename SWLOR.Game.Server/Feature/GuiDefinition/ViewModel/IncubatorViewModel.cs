@@ -13,6 +13,8 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -20,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
         IGuiRefreshable<PerkRefundedRefreshEvent>
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         public const string PartialElement = "PARTIAL_VIEW";
         public const string NewJobPartial = "NEW_JOB_PARTIAL";
         public const string InProgressJobPartial = "IN_PROGRESS_JOB_PARTIAL";
@@ -1023,7 +1026,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 SendMessageToPC(Player, $"Unable to start Incubation Job. Reason: {validationError}");
-                LogLegacy.Write(LogGroupType.Incubation, $"Job could not be created on incubator Id {_incubatorPropertyId} due to reason: {validationError}");
+                _logger.Write<IncubationLogGroup>($"Job could not be created on incubator Id {_incubatorPropertyId} due to reason: {validationError}");
             }
         }
 
@@ -1067,7 +1070,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 DB.Delete<IncubationJob>(dbJob.Id);
                 Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
-                LogLegacy.Write(LogGroupType.Incubation, $"Player '{GetName(Player)}' ({GetObjectUUID(Player)}) canceled incubation job '{dbJob.Id}' on incubator property Id '{dbJob.ParentPropertyId}'.");
+                _logger.Write<IncubationLogGroup>($"Player '{GetName(Player)}' ({GetObjectUUID(Player)}) canceled incubation job '{dbJob.Id}' on incubator property Id '{dbJob.ParentPropertyId}'.");
                 FloatingTextStringOnCreature($"Incubation job cancelled!", Player, false);
 
                 SwitchViews();

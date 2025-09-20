@@ -9,11 +9,14 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageCityViewModel : GuiViewModelBase<ManageCityViewModel, GuiPayloadBase>, IGuiAcceptsPriceChange
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private const int MaxUpgradeLevel = 5;
         private string _cityId;
 
@@ -460,7 +463,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Instructions = "Upgrade purchased successfully!";
                     InstructionsColor = GuiColor.Green;
 
-                    LogLegacy.Write(LogGroupType.Property, $"City upgrade '{upgradeType}' purchased by {GetName(Player)} for property '{dbCity.CustomName}' ({dbCity.Id}).");
+                    _logger.Write<PropertyLogGroup>($"City upgrade '{upgradeType}' purchased by {GetName(Player)} for property '{dbCity.CustomName}' ({dbCity.Id}).");
 
                     var structureTypes = Property.GetStructuresByInteriorPropertyType(propertyType);
                     var structureTypeIds = structureTypes.Select(s => (int)s).ToList();
@@ -525,7 +528,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    LogLegacy.Write(LogGroupType.Property, $"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) paid city upkeep of {dbCity.Upkeep} credits for property '{dbCity.CustomName}' ({dbCity.Id}).");
+                    _logger.Write<PropertyLogGroup>($"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) paid city upkeep of {dbCity.Upkeep} credits for property '{dbCity.CustomName}' ({dbCity.Id}).");
 
                     dbCity.Treasury -= dbCity.Upkeep;
                     dbCity.Upkeep = 0;
@@ -618,7 +621,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Set(dbCity);
 
                 GiveGoldToCreature(Player, amount);
-                LogLegacy.Write(LogGroupType.Property, $"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) withdrew {amount} credits from treasury of property '{dbCity.CustomName}' ({dbCity.Id})");
+                _logger.Write<PropertyLogGroup>($"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) withdrew {amount} credits from treasury of property '{dbCity.CustomName}' ({dbCity.Id})");
 
                 RefreshPropertyDetails();
                 Instructions = $"Withdrew {amount} credits from treasury.";
@@ -636,7 +639,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 AssignCommand(Player, () => TakeGoldFromCreature(amount, Player, true));
                 dbCity.Treasury += amount;
                 DB.Set(dbCity);
-                LogLegacy.Write(LogGroupType.Property, $"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) deposited {amount} credits into treasury of property '{dbCity.CustomName}' ({dbCity.Id})");
+                _logger.Write<PropertyLogGroup>($"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) deposited {amount} credits into treasury of property '{dbCity.CustomName}' ({dbCity.Id})");
 
                 RefreshPropertyDetails();
                 Instructions = $"Deposited {amount} credits into treasury.";

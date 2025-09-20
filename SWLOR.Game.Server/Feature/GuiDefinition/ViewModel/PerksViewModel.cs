@@ -14,6 +14,7 @@ using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
@@ -23,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<PerkResetAcquiredRefreshEvent>
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private const int ItemsPerPage = 30;
         private int _pages;
         private bool _initialLoadDone;
@@ -772,7 +774,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         dbPlayer.UnallocatedSP += refundAmount;
                         dbPlayer.Perks.Remove(selectedPerk);
 
-                        LogLegacy.Write(LogGroupType.PerkRefund, $"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {perkLevel} - PerkID {selectedPerk}");
+                        _logger.Write<PerkRefundLogGroup>($"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {perkLevel} - PerkID {selectedPerk}");
                         FloatingTextStringOnCreature($"Perk refunded! You reclaimed {refundAmount} SP.", Player, false);
                     }
                     else
@@ -791,7 +793,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         DB.Set(dbBeast);
 
-                        LogLegacy.Write(LogGroupType.PerkRefund, $"REFUND Beast - {dbBeast.Id} (Owner: {dbPlayer.Id}) - Refunded Date {DateTime.UtcNow} - Level {perkLevel} - PerkID {selectedPerk}");
+                        _logger.Write<PerkRefundLogGroup>($"REFUND Beast - {dbBeast.Id} (Owner: {dbPlayer.Id}) - Refunded Date {DateTime.UtcNow} - Level {perkLevel} - PerkID {selectedPerk}");
                         FloatingTextStringOnCreature($"Perk refunded! Your beast reclaimed {refundAmount} SP.", Player, false);
                     }
 

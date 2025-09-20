@@ -5,11 +5,14 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.PropertyService
 {
     public static class StructureChangedAction
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _actions = new();
 
         /// <summary>
@@ -183,7 +186,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
                         dbStarship.Positions[PropertyLocationType.DockPosition] = dbStarship.Positions[PropertyLocationType.LastNPCDockPosition];
 
                         DB.Set(dbStarship);
-                        LogLegacy.Write(LogGroupType.Property, $"Starship '{dbStarship.CustomName}' ({dbStarship.Id}) has been relocated to the last NPC dock it visited because the starport '{dbInterior.CustomName}' ({dbInterior.Id}) has been retrieved.");
+                        _logger.Write<PropertyLogGroup>($"Starship '{dbStarship.CustomName}' ({dbStarship.Id}) has been relocated to the last NPC dock it visited because the starport '{dbInterior.CustomName}' ({dbInterior.Id}) has been retrieved.");
                     }
                 }
 

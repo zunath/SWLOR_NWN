@@ -19,12 +19,15 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 using ResearchJob = SWLOR.Game.Server.Entity.ResearchJob;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Craft
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         public const int MaxResearchLevel = 10;
 
         private static readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
@@ -108,7 +111,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (_recipes.ContainsKey(recipeType))
                     {
-                        LogLegacy.Write(LogGroupType.Error, $"ERROR: Duplicate recipe detected: {recipeType}", true);
+                        _logger.Write<ErrorLogGroup>($"ERROR: Duplicate recipe detected: {recipeType}");
                         continue;
                     }
 

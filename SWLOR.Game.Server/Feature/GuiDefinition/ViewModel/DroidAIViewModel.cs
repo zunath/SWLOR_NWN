@@ -11,12 +11,14 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DroidAIViewModel : GuiViewModelBase<DroidAIViewModel, DroidAIPayload>
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private uint _controller;
         private List<DroidPerk> _availableDroidPerks;
         private List<DroidPerk> _activeDroidPerks;
@@ -163,7 +165,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             if (tier <= 0)
                             {
                                 var message = $"Instruction disc '{GetResRef(item)}' has an incorrectly assigned perk/level combination.";
-                                LogLegacy.Write(LogGroupType.Error, message, true);
+                                _logger.Write<ErrorLogGroup>(message);
                                 SendMessageToPC(Player, ColorToken.Red(message));
                                 return;
                             }

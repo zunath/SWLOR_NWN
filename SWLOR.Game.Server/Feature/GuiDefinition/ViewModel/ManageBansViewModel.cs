@@ -7,11 +7,14 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageBansViewModel: GuiViewModelBase<ManageBansViewModel, GuiPayloadBase>
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private int SelectedUserIndex { get; set; }
         private readonly List<string> _userIds = new List<string>();
 
@@ -144,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 AdministrationPlugin.RemoveBannedCDKey(dbUser.CDKey);
 
-                LogLegacy.Write(LogGroupType.Server, $"User deleted from ban list. CDKey: {dbUser.CDKey}, Reason: {dbUser.Reason}");
+                _logger.Write<ServerLogGroup>($"User deleted from ban list. CDKey: {dbUser.CDKey}, Reason: {dbUser.Reason}");
             });
         };
 
@@ -174,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusText = "Saved successfully.";
             StatusColor = GuiColor.Green;
 
-            LogLegacy.Write(LogGroupType.Server, $"User added to ban list. CDKey: {dbUser.CDKey}, Reason: {dbUser.Reason}");
+            _logger.Write<ServerLogGroup>($"User added to ban list. CDKey: {dbUser.CDKey}, Reason: {dbUser.Reason}");
         };
 
         public Action OnClickDiscardChanges() => () =>

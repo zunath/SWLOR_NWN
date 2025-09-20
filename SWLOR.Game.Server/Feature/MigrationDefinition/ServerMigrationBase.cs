@@ -8,11 +8,14 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     public abstract class ServerMigrationBase
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         protected void GrantRebuildTokenToAllPlayers()
         {
             var query = new DBQuery<Player>();
@@ -65,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 {
                     dbPlayer.UnallocatedSP += refundAmount;
 
-                    LogLegacy.Write(LogGroupType.Migration, $"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP.");
+                    _logger.Write<MigrationLogGroup>($"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP.");
 
                     DB.Set(dbPlayer);
                 }

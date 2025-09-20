@@ -4,11 +4,14 @@ using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class KeyItemDefinition: IItemListDefinition
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         private readonly ItemBuilder _builder = new ItemBuilder();
         public Dictionary<string, ItemDetail> BuildItems()
         {
@@ -28,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     if (keyItemId <= 0)
                     {
-                        LogLegacy.Write(LogGroupType.Error, $"KEY_ITEM_ID for item '{GetName(item)}' is not set properly.");
+                        _logger.Write<ErrorLogGroup>($"KEY_ITEM_ID for item '{GetName(item)}' is not set properly.");
                         return "KEY_ITEM_ID is not configured properly on the item. Notify an admin.";
                     }
 
@@ -44,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     }
                     catch
                     {
-                        LogLegacy.Write(LogGroupType.Error, $"KEY_ITEM_ID '{keyItemId}' for item '{GetName(item)}' is not assigned to a valid KeyItemType.");
+                        _logger.Write<ErrorLogGroup>($"KEY_ITEM_ID '{keyItemId}' for item '{GetName(item)}' is not assigned to a valid KeyItemType.");
                         return "KEY_ITEM_ID is not configured properly on the item. Notify an admin.";
                     }
 

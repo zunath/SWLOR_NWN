@@ -6,11 +6,13 @@ using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _11_RefundMobilityAndUpdateVelesStarport: ServerMigrationBase, IServerMigration
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
 
         private readonly Dictionary<(PerkType, int), int> _refundMap = new()
         {
@@ -61,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 }
 
                 DB.Set(dbShip);
-                LogLegacy.Write(LogGroupType.Migration, $"Updated location of ship '{dbShip.CustomName}' ({dbShip.Id}) in Veles Starport.");
+                _logger.Write<MigrationLogGroup>($"Updated location of ship '{dbShip.CustomName}' ({dbShip.Id}) in Veles Starport.");
             }
         }
     }

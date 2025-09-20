@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -24,6 +25,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Property
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
         private static readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();
         private static readonly Dictionary<PropertyLayoutType, PropertyLayout> _activeLayouts = new();
@@ -388,7 +390,7 @@ namespace SWLOR.Game.Server.Service
                 var lease = property.Dates[PropertyDateType.Lease];
                 if (lease <= now)
                 {
-                    LogLegacy.Write(LogGroupType.Property, $"Property '{property.CustomName}' has an expired lease. Expired on: {lease.ToString("G")}");
+                    _logger.Write<PropertyLogGroup>( $"Property '{property.CustomName}' has an expired lease. Expired on: {lease.ToString("G")}");
 
                     property.IsQueuedForDeletion = true;
                     DB.Set(property);
@@ -403,7 +405,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var property in properties)
             {
-                LogLegacy.Write(LogGroupType.Property, $"Property '{property.CustomName}' scheduled for deletion. Peforming delete now.");
+                _logger.Write<PropertyLogGroup>( $"Property '{property.CustomName}' scheduled for deletion. Peforming delete now.");
                 DeleteProperty(property);
             }
 
@@ -434,7 +436,7 @@ namespace SWLOR.Game.Server.Service
                         // their docked position with it.
                         property.Positions[PropertyLocationType.DockPosition] = property.Positions[PropertyLocationType.LastNPCDockPosition];
 
-                        LogLegacy.Write(LogGroupType.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
+                        _logger.Write<PropertyLogGroup>( $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
                     }
                 }
                 
@@ -466,7 +468,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (now < city.Dates[PropertyDateType.Upkeep])
                 {
-                    LogLegacy.Write(LogGroupType.Property, $"City '{city.CustomName}' ({city.Id}) upkeep isn't ready yet.");
+                    _logger.Write<PropertyLogGroup>( $"City '{city.CustomName}' ({city.Id}) upkeep isn't ready yet.");
                     continue;
                 }
                 else
@@ -502,11 +504,11 @@ namespace SWLOR.Game.Server.Service
                     {
                         city.IsQueuedForDeletion = true;
 
-                        LogLegacy.Write(LogGroupType.Property, $"City '{city.CustomName}' in area '{city.ParentPropertyId}' has been queued for deletion because it fell under the required {_citizensRequired[1]} citizens needed to maintain it.");
+                        _logger.Write<PropertyLogGroup>($"City '{city.CustomName}' in area '{city.ParentPropertyId}' has been queued for deletion because it fell under the required {_citizensRequired[1]} citizens needed to maintain it.");
                     }
                     else
                     {
-                        LogLegacy.Write(LogGroupType.Property, $"City '{city.CustomName}' in area '{city.ParentPropertyId}' is below the required citizen count but time has not expired. Next check will occur on the next server reboot.");
+                        _logger.Write<PropertyLogGroup>( $"City '{city.CustomName}' in area '{city.ParentPropertyId}' is below the required citizen count but time has not expired. Next check will occur on the next server reboot.");
                     }
                 }
                 // This is the first restart where the city is below the required amount.
@@ -514,7 +516,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     city.Dates[PropertyDateType.BelowRequiredCitizens] = now.AddHours(MinimumCitizensGracePeriodHours);
 
-                    LogLegacy.Write(LogGroupType.Property, $"City '{city.CustomName}' has fallen below the required {_citizensRequired[1]} citizens required to maintain a city. An expiration has been applied");
+                    _logger.Write<PropertyLogGroup>( $"City '{city.CustomName}' has fallen below the required {_citizensRequired[1]} citizens required to maintain a city. An expiration has been applied");
                 }
             }
             // Otherwise they're at or above the required amount. Ensure the date is removed from the property.
@@ -563,7 +565,7 @@ namespace SWLOR.Game.Server.Service
             // No reason to process deleted cities. Skip.
             if (city.IsQueuedForDeletion) return;
 
-            LogLegacy.Write(LogGroupType.Property, $"Election process starting for city {city.CustomName} ({city.Id})");
+            _logger.Write<PropertyLogGroup>( $"Election process starting for city {city.CustomName} ({city.Id})");
             var election = DB.Search(new DBQuery<Election>()
                 .AddFieldSearch(nameof(Election.PropertyId), city.Id, false))
                 .SingleOrDefault();
@@ -608,12 +610,12 @@ namespace SWLOR.Game.Server.Service
                     // Nobody voted at all. Incumbent stays in power.
                     if (orderedVotes.Count <= 0)
                     {
-                        LogLegacy.Write(LogGroupType.Property, $"No one voted. Incumbent mayor '{incumbentMayorId}' stays in power.");
+                        _logger.Write<PropertyLogGroup>( $"No one voted. Incumbent mayor '{incumbentMayorId}' stays in power.");
                     }
                     // If top two are the same, incumbent mayor wins.
                     else if (orderedVotes.Count >= 2 && orderedVotes.ElementAt(0).Value != orderedVotes.ElementAt(1).Value)
                     {
-                        LogLegacy.Write(LogGroupType.Property, $"Top 2 candidates were tied. Incumbent mayor '{incumbentMayorId}' wins the election.");
+                        _logger.Write<PropertyLogGroup>( $"Top 2 candidates were tied. Incumbent mayor '{incumbentMayorId}' wins the election.");
                     }
                     // Otherwise, take the person with the highest votes.
                     else 
@@ -621,13 +623,13 @@ namespace SWLOR.Game.Server.Service
                         var winnerPlayerId = orderedVotes.ElementAt(0).Key;
                         TransferPermissions(winnerPlayerId);
                         city.OwnerPlayerId = winnerPlayerId;
-                        LogLegacy.Write(LogGroupType.Property, $"New mayor of {city.CustomName} is '{winnerPlayerId}'");
+                        _logger.Write<PropertyLogGroup>( $"New mayor of {city.CustomName} is '{winnerPlayerId}'");
                     }
 
-                    LogLegacy.Write(LogGroupType.Property, $"Vote Counts:");
+                    _logger.Write<PropertyLogGroup>( $"Vote Counts:");
                     foreach (var (candidatePlayerId, voteCount) in orderedVotes)
                     {
-                        LogLegacy.Write(LogGroupType.Property, $"{candidatePlayerId}: {voteCount} votes");
+                        _logger.Write<PropertyLogGroup>( $"{candidatePlayerId}: {voteCount} votes");
                     }
 
                     // The next election should occur in 3 weeks from the end of this election.
@@ -658,7 +660,7 @@ namespace SWLOR.Game.Server.Service
                         DB.Set(city);
 
                         DB.Delete<Election>(election.Id);
-                        LogLegacy.Write(LogGroupType.Property, $"No one ran for this election. Existing mayor '{incumbentMayorId}' wins by default.");
+                        _logger.Write<PropertyLogGroup>( $"No one ran for this election. Existing mayor '{incumbentMayorId}' wins by default.");
                     }
                     // In the event only one person ran for election, they automatically win
                     // and the power shift occurs immediately. Another election is scheduled
@@ -670,14 +672,14 @@ namespace SWLOR.Game.Server.Service
                         // The winner was the incumbent mayor. No changes are needed.
                         if (winnerPlayerId == incumbentMayorId)
                         {
-                            LogLegacy.Write(LogGroupType.Property, $"Incumbent mayor '{incumbentMayorId}' ran unopposed. They retain mayor status.");
+                            _logger.Write<PropertyLogGroup>( $"Incumbent mayor '{incumbentMayorId}' ran unopposed. They retain mayor status.");
                         }
                         // Someone new won. Transfer mayor permissions over to the new player.
                         else
                         {
                             city.OwnerPlayerId = winnerPlayerId;
                             TransferPermissions(winnerPlayerId);
-                            LogLegacy.Write(LogGroupType.Property, $"Only one person '{winnerPlayerId}' ran for mayor. They win by default.");
+                            _logger.Write<PropertyLogGroup>( $"Only one person '{winnerPlayerId}' ran for mayor. They win by default.");
                         }
 
                         city.Dates[PropertyDateType.ElectionStart] = city.Dates[PropertyDateType.ElectionStart]
@@ -693,7 +695,7 @@ namespace SWLOR.Game.Server.Service
                         election.Stage = ElectionStageType.Voting;
 
                         DB.Set(election);
-                        LogLegacy.Write(LogGroupType.Property, $"City '{city.CustomName}' ({city.Id}) has progressed into the Voting stage of the election.");
+                        _logger.Write<PropertyLogGroup>( $"City '{city.CustomName}' ({city.Id}) has progressed into the Voting stage of the election.");
                     }
 
                 }
@@ -702,7 +704,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessCityLevel(WorldProperty city)
         {
-            LogLegacy.Write(LogGroupType.Property, $"Processing city level for '{city.CustomName}' ({city.Id})...");
+            _logger.Write<PropertyLogGroup>( $"Processing city level for '{city.CustomName}' ({city.Id})...");
 
             var mayor = DB.Get<Player>(city.OwnerPlayerId);
             var citizenCount = DB.SearchCount(new DBQuery<Player>()
@@ -717,7 +719,7 @@ namespace SWLOR.Game.Server.Service
             if (mayorLevel < currentLevel)
             {
                 currentLevel = mayorLevel;
-                LogLegacy.Write(LogGroupType.Property, $"City level reduced to {currentLevel} because mayor's perk level is {mayorLevel}");
+                _logger.Write<PropertyLogGroup>( $"City level reduced to {currentLevel} because mayor's perk level is {mayorLevel}");
             }
 
             var maxLevelThisCycle = 1;
@@ -726,7 +728,7 @@ namespace SWLOR.Game.Server.Service
                 // Mayor can't support a higher city level.
                 if (level > mayorLevel)
                 {
-                    LogLegacy.Write(LogGroupType.Property, $"Mayor cannot support city level {level} or higher.");
+                    _logger.Write<PropertyLogGroup>( $"Mayor cannot support city level {level} or higher.");
                     break;
                 }
 
@@ -734,7 +736,7 @@ namespace SWLOR.Game.Server.Service
                 if (citizenCount >= _citizensRequired[level])
                 {
                     maxLevelThisCycle = level;
-                    LogLegacy.Write(LogGroupType.Property, $"Meets citizen requirement for level {level} (Required amount: {_citizensRequired[level]})");
+                    _logger.Write<PropertyLogGroup>( $"Meets citizen requirement for level {level} (Required amount: {_citizensRequired[level]})");
                 }
             }
 
@@ -742,50 +744,50 @@ namespace SWLOR.Game.Server.Service
             if (currentLevel > maxLevelThisCycle)
             {
                 currentLevel = maxLevelThisCycle;
-                LogLegacy.Write(LogGroupType.Property, $"City level dropped to {maxLevelThisCycle}");
+                _logger.Write<PropertyLogGroup>( $"City level dropped to {maxLevelThisCycle}");
             }
 
             // Upkeep hasn't been paid. City isn't eligible to increase in level.
             if (city.Upkeep > 0)
             {
-                LogLegacy.Write(LogGroupType.Property, $"Unable to upgrade city because upkeep hasn't been fully paid.");
+                _logger.Write<PropertyLogGroup>( $"Unable to upgrade city because upkeep hasn't been fully paid.");
             }
             // The city can increase in level and upkeep has been paid. Perform the upgrade now.
             else if (currentLevel < maxLevelThisCycle)
             {
                 currentLevel++;
-                LogLegacy.Write(LogGroupType.Property, $"City increased by one level this cycle.");
+                _logger.Write<PropertyLogGroup>( $"City increased by one level this cycle.");
             }
 
-            LogLegacy.Write(LogGroupType.Property, $"City level changed to {currentLevel} from {city.Upgrades[PropertyUpgradeType.CityLevel]}");
+            _logger.Write<PropertyLogGroup>( $"City level changed to {currentLevel} from {city.Upgrades[PropertyUpgradeType.CityLevel]}");
             city.Upgrades[PropertyUpgradeType.CityLevel] = currentLevel;
             DB.Set(city);
 
-            LogLegacy.Write(LogGroupType.Property, $"Finished processing city level for '{city.CustomName}' ({city.Id})");
+            _logger.Write<PropertyLogGroup>( $"Finished processing city level for '{city.CustomName}' ({city.Id})");
         }
 
         private static void ProcessUpkeep(DateTime now, WorldProperty city)
         {
-            LogLegacy.Write(LogGroupType.Property, $"Processing city '{city.CustomName}' ({city.Id}) upkeep...");
+            _logger.Write<PropertyLogGroup>( $"Processing city '{city.CustomName}' ({city.Id}) upkeep...");
             
             // If upkeep wasn't fully paid for this week, process the destruction date
             if (city.Upkeep > 0)
             {
-                LogLegacy.Write(LogGroupType.Property, $"City upkeep was not paid for the past week.");
+                _logger.Write<PropertyLogGroup>( $"City upkeep was not paid for the past week.");
 
                 // This is a consecutive week in which upkeep wasn't paid. Check if it's time to destroy the city.
                 if (city.Dates.ContainsKey(PropertyDateType.DisrepairDestruction))
                 {
                     if (now >= city.Dates[PropertyDateType.DisrepairDestruction])
                     {
-                        LogLegacy.Write(LogGroupType.Property, $"City upkeep was not paid for 30 days. City is marked for destruction.");
+                        _logger.Write<PropertyLogGroup>( $"City upkeep was not paid for 30 days. City is marked for destruction.");
                         city.IsQueuedForDeletion = true;
                     }
                 }
                 else
                 {
                     city.Dates[PropertyDateType.DisrepairDestruction] = now.AddDays(30);
-                    LogLegacy.Write(LogGroupType.Property, $"This is the first week upkeep wasn't paid. Destruction will occur on {city.Dates[PropertyDateType.DisrepairDestruction]:yyyy-MM-dd hh:mm:ss}");
+                    _logger.Write<PropertyLogGroup>( $"This is the first week upkeep wasn't paid. Destruction will occur on {city.Dates[PropertyDateType.DisrepairDestruction]:yyyy-MM-dd hh:mm:ss}");
                 }
 
             }
@@ -795,7 +797,7 @@ namespace SWLOR.Game.Server.Service
                 if (city.Dates.ContainsKey(PropertyDateType.DisrepairDestruction))
                 {
                     city.Dates.Remove(PropertyDateType.DisrepairDestruction);
-                    LogLegacy.Write(LogGroupType.Property, $"City upkeep was paid. Removing destruction date.");
+                    _logger.Write<PropertyLogGroup>( $"City upkeep was paid. Removing destruction date.");
                 }
             }
             
@@ -815,17 +817,17 @@ namespace SWLOR.Game.Server.Service
                 (city.Upgrades[PropertyUpgradeType.StarportLevel] - 1) * UpgradeBasePrice +
                 (city.Upgrades[PropertyUpgradeType.CantinaLevel] - 1) * UpgradeBasePrice;
 
-            LogLegacy.Write(LogGroupType.Property, $"Weekly upkeep calcuated to be: {basePrice + upgradePrice} credits.");
+            _logger.Write<PropertyLogGroup>( $"Weekly upkeep calcuated to be: {basePrice + upgradePrice} credits.");
             city.Upkeep += basePrice + upgradePrice;
             DB.Set(city);
-            LogLegacy.Write(LogGroupType.Property, $"Total upkeep owed: {city.Upkeep} credits.");
+            _logger.Write<PropertyLogGroup>( $"Total upkeep owed: {city.Upkeep} credits.");
 
-            LogLegacy.Write(LogGroupType.Property, $"Finished processing city upkeep for '{city.CustomName}' ({city.Id})");
+            _logger.Write<PropertyLogGroup>( $"Finished processing city upkeep for '{city.CustomName}' ({city.Id})");
         }
 
         private static void ProcessCitizenshipFees(WorldProperty city)
         {
-            LogLegacy.Write(LogGroupType.Property, $"Processing citizenship fees for '{city.CustomName}' ({city.Id})");
+            _logger.Write<PropertyLogGroup>( $"Processing citizenship fees for '{city.CustomName}' ({city.Id})");
 
             var citizenQuery = new DBQuery<Player>()
                 .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
@@ -837,11 +839,11 @@ namespace SWLOR.Game.Server.Service
             foreach (var citizen in citizens)
             {
                 citizen.PropertyOwedTaxes += city.Taxes[PropertyTaxType.Citizenship];
-                LogLegacy.Write(LogGroupType.Property, $"Citizen '{citizen.Name}' owes an additional {city.Taxes[PropertyTaxType.Citizenship]} credits for a total of {citizen.PropertyOwedTaxes} credits");
+                _logger.Write<PropertyLogGroup>( $"Citizen '{citizen.Name}' owes an additional {city.Taxes[PropertyTaxType.Citizenship]} credits for a total of {citizen.PropertyOwedTaxes} credits");
                 DB.Set(citizen);
             }
 
-            LogLegacy.Write(LogGroupType.Property, $"Finished processing citizenship fees for '{city.CustomName}' ({city.Id})");
+            _logger.Write<PropertyLogGroup>( $"Finished processing citizenship fees for '{city.CustomName}' ({city.Id})");
         }
 
         public static void DeleteProperty(WorldProperty property)
@@ -876,7 +878,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var permission in permissions)
             {
                 DB.Delete<WorldPropertyPermission>(permission.Id);
-                LogLegacy.Write(LogGroupType.Property, $"Deleted property permission for property '{permission.PropertyId}' and player '{permission.PlayerId}'.");
+                _logger.Write<PropertyLogGroup>( $"Deleted property permission for property '{permission.PropertyId}' and player '{permission.PlayerId}'.");
             }
 
             // Clear item categories and their permissions
@@ -899,7 +901,7 @@ namespace SWLOR.Game.Server.Service
                 foreach (var permission in permissions)
                 {
                     DB.Delete<WorldPropertyPermission>(permission.Id);
-                    LogLegacy.Write(LogGroupType.Property, $"Deleted property permission for category '{permission.PropertyId}'.");
+                    _logger.Write<PropertyLogGroup>( $"Deleted property permission for category '{permission.PropertyId}'.");
                 }
             }
 
@@ -907,7 +909,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var category in categories)
             {
                 DB.Delete<WorldPropertyCategory>(category.Id);
-                LogLegacy.Write(LogGroupType.Property, $"Deleted property category '{category.Name}', id: '{category.Id}' from property '{category.ParentPropertyId}'");
+                _logger.Write<PropertyLogGroup>( $"Deleted property category '{category.Name}', id: '{category.Id}' from property '{category.ParentPropertyId}'");
             }
 
             // Clear any citizenship assignments on players who may be citizens of this property.
@@ -918,7 +920,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var citizen in citizens)
             {
-                LogLegacy.Write(LogGroupType.Property, $"Citizenship revoked for player '{citizen.Name}' ({citizen.Id}) on property '{property.CustomName}' ({property.Id})");
+                _logger.Write<PropertyLogGroup>( $"Citizenship revoked for player '{citizen.Name}' ({citizen.Id}) on property '{property.CustomName}' ({property.Id})");
                 citizen.CitizenPropertyId = string.Empty;
                 DB.Set(citizen);
             }
@@ -932,12 +934,12 @@ namespace SWLOR.Game.Server.Service
             foreach (var item in dbBankItems)
             {
                 DB.Delete<InventoryItem>(item.Id);
-                LogLegacy.Write(LogGroupType.Property, $"Deleted bank item '{item.Quantity}x {item.Name}' ({item.Tag} / {item.Resref}) from property '{property.Id}' which was stored by {item.PlayerId}");
+                _logger.Write<PropertyLogGroup>( $"Deleted bank item '{item.Quantity}x {item.Name}' ({item.Tag} / {item.Resref}) from property '{property.Id}' which was stored by {item.PlayerId}");
             }
 
             // Finally delete the entire property.
             DB.Delete<WorldProperty>(property.Id);
-            LogLegacy.Write(LogGroupType.Property, $"Property '{property.CustomName}' deleted.");
+            _logger.Write<PropertyLogGroup>( $"Property '{property.CustomName}' deleted.");
 
             EventsPlugin.PushEventData("PROPERTY_ID", property.Id);
             EventsPlugin.SignalEvent("SWLOR_DELETE_PROPERTY", GetModule());
@@ -994,7 +996,7 @@ namespace SWLOR.Game.Server.Service
                 if (!masterList.Contains(permission))
                 {
                     dbPermission.Permissions.Remove(permission);
-                    LogLegacy.Write(LogGroupType.Property, $"Removing permission {permission} from property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
+                    _logger.Write<PropertyLogGroup>( $"Removing permission {permission} from property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
                     hasChanges = true;
                 }
             }
@@ -1004,7 +1006,7 @@ namespace SWLOR.Game.Server.Service
                 if (!masterList.Contains(grantPermission))
                 {
                     dbPermission.Permissions.Remove(grantPermission);
-                    LogLegacy.Write(LogGroupType.Property, $"Removing grant permission {grantPermission} from property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
+                    _logger.Write<PropertyLogGroup>( $"Removing grant permission {grantPermission} from property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
                     hasChanges = true;
                 }
             }
@@ -1016,14 +1018,14 @@ namespace SWLOR.Game.Server.Service
                 if (!dbPermission.Permissions.ContainsKey(masterPermission))
                 {
                     dbPermission.Permissions[masterPermission] = hasAccess;
-                    LogLegacy.Write(LogGroupType.Property, $"Adding permission {dbPermission.Permissions[masterPermission]} to property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
+                    _logger.Write<PropertyLogGroup>( $"Adding permission {dbPermission.Permissions[masterPermission]} to property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
                     hasChanges = true;
                 }
 
                 if (!dbPermission.GrantPermissions.ContainsKey(masterPermission))
                 {
                     dbPermission.GrantPermissions[masterPermission] = hasAccess;
-                    LogLegacy.Write(LogGroupType.Property, $"Adding permission {dbPermission.Permissions[masterPermission]} to property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
+                    _logger.Write<PropertyLogGroup>( $"Adding permission {dbPermission.Permissions[masterPermission]} to property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
                     hasChanges = true;
                 }
             }
@@ -1093,7 +1095,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (parent == null)
                     {
-                        LogLegacy.Write(LogGroupType.Error, $"Error loading property '{property.Id}'. Its parent object '{property.ParentPropertyId}' does not exist in database.");
+                        _logger.Write<ErrorLogGroup>($"Error loading property '{property.Id}'. Its parent object '{property.ParentPropertyId}' does not exist in database.");
                     }
                     else
                     {
@@ -1112,9 +1114,9 @@ namespace SWLOR.Game.Server.Service
             }
 
 
-            LogLegacy.Write(LogGroupType.Property, $"Loaded {instanceProperties.Count} instanced properties.", true);
-            LogLegacy.Write(LogGroupType.Property, $"Loaded {worldProperties.Count} world properties.", true);
-            LogLegacy.Write(LogGroupType.Property, $"Loaded {areaProperties.Count} area properties.", true);
+            _logger.Write<PropertyLogGroup>( $"Loaded {instanceProperties.Count} instanced properties.", true);
+            _logger.Write<PropertyLogGroup>( $"Loaded {worldProperties.Count} world properties.", true);
+            _logger.Write<PropertyLogGroup>( $"Loaded {areaProperties.Count} area properties.", true);
         }
 
         /// <summary>
@@ -1229,7 +1231,7 @@ namespace SWLOR.Game.Server.Service
             
             SpawnIntoWorld(property, targetArea);
 
-            LogLegacy.Write(LogGroupType.Property, $"{GetName(creatorPlayer)} ({GetPCPlayerName(creatorPlayer)} / {GetPCPublicCDKey(creatorPlayer)}) placed {propertyDetail.Name}.");
+            _logger.Write<PropertyLogGroup>( $"{GetName(creatorPlayer)} ({GetPCPlayerName(creatorPlayer)} / {GetPCPublicCDKey(creatorPlayer)}) placed {propertyDetail.Name}.");
 
             return property;
         }
@@ -1377,7 +1379,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.CitizenPropertyId = city.Id;
             DB.Set(dbPlayer);
 
-            LogLegacy.Write(LogGroupType.Property, $"{GetName(player)} ({GetPCPlayerName(player)} / {GetPCPublicCDKey(player)}) founded a new city in {GetName(area)}.");
+            _logger.Write<PropertyLogGroup>( $"{GetName(player)} ({GetPCPlayerName(player)} / {GetPCPublicCDKey(player)}) founded a new city in {GetName(area)}.");
         }
 
         /// <summary>

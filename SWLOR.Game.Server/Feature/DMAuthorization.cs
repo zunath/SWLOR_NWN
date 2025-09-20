@@ -3,11 +3,14 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class DMAuthorization
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         /// <summary>
         /// Verifies that a logging in player is an authorized DM.
         /// The player will be booted if they are not authorized.
@@ -47,12 +50,12 @@ namespace SWLOR.Game.Server.Feature
             if (success)
             {
                 var log = $"{pcName} - {account} - {cdKey} - {ipAddress}: Authorization successful";
-                LogLegacy.Write(LogGroupType.DMAuthorization, log);
+                _logger.Write<DMAuthorizationLogGroup>( log);
             }
             else
             {
                 var log = $"{pcName} - {account} - {cdKey} - {ipAddress}: Authorization UNSUCCESSFUL";
-                LogLegacy.Write(LogGroupType.DMAuthorization, log);
+                _logger.Write<DMAuthorizationLogGroup>( log);
             }
         }
 

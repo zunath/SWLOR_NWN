@@ -4,11 +4,14 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class Auditing
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         /// <summary>
         /// Writes an audit log when a player connects to the server.
         /// </summary>
@@ -22,7 +25,7 @@ namespace SWLOR.Game.Server.Feature
             var pcName = GetName(player);
 
             var log = $"{pcName} - {account} - {cdKey} - {ipAddress}: Connected to server";
-            LogLegacy.Write(LogGroupType.Connection, log, true);
+            _logger.Write<ConnectionLogGroup>(log);
         }
 
         /// <summary>
@@ -38,7 +41,7 @@ namespace SWLOR.Game.Server.Feature
             var pcName = GetName(player);
 
             var log = $"{pcName} - {account} - {cdKey} - {ipAddress}: Disconnected from server";
-            LogLegacy.Write(LogGroupType.Connection, log, true);
+            _logger.Write<ConnectionLogGroup>(log);
         }
 
         /// <summary>
@@ -97,7 +100,7 @@ namespace SWLOR.Game.Server.Feature
                 log = BuildRegularLog();
             }
 
-            LogLegacy.Write(LogGroupType.Chat, log);
+            _logger.Write<ChatLogGroup>(log);
         }
     }
 }

@@ -5,11 +5,14 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
     public class FactionSnippetDefinition: ISnippetListDefinition
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
+
         private readonly SnippetBuilder _builder = new SnippetBuilder();
 
         public Dictionary<string, SnippetDetail> BuildSnippets()
@@ -38,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-faction-standing' requires factionId and amount arguments";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return false;
                     }
                     
@@ -47,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-faction-standing' has an invalid argument for 'factionId'. Must be an Id mapped to the FactionType enumeration.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return false;
                     }
 
@@ -56,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-faction-standing' has an invalid argument for 'amount'. Must be a number.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return false;
                     }
 
@@ -82,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-faction-points' requires factionId and amount arguments";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return false;
                     }
 
@@ -91,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-faction-points' has an invalid argument for 'factionId'. Must be an Id mapped to the FactionType enumeration.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return false;
                     }
 
@@ -100,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'condition-has-faction-points' has an invalid argument for 'amount'. Must be a number.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return false;
                     }
 
@@ -127,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-give-faction-points' requires factionId and amount arguments";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 
@@ -136,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-give-faction-points' has an invalid argument for 'factionId'. Must be an Id mapped to the FactionType enumeration.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 
@@ -145,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-give-faction-points' has an invalid argument for 'amount'. Must be a number.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 
@@ -166,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-take-faction-points' requires factionId and amount arguments";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 
@@ -175,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-take-faction-points' has an invalid argument for 'factionId'. Must be an Id mapped to the FactionType enumeration.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 
@@ -184,7 +187,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-take-faction-points' has an invalid argument for 'amount'. Must be a number.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 
@@ -204,7 +207,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-give-faction-standing' requires factionId and amount arguments";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 
@@ -213,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-give-faction-standing' has an invalid argument for 'factionId'. Must be an Id mapped to the FactionType enumeration.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 
@@ -222,7 +225,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-give-faction-standing' has an invalid argument for 'amount'. Must be a number.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 
@@ -242,7 +245,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-take-faction-standing' requires factionId and amount arguments";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 
@@ -251,7 +254,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-take-faction-standing' has an invalid argument for 'factionId'. Must be an Id mapped to the FactionType enumeration.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 
@@ -260,7 +263,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     {
                         const string Error = "'action-take-faction-standing' has an invalid argument for 'amount'. Must be a number.";
                         SendMessageToPC(player, Error);
-                        LogLegacy.Write(LogGroupType.Error, Error);
+                        _logger.Write<ErrorLogGroup>(Error);
                         return;
                     }
 

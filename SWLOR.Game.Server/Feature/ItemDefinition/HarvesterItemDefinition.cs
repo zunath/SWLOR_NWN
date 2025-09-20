@@ -9,12 +9,15 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class HarvesterItemDefinition: IItemListDefinition
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         private readonly ItemBuilder _builder = new();
 
         public Dictionary<string, ItemDetail> BuildItems()
@@ -74,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     if (!Loot.LootTableExists(lootTableName))
                     {
-                        LogLegacy.Write(LogGroupType.Error, $"Loot table '{lootTableName}' assigned to harvesting object '{GetName(target)}' does not exist.");
+                        _logger.Write<ErrorLogGroup>($"Loot table '{lootTableName}' assigned to harvesting object '{GetName(target)}' does not exist.");
                         return $"ERROR: Harvesting loot table misconfigured. Please use /bug to report this issue.";
                     }
 

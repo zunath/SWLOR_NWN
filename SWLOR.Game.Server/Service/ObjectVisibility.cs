@@ -6,11 +6,14 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class ObjectVisibility
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly Dictionary<string, uint> _visibilityObjects = new Dictionary<string, uint>();
         private static readonly List<uint> _defaultHiddenObjects = new List<uint>();
 
@@ -85,7 +88,7 @@ namespace SWLOR.Game.Server.Service
             var visibilityObjectId = GetLocalString(target, "VISIBILITY_OBJECT_ID");
             if (string.IsNullOrWhiteSpace(visibilityObjectId))
             {
-                LogLegacy.Write(LogGroupType.Error, $"{GetName(target)} is missing the local variable VISIBILITY_OBJECT_ID. The visibility of this object cannot be modified for player {GetName(player)}", true);
+                _logger.Write<ErrorLogGroup>($"{GetName(target)} is missing the local variable VISIBILITY_OBJECT_ID. The visibility of this object cannot be modified for player {GetName(player)}");
                 return;
             }
 
@@ -107,7 +110,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!_visibilityObjects.ContainsKey(visibilityObjectId))
             {
-                LogLegacy.Write(LogGroupType.Error, $"No object matching visibility object Id '{visibilityObjectId}' can be found. This is likely due to an object with an Id being created after module load.");
+                _logger.Write<ErrorLogGroup>($"No object matching visibility object Id '{visibilityObjectId}' can be found. This is likely due to an object with an Id being created after module load.");
                 return;
             }
 

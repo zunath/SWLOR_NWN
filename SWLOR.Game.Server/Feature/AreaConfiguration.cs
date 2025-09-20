@@ -5,11 +5,14 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
     public static class AreaConfiguration
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         /// <summary>
         /// When the module loads, load the tile magic configured on every area.
         /// </summary>
@@ -40,7 +43,7 @@ namespace SWLOR.Game.Server.Feature
             }
             catch (Exception ex)
             {
-                LogLegacy.Write(LogGroupType.Error, $"Area {GetName(area)} has an invalid tile magic type. Please fix the local variable. Exception: {ex.ToMessageAndCompleteStacktrace()}", true);
+                _logger.Write<ErrorLogGroup>($"Area {GetName(area)} has an invalid tile magic type. Please fix the local variable. Exception: {ex.ToMessageAndCompleteStacktrace()}");
             }
         }
     }

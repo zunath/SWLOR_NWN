@@ -5,11 +5,14 @@ using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     public abstract class PlayerMigrationBase: IPlayerMigration
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         public abstract int Version { get; }
         public abstract void Migrate(uint player);
 
@@ -104,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             DB.Set(dbPlayer);
 
-            LogLegacy.Write(LogGroupType.Migration, $"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP for perk '{perkType}'.");
+            _logger.Write<MigrationLogGroup>($"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP for perk '{perkType}'.");
             SendMessageToPC(player, $"Perk '{perkDetail.Name}' was automatically refunded. You reclaimed {refundAmount} SP.");
         }
     }

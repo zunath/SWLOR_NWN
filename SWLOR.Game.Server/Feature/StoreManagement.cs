@@ -9,12 +9,14 @@ using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class StoreManagement
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         private const int IntervalHours = 1; // Determines the interval at which stores are cleaned. 1 = 1 hour
         private static readonly List<uint> _stores = new();
         private const string StoreServiceItem = "STORE_SERVICE_IS_STORE_ITEM";
@@ -116,7 +118,7 @@ namespace SWLOR.Game.Server.Feature
                     count++;
                 }
 
-                LogLegacy.Write(LogGroupType.StoreCleanup, $"Store cleaned: {GetName(store)}. Items destroyed: {count}");
+                _logger.Write<StoreCleanupLogGroup>($"Store cleaned: {GetName(store)}. Items destroyed: {count}");
             }
         }
 

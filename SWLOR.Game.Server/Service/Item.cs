@@ -16,11 +16,14 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Item
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly Dictionary<string, ItemDetail> _items = new();
         private static readonly Dictionary<int, int[]> _2daCache = new();
         private static readonly Dictionary<BaseItem, AbilityType> _itemToDamageAbilityMapping = new();
@@ -1037,7 +1040,7 @@ namespace SWLOR.Game.Server.Service
         public static int GetCriticalModifier(BaseItem type)
         {
             var mod = _2daCache[(int)type][1];
-            LogLegacy.Write(LogGroupType.Attack, "Crit multiplier for item type " + type + " is " + mod);
+            _logger.Write<AttackLogGroup>("Crit multiplier for item type " + type + " is " + mod);
 
             return mod;
         }

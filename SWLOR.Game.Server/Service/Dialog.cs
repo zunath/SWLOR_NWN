@@ -6,11 +6,14 @@ using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Dialog
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         private const int NumberOfDialogs = 255;
         private const int NumberOfResponsesPerPage = 12;
         private static Dictionary<string, PlayerDialog> PlayerDialogs { get; } = new Dictionary<string, PlayerDialog>();
@@ -512,7 +515,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!GetIsPC(player) || !GetIsObjectValid(player))
             {
-                LogLegacy.Write(LogGroupType.Error, $"Conversation '{@class}' could not be started because player '{GetName(player)}' is not a valid target.");
+                _logger.Write<ErrorLogGroup>($"Conversation '{@class}' could not be started because player '{GetName(player)}' is not a valid target.");
                 return;
             }
 

@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
     public class SpaceObjectBuilder
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         private readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new Dictionary<string, SpaceObjectDetail>();
         private SpaceObjectDetail _activeSpaceObject;
         private string _creatureTag;
@@ -44,7 +47,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             if (!Space.IsRegisteredShipModule(shipModuleItemTag))
             {
-                LogLegacy.Write(LogGroupType.Error, $"Failed to add {shipModuleItemTag} to ship enemy with tag {_creatureTag} as this module is not registered. Please ensure you entered the correct module tag.");
+                _logger.Write<ErrorLogGroup>($"Failed to add {shipModuleItemTag} to ship enemy with tag {_creatureTag} as this module is not registered. Please ensure you entered the correct module tag.");
                 return this;
             }
 

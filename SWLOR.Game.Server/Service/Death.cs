@@ -4,11 +4,14 @@ using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service
 {
     public class Death
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         /// <summary>
         /// When a player starts dying, instantly kill them.
         /// </summary>
@@ -127,7 +130,7 @@ namespace SWLOR.Game.Server.Service
             var hostileName = GetName(hostile);
 
             var log = $"DEATH: {name} - {areaName} - {areaTag} - {areaResref} Killed by: {hostileName}";
-            LogLegacy.Write(LogGroupType.Death, log);
+            _logger.Write<DeathLogGroup>(log);
         }
 
 
@@ -218,7 +221,7 @@ namespace SWLOR.Game.Server.Service
             var name = GetName(player);
             var log = $"RESPAWN - {name} - {xpLost} XP lost";
 
-            LogLegacy.Write(LogGroupType.Death, log);
+            _logger.Write<DeathLogGroup>(log);
         }
     }
 }

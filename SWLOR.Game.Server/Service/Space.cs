@@ -19,6 +19,7 @@ using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using Vector3 = System.Numerics.Vector3;
 
@@ -26,6 +27,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Space
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         public const int MaxRegisteredShips = 10;
 
         private static readonly Dictionary<string, ShipDetail> _shipTypes = new();
@@ -222,7 +224,7 @@ namespace SWLOR.Game.Server.Service
                     if (moduleDetail.ShortName.Length > 14 &&
                         moduleDetail.Type != ShipModuleType.Passive)
                     {
-                        LogLegacy.Write(LogGroupType.Space, $"Ship module with short name {moduleDetail.ShortName} is longer than 14 characters. Short names should be no more than 14 characters so they display on the UI properly.", true);
+                        _logger.Write<SpaceLogGroup>($"Ship module with short name {moduleDetail.ShortName} is longer than 14 characters. Short names should be no more than 14 characters so they display on the UI properly.");
                     }
 
                     _shipModules.Add(moduleType, moduleDetail);
@@ -1076,7 +1078,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                LogLegacy.Write(LogGroupType.Error, $"Failed to locate matching ship module by its feat for player {GetName(activator)}");
+                _logger.Write<ErrorLogGroup>($"Failed to locate matching ship module by its feat for player {GetName(activator)}");
                 SendMessageToPC(activator, "Unable to use that module.");
                 return;
             }

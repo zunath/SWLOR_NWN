@@ -13,6 +13,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
 using Player = SWLOR.Game.Server.Entity.Player;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
@@ -24,6 +25,7 @@ namespace SWLOR.Game.Server.Service
 {
     public class Stat
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         public const int BaseHP = 70;
         public const int BaseFP = 10;
         public const int BaseSTM = 10;
@@ -1278,7 +1280,7 @@ namespace SWLOR.Game.Server.Service
 
             accuracy += GetSoldierPrecisionAccuracyBonus(creature);
 
-            LogLegacy.Write(LogGroupType.Attack, $"Effect Accuracy: {accuracy}");
+            _logger.Write<AttackLogGroup>($"Effect Accuracy: {accuracy}");
 
             return accuracy;
         }
@@ -1305,7 +1307,7 @@ namespace SWLOR.Game.Server.Service
 
             accuracy += GetSoldierPrecisionAccuracyBonus(creature.m_idSelf);
 
-            LogLegacy.Write(LogGroupType.Attack, $"Native Effect Accuracy: {accuracy}");
+            _logger.Write<AttackLogGroup>($"Native Effect Accuracy: {accuracy}");
 
             return accuracy;
         }
@@ -1409,7 +1411,7 @@ namespace SWLOR.Game.Server.Service
             var ac = GetAC(creature) - dexOffset - 10; // Offset by natural 10 AC granted to all characters.
             var skillType = skillOverride == SkillType.Invalid ? SkillType.Armor : skillOverride;
 
-            LogLegacy.Write(LogGroupType.Attack, $"Evasion regular AC = {ac}");
+            _logger.Write<AttackLogGroup>($"Evasion regular AC = {ac}");
 
             if (GetIsPC(creature) && !GetIsDM(creature))
             {
@@ -1428,7 +1430,7 @@ namespace SWLOR.Game.Server.Service
 
             evasionBonus += CalculateEffectEvasion(creature);
 
-            LogLegacy.Write(LogGroupType.Attack, $"Effect Evasion: {evasionBonus}");
+            _logger.Write<AttackLogGroup>($"Effect Evasion: {evasionBonus}");
 
             return GetEvasion(skillLevel, stat, ac * 5 + evasionBonus);
         }
@@ -1458,7 +1460,7 @@ namespace SWLOR.Game.Server.Service
                      creature.m_pStats.m_nACShieldMod -
                      creature.m_pStats.m_nACShieldNeg;
 
-            LogLegacy.Write(LogGroupType.Attack, $"Native Evasion AC = {ac}");
+            _logger.Write<AttackLogGroup>($"Native Evasion AC = {ac}");
 
             if (creature.m_bPlayerCharacter == 1)
             {

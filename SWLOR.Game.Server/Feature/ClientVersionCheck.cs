@@ -4,11 +4,14 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
     public static class ClientVersionCheck
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         /// <summary>
         /// When a player connects to the server, perform a version check on their client.
         /// All of the NUI window features require version 8193.33 or higher but we restrict to 8193.34 or higher
@@ -34,7 +37,7 @@ namespace SWLOR.Game.Server.Feature
             var ipAddress = EventsPlugin.GetEventData("IP_ADDRESS");
             var platformId = EventsPlugin.GetEventData("PLATFORM_ID");
 
-            LogLegacy.Write(LogGroupType.Connection, $"{playerName} failed to connect due to old client version. {cdKey} - {ipAddress} - {platformId} - {majorVersion}.{minorVersion}");
+            _logger.Write<ConnectionLogGroup>($"{playerName} failed to connect due to old client version. {cdKey} - {ipAddress} - {platformId} - {majorVersion}.{minorVersion}");
 
             EventsPlugin.SetEventResult($"Your connection has been denied because you are on an unsupported version of Neverwinter Nights. Please upgrade your game client to {RequiredMajorVersion}.{RequiredMinorVersion} or higher and retry. If you have problems please reach out to us on Discord: https://discord.gg/MyQAM6m");
             EventsPlugin.SkipEvent();

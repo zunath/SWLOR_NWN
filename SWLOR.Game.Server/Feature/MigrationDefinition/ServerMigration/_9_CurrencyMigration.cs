@@ -5,11 +5,14 @@ using SWLOR.Game.Server.Service.CurrencyService;
 
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _9_CurrencyMigration : ServerMigrationBase, IServerMigration
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         public int Version => 9;
 
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
@@ -35,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
                 DB.Set(dbPlayer);
 
-                LogLegacy.Write(LogGroupType.Migration, $"Migrated {perkResets} perk resets and {rebuildCount} rebuild tokens for player {dbPlayer.Name} ({dbPlayer.Id})");
+                _logger.Write<MigrationLogGroup>($"Migrated {perkResets} perk resets and {rebuildCount} rebuild tokens for player {dbPlayer.Name} ({dbPlayer.Id})");
             }
         }
     }

@@ -10,12 +10,15 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Perk
     {
+        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         // All categories, including inactive
         private static readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _allCategories = new();
 
@@ -620,7 +623,7 @@ namespace SWLOR.Game.Server.Service
                         CreaturePlugin.RemoveFeat(player, feat);
                     }
                     
-                    LogLegacy.Write(LogGroupType.PerkRefund, $"AUTOMATIC DECAY REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {perkLevel} - PerkID {perkType}");
+                    _logger.Write<PerkRefundLogGroup>($"AUTOMATIC DECAY REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {perkLevel} - PerkID {perkType}");
                     FloatingTextStringOnCreature($"Perk '{perkDetail.Name}' level {level} was refunded because your skill fell under the minimum requirements. You reclaimed {perkLevel.Price} SP.", player, false);
                 }
 

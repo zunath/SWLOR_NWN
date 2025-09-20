@@ -6,11 +6,14 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class RenameTargetViewModel : GuiViewModelBase<RenameTargetViewModel, RenameItemPayload>
     {
+        private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private uint _target;
         private const string RenamedItemOriginalName = "RENAMED_ITEM_ORIGINAL_NAME";
         public const string EditorPartialId = "EDITOR_PARTIAL";
@@ -137,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 BootPC(_target, $"Your name has been changed to '{newFullName}'. Please reconnect to the server.");
 
                 FloatingTextStringOnCreature($"Target renamed to '{newFullName}'.", Player);
-                LogLegacy.Write(LogGroupType.DM, $"DM '{dmName}' renamed player '{oldName}' to '{newFullName}'.");
+                _logger.Write<DMLogGroup>($"DM '{dmName}' renamed player '{oldName}' to '{newFullName}'.");
             }
             else
             {

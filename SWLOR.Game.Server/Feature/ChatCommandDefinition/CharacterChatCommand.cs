@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.Shared.Core.Service;
 using HoloCom = SWLOR.Game.Server.Service.HoloCom;
 using Player = SWLOR.Game.Server.Entity.Player;
 

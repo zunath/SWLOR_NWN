@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {

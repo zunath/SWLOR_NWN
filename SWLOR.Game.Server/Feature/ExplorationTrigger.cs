@@ -2,6 +2,7 @@ using System;
 
 using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {

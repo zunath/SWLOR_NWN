@@ -10,6 +10,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Service;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using ClassType = SWLOR.NWN.API.NWScript.Enum.ClassType;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;

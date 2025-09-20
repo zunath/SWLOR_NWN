@@ -9,6 +9,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Game.Server.Entity.Player;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;

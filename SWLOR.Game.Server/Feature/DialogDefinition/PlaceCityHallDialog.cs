@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {

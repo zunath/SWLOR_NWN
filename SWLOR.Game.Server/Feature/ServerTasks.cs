@@ -8,6 +8,7 @@ using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {

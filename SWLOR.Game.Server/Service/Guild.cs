@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service
 {

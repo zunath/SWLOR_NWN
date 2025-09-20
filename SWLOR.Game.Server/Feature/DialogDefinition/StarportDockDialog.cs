@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {

@@ -19,6 +19,7 @@ using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Service;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service

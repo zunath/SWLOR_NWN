@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Server;
+using SWLOR.Shared.Core.Service;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;

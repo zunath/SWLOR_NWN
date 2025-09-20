@@ -20,6 +20,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service
 {

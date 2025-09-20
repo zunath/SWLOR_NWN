@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Service;
 using PlayerShip = SWLOR.Game.Server.Entity.PlayerShip;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel

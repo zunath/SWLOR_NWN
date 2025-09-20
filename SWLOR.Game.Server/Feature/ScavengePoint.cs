@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 using Random = SWLOR.Game.Server.Service.Random;
 using Skill = SWLOR.Game.Server.Service.Skill;
 

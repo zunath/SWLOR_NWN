@@ -33,10 +33,6 @@
     <ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Core\" />
-  </ItemGroup>
-
   <Target Name="NWN" AfterTargets="Build">
     <ItemGroup>
       <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).dll" />

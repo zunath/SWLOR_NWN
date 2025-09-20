@@ -12,6 +12,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Game.Server.Entity.Player;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
@@ -76,7 +77,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, set a local bool on their PC representing
         /// the current state of their holonet visibility.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void LoadHolonetSetting()
         {
             var player = GetEnteringObject();
@@ -93,7 +94,7 @@ namespace SWLOR.Game.Server.Service
         /// unfocused, remove the indicator.
         /// </summary>
 
-        [ScriptHandler(ScriptName.OnModuleGuiEvent)]
+        [ScriptHandler<OnModuleGuiEvent>]
         public static void TypingIndicator()
         {
             var player = GetLastGuiEventPlayer();
@@ -111,7 +112,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         // Register DMFI Voice Command Handler which lives in nwscript land.
-        [ScriptHandler(ScriptName.OnModuleChat)]
+        [ScriptHandler<OnModuleChat>]
         public static void ProcessNativeChatMessage()
         {
             ExecuteScript("dmfi_onplychat", OBJECT_SELF);

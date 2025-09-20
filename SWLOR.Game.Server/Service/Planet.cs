@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache relevant data needed by the Planet service.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
             CachePlanets();

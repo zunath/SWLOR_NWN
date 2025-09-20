@@ -6,6 +6,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -67,7 +68,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player dies, remove them from all enmity tables.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleDeath)]
+        [ScriptHandler<OnModuleDeath>]
         public static void PlayerDeath()
         {
             var player = GetLastPlayerDied();
@@ -77,7 +78,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player leaves, remove them from all enmity tables.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler<OnModuleExit>]
         [ScriptHandler(ScriptName.OnAreaExit)]
         public static void PlayerExit()
         {

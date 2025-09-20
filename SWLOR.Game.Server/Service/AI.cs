@@ -7,6 +7,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
         private static readonly Dictionary<AIDefinitionType, IAIDefinition> _aiDefinitions = new();
 
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheAIData()
         {
             _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition();

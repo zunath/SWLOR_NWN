@@ -12,6 +12,7 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Service
         // Recast Group Descriptions
         private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new Dictionary<RecastGroup, string>();
 
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheRecastGroups()
         {
             CacheRecastGroupNames();

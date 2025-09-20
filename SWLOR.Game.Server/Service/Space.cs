@@ -25,6 +25,7 @@ using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all space data into memory.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void LoadSpaceSystem()
         {
             LoadShips();
@@ -73,7 +74,7 @@ namespace SWLOR.Game.Server.Service
             _scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(100d));
         }
 
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void EnterServer()
         {
             var player = GetEnteringObject();
@@ -81,7 +82,7 @@ namespace SWLOR.Game.Server.Service
             WarpPlayerInsideShip(player);
         }
 
-        [ScriptHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler<OnModuleExit>]
         public static void ExitServer()
         {
             var player = GetExitingObject();
@@ -1754,7 +1755,7 @@ namespace SWLOR.Game.Server.Service
         ///     - The ship will relocate back to the last dock it was at
         /// If this is an NPC, they will be killed and explode in spectacular fashion.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleDeath)]
+        [ScriptHandler<OnModuleDeath>]
         public static void ApplyDeath()
         {
             var creature = GetLastPlayerDied();

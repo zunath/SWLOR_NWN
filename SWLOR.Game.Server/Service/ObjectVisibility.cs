@@ -10,6 +10,7 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cycle through every area and every object to identify the visibility objects.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void LoadVisibilityObjects()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
@@ -47,7 +48,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, toggle visibility on all objects
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void LoadPlayerVisibilityObjects()
         {
             var player = GetEnteringObject();

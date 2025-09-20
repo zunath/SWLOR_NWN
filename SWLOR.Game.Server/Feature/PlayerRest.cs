@@ -6,6 +6,7 @@ using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a player rests, cancel the NWN resting mechanic and apply our custom Rest status effect
         /// which handles recovery of HP, FP, and STM.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleRest)]
+        [ScriptHandler<OnModuleRest>]
         public static void HandleRest()
         {
             var player = GetLastPCRested();

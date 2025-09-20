@@ -15,6 +15,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
             RegisterQuests();
@@ -106,7 +107,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the module, load their quests.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void LoadPlayerQuests()
         {
             var player = GetEnteringObject();

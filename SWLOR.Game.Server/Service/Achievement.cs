@@ -11,6 +11,7 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, read all achievement types and store them into the cache.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void LoadAchievements()
         {
             var achievementTypes = Enum.GetValues(typeof(AchievementType)).Cast<AchievementType>();

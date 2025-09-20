@@ -14,6 +14,7 @@ using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -65,7 +66,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new();
         private static readonly Dictionary<uint, List<ActiveSpawn>> _activeSpawnsByArea = new();
 
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
             LoadSpawnTables();

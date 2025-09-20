@@ -7,6 +7,7 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Feature
         /// Verifies that a logging in player is an authorized DM.
         /// The player will be booted if they are not authorized.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void VerifyDM()
         {
             var dm = GetEnteringObject();

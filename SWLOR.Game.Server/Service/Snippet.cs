@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, all available conversation snippets are loaded into the cache.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()

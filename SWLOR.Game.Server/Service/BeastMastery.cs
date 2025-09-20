@@ -24,6 +24,7 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.Service
         public const string BeastTypeVariable = "BEAST_TYPE";
         public const string BeastLevelVariable = "BEAST_LEVEL";
 
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
             LoadBeasts();
@@ -437,7 +438,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a droid acquires an item, it is stored into a persistent variable on the controller item.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleAcquire)]
+        [ScriptHandler<OnModuleAcquire>]
         public static void OnAcquireItem()
         {
             var beast = GetModuleItemAcquiredBy();

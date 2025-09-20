@@ -5,6 +5,7 @@ using System.Linq;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -99,7 +100,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player leaves the server, remove them from the party caches.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler<OnModuleExit>]
         public static void LeaveServer()
         {
             var creature = GetExitingObject();

@@ -14,6 +14,7 @@ using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, apply any defenses towards damage types they don't already have.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void AddDamageTypeDefenses()
         {
             var player = GetEnteringObject();

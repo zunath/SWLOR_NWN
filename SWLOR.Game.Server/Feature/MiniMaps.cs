@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Skips the character sheet panel open event and shows the SWLOR character sheet instead.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleGuiEvent)]
+        [ScriptHandler<OnModuleGuiEvent>]
         public static void MiniMapGui()
         {
             var player = GetLastGuiEventPlayer();

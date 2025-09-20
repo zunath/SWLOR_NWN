@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a lightsaber or saberstaff is equipped, play an audio sound of the saber turning on and then apply
         /// an effect which plays the saber humming sound effect.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEquip)]
+        [ScriptHandler<OnModuleEquip>]
         public static void EquipLightsaber()
         {
             var player = GetPCItemLastEquippedBy();
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a lightsaber or saberstaff is unequipped, remove the audio sound of the saber humming and then
         /// play an audio sound of the saber turning off.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleUnequip)]
+        [ScriptHandler<OnModuleUnequip>]
         public static void UnequipLightsaber()
         {
             var player = GetPCItemLastUnequippedBy();

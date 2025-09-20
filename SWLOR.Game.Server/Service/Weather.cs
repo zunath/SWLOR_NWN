@@ -12,6 +12,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -24,7 +25,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache planet climates and other pertinent data.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void LoadData()
         {
             _planetClimates = WeatherPlanetDefinitions.GetPlanetClimates();

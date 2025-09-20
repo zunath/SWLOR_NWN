@@ -15,6 +15,7 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature
@@ -413,7 +414,7 @@ namespace SWLOR.Game.Server.Feature
         /// Whenever a player enters the server, any temporary variables related to ability execution
         /// will be removed from their PC.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void ClearTemporaryQueuedVariables()
         {
             var player = GetEnteringObject();

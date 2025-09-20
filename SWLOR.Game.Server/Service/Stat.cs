@@ -16,6 +16,7 @@ using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 using Player = SWLOR.Game.Server.Entity.Player;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void ApplyPlayerStats()
         {
             ApplyTemporaryPlayerStats();

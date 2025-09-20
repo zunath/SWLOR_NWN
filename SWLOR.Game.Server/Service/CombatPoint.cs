@@ -12,6 +12,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -189,7 +190,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player leaves an area or the server, we need to remove all combat points
         /// that may be referenced to their character.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler<OnModuleExit>]
         [ScriptHandler(ScriptName.OnAreaExit)]
         public static void OnPlayerExit()
         {

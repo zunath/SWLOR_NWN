@@ -6,6 +6,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -80,7 +81,7 @@ namespace SWLOR.Game.Server.Feature
         /// Whenever an item with an approved base item type is equipped, the OnHitCastSpell item property will be added to it.
         /// Arrows, bolts, and bullets will also receive this item property if they're equipped.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEquip)]
+        [ScriptHandler<OnModuleEquip>]
         public static void AddOnHitProperty()
         {
             var player = GetPCItemLastEquippedBy();

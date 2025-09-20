@@ -7,6 +7,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player leaves the server, save their persistent HP.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler<OnModuleExit>]
         public static void SaveHP()
         {
             var player = GetExitingObject();
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player enters the server, load their persistent HP.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void LoadHP()
         {
             var player = GetEnteringObject();

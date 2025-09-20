@@ -4,6 +4,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Infrastructure;
 
 namespace SWLOR.Shared.Events.Service
 {
@@ -49,7 +50,7 @@ namespace SWLOR.Shared.Events.Service
         /// When a player enters the server, hook their event scripts.
         /// Also add them to a UI processor list.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void EnterServer()
         {
             HookPlayerEvents();

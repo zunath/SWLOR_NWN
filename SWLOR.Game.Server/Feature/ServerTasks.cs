@@ -15,6 +15,7 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -136,7 +137,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player enters the server, send them a greeting and a link to the Discord server.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void WelcomeMessage()
         {
             var player = GetEnteringObject();

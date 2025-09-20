@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player targets an object, execute the assigned action.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModulePlayerTarget)]
+        [ScriptHandler<OnModulePlayerTarget>]
         public static void RunTargetedItemAction()
         {
             var player = GetLastPlayerToSelectTarget();

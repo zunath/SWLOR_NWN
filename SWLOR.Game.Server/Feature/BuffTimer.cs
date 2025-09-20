@@ -7,6 +7,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Feature
         /// Get the information for different status effects and report to the player
         /// when the icon(s) are clicked.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleGuiEvent)]
+        [ScriptHandler<OnModuleGuiEvent>]
         public static void DisplayBuffInfo()
         {
             var player = GetLastGuiEventPlayer();

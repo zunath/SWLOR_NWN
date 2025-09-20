@@ -17,12 +17,12 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all relevant data into memory.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
             CachePropertyTypes();

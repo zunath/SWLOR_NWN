@@ -19,6 +19,7 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all relevant droid data into memory.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
             CacheDroidLevels();
@@ -226,7 +227,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player leaves the server, any droids they have actives are despawned.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler<OnModuleExit>]
         public static void OnPlayerExit()
         {
             var player = GetExitingObject();
@@ -251,7 +252,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a droid acquires an item, it is stored into a persistent variable on the controller item.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleAcquire)]
+        [ScriptHandler<OnModuleAcquire>]
         public static void OnAcquireItem()
         {
             var droid = GetModuleItemAcquiredBy();
@@ -293,7 +294,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a droid loses an item, it is removed from the persistent variable on the controller item.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleUnacquire)]
+        [ScriptHandler<OnModuleUnacquire>]
         public static void OnLostItem()
         {
             var droid = GetModuleItemLostBy();

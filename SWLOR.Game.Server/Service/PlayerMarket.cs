@@ -16,6 +16,7 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 using MarketCategoryType = SWLOR.Game.Server.Service.PlayerMarketService.MarketCategoryType;
 
 namespace SWLOR.Game.Server.Service
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, cache all static player market data for quick retrieval.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
             LoadMarketCategories();
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, if they have credits in their market till, send them a message stating so.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void CheckMarketTill()
         {
             var player = GetEnteringObject();

@@ -11,6 +11,7 @@ using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module is loaded, the assembly will be searched for conversations.
         /// These will be added to the cache for use at a later time.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void RegisterConversations()
         {
             // Use reflection to get all of the conversation implementations.

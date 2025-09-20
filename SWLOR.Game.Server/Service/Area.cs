@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service
         private static Dictionary<string, uint> AreasByResref { get; } = new();
         private static Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
 
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
             CacheAreasByResref();
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service
         /// Remove instance templates from the area cache on module load.
         /// This ensures player locations are not updated in places they shouldn't be.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheAfter)]
+        [ScriptHandler<OnModuleCacheAfter>]
         public static void RemoveInstancesFromCache()
         {
             var propertyLayouts = Property.GetAllLayoutsByPropertyType(PropertyType.Apartment);

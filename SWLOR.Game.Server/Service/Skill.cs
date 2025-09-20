@@ -13,6 +13,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
@@ -272,7 +273,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// If a player is missing any skills in their DB record, they will be added here.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void AddMissingSkills()
         {
             var player = GetEnteringObject();

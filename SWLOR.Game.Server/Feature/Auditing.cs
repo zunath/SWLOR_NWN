@@ -8,6 +8,7 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Writes an audit log when a player connects to the server.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void AuditClientConnection()
         {
             var player = GetEnteringObject();
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Writes an audit log when a player disconnects from the server.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler<OnModuleExit>]
         public static void AuditClientDisconnection()
         {
             var player = GetExitingObject();

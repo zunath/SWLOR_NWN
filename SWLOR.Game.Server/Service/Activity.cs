@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -55,7 +56,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the module, wipe their temporary "busy" status.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void WipeStatusOnEntry()
         {
             var player = GetEnteringObject();
@@ -65,7 +66,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player dies, wipe their temporary "busy" status.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleDeath)]
+        [ScriptHandler<OnModuleDeath>]
         public static void WipeStatusOnDeath()
         {
             var player = GetLastPlayerDied();

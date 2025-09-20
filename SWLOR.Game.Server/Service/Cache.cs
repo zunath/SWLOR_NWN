@@ -10,6 +10,7 @@ using SWLOR.Shared.Core.Entity;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         private static Dictionary<string, int> PortraitInternalIdsByPortraitResref { get; } = new();
         private static Dictionary<int, string> SoundSets { get; set; } = new();
         
-        [ScriptHandler(ScriptName.OnModuleContentChange)]
+        [ScriptHandler<OnModuleContentChange>]
         public static void CacheItemNamesByResref()
         {
             var resref = UtilPlugin.GetFirstResRef(ResRefType.Item);
@@ -50,7 +51,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles caching data into server memory for quicker lookup later.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
             LoadItemCache();

@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Service
         private const string HologramOwner = "HOLOGRAM_OWNER";
         private const string HolocomCallImmobilize = "HOLOCOM_CALL_IMMOBILIZE";
 
-        [ScriptHandler(ScriptName.OnModuleDeath)]
+        [ScriptHandler<OnModuleDeath>]
         public static void OnModuleDeath()
         {
             var player = GetLastPlayerDied();
@@ -30,14 +31,14 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void OnModuleEnter()
         {
             var player = GetEnteringObject();
             RemoveEffectByTag(player, HolocomCallImmobilize);
         }
 
-        [ScriptHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler<OnModuleExit>]
         public static void OnModuleLeave()
         {
             var player = GetExitingObject();
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Service
             CleanupAllHoloComState(player);
         }
 
-        [ScriptHandler(ScriptName.OnModuleChat)]
+        [ScriptHandler<OnModuleChat>]
         public static void OnModuleChat()
         {
             var sender = GetPCChatSpeaker();

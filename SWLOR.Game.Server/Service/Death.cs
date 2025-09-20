@@ -8,6 +8,7 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player starts dying, instantly kill them.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleDying)]
+        [ScriptHandler<OnModuleDying>]
         public static void OnPlayerDying()
         {
             ApplyEffectToObject(DurationType.Instant, EffectDeath(), GetLastPlayerDying());
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles resetting a player's standard faction reputations and displaying the respawn pop-up menu.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleDeath)]
+        [ScriptHandler<OnModuleDeath>]
         public static void OnPlayerDeath()
         {
             var player = GetLastPlayerDied();
@@ -72,7 +73,7 @@ namespace SWLOR.Game.Server.Service
         /// Handles setting player's HP, FP, and STM to half of maximum,
         /// applies penalties for death, and teleports him or her to their home point.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleRespawn)]
+        [ScriptHandler<OnModuleRespawn>]
         public static void OnPlayerRespawn()
         {
             var player = GetLastRespawnButtonPresser();
@@ -91,7 +92,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles setting a player's respawn point if they don't have one set already.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void InitializeRespawnPoint()
         {
             var player = GetEnteringObject();

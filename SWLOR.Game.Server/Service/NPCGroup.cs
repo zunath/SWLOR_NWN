@@ -5,6 +5,7 @@ using System.Linq;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
             RegisterNPCGroups();

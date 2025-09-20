@@ -9,6 +9,7 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Feature
         /// Saves a player's area map progression when exiting an area.
         /// </summary>
         [ScriptHandler(ScriptName.OnAreaExit)]
-        [ScriptHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler<OnModuleExit>]
         public static void SaveMapProgression()
         {
             var player = GetExitingObject();

@@ -7,6 +7,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, skills and categories are organized into dictionaries for quick look-ups later on.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
             // Initialize the list of categories.

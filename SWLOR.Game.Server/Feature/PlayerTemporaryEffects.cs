@@ -7,13 +7,14 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class PlayerTemporaryEffects
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void ApplyTemporaryEffects()
         {
             var player = GetEnteringObject();

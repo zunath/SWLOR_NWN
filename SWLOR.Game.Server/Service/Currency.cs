@@ -10,6 +10,7 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, cache all currency details into memory.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheCurrencies()
         {
             var currencyTypes = Enum.GetValues(typeof(CurrencyType)).Cast<CurrencyType>();

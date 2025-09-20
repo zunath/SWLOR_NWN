@@ -12,6 +12,7 @@ using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Entity;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module content changes, rerun the baking process.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleContentChange)]
+        [ScriptHandler<OnModuleContentChange>]
         public static void LoadWalkmeshes()
         {
             StoreNoSpawnZoneTriggers();

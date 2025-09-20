@@ -12,6 +12,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -94,7 +95,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, create instances of every window if they have not already been created this session.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void CreatePlayerWindows()
         {
             var player = GetEnteringObject();
@@ -134,7 +135,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player exits the server, save the geometry positions of any open windows.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler<OnModuleExit>]
         public static void SavePlayerWindowGeometry()
         {
             var player = GetExitingObject();
@@ -185,7 +186,7 @@ namespace SWLOR.Game.Server.Service
         /// When a NUI event is fired, look for an associated event on the specified element
         /// and execute the cached action.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleNuiEvent)]
+        [ScriptHandler<OnModuleNuiEvent>]
         public static void HandleNuiEvents()
         {
             var player = NuiGetEventPlayer();
@@ -251,7 +252,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a NUI event is fired, if it was a watch event, update the associated player's view model.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleNuiEvent)]
+        [ScriptHandler<OnModuleNuiEvent>]
         public static void HandleNuiWatchEvent()
         {
             var player = NuiGetEventPlayer();
@@ -385,7 +386,7 @@ namespace SWLOR.Game.Server.Service
         /// Skips the default NWN window open events and shows the SWLOR windows instead.
         /// Applies to the Journal and Character Sheet.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleGuiEvent)]
+        [ScriptHandler<OnModuleGuiEvent>]
         public static void ReplaceNWNGuis()
         {
             var player = GetLastGuiEventPlayer();
@@ -632,7 +633,7 @@ namespace SWLOR.Game.Server.Service
             return (windowX + (windowWidth / 2)) - ((text.Length + 2) / 2);
         }
 
-        [ScriptHandler(ScriptName.OnModuleEquip)]
+        [ScriptHandler<OnModuleEquip>]
         public static void RefreshOnEquip()
         {
             var player = GetPCItemLastEquippedBy();
@@ -642,7 +643,7 @@ namespace SWLOR.Game.Server.Service
             DelayCommand(0.1f, () => PublishRefreshEvent(player, new EquipItemRefreshEvent()));
         }
 
-        [ScriptHandler(ScriptName.OnModuleUnequip)]
+        [ScriptHandler<OnModuleUnequip>]
         public static void RefreshOnUnequip()
         {
             var player = GetPCItemLastUnequippedBy();

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -112,7 +113,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new TargetStatusRefreshEvent());
         }
 
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         [ScriptHandler(ScriptName.OnAreaEnter)]
         public static void LoadPlayerStatusWindow()
         {

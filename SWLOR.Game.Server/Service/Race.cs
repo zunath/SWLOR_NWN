@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -523,7 +524,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, apply the proper scaling to their character.
         /// 
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
             public static void ApplyWookieeScaling()
             {
                 var player = GetEnteringObject();

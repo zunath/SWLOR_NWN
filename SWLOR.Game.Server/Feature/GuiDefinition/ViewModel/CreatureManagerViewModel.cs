@@ -13,6 +13,7 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -131,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Search();
         };
 
-        [ScriptHandler(ScriptName.OnModulePlayerTarget)]
+        [ScriptHandler<OnModulePlayerTarget>]
         public static void RunTargetedLocationAction()
         {
             var player = GetLastPlayerToSelectTarget();

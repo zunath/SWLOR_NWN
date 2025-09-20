@@ -12,6 +12,7 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -24,7 +25,7 @@ namespace SWLOR.Game.Server.Service
         public const string CorpseBodyVariable = "CORPSE_BODY";
         private const string CorpseCopyItemVariable = "CORPSE_ITEM_COPY";
 
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void RegisterLootTables()
         {
             // Get all implementations of spawn table definitions.

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -183,7 +184,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all status effects.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheStatusEffects()
         {
             // Organize perks to make later reads quicker.
@@ -305,7 +306,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, if any of their status effects in limbo, re-add them to the
         /// dictionary for processing.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void PlayerEnter()
         {
             var player = GetEnteringObject();
@@ -325,7 +326,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player leaves the server, move their status effects to a different dictionary
         /// so they aren't processed unnecessarily.  
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler<OnModuleExit>]
         public static void PlayerExit()
         {
             var player = GetExitingObject();
@@ -401,7 +402,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player dies, remove any status effects which are present.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleDeath)]
+        [ScriptHandler<OnModuleDeath>]
         public static void OnPlayerDeath()
         {
             var player = GetLastPlayerDied();

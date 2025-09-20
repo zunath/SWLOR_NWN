@@ -14,6 +14,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, abilities will be cached and events will be scheduled.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
             CacheAbilities();
@@ -647,7 +648,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, apply the Aura AOE effect.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler<OnModuleEnter>]
         public static void ApplyAuraAOE()
         {
             var player = GetEnteringObject();
@@ -657,7 +658,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player exits the server, remove all of their Aura effects.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler<OnModuleExit>]
         public static void ClearAurasOnExit()
         {
             var player = GetExitingObject();
@@ -667,7 +668,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player dies, remove all of their Aura effects.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleDeath)]
+        [ScriptHandler<OnModuleDeath>]
         public static void ClearAurasOnDeath()
         {
             var player = GetLastPlayerDied();
@@ -677,7 +678,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player respawns, reapply the aura AOE effect
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleRespawn)]
+        [ScriptHandler<OnModuleRespawn>]
         public static void ReapplyAuraOnRespawn()
         {
             var player = GetLastRespawnButtonPresser();

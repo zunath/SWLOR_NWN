@@ -35,7 +35,9 @@
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
     <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
     <ProjectReference Include="..\SWLOR.Shared.Abstractions\SWLOR.Shared.Abstractions.csproj" />
+    <ProjectReference Include="..\SWLOR.Shared.Caching\SWLOR.Shared.Caching.csproj" />
     <ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
+    <ProjectReference Include="..\SWLOR.Shared.Events\SWLOR.Shared.Events.csproj" />
   </ItemGroup>
 
   <ItemGroup>

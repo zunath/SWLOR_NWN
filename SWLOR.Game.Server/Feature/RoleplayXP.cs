@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 using Player = SWLOR.Game.Server.Entity.Player;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Once every 30 minutes, the RP system will check all players and distribute RP XP if applicable.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnPlayerHeartbeat)]
+        [ScriptHandler(ScriptName.OnPlayerHeartbeat)]
         public static void DistributeRoleplayXP()
         {
             const string TrackerVariableName = "RP_SYSTEM_TICKS";
@@ -69,7 +70,7 @@ namespace SWLOR.Game.Server.Feature
         /// Adds RP points to a player's RP progression.
         /// If messages are sent too quickly, the message will be treated as spam and RP point will not be granted.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnNWNXChat)]
+        [ScriptHandler(ScriptName.OnNWNXChat)]
         public static void ProcessRPMessage()
         {
             var channel = ChatPlugin.GetChannel();

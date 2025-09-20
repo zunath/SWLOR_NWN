@@ -1,12 +1,13 @@
 using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature
 {
     public static class ExplorationTrigger
     {
-        [NWNEventHandler(ScriptName.OnExploreTrigger)]
+        [ScriptHandler(ScriptName.OnExploreTrigger)]
         public static void EnterExplorationTrigger()
         {
             var player = GetEnteringObject();

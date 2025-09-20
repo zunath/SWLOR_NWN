@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {

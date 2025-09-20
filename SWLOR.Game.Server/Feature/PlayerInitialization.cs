@@ -3,10 +3,11 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
 using Player = SWLOR.Game.Server.Entity.Player;
 using Race = SWLOR.Game.Server.Service.Race;
 
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handles 
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
         public static void InitializePlayer()
         {
             var player = GetEnteringObject();

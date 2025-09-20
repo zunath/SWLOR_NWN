@@ -3,12 +3,14 @@ using NWNX.NET;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Server;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
@@ -140,7 +142,7 @@ namespace SWLOR.Game.Server.Native
         // ReSharper disable once NotAccessedField.Local
         private static ResolveAttackRollHook _callOriginal;
 
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, void*, void> pHook = &OnResolveAttackRoll;

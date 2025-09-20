@@ -10,7 +10,10 @@ using StackExchange.Redis;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Shared.Core.Configuration;
+using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Server;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -41,7 +44,7 @@ namespace SWLOR.Game.Server.Service
             NReJSONSerializer.SerializerProxy = new JsonSerializer();
         }
 
-        [NWNEventHandler(ScriptName.OnModulePreload)]
+        [ScriptHandler(ScriptName.OnModulePreload)]
         public static void Load()
         {
             _appSettings = ApplicationSettings.Get();

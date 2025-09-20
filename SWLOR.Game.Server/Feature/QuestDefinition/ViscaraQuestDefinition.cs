@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -141,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         /// <summary>
         /// When a force crystal is touched, run the progression logic for the First Rites quest.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnQuestForceCrystal)]
+        [ScriptHandler(ScriptName.OnQuestForceCrystal)]
         public static void FirstRitesForceCrystal()
         {
             const string InactiveQuestText = "The crystal glows quietly...";

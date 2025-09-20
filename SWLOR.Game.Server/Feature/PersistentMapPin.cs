@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Core.Event;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Feature
@@ -37,7 +38,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Adds a map pin to the PC entity and saves it to the DB.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnMapPinAddPinBefore)]
+        [ScriptHandler(ScriptName.OnMapPinAddPinBefore)]
         public static void AddMapPin()
         {
             var player = OBJECT_SELF;
@@ -62,7 +63,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Removes a map pin from the PC entity and saves it to the DB.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnMapPinDestroyPinBefore)]
+        [ScriptHandler(ScriptName.OnMapPinDestroyPinBefore)]
         public static void DeleteMapPin()
         {
             var player = OBJECT_SELF;
@@ -94,7 +95,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Updates an existing map pin and saves the changes to the DB.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnMapPinChangePinBefore)]
+        [ScriptHandler(ScriptName.OnMapPinChangePinBefore)]
         public static void ChangeMapPin()
         {
             var player = OBJECT_SELF;
@@ -128,7 +129,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Loads map pins on all areas for a player. This only happens one time per reset.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
         public static void LoadMapPins()
         {
             var player = GetEnteringObject();

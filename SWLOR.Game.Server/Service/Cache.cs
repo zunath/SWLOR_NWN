@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Service
         private static Dictionary<string, int> PortraitInternalIdsByPortraitResref { get; } = new();
         private static Dictionary<int, string> SoundSets { get; set; } = new();
         
-        [NWNEventHandler(ScriptName.OnModuleContentChange)]
+        [ScriptHandler(ScriptName.OnModuleContentChange)]
         public static void CacheItemNamesByResref()
         {
             var resref = UtilPlugin.GetFirstResRef(ResRefType.Item);
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles caching data into server memory for quicker lookup later.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             LoadItemCache();

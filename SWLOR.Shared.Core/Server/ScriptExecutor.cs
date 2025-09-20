@@ -1,11 +1,9 @@
 using NWN.Native.API;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
-using System;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Log;
 
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.Shared.Core.Server
 {
     public class ScriptExecutor
     {
@@ -83,7 +81,7 @@ namespace SWLOR.Game.Server.Core
                 }
                 catch (Exception ex)
                 {
-                    Log.Write(LogGroup.Error, $"C# Script '{script}' threw an exception. Details: {Environment.NewLine}{Environment.NewLine}{ex.ToMessageAndCompleteStacktrace()}", true);
+                    Log.Log.Write(LogGroup.Error, $"C# Script '{script}' threw an exception. Details: {Environment.NewLine}{Environment.NewLine}{ex.ToMessageAndCompleteStacktrace()}", true);
                 }
                 finally
                 {
@@ -108,7 +106,7 @@ namespace SWLOR.Game.Server.Core
                 ServerManager.Bootstrapper.ClosureManager.ObjectSelf = oldObjectSelf;
                 if (spAfter != spBefore)
                 {
-                    Log.Write(LogGroup.Error, $"VM stack is invalid ({spBefore} != {spAfter}) after script context invocation: {action.Method.GetFullName()}");
+                    Log.Log.Write(LogGroup.Error, $"VM stack is invalid ({spBefore} != {spAfter}) after script context invocation: {action.Method.GetFullName()}");
                 }
             }
         }
@@ -127,7 +125,7 @@ namespace SWLOR.Game.Server.Core
                 ServerManager.Bootstrapper.ClosureManager.ObjectSelf = oldObjectSelf;
                 if (spAfter != spBefore)
                 {
-                    Log.Write(LogGroup.Error, $"VM stack is invalid ({spBefore} != {spAfter}) after script context invocation: {action.Method.GetFullName()}");
+                    Log.Log.Write(LogGroup.Error, $"VM stack is invalid ({spBefore} != {spAfter}) after script context invocation: {action.Method.GetFullName()}");
                 }
             }
         }

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LanguageService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
 
 namespace SWLOR.Game.Server.Service
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, create translators for every language and store them into cache.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void LoadTranslators()
         {
             _translators = new Dictionary<SkillType, ITranslator>

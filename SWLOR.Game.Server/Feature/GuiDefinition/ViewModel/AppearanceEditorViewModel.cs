@@ -14,6 +14,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -75,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private AppearanceArmorColor _selectedColorChannel;
         private ColorTarget _colorTarget;
 
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void LoadAppearances()
         {
             LoadRacialAppearances();
@@ -83,8 +84,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadWeaponAppearances();
         }
 
-        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
-        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
+        [ScriptHandler(ScriptName.OnDMPossessBefore)]
+        [ScriptHandler(ScriptName.OnDMPossessFullPowerBefore)]
         public static void CloseAppearanceWindowOnPossessionBefore()
         {
             var dm = OBJECT_SELF;

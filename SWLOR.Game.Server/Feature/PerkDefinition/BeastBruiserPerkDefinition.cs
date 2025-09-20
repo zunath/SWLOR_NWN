@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -106,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         }
 
 
-        [NWNEventHandler(ScriptName.OnItemHit)]
+        [ScriptHandler(ScriptName.OnItemHit)]
         public static void OnEnduranceLinkHit()
         {
             var beast = OBJECT_SELF;

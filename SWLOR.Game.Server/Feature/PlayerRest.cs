@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a player rests, cancel the NWN resting mechanic and apply our custom Rest status effect
         /// which handles recovery of HP, FP, and STM.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleRest)]
+        [ScriptHandler(ScriptName.OnModuleRest)]
         public static void HandleRest()
         {
             var player = GetLastPCRested();
@@ -85,7 +86,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a player enters a rest trigger, flag them and notify them they can rest.
         /// This will only occur if they are inside a dungeon because they can rest anywhere they want outside of a dungeon.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnRestTriggerEnter)]
+        [ScriptHandler(ScriptName.OnRestTriggerEnter)]
         public static void EnterRestTrigger()
         {
             var player = GetEnteringObject();
@@ -99,7 +100,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a player exits a rest trigger, unflag them and notify them they can no longer rest.
         /// This will only occur if they are inside a dungeon.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnRestTriggerExit)]
+        [ScriptHandler(ScriptName.OnRestTriggerExit)]
         public static void ExitRestTrigger()
         {
             var player = GetExitingObject();

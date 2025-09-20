@@ -7,13 +7,14 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class TrainingStoreViewModel: GuiViewModelBase<TrainingStoreViewModel, GuiPayloadBase>,
         IGuiRefreshable<RPXPRefreshEvent>
     {
-        [NWNEventHandler(ScriptName.OnOpenTrainingStore)]
+        [ScriptHandler(ScriptName.OnOpenTrainingStore)]
         public static void OpenTrainingStore()
         {
             var player = GetPCSpeaker();

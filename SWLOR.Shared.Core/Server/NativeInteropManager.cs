@@ -1,11 +1,9 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
-using System;
 using System.Runtime.InteropServices;
 using NWNX.NET;
 using NWNX.NET.Native;
+using SWLOR.Shared.Core.Log;
 
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.Shared.Core.Server
 {
     public unsafe class NativeInteropManager
     {
@@ -26,7 +24,7 @@ namespace SWLOR.Game.Server.Core
             }
             catch (Exception e)
             {
-                Log.Write(LogGroup.Error, $"MainLoop exception: {e}", true);
+                Log.Log.Write(LogGroup.Error, $"MainLoop exception: {e}", true);
             }
         }
 
@@ -40,7 +38,7 @@ namespace SWLOR.Game.Server.Core
             }
             catch (Exception e)
             {
-                Log.Write(LogGroup.Error, $"RunScript exception: {e}", true);
+                Log.Log.Write(LogGroup.Error, $"RunScript exception: {e}", true);
                 return -1;
             }
         }
@@ -55,7 +53,7 @@ namespace SWLOR.Game.Server.Core
             }
             catch (Exception e)
             {
-                Log.Write(LogGroup.Error, $"Signal processing exception: {e}", true);
+                Log.Log.Write(LogGroup.Error, $"Signal processing exception: {e}", true);
             }
         }
 
@@ -68,7 +66,7 @@ namespace SWLOR.Game.Server.Core
             }
             catch (Exception e)
             {
-                Log.Write(LogGroup.Error, $"Closure processing exception: {e}", true);
+                Log.Log.Write(LogGroup.Error, $"Closure processing exception: {e}", true);
             }
         }
 

@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.Shared.Core.Event
 {
     /// <summary>
     /// Constants for NWN script names used in NWNEventHandler attributes.

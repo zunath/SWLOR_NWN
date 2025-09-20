@@ -2,8 +2,9 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -12,8 +13,8 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Saves a player's area map progression when exiting an area.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAreaExit)]
-        [NWNEventHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler(ScriptName.OnAreaExit)]
+        [ScriptHandler(ScriptName.OnModuleExit)]
         public static void SaveMapProgression()
         {
             var player = GetExitingObject();
@@ -37,7 +38,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Loads a player's area map progression when entering an area for the first time after a reboot.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler(ScriptName.OnAreaEnter)]
         public static void LoadMapProgression()
         {
             var player = GetEnteringObject();

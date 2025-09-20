@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -32,14 +33,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), creature);
         }
 
-        [NWNEventHandler(ScriptName.OnGrenadeIncendiary1Enable)]
+        [ScriptHandler(ScriptName.OnGrenadeIncendiary1Enable)]
         public static void IncendiaryBomb1Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 4);
         }
 
-        [NWNEventHandler(ScriptName.OnGrenadeIncendiary1Heartbeat)]
+        [ScriptHandler(ScriptName.OnGrenadeIncendiary1Heartbeat)]
         public static void IncendiaryBomb1Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
@@ -50,14 +51,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        [NWNEventHandler(ScriptName.OnGrenadeIncendiary2Enable)]
+        [ScriptHandler(ScriptName.OnGrenadeIncendiary2Enable)]
         public static void IncendiaryBomb2Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 10);
         }
 
-        [NWNEventHandler(ScriptName.OnGrenadeIncendiary2Heartbeat)]
+        [ScriptHandler(ScriptName.OnGrenadeIncendiary2Heartbeat)]
         public static void IncendiaryBomb2Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
@@ -68,14 +69,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        [NWNEventHandler(ScriptName.OnGrenadeIncendiary3Enable)]
+        [ScriptHandler(ScriptName.OnGrenadeIncendiary3Enable)]
         public static void IncendiaryBomb3Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 16);
         }
 
-        [NWNEventHandler(ScriptName.OnGrenadeIncendiary3Heartbeat)]
+        [ScriptHandler(ScriptName.OnGrenadeIncendiary3Heartbeat)]
         public static void IncendiaryBomb3Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);

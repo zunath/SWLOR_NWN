@@ -3,11 +3,12 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         /// <summary>
         /// Whenever a resource despawns, if it has an associated prop placeable, destroy it from the game world.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSpawnDespawn)]
+        [ScriptHandler(ScriptName.OnSpawnDespawn)]
         public static void CleanupResourcePropPlaceables()
         {
             var resource = OBJECT_SELF;

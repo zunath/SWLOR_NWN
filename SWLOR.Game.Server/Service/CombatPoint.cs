@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Adds a combat point to a given NPC creature for a given player and skill type.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnItemHit)]
+        [ScriptHandler(ScriptName.OnItemHit)]
         public static void OnHitCastSpell()
         {
             var player = OBJECT_SELF;
@@ -68,7 +69,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature dies, skill XP is given to all players who contributed during battle.
         /// Then, those combat points are cleared out.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
+        [ScriptHandler(ScriptName.OnCreatureDeathAfter)]
         public static void OnCreatureDeath()
         {
             // Clears the combat point cache information for an NPC and all player associated.
@@ -184,8 +185,8 @@ namespace SWLOR.Game.Server.Service
         /// When a player leaves an area or the server, we need to remove all combat points
         /// that may be referenced to their character.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleExit)]
-        [NWNEventHandler(ScriptName.OnAreaExit)]
+        [ScriptHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler(ScriptName.OnAreaExit)]
         public static void OnPlayerExit()
         {
             var player = GetExitingObject();

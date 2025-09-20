@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
@@ -17,7 +16,9 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Log;
 using ResearchJob = SWLOR.Game.Server.Entity.ResearchJob;
 
 namespace SWLOR.Game.Server.Service
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the skill cache has finished loading, recipe and category data is cached.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSwlorSkillCache)]
+        [ScriptHandler(ScriptName.OnSwlorSkillCache)]
         public static void CacheData()
         {
             CacheCategories();
@@ -351,7 +352,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a crafting device is used, display the recipe menu.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCraftUsed)]
+        [ScriptHandler(ScriptName.OnCraftUsed)]
         public static void UseCraftingDevice()
         {
             var player = GetLastUsedBy();
@@ -715,14 +716,14 @@ namespace SWLOR.Game.Server.Service
             throw new Exception("Unsupported enhancement type.");
         }
 
-        [NWNEventHandler(ScriptName.OnRefineryUsed)]
+        [ScriptHandler(ScriptName.OnRefineryUsed)]
         public static void UseRefinery()
         {
             var player = GetLastUsedBy();
             Gui.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
         }
 
-        [NWNEventHandler(ScriptName.OnResearchTerminal)]
+        [ScriptHandler(ScriptName.OnResearchTerminal)]
         public static void UseResearchTerminal()
         {
             var player = GetLastUsedBy();
@@ -920,7 +921,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a property is removed, also remove any associated research jobs.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSwlorDeleteProperty)]
+        [ScriptHandler(ScriptName.OnSwlorDeleteProperty)]
         public static void OnRemoveProperty()
         {
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");

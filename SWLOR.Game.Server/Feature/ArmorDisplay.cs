@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -10,7 +11,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player equips a type of armor which can be hidden, set whether it is hidden based on the player's setting.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEquip)]
+        [ScriptHandler(ScriptName.OnModuleEquip)]
         public static void EquipHelmet()
         {
             var player = GetPCItemLastEquippedBy();

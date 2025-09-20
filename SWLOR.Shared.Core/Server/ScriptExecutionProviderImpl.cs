@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
 using SWLOR.NWN.API;
 
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.Shared.Core.Server
 {
     /// <summary>
     /// Implementation of IScriptExecutionProvider that bridges the NWScript API

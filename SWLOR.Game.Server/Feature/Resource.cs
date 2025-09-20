@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -8,7 +9,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a resource is used, display an error message indicating that a harvester is needed.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnResourceUsed)]
+        [ScriptHandler(ScriptName.OnResourceUsed)]
         public static void OnUsed()
         {
             var user = GetLastUsedBy();
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a resource's heartbeat fires for the first time, spawn a prop object if specified.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnResourceHeartbeat)]
+        [ScriptHandler(ScriptName.OnResourceHeartbeat)]
         public static void OnHeartbeat()
         {
             var placeable = OBJECT_SELF;

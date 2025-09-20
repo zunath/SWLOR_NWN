@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -18,6 +17,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Async;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
@@ -47,7 +48,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all space data into memory.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadSpaceSystem()
         {
             LoadShips();
@@ -62,7 +63,7 @@ namespace SWLOR.Game.Server.Service
             Scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(100d));
         }
 
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
         public static void EnterServer()
         {
             var player = GetEnteringObject();
@@ -70,7 +71,7 @@ namespace SWLOR.Game.Server.Service
             WarpPlayerInsideShip(player);
         }
 
-        [NWNEventHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler(ScriptName.OnModuleExit)]
         public static void ExitServer()
         {
             var player = GetExitingObject();
@@ -86,7 +87,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, 
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void LoadLandingPoints()
         {
             var count = 0;
@@ -383,7 +384,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles swapping a player's target to the object they attempted to attack using NWN's combat system.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnInputAttackObjectBefore)]
+        [ScriptHandler(ScriptName.OnInputAttackObjectBefore)]
         public static void SelectTarget()
         {
             var player = OBJECT_SELF;
@@ -418,7 +419,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters a space area, update the property's space position.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler(ScriptName.OnAreaEnter)]
         public static void UpdateSpacePosition()
         {
             var player = GetEnteringObject();
@@ -448,7 +449,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature leaves an area, their current target is cleared.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAreaExit)]
+        [ScriptHandler(ScriptName.OnAreaExit)]
         public static void ClearTargetOnAreaExit()
         {
             var player = GetExitingObject();
@@ -462,7 +463,7 @@ namespace SWLOR.Game.Server.Service
         /// If player has permission and the ship isn't currently being controlled by another player,
         /// send the player into space mode.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnShipComputer)]
+        [ScriptHandler(ScriptName.OnShipComputer)]
         public static void UseShipComputer()
         {
             var area = GetArea(OBJECT_SELF);
@@ -994,7 +995,7 @@ namespace SWLOR.Game.Server.Service
         /// When a ship module item is examined,
         /// append the configured description to the item's description and add prerequisite perk item properties.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
+        [ScriptHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineShipModuleItem()
         {
             var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
@@ -1027,7 +1028,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a ship item is examined, add the prerequisite perk item properties.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
+        [ScriptHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExamineShipItem()
         {
             var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
@@ -1050,7 +1051,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a ship module's feat is used, execute the currently equipped module's custom code.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnFeatUseBefore)]
+        [ScriptHandler(ScriptName.OnFeatUseBefore)]
         public static void HandleShipModuleFeats()
         {
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
@@ -1292,7 +1293,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature spawns, track it in the cache.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureSpawnBefore)]
+        [ScriptHandler(ScriptName.OnCreatureSpawnBefore)]
         public static void CreatureSpawn()
         {
             var creature = OBJECT_SELF;
@@ -1371,7 +1372,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature dies, remove it from the cache.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
+        [ScriptHandler(ScriptName.OnCreatureDeathAfter)]
         public static void CreatureDeath()
         {
             var creature = OBJECT_SELF;
@@ -1743,7 +1744,7 @@ namespace SWLOR.Game.Server.Service
         ///     - The ship will relocate back to the last dock it was at
         /// If this is an NPC, they will be killed and explode in spectacular fashion.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleDeath)]
+        [ScriptHandler(ScriptName.OnModuleDeath)]
         public static void ApplyDeath()
         {
             var creature = GetLastPlayerDied();
@@ -1948,7 +1949,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature clicks on a space object, target that object.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSpaceTarget)]
+        [ScriptHandler(ScriptName.OnSpaceTarget)]
         public static void TargetSpaceObject()
         {
             var creature = GetPlaceableLastClickedBy();
@@ -2113,7 +2114,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player attempts to stealth while in space mode,
         /// exit the stealth mode and send an error message.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnStealthEnterBefore)]
+        [ScriptHandler(ScriptName.OnStealthEnterBefore)]
         public static void PreventSpaceStealth()
         {
             var creature = OBJECT_SELF;

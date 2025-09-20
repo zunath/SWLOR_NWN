@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles creating all of the mapping dictionaries used by the skill system on module load.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadMappings()
         {
             LoadItemToSkillMapping();

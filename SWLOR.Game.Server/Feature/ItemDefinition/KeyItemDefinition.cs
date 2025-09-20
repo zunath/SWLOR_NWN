@@ -2,8 +2,8 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Log;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {

@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.TaxiService;
+using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Game.Server.Service
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all taxi destinations.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadTaxiDestinations()
         {
             var taxiDestinationTypes = Enum.GetValues(typeof(TaxiDestinationType)).Cast<TaxiDestinationType>();

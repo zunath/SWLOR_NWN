@@ -13,6 +13,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Event;
 using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Feature
         /// If it is, requirements to use the feat will be checked and then the ability will activate.
         /// If there are errors at any point in this process, the creature will be notified and the execution will end.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnFeatUseBefore)]
+        [ScriptHandler(ScriptName.OnFeatUseBefore)]
         public static void UseFeat()
         {
             var activator = OBJECT_SELF;
@@ -380,7 +381,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player's weapon hits a target, if an ability is queued, that ability will be executed.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnItemHit)]
+        [ScriptHandler(ScriptName.OnItemHit)]
         public static void ProcessQueuedWeaponAbility()
         {
             var activator = OBJECT_SELF;
@@ -411,7 +412,7 @@ namespace SWLOR.Game.Server.Feature
         /// Whenever a player enters the server, any temporary variables related to ability execution
         /// will be removed from their PC.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
         public static void ClearTemporaryQueuedVariables()
         {
             var player = GetEnteringObject();
@@ -422,7 +423,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Whenever a player starts resting, clear any queued abilities.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnRestStarted)]
+        [ScriptHandler(ScriptName.OnRestStarted)]
         public static void ClearTemporaryQueuedVariablesOnRest()
         {
             ClearQueuedAbility(OBJECT_SELF);
@@ -431,7 +432,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Whenever a player equips an item, clear any queued abilities.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
+        [ScriptHandler(ScriptName.OnSWLORItemEquipValidBefore)]
         public static void ClearTemporaryQueuedVariablesOnEquip()
         {
             ClearQueuedAbility(OBJECT_SELF);

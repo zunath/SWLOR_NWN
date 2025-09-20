@@ -5,9 +5,10 @@ using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, add all valid damage types to the cache.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void LoadDamageTypes()
         {
             var allValues = Enum.GetValues(typeof(CombatDamageType)).Cast<CombatDamageType>();
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, apply any defenses towards damage types they don't already have.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
         public static void AddDamageTypeDefenses()
         {
             var player = GetEnteringObject();
@@ -245,7 +246,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// On module heartbeat, clear a PC's saved combat facing if they are no longer in combat.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnIntervalPC6Seconds)]
+        [ScriptHandler(ScriptName.OnIntervalPC6Seconds)]
         public static void ClearCombatState()
         {
             uint player = OBJECT_SELF;

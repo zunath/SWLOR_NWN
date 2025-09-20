@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Saves a player's location on area enter.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler(ScriptName.OnAreaEnter)]
         public static void SaveLocationOnAreaEnter()
         {
             var player = GetEnteringObject();
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Saves a player's location on rest.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleRest)]
+        [ScriptHandler(ScriptName.OnModuleRest)]
         public static void SaveLocationOnRest()
         {
             var player = GetLastPCRested();
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Loads a player's location if they enter an area with the tag "ooc_area".
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler(ScriptName.OnAreaEnter)]
         public static void LoadLocationOnEnter()
         {
             var player = GetEnteringObject();

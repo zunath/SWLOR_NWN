@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Shared.Core.Log;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {

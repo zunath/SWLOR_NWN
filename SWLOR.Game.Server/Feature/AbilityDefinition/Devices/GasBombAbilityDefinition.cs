@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -27,14 +28,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Acid), creature);
         }
 
-        [NWNEventHandler(ScriptName.OnGrenadeGas1Enable)]
+        [ScriptHandler(ScriptName.OnGrenadeGas1Enable)]
         public static void GasBomb1Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature,  4);
         }
 
-        [NWNEventHandler(ScriptName.OnGrenadeGas1Heartbeat)]
+        [ScriptHandler(ScriptName.OnGrenadeGas1Heartbeat)]
         public static void GasBomb1Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
@@ -45,14 +46,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        [NWNEventHandler(ScriptName.OnGrenadeGas2Enable)]
+        [ScriptHandler(ScriptName.OnGrenadeGas2Enable)]
         public static void GasBomb2Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 12);
         }
 
-        [NWNEventHandler(ScriptName.OnGrenadeGas2Heartbeat)]
+        [ScriptHandler(ScriptName.OnGrenadeGas2Heartbeat)]
         public static void GasBomb2Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
@@ -63,14 +64,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        [NWNEventHandler(ScriptName.OnGrenadeGas3Enable)]
+        [ScriptHandler(ScriptName.OnGrenadeGas3Enable)]
         public static void GasBomb3Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 16);
         }
 
-        [NWNEventHandler(ScriptName.OnGrenadeGas3Heartbeat)]
+        [ScriptHandler(ScriptName.OnGrenadeGas3Heartbeat)]
         public static void GasBomb3Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);

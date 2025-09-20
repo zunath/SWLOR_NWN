@@ -8,6 +8,9 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Configuration;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -32,7 +35,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Loads all chat commands into cache and builds the related help text.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void OnModuleLoad()
         {
             LoadChatCommands();
@@ -43,7 +46,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles validating and processing chat commands sent by players and DMs.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnNWNXChat)]
+        [ScriptHandler(ScriptName.OnNWNXChat)]
         public static void HandleChatMessage()
         {
             var sender = OBJECT_SELF;

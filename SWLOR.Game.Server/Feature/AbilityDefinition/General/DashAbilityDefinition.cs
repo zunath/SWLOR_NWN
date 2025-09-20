@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
 {
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
             return _builder.Build();
         }
 
-        [NWNEventHandler(ScriptName.OnSpaceEnter)]
+        [ScriptHandler(ScriptName.OnSpaceEnter)]
         public static void EnterSpace()
         {
             var player = OBJECT_SELF;

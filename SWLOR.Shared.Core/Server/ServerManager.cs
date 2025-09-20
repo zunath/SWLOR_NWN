@@ -1,8 +1,6 @@
-using System;
-
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.Shared.Core.Server
 {
-    public static class ServerManager
+    public class ServerManager
     {
         public static ServerBootstrapper Bootstrapper { get; private set; }
         public static NativeInteropManager NativeInterop { get; private set; }

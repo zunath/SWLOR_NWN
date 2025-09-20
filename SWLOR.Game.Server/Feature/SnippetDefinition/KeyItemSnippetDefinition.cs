@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SnippetService;
+using SWLOR.Shared.Core.Log;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {

@@ -1,10 +1,8 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API;
-using System;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Log;
 
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.Shared.Core.Server
 {
     public class ServerBootstrapper
     {
@@ -55,7 +53,7 @@ namespace SWLOR.Game.Server.Core
             Environment.SetEnvironmentVariable("GAME_SERVER_CONTEXT", "true");
 
             Console.WriteLine("Registering loggers...");
-            Log.Register();
+            Log.Log.Register();
             Console.WriteLine("Loggers registered successfully.");
 
             Console.WriteLine("Registering script execution provider...");
@@ -77,7 +75,7 @@ namespace SWLOR.Game.Server.Core
 
         private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs ex)
         {
-            Log.Write(LogGroup.Error, ((Exception)ex.ExceptionObject).ToMessageAndCompleteStacktrace(), true);
+            Log.Log.Write(LogGroup.Error, ((Exception)ex.ExceptionObject).ToMessageAndCompleteStacktrace(), true);
         }
     }
 }

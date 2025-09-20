@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Core
+﻿namespace SWLOR.Shared.Core.Server
 {
     public interface ICoreEventHandler
     {

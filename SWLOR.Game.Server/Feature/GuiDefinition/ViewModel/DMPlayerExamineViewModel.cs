@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private const int MaxNotes = 50;
 
-        [NWNEventHandler(ScriptName.OnExamineObjectBefore)]
+        [ScriptHandler(ScriptName.OnExamineObjectBefore)]
         public static void ExaminePlayer()
         {
             var dm = OBJECT_SELF;

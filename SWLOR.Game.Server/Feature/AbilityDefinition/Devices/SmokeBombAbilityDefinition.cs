@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -17,14 +18,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             ApplyEffectToObject(DurationType.Temporary, EffectInvisibility(InvisibilityType.Normal), creature, 6f);
         }
 
-        [NWNEventHandler(ScriptName.OnGrenadeSmokeEnable)]
+        [ScriptHandler(ScriptName.OnGrenadeSmokeEnable)]
         public static void SmokeBombEnter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature);
         }
 
-        [NWNEventHandler(ScriptName.OnGrenadeSmokeHeartbeat)]
+        [ScriptHandler(ScriptName.OnGrenadeSmokeHeartbeat)]
         public static void SmokeBombHeartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);

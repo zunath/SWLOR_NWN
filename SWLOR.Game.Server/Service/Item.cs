@@ -9,12 +9,13 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             Load2DACache();
@@ -244,7 +245,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an item is used, if its tag is in the item cache, run it through the action item process.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnItemUseBefore)]
+        [ScriptHandler(ScriptName.OnItemUseBefore)]
         public static void UseItem()
         {
             var user = OBJECT_SELF;

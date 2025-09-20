@@ -2,8 +2,8 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Core.Log;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {

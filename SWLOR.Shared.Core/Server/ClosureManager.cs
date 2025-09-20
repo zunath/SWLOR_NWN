@@ -1,11 +1,8 @@
 ﻿using NWNX.NET;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
-using System;
-using System.Collections.Generic;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Log;
 
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.Shared.Core.Server
 {
     /// <summary>
     /// Simple GameManager implementation. Used by default if no manager is specified during bootstrap.
@@ -65,7 +62,7 @@ namespace SWLOR.Game.Server.Core
             }
             catch (Exception ex)
             {
-                Log.Write(LogGroup.Error, ex.ToMessageAndCompleteStacktrace());
+                Log.Log.Write(LogGroup.Error, ex.ToMessageAndCompleteStacktrace());
             }
 
             _closures.Remove(eid);

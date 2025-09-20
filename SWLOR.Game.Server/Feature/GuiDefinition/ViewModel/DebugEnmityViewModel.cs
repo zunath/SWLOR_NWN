@@ -2,13 +2,14 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DebugEnmityViewModel: GuiViewModelBase<DebugEnmityViewModel, GuiPayloadBase>,
         IGuiRefreshable<EnmityChangedRefreshEvent>
     {
-        [NWNEventHandler(ScriptName.OnEnmityChanged)]
+        [ScriptHandler(ScriptName.OnEnmityChanged)]
         public static void OnEnmityChanged()
         {
             foreach (var member in Party.GetAllPartyMembers(OBJECT_SELF))

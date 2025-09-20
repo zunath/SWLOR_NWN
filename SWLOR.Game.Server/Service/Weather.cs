@@ -9,6 +9,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.NWN.API.Engine;
+using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Game.Server.Service
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache planet climates and other pertinent data.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadData()
         {
             _planetClimates = WeatherPlanetDefinitions.GetPlanetClimates();
@@ -640,7 +641,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler(ScriptName.OnAreaEnter)]
         public static void OnAreaEnter()
         {
             SetWeather();
@@ -701,7 +702,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        [NWNEventHandler(ScriptName.OnSwlorHeartbeat)]
+        [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
         public static void OnModuleHeartbeat()
         {
             var oMod = GetModule();

@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -9,7 +10,7 @@ namespace SWLOR.Game.Server.Feature
         /// Whenever an attack of opportunity is broadcast, skip the event to disable it.
         /// This should effectively disable AOOs across the board.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnBroadcastAttackOfOpportunityBefore)]
+        [ScriptHandler(ScriptName.OnBroadcastAttackOfOpportunityBefore)]
         public static void OnAttackOfOpportunity()
         {
             EventsPlugin.SkipEvent();

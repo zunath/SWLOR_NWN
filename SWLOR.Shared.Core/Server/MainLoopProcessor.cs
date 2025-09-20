@@ -1,10 +1,8 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
-using System;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Log;
 
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.Shared.Core.Server
 {
     public class MainLoopProcessor
     {
@@ -22,7 +20,7 @@ namespace SWLOR.Game.Server.Core
             }
             catch (Exception ex)
             {
-                Log.Write(LogGroup.Error, ex.ToMessageAndCompleteStacktrace(), true);
+                Log.Log.Write(LogGroup.Error, ex.ToMessageAndCompleteStacktrace(), true);
             }
 
             OnScriptContextEnd?.Invoke();

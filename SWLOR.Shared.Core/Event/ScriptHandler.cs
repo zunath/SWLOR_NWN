@@ -1,13 +1,11 @@
-using System;
-
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.Shared.Core.Event
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public class NWNEventHandler : Attribute
+    public class ScriptHandler : Attribute
     {
         public string Script { get; }
 
-        public NWNEventHandler(string script)
+        public ScriptHandler(string script)
         {
             Script = script;
         }

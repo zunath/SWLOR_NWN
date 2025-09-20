@@ -5,6 +5,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Game.Server.Service
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, cache all currency details into memory.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheCurrencies()
         {
             var currencyTypes = Enum.GetValues(typeof(CurrencyType)).Cast<CurrencyType>();

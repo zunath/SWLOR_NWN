@@ -3,13 +3,14 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature
 {
     public static class PlayerStatusWindow
     {
 
-        [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
+        [ScriptHandler(ScriptName.OnSWLORItemEquipValidBefore)]
         public static void PlayerEquipItem()
         {
             var player = OBJECT_SELF;
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
-        [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
+        [ScriptHandler(ScriptName.OnItemUnequipBefore)]
         public static void PlayerUnequipItem()
         {
             var player = OBJECT_SELF;
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
-        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
+        [ScriptHandler(ScriptName.OnPlayerDamaged)]
         public static void PlayerDamaged()
         {
             var player = OBJECT_SELF;
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
 
-        [NWNEventHandler(ScriptName.OnPlayerFPAdjusted)]
+        [ScriptHandler(ScriptName.OnPlayerFPAdjusted)]
         public static void PlayerFPAdjusted()
         {
             var player = OBJECT_SELF;
@@ -53,7 +54,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
         }
 
-        [NWNEventHandler(ScriptName.OnPlayerStaminaAdjusted)]
+        [ScriptHandler(ScriptName.OnPlayerStaminaAdjusted)]
         public static void PlayerSTMAdjusted()
         {
             var player = OBJECT_SELF;
@@ -63,14 +64,14 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
-        [NWNEventHandler(ScriptName.OnHealAfter)]
+        [ScriptHandler(ScriptName.OnHealAfter)]
         public static void PlayerHealed()
         {
             var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
             Gui.PublishRefreshEvent(target, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
 
-        [NWNEventHandler(ScriptName.OnPlayerShieldAdjusted)]
+        [ScriptHandler(ScriptName.OnPlayerShieldAdjusted)]
         public static void PlayerShieldAdjusted()
         {
             var player = OBJECT_SELF;
@@ -80,7 +81,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Shield));
         }
 
-        [NWNEventHandler(ScriptName.OnPlayerHullAdjusted)]
+        [ScriptHandler(ScriptName.OnPlayerHullAdjusted)]
         public static void PlayerHullAdjusted()
         {
             var player = OBJECT_SELF;
@@ -90,7 +91,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Hull));
         }
 
-        [NWNEventHandler(ScriptName.OnPlayerCapAdjusted)]
+        [ScriptHandler(ScriptName.OnPlayerCapAdjusted)]
         public static void PlayerCapacitorAdjusted()
         {
             var player = OBJECT_SELF;
@@ -100,7 +101,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Capacitor));
         }
 
-        [NWNEventHandler(ScriptName.OnPlayerTargetUpdated)]
+        [ScriptHandler(ScriptName.OnPlayerTargetUpdated)]
         public static void PlayerSpaceTargetAdjusted()
         {
             var player = OBJECT_SELF;
@@ -110,8 +111,8 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new TargetStatusRefreshEvent());
         }
 
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
-        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnAreaEnter)]
         public static void LoadPlayerStatusWindow()
         {
             var player = GetEnteringObject();

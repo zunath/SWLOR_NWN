@@ -5,10 +5,11 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using ClassType = SWLOR.NWN.API.NWScript.Enum.ClassType;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CharacterFullRebuildViewModel: GuiViewModelBase<CharacterFullRebuildViewModel, GuiPayloadBase>
     {
-        [NWNEventHandler(ScriptName.OnCharacterRebuild)]
+        [ScriptHandler(ScriptName.OnCharacterRebuild)]
         public static void LoadCharacterMigrationWindow()
         {
             var player = GetLastUsedBy();
@@ -37,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(player, GuiWindowType.CharacterMigration, null, OBJECT_SELF);
         }
 
-        [NWNEventHandler(ScriptName.OnExitRebuild)]
+        [ScriptHandler(ScriptName.OnExitRebuild)]
         public static void ExitRebuildArea()
         {
             var player = GetLastUsedBy();
@@ -65,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             });
         }
 
-        [NWNEventHandler(ScriptName.OnExitSpending)]
+        [ScriptHandler(ScriptName.OnExitSpending)]
         public static void ExitSpendingArea()
         {
             var player = GetLastUsedBy();

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Game.Server.Service
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, cache relevant data and load guild tasks.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadData()
         {
             var guildTypes = Enum.GetValues(typeof(GuildType)).Cast<GuildType>();
@@ -125,7 +126,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// After quests are registered, refresh the available guild tasks.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnQuestsRegistered)]
+        [ScriptHandler(ScriptName.OnQuestsRegistered)]
         public static void RefreshGuildTasks()
         {
             if (DateTasksLoaded != null) return;

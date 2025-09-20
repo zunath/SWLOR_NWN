@@ -8,14 +8,15 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Log;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
@@ -71,7 +72,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all relevant data into memory.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             CachePropertyTypes();
@@ -85,7 +86,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, clean up any deleted data, refreshes permissions and then load properties.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void OnModuleLoad()
         {
             RefreshPermissions();
@@ -1628,7 +1629,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an apartment terminal is used, open the Apartment NUI
         /// </summary>
-        [NWNEventHandler(ScriptName.OnApartmentTerminal)]
+        [ScriptHandler(ScriptName.OnApartmentTerminal)]
         public static void StartApartmentConversation()
         {
             var player = GetLastUsedBy();
@@ -1721,7 +1722,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters a property instance, add them to the list of players.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler(ScriptName.OnAreaEnter)]
         public static void EnterPropertyInstance()
         {
             var player = GetExitingObject();
@@ -1740,7 +1741,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player exits a property instance, remove them from the list of players.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAreaExit)]
+        [ScriptHandler(ScriptName.OnAreaExit)]
         public static void ExitPropertyInstance()
         {
             var player = GetExitingObject();
@@ -1827,7 +1828,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the property menu feat is used, open the GUI window.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnFeatUseBefore)]
+        [ScriptHandler(ScriptName.OnFeatUseBefore)]
         public static void PropertyMenu()
         {
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
@@ -1910,7 +1911,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Before an item is used, if it is a structure item, place it at the specified location.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnItemUseBefore)]
+        [ScriptHandler(ScriptName.OnItemUseBefore)]
         public static void PlaceStructure()
         {
             var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
@@ -2114,7 +2115,7 @@ namespace SWLOR.Game.Server.Service
         /// When a building entrance is used, port the player inside the instance if they have permission
         /// or display an error message saying they don't have permission to enter.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnEnterProperty)]
+        [ScriptHandler(ScriptName.OnEnterProperty)]
         public static void EnterBuilding()
         {
             var player = GetLastUsedBy();
@@ -2171,7 +2172,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the Citizenship terminal is used, open the Manage Citizenship UI.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnOpenCitizenship)]
+        [ScriptHandler(ScriptName.OnOpenCitizenship)]
         public static void OpenCitizenshipMenu()
         {
             var player = GetLastUsedBy();
@@ -2207,7 +2208,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the City Management terminal is used, open the City Management UI.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnOpenCityManage)]
+        [ScriptHandler(ScriptName.OnOpenCityManage)]
         public static void OpenCityManagementMenu()
         {
             var player = GetLastUsedBy();

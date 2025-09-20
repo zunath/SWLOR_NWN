@@ -6,8 +6,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Core.Log;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Game.Server.Service
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all key item data.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadData()
         {
             // Organize categories
@@ -238,7 +239,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a placeable with a key item defined is used by a player, give it to them.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnGetKeyItem)]
+        [ScriptHandler(ScriptName.OnGetKeyItem)]
         public static void ObtainKeyItem()
         {
 

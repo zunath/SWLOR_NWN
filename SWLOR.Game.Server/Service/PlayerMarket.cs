@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 using MarketCategoryType = SWLOR.Game.Server.Service.PlayerMarketService.MarketCategoryType;
 
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, cache all static player market data for quick retrieval.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             LoadMarketCategories();
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Marks items as unlisted if they have been sitting on the market for longer than two weeks.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void RemoveOldListings()
         {
             var query = new DBQuery<MarketItem>()
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, if they have credits in their market till, send them a message stating so.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
         public static void CheckMarketTill()
         {
             var player = GetEnteringObject();

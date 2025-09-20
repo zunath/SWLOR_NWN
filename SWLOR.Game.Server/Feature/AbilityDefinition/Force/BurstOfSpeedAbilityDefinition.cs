@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return string.Empty;
         }
 
-        [NWNEventHandler(ScriptName.OnBurstOfSpeedApply)]
+        [ScriptHandler(ScriptName.OnBurstOfSpeedApply)]
         public static void ApplyEffect()
         {
             var activeEffect = GetLastRunScriptEffect();
@@ -69,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             Stat.ApplyPlayerMovementRate(target);
         }
 
-        [NWNEventHandler(ScriptName.OnBurstOfSpeedRemoved)]
+        [ScriptHandler(ScriptName.OnBurstOfSpeedRemoved)]
         public static void RemoveEffect()
         {
             var target = OBJECT_SELF;

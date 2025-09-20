@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -10,7 +11,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a user click the holonet terminal, a UI will open which lets them enter their message
         /// and pay a fee to send a message over the in-game holonet channel and discord.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnOpenHoloNet)]
+        [ScriptHandler(ScriptName.OnOpenHoloNet)]
         public static void OpenHolonetUI()
         {
             var player = GetLastUsedBy();

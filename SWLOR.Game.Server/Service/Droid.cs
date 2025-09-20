@@ -16,6 +16,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -37,7 +38,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all relevant droid data into memory.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             CacheDroidLevels();
@@ -204,7 +205,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player uses a droid assembly terminal, displays the UI.
         /// Player will receive an error if they don't have any ranks in the Droid Assembly perk.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnDroidAssociateUsed)]
+        [ScriptHandler(ScriptName.OnDroidAssociateUsed)]
         public static void UseDroidAssemblyTerminal()
         {
             var player = GetLastUsedBy();
@@ -223,7 +224,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player leaves the server, any droids they have actives are despawned.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler(ScriptName.OnModuleExit)]
         public static void OnPlayerExit()
         {
             var player = GetExitingObject();
@@ -248,7 +249,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a droid acquires an item, it is stored into a persistent variable on the controller item.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleAcquire)]
+        [ScriptHandler(ScriptName.OnModuleAcquire)]
         public static void OnAcquireItem()
         {
             var droid = GetModuleItemAcquiredBy();
@@ -290,7 +291,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a droid loses an item, it is removed from the persistent variable on the controller item.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleUnacquire)]
+        [ScriptHandler(ScriptName.OnModuleUnacquire)]
         public static void OnLostItem()
         {
             var droid = GetModuleItemLostBy();
@@ -304,7 +305,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a droid equips an item, it is removed from its inventory and added to its equipped items.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
+        [ScriptHandler(ScriptName.OnSWLORItemEquipValidBefore)]
         public static void OnEquipItem()
         {
             var droid = OBJECT_SELF;
@@ -343,7 +344,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a droid unequips an item, it is removed from its equipped items and added to its inventory.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
+        [ScriptHandler(ScriptName.OnItemUnequipBefore)]
         public static void OnUnequipItem()
         {
             var droid = OBJECT_SELF;
@@ -834,7 +835,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the appearance of a droid is changed, update the data on the local variable.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAppearanceEdit)]
+        [ScriptHandler(ScriptName.OnAppearanceEdit)]
         public static void EditDroidAppearance()
         {
             var droid = OBJECT_SELF;
@@ -874,8 +875,8 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters space or forcefully removes a droid from the party, the droid gets despawned.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSpaceEnter)]
-        [NWNEventHandler(ScriptName.OnAssociateRemoveBefore)]
+        [ScriptHandler(ScriptName.OnSpaceEnter)]
+        [ScriptHandler(ScriptName.OnAssociateRemoveBefore)]
         public static void RemoveAssociate()
         {
             var player = OBJECT_SELF;
@@ -952,13 +953,13 @@ namespace SWLOR.Game.Server.Service
             SetLocalString(controller, ConstructedDroidVariable, serialized);
         }
         
-        [NWNEventHandler(ScriptName.OnDroidBlocked)]
+        [ScriptHandler(ScriptName.OnDroidBlocked)]
         public static void DroidOnBlocked()
         {
             ExecuteScript("x0_ch_hen_block", OBJECT_SELF);
         }
 
-        [NWNEventHandler(ScriptName.OnDroidRoundEnd)]
+        [ScriptHandler(ScriptName.OnDroidRoundEnd)]
         public static void DroidOnEndCombatRound()
         {
             var droid = OBJECT_SELF;
@@ -969,20 +970,20 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        [NWNEventHandler(ScriptName.OnDroidConversation)]
+        [ScriptHandler(ScriptName.OnDroidConversation)]
         public static void DroidOnConversation()
         {
             ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
-        [NWNEventHandler(ScriptName.OnDroidDamaged)]
+        [ScriptHandler(ScriptName.OnDroidDamaged)]
         public static void DroidOnDamaged()
         {
             ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
 
         }
 
-        [NWNEventHandler(ScriptName.OnDroidDeath)]
+        [ScriptHandler(ScriptName.OnDroidDeath)]
         public static void DroidOnDeath()
         {
             var droid = OBJECT_SELF;
@@ -999,34 +1000,34 @@ namespace SWLOR.Game.Server.Service
             CloseAppearanceEditor(player);
         }
 
-        [NWNEventHandler(ScriptName.OnDroidDisturbed)]
+        [ScriptHandler(ScriptName.OnDroidDisturbed)]
         public static void DroidOnDisturbed()
         {
             ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
         }
 
-        [NWNEventHandler(ScriptName.OnDroidHeartbeat)]
+        [ScriptHandler(ScriptName.OnDroidHeartbeat)]
         public static void DroidOnHeartbeat()
         {
             ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
             Stat.RestoreNPCStats(false);
         }
 
-        [NWNEventHandler(ScriptName.OnDroidPerception)]
+        [ScriptHandler(ScriptName.OnDroidPerception)]
         public static void DroidOnPerception()
         {
             ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
 
         }
 
-        [NWNEventHandler(ScriptName.OnDroidAttacked)]
+        [ScriptHandler(ScriptName.OnDroidAttacked)]
         public static void DroidOnPhysicalAttacked()
         {
             ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
 
         }
 
-        [NWNEventHandler(ScriptName.OnDroidRest)]
+        [ScriptHandler(ScriptName.OnDroidRest)]
         public static void DroidOnRested()
         {
             var droid = OBJECT_SELF;
@@ -1037,7 +1038,7 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.Apply(droid, droid, StatusEffectType.Rest, 0f);
         }
 
-        [NWNEventHandler(ScriptName.OnDroidSpawn)]
+        [ScriptHandler(ScriptName.OnDroidSpawn)]
         public static void DroidOnSpawn()
         {
             var droid = OBJECT_SELF;
@@ -1049,14 +1050,14 @@ namespace SWLOR.Game.Server.Service
             Stat.LoadNPCStats();
         }
 
-        [NWNEventHandler(ScriptName.OnDroidSpellCast)]
+        [ScriptHandler(ScriptName.OnDroidSpellCast)]
         public static void DroidOnSpellCastAt()
         {
             ExecuteScript("x2_hen_spell", OBJECT_SELF);
 
         }
 
-        [NWNEventHandler(ScriptName.OnDroidUserDefined)]
+        [ScriptHandler(ScriptName.OnDroidUserDefined)]
         public static void DroidOnUserDefined()
         {
             ExecuteScript("x0_ch_hen_usrdef", OBJECT_SELF);

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Event;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Game.Server.Entity.Player;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
@@ -44,8 +45,8 @@ namespace SWLOR.Game.Server.Service
         /// Whenever a DM possesses a creature, track the NPC on their object so that messages can be
         /// sent to them during the possession.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
-        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
+        [ScriptHandler(ScriptName.OnDMPossessBefore)]
+        [ScriptHandler(ScriptName.OnDMPossessFullPowerBefore)]
         public static void OnDMPossess()
         {
             var dm = OBJECT_SELF;
@@ -71,7 +72,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, set a local bool on their PC representing
         /// the current state of their holonet visibility.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
         public static void LoadHolonetSetting()
         {
             var player = GetEnteringObject();
@@ -88,7 +89,7 @@ namespace SWLOR.Game.Server.Service
         /// unfocused, remove the indicator.
         /// </summary>
 
-        [NWNEventHandler(ScriptName.OnModuleGuiEvent)]
+        [ScriptHandler(ScriptName.OnModuleGuiEvent)]
         public static void TypingIndicator()
         {
             var player = GetLastGuiEventPlayer();
@@ -106,13 +107,13 @@ namespace SWLOR.Game.Server.Service
         }
 
         // Register DMFI Voice Command Handler which lives in nwscript land.
-        [NWNEventHandler(ScriptName.OnModuleChat)]
+        [ScriptHandler(ScriptName.OnModuleChat)]
         public static void ProcessNativeChatMessage()
         {
             ExecuteScript("dmfi_onplychat", OBJECT_SELF);
         }
 
-        [NWNEventHandler(ScriptName.OnNWNXChat)]
+        [ScriptHandler(ScriptName.OnNWNXChat)]
         public static void ProcessChatMessage()
         {
             var channel = ChatPlugin.GetChannel();

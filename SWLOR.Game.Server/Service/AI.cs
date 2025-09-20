@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
         private static readonly Dictionary<AIDefinitionType, IAIDefinition> _aiDefinitions = new();
 
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheAIData()
         {
             _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition();
@@ -24,7 +25,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Entry point for creature heartbeat logic.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureHeartbeatAfter)]
+        [ScriptHandler(ScriptName.OnCreatureHeartbeatAfter)]
         public static void CreatureHeartbeat()
         {
             if (GetAILevel(OBJECT_SELF) == AILevel.VeryLow)
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Entry point for creature perception logic.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreaturePerceptionAfter)]
+        [ScriptHandler(ScriptName.OnCreaturePerceptionAfter)]
         public static void CreaturePerception()
         {
             // This is a stripped-down version of the default NWN perception event.
@@ -49,7 +50,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Entry point for creature combat round end logic.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureRoundEndAfter)]
+        [ScriptHandler(ScriptName.OnCreatureRoundEndAfter)]
         public static void CreatureCombatRoundEnd()
         {
             var creature = OBJECT_SELF;
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Entry point for creature conversation logic.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureConversationAfter)]
+        [ScriptHandler(ScriptName.OnCreatureConversationAfter)]
         public static void CreatureConversation()
         {
             var conversation = GetLocalString(OBJECT_SELF, "CONVERSATION");
@@ -78,7 +79,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Entry point for creature physical attacked logic
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureAttackAfter)]
+        [ScriptHandler(ScriptName.OnCreatureAttackAfter)]
         public static void CreaturePhysicalAttacked()
         {
             Enmity.AttackHighestEnmityTarget(OBJECT_SELF);
@@ -87,7 +88,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Entry point for creature damaged logic
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureDamagedAfter)]
+        [ScriptHandler(ScriptName.OnCreatureDamagedAfter)]
         public static void CreatureDamaged()
         {
             Enmity.AttackHighestEnmityTarget(OBJECT_SELF);
@@ -96,7 +97,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Entry point for creature death logic
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
+        [ScriptHandler(ScriptName.OnCreatureDeathAfter)]
         public static void CreatureDeath()
         {
             RemoveFromAlliesCache();
@@ -105,7 +106,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Entry point for creature disturbed logic
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureDisturbedAfter)]
+        [ScriptHandler(ScriptName.OnCreatureDisturbedAfter)]
         public static void CreatureDisturbed()
         {
             Enmity.AttackHighestEnmityTarget(OBJECT_SELF);
@@ -114,7 +115,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Entry point for creature spawn logic
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureSpawnAfter)]
+        [ScriptHandler(ScriptName.OnCreatureSpawnAfter)]
         public static void CreatureSpawn()
         {
             SetLocalString(OBJECT_SELF, "X2_SPECIAL_COMBAT_AI_SCRIPT", "xxx");
@@ -128,7 +129,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Entry point for creature rested logic
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureRestedAfter)]
+        [ScriptHandler(ScriptName.OnCreatureRestedAfter)]
         public static void CreatureRested()
         {
         }
@@ -136,7 +137,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Entry point for creature spell cast at logic
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureSpellCastAfter)]
+        [ScriptHandler(ScriptName.OnCreatureSpellCastAfter)]
         public static void CreatureSpellCastAt()
         {
         }
@@ -144,7 +145,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Entry point for creature user defined logic
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureUserDefinedAfter)]
+        [ScriptHandler(ScriptName.OnCreatureUserDefinedAfter)]
         public static void CreatureUserDefined()
         {
         }
@@ -152,7 +153,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Entry point for creature blocked logic
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureBlockedAfter)]
+        [ScriptHandler(ScriptName.OnCreatureBlockedAfter)]
         public static void CreatureBlocked()
         {
         }
@@ -161,7 +162,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature enters the aggro aura of another creature, increase their enmity and start the aggro process.
         /// Invisible creatures do not trigger this.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureAggroEnter)]
+        [ScriptHandler(ScriptName.OnCreatureAggroEnter)]
         public static void CreatureAggroEnter()
         {
             var entering = GetEnteringObject();
@@ -209,7 +210,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature exits the aggro aura of another creature, 
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureAggroExit)]
+        [ScriptHandler(ScriptName.OnCreatureAggroExit)]
         public static void CreatureAggroExit()
         {
         }
@@ -409,7 +410,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the creature dies or is destroyed, remove it from all caches.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnObjectDestroyed)]
+        [ScriptHandler(ScriptName.OnObjectDestroyed)]
         public static void RemoveFromAlliesCache()
         {
             var self = OBJECT_SELF;

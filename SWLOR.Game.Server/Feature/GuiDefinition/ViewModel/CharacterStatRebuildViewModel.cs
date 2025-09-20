@@ -7,12 +7,13 @@ using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CharacterStatRebuildViewModel: GuiViewModelBase<CharacterStatRebuildViewModel, GuiPayloadBase>
     {
-        [NWNEventHandler(ScriptName.OnBuyStatRebuild)]
+        [ScriptHandler(ScriptName.OnBuyStatRebuild)]
         public static void LoadCharacterStatRebuild()
         {
             var terminal = OBJECT_SELF;

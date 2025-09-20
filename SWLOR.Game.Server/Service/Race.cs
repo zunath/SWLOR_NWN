@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all default race appearances.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void LoadRaces()
         {
             // Male appearances
@@ -520,7 +521,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, apply the proper scaling to their character.
         /// 
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
             public static void ApplyWookieeScaling()
             {
                 var player = GetEnteringObject();

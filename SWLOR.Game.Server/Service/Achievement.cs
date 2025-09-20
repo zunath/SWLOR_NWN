@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Game.Server.Service
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Service
         private static Gui.IdReservation _idReservation;
         private static readonly Dictionary<AchievementType, AchievementAttribute> _activeAchievements = new Dictionary<AchievementType, AchievementAttribute>();
 
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void ReserveGuiIds()
         {
             _idReservation = Gui.ReserveIds(nameof(Achievement), 6);
@@ -24,7 +25,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, read all achievement types and store them into the cache.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadAchievements()
         {
             var achievementTypes = Enum.GetValues(typeof(AchievementType)).Cast<AchievementType>();

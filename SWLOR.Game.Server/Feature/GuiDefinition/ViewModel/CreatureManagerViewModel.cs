@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -124,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Search();
         };
 
-        [NWNEventHandler(ScriptName.OnModulePlayerTarget)]
+        [ScriptHandler(ScriptName.OnModulePlayerTarget)]
         public static void RunTargetedLocationAction()
         {
             var player = GetLastPlayerToSelectTarget();

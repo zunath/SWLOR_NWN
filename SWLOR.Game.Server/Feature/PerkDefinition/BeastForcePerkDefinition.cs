@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -105,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Innervate5);
         }
 
-        [NWNEventHandler(ScriptName.OnItemHit)]
+        [ScriptHandler(ScriptName.OnItemHit)]
         public static void OnForceLinkHit()
         {
             var beast = OBJECT_SELF;

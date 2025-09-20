@@ -1,11 +1,8 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
 
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.Shared.Core.Server
 {
     public class ScriptRegistry
     {
@@ -42,17 +39,17 @@ namespace SWLOR.Game.Server.Core
             var handlers = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(a => a.GetTypes())
                 .SelectMany(t => t.GetMethods())
-                .Where(m => m.GetCustomAttributes(typeof(NWNEventHandler), false).Length > 0)
+                .Where(m => m.GetCustomAttributes(typeof(ScriptHandler), false).Length > 0)
                 .ToArray();
 
             foreach (var mi in handlers)
             {
-                foreach (var attr in mi.GetCustomAttributes(typeof(NWNEventHandler), false))
+                foreach (var attr in mi.GetCustomAttributes(typeof(ScriptHandler), false))
                 {
-                    var script = ((NWNEventHandler)attr).Script;
+                    var script = ((ScriptHandler)attr).Script;
                     if (script.Length > MaxCharsInScriptName || script.Length == 0)
                     {
-                        Log.Write(LogGroup.Error, $"Script name '{script}' is invalid on method {mi.Name}.", true);
+                        Log.Log.Write(LogGroup.Error, $"Script name '{script}' is invalid on method {mi.Name}.", true);
                         throw new ApplicationException();
                     }
 
@@ -66,7 +63,7 @@ namespace SWLOR.Game.Server.Core
                     }
                     else
                     {
-                        Log.Write(LogGroup.Error, $"Method '{mi.Name}' tied to script '{script}' has an invalid return type. This script was NOT loaded.", true);
+                        Log.Log.Write(LogGroup.Error, $"Method '{mi.Name}' tied to script '{script}' has an invalid return type. This script was NOT loaded.", true);
                     }
                 }
             }

@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -12,6 +11,8 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
 using Player = SWLOR.Game.Server.Entity.Player;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
         public static void ApplyPlayerStats()
         {
             ApplyTemporaryPlayerStats();
@@ -361,7 +362,7 @@ namespace SWLOR.Game.Server.Service
         /// After a player's status effects are reassociated,
         /// adjust any food HP if necessary.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAssociateStateEffect)]
+        [ScriptHandler(ScriptName.OnAssociateStateEffect)]
         public static void ReapplyFoodHP()
         {
             var player = OBJECT_SELF;

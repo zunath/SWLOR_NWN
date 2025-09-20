@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Core.Event;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Feature
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is equipped, check the custom rules to see if the item can be equipped by the player.
         /// If not able to be used, an error message will be sent and item will not be equipped.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnItemEquipValidateBefore)]
+        [ScriptHandler(ScriptName.OnItemEquipValidateBefore)]
         public static void ValidateItemEquip()
         {
             var creature = OBJECT_SELF;
@@ -246,7 +247,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When an item is equipped, if any of a player's perks has an Equipped Trigger, run those actions now.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
+        [ScriptHandler(ScriptName.OnSWLORItemEquipValidBefore)]
         public static void ApplyEquipTriggers()
         {
             var player = OBJECT_SELF;
@@ -294,7 +295,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When an item is unequipped, if any of a player's perks has an Unequipped Trigger, run those actions now.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
+        [ScriptHandler(ScriptName.OnItemUnequipBefore)]
         public static void ApplyUnequipTriggers()
         {
             var player = OBJECT_SELF;

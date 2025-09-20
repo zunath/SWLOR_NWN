@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Feature
         /// If a player enters an area with a disabled mini-map and they do not have the map key item, disable the window.
         /// If a player enters an area with the associated map key item, fully explore it for them.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler(ScriptName.OnAreaEnter)]
         public static void DisableMiniMap()
         {
             var area = OBJECT_SELF;
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Ensures the mini-map is always re-enabled when leaving an area.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAreaExit)]
+        [ScriptHandler(ScriptName.OnAreaExit)]
         public static void EnableMiniMap()
         {
             var player = GetExitingObject();
@@ -55,7 +56,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Skips the character sheet panel open event and shows the SWLOR character sheet instead.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleGuiEvent)]
+        [ScriptHandler(ScriptName.OnModuleGuiEvent)]
         public static void MiniMapGui()
         {
             var player = GetLastGuiEventPlayer();

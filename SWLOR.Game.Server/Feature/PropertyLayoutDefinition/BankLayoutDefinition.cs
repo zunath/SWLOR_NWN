@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 {
@@ -24,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
         /// When a bank contained inside a property is used,
         /// ensure the user is a citizen of the city the bank is associated with.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnOpenPropertyBank)]
+        [ScriptHandler(ScriptName.OnOpenPropertyBank)]
         public static void OpenPropertyBank()
         {
             var player = GetLastUsedBy();

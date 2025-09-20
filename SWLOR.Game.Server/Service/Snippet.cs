@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, all available conversation snippets are loaded into the cache.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
@@ -50,10 +51,10 @@ namespace SWLOR.Game.Server.Service
         /// check for any conversation conditions and process them.
         /// </summary>
         /// <returns></returns>
-        [NWNEventHandler(ScriptName.OnDialogAppear)]
-        [NWNEventHandler(ScriptName.OnDialogAppears)]
-        [NWNEventHandler(ScriptName.OnDialogCondition)]
-        [NWNEventHandler(ScriptName.OnDialogConditions)]
+        [ScriptHandler(ScriptName.OnDialogAppear)]
+        [ScriptHandler(ScriptName.OnDialogAppears)]
+        [ScriptHandler(ScriptName.OnDialogCondition)]
+        [ScriptHandler(ScriptName.OnDialogConditions)]
         public static bool ConversationAppearsWhen()
         {
             var player = GetPCSpeaker();
@@ -64,8 +65,8 @@ namespace SWLOR.Game.Server.Service
         /// When a conversation node with this script assigned in the "Actions Taken" event is run,
         /// check for any conversation actions and process them.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnDialogAction)]
-        [NWNEventHandler(ScriptName.OnDialogActions)]
+        [ScriptHandler(ScriptName.OnDialogAction)]
+        [ScriptHandler(ScriptName.OnDialogActions)]
         public static void ConversationAction()
         {
             var player = GetPCSpeaker();

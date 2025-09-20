@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <summary>
         /// When a bank placeable is used, display this UI view.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnOpenBank)]
+        [ScriptHandler(ScriptName.OnOpenBank)]
         public static void ShowBank()
         {
             var player = GetLastUsedBy();

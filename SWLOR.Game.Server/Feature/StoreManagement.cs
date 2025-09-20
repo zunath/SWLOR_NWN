@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Core.Async;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, place all stores inside the cache and schedule the cleanup process.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void ProcessStores()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a store item is acquired, destroy the local flag indicating it's a store item.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleAcquire)]
+        [ScriptHandler(ScriptName.OnModuleAcquire)]
         public static void AcquireItem()
         {
             ClearStoreServiceItemFlag();
@@ -121,7 +122,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Destroys items sold to NPC stores immediately.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnStoreSellAfter)]
+        [ScriptHandler(ScriptName.OnStoreSellAfter)]
         public static void DestroySoldItem()
         {
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
@@ -136,7 +137,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Prevents items from being sold from a henchman's inventory.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnStoreSellBefore)]
+        [ScriptHandler(ScriptName.OnStoreSellBefore)]
         public static void PreventSalesFromHenchmenInventory()
         {
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));

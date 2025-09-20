@@ -5,13 +5,15 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Server;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using DamageType = NWN.Native.API.DamageType;
@@ -77,7 +79,7 @@ namespace SWLOR.Game.Server.Native
         // ReSharper disable once NotAccessedField.Local
         private static GetDamageRollHook _callOriginal;
 
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, void*, int, int, int, int, int, int> pHook = &OnGetDamageRoll;

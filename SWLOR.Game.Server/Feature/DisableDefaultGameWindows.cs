@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -9,7 +10,7 @@ namespace SWLOR.Game.Server.Feature
         /// When the player enters the server, disable default game windows.
         /// In most cases, these windows are replaced with custom versions.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
         public static void DisableWindows()
         {
             var player = GetEnteringObject();

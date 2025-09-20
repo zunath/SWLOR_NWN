@@ -7,6 +7,8 @@ using Discord.Webhook;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Shared.Core.Configuration;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {

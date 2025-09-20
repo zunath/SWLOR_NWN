@@ -5,11 +5,12 @@ using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -60,7 +61,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new();
         private static readonly Dictionary<uint, List<ActiveSpawn>> _activeSpawnsByArea = new();
 
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             LoadSpawnTables();
@@ -286,7 +287,7 @@ namespace SWLOR.Game.Server.Service
             return count;
         }
 
-        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler(ScriptName.OnAreaEnter)]
         public static void SpawnArea()
         {
             var player = GetEnteringObject();
@@ -321,7 +322,7 @@ namespace SWLOR.Game.Server.Service
         /// When the last player in an area leaves, a despawn request is queued up.
         /// The heartbeat processor will despawn all objects when this happens
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAreaExit)]
+        [ScriptHandler(ScriptName.OnAreaExit)]
         public static void QueueDespawnArea()
         {
             var player = GetExitingObject();
@@ -404,8 +405,8 @@ namespace SWLOR.Game.Server.Service
         /// via DestroyObject.  Call this method directly if you need to use DestroyObject
         /// on a respawning object.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
-        [NWNEventHandler(ScriptName.OnPlaceableDeath)]
+        [ScriptHandler(ScriptName.OnCreatureDeathAfter)]
+        [ScriptHandler(ScriptName.OnPlaceableDeath)]
         public static void QueueRespawn()
         {
             uint creature = OBJECT_SELF;
@@ -425,7 +426,7 @@ namespace SWLOR.Game.Server.Service
         /// On each module heartbeat, process queued spawns and
         /// process dequeue area event requests.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSwlorHeartbeat)]
+        [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
         public static void ProcessSpawnSystem()
         {
             ProcessQueuedSpawns();
@@ -678,7 +679,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a DM spawns a creature, attach all required scripts to it.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnDMSpawnObjectAfter)]
+        [ScriptHandler(ScriptName.OnDMSpawnObjectAfter)]
         public static void DMSpawnCreature()
         {
             var objectType = (InternalObjectType)Convert.ToInt32(EventsPlugin.GetEventData("OBJECT_TYPE"));

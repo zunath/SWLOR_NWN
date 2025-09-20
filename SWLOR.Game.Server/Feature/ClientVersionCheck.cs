@@ -1,8 +1,9 @@
 using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Feature
         /// All of the NUI window features require version 8193.33 or higher but we restrict to 8193.34 or higher
         /// due to fixes applied in .34.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnClientConnectBefore)]
+        [ScriptHandler(ScriptName.OnClientConnectBefore)]
         public static void CheckVersion()
         {
             const int RequiredMajorVersion = 8193;

@@ -4,6 +4,8 @@ using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWScript.Enum;
 using System;
 using System.Runtime.InteropServices;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Server;
 using SavingThrow = NWN.Native.API.SavingThrow;
 
 namespace SWLOR.Game.Server.Native
@@ -24,7 +26,7 @@ namespace SWLOR.Game.Server.Native
         // ReSharper disable once NotAccessedField.Local
         private static GetFortitudeSavingThrowHook _callOriginal;
 
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {
             delegate* unmanaged<void*, int, sbyte> pHook = &OnGetFortitudeSavingThrow;

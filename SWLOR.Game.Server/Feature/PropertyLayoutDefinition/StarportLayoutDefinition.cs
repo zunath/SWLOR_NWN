@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 {
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             return true;
         }
 
-        [NWNEventHandler(ScriptName.OnPropertyStarportTerminal)]
+        [ScriptHandler(ScriptName.OnPropertyStarportTerminal)]
         public static void UsePropertyStarportTerminal()
         {
             var player = GetLastUsedBy();

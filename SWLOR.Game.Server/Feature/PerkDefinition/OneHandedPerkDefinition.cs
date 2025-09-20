@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -320,7 +321,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 });
         }
 
-        [NWNEventHandler(ScriptName.OnItemHit)]
+        [ScriptHandler(ScriptName.OnItemHit)]
         public static void ApplyAlacrityAndClarity()
         {
             var defender = OBJECT_SELF;

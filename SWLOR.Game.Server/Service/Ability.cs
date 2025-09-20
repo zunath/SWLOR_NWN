@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module caches, abilities will be cached and events will be scheduled.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             CacheAbilities();
@@ -245,7 +246,7 @@ namespace SWLOR.Game.Server.Service
         /// Each tick, creatures with a concentration effect will be processed.
         /// This will drain FP and reapply whatever effect is associated with an ability.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSwlorHeartbeat)]
+        [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
         public static void ProcessConcentrationEffects()
         {
             var pairs = _activeConcentrationAbilities.ToList();
@@ -443,7 +444,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Whenever a weapon's OnHit event is fired, add a Leadership combat point if an Aura is active.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnItemHit)]
+        [ScriptHandler(ScriptName.OnItemHit)]
         public static void AddLeadershipCombatPoint()
         {
             var player = OBJECT_SELF;
@@ -642,7 +643,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, apply the Aura AOE effect.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
         public static void ApplyAuraAOE()
         {
             var player = GetEnteringObject();
@@ -652,7 +653,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player exits the server, remove all of their Aura effects.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler(ScriptName.OnModuleExit)]
         public static void ClearAurasOnExit()
         {
             var player = GetExitingObject();
@@ -662,7 +663,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player dies, remove all of their Aura effects.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleDeath)]
+        [ScriptHandler(ScriptName.OnModuleDeath)]
         public static void ClearAurasOnDeath()
         {
             var player = GetLastPlayerDied();
@@ -672,7 +673,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player respawns, reapply the aura AOE effect
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleRespawn)]
+        [ScriptHandler(ScriptName.OnModuleRespawn)]
         public static void ReapplyAuraOnRespawn()
         {
             var player = GetLastRespawnButtonPresser();
@@ -682,7 +683,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters space mode, remove all of their Aura effects.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSpaceEnter)]
+        [ScriptHandler(ScriptName.OnSpaceEnter)]
         public static void ClearAurasOnSpaceEntry()
         {
             var player = OBJECT_SELF;
@@ -692,7 +693,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Whenever a creature enters the aura, add them to the cache.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAuraEnter)]
+        [ScriptHandler(ScriptName.OnAuraEnter)]
         public static void AuraEnter()
         {
             var entering = GetEnteringObject();
@@ -739,7 +740,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Whenever a creature exits the aura, remove it from the cache.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAuraExit)]
+        [ScriptHandler(ScriptName.OnAuraExit)]
         public static void AuraExit()
         {
             var exiting = GetExitingObject();

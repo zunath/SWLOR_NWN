@@ -6,6 +6,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
+using SWLOR.Shared.Core.Event;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module content changes, rerun the baking process.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleContentChange)]
+        [ScriptHandler(ScriptName.OnModuleContentChange)]
         public static void LoadWalkmeshes()
         {
             StoreNoSpawnZoneTriggers();
@@ -66,7 +67,7 @@ namespace SWLOR.Game.Server.Service
         /// These locations can be used to spawn objects randomly throughout an area.
         /// This only runs if the module content has NOT changed since the last run.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void RetrieveWalkmeshes()
         {
             if (_bakingRan)

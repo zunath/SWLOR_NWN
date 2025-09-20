@@ -3,8 +3,9 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Log;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cycle through every area and every object to identify the visibility objects.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadVisibilityObjects()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, toggle visibility on all objects
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
         public static void LoadPlayerVisibilityObjects()
         {
             var player = GetEnteringObject();

@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -9,7 +10,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a throwing item (shuriken, dart, throwing axe) is thrown, prevent the stack from decrementing.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnItemDecrementBefore)]
+        [ScriptHandler(ScriptName.OnItemDecrementBefore)]
         public static void PreventStackDecrement()
         {
             var item = OBJECT_SELF;

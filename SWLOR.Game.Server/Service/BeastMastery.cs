@@ -18,6 +18,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Game.Server.Service
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Service
         public const string BeastTypeVariable = "BEAST_TYPE";
         public const string BeastLevelVariable = "BEAST_LEVEL";
 
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             LoadBeasts();
@@ -391,7 +392,7 @@ namespace SWLOR.Game.Server.Service
             return (likedFood, hatedFood);
         }
 
-        [NWNEventHandler(ScriptName.OnCombatPointXPDistribute)]
+        [ScriptHandler(ScriptName.OnCombatPointXPDistribute)]
         public static void CombatPointXPDistributed()
         {
             var player = OBJECT_SELF;
@@ -419,8 +420,8 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters space or forcefully removes a beast from the party, the beast gets despawned.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSpaceEnter)]
-        [NWNEventHandler(ScriptName.OnAssociateRemoveBefore)]
+        [ScriptHandler(ScriptName.OnSpaceEnter)]
+        [ScriptHandler(ScriptName.OnAssociateRemoveBefore)]
         public static void RemoveAssociate()
         {
             var player = OBJECT_SELF;
@@ -431,7 +432,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a droid acquires an item, it is stored into a persistent variable on the controller item.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleAcquire)]
+        [ScriptHandler(ScriptName.OnModuleAcquire)]
         public static void OnAcquireItem()
         {
             var beast = GetModuleItemAcquiredBy();
@@ -455,13 +456,13 @@ namespace SWLOR.Game.Server.Service
             Item.ReturnItem(master, item);
         }
 
-        [NWNEventHandler(ScriptName.OnBeastBlocked)]
+        [ScriptHandler(ScriptName.OnBeastBlocked)]
         public static void BeastOnBlocked()
         {
             ExecuteScript("x0_ch_hen_block", OBJECT_SELF);
         }
 
-        [NWNEventHandler(ScriptName.OnBeastRoundEnd)]
+        [ScriptHandler(ScriptName.OnBeastRoundEnd)]
         public static void BeastOnEndCombatRound()
         {
             var beast = OBJECT_SELF;
@@ -472,19 +473,19 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        [NWNEventHandler(ScriptName.OnBeastConversation)]
+        [ScriptHandler(ScriptName.OnBeastConversation)]
         public static void BeastOnConversation()
         {
             ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
-        [NWNEventHandler(ScriptName.OnBeastDamaged)]
+        [ScriptHandler(ScriptName.OnBeastDamaged)]
         public static void BeastOnDamaged()
         {
             ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
         }
 
-        [NWNEventHandler(ScriptName.OnBeastDeath)]
+        [ScriptHandler(ScriptName.OnBeastDeath)]
         public static void BeastOnDeath()
         {
             var beast = OBJECT_SELF;
@@ -500,34 +501,34 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbBeast);
         }
 
-        [NWNEventHandler(ScriptName.OnBeastDisturbed)]
+        [ScriptHandler(ScriptName.OnBeastDisturbed)]
         public static void BeastOnDisturbed()
         {
             ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
         }
 
-        [NWNEventHandler(ScriptName.OnBeastHeartbeat)]
+        [ScriptHandler(ScriptName.OnBeastHeartbeat)]
         public static void BeastOnHeartbeat()
         {
             ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
             Stat.RestoreNPCStats(false);
         }
 
-        [NWNEventHandler(ScriptName.OnBeastPerception)]
+        [ScriptHandler(ScriptName.OnBeastPerception)]
         public static void BeastOnPerception()
         {
             ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
 
         }
 
-        [NWNEventHandler(ScriptName.OnBeastAttacked)]
+        [ScriptHandler(ScriptName.OnBeastAttacked)]
         public static void BeastOnPhysicalAttacked()
         {
             ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
 
         }
 
-        [NWNEventHandler(ScriptName.OnBeastRest)]
+        [ScriptHandler(ScriptName.OnBeastRest)]
         public static void BeastOnRested()
         {
             var beast = OBJECT_SELF;
@@ -538,7 +539,7 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.Apply(beast, beast, StatusEffectType.Rest, 0f);
         }
 
-        [NWNEventHandler(ScriptName.OnBeastSpawn)]
+        [ScriptHandler(ScriptName.OnBeastSpawn)]
         public static void BeastOnSpawn()
         {
             var beast = OBJECT_SELF;
@@ -551,20 +552,20 @@ namespace SWLOR.Game.Server.Service
             Stat.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
         }
 
-        [NWNEventHandler(ScriptName.OnBeastSpellCast)]
+        [ScriptHandler(ScriptName.OnBeastSpellCast)]
         public static void BeastOnSpellCastAt()
         {
             ExecuteScript("x2_hen_spell", OBJECT_SELF);
 
         }
 
-        [NWNEventHandler(ScriptName.OnBeastUserDefined)]
+        [ScriptHandler(ScriptName.OnBeastUserDefined)]
         public static void BeastOnUserDefined()
         {
             ExecuteScript("x0_ch_hen_usrdef", OBJECT_SELF);
         }
 
-        [NWNEventHandler(ScriptName.OnBeastTerminate)]
+        [ScriptHandler(ScriptName.OnBeastTerminate)]
         public static void OpenStablesMenu()
         {
             var player = GetLastUsedBy();
@@ -710,7 +711,7 @@ namespace SWLOR.Game.Server.Service
                 : _incubationPercentages[itemPropertyId];
         }
 
-        [NWNEventHandler(ScriptName.OnIncubatorTerminal)]
+        [ScriptHandler(ScriptName.OnIncubatorTerminal)]
         public static void UseIncubator()
         {
             var player = GetLastUsedBy();
@@ -860,7 +861,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a property is removed, also remove any associated incubation jobs.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSwlorDeleteProperty)]
+        [ScriptHandler(ScriptName.OnSwlorDeleteProperty)]
         public static void OnRemoveProperty()
         {
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
@@ -877,7 +878,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player clicks a "DNA Extract" object, they get a message stating to use the extractor item on it.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnDNAExtractUsed)]
+        [ScriptHandler(ScriptName.OnDNAExtractUsed)]
         public static void UseExtractDNAObject()
         {
             var player = GetLastUsedBy();

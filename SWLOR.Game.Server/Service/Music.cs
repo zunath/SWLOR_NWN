@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, read the ambientmusic.2da file for all active songs.
         /// Add these to the cache.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void LoadSongList()
         {
             const string File = "ambientmusic";
@@ -61,7 +62,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, if a battle theme has been selected by the player,
         /// apply the battle theme to the player.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        [ScriptHandler(ScriptName.OnAreaEnter)]
         public static void ApplyBattleThemeToPlayer()
         {
             var player = GetEnteringObject();

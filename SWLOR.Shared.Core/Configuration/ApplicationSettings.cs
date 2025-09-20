@@ -1,7 +1,6 @@
-﻿using System;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server
+namespace SWLOR.Shared.Core.Configuration
 {
     public class ApplicationSettings
     {

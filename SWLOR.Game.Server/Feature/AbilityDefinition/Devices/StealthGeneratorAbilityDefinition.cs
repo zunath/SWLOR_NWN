@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -21,8 +22,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return _builder.Build();
         }
 
-        [NWNEventHandler(ScriptName.OnHarvesterUsed)]
-        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
+        [ScriptHandler(ScriptName.OnHarvesterUsed)]
+        [ScriptHandler(ScriptName.OnPlayerDamaged)]
         public static void ClearInvisibility()
         {
             RemoveEffect(OBJECT_SELF, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility);

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -181,7 +182,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all status effects.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheStatusEffects()
         {
             // Organize perks to make later reads quicker.
@@ -303,7 +304,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, if any of their status effects in limbo, re-add them to the
         /// dictionary for processing.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
         public static void PlayerEnter()
         {
             var player = GetEnteringObject();
@@ -323,7 +324,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player leaves the server, move their status effects to a different dictionary
         /// so they aren't processed unnecessarily.  
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleExit)]
+        [ScriptHandler(ScriptName.OnModuleExit)]
         public static void PlayerExit()
         {
             var player = GetExitingObject();
@@ -340,7 +341,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module heartbeat runs, execute and clean up status effects on all creatures.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSwlorHeartbeat)]
+        [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
         public static void TickStatusEffects()
         {
             var now = DateTime.UtcNow;
@@ -399,7 +400,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player dies, remove any status effects which are present.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleDeath)]
+        [ScriptHandler(ScriptName.OnModuleDeath)]
         public static void OnPlayerDeath()
         {
             var player = GetLastPlayerDied();

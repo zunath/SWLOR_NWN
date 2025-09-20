@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         /// <summary>
         /// When a player is damaged, remove the rest effect
         /// </summary>
-        [NWNEventHandler(ScriptName.OnPlayerDamaged)]
+        [ScriptHandler(ScriptName.OnPlayerDamaged)]
         public static void RemoveRestOnDamage()
         {
             var player = OBJECT_SELF;
@@ -32,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         /// <summary>
         /// When a player attacks, remove the rest effect
         /// </summary>
-        [NWNEventHandler(ScriptName.OnInputAttackObjectBefore)]
+        [ScriptHandler(ScriptName.OnInputAttackObjectBefore)]
         public static void RemoveRestOnAttack()
         {
             var player = OBJECT_SELF;
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatusEffect.Remove(player, StatusEffectType.Rest);
         }
 
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        [ScriptHandler(ScriptName.OnModuleEnter)]
         public static void RemoveRestOnLogin()
         {
             var player = GetEnteringObject();

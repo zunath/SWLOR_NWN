@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Game.Server.Service
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, retrieve and organize all fishing data for quick look-ups.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        [ScriptHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
             LoadFish();
@@ -216,7 +217,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Runs when a player interacts with a fishing point.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnFishPoint)]
+        [ScriptHandler(ScriptName.OnFishPoint)]
         public static void ClickFishingPoint()
         {
             void CheckPosition(uint player, Vector3 startPosition, string attemptId)
@@ -310,7 +311,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Runs when the fishing process completes.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnFinishFishing)]
+        [ScriptHandler(ScriptName.OnFinishFishing)]
         public static void FinishFishing()
         {
             var player = OBJECT_SELF;

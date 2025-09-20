@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Event;
 using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature
@@ -10,7 +11,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, set all of the weapon-related feat and item configurations.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandler(ScriptName.OnModuleLoad)]
         public static void ConfigureWeaponFeats()
         {
             // Weapon Focus, Specialization, Improved Critical

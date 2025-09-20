@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Core.Server;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server
 {

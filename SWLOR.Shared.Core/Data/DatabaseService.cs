@@ -43,7 +43,6 @@ namespace SWLOR.Shared.Core.Data
             NReJSONSerializer.SerializerProxy = new JsonSerializer();
         }
 
-        [ScriptHandler(ScriptName.OnModulePreload)]
         public void Load()
         {
             _appSettings = ApplicationSettings.Get();

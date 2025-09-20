@@ -1,6 +1,8 @@
 ﻿using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {
@@ -11,6 +13,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class RequiredQuestPrerequisite : IQuestPrerequisite
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly string _questID;
 
         public RequiredQuestPrerequisite(string questID)
@@ -21,7 +24,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         public bool MeetsPrerequisite(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var timesCompleted = dbPlayer.Quests.ContainsKey(_questID) ? dbPlayer.Quests[_questID].TimesCompleted : 0;
             return timesCompleted > 0;
         }
@@ -44,6 +47,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class RequiredFactionStandingPrerequisite : IQuestPrerequisite
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly FactionType _factionType;
         private readonly int _requiredAmount;
 
@@ -56,7 +60,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         public bool MeetsPrerequisite(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var standing = dbPlayer.Factions.ContainsKey(_factionType) ? dbPlayer.Factions[_factionType].Standing : 0;
 
             return standing >= _requiredAmount;

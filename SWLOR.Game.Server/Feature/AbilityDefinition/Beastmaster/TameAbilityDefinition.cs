@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using Random = SWLOR.Game.Server.Service.Random;
 
@@ -16,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
     public class TameAbilityDefinition: IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
 
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -44,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     }
 
                     var playerId = GetObjectUUID(activator);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
 
                     if (!string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId))
                     {
@@ -78,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     var maxBeasts = 1 + Perk.GetPerkLevel(activator, PerkType.Stabling);
                     var dbQuery = new DBQuery<Beast>()
                         .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
-                    var beastCount = (int)DB.SearchCount(dbQuery);
+                    var beastCount = (int)_db.SearchCount(dbQuery);
                     if (beastCount >= maxBeasts)
                     {
                         return $"You have already tamed the maximum number of beasts your perks support.";
@@ -89,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, target, _, targetLocation) =>
                 {
                     var playerId = GetObjectUUID(activator);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     var type = BeastMastery.GetBeastType(target);
                     var skill = dbPlayer.Skills[SkillType.BeastMastery].Rank;
                     var npcStats = Stat.GetNPCStats(target);
@@ -142,10 +144,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         }
                     };
 
-                    DB.Set(dbBeast);
+                    _db.Set(dbBeast);
 
                     dbPlayer.ActiveBeastId = dbBeast.Id;
-                    DB.Set(dbPlayer);
+                    _db.Set(dbPlayer);
 
                     SendMessageToPC(activator, ColorToken.Green($"Successfully tamed {GetName(target)}!"));
                     DestroyObject(target);

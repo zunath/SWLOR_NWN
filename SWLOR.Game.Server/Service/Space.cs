@@ -15,6 +15,7 @@ using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Event;
@@ -28,6 +29,7 @@ namespace SWLOR.Game.Server.Service
     public static class Space
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public const int MaxRegisteredShips = 10;
 
         private static readonly Dictionary<string, ShipDetail> _shipTypes = new();
@@ -430,9 +432,9 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
-            var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+            var dbPlayer = _db.Get<Player>(playerId);
+            var dbShip = _db.Get<PlayerShip>(dbPlayer.ActiveShipId);
+            var dbProperty = _db.Get<WorldProperty>(dbShip.PropertyId);
             var position = GetPosition(player);
             var areaResref = GetResRef(OBJECT_SELF);
             var orientation = GetFacing(player);
@@ -446,7 +448,7 @@ namespace SWLOR.Game.Server.Service
                 AreaResref = areaResref
             };
 
-            DB.Set(dbProperty);
+            _db.Set(dbProperty);
         }
 
         /// <summary>
@@ -476,7 +478,7 @@ namespace SWLOR.Game.Server.Service
             var permissionQuery = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            var permission = DB.Search(permissionQuery).FirstOrDefault();
+            var permission = _db.Search(permissionQuery).FirstOrDefault();
 
             if (permission == null || !permission.Permissions[PropertyPermissionType.PilotShip])
             {
@@ -486,7 +488,7 @@ namespace SWLOR.Game.Server.Service
 
             var shipQuery = new DBQuery<PlayerShip>()
                 .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyId, false);
-            var dbShip = DB.Search(shipQuery).FirstOrDefault();
+            var dbShip = _db.Search(shipQuery).FirstOrDefault();
 
             if (dbShip == null)
             {
@@ -511,7 +513,7 @@ namespace SWLOR.Game.Server.Service
             SetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET", true);
             EnterSpaceMode(player, dbShip.Id);
 
-            var dbProperty = DB.Get<WorldProperty>(propertyId);
+            var dbProperty = _db.Get<WorldProperty>(propertyId);
 
             // The existence of a current location means the ship is currently in space.
             // Warp the player to the ship's location.
@@ -601,8 +603,8 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var dbPlayerShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayerShip = _db.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
             foreach (var (slot, shipModule) in dbPlayerShip.Status.HighPowerModules)
             {
@@ -623,7 +625,7 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
             return dbPlayer.ActiveShipId != Guid.Empty.ToString();
         }
 
@@ -645,8 +647,8 @@ namespace SWLOR.Game.Server.Service
             ClonePlayerAndSit(player);
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var dbPlayerShip = DB.Get<PlayerShip>(shipId);
+            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayerShip = _db.Get<PlayerShip>(shipId);
             var shipDetail = _shipTypes[dbPlayerShip.Status.ItemTag];
 
             // Update player appearance to match that of the ship.
@@ -726,8 +728,8 @@ namespace SWLOR.Game.Server.Service
                 dbPlayerShip.PlayerHotBars[playerId] = CreaturePlugin.SerializeQuickbar(player);
             }
 
-            DB.Set(dbPlayer);
-            DB.Set(dbPlayerShip);
+            _db.Set(dbPlayer);
+            _db.Set(dbPlayerShip);
 
             // If the ship is in the "actively piloted" list, it means it's in space.
             // Destroy the NPC clone that's associated with this ship since the player is taking over the controls.
@@ -838,9 +840,9 @@ namespace SWLOR.Game.Server.Service
             CloneShip(player);
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var shipId = dbPlayer.ActiveShipId;
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbShip = _db.Get<PlayerShip>(shipId);
 
             ClearCurrentTarget(player);
             SetCreatureAppearanceType(player, dbPlayer.OriginalAppearanceType);
@@ -870,8 +872,8 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             }
 
-            DB.Set(dbPlayer);
-            DB.Set(dbShip);
+            _db.Set(dbPlayer);
+            _db.Set(dbShip);
 
             // Destroy the NPC clone.
             DestroyPilotClone(player);
@@ -885,10 +887,10 @@ namespace SWLOR.Game.Server.Service
         private static void CloneShip(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var shipId = dbPlayer.ActiveShipId;
-            var dbShip = DB.Get<PlayerShip>(shipId);
-            var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+            var dbShip = _db.Get<PlayerShip>(shipId);
+            var dbProperty = _db.Get<WorldProperty>(dbShip.PropertyId);
             var shipDetail = GetShipDetailByItemTag(dbShip.Status.ItemTag);
 
             // The existence of a current location on a ship property indicates it is currently in space.
@@ -908,7 +910,7 @@ namespace SWLOR.Game.Server.Service
                         Z = position.Z,
                         Orientation = GetFacingFromLocation(location)
                     };
-                    DB.Set(dbProperty);
+                    _db.Set(dbProperty);
 
                     var clone = CreateObject(ObjectType.Creature, "player_starship", location);
                     SetCreatureAppearanceType(clone, shipDetail.Appearance);
@@ -945,7 +947,7 @@ namespace SWLOR.Game.Server.Service
         public static bool CanPlayerUseShip(uint player, ShipStatus playerShip)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             
             var shipDetails = _shipTypes[playerShip.ItemTag];
 
@@ -981,7 +983,7 @@ namespace SWLOR.Game.Server.Service
             if (!_shipModules.ContainsKey(itemTag)) return false;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var shipModule = _shipModules[itemTag];
 
             foreach (var (perkType, requiredLevel) in shipModule.RequiredPerks)
@@ -1171,22 +1173,22 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(activator))
             {
                 var playerId = GetObjectUUID(activator);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+                var dbPlayer = _db.Get<Player>(playerId);
+                var dbShip = _db.Get<PlayerShip>(dbPlayer.ActiveShipId);
                 dbShip.Status = activatorShipStatus;
                 
-                DB.Set(dbShip);
+                _db.Set(dbShip);
                 ExecuteScript("pc_target_upd", activator);
             }
 
             if (GetIsPC(target))
             {
                 var playerId = GetObjectUUID(target);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+                var dbPlayer = _db.Get<Player>(playerId);
+                var dbShip = _db.Get<PlayerShip>(dbPlayer.ActiveShipId);
                 dbShip.Status = targetShipStatus;
 
-                DB.Set(dbShip);
+                _db.Set(dbShip);
                 ExecuteScript("pc_target_upd", target);
             }
         }
@@ -1224,13 +1226,13 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 var playerId = GetObjectUUID(player);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+                var dbPlayer = _db.Get<Player>(playerId);
+                var dbShip = _db.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
                 ApplyAutoShipRecovery(player, dbShip.Status);
 
                 // Update changes
-                DB.Set(dbShip);
+                _db.Set(dbShip);
             }
         }
 
@@ -1404,12 +1406,12 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(creature))
             {
                 var targetPlayerId = GetObjectUUID(creature);
-                var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
+                var dbTargetPlayer = _db.Get<Player>(targetPlayerId);
 
                 if (dbTargetPlayer.ActiveShipId == Guid.Empty.ToString())
                     return null;
 
-                var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
+                var dbPlayerShip = _db.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
 
                 return dbPlayerShip?.Status;
             }
@@ -1457,7 +1459,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(attacker) && !GetIsDM(attacker))
             {
                 var playerId = GetObjectUUID(attacker);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 level = dbPlayer.Skills[SkillType.Piloting].Rank;
             }
             else
@@ -1485,7 +1487,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(defender) && !GetIsDM(defender))
             {
                 var playerId = GetObjectUUID(defender);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 level = dbPlayer.Skills[SkillType.Piloting].Rank;
             }
             else
@@ -1512,7 +1514,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(attacker) && !GetIsDM(attacker))
             {
                 var playerId = GetObjectUUID(attacker);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 level = dbPlayer.Skills[SkillType.Piloting].Rank;
             }
@@ -1540,7 +1542,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(defender) && !GetIsDM(defender))
             {
                 var playerId = GetObjectUUID(defender);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 level = dbPlayer.Skills[SkillType.Piloting].Rank;
             }
@@ -1640,8 +1642,8 @@ namespace SWLOR.Game.Server.Service
                 if (GetIsPC(target))
                 {
                     var targetPlayerId = GetObjectUUID(target);
-                    var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
-                    var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
+                    var dbTargetPlayer = _db.Get<Player>(targetPlayerId);
+                    var dbPlayerShip = _db.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
                     var instance = Property.GetRegisteredInstance(dbPlayerShip.PropertyId);
                     var location = Location(instance.Area, Vector3.Zero, 0.0f);
 
@@ -1650,7 +1652,7 @@ namespace SWLOR.Game.Server.Service
                     dbPlayerShip.Status.Shield = targetShipStatus.Shield;
                     dbPlayerShip.Status.Hull = targetShipStatus.Hull;
 
-                    DB.Set(dbPlayerShip);
+                    _db.Set(dbPlayerShip);
                     ExecuteScript("pc_shld_adjusted", target);
                     ExecuteScript("pc_hull_adjusted", target);
                 }
@@ -1707,8 +1709,8 @@ namespace SWLOR.Game.Server.Service
                 if (GetIsPC(target))
                 {
                     var targetPlayerId = GetObjectUUID(target);
-                    var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
-                    var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
+                    var dbTargetPlayer = _db.Get<Player>(targetPlayerId);
+                    var dbPlayerShip = _db.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
                     var instance = Property.GetRegisteredInstance(dbPlayerShip.PropertyId);
                     var location = Location(instance.Area, Vector3.Zero, 0.0f);
 
@@ -1717,7 +1719,7 @@ namespace SWLOR.Game.Server.Service
                     dbPlayerShip.Status.Shield = targetShipStatus.Shield;
                     dbPlayerShip.Status.Hull = targetShipStatus.Hull;
 
-                    DB.Set(dbPlayerShip);
+                    _db.Set(dbPlayerShip);
                     ExecuteScript("pc_shld_adjusted", target);
                     ExecuteScript("pc_hull_adjusted", target);
                 }
@@ -1763,9 +1765,9 @@ namespace SWLOR.Game.Server.Service
                 const int ChanceToDropModule = 65;
                 var deathLocation = GetLocation(creature);
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
-                var dbPlayerShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
-                var dbProperty = DB.Get<WorldProperty>(dbPlayerShip.PropertyId);
+                var dbPlayer = _db.Get<Player>(playerId);
+                var dbPlayerShip = _db.Get<PlayerShip>(dbPlayer.ActiveShipId);
+                var dbProperty = _db.Get<WorldProperty>(dbPlayerShip.PropertyId);
                 var instance = Property.GetRegisteredInstance(dbPlayerShip.PropertyId);
 
                 // Give a chance to drop each installed module.
@@ -1838,9 +1840,9 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Update the changes
-                DB.Set(dbProperty);
-                DB.Set(dbPlayerShip);
-                DB.Set(dbPlayer);
+                _db.Set(dbProperty);
+                _db.Set(dbPlayerShip);
+                _db.Set(dbPlayer);
 
                 // Murder everyone inside the ship's instance.
                 foreach (var player in instance.Players)
@@ -1994,7 +1996,7 @@ namespace SWLOR.Game.Server.Service
             var propertyId = Property.GetPropertyId(instance);
             var shipQuery = new DBQuery<PlayerShip>()
                 .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyId, false);
-            var dbShip = DB.Search(shipQuery).FirstOrDefault();
+            var dbShip = _db.Search(shipQuery).FirstOrDefault();
 
             if (dbShip == null)
                 return;
@@ -2012,7 +2014,7 @@ namespace SWLOR.Game.Server.Service
 
             // No one's in the ship and it's lost in space. Let's send it back to the last dock
             // and apply penalties.
-            var dbProperty = DB.Get<WorldProperty>(propertyId);
+            var dbProperty = _db.Get<WorldProperty>(propertyId);
 
             if (dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
             {
@@ -2021,8 +2023,8 @@ namespace SWLOR.Game.Server.Service
                 dbShip.Status.Shield = 0;
                 dbShip.Status.Hull = 1;
 
-                DB.Set(dbProperty);
-                DB.Set(dbShip);
+                _db.Set(dbProperty);
+                _db.Set(dbShip);
             }
 
             if (_shipClones.ContainsKey(dbShip.Id))

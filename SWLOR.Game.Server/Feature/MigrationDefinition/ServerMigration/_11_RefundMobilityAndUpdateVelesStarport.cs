@@ -5,14 +5,17 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _11_RefundMobilityAndUpdateVelesStarport: ServerMigrationBase, IServerMigration
     {
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
 
         private readonly Dictionary<(PerkType, int), int> _refundMap = new()
         {
@@ -33,8 +36,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
             var dbQuery = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Starship);
-            var shipCount = (int)DB.SearchCount(dbQuery);
-            var dbShips = DB.Search(dbQuery
+            var shipCount = (int)_db.SearchCount(dbQuery);
+            var dbShips = _db.Search(dbQuery
                 .AddPaging(shipCount, 0));
 
             var waypoint = GetWaypointByTag("VISCARA_LANDING");
@@ -62,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                     lastNPCDockPosition.Orientation = facing;
                 }
 
-                DB.Set(dbShip);
+                _db.Set(dbShip);
                 _logger.Write<MigrationLogGroup>($"Updated location of ship '{dbShip.CustomName}' ({dbShip.Id}) in Veles Starport.");
             }
         }

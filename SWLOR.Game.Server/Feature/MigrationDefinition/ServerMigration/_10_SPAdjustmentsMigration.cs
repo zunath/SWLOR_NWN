@@ -5,15 +5,18 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _10_SPAdjustmentsMigration : ServerMigrationBase, IServerMigration
     {
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly Dictionary<(PerkType, int), int> _refundMap = new()
         {
             // Force - Universal Price Changes
@@ -105,8 +108,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         private void RemoveGrenadesRecast()
         {
             var dbQuery = new DBQuery<Player>();
-            var playerCount = (int)DB.SearchCount(dbQuery);
-            var dbPlayersRaw = DB.SearchRawJson(dbQuery
+            var playerCount = (int)_db.SearchCount(dbQuery);
+            var dbPlayersRaw = _db.SearchRawJson(dbQuery
                 .AddPaging(playerCount, 0));
 
             foreach (var dbPlayerJson in dbPlayersRaw)
@@ -121,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
                     var dbPlayer = jObject.ToObject<Player>();
 
-                    DB.Set(dbPlayer);
+                    _db.Set(dbPlayer);
 
                     _logger.Write<MigrationLogGroup>($"{dbPlayer.Name} ({dbPlayer.Id}): Replaced recast timer for Grenades.");
                 }

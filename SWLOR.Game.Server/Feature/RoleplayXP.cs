@@ -5,7 +5,9 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 using Player = SWLOR.Game.Server.Entity.Player;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 
@@ -13,6 +15,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public class RoleplayXP
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private const string RPTimestampVariable = "RP_SYSTEM_LAST_MESSAGE_TIMESTAMP";
 
         /// <summary>
@@ -45,7 +48,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
 
             if (dbPlayer.RoleplayProgress.RPPoints >= 50)
             {
@@ -60,7 +63,7 @@ namespace SWLOR.Game.Server.Feature
                 dbPlayer.RoleplayProgress.RPPoints = 0;
                 dbPlayer.RoleplayProgress.TotalRPExpGained += (ulong)xp;
                 dbPlayer.UnallocatedXP += xp;
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
                 
                 SendMessageToPC(player, $"You gained {xp} roleplay XP.");
             }
@@ -97,7 +100,7 @@ namespace SWLOR.Game.Server.Feature
             if (startingText == "//" || startingText == "((") return;
 
             var playerID = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerID);
+            var dbPlayer = _db.Get<Player>(playerID);
 
             // Spam prevention
             var timestampString = GetLocalString(player, RPTimestampVariable);
@@ -111,7 +114,7 @@ namespace SWLOR.Game.Server.Feature
                 if (now <= lastSend.AddSeconds(1))
                 {
                     dbPlayer.RoleplayProgress.SpamMessageCount++;
-                    DB.Set(dbPlayer);
+                    _db.Set(dbPlayer);
                     return;
                 }
             }
@@ -120,7 +123,7 @@ namespace SWLOR.Game.Server.Feature
             if (!CanReceiveRPPoint(player, channel)) return;
 
             dbPlayer.RoleplayProgress.RPPoints++;
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>

@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static partial class Skill
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.
         /// </summary>
@@ -46,7 +48,7 @@ namespace SWLOR.Game.Server.Service
 
             var modifiedSkills = new List<SkillType>();
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             var details = GetSkillDetails(skill);
             var pcSkill = dbPlayer.Skills[skill];
@@ -120,7 +122,7 @@ namespace SWLOR.Game.Server.Service
 
             if (xp <= 0)
             {
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
                 return;
             }
             
@@ -228,7 +230,7 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.Skills[skill].XP = 0;
             }
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             modifiedSkills.Add(skill);
             Gui.PublishRefreshEvent(player, new SkillXPRefreshEvent(modifiedSkills));
@@ -276,7 +278,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             foreach (var skill in GetAllSkills())
             {
                 if (!dbPlayer.Skills.ContainsKey(skill.Key))
@@ -285,7 +287,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>
@@ -301,7 +303,7 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var skillDetails = GetSkillDetails(skillType);
             var currentSkill = dbPlayer.Skills[skillType];
 

@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -26,6 +27,7 @@ namespace SWLOR.Game.Server.Service
     public class Stat
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public const int BaseHP = 70;
         public const int BaseFP = 10;
         public const int BaseSTM = 10;
@@ -78,7 +80,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer == null)
                 {
                     var playerId = GetObjectUUID(creature);
-                    dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer = _db.Get<Player>(playerId);
                 }
                 baseFP = dbPlayer.MaxFP;
 
@@ -112,7 +114,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer == null)
                 {
                     var playerId = GetObjectUUID(creature);
-                    dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer = _db.Get<Player>(playerId);
                 }
 
                 return dbPlayer.FP;
@@ -149,7 +151,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer == null)
                 {
                     var playerId = GetObjectUUID(creature);
-                    dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer = _db.Get<Player>(playerId);
                 }
 
                 baseStamina = dbPlayer.MaxStamina;
@@ -184,7 +186,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer == null)
                 {
                     var playerId = GetObjectUUID(creature);
-                    dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer = _db.Get<Player>(playerId);
                 }
 
                 return dbPlayer.Stamina;
@@ -214,7 +216,7 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(creature);
                 if (dbPlayer == null)
                 {
-                    dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer = _db.Get<Player>(playerId);
                 }
                 
                 dbPlayer.FP += amount;
@@ -222,7 +224,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.FP > maxFP)
                     dbPlayer.FP = maxFP;
                 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
             // NPCs
             else
@@ -255,7 +257,7 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(creature);
                 if (dbPlayer == null)
                 {
-                    dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer = _db.Get<Player>(playerId);
                 }
 
                 dbPlayer.FP -= reduceBy;
@@ -263,7 +265,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.FP < 0)
                     dbPlayer.FP = 0;
                 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
             else
             {
@@ -296,7 +298,7 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(creature);
                 if (dbPlayer == null)
                 {
-                    dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer = _db.Get<Player>(playerId);
                 }
 
                 dbPlayer.Stamina += amount;
@@ -304,7 +306,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.Stamina > maxSTM)
                     dbPlayer.Stamina = maxSTM;
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
             // NPCs
             else
@@ -337,7 +339,7 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(creature);
                 if (dbPlayer == null)
                 {
-                    dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer = _db.Get<Player>(playerId);
                 }
 
                 dbPlayer.Stamina -= reduceBy;
@@ -345,7 +347,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.Stamina < 0)
                     dbPlayer.Stamina = 0;
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
             else
             {
@@ -372,7 +374,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             // Player returned after the server restarted. They no longer have the food status effect.
             // Reduce their HP by the amount tracked in the DB.
@@ -380,7 +382,7 @@ namespace SWLOR.Game.Server.Service
             {
                 AdjustPlayerMaxHP(dbPlayer, player, -dbPlayer.TemporaryFoodHP);
                 dbPlayer.TemporaryFoodHP = 0;
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
         }
 
@@ -388,7 +390,7 @@ namespace SWLOR.Game.Server.Service
         /// Increases or decreases a player's HP by a specified amount.
         /// There is a cap of 255 HP per NWN level. Players are auto-leveled to 40 by default, so this
         /// gives 255 * 40 = 10,200 HP maximum. If the player's HP would go over this amount, it will be set to 10,200.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="player">The player to adjust</param>
@@ -442,7 +444,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Modifies a player's maximum FP by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
@@ -463,7 +465,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Modifies a player's maximum STM by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
@@ -543,7 +545,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Modifies the ability recast reduction of a player by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The player entity</param>
         /// <param name="adjustBy">The amount to adjust by</param>
@@ -554,7 +556,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Modifies a player's HP Regen by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
@@ -567,7 +569,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Modifies a player's FP Regen by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
@@ -580,7 +582,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Modifies a player's STM Regen by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
@@ -593,7 +595,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Modifies a player's defense toward a particular damage type by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="type">The type of damage</param>
@@ -605,7 +607,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Modifies a player's evasion by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
@@ -616,7 +618,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Modifies a player's attack by a certain amount. Attack affects damage output.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
@@ -627,7 +629,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Modifies a player's force attack by a certain amount. Force Attack affects damage output.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
@@ -638,7 +640,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Modifies a player's control by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="skillType">The skill type to modify</param>
@@ -653,7 +655,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Modifies a player's craftsmanship by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="skillType">The skill type to modify</param>
@@ -668,7 +670,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Modifies a player's CP bonus by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// This method will not persist the changes so be sure you call _db.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="skillType">The skill type to modify</param>
@@ -856,7 +858,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(creature) && !GetIsDM(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (skillType != SkillType.Invalid)
                     skillLevel = dbPlayer.Skills[skillType].Rank;
@@ -904,7 +906,7 @@ namespace SWLOR.Game.Server.Service
             if (creature.m_bPlayerCharacter == 1)
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (dbPlayer != null)
                 {
@@ -974,7 +976,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(creature) && !GetIsDM(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (type == CombatDamageType.Fire ||
                     type == CombatDamageType.Poison ||
@@ -1080,7 +1082,7 @@ namespace SWLOR.Game.Server.Service
             if (creature.m_bPlayerCharacter == 1)
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (dbPlayer != null)
                 {
@@ -1162,7 +1164,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(creature) && !GetIsDM(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (skillType != SkillType.Invalid)
                     skillLevel = dbPlayer.Skills[skillType].Rank;
@@ -1227,7 +1229,7 @@ namespace SWLOR.Game.Server.Service
             if (creature.m_bPlayerCharacter == 1)
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (dbPlayer != null && skillType != SkillType.Invalid)
                 {
@@ -1416,7 +1418,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(creature) && !GetIsDM(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 skillLevel = dbPlayer.Skills[skillType].Rank;
                 evasionBonus = dbPlayer.Evasion;
@@ -1465,7 +1467,7 @@ namespace SWLOR.Game.Server.Service
             if (creature.m_bPlayerCharacter == 1)
             {
                 var playerId = creature.m_pUUID.GetOrAssignRandom().ToString();
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (dbPlayer != null)
                 {
@@ -1802,7 +1804,7 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             var control = dbPlayer.Control.ContainsKey(craftingSkillType)
                 ? dbPlayer.Control[craftingSkillType]
@@ -1832,7 +1834,7 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             var control = dbPlayer.Craftsmanship.ContainsKey(craftingSkillType)
                 ? dbPlayer.Craftsmanship[craftingSkillType]

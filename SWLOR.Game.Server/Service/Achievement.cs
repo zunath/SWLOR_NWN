@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 
@@ -13,6 +14,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Achievement
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static Gui.IdReservation _idReservation;
         private static readonly Dictionary<AchievementType, AchievementAttribute> _activeAchievements = new Dictionary<AchievementType, AchievementAttribute>();
 
@@ -51,14 +53,14 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var cdKey = GetPCPublicCDKey(player);
-            var account = DB.Get<Account>(cdKey) ?? new Account(cdKey);
+            var account = _db.Get<Account>(cdKey) ?? new Account(cdKey);
             if (account.Achievements.ContainsKey(achievementType)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var now = DateTime.UtcNow;
             account.Achievements[achievementType] = now;
-            DB.Set(account);
+            _db.Set(account);
 
             // Player turned off achievement notifications. Nothing left to do here.
             if (!dbPlayer.Settings.DisplayAchievementNotification) return;

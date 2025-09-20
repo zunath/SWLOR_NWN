@@ -5,11 +5,14 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWNX.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class CZ220QuestDefinition: IQuestListDefinition
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public Dictionary<string, QuestDetail> BuildQuests()
         {
             var builder = new QuestBuilder();
@@ -46,10 +49,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                     KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt);
 
                     var cdKey = GetPCPublicCDKey(player);
-                    var dbAccount = DB.Get<Account>(cdKey) ?? new Account(cdKey);
+                    var dbAccount = _db.Get<Account>(cdKey) ?? new Account(cdKey);
                     dbAccount.HasCompletedTutorial = true;
 
-                    DB.Set(dbAccount);
+                    _db.Set(dbAccount);
                 });
         }
 

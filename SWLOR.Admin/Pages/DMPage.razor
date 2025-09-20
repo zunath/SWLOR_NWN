@@ -2,6 +2,9 @@
 @attribute [Authorize(Policy = "DiscordAdmin")]
 @using SWLOR.Game.Server
 @using SWLOR.Game.Server.Enumeration
+@using SWLOR.Shared.Abstractions.Contracts
+@using SWLOR.Shared.Core.Service
+@inject IDatabaseService _db
 
 <h3>DMs (@_totalRecords)</h3>
 
@@ -178,7 +181,7 @@
 	protected void RefreshList()
 	{
 		var query = new DBQuery<AuthorizedDM>();
-		_totalRecords = DB.SearchCount(query);
+		_totalRecords = _db.SearchCount(query);
 
 		if (!string.IsNullOrWhiteSpace(_searchText))
 		{
@@ -202,7 +205,7 @@
         var offset = (_currentPage - 1) * PageSize;
         query.AddPaging(PageSize, offset);
 
-	    _dms = DB.Search(query).ToList();
+	    _dms = _db.Search(query).ToList();
 	}
 
     // Pagination methods
@@ -307,7 +310,7 @@
 		// Check if CD Key already exists (for new DMs)
 		if (_editingDM == null)
 		{
-			var existingDM = DB.Get<AuthorizedDM>(trimmedCDKey);
+			var existingDM = _db.Get<AuthorizedDM>(trimmedCDKey);
 			if (existingDM != null)
 			{
 				_validationError = "A DM with this CD Key already exists.";
@@ -326,7 +329,7 @@
 				CDKey = trimmedCDKey,
 				Authorization = _modalAuthorization
 			};
-			DB.Set(newDM);
+			_db.Set(newDM);
 		}
 		else
 		{
@@ -334,7 +337,7 @@
 			_editingDM.Name = _modalName.Trim();
 			_editingDM.CDKey = trimmedCDKey;
 			_editingDM.Authorization = _modalAuthorization;
-			DB.Set(_editingDM);
+			_db.Set(_editingDM);
 		}
 
 		HideModal();
@@ -345,7 +348,7 @@
 	{
 		if (_deletingDM != null)
 		{
-			DB.Delete<AuthorizedDM>(_deletingDM.Id);
+			_db.Delete<AuthorizedDM>(_deletingDM.Id);
 			HideDeleteModal();
 			RefreshList();
 		}

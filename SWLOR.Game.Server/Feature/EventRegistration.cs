@@ -2,14 +2,18 @@ using System;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Entity;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
     public static class EventRegistration
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         /// <summary>
         /// Fires on the module PreLoad event. This event should be specified in the environment variables.
         /// This will hook all module/global events.
@@ -19,7 +23,7 @@ namespace SWLOR.Game.Server.Feature
         {
             ExecuteScript("db_load", OBJECT_SELF);
 
-            var serverConfig = DB.Get<ModuleCache>(ModuleCache.DefaultId) ?? new ModuleCache();
+            var serverConfig = _db.Get<ModuleCache>(ModuleCache.DefaultId) ?? new ModuleCache();
 
             Console.WriteLine("Hooking all module events.");
             HookModuleEvents();
@@ -42,7 +46,7 @@ namespace SWLOR.Game.Server.Feature
                 // DB record must be updated before the event fires, as some
                 // events use the server configuration record.
                 serverConfig.LastModuleMTime = UtilPlugin.GetModuleMTime();
-                DB.Set(serverConfig);
+                _db.Set(serverConfig);
 
                 ExecuteScript(ScriptName.OnModuleContentChange, GetModule());
             }

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -13,6 +14,7 @@ namespace SWLOR.Game.Server.Feature
     public class PersistentMapProgression
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         /// <summary>
         /// Saves a player's area map progression when exiting an area.
         /// </summary>
@@ -25,7 +27,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
             var area = OBJECT_SELF;
             var areaResref = GetResRef(area);
 
@@ -35,7 +37,7 @@ namespace SWLOR.Game.Server.Feature
 
             dbPlayer.MapProgressions[areaResref] = progression;
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>
@@ -75,7 +77,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetLocalBool(player, localVarName)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (dbPlayer == null)
                 return;
 

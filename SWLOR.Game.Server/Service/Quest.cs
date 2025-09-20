@@ -11,12 +11,15 @@ using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Quest
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly Dictionary<string, QuestDetail> _quests = new();
         private static readonly Dictionary<NPCGroupType, List<string>> _npcsWithKillQuests = new();
         private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _questsByGuildType = new();
@@ -109,7 +112,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
 
             // Reapply quest journal entries on log-in.
             // An NWN quirk requires this to be on a short delay because journal entries are wiped on login.
@@ -200,7 +203,7 @@ namespace SWLOR.Game.Server.Service
         public static void RequestItemsFromPlayer(uint player, string questId)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (!dbPlayer.Quests.ContainsKey(questId))
             {
@@ -264,7 +267,7 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 var playerId = GetObjectUUID(member);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 // Need to iterate over every possible quest this creature is a part of.
                 foreach (var questId in possibleQuests)
@@ -312,7 +315,7 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastOpenedBy();
             var playerId = GetObjectUUID(player);
 
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (!dbPlayer.Quests.ContainsKey(questId))
             {
@@ -369,7 +372,7 @@ namespace SWLOR.Game.Server.Service
             var owner = GetLocalObject(container, "QUEST_OWNER");
             var player = GetLastDisturbed();
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var item = GetInventoryDisturbItem();
             var resref = GetResRef(item);
             var questId = GetLocalString(container, "QUEST_ID");
@@ -400,7 +403,7 @@ namespace SWLOR.Game.Server.Service
                 Item.ReduceItemStack(item, stackSize);
             }
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             // Give the player an update and reduce the item stack.
             var itemName = Cache.GetItemNameByResref(resref);
@@ -470,7 +473,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (!dbPlayer.Quests.ContainsKey(questId)) return;
 

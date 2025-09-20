@@ -2,12 +2,16 @@
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class KeyItemsViewModel: GuiViewModelBase<KeyItemsViewModel, GuiPayloadBase>,
         IGuiRefreshable<KeyItemReceivedRefreshEvent>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         public GuiBindingList<string> Names
         {
             get => Get<GuiBindingList<string>>();
@@ -46,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadKeyItems()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             var names = new GuiBindingList<string>();
             var types = new GuiBindingList<string>();

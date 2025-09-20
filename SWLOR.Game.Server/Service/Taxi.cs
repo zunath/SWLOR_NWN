@@ -4,13 +4,16 @@ using System.Linq;
 
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.TaxiService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Taxi
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly Dictionary<TaxiDestinationType, TaxiDestinationAttribute> _allTaxiDestinations = new Dictionary<TaxiDestinationType, TaxiDestinationAttribute>();
         private static readonly Dictionary<int, Dictionary<TaxiDestinationType, TaxiDestinationAttribute>> _taxiDestinationsByRegionId = new Dictionary<int, Dictionary<TaxiDestinationType, TaxiDestinationAttribute>>();
 
@@ -49,7 +52,7 @@ namespace SWLOR.Game.Server.Service
 
             var detail = _allTaxiDestinations[type];
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (!dbPlayer.TaxiDestinations.ContainsKey(detail.RegionId))
                 dbPlayer.TaxiDestinations[detail.RegionId] = new List<TaxiDestinationType>();
@@ -63,7 +66,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.TaxiDestinations[detail.RegionId].Add(type);
             SendMessageToPC(player, $"'{detail.Name}' registered into taxi destinations!");
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>

@@ -7,13 +7,16 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Recast
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         // Recast Group Descriptions
         private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new Dictionary<RecastGroup, string>();
 
@@ -65,7 +68,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(creature) && !GetIsDMPossessed(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (!dbPlayer.RecastTimes.ContainsKey(recastGroup)) return (false, string.Empty);
 
@@ -112,7 +115,7 @@ namespace SWLOR.Game.Server.Service
             else if (GetIsPC(activator) && !GetIsDM(activator))
             {
                 var playerId = GetObjectUUID(activator);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (!ignoreRecastReduction)
                 {
@@ -135,7 +138,7 @@ namespace SWLOR.Game.Server.Service
                 var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
                 dbPlayer.RecastTimes[group] = recastDate;
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
 
         }

@@ -5,11 +5,15 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CustomizeCharacterViewModel: GuiViewModelBase<CustomizeCharacterViewModel, CustomizeCharacterPayload>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private uint _target;
 
         public const string PartialElement = "PARTIAL_VIEW";
@@ -229,10 +233,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (isBeast)
             {
                 var beastId = BeastMastery.GetBeastId(_target);
-                var dbBeast = DB.Get<Beast>(beastId);
+                var dbBeast = _db.Get<Beast>(beastId);
 
                 dbBeast.PortraitId = portraitId;
-                DB.Set(dbBeast);
+                _db.Set(dbBeast);
             }
 
             Gui.PublishRefreshEvent(Player, new ChangePortraitRefreshEvent());
@@ -263,10 +267,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (BeastMastery.IsPlayerBeast(_target))
             {
                 var beastId = BeastMastery.GetBeastId(_target);
-                var dbBeast = DB.Get<Beast>(beastId);
+                var dbBeast = _db.Get<Beast>(beastId);
 
                 dbBeast.SoundSetId = soundSetId;
-                DB.Set(dbBeast);
+                _db.Set(dbBeast);
             }
         };
     }

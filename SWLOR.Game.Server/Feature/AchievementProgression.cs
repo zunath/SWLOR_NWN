@@ -2,12 +2,16 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AchievementService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
     public static class AchievementProgression
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         /// <summary>
         /// When a player enters the mod, increase their number of logins
         /// </summary>
@@ -18,10 +22,10 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var cdKey = GetPCPublicCDKey(player);
-            var dbAccount = DB.Get<Account>(cdKey) ?? new Account(cdKey);
+            var dbAccount = _db.Get<Account>(cdKey) ?? new Account(cdKey);
 
             dbAccount.TimesLoggedIn++;
-            DB.Set(dbAccount);
+            _db.Set(dbAccount);
         }
 
         /// <summary>
@@ -50,10 +54,10 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(killer) || GetIsDM(killer)) return;
 
             var cdKey = GetPCPublicCDKey(killer);
-            var dbAccount = DB.Get<Account>(cdKey);
+            var dbAccount = _db.Get<Account>(cdKey);
 
             dbAccount.AchievementProgress.EnemiesKilled++;
-            DB.Set(dbAccount);
+            _db.Set(dbAccount);
 
             var kills = dbAccount.AchievementProgress.EnemiesKilled;
 
@@ -93,10 +97,10 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var cdKey = GetPCPublicCDKey(player);
-            var dbAccount = DB.Get<Account>(cdKey);
+            var dbAccount = _db.Get<Account>(cdKey);
 
             dbAccount.AchievementProgress.PerksLearned++;
-            DB.Set(dbAccount);
+            _db.Set(dbAccount);
 
             var numberLearned = dbAccount.AchievementProgress.PerksLearned;
 
@@ -132,10 +136,10 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var cdKey = GetPCPublicCDKey(player);
-            var dbAccount = DB.Get<Account>(cdKey);
+            var dbAccount = _db.Get<Account>(cdKey);
 
             dbAccount.AchievementProgress.SkillsLearned++;
-            DB.Set(dbAccount);
+            _db.Set(dbAccount);
 
             var numberLearned = dbAccount.AchievementProgress.SkillsLearned;
 
@@ -175,10 +179,10 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var cdKey = GetPCPublicCDKey(player);
-            var dbAccount = DB.Get<Account>(cdKey);
+            var dbAccount = _db.Get<Account>(cdKey);
 
             dbAccount.AchievementProgress.QuestsCompleted++;
-            DB.Set(dbAccount);
+            _db.Set(dbAccount);
 
             var numberCompleted = dbAccount.AchievementProgress.QuestsCompleted;
 
@@ -234,10 +238,10 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var cdKey = GetPCPublicCDKey(player);
-            var dbAccount = DB.Get<Account>(cdKey);
+            var dbAccount = _db.Get<Account>(cdKey);
 
             dbAccount.AchievementProgress.ItemsCrafted++;
-            DB.Set(dbAccount);
+            _db.Set(dbAccount);
 
             var numberCompleted = dbAccount.AchievementProgress.ItemsCrafted;
             if (numberCompleted >= 1)

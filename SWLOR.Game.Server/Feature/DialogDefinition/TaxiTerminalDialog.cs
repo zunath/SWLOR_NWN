@@ -3,12 +3,15 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.TaxiService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class TaxiTerminalDialog: DialogBase
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private const string MainPageId = "MAIN_PAGE";
 
         public override PlayerDialog SetUp(uint player)
@@ -55,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 }
 
                 var playerId = GetObjectUUID(player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 // Register Location option
                 if (!dbPlayer.TaxiDestinations.ContainsKey(regionId) ||

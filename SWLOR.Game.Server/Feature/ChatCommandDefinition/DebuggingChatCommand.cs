@@ -6,12 +6,15 @@ using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     public class DebuggingChatCommand: IChatCommandListDefinition
     {
         private readonly ChatCommandBuilder _builder = new();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
             //MoveDoor();
@@ -107,12 +110,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     var playerId = GetObjectUUID(user);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     
                     dbPlayer.ActiveBeastId = string.Empty;
-                    DB.Set(dbPlayer);
+                    _db.Set(dbPlayer);
 
-                    DB.Delete<Beast>(dbPlayer.ActiveBeastId);
+                    _db.Delete<Beast>(dbPlayer.ActiveBeastId);
 
                 });
         }

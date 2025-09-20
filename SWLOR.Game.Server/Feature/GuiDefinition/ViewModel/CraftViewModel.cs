@@ -15,6 +15,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -28,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<SkillXPRefreshEvent>
     {
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public const string ViewName = "CraftView";
         public const string SetUpPartialName = "SetUpPartial";
         public const string CraftPartialName = "CraftPartial";
@@ -522,7 +524,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadCraftingState()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var recipe = Craft.GetRecipe(_recipe);
             var skill = dbPlayer.Skills[recipe.Skill].Rank;
             var levelDetail = Craft.GetRecipeLevelDetail(recipe.Level);
@@ -1228,7 +1230,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void SwitchToSetUpMode()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             IsInCraftMode = false;
             IsInSetupMode = true;
@@ -1373,7 +1375,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int CalculateProgress(int baseProgress)
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var recipe = Craft.GetRecipe(_recipe);
             var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
             var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
@@ -1388,7 +1390,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int CalculateQuality(int baseQuality)
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var recipe = Craft.GetRecipe(_recipe);
             var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
             var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
@@ -1449,7 +1451,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var recipe = Craft.GetRecipe(_recipe);
             var item = CreateItemOnObject(recipe.Resref, Player, recipe.Quantity);
             var firstTime = !dbPlayer.CraftedRecipes.ContainsKey(_recipe);
@@ -1501,7 +1503,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (firstTime)
             {
                 dbPlayer.CraftedRecipes[_recipe] = DateTime.UtcNow;
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
 
             // Give XP plus a percent bonus based on the quality achieved.
@@ -1588,7 +1590,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var recipe = Craft.GetRecipe(_recipe);
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             const int ChanceToLoseItem = 65;
 
             // Process enhancements
@@ -1884,7 +1886,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public void Refresh(SkillXPRefreshEvent payload)
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             RefreshYourSkill(dbPlayer);
         }
     }

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using static SWLOR.Game.Server.Service.Random;
 
@@ -10,6 +11,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class DiceDialog : DialogBase
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private enum DiceGroup
         {
             None = 0,
@@ -204,7 +207,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             if (!GetIsDM(user))
             {
                 var playerId = GetObjectUUID(user);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 // Skills
                  if (model.Skill != SkillType.Invalid)

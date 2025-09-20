@@ -8,12 +8,15 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class CombatPoint
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         /// <summary>
         /// Tracks the combat points earned by players during combat.
         /// </summary>
@@ -41,7 +44,7 @@ namespace SWLOR.Game.Server.Service
             var skill = Skill.GetSkillTypeByBaseItem(baseItemType);
             if (skill == SkillType.Invalid) return;
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var levelDelta = dbPlayer.Skills[SkillType.Force].Rank - dbPlayer.Skills[skill].Rank;
 
             AddCombatPoint(player, target, skill);
@@ -111,7 +114,7 @@ namespace SWLOR.Game.Server.Service
                         continue;
 
                     var playerId = GetObjectUUID(player);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
 
                     // Filter the skills list down to just those with combat points (CP)
                     var skillsWithCP = dbPlayer

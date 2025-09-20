@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
 
@@ -14,6 +15,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal class BankViewModel: GuiViewModelBase<BankViewModel, GuiPayloadBase>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         /// <summary>
         /// When a bank placeable is used, display this UI view.
         /// </summary>
@@ -78,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var storageId = GetLocalString(bank, "STORAGE_ID");
             var maxItems = GetLocalInt(bank, "STORAGE_ITEM_LIMIT");
 
-            var itemCount = DB.SearchCount(new DBQuery<InventoryItem>()
+            var itemCount = _db.SearchCount(new DBQuery<InventoryItem>()
                 .AddFieldSearch(nameof(InventoryItem.StorageId), storageId, false)
                 .AddFieldSearch(nameof(InventoryItem.PlayerId), playerId, false));
 
@@ -110,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             _itemIds.Clear();
-            var items = DB.Search(query);
+            var items = _db.Search(query);
             var itemResrefs = new GuiBindingList<string>();
             var itemNames = new GuiBindingList<string>();
 
@@ -150,12 +153,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var itemId = _itemIds[index];
-            var dbItem = DB.Get<InventoryItem>(itemId);
+            var dbItem = _db.Get<InventoryItem>(itemId);
 
             var item = ObjectPlugin.Deserialize(dbItem.Data);
             ObjectPlugin.AcquireItem(Player, item);
 
-            DB.Delete<InventoryItem>(dbItem.Id);
+            _db.Delete<InventoryItem>(dbItem.Id);
 
             _itemIds.RemoveAt(index);
             ItemNames.RemoveAt(index);
@@ -206,7 +209,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     IconResref = Item.GetIconResref(item)
                 };
 
-                DB.Set(dbItem);
+                _db.Set(dbItem);
 
                 DestroyObject(item);
 

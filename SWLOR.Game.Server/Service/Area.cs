@@ -4,7 +4,7 @@ using System.Linq;
 
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Entity;
-
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
 
@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Service
 {
     public class Area
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static Dictionary<string, uint> AreasByResref { get; } = new();
         private static Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
 
@@ -109,7 +110,7 @@ namespace SWLOR.Game.Server.Service
             var query = new DBQuery<AreaNote>()
                 .AddFieldSearch(nameof(AreaNote.AreaResref), GetResRef(area), false)
                 .OrderBy(nameof(AreaNote.AreaResref));
-            var notes = DB.Search(query)
+            var notes = _db.Search(query)
                 .ToList();
 
             if (notes.Count > 0)

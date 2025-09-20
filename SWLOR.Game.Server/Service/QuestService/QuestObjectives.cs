@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.NPCService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -15,6 +16,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class CollectItemObjective : IQuestObjective
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly string _resref;
         private readonly int _quantity;
 
@@ -27,18 +29,18 @@ namespace SWLOR.Game.Server.Service.QuestService
         public void Initialize(uint player, string questId)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var quest = dbPlayer.Quests.ContainsKey(questId) ? dbPlayer.Quests[questId] : new PlayerQuest();
 
             quest.ItemProgresses[_resref] = _quantity;
             dbPlayer.Quests[questId] = quest;
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         public void Advance(uint player, string questId)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var quest = dbPlayer.Quests.ContainsKey(questId) ? dbPlayer.Quests[questId] : null;
 
             if (quest == null) return;
@@ -46,7 +48,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             if (quest.ItemProgresses[_resref] <= 0) return;
 
             quest.ItemProgresses[_resref]--;
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             var questDetail = Quest.GetQuestById(questId);
             var itemName = Cache.GetItemNameByResref(_resref);
@@ -64,7 +66,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         public bool IsComplete(uint player, string questId)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var quest = dbPlayer.Quests.ContainsKey(questId) ? dbPlayer.Quests[questId] : null;
 
             if (quest == null) return false;
@@ -81,7 +83,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         public string GetCurrentStateText(uint player, string questId)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (!dbPlayer.Quests.ContainsKey(questId))
                 return "N/A";
             if (!dbPlayer.Quests[questId].ItemProgresses.ContainsKey(_resref))
@@ -95,6 +97,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class KillTargetObjective : IQuestObjective
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public NPCGroupType Group { get; }
         private readonly int _amount;
 
@@ -107,18 +110,18 @@ namespace SWLOR.Game.Server.Service.QuestService
         public void Initialize(uint player, string questId)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var quest = dbPlayer.Quests.ContainsKey(questId) ? dbPlayer.Quests[questId] : new PlayerQuest();
             
             quest.KillProgresses[Group] = _amount;
             dbPlayer.Quests[questId] = quest;
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         public void Advance(uint player, string questId)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var quest = dbPlayer.Quests.ContainsKey(questId) ? dbPlayer.Quests[questId] : null;
 
             if (quest == null) return;
@@ -126,7 +129,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             if (quest.KillProgresses[Group] <= 0) return;
 
             quest.KillProgresses[Group]--;
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             var npcGroup = NPCGroup.GetNPCGroup(Group);
             var questDetail = Quest.GetQuestById(questId);
@@ -144,7 +147,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         public bool IsComplete(uint player, string questId)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var quest = dbPlayer.Quests.ContainsKey(questId) ? dbPlayer.Quests[questId] : null;
 
             if (quest == null) return false;
@@ -161,7 +164,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         public string GetCurrentStateText(uint player, string questId)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (!dbPlayer.Quests.ContainsKey(questId))
                 return "N/A";
 

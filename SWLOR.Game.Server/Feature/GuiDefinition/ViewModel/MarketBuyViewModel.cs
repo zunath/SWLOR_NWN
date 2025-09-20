@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -19,6 +20,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class MarketBuyViewModel: GuiViewModelBase<MarketBuyViewModel, MarketPayload>
     {
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private const int ListingsPerPage = 20;
 
         private static readonly List<MarketCategoryType> _categoryTypes = new();
@@ -180,11 +183,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             query.AddPaging(ListingsPerPage, ListingsPerPage * SelectedPageIndex);
 
-            var totalRecordCount = DB.SearchCount(query);
+            var totalRecordCount = _db.SearchCount(query);
             UpdatePagination(totalRecordCount);
 
             var credits = GetGold(Player);
-            var results = DB.Search(query);
+            var results = _db.Search(query);
 
             _itemIds.Clear();
             _itemPrices.Clear();
@@ -275,7 +278,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var itemId = _itemIds[index];
-            var dbItem = DB.Get<MarketItem>(itemId);
+            var dbItem = _db.Get<MarketItem>(itemId);
 
             var item = ObjectPlugin.Deserialize(dbItem.Data);
             var payload = new ExamineItemPayload(GetName(item), GetDescription(item), Item.BuildItemPropertyString(item));
@@ -292,7 +295,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal($"Are you sure you want to buy '{itemName}' for {price} credits?", () =>
             {
-                var dbItem = DB.Get<MarketItem>(itemId);
+                var dbItem = _db.Get<MarketItem>(itemId);
 
                 // If another player buys the item or the item gets removed from the market,
                 // prevent the player from purchasing it.
@@ -339,15 +342,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ItemBuyEnabled.RemoveAt(index);
 
                 // Remove the item from the database.
-                DB.Delete<MarketItem>(itemId);
+                _db.Delete<MarketItem>(itemId);
 
                 // Give the money to the seller.
                 var market = PlayerMarket.GetMarketRegion(_regionType);
                 var sellerPlayerId = dbItem.PlayerId;
-                var dbSeller = DB.Get<Player>(sellerPlayerId);
+                var dbSeller = _db.Get<Player>(sellerPlayerId);
                 var proceeds = (int)(price - (price * market.TaxRate));
                 dbSeller.MarketTill += proceeds;
-                DB.Set(dbSeller);
+                _db.Set(dbSeller);
             });
         };
 

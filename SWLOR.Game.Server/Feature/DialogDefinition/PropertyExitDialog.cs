@@ -2,12 +2,15 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class PropertyExitDialog: DialogBase
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private const string MainPageId = "MAIN_PAGE";
 
         public override PlayerDialog SetUp(uint player)
@@ -38,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var player = GetPC();
             var area = GetArea(player);
             var propertyId = Property.GetPropertyId(area);
-            var property = DB.Get<WorldProperty>(propertyId);
+            var property = _db.Get<WorldProperty>(propertyId);
 
             page.Header = $"What would you like to do?";
 

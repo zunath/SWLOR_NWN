@@ -5,6 +5,8 @@ namespace SWLOR.Shared.Abstractions.Contracts
     /// </summary>
     public interface IDatabaseService
     {
+        void Load();
+
         /// <summary>
         /// Stores a specific object in the database by its Id.
         /// </summary>

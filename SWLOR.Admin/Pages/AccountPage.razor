@@ -1,6 +1,9 @@
 ﻿@page "/account"
 @using SWLOR.Game.Server
+@using SWLOR.Shared.Abstractions.Contracts
+@using SWLOR.Shared.Core.Service
 @attribute [Authorize(Policy = "DiscordAdmin")]
+@inject IDatabaseService _db
 
 <h3>Accounts (@_totalRecords)</h3>
 
@@ -94,7 +97,7 @@
     protected void RefreshList()
     {
         var query = new DBQuery<Account>();
-        _totalRecords = DB.SearchCount(query);
+        _totalRecords = _db.SearchCount(query);
 
         if (!string.IsNullOrWhiteSpace(_searchText))
         {
@@ -118,7 +121,7 @@
         var offset = (_currentPage - 1) * PageSize;
         query.AddPaging(PageSize, offset);
 
-        _accounts = DB.Search(query).ToList();
+        _accounts = _db.Search(query).ToList();
     }
 
     // Pagination methods

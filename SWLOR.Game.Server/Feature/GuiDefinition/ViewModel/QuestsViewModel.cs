@@ -7,6 +7,8 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -15,6 +17,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<QuestProgressedRefreshEvent>,
         IGuiRefreshable<QuestCompletedRefreshEvent>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         public string SearchText
         {
             get => Get<string>();
@@ -60,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var questId = _questIds[SelectedQuestIndex];
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
 
                 var dbPlayerQuest = dbPlayer.Quests[questId];
@@ -104,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             SelectedQuestIndex = -1;
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             _questIds.Clear();
             var questNames = new GuiBindingList<string>();

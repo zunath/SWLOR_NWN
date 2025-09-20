@@ -3,6 +3,9 @@
 @inject NavigationManager NavManager
 @using System.Reflection
 @using SWLOR.Game.Server
+@using SWLOR.Shared.Abstractions.Contracts
+@using SWLOR.Shared.Core.Service
+@inject IDatabaseService _db
 
 <h3>Players (@_totalRecords)</h3>
 
@@ -91,7 +94,7 @@
 	{
 		var query = new DBQuery<Player>();
 
-	    _totalRecords = DB.SearchCount(query);
+	    _totalRecords = _db.SearchCount(query);
 
 		if (!string.IsNullOrWhiteSpace(_searchText))
 		{
@@ -115,7 +118,7 @@
         var offset = (_currentPage - 1) * PageSize;
         query.AddPaging(PageSize, offset);
 
-		_players = DB.Search(query).ToList();
+		_players = _db.Search(query).ToList();
 	}
 
 	protected override async Task OnInitializedAsync()

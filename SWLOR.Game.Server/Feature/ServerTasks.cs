@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
@@ -16,6 +17,7 @@ namespace SWLOR.Game.Server.Feature
     public static class ServerTasks
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         // This determines what time the server will restart.
         // Restarts happen within a range of 30 seconds of this specified time. 
         // All times are in UTC.
@@ -75,8 +77,8 @@ namespace SWLOR.Game.Server.Feature
         {
             var query = new DBQuery<PlayerBan>();
 
-            var dbBanCount = (int)DB.SearchCount(query);
-            var dbBans = DB.Search(query.AddPaging(dbBanCount, 0));
+            var dbBanCount = (int)_db.SearchCount(query);
+            var dbBans = _db.Search(query.AddPaging(dbBanCount, 0));
 
             foreach (var ban in dbBans)
             {
@@ -111,7 +113,7 @@ namespace SWLOR.Game.Server.Feature
                     for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
                     {
                         var playerId = GetObjectUUID(player);
-                        var dbPlayer = DB.Get<Player>(playerId);
+                        var dbPlayer = _db.Get<Player>(playerId);
 
                         if(GetIsDM(player) || GetIsDMPossessed(player) || (dbPlayer != null && dbPlayer.Settings.DisplayServerResetReminders))
                             SendMessageToPC(player, message);

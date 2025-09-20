@@ -13,6 +13,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
@@ -25,6 +26,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PerkResetAcquiredRefreshEvent>
     {
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private const int ItemsPerPage = 30;
         private int _pages;
         private bool _initialLoadDone;
@@ -244,7 +247,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadDetails()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var now = DateTime.UtcNow;
 
             if (IsInMyPerksMode)
@@ -254,7 +257,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else if (IsInBeastPerksMode)
             {
-                var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+                var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
                 AvailableSP = $"Available SP: {dbBeast.UnallocatedSP}";
                 TotalSP = $"Total SP: {dbBeast.Level} / {BeastMastery.MaxLevel}";
             }
@@ -274,7 +277,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!_initialLoadDone) return;
 
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             _filteredPerks.Clear();
             
@@ -323,7 +326,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else
                 {
-                    var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+                    var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
                     if (dbBeast == null)
                     {
                         rank = 0;
@@ -437,7 +440,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             // Adjust the selected perk.
             if (SelectedPerkIndex > -1)
@@ -464,7 +467,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+                var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
                 if (dbBeast == null)
                     return;
 
@@ -579,7 +582,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var selectedPerk = _filteredPerks[_selectedPerkIndex];
 
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (IsInMyPerksMode)
             {
                 rank = dbPlayer.Perks.ContainsKey(selectedPerk)
@@ -588,7 +591,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+                var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
                 if (dbBeast == null)
                     return;
 
@@ -613,7 +616,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
 
                     // Refresh data
-                    dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer = _db.Get<Player>(playerId);
                     selectedPerk = _filteredPerks[_selectedPerkIndex];
                     detail = Perk.GetPerkDetails(selectedPerk);
                     int unallocatedSP;
@@ -627,7 +630,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
                     else
                     {
-                        var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+                        var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
                         if (dbBeast == null)
                             return;
 
@@ -675,19 +678,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     {
                         dbPlayer.Perks[selectedPerk] = rank + 1;
                         dbPlayer.UnallocatedSP -= nextUpgrade.Price;
-                        DB.Set(dbPlayer);
+                        _db.Set(dbPlayer);
 
                         unallocatedSP = dbPlayer.UnallocatedSP;
                     }
                     else
                     {
-                        var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+                        var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
                         if (dbBeast == null)
                             return;
 
                         dbBeast.Perks[selectedPerk] = rank + 1;
                         dbBeast.UnallocatedSP -= nextUpgrade.Price;
-                        DB.Set(dbBeast);
+                        _db.Set(dbBeast);
 
                         unallocatedSP = dbBeast.UnallocatedSP;
                     }
@@ -735,7 +738,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"You may only refund one perk per 1 hour (real world time). This will also consume a refund token. Are you sure you want to refund this perk?", () =>
             {
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 var selectedPerk = _filteredPerks[SelectedPerkIndex];
                 var perkDetail = Perk.GetPerkDetails(selectedPerk);
                 var target = IsInMyPerksMode ? Player : GetAssociate(AssociateType.Henchman, Player);
@@ -779,7 +782,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
                     else
                     {
-                        var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+                        var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
                         if (dbBeast == null)
                             return;
 
@@ -791,14 +794,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         dbBeast.UnallocatedSP += refundAmount;
                         dbBeast.Perks.Remove(selectedPerk);
 
-                        DB.Set(dbBeast);
+                        _db.Set(dbBeast);
 
                         _logger.Write<PerkRefundLogGroup>($"REFUND Beast - {dbBeast.Id} (Owner: {dbPlayer.Id}) - Refunded Date {DateTime.UtcNow} - Level {perkLevel} - PerkID {selectedPerk}");
                         FloatingTextStringOnCreature($"Perk refunded! Your beast reclaimed {refundAmount} SP.", Player, false);
                     }
 
                     dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(1);
-                    DB.Set(dbPlayer);
+                    _db.Set(dbPlayer);
                     Currency.TakeCurrency(Player, CurrencyType.PerkRefundToken, 1);
 
                     Gui.PublishRefreshEvent(Player, new PerkRefundedRefreshEvent(selectedPerk));

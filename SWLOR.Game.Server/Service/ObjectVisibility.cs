@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -14,6 +15,7 @@ namespace SWLOR.Game.Server.Service
     public static class ObjectVisibility
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly Dictionary<string, uint> _visibilityObjects = new Dictionary<string, uint>();
         private static readonly List<uint> _defaultHiddenObjects = new List<uint>();
 
@@ -58,7 +60,7 @@ namespace SWLOR.Game.Server.Service
 
             // Now iterate over the player's objects and adjust visibility.
             var playerId = GetObjectUUID(player);
-            var visibilities = (DB.Get<Player>(playerId) ?? new Player(playerId));
+            var visibilities = (_db.Get<Player>(playerId) ?? new Player(playerId));
             for(var index = visibilities.ObjectVisibilities.Count-1; index >= 0; index--)
             {
                 var (objectId, visibilityType) = visibilities.ObjectVisibilities.ElementAt(index);
@@ -93,9 +95,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             var playerId = GetObjectUUID(player);
-            var dbVisibility = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var dbVisibility = _db.Get<Player>(playerId) ?? new Player(playerId);
             dbVisibility.ObjectVisibilities[visibilityObjectId] = type;
-            DB.Set(dbVisibility);
+            _db.Set(dbVisibility);
 
             VisibilityPlugin.SetVisibilityOverride(player, target, type);
         }

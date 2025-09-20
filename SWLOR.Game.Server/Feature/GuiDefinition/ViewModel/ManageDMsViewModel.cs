@@ -6,14 +6,18 @@ using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageDMsViewModel: GuiViewModelBase<ManageDMsViewModel, GuiPayloadBase>
     {
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private int SelectedUserIndex { get; set; }
         private readonly List<string> _userIds = new List<string>();
 
@@ -80,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _userIds.Clear();
             var query = new DBQuery<AuthorizedDM>();
-            var users = DB.Search(query);
+            var users = _db.Search(query);
 
             var names = new GuiBindingList<string>();
             var toggles = new GuiBindingList<bool>();
@@ -108,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedUserIndex = index;
             var userId = _userIds[index];
-            var dbUser = DB.Get<AuthorizedDM>(userId);
+            var dbUser = _db.Get<AuthorizedDM>(userId);
             var userCDKey = GetPCPublicCDKey(Player);
 
             IsUserSelected = true;
@@ -134,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Names.Add(newUser.Name);
             UserToggles.Add(false);
 
-            DB.Set(newUser);
+            _db.Set(newUser);
 
             StatusText = string.Empty;
         };
@@ -145,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var userCDKey = GetPCPublicCDKey(Player);
                 var userId = _userIds[SelectedUserIndex];
-                var dbUser = DB.Get<AuthorizedDM>(userId);
+                var dbUser = _db.Get<AuthorizedDM>(userId);
 
                 if (dbUser.CDKey == userCDKey)
                 {
@@ -154,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                DB.Delete<AuthorizedDM>(userId);
+                _db.Delete<AuthorizedDM>(userId);
 
                 IsUserSelected = false;
                 IsDeleteEnabled = false;
@@ -183,7 +187,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var userId = _userIds[SelectedUserIndex];
-            var dbUser = DB.Get<AuthorizedDM>(userId);
+            var dbUser = _db.Get<AuthorizedDM>(userId);
             var userCDKey = GetPCPublicCDKey(Player);
 
             dbUser.Name = ActiveUserName;
@@ -192,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             IsDeleteEnabled = userCDKey != dbUser.CDKey;
 
-            DB.Set(dbUser);
+            _db.Set(dbUser);
 
             Names[SelectedUserIndex] = dbUser.Name;
 
@@ -205,7 +209,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickDiscardChanges() => () =>
         {
             var userId = _userIds[SelectedUserIndex];
-            var dbUser = DB.Get<AuthorizedDM>(userId);
+            var dbUser = _db.Get<AuthorizedDM>(userId);
 
             ActiveUserName = dbUser.Name;
             ActiveUserCDKey = dbUser.CDKey;

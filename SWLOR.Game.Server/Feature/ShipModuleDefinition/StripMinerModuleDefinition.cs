@@ -6,11 +6,13 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class StripMinerModuleDefinition : IShipModuleListDefinition
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
@@ -89,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         if (GetIsPC(activator) && !GetIsDM(activator) && !GetIsDMPossessed(activator))
                         {
                             var playerId = GetObjectUUID(activator);
-                            var dbPlayer = DB.Get<Player>(playerId);
+                            var dbPlayer = _db.Get<Player>(playerId);
                             var rank = dbPlayer.Skills[SkillType.Piloting].Rank;
                             var asteroidLevel = GetLocalInt(target, "ASTEROID_TIER") * 10;
                             var delta = asteroidLevel - rank;

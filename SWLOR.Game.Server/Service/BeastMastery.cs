@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
@@ -26,6 +27,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class BeastMastery
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly Dictionary<BeastType, BeastDetail> _beasts = new();
         private static readonly Dictionary<BeastRoleType, BeastRoleAttribute> _beastRoles = new();
         private static List<BeastFoodType> _beastFoods = new();
@@ -159,7 +161,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetMaster(beast);
             var beastId = GetBeastId(beast);
-            var dbBeast = DB.Get<Beast>(beastId);
+            var dbBeast = _db.Get<Beast>(beastId);
             var maxBeastLevel = Perk.GetPerkLevel(player, PerkType.Tame) * 10;
             var bonusPercentage = 0f;
             var social = GetAbilityScore(beast, AbilityType.Social);
@@ -232,7 +234,7 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(player, $"{dbBeast.Name} reaches level {dbBeast.Level}!");
             }
 
-            DB.Set(dbBeast);
+            _db.Set(dbBeast);
             ApplyStats(beast);
 
             Gui.PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
@@ -251,7 +253,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var dbBeast = DB.Get<Beast>(beastId);
+            var dbBeast = _db.Get<Beast>(beastId);
 
             if (dbBeast == null)
             {
@@ -328,7 +330,7 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyStats(uint beast)
         {
             var beastId = GetBeastId(beast);
-            var dbBeast = DB.Get<Beast>(beastId);
+            var dbBeast = _db.Get<Beast>(beastId);
             var beastDetail = GetBeastDetail(dbBeast.Type);
 
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, beast);
@@ -405,7 +407,7 @@ namespace SWLOR.Game.Server.Service
             var npc = StringToObject(EventsPlugin.GetEventData("NPC"));
             var npcStats = Stat.GetNPCStats(npc);
             var beastId = GetBeastId(beast);
-            var dbBeast = DB.Get<Beast>(beastId);
+            var dbBeast = _db.Get<Beast>(beastId);
 
             var delta = npcStats.Level - dbBeast.Level;
             if (delta > _highestDelta)
@@ -493,13 +495,13 @@ namespace SWLOR.Game.Server.Service
             ExecuteScript("x2_hen_death", beast);
 
             var beastId = GetBeastId(beast);
-            var dbBeast = DB.Get<Beast>(beastId);
+            var dbBeast = _db.Get<Beast>(beastId);
             if (dbBeast == null)
                 return;
 
             dbBeast.IsDead = true;
 
-            DB.Set(dbBeast);
+            _db.Set(dbBeast);
         }
 
         [ScriptHandler(ScriptName.OnBeastDisturbed)]
@@ -736,7 +738,7 @@ namespace SWLOR.Game.Server.Service
 
             var dbQuery = new DBQuery<IncubationJob>()
                 .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), incubatorPropertyId, false);
-            var incubatorJob = DB.Search(dbQuery).FirstOrDefault();
+            var incubatorJob = _db.Search(dbQuery).FirstOrDefault();
 
             if (incubatorJob != null && incubatorJob.PlayerId != playerId)
             {
@@ -832,7 +834,7 @@ namespace SWLOR.Game.Server.Service
             var beastDetail = GetBeastDetail(beastType);
             SetName(egg, $"Beast Egg: {beastDetail.Name}");
 
-            DB.Delete<IncubationJob>(job.Id);
+            _db.Delete<IncubationJob>(job.Id);
         }
 
         /// <summary>
@@ -868,11 +870,11 @@ namespace SWLOR.Game.Server.Service
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
             var dbQuery = new DBQuery<IncubationJob>()
                 .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), propertyId, false);
-            var dbJobs = DB.Search(dbQuery).ToList();
+            var dbJobs = _db.Search(dbQuery).ToList();
 
             foreach (var dbJob in dbJobs)
             {
-                DB.Delete<IncubationJob>(dbJob.Id);
+                _db.Delete<IncubationJob>(dbJob.Id);
             }
         }
 

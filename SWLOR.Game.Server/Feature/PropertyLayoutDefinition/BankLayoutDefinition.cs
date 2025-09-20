@@ -4,12 +4,15 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 {
     public class BankLayoutDefinition: IPropertyLayoutListDefinition
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly PropertyLayoutBuilder _builder = new();
 
         public Dictionary<PropertyLayoutType, PropertyLayout> Build()
@@ -37,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             }
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var bank = OBJECT_SELF;
             var cityId = GetLocalString(bank, "STORAGE_ID");
 
@@ -103,8 +106,8 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .OnSpawn(area =>
                 {
                     var propertyId = Property.GetPropertyId(area);
-                    var dbProperty = DB.Get<WorldProperty>(propertyId);
-                    var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+                    var dbProperty = _db.Get<WorldProperty>(propertyId);
+                    var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
                     var upgradeLevel = Property.GetEffectiveUpgradeLevel(dbBuilding.ParentPropertyId, PropertyUpgradeType.BankLevel);
                     var storageCap = CalculateStorageCap(upgradeLevel);
                     var bankId = dbBuilding.ParentPropertyId;

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -13,6 +14,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class ScavengePoint
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         /// <summary>
         /// 
         /// </summary>
@@ -66,7 +68,7 @@ namespace SWLOR.Game.Server.Feature
             var xp = 0;
 
             var playerId = GetObjectUUID(user);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var dbSkill = dbPlayer.Skills[SkillType.Gathering];
             var scavLevel = 10 * requiredLevel;            
             var delta = scavLevel - dbSkill.Rank;

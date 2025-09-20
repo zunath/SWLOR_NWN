@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
     public class BeastEggItemDefinition: IItemListDefinition
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly ItemBuilder _builder = new();
 
         public Dictionary<string, ItemDetail> BuildItems()
@@ -41,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     }
 
                     var playerId = GetObjectUUID(user);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
 
                     if (dbPlayer == null)
                     {
@@ -56,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var maxBeasts = 1 + Perk.GetPerkLevel(user, PerkType.Stabling);
                     var dbQuery = new DBQuery<Beast>()
                         .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
-                    var beastCount = (int)DB.SearchCount(dbQuery);
+                    var beastCount = (int)_db.SearchCount(dbQuery);
                     if (beastCount >= maxBeasts)
                     {
                         return $"You have already tamed the maximum number of beasts your perks support.";
@@ -67,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     var playerId = GetObjectUUID(user);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
 
                     var type = BeastType.Invalid;
                     var attackPurity = 0;
@@ -194,10 +196,10 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         }
                     };
 
-                    DB.Set(dbBeast);
+                    _db.Set(dbBeast);
 
                     dbPlayer.ActiveBeastId = dbBeast.Id;
-                    DB.Set(dbPlayer);
+                    _db.Set(dbPlayer);
 
                     DestroyObject(item);
                 });

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
@@ -15,6 +16,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class ManageBansViewModel: GuiViewModelBase<ManageBansViewModel, GuiPayloadBase>
     {
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private int SelectedUserIndex { get; set; }
         private readonly List<string> _userIds = new List<string>();
 
@@ -68,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _userIds.Clear();
             var query = new DBQuery<PlayerBan>();
-            var users = DB.Search(query);
+            var users = _db.Search(query);
 
             var cdKeys = new GuiBindingList<string>();
             var toggles = new GuiBindingList<bool>();
@@ -95,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedUserIndex = index;
             var userId = _userIds[index];
-            var dbUser = DB.Get<PlayerBan>(userId);
+            var dbUser = _db.Get<PlayerBan>(userId);
 
             IsUserSelected = true;
             ActiveBanReason = dbUser.Reason;
@@ -117,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CDKeys.Add(newBan.CDKey);
             UserToggles.Add(false);
 
-            DB.Set(newBan);
+            _db.Set(newBan);
 
             StatusText = string.Empty;
         };
@@ -127,11 +130,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal("Are you sure you want to delete this ban?", () =>
             {
                 var userId = _userIds[SelectedUserIndex];
-                var dbUser = DB.Get<PlayerBan>(userId);
+                var dbUser = _db.Get<PlayerBan>(userId);
                 if (dbUser == null)
                     return;
 
-                DB.Delete<PlayerBan>(userId);
+                _db.Delete<PlayerBan>(userId);
 
                 IsUserSelected = false;
                 ActiveUserCDKey = string.Empty;
@@ -161,14 +164,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var userId = _userIds[SelectedUserIndex];
-            var dbUser = DB.Get<PlayerBan>(userId);
+            var dbUser = _db.Get<PlayerBan>(userId);
 
             AdministrationPlugin.RemoveBannedCDKey(dbUser.CDKey);
 
             dbUser.Reason = ActiveBanReason;
             dbUser.CDKey = ActiveUserCDKey;
 
-            DB.Set(dbUser);
+            _db.Set(dbUser);
 
             AdministrationPlugin.AddBannedCDKey(dbUser.CDKey);
 
@@ -183,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickDiscardChanges() => () =>
         {
             var userId = _userIds[SelectedUserIndex];
-            var dbUser = DB.Get<PlayerBan>(userId);
+            var dbUser = _db.Get<PlayerBan>(userId);
 
             ActiveBanReason = dbUser.Reason;
             ActiveUserCDKey = dbUser.CDKey;

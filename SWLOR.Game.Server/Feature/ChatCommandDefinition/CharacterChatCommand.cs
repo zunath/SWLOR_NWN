@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using HoloCom = SWLOR.Game.Server.Service.HoloCom;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -21,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
     public class CharacterChatCommand: IChatCommandListDefinition
     {
         private readonly ChatCommandBuilder _builder = new ChatCommandBuilder();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
@@ -63,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     var playerId = GetObjectUUID(user);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     var cdKey = GetPCPublicCDKey(user);
                     var daysOld = (DateTime.UtcNow - dbPlayer.DateCreated).Days;
                     var daysOldMessage = daysOld == 1 ? "day old" : "days old";
@@ -299,9 +301,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     else
                     {
                         var playerId = GetObjectUUID(user);
-                        var entity = DB.Get<Player>(playerId);
+                        var entity = _db.Get<Player>(playerId);
                         entity.IsDeleted = true;
-                        DB.Set(entity);
+                        _db.Set(entity);
 
                         var playerName = GetPCPlayerName(user);
                         var characterName = GetName(user);
@@ -522,13 +524,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     var playerId = GetObjectUUID(user);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     
                     // Clear all stored window geometries
                     dbPlayer.WindowGeometries.Clear();
                     
                     // Save the player data
-                    DB.Set(dbPlayer);
+                    _db.Set(dbPlayer);
                     
                     // Update all player window instances with default geometries
                     // This ensures that when windows are reopened, they use default positions

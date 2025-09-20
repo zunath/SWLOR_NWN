@@ -14,6 +14,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
 
@@ -23,6 +24,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         GuiViewModelBase<AppearanceEditorViewModel, AppearanceEditorPayload>,
         IGuiRefreshable<EquipItemRefreshEvent>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         public enum ColorTarget
         {
             Invalid = 0,
@@ -1119,7 +1122,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (dbPlayer == null)
                 return;
 
@@ -1296,7 +1299,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsSettingsSelected = true;
 
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             ShowHelmet = dbPlayer.Settings.ShowHelmet;
             ShowCloak = dbPlayer.Settings.ShowCloak;
@@ -1776,7 +1779,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
         };
@@ -1784,7 +1787,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickSaveSettings() => () =>
         {
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             dbPlayer.Settings.ShowCloak = ShowCloak;
             dbPlayer.Settings.ShowHelmet = ShowHelmet;
@@ -1792,7 +1795,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var newHeight = GetObjectVisualTransform(_target, ObjectVisualTransform.Scale);
             dbPlayer.AppearanceScale = newHeight;
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
             SendMessageToPC(_target, ColorToken.Green("Appearance settings saved successfully."));
 
             UpdateArmorDisplay();

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -18,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
     public class HarvesterItemDefinition: IItemListDefinition
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly ItemBuilder _builder = new();
 
         public Dictionary<string, ItemDetail> BuildItems()
@@ -146,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     if (GetIsPC(user) && !GetIsDM(user))
                     {
                         var playerId = GetObjectUUID(user);
-                        var dbPlayer = DB.Get<Player>(playerId);
+                        var dbPlayer = _db.Get<Player>(playerId);
                         var dbSkill = dbPlayer.Skills[SkillType.Gathering];
                         var veinLevel = 10 * (resourceLevel - 1) + 5;
                         var delta = veinLevel - dbSkill.Rank;

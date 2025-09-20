@@ -7,12 +7,16 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class MedKitAbilityDefinition: FirstAidBaseAbilityDefinition
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             MedKit1();
@@ -68,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 // If AddCombatPoint... returns 0, but GetRecentEnemyLevel returns > -1, then we are out of combat but recently were in combat.
                 var enemyLevel = CombatPoint.GetRecentEnemyLevel(activator);
                 var playerId = GetObjectUUID(activator);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 var firstAidLevel = dbPlayer.Skills[SkillType.FirstAid].Rank;
                 var nXP = enemyLevel != -1 ? Skill.GetDeltaXP(enemyLevel - firstAidLevel) : 0;
                 Skill.GiveSkillXP(activator, SkillType.FirstAid, nXP);

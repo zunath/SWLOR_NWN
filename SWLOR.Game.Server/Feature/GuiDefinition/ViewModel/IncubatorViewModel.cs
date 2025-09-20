@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
@@ -23,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PerkRefundedRefreshEvent>
     {
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public const string PartialElement = "PARTIAL_VIEW";
         public const string NewJobPartial = "NEW_JOB_PARTIAL";
         public const string InProgressJobPartial = "IN_PROGRESS_JOB_PARTIAL";
@@ -329,7 +331,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var dbQuery = new DBQuery<IncubationJob>()
                 .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), _incubatorPropertyId, false);
-            var dbJob = DB.Search(dbQuery)
+            var dbJob = _db.Search(dbQuery)
                 .FirstOrDefault();
 
             return dbJob;
@@ -930,7 +932,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var maxConcurrentJobs = Perk.GetPerkLevel(Player, PerkType.IncubationManagement) + 1;
             var dbQuery = new DBQuery<IncubationJob>()
                 .AddFieldSearch(nameof(IncubationJob.PlayerId), playerId, false);
-            var currentJobs = DB.Search(dbQuery).ToList();
+            var currentJobs = _db.Search(dbQuery).ToList();
             var currentJobCount = currentJobs.Count(x => x.ParentPropertyId != _incubatorPropertyId);
 
             if (currentJobCount >= maxConcurrentJobs)
@@ -1014,7 +1016,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 job.DateStarted = now;
                 job.DateCompleted = now.AddSeconds(incubationSeconds);
 
-                DB.Set(job);
+                _db.Set(job);
 
                 _dnaItem = string.Empty;
                 _hydrolaseItem = string.Empty;
@@ -1068,7 +1070,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (dbJob == null)
                     return;
 
-                DB.Delete<IncubationJob>(dbJob.Id);
+                _db.Delete<IncubationJob>(dbJob.Id);
                 Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
                 _logger.Write<IncubationLogGroup>($"Player '{GetName(Player)}' ({GetObjectUUID(Player)}) canceled incubation job '{dbJob.Id}' on incubator property Id '{dbJob.ParentPropertyId}'.");
                 FloatingTextStringOnCreature($"Incubation job cancelled!", Player, false);

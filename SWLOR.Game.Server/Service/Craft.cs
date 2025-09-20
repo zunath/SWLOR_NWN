@@ -15,6 +15,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
@@ -28,6 +29,7 @@ namespace SWLOR.Game.Server.Service
     public static class Craft
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public const int MaxResearchLevel = 10;
 
         private static readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
@@ -750,7 +752,7 @@ namespace SWLOR.Game.Server.Service
 
             var query = new DBQuery<ResearchJob>()
                 .AddFieldSearch(nameof(ResearchJob.ParentPropertyId), propertyId, false);
-            var dbJob = DB.Search(query)
+            var dbJob = _db.Search(query)
                 .FirstOrDefault();
 
             if (dbJob == null)
@@ -930,11 +932,11 @@ namespace SWLOR.Game.Server.Service
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
             var dbQuery = new DBQuery<ResearchJob>()
                 .AddFieldSearch(nameof(ResearchJob.ParentPropertyId), propertyId, false);
-            var dbJobs = DB.Search(dbQuery).ToList();
+            var dbJobs = _db.Search(dbQuery).ToList();
 
             foreach (var dbJob in dbJobs)
             {
-                DB.Delete<ResearchJob>(dbJob.Id);
+                _db.Delete<ResearchJob>(dbJob.Id);
             }
         }
     }

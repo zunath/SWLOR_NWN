@@ -5,13 +5,16 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class PersistentMapPin
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private struct MapPinDetails
         {
             public string Text { get; set; }
@@ -48,7 +51,7 @@ namespace SWLOR.Game.Server.Feature
             mapPin.Id = GetNumberOfMapPins(player) + 1;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
             var area = GetArea(player);
             var areaResref = GetResRef(area);
 
@@ -57,7 +60,7 @@ namespace SWLOR.Game.Server.Feature
 
             dbPlayer.MapPins[areaResref].Add(mapPin);
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>
@@ -71,7 +74,7 @@ namespace SWLOR.Game.Server.Feature
 
             var mapPin = LoadMapPin(true, true);
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (dbPlayer == null) return;
 
             var area = GetArea(player);
@@ -89,7 +92,7 @@ namespace SWLOR.Game.Server.Feature
                 }
             }
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>
@@ -103,7 +106,7 @@ namespace SWLOR.Game.Server.Feature
 
             var mapPin = LoadMapPin();
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (dbPlayer == null) return;
 
             var area = GetArea(player);
@@ -123,7 +126,7 @@ namespace SWLOR.Game.Server.Feature
                 }
             }
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>
@@ -136,7 +139,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetLocalBool(player, "MAP_PINS_LOADED")) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             var mapPinTuple = dbPlayer
                 .MapPins
@@ -158,7 +161,7 @@ namespace SWLOR.Game.Server.Feature
             SetLocalBool(player, "MAP_PINS_LOADED", true);
 
             // Save any changes to the IDs.
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>

@@ -2,12 +2,16 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class PersistentLocation
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         /// <summary>
         /// Saves a player's position to the database.
         /// Does nothing for NPCs and DMs.
@@ -28,7 +32,7 @@ namespace SWLOR.Game.Server.Feature
             var position = GetPosition(player);
             var orientation = GetFacing(player);
             var playerId = GetObjectUUID(player);
-            var entity = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var entity = _db.Get<Player>(playerId) ?? new Player(playerId);
 
             entity.LocationX = position.X;
             entity.LocationY = position.Y;
@@ -36,7 +40,7 @@ namespace SWLOR.Game.Server.Feature
             entity.LocationOrientation = orientation;
             entity.LocationAreaResref = GetResRef(area);
 
-            DB.Set(entity);
+            _db.Set(entity);
         }
 
         /// <summary>
@@ -88,7 +92,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (dbPlayer == null)
                 return;

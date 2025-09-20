@@ -7,18 +7,21 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {
     public class _1_LegacyPlayerMigration: LegacyMigrationBase, IPlayerMigration
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly CatharRacialAppearanceDefinition _catharAppearance = new();
 
         public int Version => 1;
         public void Migrate(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             AutoLevelUp(player);
             ResetNWNSkills(player);
@@ -33,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             MigrateCyborgsToHuman(player);
             AdjustCatharParts(player);
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         private void AutoLevelUp(uint player)

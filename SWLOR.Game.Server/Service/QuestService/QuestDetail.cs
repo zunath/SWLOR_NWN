@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service.QuestService
@@ -18,6 +20,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class QuestDetail
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public string QuestId { get; set; }
         public string Name { get; set; }
         public bool IsRepeatable { get; set; }
@@ -74,7 +77,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             // Retrieve the player's current quest status for this quest.
             // If they haven't accepted it yet, this will be null.
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var quest = dbPlayer.Quests.ContainsKey(playerId) ? dbPlayer.Quests[QuestId] : null;
 
             // If the status is null, it's assumed that the player hasn't accepted it yet.
@@ -120,7 +123,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         {
             // Has the player even accepted this quest?
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var quest = dbPlayer.Quests.ContainsKey(QuestId) ? dbPlayer.Quests[QuestId] : null;
 
             if (quest == null) return false;
@@ -194,7 +197,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (!dbPlayer.Quests.ContainsKey(QuestId))
                 return;
 
@@ -210,7 +213,7 @@ namespace SWLOR.Game.Server.Service.QuestService
                 dbPlayer.Quests.Remove(QuestId);
             }
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
             SendMessageToPC(player, $"Quest '{Name}' has been abandoned!");
 
             foreach (var action in OnAbandonActions)
@@ -235,7 +238,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
             // By this point, it's assumed the player will accept the quest.
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var quest = Quest.GetQuestById(QuestId);
             var playerQuest = dbPlayer.Quests.ContainsKey(QuestId) ? dbPlayer.Quests[QuestId] : new PlayerQuest();
 
@@ -243,7 +246,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             playerQuest.CurrentState = 1;
             playerQuest.DateLastCompleted = null;
             dbPlayer.Quests[QuestId] = playerQuest;
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             var state = GetState(1);
             foreach (var objective in state.GetObjectives())
@@ -289,7 +292,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
             // Retrieve the player's current quest state.
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var quest = Quest.GetQuestById(QuestId);
             var playerQuest = dbPlayer.Quests.ContainsKey(QuestId) ? dbPlayer.Quests[QuestId] : new PlayerQuest();
 
@@ -347,7 +350,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
                 // Save changes
                 dbPlayer.Quests[QuestId] = playerQuest;
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
 
                 // Create any extended data entries for the next state of the quest.
                 foreach (var objective in nextState.GetObjectives())
@@ -379,7 +382,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             if (!CanComplete(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var quest = dbPlayer.Quests.ContainsKey(QuestId) ? dbPlayer.Quests[QuestId] : new PlayerQuest();
 
             // Mark player as being on the last state of the quest.
@@ -392,7 +395,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             quest.KillProgresses.Clear();
             quest.DateLastCompleted = DateTime.UtcNow;
             dbPlayer.Quests[QuestId] = quest;
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             // No selected reward, simply give all available rewards to the player.
             if (selectedReward == null)

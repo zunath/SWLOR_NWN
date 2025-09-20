@@ -5,8 +5,10 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Entity;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -17,6 +19,7 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static class Cache
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static bool _cachedThisRun;
         private static Dictionary<string, string> ItemNamesByResref { get; set; } = new();
         private static Dictionary<int, int> PortraitIdsByInternalId { get; } = new();
@@ -36,9 +39,9 @@ namespace SWLOR.Game.Server.Service
                 resref = UtilPlugin.GetNextResRef();
             }
 
-            var dbModuleCache = DB.Get<ModuleCache>("SWLOR_CACHE");
+            var dbModuleCache = _db.Get<ModuleCache>("SWLOR_CACHE");
             dbModuleCache.ItemNamesByResref = ItemNamesByResref;
-            DB.Set(dbModuleCache);
+            _db.Set(dbModuleCache);
 
             _cachedThisRun = true;
         }
@@ -64,7 +67,7 @@ namespace SWLOR.Game.Server.Service
             if (_cachedThisRun)
                 return;
 
-            var dbModuleCache = DB.Get<ModuleCache>("SWLOR_CACHE");
+            var dbModuleCache = _db.Get<ModuleCache>("SWLOR_CACHE");
             ItemNamesByResref = dbModuleCache.ItemNamesByResref;
         }
 

@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using PlayerShip = SWLOR.Game.Server.Entity.PlayerShip;
 
@@ -19,6 +20,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ShipManagementViewModel : GuiViewModelBase<ShipManagementViewModel, ShipManagementPayload>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private const string _blank = "Blank";
 
         private int SelectedShipIndex { get; set; }
@@ -601,7 +604,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var query = new DBQuery<PlayerShip>()
                 .AddFieldSearch(nameof(PlayerShip.OwnerPlayerId), playerId, false);
-            return DB.Search(query).ToList();
+            return _db.Search(query).ToList();
         }
 
         private List<PlayerShip> GetOtherShips()
@@ -609,8 +612,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var permissionQuery = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            var permissionCount = (int)DB.SearchCount(permissionQuery);
-            var propertyIds = DB.Search(permissionQuery.AddPaging(permissionCount, 0))
+            var permissionCount = (int)_db.SearchCount(permissionQuery);
+            var propertyIds = _db.Search(permissionQuery.AddPaging(permissionCount, 0))
                 .Select(s => s.PropertyId)
                 .ToList();
 
@@ -620,7 +623,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var shipQuery = new DBQuery<PlayerShip>()
                 .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyIds);
 
-            var ships = DB.Search(shipQuery)
+            var ships = _db.Search(shipQuery)
                 .Where(x => x.OwnerPlayerId != playerId)
                 .ToList();
 
@@ -630,7 +633,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int CalculateRepairBill(PlayerShip ship)
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var shieldDiff = ship.Status.MaxShield - ship.Status.Shield;
             var hullDiff = ship.Status.MaxHull - ship.Status.Hull;
             var price = shieldDiff * 50 + hullDiff * 100;
@@ -664,9 +667,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var query = new DBQuery<PlayerShip>()
                     .AddFieldSearch(nameof(PlayerShip.PropertyId), initialPayload.SpecificPropertyId, false);
-                dbPlayerShips = DB.Search(query).ToList();
+                dbPlayerShips = _db.Search(query).ToList();
 
-                var dbProperty = DB.Get<WorldProperty>(initialPayload.SpecificPropertyId);
+                var dbProperty = _db.Get<WorldProperty>(initialPayload.SpecificPropertyId);
                 var spacePropertyLocation = dbProperty.Positions[PropertyLocationType.SpacePosition];
                 var spaceArea = Area.GetAreaByResref(spacePropertyLocation.AreaResref);
                 var spacePosition = Vector3(spacePropertyLocation.X, spacePropertyLocation.Y, spacePropertyLocation.Z);
@@ -805,14 +808,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 var shipId = _shipIds[SelectedShipIndex];
-                var ship = DB.Get<PlayerShip>(shipId);
+                var ship = _db.Get<PlayerShip>(shipId);
                 var shipDetail = Space.GetShipDetailByItemTag(ship.Status.ItemTag);
-                var property = DB.Get<WorldProperty>(ship.PropertyId);
+                var property = _db.Get<WorldProperty>(ship.PropertyId);
 
                 var permissionQuery = new DBQuery<WorldPropertyPermission>()
                     .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                     .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), ship.PropertyId, false);
-                var permission = DB.Search(permissionQuery).Single();
+                var permission = _db.Search(permissionQuery).Single();
                 var currentLocation = GetShipLocation(property);
                 var isAtCurrentLocation = currentLocation == GetArea(Player);
                 var gold = GetGold(Player);
@@ -1259,8 +1262,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var playerId = GetObjectUUID(Player);
                 var shipId = _shipIds[SelectedShipIndex];
-                var dbShip = DB.Get<PlayerShip>(shipId);
-                var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+                var dbShip = _db.Get<PlayerShip>(shipId);
+                var dbProperty = _db.Get<WorldProperty>(dbShip.PropertyId);
                 var shipLocation = GetShipLocation(dbProperty);
                 IsUnregisterEnabled = shipLocation == GetArea(Player) && playerId == dbProperty.OwnerPlayerId;
             }
@@ -1308,7 +1311,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var playerId = GetObjectUUID(Player);
                 var query = new DBQuery<PlayerShip>()
                     .AddFieldSearch(nameof(PlayerShip.OwnerPlayerId), playerId, false);
-                var dbPlayerShips = DB.Search(query).ToList();
+                var dbPlayerShips = _db.Search(query).ToList();
 
                 if (dbPlayerShips.Count >= Space.MaxRegisteredShips)
                 {
@@ -1355,7 +1358,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         CapitalShip = shipDetail.CapitalShip
                     }
                 };
-                DB.Set(ship);
+                _db.Set(ship);
 
                 var instance = Property.GetRegisteredInstance(property.Id);
                 SetName(instance.Area, "{PC} " + property.CustomName);
@@ -1380,9 +1383,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var playerId = GetObjectUUID(Player);
                     var shipId = _shipIds[SelectedShipIndex];
-                    var dbPlayer = DB.Get<Player>(playerId);
-                    var dbShip = DB.Get<PlayerShip>(shipId);
-                    var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+                    var dbPlayer = _db.Get<Player>(playerId);
+                    var dbShip = _db.Get<PlayerShip>(shipId);
+                    var dbProperty = _db.Get<WorldProperty>(dbShip.PropertyId);
 
                     if (dbShip.Status.HighPowerModules.Count > 0 ||
                         dbShip.Status.LowPowerModules.Count > 0)
@@ -1403,9 +1406,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     dbProperty.IsQueuedForDeletion = true;
 
-                    DB.Delete<PlayerShip>(shipId);
-                    DB.Set(dbPlayer);
-                    DB.Set(dbProperty);
+                    _db.Delete<PlayerShip>(shipId);
+                    _db.Set(dbPlayer);
+                    _db.Set(dbProperty);
 
                     var item = ObjectPlugin.Deserialize(dbShip.SerializedItem);
                     ObjectPlugin.AcquireItem(Player, item);
@@ -1431,12 +1434,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
-            var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+            var dbShip = _db.Get<PlayerShip>(shipId);
+            var dbProperty = _db.Get<WorldProperty>(dbShip.PropertyId);
             var instance = Property.GetRegisteredInstance(dbShip.PropertyId);
 
             dbProperty.CustomName = ShipName;
-            DB.Set(dbProperty);
+            _db.Set(dbProperty);
 
             SetName(instance.Area, "{PC} " + ShipName);
 
@@ -1507,7 +1510,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void ProcessHighPower(int slot)
         {
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbShip = _db.Get<PlayerShip>(shipId);
             var module = dbShip.Status.HighPowerModules.ContainsKey(slot)
                 ? dbShip.Status.HighPowerModules[slot]
                 : null;
@@ -1519,7 +1522,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship high-powered module within your inventory.",
                     item => 
                 {
-                    dbShip = DB.Get<PlayerShip>(shipId);
+                    dbShip = _db.Get<PlayerShip>(shipId);
                     var itemTag = GetTag(item);
                     if (!Space.IsRegisteredShipModule(itemTag))
                     {
@@ -1550,7 +1553,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
 
-                    DB.Set(dbShip);
+                    _db.Set(dbShip);
 
                     DestroyObject(item);
                     LoadShip();
@@ -1568,7 +1571,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var moduleBonus = Space.GetModuleBonus(item);
                     moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
                     dbShip.Status.HighPowerModules.Remove(slot);
-                    DB.Set(dbShip);
+                    _db.Set(dbShip);
                     LoadShip();
                 });
             }
@@ -1577,7 +1580,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void ProcessLowPower(int slot)
         {
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbShip = _db.Get<PlayerShip>(shipId);
             var module = dbShip.Status.LowPowerModules.ContainsKey(slot)
                 ? dbShip.Status.LowPowerModules[slot]
                 : null;
@@ -1589,7 +1592,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a low-powered ship module within your inventory",
                     item =>
                 {
-                    dbShip = DB.Get<PlayerShip>(shipId);
+                    dbShip = _db.Get<PlayerShip>(shipId);
                     var itemTag = GetTag(item);
                     if (!Space.IsRegisteredShipModule(itemTag))
                     {
@@ -1621,7 +1624,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
 
-                    DB.Set(dbShip);
+                    _db.Set(dbShip);
 
                     DestroyObject(item);
                     LoadShip();
@@ -1639,7 +1642,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
                     dbShip.Status.LowPowerModules.Remove(slot);
-                    DB.Set(dbShip);
+                    _db.Set(dbShip);
                     LoadShip();
                 });
             }
@@ -1648,7 +1651,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void ProcessConfiguration(int slot)
         {
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbShip = _db.Get<PlayerShip>(shipId);
             var module = dbShip.Status.ConfigurationModules.ContainsKey(slot)
                 ? dbShip.Status.ConfigurationModules[slot]
                 : null;
@@ -1660,7 +1663,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship configuration module within your inventory",
                     item =>
                     {
-                        dbShip = DB.Get<PlayerShip>(shipId);
+                        dbShip = _db.Get<PlayerShip>(shipId);
                         var itemTag = GetTag(item);
                         if (!Space.IsRegisteredShipModule(itemTag))
                         {
@@ -1691,7 +1694,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
 
-                        DB.Set(dbShip);
+                        _db.Set(dbShip);
 
                         DestroyObject(item);
                         LoadShip();
@@ -1709,7 +1712,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     moduleDetail.ModuleUnequippedAction?.Invoke(dbShip.Status, moduleBonus);
                     dbShip.Status.ConfigurationModules.Remove(slot);
-                    DB.Set(dbShip);
+                    _db.Set(dbShip);
                     LoadShip();
                 });
             }
@@ -1826,7 +1829,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickBoardShip() => () =>
         {
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbShip = _db.Get<PlayerShip>(shipId);
             var shipDetail = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
             var instance = Property.GetRegisteredInstance(dbShip.PropertyId);
             var entrance = Property.GetEntrancePosition(shipDetail.Layout);
@@ -1843,7 +1846,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickPermissions() => () =>
         {
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbShip = _db.Get<PlayerShip>(shipId);
             
             var payload = new PropertyPermissionPayload(PropertyType.Starship, dbShip.PropertyId, string.Empty, false);
             Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
@@ -1857,7 +1860,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var ship in ships)
             {
-                var property = DB.Get<WorldProperty>(ship.PropertyId);
+                var property = _db.Get<WorldProperty>(ship.PropertyId);
 
                 _shipIds.Add(ship.Id);
                 shipToggles.Add(false);
@@ -1893,7 +1896,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickRepair() => () =>
         {
             var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbShip = _db.Get<PlayerShip>(shipId);
             var price = CalculateRepairBill(dbShip);
 
             ShowModal($"Repairs will cost you {price} credits. Will you pay for repairs?", () =>
@@ -1913,7 +1916,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 dbShip.Status.Shield = dbShip.Status.MaxShield;
                 dbShip.Status.Hull = dbShip.Status.MaxHull;
-                DB.Set(dbShip);
+                _db.Set(dbShip);
 
                 FloatingTextStringOnCreature(ColorToken.Green("Ship repaired!"), Player, false);
                 LoadShip();

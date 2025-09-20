@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -12,6 +13,7 @@ namespace SWLOR.Game.Server.Service
     public class Death
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         /// <summary>
         /// When a player starts dying, instantly kill them.
         /// </summary>
@@ -44,7 +46,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(hostile) && !GetIsDM(hostile) && !GetIsDMPossessed(hostile))
             {
                 var hostilePlayerId = GetObjectUUID(hostile);
-                var dbHostilePlayer = DB.Get<Player>(hostilePlayerId);
+                var dbHostilePlayer = _db.Get<Player>(hostilePlayerId);
                 if (dbHostilePlayer != null && dbHostilePlayer.Settings.IsSubdualModeEnabled)
                 {
                     SendMessageToPC(player, "You have been subdued.");
@@ -96,7 +98,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
 
             // Already have a respawn point, no need to set the default one.
             if (!string.IsNullOrWhiteSpace(dbPlayer.RespawnAreaResref)) return;
@@ -112,7 +114,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.RespawnAreaResref = areaResref;
             dbPlayer.RespawnLocationOrientation = facing;
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>
@@ -141,7 +143,7 @@ namespace SWLOR.Game.Server.Service
         private static void SendToHomePoint(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var entity = DB.Get<Player>(playerId);
+            var entity = _db.Get<Player>(playerId);
             var area = Area.GetAreaByResref(entity.RespawnAreaResref);
             var position = Vector3(
                 entity.RespawnLocationX,
@@ -167,7 +169,7 @@ namespace SWLOR.Game.Server.Service
         private static int ApplyPenalties(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             int multiplier;
 
             // 300+
@@ -204,7 +206,7 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.XPDebt > MaxDebt)
                 dbPlayer.XPDebt = MaxDebt;
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             SendMessageToPC(player, $"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)");
 

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
@@ -15,6 +16,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
     public class StarportDockDialog: DialogBase
     {
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private class Model
         {
             public PlanetType Planet { get; set; }
@@ -97,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                     // There's a chance the starport has been picked up since the menu was loaded.
                     // If we can't locate the starport anymore, give an error message to the player.
-                    var dbStarport = DB.Get<WorldProperty>(dockPoint.PropertyId);
+                    var dbStarport = _db.Get<WorldProperty>(dockPoint.PropertyId);
                     if (!dockPoint.IsNPC)
                     {
                         if (dbStarport == null)
@@ -118,9 +121,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     var landingOrientation = GetFacingFromLocation(dockPoint.Location);
 
                     // Clear the ship property's space position and update its last docked position with the new destination.
-                    var dbPlayer = DB.Get<Player>(playerId);
-                    var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
-                    var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+                    var dbPlayer = _db.Get<Player>(playerId);
+                    var dbShip = _db.Get<PlayerShip>(dbPlayer.ActiveShipId);
+                    var dbProperty = _db.Get<WorldProperty>(dbShip.PropertyId);
                     dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
                     
                     // Docking at an NPC starport will update the safety location to that dock.
@@ -145,18 +148,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     var oldRegistration = dbProperty.ChildPropertyIds[PropertyChildType.RegisteredStarport].FirstOrDefault();
                     if (oldRegistration != null)
                     {
-                        var dbOldStarport = DB.Get<WorldProperty>(oldRegistration);
+                        var dbOldStarport = _db.Get<WorldProperty>(oldRegistration);
                         if (dbOldStarport != null)
                         {
                             dbOldStarport.ChildPropertyIds[PropertyChildType.Starship].Remove(dbProperty.Id);
-                            DB.Set(dbOldStarport);
+                            _db.Set(dbOldStarport);
 
                             _logger.Write<PropertyLogGroup>($"Unregistered player ship '{dbProperty.CustomName}' ({dbProperty.Id}) from old starport '{dbOldStarport.CustomName}' ({dbOldStarport.Id}).");
                             
                             // Refresh the starport object we're working with in the event the "old" starport
                             // is actually the current one. This ensures we don't get a duplicate starship property Id in the list.
                             if(dbStarport != null && dbOldStarport.Id == dbStarport.Id)
-                                dbStarport = DB.Get<WorldProperty>(dockPoint.PropertyId);
+                                dbStarport = _db.Get<WorldProperty>(dockPoint.PropertyId);
                         }
 
                         dbProperty.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
@@ -173,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                         if(!dbStarport.ChildPropertyIds[PropertyChildType.Starship].Contains(dbProperty.Id))
                             dbStarport.ChildPropertyIds[PropertyChildType.Starship].Add(dbProperty.Id);
-                        DB.Set(dbStarport);
+                        _db.Set(dbStarport);
                     }
 
                     dbProperty.Positions[PropertyLocationType.DockPosition] = new PropertyLocation
@@ -195,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         Orientation = spaceOrientation
                     };
 
-                    DB.Set(dbProperty);
+                    _db.Set(dbProperty);
 
                     Space.WarpPlayerInsideShip(player);
                 });

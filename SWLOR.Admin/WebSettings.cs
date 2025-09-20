@@ -1,7 +1,11 @@
-﻿namespace SWLOR.Admin
+﻿using SWLOR.Game.Server;
+using SWLOR.Shared.Abstractions.Contracts;
+
+namespace SWLOR.Admin
 {
     public class WebSettings
     {
+        private IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public const string Section = "Web";
 
         public string RedisIP { get; set; }
@@ -22,7 +26,7 @@
             Environment.SetEnvironmentVariable("SWLOR_APP_LOG_DIRECTORY", LogDirectory);
             Environment.SetEnvironmentVariable("NWNX_REDIS_HOST", $"{RedisIP}:{Port}");
 
-            DB.Load();
+            _db.Load();
         }
 
     }

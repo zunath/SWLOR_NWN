@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
@@ -8,6 +9,7 @@ namespace SWLOR.Game.Server.Service.PerkService
     /// </summary>
     public class PerkRequirementSkill : IPerkRequirement
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public SkillType Type { get; }
         public int RequiredRank { get; }
 
@@ -20,7 +22,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         public string CheckRequirements(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var skill = dbPlayer.Skills[Type];
             var rank = skill.Rank;
 

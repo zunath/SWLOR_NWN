@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
-
+using SWLOR.Shared.Abstractions.Contracts;
 using AuthorizationLevel = SWLOR.Game.Server.Enumeration.AuthorizationLevel;
 
 namespace SWLOR.Game.Server.Service
 {
     public class Authorization
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         /// <summary>
         /// Retrieves the authorization level of a given player.
         /// </summary>
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Service
 
             var query = new DBQuery<AuthorizedDM>()
                 .AddFieldSearch(nameof(AuthorizedDM.CDKey), cdKey, false);
-            var existing = DB.Search(query).FirstOrDefault();
+            var existing = _db.Search(query).FirstOrDefault();
             if (existing == null)
                 return AuthorizationLevel.Player;
 

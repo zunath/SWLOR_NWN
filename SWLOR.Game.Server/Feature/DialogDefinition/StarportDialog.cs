@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
@@ -14,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
     public class StarportDialog: DialogBase
     {
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private const string MainPageId = "MAIN_PAGE";
 
         public override PlayerDialog SetUp(uint player)
@@ -61,9 +63,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     // PC starports need to look at the city's area to determine this.
                     else
                     {
-                        var dbProperty = DB.Get<WorldProperty>(propertyId);
-                        var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
-                        var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
+                        var dbProperty = _db.Get<WorldProperty>(propertyId);
+                        var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
+                        var dbCity = _db.Get<WorldProperty>(dbBuilding.ParentPropertyId);
                         var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
 
                         planetType = Planet.GetPlanetType(cityArea);

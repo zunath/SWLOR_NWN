@@ -1,9 +1,11 @@
 ﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
     public class PerkRequirementQuest : IPerkRequirement
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly string _questId;
 
         public PerkRequirementQuest(string questId)
@@ -15,7 +17,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         {
             var quest = Quest.GetQuestById(_questId);
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var error = $"You have not completed the quest '{quest.Name}'.";
 
             if (!dbPlayer.Quests.ContainsKey(_questId)) return error;

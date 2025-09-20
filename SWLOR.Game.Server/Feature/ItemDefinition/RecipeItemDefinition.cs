@@ -6,11 +6,14 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class RecipeItemDefinition: IItemListDefinition
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly ItemBuilder _builder = new();
 
         public Dictionary<string, ItemDetail> BuildItems()
@@ -33,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     }
 
                     var playerId = GetObjectUUID(user);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     var characterTypeRestriction = (CharacterType)GetLocalInt(item, "CHARACTER_TYPE");
 
                     if (characterTypeRestriction != CharacterType.Invalid &&
@@ -50,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var recipeList = GetLocalString(item, "RECIPES");
                     var recipeIds = recipeList.Split(',');
                     var playerId = GetObjectUUID(user);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     var recipesLearned = 0;
 
                     foreach (var recipeId in recipeIds)
@@ -98,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         return;
                     }
 
-                    DB.Set(dbPlayer);
+                    _db.Set(dbPlayer);
 
                     Item.ReduceItemStack(item, 1);
                 });

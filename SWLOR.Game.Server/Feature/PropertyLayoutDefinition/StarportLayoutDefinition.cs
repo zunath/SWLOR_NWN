@@ -5,12 +5,15 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 {
     public class StarportLayoutDefinition: IPropertyLayoutListDefinition
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly PropertyLayoutBuilder _builder = new();
 
         public Dictionary<PropertyLayoutType, PropertyLayout> Build()
@@ -29,12 +32,12 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             }
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var terminal = OBJECT_SELF;
             var area = GetArea(terminal);
             var propertyId = Property.GetPropertyId(area);
-            var dbProperty = DB.Get<WorldProperty>(propertyId);
-            var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+            var dbProperty = _db.Get<WorldProperty>(propertyId);
+            var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
             var cityId = dbBuilding.ParentPropertyId;
 
             if (dbPlayer.CitizenPropertyId != cityId)
@@ -157,9 +160,9 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .OnSpawn(instance =>
                 {
                     var propertyId = Property.GetPropertyId(instance);
-                    var dbProperty = DB.Get<WorldProperty>(propertyId);
-                    var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
-                    var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
+                    var dbProperty = _db.Get<WorldProperty>(propertyId);
+                    var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
+                    var dbCity = _db.Get<WorldProperty>(dbBuilding.ParentPropertyId);
                     var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
                     var planet = Planet.GetPlanetType(cityArea);
 

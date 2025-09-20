@@ -7,13 +7,16 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.LanguageService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Language
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static Dictionary<SkillType, ITranslator> _translators = new Dictionary<SkillType, ITranslator>();
         private static readonly TranslatorGeneric _genericTranslator = new TranslatorGeneric();
 
@@ -54,7 +57,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(speaker))
             {
                 var playerId = GetObjectUUID(speaker);
-                var dbSpeaker = DB.Get<Player>(playerId);
+                var dbSpeaker = _db.Get<Player>(playerId);
                 // Get the rank and max rank for the speaker, and garble their English text based on it.
                 var speakerSkillRank = dbSpeaker == null ?
                     languageSkill.MaxRank :
@@ -85,7 +88,7 @@ namespace SWLOR.Game.Server.Service
 
             // Let's grab the max rank for the listener skill, and then we roll for a successful translate based on that.
             var listenerId = GetObjectUUID(listener);
-            var dbListener = DB.Get<Player>(listenerId);
+            var dbListener = _db.Get<Player>(listenerId);
             var rank = dbListener == null ?
                 languageSkill.MaxRank :
                 dbListener.Skills[language].Rank;

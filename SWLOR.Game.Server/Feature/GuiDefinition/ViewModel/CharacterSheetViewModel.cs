@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
@@ -27,6 +28,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<StatusEffectRemovedRefreshEvent>,
         IGuiRefreshable<BeastGainXPRefreshEvent>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private const int MaxUpgrades = 10;
         private uint _target;
 
@@ -349,7 +352,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpgradeAttribute(AbilityType ability, string abilityName)
         {
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
             var promptMessage = isRacial
                 ? "WARNING: You are about to spend your one-time racial stat bonus. Once spent, this action can only be undone with a stat rebuild. Are you SURE you want to upgrade this stat?"
@@ -364,7 +367,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 playerId = GetObjectUUID(_target);
-                dbPlayer = DB.Get<Player>(playerId);
+                dbPlayer = _db.Get<Player>(playerId);
                 isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
 
                 // Racial upgrades do not count toward the 10 cap and they don't reduce AP.
@@ -392,7 +395,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 CreaturePlugin.ModifyRawAbilityScore(_target, ability, 1);
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
 
                 FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", _target, false);
                 LoadData();
@@ -472,7 +475,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (IsPlayerMode)
             {
                 var playerId = GetObjectUUID(_target);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 var isRacialBonusAvailable = dbPlayer.RacialStat == AbilityType.Invalid;
                 IsMightUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades) || isRacialBonusAvailable;
@@ -496,7 +499,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (GetIsPC(_target))
                 {
                     var playerId = GetObjectUUID(_target);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     skillRank = dbPlayer.Skills[skill].Rank;
                 }
                 else
@@ -594,7 +597,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (GetIsPC(_target))
             {
                 var playerId = GetObjectUUID(_target);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 var fireDefense = (dbPlayer.Defenses[CombatDamageType.Fire] + food.DefenseFire).ToString();
                 var poisonDefense = (dbPlayer.Defenses[CombatDamageType.Poison] + food.DefensePoison).ToString();
@@ -636,7 +639,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (GetIsPC(_target))
             {
                 var playerId = GetObjectUUID(_target);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
                 APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
@@ -644,7 +647,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (BeastMastery.IsPlayerBeast(_target))
             {
                 var beastId = BeastMastery.GetBeastId(_target);
-                var dbBeast = DB.Get<Beast>(beastId);
+                var dbBeast = _db.Get<Beast>(beastId);
 
                 SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
                 APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
@@ -700,7 +703,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
             APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
@@ -714,7 +717,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var beastId = BeastMastery.GetBeastId(_target);
-            var dbBeast = DB.Get<Beast>(beastId);
+            var dbBeast = _db.Get<Beast>(beastId);
 
             SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
             APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";

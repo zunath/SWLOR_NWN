@@ -5,16 +5,20 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {
     public class _2_CorrectAppearanceType: IPlayerMigration
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         public int Version => 2;
         public void Migrate(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var racialType = GetRacialType(player);
             AppearanceType appearanceType;
             int headId;
@@ -135,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             SetCreatureBodyPart(CreaturePart.Head, headId, player);
 
             dbPlayer.OriginalAppearanceType = GetAppearanceType(player);
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
     }
 }

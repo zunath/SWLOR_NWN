@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SnippetService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 
@@ -11,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
     public class SkillSnippetDefinition: ISnippetListDefinition
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
         private readonly SnippetBuilder _builder = new SnippetBuilder();
         public Dictionary<string, SnippetDetail> BuildSnippets()
@@ -48,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     }
 
                     var playerId = GetObjectUUID(player);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
 
                     for (var index = 1; index <= args.Length; index++)
                     {
@@ -117,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     }
 
                     var playerId = GetObjectUUID(player);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
 
                     for (var index = 1; index <= args.Length; index++)
                     {

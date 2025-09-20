@@ -9,14 +9,17 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Service;
 using MarketCategoryType = SWLOR.Game.Server.Service.PlayerMarketService.MarketCategoryType;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class PlayerMarket
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public const int MaxListingsPerMarket = 25;
         private static Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeMarketCategories = new();
         private static readonly Dictionary<MarketRegionType, MarketRegionAttribute> _activeMarketRegions = new();
@@ -39,8 +42,8 @@ namespace SWLOR.Game.Server.Service
         {
             var query = new DBQuery<MarketItem>()
                 .AddFieldSearch(nameof(MarketItem.IsListed), true);
-            var count = (int)DB.SearchCount(query);
-            var listings = DB.Search(query
+            var count = (int)_db.SearchCount(query);
+            var listings = _db.Search(query
                 .AddPaging(count, 0));
             var now = DateTime.UtcNow;
 
@@ -50,7 +53,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     listing.IsListed = false;
 
-                    DB.Set(listing);
+                    _db.Set(listing);
                 }
             }
         }
@@ -67,7 +70,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (dbPlayer.MarketTill == 1)
             {

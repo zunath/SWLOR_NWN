@@ -1,10 +1,12 @@
 ﻿using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
     public class PerkRequirementBeastRole: IPerkRequirement
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly BeastRoleType _requiredRole;
 
         public PerkRequirementBeastRole(BeastRoleType requiredRole)
@@ -15,8 +17,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         public string CheckRequirements(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+            var dbPlayer = _db.Get<Player>(playerId);
+            var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
             var roleDetail = BeastMastery.GetBeastRoleDetail(_requiredRole);
 
             if (dbBeast == null)

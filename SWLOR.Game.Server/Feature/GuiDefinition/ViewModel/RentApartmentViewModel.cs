@@ -7,11 +7,15 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class RentApartmentViewModel: GuiViewModelBase<RentApartmentViewModel, GuiPayloadBase>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         public string Instructions
         {
             get => Get<string>();
@@ -77,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
                 .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
-            var dbApartment = DB.Search(query).FirstOrDefault();
+            var dbApartment = _db.Search(query).FirstOrDefault();
 
             return dbApartment == null;
         }
@@ -153,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
                         .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
                         .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
-                    var apartments = DB.Search(query).ToList();
+                    var apartments = _db.Search(query).ToList();
 
                     if (apartments.Count > 0)
                     {

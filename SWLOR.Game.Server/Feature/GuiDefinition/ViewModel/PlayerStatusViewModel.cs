@@ -6,12 +6,16 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal class PlayerStatusViewModel: GuiViewModelBase<PlayerStatusViewModel, GuiPayloadBase>,
         IGuiRefreshable<PlayerStatusRefreshEvent>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private int _screenHeight;
         private int _screenWidth;
         private int _screenScale;
@@ -192,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpdateFP()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var currentFP = dbPlayer.FP;
             var maxFP = Stat.GetMaxFP(Player, dbPlayer);
             var isStandard = dbPlayer.CharacterType == CharacterType.Standard;
@@ -203,7 +207,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpdateSTM()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var currentSTM = dbPlayer.Stamina;
             var maxSTM = Stat.GetMaxStamina(Player, dbPlayer);
 

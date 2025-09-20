@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -24,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class CharacterFullRebuildViewModel: GuiViewModelBase<CharacterFullRebuildViewModel, GuiPayloadBase>
     {
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         [ScriptHandler(ScriptName.OnCharacterRebuild)]
         public static void LoadCharacterMigrationWindow()
         {
@@ -53,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (!dbPlayer.RebuildComplete)
             {
@@ -81,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (!dbPlayer.RebuildComplete)
             {
@@ -201,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void ResetControls()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             _might = 0;
             _perception = 0;
@@ -280,7 +282,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RecalculateAvailableSkillPoints()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             _remainingSkillPoints = dbPlayer.TotalSPAcquired - _skillDistributionPoints.Sum();
             RemainingSkillPoints = $"Skills - {_remainingSkillPoints} Points Remaining";
@@ -312,7 +314,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             void RefundAllPerks()
             {
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 var pcPerks = dbPlayer.Perks.ToDictionary(x => x.Key, y => y.Value);
 
                 foreach (var (type, level) in pcPerks)
@@ -340,13 +342,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
 
             void RefundAllSkills()
             {
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 
                 foreach (var (type, _) in dbPlayer.Skills)
                 {
@@ -359,13 +361,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     dbPlayer.Skills[type].IsLocked = false;
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
 
             void ResetStats()
             {
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Might, 10);
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Perception, 10);
@@ -395,7 +397,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 dbPlayer.UnallocatedAP = dbPlayer.TotalAPAcquired;
                 dbPlayer.RebuildComplete = false;
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
 
                 // Reapply racial stat bonus
                 if (dbPlayer.RacialStat != AbilityType.Invalid)
@@ -661,7 +663,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 CreaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Might, _might);
                 CreaturePlugin.ModifyRawAbilityScore(Player, AbilityType.Perception, _perception);
@@ -701,7 +703,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Gui.TogglePlayerWindow(Player, GuiWindowType.CharacterMigration, null, TetherObject);
                 FloatingTextStringOnCreature(ColorToken.Green("Character rebuild complete!"), Player, false);
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             });
         };
     }

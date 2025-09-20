@@ -5,12 +5,15 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class AreaNotesViewModel: GuiViewModelBase<AreaNotesViewModel, GuiPayloadBase>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         public const int MaxNoteLength = 10000;
 
         private readonly List<uint> _areas = new();
@@ -127,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var query = new DBQuery<AreaNote>()
                 .AddFieldSearch(nameof(AreaNote.AreaResref), AreaResrefs[SelectedAreaIndex], false)
                 .OrderBy(nameof(AreaNote.AreaResref));
-            var notes = DB.Search(query)
+            var notes = _db.Search(query)
                 .ToList();
 
             foreach (var note in notes)
@@ -143,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     AreaResref = AreaResrefs[SelectedAreaIndex]
                 };
-                DB.Set<AreaNote>(dbNote);
+                _db.Set<AreaNote>(dbNote);
             }
 
             _isLoadingNote = false;
@@ -158,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var query = new DBQuery<AreaNote>()
                 .AddFieldSearch(nameof(AreaNote.AreaResref), AreaResrefs[SelectedAreaIndex], false)
                 .OrderBy(nameof(AreaNote.AreaResref));
-            var notes = DB.Search(query)
+            var notes = _db.Search(query)
                 .ToList();
 
             foreach (var note in notes)
@@ -174,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SendMessageToPC(player, ColorToken.Purple(message));
             }
 
-            DB.Set(notes[0]);
+            _db.Set(notes[0]);
             IsSaveEnabled = false;
         }
 

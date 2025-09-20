@@ -7,13 +7,17 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class TrainingStoreViewModel: GuiViewModelBase<TrainingStoreViewModel, GuiPayloadBase>,
         IGuiRefreshable<RPXPRefreshEvent>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         [ScriptHandler(ScriptName.OnOpenTrainingStore)]
         public static void OpenTrainingStore()
         {
@@ -75,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadData()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var cantinaBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel) * 0.1f;
 
             AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP}";
@@ -119,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"Are you sure you want to buy the {Names[index]} for {PriceTexts[index]} XP?", () =>
             {
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (dbPlayer.UnallocatedXP < Prices[index])
                 {
@@ -128,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 dbPlayer.UnallocatedXP -= Prices[index];
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
 
                 CreateItemOnObject(Resrefs[index], Player);
                 Gui.PublishRefreshEvent(Player, new RPXPRefreshEvent());

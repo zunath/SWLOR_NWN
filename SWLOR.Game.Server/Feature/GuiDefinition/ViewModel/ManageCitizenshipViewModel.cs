@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
@@ -16,6 +17,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class ManageCitizenshipViewModel: GuiViewModelBase<ManageCitizenshipViewModel, GuiPayloadBase>
     {
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private string _cityPropertyId;
         private string _electionId;
 
@@ -58,17 +61,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadData()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var area = GetArea(TetherObject);
             var propertyId = Property.GetPropertyId(area);
-            var dbProperty = DB.Get<WorldProperty>(propertyId);
-            var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
-            var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
-            var dbMayorPlayer = DB.Get<Player>(dbCity.OwnerPlayerId);
-            var dbElection = DB.Search(new DBQuery<Election>()
+            var dbProperty = _db.Get<WorldProperty>(propertyId);
+            var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
+            var dbCity = _db.Get<WorldProperty>(dbBuilding.ParentPropertyId);
+            var dbMayorPlayer = _db.Get<Player>(dbCity.OwnerPlayerId);
+            var dbElection = _db.Search(new DBQuery<Election>()
                 .AddFieldSearch(nameof(Election.PropertyId), dbCity.Id, false))
                 .SingleOrDefault();
-            var dbCitizenCount = DB.SearchCount(new DBQuery<Player>()
+            var dbCitizenCount = _db.SearchCount(new DBQuery<Player>()
                 .AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), dbCity.Id, false)
                 .AddFieldSearch(nameof(Entity.Player.IsDeleted), false));
 
@@ -137,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action RegisterRevoke() => () =>
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             // Chose to revoke citizenship.
             if (dbPlayer.CitizenPropertyId == _cityPropertyId)
@@ -145,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Revoking your citizenship will remove your ability to access all public facilities. You will also lose any permissions granted to you. If you are a candidate for an election, you will be withdrawn from the race. Are you sure you want to revoke your citizenship?",
                     () =>
                     {
-                        var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
+                        var dbCity = _db.Get<WorldProperty>(_cityPropertyId);
                         if (playerId == dbCity.OwnerPlayerId)
                         {
                             FloatingTextStringOnCreature("You are the mayor of this city and cannot revoke your citizenship.", Player, false);
@@ -153,15 +156,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         }
 
                         // Remove the player's citizenship property Id.
-                        dbPlayer = DB.Get<Player>(playerId);
+                        dbPlayer = _db.Get<Player>(playerId);
                         dbPlayer.CitizenPropertyId = string.Empty;
                         dbPlayer.PropertyOwedTaxes = 0;
-                        DB.Set(dbPlayer);
+                        _db.Set(dbPlayer);
 
                         // If there's an active election going, remove this player from the running.
                         if (!string.IsNullOrWhiteSpace(_electionId))
                         {
-                            var dbElection = DB.Get<Election>(_electionId);
+                            var dbElection = _db.Get<Election>(_electionId);
                             dbElection.CandidatePlayerIds.Remove(playerId);
 
                             var toRemove = dbElection.VoterSelections.Where(x => x.Value.CandidatePlayerId == playerId);
@@ -171,7 +174,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                                 _logger.Write<PropertyLogGroup>( $"Removed vote from player '{vote.Key}' because chosen candidate '{playerId}' has dropped out of the race.");
                             }
 
-                            DB.Set(dbElection);
+                            _db.Set(dbElection);
                         }
 
                         // Retrieve all structure Ids
@@ -180,7 +183,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             : new List<string>();
 
                         // Pull back the full structure information
-                        var structures = DB.Search(new DBQuery<WorldProperty>()
+                        var structures = _db.Search(new DBQuery<WorldProperty>()
                             .AddFieldSearch(nameof(WorldProperty.Id), structureIds));
 
                         // Look for any structures that have interior children and return their Ids
@@ -193,14 +196,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         interiorPropertyIds.Add(_cityPropertyId);
 
                         // Retrieve any permissions associated to this player across any structures in the city.
-                        var permissions = DB.Search(new DBQuery<WorldPropertyPermission>()
+                        var permissions = _db.Search(new DBQuery<WorldPropertyPermission>()
                             .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), interiorPropertyIds)
                             .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false));
 
                         // Remove the player's permissions, if any.
                         foreach (var permission in permissions)
                         {
-                            DB.Delete<WorldPropertyPermission>(permission.Id);
+                            _db.Delete<WorldPropertyPermission>(permission.Id);
                         }
 
                         FloatingTextStringOnCreature("Your citizenship has been revoked!", Player, false);
@@ -220,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             return;
                         }
 
-                        dbPlayer = DB.Get<Player>(playerId);
+                        dbPlayer = _db.Get<Player>(playerId);
                         if (dbPlayer.DateCreated.AddDays(30) > DateTime.UtcNow)
                         {
                             FloatingTextStringOnCreature("Your character must be 30 days or older to become a citizen of a city.", Player, false);
@@ -235,10 +238,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         AssignCommand(Player, () => TakeGoldFromCreature(5000, Player, true));
 
-                        var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
+                        var dbCity = _db.Get<WorldProperty>(_cityPropertyId);
                         dbPlayer.CitizenPropertyId = _cityPropertyId;
 
-                        DB.Set(dbPlayer);
+                        _db.Set(dbPlayer);
 
                         _logger.Write<PropertyLogGroup>( $"Player '{GetName(Player)}' ({GetPCPlayerName(Player)} / {GetPCPublicCDKey(Player)}) became a citizen of '{dbCity.CustomName}' ({dbCity.Id}).");
                         FloatingTextStringOnCreature($"You became a citizen of {dbCity.CustomName}!", Player, false);
@@ -251,11 +254,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action PayTaxes() => () =>
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             ShowModal($"You owe {dbPlayer.PropertyOwedTaxes} credits. Will you pay this now?", () =>
             {
-                var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
-                dbPlayer = DB.Get<Player>(playerId);
+                var dbCity = _db.Get<WorldProperty>(_cityPropertyId);
+                dbPlayer = _db.Get<Player>(playerId);
                 var gold = GetGold(Player);
 
                 if (gold <= 0)
@@ -282,8 +285,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     dbPlayer.PropertyOwedTaxes = 0;
                 }
 
-                DB.Set(dbPlayer);
-                DB.Set(dbCity);
+                _db.Set(dbPlayer);
+                _db.Set(dbCity);
 
                 IsPayTaxesEnabled = dbPlayer.PropertyOwedTaxes > 0;
                 PayTaxesButtonName = $"Pay Taxes ({dbPlayer.PropertyOwedTaxes} cr)";

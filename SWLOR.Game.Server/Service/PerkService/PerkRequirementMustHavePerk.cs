@@ -1,9 +1,11 @@
 ﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
     public class PerkRequirementMustHavePerk: IPerkRequirement
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly PerkType _mustHavePerkType;
         private readonly int _mustHavePerkLevel;
 
@@ -20,7 +22,7 @@ namespace SWLOR.Game.Server.Service.PerkService
 
             var perkDetail = Perk.GetPerkDetails(_mustHavePerkType);
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (!dbPlayer.Perks.ContainsKey(_mustHavePerkType) || Perk.GetPerkLevel(player, _mustHavePerkType) < _mustHavePerkLevel)
                return $"You must have perk {perkDetail.Name} at level {_mustHavePerkLevel}.";

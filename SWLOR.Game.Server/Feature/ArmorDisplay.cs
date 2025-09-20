@@ -2,12 +2,16 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
     public static class ArmorDisplay
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         /// <summary>
         /// When a player equips a type of armor which can be hidden, set whether it is hidden based on the player's setting.
         /// </summary>
@@ -21,7 +25,7 @@ namespace SWLOR.Game.Server.Feature
             var itemType = GetBaseItemType(item);
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
             if (itemType == BaseItem.Helmet)
             {
                 SetHiddenWhenEquipped(item, !dbPlayer.Settings.ShowHelmet);

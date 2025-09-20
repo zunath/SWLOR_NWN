@@ -1,11 +1,15 @@
 ﻿using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class MedicalRegistrationDialog: DialogBase
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private const string MainPageId = "MAIN_PAGE";
 
         public override PlayerDialog SetUp(uint player)
@@ -26,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 if (!GetIsPC(player) || GetIsDM(player)) return;
 
                 var playerId = GetObjectUUID(player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 var position = GetPosition(player);
                 var orientation = GetFacing(player);
@@ -38,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 dbPlayer.RespawnLocationY = position.Y;
                 dbPlayer.RespawnLocationZ = position.Z;
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
 
                 FloatingTextStringOnCreature("You will return to this location the next time you die.", player, false);
             });

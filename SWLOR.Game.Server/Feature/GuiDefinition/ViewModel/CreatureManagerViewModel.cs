@@ -8,12 +8,16 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CreatureManagerViewModel: GuiViewModelBase<CreatureManagerViewModel, GuiPayloadBase>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private readonly List<string> _creatureIds = new();        
         private const int ListingsPerPage = 20;
         private bool _skipPaginationSearch;
@@ -79,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                  var serialized = ObjectPlugin.Serialize(creature);
                  var dbCreature = new DMCreature(GetName(creature), GetTag(creature), serialized);
-                 DB.Set(dbCreature);
+                 _db.Set(dbCreature);
 
                  DeleteLocalObject(Player, "DMCM_CREATURE_TO_SPAWN");
 
@@ -93,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedCreatureIndex = index;
 
-            var dbCreature = DB.Get<DMCreature>(_creatureIds[SelectedCreatureIndex]);
+            var dbCreature = _db.Get<DMCreature>(_creatureIds[SelectedCreatureIndex]);
             var deserialized = ObjectPlugin.Deserialize(dbCreature.Data);
 
             SetLocalObject(Player, "DMCM_CREATURE_TO_SPAWN", deserialized);
@@ -107,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedCreatureIndex = index;
 
-            var dbCreature = DB.Get<DMCreature>(_creatureIds[SelectedCreatureIndex]);
+            var dbCreature = _db.Get<DMCreature>(_creatureIds[SelectedCreatureIndex]);
             var deserialized = ObjectPlugin.Deserialize(dbCreature.Data);
 
             SetLocalObject(Player, "DMCM_CREATURE_TO_SPAWN", deserialized);
@@ -121,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var index = NuiGetEventArrayIndex();
             SelectedCreatureIndex = index;
 
-            DB.Delete<DMCreature>(_creatureIds[SelectedCreatureIndex]);
+            _db.Delete<DMCreature>(_creatureIds[SelectedCreatureIndex]);
             Search();
         };
 
@@ -157,10 +161,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             query.AddPaging(ListingsPerPage, ListingsPerPage * SelectedPageIndex);
 
-            var totalRecordCount = DB.SearchCount(query);
+            var totalRecordCount = _db.SearchCount(query);
             UpdatePagination(totalRecordCount);
 
-            var results = DB.Search(query);
+            var results = _db.Search(query);
 
             _creatureIds.Clear();
             var creatureNames = new GuiBindingList<string>();

@@ -4,13 +4,16 @@ using System.Linq;
 
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.FactionService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Faction
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly Dictionary<FactionType, FactionAttribute> _factions = new Dictionary<FactionType, FactionAttribute>();
         public const int MinimumFaction = -5000;
         public const int MaximumFaction = 5000;
@@ -64,7 +67,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || adjustBy == 0) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var factionDetail = _factions[faction];
             var cantGoHigher = false;
             var cantGoLower = false;
@@ -112,7 +115,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>
@@ -128,7 +131,7 @@ namespace SWLOR.Game.Server.Service
 
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var factionDetail = Faction.GetFactionDetail(faction);
 
             if (!dbPlayer.Factions.ContainsKey(faction))
@@ -140,7 +143,7 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.Factions[faction].Points < 0)
                 dbPlayer.Factions[faction].Points = 0;
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             if (adjustBy > 0)
             {

@@ -6,12 +6,14 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class CallBeastAbilityDefinition: IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -50,14 +52,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     }
 
                     var playerId = GetObjectUUID(activator);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
 
                     if (string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId))
                     {
                         return "You do not have an active beast.";
                     }
 
-                    var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+                    var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
 
                     if (dbBeast.IsDead)
                     {
@@ -74,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     var playerId = GetObjectUUID(activator);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     
                     BeastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 50);
 

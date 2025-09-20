@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log;
@@ -19,6 +20,7 @@ namespace SWLOR.Game.Server.Service
     public static class Perk
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         // All categories, including inactive
         private static readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _allCategories = new();
 
@@ -430,7 +432,7 @@ namespace SWLOR.Game.Server.Service
         private static int GetPlayerPerkLevel(uint player, PerkType perkType)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (dbPlayer == null)
                 return 0;
@@ -453,7 +455,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return 0;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (dbPlayer == null)
                 return 0;
 
@@ -519,7 +521,7 @@ namespace SWLOR.Game.Server.Service
 
             // todo: merge with player branch
             var beastId = BeastMastery.GetBeastId(beast);
-            var dbBeast = DB.Get<Beast>(beastId);
+            var dbBeast = _db.Get<Beast>(beastId);
 
             if (dbBeast == null)
                 return 0;
@@ -572,11 +574,11 @@ namespace SWLOR.Game.Server.Service
             if (!_perksWithUnlockRequirements.ContainsKey(perkType)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (dbPlayer.UnlockedPerks.ContainsKey(perkType)) return;
 
             dbPlayer.UnlockedPerks[perkType] = DateTime.UtcNow;
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>
@@ -594,7 +596,7 @@ namespace SWLOR.Game.Server.Service
 
             var player = OBJECT_SELF;
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             var possiblePerks = _perksWithSkillRequirement[skillType];
             
@@ -628,7 +630,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 dbPlayer.Perks[perkType] = effectiveLevel;
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
 
                 foreach (var refundTrigger in perkDetail.RefundedTriggers)
                 {

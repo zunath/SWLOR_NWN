@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
@@ -18,6 +19,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Fishing
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly Dictionary<FishType, FishAttribute> _fish = new();
         private static readonly Dictionary<FishingRodType, FishingRodAttribute> _rods = new();
         private static readonly Dictionary<FishingBaitType, FishingBaitAttribute> _baits = new();
@@ -403,7 +405,7 @@ namespace SWLOR.Game.Server.Service
             SetLocalInt(rod, RemainingBaitVariable, remainingBait);
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var skill = dbPlayer.Skills[SkillType.Agriculture].Rank;
 
             const int BaseChance = 40;

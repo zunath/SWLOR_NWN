@@ -13,12 +13,16 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal class StablesViewModel : GuiViewModelBase<StablesViewModel, GuiPayloadBase>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         public const string BeastDetailsPartial = "BEAST_DETAILS_PARTIAL";
         public const string PartialViewStats = "PARTIAL_VIEW_STATS";
         public const string PartialViewPurities = "PARTIAL_VIEW_PURITIES";
@@ -347,11 +351,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadBeasts()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var perkLevel = Perk.GetPerkLevel(Player, PerkType.Stabling) + 1;
             var dbQuery = new DBQuery<Beast>()
                 .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
-            var dbBeasts = DB.Search(dbQuery)
+            var dbBeasts = _db.Search(dbQuery)
                 .OrderBy(o => o.Name)
                 .ToList();
 
@@ -444,8 +448,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var playerId = GetObjectUUID(Player);
             var beastId = _beastIds[_selectedBeastIndex];
-            var dbBeast = DB.Get<Beast>(beastId);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbBeast = _db.Get<Beast>(beastId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var beastDetails = BeastMastery.GetBeastDetail(dbBeast.Type);
             var roleDetails = BeastMastery.GetBeastRoleDetail(beastDetails.Role);
             var level = beastDetails.Levels[dbBeast.Level];
@@ -583,7 +587,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var dbQuery = new DBQuery<Beast>()
                 .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
-            var beastCount = DB.SearchCount(dbQuery);
+            var beastCount = _db.SearchCount(dbQuery);
             var perkLevel = Perk.GetPerkLevel(Player, PerkType.Stabling) + 1;
             if (perkLevel < beastCount)
             {
@@ -599,7 +603,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             BeastNameColors = beastNameColors;
 
             var beastId = _beastIds[_selectedBeastIndex];
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (dbPlayer.ActiveBeastId == beastId)
             {
@@ -614,7 +618,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 BeastNameColors[_selectedBeastIndex] = GuiColor.Green;
             }
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         };
 
         private void CreateDNAItem(Beast dbBeast)
@@ -679,9 +683,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
 
                     var beastId = _beastIds[_selectedBeastIndex];
-                    var dbBeast = DB.Get<Beast>(beastId);
+                    var dbBeast = _db.Get<Beast>(beastId);
                     var playerId = GetObjectUUID(Player);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     var beast = GetAssociate(AssociateType.Henchman, Player);
                     if (BeastMastery.IsPlayerBeast(beast) && BeastMastery.GetBeastId(beast) == beastId)
                     {
@@ -691,12 +695,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (dbPlayer.ActiveBeastId == beastId)
                     {
                         dbPlayer.ActiveBeastId = string.Empty;
-                        DB.Set(dbPlayer);
+                        _db.Set(dbPlayer);
                     }
 
                     CreateDNAItem(dbBeast);
 
-                    DB.Delete<Beast>(beastId);
+                    _db.Delete<Beast>(beastId);
 
                     BeastNameColors.RemoveAt(_selectedBeastIndex);
                     BeastNames.RemoveAt(_selectedBeastIndex);
@@ -767,10 +771,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ClearInstructions();
 
             var beastId = _beastIds[_selectedBeastIndex];
-            var dbBeast = DB.Get<Beast>(beastId);
+            var dbBeast = _db.Get<Beast>(beastId);
 
             dbBeast.Name = Name;
-            DB.Set(dbBeast);
+            _db.Set(dbBeast);
 
             BeastNames[_selectedBeastIndex] = dbBeast.Name;
 

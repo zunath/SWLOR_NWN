@@ -26,7 +26,9 @@ namespace SWLOR.Game.Server.Native
 {
     public static unsafe class GetDamageRoll
     {
-        private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IScriptExecutor _scriptExecutor = ServiceContainer.GetService<IScriptExecutor>();
+
         private const int PowerAttackDamageBonus = 3;
         private const int ImprovedPowerAttackDamageBonus = 6;
         private const int DefaultPhysicalDamage = 1;
@@ -98,7 +100,7 @@ namespace SWLOR.Game.Server.Native
         [UnmanagedCallersOnly]
         private static int OnGetDamageRoll(void* thisPtr, void* pTarget, int bOffHand, int bCritical, int bSneakAttack, int bDeathAttack, int bForceMax)
         {
-            return ServerManager.Executor.ExecuteInScriptContext(() =>
+            return _scriptExecutor.ExecuteInScriptContext(() =>
             {
                 var attackerStats = CNWSCreatureStats.FromPointer(thisPtr);
                 var attacker = CNWSCreature.FromPointer(attackerStats.m_pBaseCreature);

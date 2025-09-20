@@ -6,12 +6,15 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class ReviveBeastAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
 
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -36,14 +39,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             }
 
             var playerId = GetObjectUUID(activator);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId))
             {
                 return "You do not have an active beast.";
             }
 
-            var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+            var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
 
             if (!dbBeast.IsDead)
             {
@@ -68,12 +71,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var playerId = GetObjectUUID(activator);
-                    var dbPlayer = DB.Get<Player>(playerId);
-                    var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+                    var dbPlayer = _db.Get<Player>(playerId);
+                    var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
 
                     dbBeast.IsDead = false;
 
-                    DB.Set(dbBeast);
+                    _db.Set(dbBeast);
 
                     BeastMastery.SpawnBeast(activator, dbBeast.Id, 0);
                     Enmity.ModifyEnmityOnAll(activator, 500);
@@ -96,12 +99,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var playerId = GetObjectUUID(activator);
-                    var dbPlayer = DB.Get<Player>(playerId);
-                    var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+                    var dbPlayer = _db.Get<Player>(playerId);
+                    var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
 
                     dbBeast.IsDead = false;
 
-                    DB.Set(dbBeast);
+                    _db.Set(dbBeast);
 
                     var hpPercentage = 10 + GetAbilityScore(activator, AbilityType.Social);
                     BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
@@ -125,12 +128,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var playerId = GetObjectUUID(activator);
-                    var dbPlayer = DB.Get<Player>(playerId);
-                    var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+                    var dbPlayer = _db.Get<Player>(playerId);
+                    var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
 
                     dbBeast.IsDead = false;
 
-                    DB.Set(dbBeast);
+                    _db.Set(dbBeast);
 
                     var hpPercentage = 30 + GetAbilityScore(activator, AbilityType.Social) * 2;
                     BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);

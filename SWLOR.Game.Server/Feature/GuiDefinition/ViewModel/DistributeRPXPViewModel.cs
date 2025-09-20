@@ -7,12 +7,16 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DistributeRPXPViewModel: GuiViewModelBase<DistributeRPXPViewModel, RPXPPayload>,
         IGuiRefreshable<RPXPRefreshEvent>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private SkillType _skillType;
         private int _availableRPXP;
         private int _maxDistributableXP;
@@ -92,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
 
                     var playerId = GetObjectUUID(Player);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
 
                     // Some skills are restricted by character type.
                     // Players shouldn't be able to see this pop-up but in case they get to it,
@@ -115,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
 
                     dbPlayer.UnallocatedXP -= amount;
-                    DB.Set(dbPlayer);
+                    _db.Set(dbPlayer);
 
                     Skill.GiveSkillXP(Player, _skillType, amount, true, false);
 
@@ -145,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public void Refresh(RPXPRefreshEvent payload)
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             _availableRPXP = dbPlayer.UnallocatedXP;
             _maxDistributableXP = Skill.GetMaxDistributableXP(Player, _skillType);

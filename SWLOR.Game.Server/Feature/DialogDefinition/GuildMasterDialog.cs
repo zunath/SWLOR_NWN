@@ -5,12 +5,15 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWScript;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class GuildMasterDialog: DialogBase
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private class Model
         {
             public GuildType Guild { get; set; }
@@ -60,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var model = GetDataModel<Model>();
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var playerName = GetName(player);
             var guild = Guild.GetGuild(model.Guild);
             var pcGuild = dbPlayer.Guilds.ContainsKey(model.Guild)
@@ -114,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var model = GetDataModel<Model>();
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             page.Header = "The following tasks are available for you.";
 
             var currentTasks = Guild.GetAllActiveGuildTasks(model.Guild);
@@ -173,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var model = GetDataModel<Model>();
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var pcQuest = dbPlayer.Quests.ContainsKey(model.QuestId)
                 ? dbPlayer.Quests[model.QuestId]
                 : null;
@@ -221,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var model = GetDataModel<Model>();
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (!dbPlayer.Quests.ContainsKey(model.QuestId)) return;
 
             var pcStatus = dbPlayer.Quests[model.QuestId];
@@ -276,7 +279,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             var model = GetDataModel<Model>();
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var pcGuild = dbPlayer.Guilds.ContainsKey(model.Guild)
                 ? dbPlayer.Guilds[model.Guild]
                 : new PlayerGuild();

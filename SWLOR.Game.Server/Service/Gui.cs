@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
 
@@ -15,6 +16,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Gui
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly Dictionary<GuiWindowType, GuiConstructedWindow> _windowTemplates = new();
         private static readonly Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> _playerWindows = new();
         private static readonly Dictionary<string, Dictionary<string, GuiMethodDetail>> _elementEvents = new();
@@ -100,7 +102,7 @@ namespace SWLOR.Game.Server.Service
             if (_playerWindows.ContainsKey(playerId))
                 return;
 
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
             _playerWindows[playerId] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
 
             foreach (var (type, window) in _windowTemplates)
@@ -139,7 +141,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             foreach (var (type, _) in _windowTemplates)
             {
@@ -150,7 +152,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>
@@ -169,13 +171,13 @@ namespace SWLOR.Game.Server.Service
 
         private static void SaveWindowGeometry(string playerId, GuiWindowType windowType, GuiRectangle geometry)
         {
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (dbPlayer == null)
                 return;
 
             dbPlayer.WindowGeometries[windowType] = geometry;
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>

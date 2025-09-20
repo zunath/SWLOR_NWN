@@ -8,14 +8,18 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 
 namespace SWLOR.Game.Server.Feature
 {
     public static class EquipmentStats
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private delegate void ApplyStatChangeDelegate(uint player, uint item, ItemProperty ip, bool isAdding);
         private static readonly Dictionary<ItemPropertyType, ApplyStatChangeDelegate> _statChangeActions = new();
 
@@ -144,7 +148,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (isAdding)
                 {
@@ -155,7 +159,7 @@ namespace SWLOR.Game.Server.Feature
                     Stat.AdjustPlayerMaxHP(dbPlayer, creature, -amount);
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
             else
             {
@@ -211,7 +215,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (isAdding)
                 {
@@ -222,7 +226,7 @@ namespace SWLOR.Game.Server.Feature
                     Stat.AdjustPlayerMaxFP(dbPlayer, -amount, creature);
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
             else
             {
@@ -247,7 +251,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (isAdding)
                 {
@@ -258,7 +262,7 @@ namespace SWLOR.Game.Server.Feature
                     Stat.AdjustFPRegen(dbPlayer, -amount);
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
             else
             {
@@ -283,7 +287,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (isAdding)
                 {
@@ -294,7 +298,7 @@ namespace SWLOR.Game.Server.Feature
                     Stat.AdjustPlayerMaxSTM(dbPlayer, -amount, creature);
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
             else
             {
@@ -319,7 +323,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (isAdding)
                 {
@@ -330,7 +334,7 @@ namespace SWLOR.Game.Server.Feature
                     Stat.AdjustSTMRegen(dbPlayer, -amount);
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
             else
             {
@@ -355,7 +359,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (isAdding)
                 {
@@ -366,7 +370,7 @@ namespace SWLOR.Game.Server.Feature
                     Stat.AdjustPlayerRecastReduction(dbPlayer, -amount);
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
             else
             {
@@ -391,7 +395,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (isAdding)
                 {
@@ -402,7 +406,7 @@ namespace SWLOR.Game.Server.Feature
                     Stat.AdjustAttack(dbPlayer, -amount);
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
             else
             {
@@ -427,7 +431,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (isAdding)
                 {
@@ -438,7 +442,7 @@ namespace SWLOR.Game.Server.Feature
                     Stat.AdjustForceAttack(dbPlayer, -amount);
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
             else
             {
@@ -464,7 +468,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (isAdding)
                 {
@@ -475,7 +479,7 @@ namespace SWLOR.Game.Server.Feature
                     Stat.AdjustDefense(dbPlayer, damageType, -amount);
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
             else
             {
@@ -532,7 +536,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (isAdding)
                 {
@@ -543,7 +547,7 @@ namespace SWLOR.Game.Server.Feature
                     Stat.AdjustEvasion(dbPlayer, -amount);
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
             else
             {
@@ -568,7 +572,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 var subType = GetItemPropertySubType(ip);
                 var skillType = SkillType.Invalid;
 
@@ -603,7 +607,7 @@ namespace SWLOR.Game.Server.Feature
                     Stat.AdjustControl(dbPlayer, skillType, -amount);
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
         }
 
@@ -624,7 +628,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 var subType = GetItemPropertySubType(ip);
                 var skillType = SkillType.Invalid;
 
@@ -653,7 +657,7 @@ namespace SWLOR.Game.Server.Feature
                     Stat.AdjustCraftsmanship(dbPlayer, skillType, -amount);
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
         }
         /// <summary>
@@ -673,7 +677,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(creature))
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 var subType = GetItemPropertySubType(ip);
                 var skillType = SkillType.Invalid;
 
@@ -702,7 +706,7 @@ namespace SWLOR.Game.Server.Feature
                     Stat.AdjustCPBonus(dbPlayer, skillType, -amount);
                 }
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
         }
     }

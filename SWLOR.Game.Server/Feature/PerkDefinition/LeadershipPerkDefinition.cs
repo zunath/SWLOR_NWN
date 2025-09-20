@@ -8,11 +8,14 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class LeadershipPerkDefinition: IPerkListDefinition
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly PerkBuilder _builder = new();
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
@@ -41,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RefundRequirement((player) =>
                 {
                     var playerId = GetObjectUUID(player);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
 
                     // Not a citizen of any property.
                     if (string.IsNullOrWhiteSpace(dbPlayer.CitizenPropertyId) ||
@@ -50,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                         return string.Empty;
                     }
 
-                    var dbCity = DB.Get<WorldProperty>(dbPlayer.CitizenPropertyId);
+                    var dbCity = _db.Get<WorldProperty>(dbPlayer.CitizenPropertyId);
 
                     // Player is the owner of a city (aka their mayor)
                     if (dbCity.OwnerPlayerId == dbPlayer.Id)
@@ -59,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     }
 
                     // Player is currently running for election.
-                    var dbElection = DB.Search(new DBQuery<Election>()
+                    var dbElection = _db.Search(new DBQuery<Election>()
                         .AddFieldSearch(nameof(Election.PropertyId), dbCity.Id, false))
                         .SingleOrDefault();
                     if (dbElection != null && dbElection.CandidatePlayerIds.Contains(playerId))

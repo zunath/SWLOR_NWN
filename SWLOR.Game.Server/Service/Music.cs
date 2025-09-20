@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service
 {
     public class Music
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly Dictionary<int, Song> _songs = new Dictionary<int,Song>();
         private static readonly Dictionary<int, Song> _playerBattleSongs = new Dictionary<int, Song>();
 
@@ -70,7 +73,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Entity.Player>(playerId);
             if (dbPlayer == null)
                 return;
 

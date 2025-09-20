@@ -2,11 +2,13 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SnippetService;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
     public class AccountSnippetDefinition: ISnippetListDefinition
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly SnippetBuilder _builder = new SnippetBuilder();
         
         public Dictionary<string, SnippetDetail> BuildSnippets()
@@ -26,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                 .AppearsWhenAction((player, args) =>
                 {
                     var cdKey = GetPCPublicCDKey(player);
-                    var dbAccount = DB.Get<Account>(cdKey) ?? new Account(cdKey);
+                    var dbAccount = _db.Get<Account>(cdKey) ?? new Account(cdKey);
 
                     return dbAccount.HasCompletedTutorial;
                 });

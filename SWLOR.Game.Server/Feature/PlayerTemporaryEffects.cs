@@ -3,12 +3,15 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class PlayerTemporaryEffects
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         [ScriptHandler(ScriptName.OnModuleEnter)]
         public static void ApplyTemporaryEffects()
         {
@@ -32,7 +35,7 @@ namespace SWLOR.Game.Server.Feature
         private static void ApplyHeight(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             SetObjectVisualTransform(player, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
         }

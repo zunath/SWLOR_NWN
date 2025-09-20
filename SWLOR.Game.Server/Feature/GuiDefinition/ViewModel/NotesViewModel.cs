@@ -5,11 +5,15 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class NotesViewModel: GuiViewModelBase<NotesViewModel, GuiPayloadBase>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         public const int MaxNumberOfNotes = 25;
         public const int MaxNoteLength = 1000;
 
@@ -89,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddFieldSearch(nameof(PlayerNote.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(PlayerNote.IsDMNote), false)
                 .OrderBy(nameof(PlayerNote.Name));
-            var notes = DB.Search(query)
+            var notes = _db.Search(query)
                 .ToList();
 
             _noteIds.Clear();
@@ -123,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _isLoadingNote = true;
             var noteId = _noteIds[SelectedNoteIndex];
-            var dbNote = DB.Get<PlayerNote>(noteId);
+            var dbNote = _db.Get<PlayerNote>(noteId);
 
             ActiveNoteName = dbNote.Name;
             ActiveNoteText = dbNote.Text;
@@ -136,12 +140,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var noteId = _noteIds[SelectedNoteIndex];
-            var dbNote = DB.Get<PlayerNote>(noteId);
+            var dbNote = _db.Get<PlayerNote>(noteId);
 
             dbNote.Name = ActiveNoteName;
             dbNote.Text = ActiveNoteText;
 
-            DB.Set(dbNote);
+            _db.Set(dbNote);
 
             IsSaveEnabled = false;
             NoteNames[SelectedNoteIndex] = ActiveNoteName;
@@ -167,7 +171,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             NoteToggled.Add(false);
             IsNewEnabled = _noteIds.Count < MaxNumberOfNotes;
 
-            DB.Set(note);
+            _db.Set(note);
         };
 
         public Action OnClickDeleteNote() => () =>
@@ -194,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsSaveEnabled = false;
                 _isLoadingNote = false;
 
-                DB.Delete<PlayerNote>(noteId);
+                _db.Delete<PlayerNote>(noteId);
             });
         };
 

@@ -4,6 +4,8 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {
@@ -52,6 +54,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class XPReward : IQuestReward
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public int Amount { get; }
         public bool IsSelectable { get; }
         public string MenuName => Amount + " XP";
@@ -65,10 +68,10 @@ namespace SWLOR.Game.Server.Service.QuestService
         public void GiveReward(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             dbPlayer.UnallocatedXP += Amount;
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
             SendMessageToPC(player, $"You earned {Amount} XP!");
         }
     }

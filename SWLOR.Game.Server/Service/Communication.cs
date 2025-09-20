@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
@@ -18,6 +19,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Communication
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
         private const int HolonetDelayMinutes = 5;
 
@@ -80,7 +82,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
             
             SetLocalBool(player, "DISPLAY_HOLONET", dbPlayer.Settings.IsHolonetEnabled);
         }
@@ -219,7 +221,7 @@ namespace SWLOR.Game.Server.Service
                 !GetIsDMPossessed(sender))
             {
                 var playerId = GetObjectUUID(sender);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 if (!dbPlayer.Settings.IsHolonetEnabled)
                 {
@@ -331,7 +333,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var receiver in recipients.Distinct())
             {
                 var receiverId = GetObjectUUID(receiver);
-                var dbReceiver = DB.Get<Player>(receiverId);
+                var dbReceiver = _db.Get<Player>(receiverId);
 
                 // Generate the final message as perceived by obj.
                 var finalMessage = new StringBuilder();
@@ -744,7 +746,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player))
             {
                 var playerId = GetObjectUUID(player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 return dbPlayer.EmoteStyle;
             }
@@ -757,9 +759,9 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(player) && !GetIsDM(player))
             {
                 var playerId = GetObjectUUID(player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 dbPlayer.EmoteStyle = style;
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
         }
     }

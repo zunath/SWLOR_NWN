@@ -11,11 +11,15 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageStructuresViewModel: GuiViewModelBase<ManageStructuresViewModel, GuiPayloadBase>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private const int StructuresPerPage = 20;
         private int SelectedStructureIndex { get; set; }
         private bool _skipPaginationSearch;
@@ -116,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private WorldProperty GetStructure()
         {
             var propertyId = _structurePropertyIds[SelectedStructureIndex];
-            var structure = DB.Get<WorldProperty>(propertyId);
+            var structure = _db.Get<WorldProperty>(propertyId);
 
             return structure;
         }
@@ -160,11 +164,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var query = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), propertyId, false)
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Structure);
-            var structureCount = DB.SearchCount(query);
+            var structureCount = _db.SearchCount(query);
             UpdatePagination(structureCount);
 
             query.AddPaging(StructuresPerPage, SelectedPageIndex * StructuresPerPage);
-            var structures = DB.Search(query);
+            var structures = _db.Search(query);
             _structurePropertyIds.Clear();
 
             foreach (var structure in structures)
@@ -188,7 +192,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var query = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            return DB.Search(query).FirstOrDefault();
+            return _db.Search(query).FirstOrDefault();
         }
 
         private void LoadPropertyPermissions(WorldProperty property)
@@ -240,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
             
-            var property = DB.Get<WorldProperty>(propertyId);
+            var property = _db.Get<WorldProperty>(propertyId);
             ManageButtonText = property.PropertyType == PropertyType.Apartment
                 ? "Manage Property"
                 : "Permissions";
@@ -347,7 +351,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var area = GetArea(Player);
             var propertyId = Property.GetPropertyId(area);
-            var property = DB.Get<WorldProperty>(propertyId);
+            var property = _db.Get<WorldProperty>(propertyId);
 
             // Apartments have their own management menu.
             if (property.PropertyType == PropertyType.Apartment)
@@ -370,7 +374,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Buildings look at their parent's parent to determine the city Id.
             else
             {
-                var parentBuilding = DB.Get<WorldProperty>(property.ParentPropertyId);
+                var parentBuilding = _db.Get<WorldProperty>(property.ParentPropertyId);
                 var cityId = parentBuilding.ParentPropertyId;
                 var payload = new PropertyPermissionPayload(property.PropertyType, propertyId, cityId, false);
                 Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
@@ -387,7 +391,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"Are you sure you want to retrieve this structure? WARNING: Any structures, items, research jobs, etc. contained inside will be permanently lost.", () =>
             {
                 var structure = GetStructure();
-                var parentProperty = DB.Get<WorldProperty>(structure.ParentPropertyId);
+                var parentProperty = _db.Get<WorldProperty>(structure.ParentPropertyId);
                 var placeable = Property.GetPlaceableByPropertyId(structure.Id);
                 var permission = GetPermission();
 
@@ -412,7 +416,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // in storage.
                 var query = new DBQuery<WorldPropertyCategory>()
                     .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), structure.ParentPropertyId, false);
-                var categories = DB.Search(query).ToList();
+                var categories = _db.Search(query).ToList();
                 var itemCount = categories.Sum(x => x.Items.Count);
 
                 if (itemCount > parentProperty.ItemStorageCount - structure.ItemStorageCount)
@@ -429,7 +433,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 parentProperty.ChildPropertyIds[PropertyChildType.Structure].Remove(structure.Id);
                 parentProperty.ItemStorageCount -= structure.ItemStorageCount;
 
-                DB.Set(parentProperty);
+                _db.Set(parentProperty);
 
                 // Some structures have specific logic which must be run when they're picked up. Do that now.
                 Property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.Retrieved, structure, placeable);
@@ -471,7 +475,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             structure.CustomName = StructureName;
 
-            DB.Set(structure);
+            _db.Set(structure);
 
             StructureNames[SelectedStructureIndex] = StructureName;
 

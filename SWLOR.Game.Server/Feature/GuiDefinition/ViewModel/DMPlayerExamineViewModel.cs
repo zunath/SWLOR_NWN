@@ -7,12 +7,16 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DMPlayerExamineViewModel: GuiViewModelBase<DMPlayerExamineViewModel, DMPlayerExaminePayload>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private const int MaxNotes = 50;
 
         [ScriptHandler(ScriptName.OnExamineObjectBefore)]
@@ -193,7 +197,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadTargetSkills()
         {
-            var dbPlayer = DB.Get<Player>(_playerId);
+            var dbPlayer = _db.Get<Player>(_playerId);
 
             if (dbPlayer == null)
                 return;
@@ -212,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadTargetPerks()
         {
-            var dbPlayer = DB.Get<Player>(_playerId);
+            var dbPlayer = _db.Get<Player>(_playerId);
 
             if (dbPlayer == null)
                 return;
@@ -232,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadTargetNotes()
         {
-            var dbPlayer = DB.Get<Player>(_playerId);
+            var dbPlayer = _db.Get<Player>(_playerId);
 
             if (dbPlayer == null)
                 return;
@@ -240,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var query = new DBQuery<PlayerNote>()
                 .AddFieldSearch(nameof(PlayerNote.PlayerId), _playerId, false)
                 .AddFieldSearch(nameof(PlayerNote.IsDMNote), true);
-            var dbNotes = DB.Search(query);
+            var dbNotes = _db.Search(query);
 
             _noteIds.Clear();
             var noteNames = new GuiBindingList<string>();
@@ -309,7 +313,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var index = NuiGetEventArrayIndex();
             var noteId = _noteIds[index];
-            var dbNote = DB.Get<PlayerNote>(noteId);
+            var dbNote = _db.Get<PlayerNote>(noteId);
 
             ActiveNoteName = dbNote.Name;
             ActiveNoteCreator = $"{dbNote.DMCreatorName} [{dbNote.DMCreatorCDKey}]";
@@ -334,7 +338,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DMCreatorName = GetName(Player)
             };
 
-            DB.Set(dbNote);
+            _db.Set(dbNote);
 
             _noteIds.Add(dbNote.Id);
             NoteNames.Add(dbNote.Name);
@@ -349,7 +353,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal("Are you sure you want to delete this note?", () =>
             {
                 var noteId = _noteIds[_selectedIndex];
-                DB.Delete<PlayerNote>(noteId);
+                _db.Delete<PlayerNote>(noteId);
 
                 NoteToggles[_selectedIndex] = false;
 
@@ -369,12 +373,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var noteId = _noteIds[_selectedIndex];
-            var dbNote = DB.Get<PlayerNote>(noteId);
+            var dbNote = _db.Get<PlayerNote>(noteId);
 
             dbNote.Name = ActiveNoteName;
             dbNote.Text = ActiveNoteDetail;
 
-            DB.Set(dbNote);
+            _db.Set(dbNote);
 
             NoteNames[_selectedIndex] = ActiveNoteName;
 

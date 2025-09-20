@@ -7,11 +7,15 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ElectionViewModel: GuiViewModelBase<ElectionViewModel, GuiPayloadBase>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private List<string> _candidatePlayerIds = new List<string>();
         private int _selectedCandidateIndex;
         private string _electionId;
@@ -58,9 +62,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var area = GetArea(TetherObject);
             var propertyId = Property.GetPropertyId(area);
-            var dbProperty = DB.Get<WorldProperty>(propertyId);
-            var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
-            var election = DB.Search(new DBQuery<Election>()
+            var dbProperty = _db.Get<WorldProperty>(propertyId);
+            var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
+            var election = _db.Search(new DBQuery<Election>()
                 .AddFieldSearch(nameof(Election.PropertyId), dbBuilding.ParentPropertyId, false))
                 .Single();
 
@@ -88,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var candidates = election.CandidatePlayerIds.Count > 0
-                ? DB.Search(new DBQuery<Player>()
+                ? _db.Search(new DBQuery<Player>()
                     .AddFieldSearch(nameof(Entity.Player.Id), election.CandidatePlayerIds))
                     .ToList()
                 : new List<Player>();
@@ -146,11 +150,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var cdKey = GetPCPublicCDKey(Player);
-            var dbElection = DB.Get<Election>(_electionId);
+            var dbElection = _db.Get<Election>(_electionId);
 
             bool IsCitizen()
             {
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 if (dbPlayer.CitizenPropertyId != dbElection.PropertyId)
                 {
                     SendMessageToPC(Player, "You must be a registered citizen of this city to run in the election.");
@@ -163,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!IsCitizen())
                 return;
 
-            var dbCity = DB.Get<WorldProperty>(dbElection.PropertyId);
+            var dbCity = _db.Get<WorldProperty>(dbElection.PropertyId);
 
             // This button behaves differently depending on the mode the election is in.
             // If we're in the 'Registration' process, it will enter or exit the player from the race.
@@ -179,7 +183,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             if (!IsCitizen())
                                 return;
 
-                            dbElection = DB.Get<Election>(_electionId);
+                            dbElection = _db.Get<Election>(_electionId);
 
                             if(dbElection.CandidatePlayerIds.Contains(playerId))
                                 dbElection.CandidatePlayerIds.Remove(playerId);
@@ -192,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                                 dbElection.VoterSelections.Remove(vote.Key);
                             }
 
-                            DB.Set(dbElection);
+                            _db.Set(dbElection);
                             SendMessageToPC(Player, "You have withdrawn from the race.");
                             Gui.TogglePlayerWindow(Player, GuiWindowType.Election);
                         });
@@ -205,11 +209,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             if (!IsCitizen())
                                 return;
 
-                            dbElection = DB.Get<Election>(_electionId);
+                            dbElection = _db.Get<Election>(_electionId);
                             if(!dbElection.CandidatePlayerIds.Contains(playerId))
                                 dbElection.CandidatePlayerIds.Add(playerId);
 
-                            DB.Set(dbElection);
+                            _db.Set(dbElection);
                             SendMessageToPC(Player, "You have entered the race!");
                             Gui.TogglePlayerWindow(Player, GuiWindowType.Election);
                         });
@@ -232,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 else
                 {
                     var selectedCandidateId = _candidatePlayerIds[_selectedCandidateIndex];
-                    var dbCandidate = DB.Get<Player>(selectedCandidateId);
+                    var dbCandidate = _db.Get<Player>(selectedCandidateId);
 
                     dbElection.VoterSelections[cdKey] = new ElectionVoter
                     {
@@ -244,7 +248,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Election);
                 }
 
-                DB.Set(dbElection);
+                _db.Set(dbElection);
             }
         };
     }

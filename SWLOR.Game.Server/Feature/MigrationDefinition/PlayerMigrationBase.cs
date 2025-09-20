@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
@@ -13,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
     public abstract class PlayerMigrationBase: IPlayerMigration
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        protected static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public abstract int Version { get; }
         public abstract void Migrate(uint player);
 
@@ -41,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             DelayCommand(1f, () =>
             {
                 var playerId = GetObjectUUID(player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 // HP
                 dbPlayer.MaxHP = Stat.BaseHP;
@@ -79,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 // Evasion
                 dbPlayer.Evasion = 0;
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
                 Stat.AdjustPlayerMaxHP(dbPlayer, player, 0);
                 SetCurrentHitPoints(player, GetMaxHitPoints(player));
 
@@ -91,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         protected void RefundPerk(uint player, PerkType perkType)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (!dbPlayer.Perks.ContainsKey(perkType))
                 return;
@@ -105,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             dbPlayer.UnallocatedSP += refundAmount;
             dbPlayer.Perks.Remove(perkType);
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             _logger.Write<MigrationLogGroup>($"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP for perk '{perkType}'.");
             SendMessageToPC(player, $"Perk '{perkDetail.Name}' was automatically refunded. You reclaimed {refundAmount} SP.");

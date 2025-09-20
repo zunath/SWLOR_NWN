@@ -7,12 +7,15 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWNX.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class ViscaraQuestDefinition : IQuestListDefinition
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly QuestBuilder _builder = new QuestBuilder();
         public Dictionary<string, QuestDetail> BuildQuests()
         {
@@ -156,7 +159,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             }
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             // Player doesn't have this quest yet.
             if (!dbPlayer.Quests.ContainsKey("first_rites"))

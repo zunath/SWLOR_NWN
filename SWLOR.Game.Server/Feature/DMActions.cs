@@ -4,12 +4,16 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class DMActions
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         [ScriptHandler(ScriptName.OnDMSpawnObjectAfter)]
         public static void OnDMSpawnObject()
         {
@@ -46,9 +50,9 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(target) && !GetIsDM(target))
             {
                 var playerId = GetObjectUUID(target);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 dbPlayer.UnallocatedXP += amount;
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
                 SendMessageToPC(target, $"A DM has awarded you with {amount} roleplay XP.");
                 SendMessageToPC(dm, $"You award {GetName(target)} with {amount} roleplay XP.");
                 Gui.PublishRefreshEvent(target, new RPXPRefreshEvent());

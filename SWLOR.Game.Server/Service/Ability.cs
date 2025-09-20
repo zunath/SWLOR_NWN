@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
 
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Ability
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
         private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new();
         private static readonly Dictionary<AbilityToggleType, Action<uint, bool>> _toggleActions = new();
@@ -360,7 +362,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (dbPlayer.AbilityToggles == null)
                 dbPlayer.AbilityToggles = new Dictionary<AbilityToggleType, bool>();
@@ -371,7 +373,7 @@ namespace SWLOR.Game.Server.Service
             var runLogic = dbPlayer.AbilityToggles[toggleType] != isToggled;
             dbPlayer.AbilityToggles[toggleType] = isToggled;
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             if (runLogic &&
                 _toggleActions.ContainsKey(toggleType))
@@ -403,7 +405,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if the ability is toggled on, false otherwise</returns>
         public static bool IsAbilityToggled(string playerId, AbilityToggleType toggleType)
         {
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (dbPlayer == null)
                 return false;
@@ -425,7 +427,7 @@ namespace SWLOR.Game.Server.Service
         public static bool IsAnyAbilityToggled(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (dbPlayer == null)
                 return false;

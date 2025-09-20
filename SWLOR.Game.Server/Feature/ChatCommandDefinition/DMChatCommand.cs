@@ -17,6 +17,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
 
@@ -25,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
     public class DMChatCommand: IChatCommandListDefinition
     {
         private readonly ChatCommandBuilder _builder = new ChatCommandBuilder();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
@@ -578,10 +580,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     if (GetIsPC(target) && !GetIsDM(target))
                     {
                         var playerId = GetObjectUUID(target);
-                        var dbPlayer = DB.Get<Player>(playerId);
+                        var dbPlayer = _db.Get<Player>(playerId);
                         dbPlayer.UnallocatedXP += amount;
 
-                        DB.Set(dbPlayer);
+                        _db.Set(dbPlayer);
                         SendMessageToPC(target, $"A DM has awarded you with {amount} roleplay XP.");
                         Gui.PublishRefreshEvent(target, new RPXPRefreshEvent());
                     }
@@ -616,10 +618,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     var playerId = GetObjectUUID(target);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;
 
-                    DB.Set(dbPlayer);
+                    _db.Set(dbPlayer);
                     SendMessageToPC(target, $"A DM has reset your perk refund cooldown.");
                 });
         }
@@ -680,9 +682,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     var targetName = GetName(target);
                     var playerId = GetObjectUUID(target);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     dbPlayer.RecastTimes.Clear();
-                    DB.Set(dbPlayer);
+                    _db.Set(dbPlayer);
                     
                     SendMessageToPC(user, $"You have reset all of {targetName}'s cooldowns.");
                     SendMessageToPC(target, "A DM has reset all of your cooldowns.");
@@ -730,7 +732,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     var playerId = GetObjectUUID(target);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
 
                     foreach (var (faction, standingDetail) in dbPlayer.Factions)
                     {
@@ -757,7 +759,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     var playerId = GetObjectUUID(target);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
 
                     foreach (var (faction, standingDetail) in dbPlayer.Factions)
                     {
@@ -836,10 +838,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     var amount = Convert.ToInt32(args[0]);
                     var playerId = GetObjectUUID(target);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     dbPlayer.DMXPBonus = amount;
 
-                    DB.Set(dbPlayer);
+                    _db.Set(dbPlayer);
 
                     SendMessageToPC(user, $"{GetName(target)}'s DM XP bonus set to {amount}%.");
                     SendMessageToPC(target, $"Your DM XP bonus has been changed to {amount}%.");
@@ -862,7 +864,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                     
                     var playerId = GetObjectUUID(target);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     
                     SendMessageToPC(user, $"{GetName(target)}'s DM XP bonus is {dbPlayer.DMXPBonus}%.");
                 });
@@ -1043,7 +1045,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             if (GetIsPC(target) == true)
                             {
                                 var playerId = GetObjectUUID(target);
-                                var dbPlayer = DB.Get<Player>(playerId);
+                                var dbPlayer = _db.Get<Player>(playerId);
                                 level = dbPlayer.Skills[Service.SkillService.SkillType.Piloting].Rank;
                             }
                             var targetName = GetName(target);
@@ -1096,13 +1098,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         if (GetIsPC(target))
                         {
                             var targetPlayerId = GetObjectUUID(target);
-                            var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
-                            var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
+                            var dbTargetPlayer = _db.Get<Player>(targetPlayerId);
+                            var dbPlayerShip = _db.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
 
                             dbPlayerShip.Status.Shield = targetStatus.Shield;
                             dbPlayerShip.Status.Hull = targetStatus.Hull;
 
-                            DB.Set(dbPlayerShip);
+                            _db.Set(dbPlayerShip);
                             
                             // Trigger UI refresh events after database update
                             ExecuteScript(ScriptName.OnPlayerShieldAdjusted, target);

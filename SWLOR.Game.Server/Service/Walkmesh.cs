@@ -6,14 +6,17 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Entity;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Walkmesh
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly Dictionary<uint, List<uint>> _noSpawnZoneTriggers = new();
         private static Dictionary<string, List<Vector3>> _walkmeshesByArea = new();
         private const int AreaBakeStep = 2;
@@ -32,9 +35,9 @@ namespace SWLOR.Game.Server.Service
                 BakeArea(area);
             }
             
-            var serverConfig = DB.Get<ModuleCache>("SWLOR_CACHE") ?? new ModuleCache{ Id = "SWLOR_CACHE" };
+            var serverConfig = _db.Get<ModuleCache>("SWLOR_CACHE") ?? new ModuleCache{ Id = "SWLOR_CACHE" };
             serverConfig.WalkmeshesByArea = _walkmeshesByArea;
-            DB.Set(serverConfig);
+            _db.Set(serverConfig);
 
             _bakingRan = true;
             Console.WriteLine($"Baked {_walkmeshesByArea.Count} areas.");
@@ -74,7 +77,7 @@ namespace SWLOR.Game.Server.Service
             if (_bakingRan)
                 return;
 
-            var serverConfig = DB.Get<ModuleCache>("SWLOR_CACHE");
+            var serverConfig = _db.Get<ModuleCache>("SWLOR_CACHE");
             _walkmeshesByArea = serverConfig.WalkmeshesByArea;
             Console.WriteLine($"Loaded {_walkmeshesByArea.Count} area walkmeshes.");
         }

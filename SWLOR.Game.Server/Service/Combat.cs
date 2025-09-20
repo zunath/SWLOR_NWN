@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -20,6 +21,7 @@ namespace SWLOR.Game.Server.Service
     public static class Combat
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly List<CombatDamageType> _allValidDamageTypes = new();
 
         /// <summary>
@@ -51,7 +53,7 @@ namespace SWLOR.Game.Server.Service
 
             var foundNewType = false;
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             if (dbPlayer == null)
                 return;
 
@@ -66,7 +68,7 @@ namespace SWLOR.Game.Server.Service
 
             if (foundNewType)
             {
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
         }
 
@@ -236,7 +238,7 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 var pcSkill = dbPlayer.Skills[skill];
                 level = pcSkill.Rank;

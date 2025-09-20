@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Native
 {
     public static unsafe class ResolveAttackRoll
     {
+        private static readonly IScriptExecutor _scriptExecutor = ServiceContainer.GetService<IScriptExecutor>();
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
         // Attack result constants
         private const int AttackResultAutomaticHit = 7;
@@ -161,7 +162,7 @@ namespace SWLOR.Game.Server.Native
         [UnmanagedCallersOnly]
         private static void OnResolveAttackRoll(void* thisPtr, void* pTarget)
         {
-            ServerManager.Executor.ExecuteInScriptContext(() =>
+            _scriptExecutor.ExecuteInScriptContext(() =>
             {
 
                 /*

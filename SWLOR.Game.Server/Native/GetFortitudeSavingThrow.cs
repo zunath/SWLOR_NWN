@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Native
 {
     public static unsafe class GetFortitudeSavingThrow
     {
+        private static readonly IScriptExecutor _scriptExecutor = ServiceContainer.GetService<IScriptExecutor>();
         // Hash constants for ruleset entries (computed using djb2 hash algorithm)
         private const uint LUCKOFHEROES_SAVE_BONUS_HASH = 0x390339C3; // djb2 hash of "LUCKOFHEROES_SAVE_BONUS"
 
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Native
         [UnmanagedCallersOnly]
         private static sbyte OnGetFortitudeSavingThrow(void* thisPtr, int bExcludeEffectBonus)
         {
-            return ServerManager.Executor.ExecuteInScriptContext(() =>
+            return _scriptExecutor.ExecuteInScriptContext(() =>
             {
                 var stats = CNWSCreatureStats.FromPointer(thisPtr);
 

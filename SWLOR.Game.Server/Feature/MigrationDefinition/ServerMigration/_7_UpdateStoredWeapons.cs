@@ -7,12 +7,16 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _7_UpdateStoredWeapons: ServerMigrationBase, IServerMigration
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         public int Version => 7;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
 
@@ -72,8 +76,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         private void UpdatePersistentStorageWeapons()
         {
             var query = new DBQuery<InventoryItem>();
-            var itemCount = (int)DB.SearchCount(query);
-            var items = DB.Search(query.AddPaging(itemCount, 0)).ToList();
+            var itemCount = (int)_db.SearchCount(query);
+            var items = _db.Search(query.AddPaging(itemCount, 0)).ToList();
 
             foreach (var item in items)
             {
@@ -84,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 UpdateWeapon(deserialized);
 
                 item.Data = ObjectPlugin.Serialize(deserialized);
-                DB.Set(item);
+                _db.Set(item);
 
                 DestroyObject(deserialized);
             }

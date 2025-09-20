@@ -1,5 +1,8 @@
 ﻿@page "/viewplayer/{PlayerId}"
 @attribute [Authorize(Policy = "DiscordAdmin")]
+@using SWLOR.Shared.Abstractions.Contracts
+@using SWLOR.Shared.Core.Service
+@inject IDatabaseService _db
 
 @if (!PlayerExists())
 {
@@ -131,7 +134,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        ActivePlayer = DB.Get<Player>(PlayerId);
+        ActivePlayer = _db.Get<Player>(PlayerId);
     }
 
     protected bool PlayerExists()

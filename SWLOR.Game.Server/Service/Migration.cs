@@ -6,6 +6,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log;
@@ -18,6 +19,7 @@ namespace SWLOR.Game.Server.Service
     public static class Migration
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static int _currentMigrationVersion;
         private static int _newMigrationVersion;
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostDatabase = new();
@@ -49,13 +51,13 @@ namespace SWLOR.Game.Server.Service
             {
                 var config = GetServerConfiguration();
                 config.MigrationVersion = _newMigrationVersion;
-                DB.Set(config);
+                _db.Set(config);
             }
         }
 
         private static ServerConfiguration GetServerConfiguration()
         {
-            return DB.Get<ServerConfiguration>("SWLOR_CONFIG") ?? new ServerConfiguration();
+            return _db.Get<ServerConfiguration>("SWLOR_CONFIG") ?? new ServerConfiguration();
         }
 
         private static IEnumerable<IServerMigration> GetMigrations(MigrationExecutionType executionType)
@@ -134,7 +136,7 @@ namespace SWLOR.Game.Server.Service
 
             var sw = new Stopwatch();
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
 
             var migrations = _playerMigrations
                 .Where(x => x.Key > dbPlayer.Version)
@@ -161,9 +163,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Migrations can edit the database player entity. Refresh it before updating the version.
-            dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
             dbPlayer.Version = newVersion;
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         private static void LoadServerMigrations()

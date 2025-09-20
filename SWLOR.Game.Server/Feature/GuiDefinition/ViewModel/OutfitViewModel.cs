@@ -8,11 +8,15 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class OutfitViewModel: GuiViewModelBase<OutfitViewModel, GuiPayloadBase>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private const int MaxOutfits = 25;
 
         private List<string> _outfitIds = new();
@@ -78,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private List<PlayerOutfit> GetOutfits()
         {
             var playerId = GetObjectUUID(Player);
-            var dbOutfits = DB.Search(new DBQuery<PlayerOutfit>()
+            var dbOutfits = _db.Search(new DBQuery<PlayerOutfit>()
                 .AddFieldSearch(nameof(PlayerOutfit.PlayerId), playerId, false));
 
             return dbOutfits.ToList();
@@ -117,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             SelectedSlotIndex = NuiGetEventArrayIndex();
 
-            var dbOutfit = DB.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
+            var dbOutfit = _db.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
             IsDeleteEnabled = true;
             IsSlotLoaded = true;
             IsLoadEnabled = !string.IsNullOrWhiteSpace(dbOutfit.Data);
@@ -163,21 +167,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSave() => () =>
         {
-            var dbOutfit = DB.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
+            var dbOutfit = _db.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
 
             if (Name.Length > 32)
                 Name = Name.Substring(0, 32);
 
             dbOutfit.Name = Name;
 
-            DB.Set(dbOutfit);
+            _db.Set(dbOutfit);
             IsSaveEnabled = false;
             SlotNames[SelectedSlotIndex] = Name;
         };
 
         public Action OnClickStoreOutfit() => () =>
         {
-            var dbOutfit = DB.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
+            var dbOutfit = _db.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
 
             void DoSave()
             {
@@ -213,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbOutfit.RightShoulderId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder);
                 dbOutfit.RightThighId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh);
 
-                DB.Set(dbOutfit);
+                _db.Set(dbOutfit);
 
                 IsLoadEnabled = true;
                 UpdateDetails(dbOutfit);
@@ -256,7 +260,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadOutfit()
         {
             var armor = GetItemInSlot(InventorySlot.Chest, Player);
-            var dbOutfit = DB.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
+            var dbOutfit = _db.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
 
             // Get the temporary storage placeable and deserialize the outfit into it.
             var tempStorage = GetObjectByTag("OUTFIT_BARREL");
@@ -319,7 +323,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickNew() => () =>
         {
             var playerId = GetObjectUUID(Player);
-            var outfitCount = DB.SearchCount(new DBQuery<PlayerOutfit>()
+            var outfitCount = _db.SearchCount(new DBQuery<PlayerOutfit>()
                 .AddFieldSearch(nameof(PlayerOutfit.PlayerId), playerId, false));
 
             if (outfitCount >= MaxOutfits)
@@ -334,7 +338,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 PlayerId = playerId
             };
             
-            DB.Set(newOutfit);
+            _db.Set(newOutfit);
             _outfitIds.Add(newOutfit.Id);
             SlotNames.Add(newOutfit.Name);
             SlotToggles.Add(false);
@@ -348,9 +352,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
 
                 var outfitId = _outfitIds[SelectedSlotIndex];
-                var dbOutfit = DB.Get<PlayerOutfit>(outfitId);
+                var dbOutfit = _db.Get<PlayerOutfit>(outfitId);
                 
-                DB.Delete<PlayerOutfit>(dbOutfit.Id);
+                _db.Delete<PlayerOutfit>(dbOutfit.Id);
 
                 _outfitIds.RemoveAt(SelectedSlotIndex);
                 SlotNames.RemoveAt(SelectedSlotIndex);

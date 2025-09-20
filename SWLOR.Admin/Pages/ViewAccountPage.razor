@@ -1,7 +1,10 @@
 @page "/viewaccount/{AccountId}"
 @attribute [Authorize(Policy = "DiscordAdmin")]
 @using SWLOR.Game.Server.Service.AchievementService
+@using SWLOR.Shared.Abstractions.Contracts
 @using SWLOR.Shared.Core.Extension
+@using SWLOR.Shared.Core.Service
+@inject IDatabaseService _db
 
 @if (!AccountExists())
 {
@@ -197,7 +200,7 @@
         base.OnInitialized();
         if (!string.IsNullOrEmpty(AccountId))
         {
-            ActiveAccount = DB.Get<Account>(AccountId);
+            ActiveAccount = _db.Get<Account>(AccountId);
             // Cache the total pages
             _unlockedTotalPages = (int)Math.Ceiling((double)GetAchievementDetails().Count / UnlockedPageSize);
             _availableTotalPages = (int)Math.Ceiling((double)GetAvailableAchievements().Count / AvailablePageSize);

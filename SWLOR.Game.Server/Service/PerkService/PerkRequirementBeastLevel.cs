@@ -1,9 +1,11 @@
 ﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
     public class PerkRequirementBeastLevel: IPerkRequirement
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly int _requiredLevel;
 
         public PerkRequirementBeastLevel(int requiredLevel)
@@ -14,8 +16,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         public string CheckRequirements(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var dbBeast = DB.Get<Beast>(dbPlayer.ActiveBeastId);
+            var dbPlayer = _db.Get<Player>(playerId);
+            var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
 
             if (dbBeast == null)
                 return "You do not have a beast tamed.";

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
@@ -12,6 +13,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
     public class StarportFlightsDialog: DialogBase
     {
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private class Model
         {
             public int Price { get; set; }
@@ -45,9 +48,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             if (string.IsNullOrWhiteSpace(propertyId))
                 return;
 
-            var dbProperty = DB.Get<WorldProperty>(propertyId);
-            var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
-            var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
+            var dbProperty = _db.Get<WorldProperty>(propertyId);
+            var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
+            var dbCity = _db.Get<WorldProperty>(dbBuilding.ParentPropertyId);
 
             model.Tax = 0.01f * dbCity.Taxes[PropertyTaxType.Transportation];
             model.CityPropertyId = dbCity.Id;
@@ -122,12 +125,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                     if (!string.IsNullOrWhiteSpace(model.CityPropertyId))
                     {
-                        var dbCity = DB.Get<WorldProperty>(model.CityPropertyId);
+                        var dbCity = _db.Get<WorldProperty>(model.CityPropertyId);
                         if (dbCity == null)
                             return;
 
                         dbCity.Treasury += tax;
-                        DB.Set(dbCity);
+                        _db.Set(dbCity);
                         _logger.Write<PropertyLogGroup>($"{GetName(player)} paid {tax} credits in tax for their trip to {model.PlanetName}.");
                     }
 

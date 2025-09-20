@@ -11,13 +11,17 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Service;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal class ResearchViewModel: GuiViewModelBase<ResearchViewModel, ResearchPayload>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private class ResearchJobDetails
         {
             public int Quantity { get; set; }
@@ -138,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var query = new DBQuery<ResearchJob>()
                 .AddFieldSearch(nameof(ResearchJob.ParentPropertyId), _researchTerminalPropertyId, false);
-            var dbJob = DB.Search(query)
+            var dbJob = _db.Search(query)
                 .FirstOrDefault();
 
             return dbJob;
@@ -312,7 +316,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var maxConcurrentJobs = Perk.GetPerkLevel(Player, PerkType.ResearchProjects) + 1;
             var dbQuery = new DBQuery<ResearchJob>()
                 .AddFieldSearch(nameof(ResearchJob.PlayerId), playerId, false);
-            var currentJobs = DB.Search(dbQuery).ToList();
+            var currentJobs = _db.Search(dbQuery).ToList();
             var currentJobCount = currentJobs.Count(x => x.ParentPropertyId != _researchTerminalPropertyId);
 
             if (currentJobCount >= maxConcurrentJobs)
@@ -348,7 +352,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         Level = researchJob.CurrentLevel,
                         Recipe = _recipeType
                     };
-                    DB.Set(dbResearchJob);
+                    _db.Set(dbResearchJob);
 
                     AssignCommand(Player, () => TakeGoldFromCreature(researchJob.CreditCost, Player, true));
                     DestroyObject(_blueprintItem);
@@ -372,7 +376,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         ObjectPlugin.AcquireItem(Player, item);
                     }
 
-                    DB.Delete<ResearchJob>(dbJob.Id);
+                    _db.Delete<ResearchJob>(dbJob.Id);
                     Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
                     FloatingTextStringOnCreature("Research job cancelled!", Player, false);
                 },
@@ -536,7 +540,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Craft.SetBlueprintDetails(item, blueprintDetails);
             Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
 
-            DB.Delete<ResearchJob>(dbJob.Id);
+            _db.Delete<ResearchJob>(dbJob.Id);
         };
     }
 }

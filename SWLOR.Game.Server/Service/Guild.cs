@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Service;
@@ -15,6 +16,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Guild
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly Dictionary<GuildType, GuildAttribute> _activeGuilds = new();
         private static readonly Dictionary<int, int> _rankProgression = new()
         {
@@ -65,7 +67,7 @@ namespace SWLOR.Game.Server.Service
         public static int CalculateGPReward(uint player, GuildType guild, int baseAmount)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if(!dbPlayer.Guilds.ContainsKey(guild))
                 dbPlayer.Guilds[guild] = new PlayerGuild();
@@ -91,7 +93,7 @@ namespace SWLOR.Game.Server.Service
                 amount = 1000;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (!dbPlayer.Guilds.ContainsKey(guild))
                 dbPlayer.Guilds[guild] = new PlayerGuild();
@@ -121,7 +123,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             dbPlayer.Guilds[guild] = dbGuild;
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
         }
 
         /// <summary>

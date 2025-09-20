@@ -7,12 +7,16 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class AchievementsViewModel: GuiViewModelBase<AchievementsViewModel, GuiPayloadBase>,
         IGuiRefreshable<AchievementUnlockedRefreshEvent>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private const int EntriesPerPage = 25;
         private int SelectedIndex { get; set; }
         private readonly List<AchievementType> _types = new();
@@ -83,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void Search()
         {
             var cdKey = GetPCPublicCDKey(Player);
-            var dbAccount = DB.Get<Account>(cdKey) ?? new Account(cdKey);
+            var dbAccount = _db.Get<Account>(cdKey) ?? new Account(cdKey);
             var achievements = Achievement.GetActiveAchievements()
                 .Skip(SelectedPageIndex * EntriesPerPage)
                 .Take(EntriesPerPage);
@@ -124,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var type = _types[SelectedIndex];
             var achievement = Achievement.GetAchievement(type);
             var cdKey = GetPCPublicCDKey(Player);
-            var dbAccount = DB.Get<Account>(cdKey) ?? new Account(cdKey);
+            var dbAccount = _db.Get<Account>(cdKey) ?? new Account(cdKey);
 
             Name = achievement.Name;
             Description = achievement.Description;

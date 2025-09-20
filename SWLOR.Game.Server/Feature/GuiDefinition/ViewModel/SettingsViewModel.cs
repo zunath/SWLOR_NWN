@@ -6,12 +6,15 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class SettingsViewModel: GuiViewModelBase<SettingsViewModel, GuiPayloadBase>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         public const string SettingsView = "SETTINGS_VIEW";
 
         public const string GeneralPartial = "GENERAL_VIEW";
@@ -141,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadGeneralView()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             IsForceSensitive = dbPlayer.CharacterType == CharacterType.ForceSensitive;
 
@@ -155,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadChatView()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var colorSettings = dbPlayer.Settings.LanguageChatColors;
             var languages = Skill.GetActiveSkillsByCategory(SkillCategoryType.Languages);
 
@@ -250,7 +253,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnSave() => () =>
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             dbPlayer.Settings.DisplayAchievementNotification = DisplayAchievementNotification;
             dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel;
@@ -276,7 +279,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbPlayer.Settings.LanguageChatColors[type] = new PlayerColor(color.R, color.G, color.B);
             }
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
 

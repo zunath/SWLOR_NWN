@@ -8,6 +8,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -15,6 +17,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<RPXPRefreshEvent>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private readonly List<SkillType> _viewableSkills = new();
 
         public string AvailableXP
@@ -124,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadSkills(Dictionary<SkillType, SkillAttribute> skills)
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             _viewableSkills.Clear();
             var skillNames = new GuiBindingList<string>();
@@ -248,14 +252,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action ToggleDecayLock() => () =>
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var index = NuiGetEventArrayIndex();
             var selectedSkill = _viewableSkills[index];
             var isLocked = !dbPlayer.Skills[selectedSkill].IsLocked;
 
             dbPlayer.Skills[selectedSkill].IsLocked = isLocked;
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             DecayLockColors[index] = GetDecayLockColor(isLocked, true);
             DecayLockTexts[index] = GetDecayLockText(isLocked, true);
@@ -270,7 +274,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var index = NuiGetEventArrayIndex();
             var name = SkillNames[index];
 
@@ -289,7 +293,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var skill in payload.ModifiedSkills)
             {
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
                 var index = _viewableSkills.IndexOf(skill);
                 var pcSkill = dbPlayer.Skills[skill];
 
@@ -303,7 +307,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public void Refresh(RPXPRefreshEvent payload)
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP}";
             XPDebt = $"XP Debt: {dbPlayer.XPDebt}";
 

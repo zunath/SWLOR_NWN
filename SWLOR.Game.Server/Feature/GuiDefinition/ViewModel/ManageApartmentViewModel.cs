@@ -8,11 +8,15 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageApartmentViewModel: GuiViewModelBase<ManageApartmentViewModel, ManageApartmentPayload>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         public const int MaxNameLength = 50;
         public const int MaxDescriptionLength = 200;
         private const int MaxLeaseDays = 30;
@@ -170,7 +174,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var selectedPropertyId = _propertyIds[SelectedApartmentIndex];
             var query = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.Id), selectedPropertyId, false);
-            var apartment = DB.Search(query).Single();
+            var apartment = _db.Search(query).Single();
 
             return apartment;
         }
@@ -182,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var query = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), selectedPropertyId, false);
-            var permission = DB.Search(query).FirstOrDefault()
+            var permission = _db.Search(query).FirstOrDefault()
                              ?? new WorldPropertyPermission();
 
             return permission;
@@ -198,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (initialPayload != null && !string.IsNullOrWhiteSpace(initialPayload.SpecificPropertyId))
             {
-                var property = DB.Get<WorldProperty>(initialPayload.SpecificPropertyId);
+                var property = _db.Get<WorldProperty>(initialPayload.SpecificPropertyId);
                 apartmentNames.Add(property.CustomName);
                 apartmentToggles.Add(true);
                 _propertyIds.Add(property.Id);
@@ -209,8 +213,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var permissionQuery = new DBQuery<WorldPropertyPermission>()
                     .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-                var permissionCount = (int)DB.SearchCount(permissionQuery);
-                var dbPermissions = DB.Search(permissionQuery
+                var permissionCount = (int)_db.SearchCount(permissionQuery);
+                var dbPermissions = _db.Search(permissionQuery
                         .AddPaging(permissionCount, 0))
                     .ToList();
 
@@ -221,9 +225,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
                         .AddFieldSearch(nameof(WorldProperty.Id), propertyIds)
                         .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
-                    var propertyCount = (int)DB.SearchCount(propertyQuery);
+                    var propertyCount = (int)_db.SearchCount(propertyQuery);
 
-                    var properties = DB.Search(propertyQuery
+                    var properties = _db.Search(propertyQuery
                         .AddPaging(propertyCount, 0));
 
                     foreach (var property in properties)
@@ -395,7 +399,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (hasChange)
             {
-                DB.Set(apartment);
+                _db.Set(apartment);
 
                 var instance = Property.GetRegisteredInstance(apartment.Id);
                 SetName(instance.Area, "{PC} " + CustomName);
@@ -443,7 +447,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     apartment = GetApartment();
                     apartment.Dates[PropertyDateType.Lease] = newLeaseDate;
 
-                    DB.Set(apartment);
+                    _db.Set(apartment);
 
                     Instruction = $"Lease extended by {days} {dayWord}!";
                     InstructionColor = GuiColor.Green;
@@ -474,7 +478,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     // Queue the deletion for the next reboot to avoid lag while players are on.
                     apartment.IsQueuedForDeletion = true;
-                    DB.Set(apartment);
+                    _db.Set(apartment);
                     
                     if(Gui.IsWindowOpen(Player, GuiWindowType.ManageApartment))
                         Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);

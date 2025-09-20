@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
@@ -13,6 +14,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
     public static class StructureChangedAction
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _actions = new();
 
         /// <summary>
@@ -107,7 +109,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         private static void AssignExitLocationToInstance(uint building, Location location)
         {
             var propertyId = Property.GetPropertyId(building);
-            var dbBuilding = DB.Get<WorldProperty>(propertyId);
+            var dbBuilding = _db.Get<WorldProperty>(propertyId);
 
             if (!dbBuilding.ChildPropertyIds.ContainsKey(PropertyChildType.Interior))
                 return;
@@ -134,9 +136,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 : null;
             if (!string.IsNullOrWhiteSpace(interiorId))
             {
-                var interior = DB.Get<WorldProperty>(interiorId);
+                var interior = _db.Get<WorldProperty>(interiorId);
                 interior.CustomName = property.CustomName;
-                DB.Set(interior);
+                _db.Set(interior);
 
                 var instance = Property.GetRegisteredInstance(interiorId);
                 SetName(instance.Area, "{PC} " + property.CustomName);
@@ -173,26 +175,26 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 if (string.IsNullOrWhiteSpace(interiorId))
                     return;
 
-                var dbInterior = DB.Get<WorldProperty>(interiorId);
+                var dbInterior = _db.Get<WorldProperty>(interiorId);
                 if (dbInterior.ChildPropertyIds.ContainsKey(PropertyChildType.Starship))
                 {
                     foreach (var starshipId in dbInterior.ChildPropertyIds[PropertyChildType.Starship])
                     {
-                        var dbStarship = DB.Get<WorldProperty>(starshipId);
+                        var dbStarship = _db.Get<WorldProperty>(starshipId);
 
                         if (dbStarship.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
                             dbStarship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
 
                         dbStarship.Positions[PropertyLocationType.DockPosition] = dbStarship.Positions[PropertyLocationType.LastNPCDockPosition];
 
-                        DB.Set(dbStarship);
+                        _db.Set(dbStarship);
                         _logger.Write<PropertyLogGroup>($"Starship '{dbStarship.CustomName}' ({dbStarship.Id}) has been relocated to the last NPC dock it visited because the starport '{dbInterior.CustomName}' ({dbInterior.Id}) has been retrieved.");
                     }
                 }
 
                 // The dock point needs to be unregistered from the space service so it no longer displays in the list
                 // of docking points.
-                var dbCity = DB.Get<WorldProperty>(property.ParentPropertyId);
+                var dbCity = _db.Get<WorldProperty>(property.ParentPropertyId);
                 var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
                 var instance = Property.GetRegisteredInstance(interiorId);
                 var dockPoint = GetLandingWaypoint(instance.Area);

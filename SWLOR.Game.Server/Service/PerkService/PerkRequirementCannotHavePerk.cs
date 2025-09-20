@@ -1,9 +1,11 @@
 ﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
     public class PerkRequirementCannotHavePerk: IPerkRequirement
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly PerkType _cannotHavePerkType;
 
         public PerkRequirementCannotHavePerk(PerkType cannotHavePerkType)
@@ -18,7 +20,7 @@ namespace SWLOR.Game.Server.Service.PerkService
 
             var perkDetail = Perk.GetPerkDetails(_cannotHavePerkType);
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (dbPlayer.Perks.ContainsKey(_cannotHavePerkType) &&
                 dbPlayer.Perks[_cannotHavePerkType] > 0)

@@ -8,11 +8,15 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class MarketListingViewModel: GuiViewModelBase<MarketListingViewModel, MarketPayload>, IGuiAcceptsPriceChange
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private MarketRegionType _regionType;
 
         public string SearchText
@@ -102,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddFieldSearch(nameof(MarketItem.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(MarketItem.MarketId), market.MarketId, false)
                 .OrderBy(nameof(MarketItem.Name));
-            var records = DB.Search(query);
+            var records = _db.Search(query);
             var count = 0;
 
             foreach (var record in records)
@@ -131,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemListed = itemListed;
             ListingCheckboxEnabled = listingCheckboxEnabled;
 
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             ShopTill = $"Till: {dbPlayer.MarketTill} cr";
             IsShopTillEnabled = dbPlayer.MarketTill > 0;
 
@@ -217,7 +221,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Category = PlayerMarket.GetItemMarketCategory(item)
             };
 
-            DB.Set(listing);
+            _db.Set(listing);
             DestroyObject(item);
 
             _itemIds.Add(listing.Id);
@@ -240,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal("Are you sure you want to remove this item's listing? It will return to your inventory.", () =>
             {
-                var dbListing = DB.Get<MarketItem>(itemId);
+                var dbListing = _db.Get<MarketItem>(itemId);
 
                 // The item was either bought or removed already. 
                 // Remove it from the client's view, but don't take any action on the server.
@@ -248,7 +252,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var deserialized = ObjectPlugin.Deserialize(dbListing.Data);
                     ObjectPlugin.AcquireItem(Player, deserialized);
-                    DB.Delete<MarketItem>(itemId);
+                    _db.Delete<MarketItem>(itemId);
                 }
                 else
                 {
@@ -288,7 +292,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             for(var index = 0; index < _itemIds.Count; index++)
             {
                 var id = _itemIds[index];
-                var dbListing = DB.Get<MarketItem>(id);
+                var dbListing = _db.Get<MarketItem>(id);
 
                 // It's possible the item was sold already, in which case there won't be a DB record.
                 // Skip this update.
@@ -307,7 +311,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if(dbListing.IsListed)
                     dbListing.DateListed = DateTime.UtcNow;
 
-                DB.Set(dbListing);
+                _db.Set(dbListing);
             }
             
             LoadData();
@@ -360,7 +364,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickShopTill() => () =>
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             var credits = dbPlayer.MarketTill;
 
             if (credits <= 0)
@@ -368,7 +372,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             GiveGoldToCreature(Player, credits);
             dbPlayer.MarketTill = 0;
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             IsShopTillEnabled = false;
             ShopTill = "Shop Till: 0 cr";

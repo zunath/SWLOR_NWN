@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -18,6 +19,7 @@ namespace SWLOR.Game.Server.Feature
     public class PlayerInitialization
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         /// <summary>
         /// Handles 
         /// </summary>
@@ -29,7 +31,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
 
             // Already been initialized. Don't do it again.
             if (dbPlayer.Version >= 1 || dbPlayer.Version == -1) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
@@ -55,7 +57,7 @@ namespace SWLOR.Game.Server.Feature
             RegisterDefaultRespawnPoint(dbPlayer);
             ApplyMovementRate(player);
 
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
         }

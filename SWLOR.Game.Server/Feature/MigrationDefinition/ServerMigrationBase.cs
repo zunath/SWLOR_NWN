@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -16,11 +17,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
     public abstract class ServerMigrationBase
     {
         private static ILogger _logger = ServiceContainer.GetService<ILogger>();
+        protected static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         protected void GrantRebuildTokenToAllPlayers()
         {
             var query = new DBQuery<Player>();
-            var count = (int)DB.SearchCount(query);
-            var dbPlayers = DB.Search(query
+            var count = (int)_db.SearchCount(query);
+            var dbPlayers = _db.Search(query
                 .AddPaging(count, 0));
 
             foreach (var dbPlayer in dbPlayers)
@@ -30,16 +32,16 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
                 dbPlayer.Currencies[CurrencyType.RebuildToken]++;
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
             }
         }
 
         protected void RefundPerksByMapping(Dictionary<(PerkType, int), int> refundMap)
         {
             var dbQuery = new DBQuery<Player>();
-            var playerCount = (int)DB.SearchCount(dbQuery);
+            var playerCount = (int)_db.SearchCount(dbQuery);
 
-            var dbPlayers = DB.Search(dbQuery
+            var dbPlayers = _db.Search(dbQuery
                 .AddPaging(playerCount, 0));
 
             foreach (var dbPlayer in dbPlayers)
@@ -70,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
                     _logger.Write<MigrationLogGroup>($"{dbPlayer.Name} ({dbPlayer.Id}) refunded {refundAmount} SP.");
 
-                    DB.Set(dbPlayer);
+                    _db.Set(dbPlayer);
                 }
             }
         }
@@ -83,8 +85,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             }
 
             var query = new DBQuery<PlayerShip>();
-            var count = (int)DB.SearchCount(query);
-            var dbShips = DB.Search(query
+            var count = (int)_db.SearchCount(query);
+            var dbShips = _db.Search(query
                 .AddPaging(count, 0));
 
             foreach (var dbShip in dbShips)
@@ -191,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     }
                 }
 
-                DB.Set(dbShip);
+                _db.Set(dbShip);
 
                 DestroyObject(shipItem);
             }

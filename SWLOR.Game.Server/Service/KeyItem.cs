@@ -6,13 +6,16 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.NWN.API.NWNX.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class KeyItem
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         // All categories/key items
         private static readonly Dictionary<KeyItemCategoryType, KeyItemCategoryAttribute> _allCategories = new Dictionary<KeyItemCategoryType, KeyItemCategoryAttribute>();
         private static readonly Dictionary<KeyItemType, KeyItemAttribute> _allKeyItems = new Dictionary<KeyItemType, KeyItemAttribute>();
@@ -155,13 +158,13 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (dbPlayer.KeyItems.ContainsKey(keyItem))
                 return;
 
             dbPlayer.KeyItems[keyItem] = DateTime.UtcNow;
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             var keyItemDetail = _allKeyItems[keyItem];
             SendMessageToPC(player, $"You acquire the '{keyItemDetail.Name}' key item.");
@@ -180,13 +183,13 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             if (!dbPlayer.KeyItems.ContainsKey(keyItem))
                 return;
 
             dbPlayer.KeyItems.Remove(keyItem);
-            DB.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             var keyItemDetail = _allKeyItems[keyItem];
             SendMessageToPC(player, $"You lost the '{keyItemDetail.Name}' key item.");
@@ -204,7 +207,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return false;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
 
             return dbPlayer.KeyItems.ContainsKey(keyItem);
         }
@@ -225,7 +228,7 @@ namespace SWLOR.Game.Server.Service
                 return true;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = _db.Get<Player>(playerId);
             
             foreach (var ki in keyItems)
             {

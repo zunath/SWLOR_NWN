@@ -6,12 +6,15 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class BulwarkShieldGeneratorModuleDefinition : IShipModuleListDefinition
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
@@ -68,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             if (GetIsPC(nearby) && !GetIsDM(nearby) && !GetIsDMPossessed(nearby))
                             {
                                 var playerId = GetObjectUUID(nearby);
-                                var dbPlayer = DB.Get<Player>(playerId);
-                                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+                                var dbPlayer = _db.Get<Player>(playerId);
+                                var dbShip = _db.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
                                 if (dbShip != null)
                                 {
                                     dbShip.Status = nearbyStatus;
-                                    DB.Set(dbShip);
+                                    _db.Set(dbShip);
 
                                     ExecuteScript(ScriptName.OnPlayerShieldAdjusted, nearby);
                                     ExecuteScript(ScriptName.OnPlayerTargetUpdated, nearby);

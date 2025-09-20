@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
@@ -17,6 +18,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class ManageCityViewModel : GuiViewModelBase<ManageCityViewModel, GuiPayloadBase>, IGuiAcceptsPriceChange
     {
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         private const int MaxUpgradeLevel = 5;
         private string _cityId;
 
@@ -198,8 +201,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var area = GetArea(TetherObject);
             var propertyId = Property.GetPropertyId(area);
-            var dbProperty = DB.Get<WorldProperty>(propertyId);
-            var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+            var dbProperty = _db.Get<WorldProperty>(propertyId);
+            var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
             _cityId = dbBuilding.ParentPropertyId;
             
             RefreshPermissions();
@@ -217,8 +220,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RefreshPermissions()
         {
             var playerId = GetObjectUUID(Player);
-            var dbCity = DB.Get<WorldProperty>(_cityId);
-            var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
+            var dbCity = _db.Get<WorldProperty>(_cityId);
+            var permission = _db.Search(new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), _cityId, false))
                 .Single();
@@ -245,7 +248,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshUpgradeLevels()
         {
-            var dbCity = DB.Get<WorldProperty>(_cityId);
+            var dbCity = _db.Get<WorldProperty>(_cityId);
 
             BankUpgradeLevel = $"Bank: Lvl {dbCity.Upgrades[PropertyUpgradeType.BankLevel]}";
             MedicalCenterLevel = $"Medical Center: Lvl {dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel]}";
@@ -264,7 +267,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshCitizenList()
         {
-            var dbCitizens = DB.Search(new DBQuery<Player>()
+            var dbCitizens = _db.Search(new DBQuery<Player>()
                 .AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), _cityId, false)
                 .AddFieldSearch(nameof(Entity.Player.IsDeleted), false));
 
@@ -283,7 +286,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshPropertyDetails()
         {
-            var dbCity = DB.Get<WorldProperty>(_cityId);
+            var dbCity = _db.Get<WorldProperty>(_cityId);
             var level = dbCity.Upgrades[PropertyUpgradeType.CityLevel];
             Instructions = string.Empty;
             InstructionsColor = GuiColor.Green;
@@ -294,13 +297,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         
         private void RefreshUpkeep()
         {
-            var dbCity = DB.Get<WorldProperty>(_cityId);
+            var dbCity = _db.Get<WorldProperty>(_cityId);
             UpkeepText = $"Pay Upkeep ({dbCity.Upkeep} cr)";
         }
 
         private void RefreshTaxesAndFees()
         {
-            var dbCity = DB.Get<WorldProperty>(_cityId);
+            var dbCity = _db.Get<WorldProperty>(_cityId);
 
             CitizenshipTax = $"{dbCity.Taxes[PropertyTaxType.Citizenship]}";
             TransportationTax = $"{dbCity.Taxes[PropertyTaxType.Transportation]}";
@@ -393,8 +396,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private bool ValidateUpgrade(PropertyUpgradeType upgradeType, int price)
         {
-            var dbCity = DB.Get<WorldProperty>(_cityId);
-            var mayor = DB.Get<Player>(dbCity.OwnerPlayerId);
+            var dbCity = _db.Get<WorldProperty>(_cityId);
+            var mayor = _db.Get<Player>(dbCity.OwnerPlayerId);
             var currentLevel = dbCity.Upgrades[upgradeType];
             var mayorPerkLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
                 ? mayor.Perks[PerkType.CityManagement]
@@ -433,7 +436,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void HandleUpgrade(PropertyUpgradeType upgradeType, PropertyType propertyType)
         {
-            var dbCity = DB.Get<WorldProperty>(_cityId);
+            var dbCity = _db.Get<WorldProperty>(_cityId);
             var currentLevel = dbCity.Upgrades[upgradeType];
             var initialPrice = 50000 * (currentLevel + 1);
 
@@ -444,7 +447,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 () =>
                 {
                     // Refresh entity in case another player is editing this city.
-                    dbCity = DB.Get<WorldProperty>(_cityId);
+                    dbCity = _db.Get<WorldProperty>(_cityId);
                     currentLevel = dbCity.Upgrades[upgradeType];
                     initialPrice = 50000 * (currentLevel + 1);
 
@@ -454,7 +457,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     dbCity.Treasury -= initialPrice;
                     dbCity.Upgrades[upgradeType]++;
 
-                    DB.Set(dbCity);
+                    _db.Set(dbCity);
 
                     RefreshPropertyDetails();
                     RefreshPermissions();
@@ -472,7 +475,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     {
                         // Retrieve all interior property Ids in this city of the given type of property.
                         // I.E: All banks, all medical centers, etc.
-                        var instancePropertyIds = DB.Search(new DBQuery<WorldProperty>()
+                        var instancePropertyIds = _db.Search(new DBQuery<WorldProperty>()
                             .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), _cityId, false)
                             .AddFieldSearch(nameof(WorldProperty.StructureType), structureTypeIds))
                             .SelectMany(s => s.ChildPropertyIds[PropertyChildType.Interior]);
@@ -514,12 +517,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action PayUpkeep() => () =>
         {
-            var dbCity = DB.Get<WorldProperty>(_cityId);
+            var dbCity = _db.Get<WorldProperty>(_cityId);
 
             ShowModal($"Your upkeep bill is {dbCity.Upkeep} cr. Note that credits must be deposited into your city's treasury. Will you pay this fee now?",
                 () =>
                 {
-                    dbCity = DB.Get<WorldProperty>(_cityId);
+                    dbCity = _db.Get<WorldProperty>(_cityId);
 
                     if (dbCity.Upkeep > dbCity.Treasury)
                     {
@@ -533,7 +536,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     dbCity.Treasury -= dbCity.Upkeep;
                     dbCity.Upkeep = 0;
 
-                    DB.Set(dbCity);
+                    _db.Set(dbCity);
 
                     Instructions = "Upkeep paid successfully.";
                     InstructionsColor = GuiColor.Green;
@@ -553,7 +556,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var dbCity = DB.Get<WorldProperty>(_cityId);
+            var dbCity = _db.Get<WorldProperty>(_cityId);
 
             dbCity.CustomName = CityName;
 
@@ -580,7 +583,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbCity.Taxes[PropertyTaxType.Citizenship] = citizenshipTax;
             dbCity.Taxes[PropertyTaxType.Transportation] = transportationTax;
 
-            DB.Set(dbCity);
+            _db.Set(dbCity);
 
             RefreshPropertyDetails();
             RefreshTaxesAndFees();
@@ -598,7 +601,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public void ChangePrice(string recordId, int amount)
         {
-            var dbCity = DB.Get<WorldProperty>(_cityId);
+            var dbCity = _db.Get<WorldProperty>(_cityId);
             RefreshPermissions();
 
             if (!CanAccessTreasury)
@@ -618,7 +621,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 dbCity.Treasury -= amount;
-                DB.Set(dbCity);
+                _db.Set(dbCity);
 
                 GiveGoldToCreature(Player, amount);
                 _logger.Write<PropertyLogGroup>($"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) withdrew {amount} credits from treasury of property '{dbCity.CustomName}' ({dbCity.Id})");
@@ -638,7 +641,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 AssignCommand(Player, () => TakeGoldFromCreature(amount, Player, true));
                 dbCity.Treasury += amount;
-                DB.Set(dbCity);
+                _db.Set(dbCity);
                 _logger.Write<PropertyLogGroup>($"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) deposited {amount} credits into treasury of property '{dbCity.CustomName}' ({dbCity.Id})");
 
                 RefreshPropertyDetails();

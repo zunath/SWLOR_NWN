@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
 
@@ -14,6 +15,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CharacterStatRebuildViewModel: GuiViewModelBase<CharacterStatRebuildViewModel, GuiPayloadBase>
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        
         [ScriptHandler(ScriptName.OnBuyStatRebuild)]
         public static void LoadCharacterStatRebuild()
         {
@@ -304,7 +307,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 UnequipAllItems();
 
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayer = _db.Get<Player>(playerId);
 
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Might, 10 + _might);
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Perception, 10 + _perception);
@@ -332,7 +335,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 FloatingTextStringOnCreature(ColorToken.Green("Character stat rebuild complete!"), Player, false);
 
-                DB.Set(dbPlayer);
+                _db.Set(dbPlayer);
                 Gui.CloseWindow(Player, GuiWindowType.StatRebuild, Player);
                 Gui.CloseWindow(Player, GuiWindowType.CharacterSheet, Player);
 

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.SnippetService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 
@@ -11,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
     public class FactionSnippetDefinition: ISnippetListDefinition
     {
+        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private ILogger _logger = ServiceContainer.GetService<ILogger>();
 
         private readonly SnippetBuilder _builder = new SnippetBuilder();
@@ -65,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 
                     var factionType = (FactionType) factionId;
                     var playerId = GetObjectUUID(player);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     var factionStanding = 0;
 
                     if (dbPlayer.Factions.ContainsKey(factionType))
@@ -109,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 
                     var factionType = (FactionType)factionId;
                     var playerId = GetObjectUUID(player);
-                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<Player>(playerId);
                     var factionStanding = 0;
 
                     if (dbPlayer.Factions.ContainsKey(factionType))

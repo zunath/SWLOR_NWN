@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
+using SWLOR.Shared.Abstractions;
 
 namespace SWLOR.Game.Server.Entity
 {

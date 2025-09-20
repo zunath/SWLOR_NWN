@@ -1,12 +1,16 @@
-﻿using System.Collections.Generic;
 using System.Text;
 using NRediSearch;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Shared.Abstractions;
+using SWLOR.Shared.Abstractions.Contracts;
 
-namespace SWLOR.Game.Server.Service.DBService
+namespace SWLOR.Shared.Core.Data
 {
-    public class DBQuery<T>
+    /// <summary>
+    /// Query builder for database search operations using Redis/RediSearch.
+    /// Provides a fluent interface for building complex search queries.
+    /// </summary>
+    /// <typeparam name="T">The type of entity to query</typeparam>
+    public class DBQuery<T>: IDBQuery<T>
         where T: EntityBase
     {
         private class SearchCriteria
@@ -34,7 +38,7 @@ namespace SWLOR.Game.Server.Service.DBService
         /// <param name="search">The text to search for</param>
         /// <param name="allowPartialMatches">If true, partial matches are accepted.</param>
         /// <returns>A configured DBQuery</returns>
-        public DBQuery<T> AddFieldSearch(string fieldName, string search, bool allowPartialMatches)
+        public IDBQuery<T> AddFieldSearch(string fieldName, string search, bool allowPartialMatches)
         {
             if (allowPartialMatches)
                 search += "*";
@@ -51,7 +55,7 @@ namespace SWLOR.Game.Server.Service.DBService
         /// <param name="fieldName">The name of the field to search for</param>
         /// <param name="search">The list of Ids to search for</param>
         /// <returns>A configured DBQuery</returns>
-        public DBQuery<T> AddFieldSearch(string fieldName, IEnumerable<int> search)
+        public IDBQuery<T> AddFieldSearch(string fieldName, IEnumerable<int> search)
         {
             var searchText = string.Join("|", search);
             var criteria = new SearchCriteria(searchText)
@@ -71,12 +75,12 @@ namespace SWLOR.Game.Server.Service.DBService
         /// <param name="fieldName">The name of the field to search for</param>
         /// <param name="search">The list of values to search for</param>
         /// <returns>A configured DBQuery</returns>
-        public DBQuery<T> AddFieldSearch(string fieldName, IEnumerable<string> search)
+        public IDBQuery<T> AddFieldSearch(string fieldName, IEnumerable<string> search)
         {
             var list = new List<string>();
             foreach (var s in search)
             {
-                list.Add(DB.EscapeTokens(s));
+                list.Add(DatabaseTokenHelper.EscapeTokens(s));
             }
 
             var searchText = string.Join("|", list);
@@ -96,7 +100,7 @@ namespace SWLOR.Game.Server.Service.DBService
         /// <param name="fieldName">The name of the field to search for</param>
         /// <param name="search">The number to search for</param>
         /// <returns>A configured DBQuery</returns>
-        public DBQuery<T> AddFieldSearch(string fieldName, int search)
+        public IDBQuery<T> AddFieldSearch(string fieldName, int search)
         {
             FieldSearches.Add(fieldName, new SearchCriteria(search.ToString()));
 
@@ -109,7 +113,7 @@ namespace SWLOR.Game.Server.Service.DBService
         /// <param name="fieldName">The name of the field to search for</param>
         /// <param name="search">The value to search for</param>
         /// <returns>A configured DBQuery</returns>
-        public DBQuery<T> AddFieldSearch(string fieldName, bool search)
+        public IDBQuery<T> AddFieldSearch(string fieldName, bool search)
         {
             FieldSearches.Add(fieldName, new SearchCriteria((search ? 1 : 0).ToString()));
 
@@ -122,7 +126,7 @@ namespace SWLOR.Game.Server.Service.DBService
         /// <param name="limit">The number of records to retrieve.</param>
         /// <param name="offset">The number of records to skip.</param>
         /// <returns>A configured DBQuery</returns>
-        public DBQuery<T> AddPaging(int limit, int offset)
+        public IDBQuery<T> AddPaging(int limit, int offset)
         {
             Limit = limit;
             Offset = offset;
@@ -136,7 +140,7 @@ namespace SWLOR.Game.Server.Service.DBService
         /// <param name="fieldName">The name of the field.</param>
         /// <param name="isAscending">if true, sort will be in ascending order. Otherwise, descending order will be used.</param>
         /// <returns>A configured DBQuery</returns>
-        public DBQuery<T> OrderBy(string fieldName, bool isAscending = true)
+        public IDBQuery<T> OrderBy(string fieldName, bool isAscending = true)
         {
             SortByField = fieldName;
             IsAscending = isAscending;
@@ -160,7 +164,7 @@ namespace SWLOR.Game.Server.Service.DBService
             {
                 var search = criteria.SkipEscaping
                     ? criteria.Text
-                    : DB.EscapeTokens(criteria.Text);
+                    : DatabaseTokenHelper.EscapeTokens(criteria.Text);
 
                 sb.Append($" @{name}:{search}");
             }
@@ -196,6 +200,9 @@ namespace SWLOR.Game.Server.Service.DBService
             return query;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the DBQuery class.
+        /// </summary>
         public DBQuery()
         {
             FieldSearches = new Dictionary<string, SearchCriteria>();

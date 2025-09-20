@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Shared.Abstractions;
 
 namespace SWLOR.Game.Server.Entity
 {

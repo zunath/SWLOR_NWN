@@ -1,22 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
 using Newtonsoft.Json;
 using NRediSearch;
 using NReJSON;
 using StackExchange.Redis;
-using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Shared.Abstractions;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Server;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Shared.Core.Data
 {
-    public static class DB
+    /// <summary>
+    /// Database service providing Redis-based storage and search capabilities.
+    /// Handles CRUD operations, indexing, and complex queries for entities.
+    /// </summary>
+    public class DatabaseService: IDatabaseService
     {
         internal class JsonSerializer: ISerializerProxy
         {
@@ -31,20 +31,20 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static ApplicationSettings _appSettings;
-        private static readonly Dictionary<Type, string> _keyPrefixByType = new();
-        private static readonly Dictionary<Type, Client> _searchClientsByType = new();
-        private static readonly Dictionary<Type, List<string>> _indexedPropertiesByName = new();
-        private static ConnectionMultiplexer _multiplexer;
-        private static readonly Dictionary<string, EntityBase> _cachedEntities = new();
+        private ApplicationSettings _appSettings;
+        private readonly Dictionary<Type, string> _keyPrefixByType = new();
+        private readonly Dictionary<Type, Client> _searchClientsByType = new();
+        private readonly Dictionary<Type, List<string>> _indexedPropertiesByName = new();
+        private ConnectionMultiplexer _multiplexer;
+        private readonly Dictionary<string, EntityBase> _cachedEntities = new();
 
-        static DB()
+        public DatabaseService()
         {
             NReJSONSerializer.SerializerProxy = new JsonSerializer();
         }
 
         [ScriptHandler(ScriptName.OnModulePreload)]
-        public static void Load()
+        public void Load()
         {
             _appSettings = ApplicationSettings.Get();
 
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Service
         /// Processes the Redis Search index with the latest changes.
         /// </summary>
         /// <param name="entity"></param>
-        private static void ProcessIndex(EntityBase entity)
+        private void ProcessIndex(EntityBase entity)
         {
             var type = entity.GetType();
 
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Service
             WaitForReindexing(type);
         }
 
-        private static void WaitForReindexing(Type type)
+        private void WaitForReindexing(Type type)
         {
             string indexing;
 
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Service
         /// The KeyPrefix value of each of these will be stored into a dictionary for quick retrievals later.
         /// This is intended to abstract key building away from the consumer of this class.
         /// </summary>
-        private static void LoadEntities()
+        private void LoadEntities()
         {
             var entityInstances = typeof(EntityBase)
                 .Assembly.GetTypes()
@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <typeparam name="T">The type of data to store</typeparam>
         /// <param name="entity">The data to store.</param>
-        public static void Set<T>(T entity)
+        public void Set<T>(T entity)
             where T : EntityBase
         {
             var type = typeof(T);
@@ -222,12 +222,12 @@ namespace SWLOR.Game.Server.Service
 
                     if (property.PropertyType == typeof(Guid))
                     {
-                        value = EscapeTokens(((Guid) value).ToString());
+                        value = DatabaseTokenHelper.EscapeTokens(((Guid) value).ToString());
                     }
 
                     if (property.PropertyType == typeof(string))
                     {
-                        value = EscapeTokens((string) value);
+                        value = DatabaseTokenHelper.EscapeTokens((string) value);
                     }
 
                     indexData[prop] = (dynamic)value;
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Service
         /// <typeparam name="T">The type of data to retrieve</typeparam>
         /// <param name="id">The arbitrary key the data is stored under</param>
         /// <returns>The object stored in the database under the specified key</returns>
-        public static T Get<T>(string id)
+        public T Get<T>(string id)
             where T: EntityBase
         {
             var keyPrefix = _keyPrefixByType[typeof(T)];
@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="id">The arbitrary key the data is stored under</param>
         /// <returns>The raw json stored in the database under the specified key</returns>
-        public static string GetRawJson<T>(string id)
+        public string GetRawJson<T>(string id)
         {
             var keyPrefix = _keyPrefixByType[typeof(T)];
             RedisValue data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="id">The key of the entity.</param>
         /// <returns>true if found, false otherwise.</returns>
-        public static bool Exists<T>(string id)
+        public bool Exists<T>(string id)
             where T : EntityBase
         {
             var keyPrefix = _keyPrefixByType[typeof(T)];
@@ -305,7 +305,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <typeparam name="T">The type of entity to delete.</typeparam>
         /// <param name="id">The key of the entity</param>
-        public static void Delete<T>(string id)
+        public void Delete<T>(string id)
             where T: EntityBase
         {
             var keyPrefix = _keyPrefixByType[typeof(T)];
@@ -316,34 +316,12 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Escapes tokens used in Redis queries.
-        /// </summary>
-        /// <param name="str">The string to escape</param>
-        /// <returns>A string containing escaped tokens.</returns>
-        public static string EscapeTokens(string str)
-        {
-            return str
-                .Replace("@", "\\@")
-                .Replace("!", "\\!")
-                .Replace("{", "\\{")
-                .Replace("}", "\\}")
-                .Replace("(", "\\(")
-                .Replace(")", "\\)")
-                .Replace("|", "\\|")
-                .Replace("-", "\\-")
-                .Replace("=", "\\=")
-                .Replace(">", "\\>")
-                .Replace("'", "\\'")
-                .Replace("\"", "\\\"");
-        }
-
-        /// <summary>
         /// Searches the Redis DB for records matching the query criteria.
         /// </summary>
         /// <typeparam name="T">The type of entity to retrieve.</typeparam>
         /// <param name="query">The query to run.</param>
         /// <returns>An enumerable of entities matching the criteria.</returns>
-        public static IEnumerable<T> Search<T>(DBQuery<T> query)
+        public IEnumerable<T> Search<T>(IDBQuery<T> query)
             where T: EntityBase
         {
             var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery());
@@ -362,7 +340,7 @@ namespace SWLOR.Game.Server.Service
         /// <typeparam name="T">The type of entity to retrieve.</typeparam>
         /// <param name="query">The query to run.</param>
         /// <returns>An enumerable of raw json values matching the criteria.</returns>
-        public static IEnumerable<string> SearchRawJson<T>(DBQuery<T> query)
+        public IEnumerable<string> SearchRawJson<T>(IDBQuery<T> query)
             where T: EntityBase
         {
             var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery());
@@ -382,7 +360,7 @@ namespace SWLOR.Game.Server.Service
         /// <typeparam name="T">The type of entity to retrieve.</typeparam>
         /// <param name="query">The query to run.</param>
         /// <returns>The number of records matching the query criteria.</returns>
-        public static long SearchCount<T>(DBQuery<T> query)
+        public long SearchCount<T>(IDBQuery<T> query)
             where T: EntityBase
         {
             var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery(true));

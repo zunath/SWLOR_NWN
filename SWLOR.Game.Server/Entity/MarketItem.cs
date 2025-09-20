@@ -1,5 +1,6 @@
 ﻿using System;
 using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Shared.Abstractions;
 
 namespace SWLOR.Game.Server.Entity
 {

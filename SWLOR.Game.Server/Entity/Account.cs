@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AchievementService;
+using SWLOR.Shared.Abstractions;
 
 namespace SWLOR.Game.Server.Entity
 {

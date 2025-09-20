@@ -1,4 +1,6 @@
-﻿namespace SWLOR.Game.Server.Entity
+﻿using SWLOR.Shared.Abstractions;
+
+namespace SWLOR.Game.Server.Entity
 {
     public class PlayerNote: EntityBase
     {

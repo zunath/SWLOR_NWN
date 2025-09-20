@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions;
 
 namespace SWLOR.Game.Server.Entity
 {

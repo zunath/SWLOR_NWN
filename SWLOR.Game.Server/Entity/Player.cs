@@ -16,6 +16,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.TaxiService;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions;
 
 namespace SWLOR.Game.Server.Entity
 {

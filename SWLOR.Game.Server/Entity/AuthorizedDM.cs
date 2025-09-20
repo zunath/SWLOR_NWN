@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Shared.Abstractions;
 
 namespace SWLOR.Game.Server.Entity
 {

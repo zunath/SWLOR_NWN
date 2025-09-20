@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using SWLOR.Game.Server.Properties;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Shared.Core.Properties;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {

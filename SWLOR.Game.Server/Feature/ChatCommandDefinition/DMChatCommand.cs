@@ -18,8 +18,8 @@ using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {

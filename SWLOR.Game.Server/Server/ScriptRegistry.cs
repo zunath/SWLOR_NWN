@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Delegates;
-using SWLOR.Shared.Core.Event;
-using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Events.Attributes;
 
-namespace SWLOR.Shared.Core.Server
+namespace SWLOR.Game.Server.Server
 {
     public class ScriptRegistry : IScriptRegistry
     {
@@ -46,14 +46,14 @@ namespace SWLOR.Shared.Core.Server
             var handlers = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(a => a.GetTypes())
                 .SelectMany(t => t.GetMethods())
-                .Where(m => m.GetCustomAttributes(typeof(ScriptHandler), false).Length > 0)
+                .Where(m => m.GetCustomAttributes(typeof(ScriptHandlerAttribute), false).Length > 0)
                 .ToArray();
 
             foreach (var mi in handlers)
             {
-                foreach (var attr in mi.GetCustomAttributes(typeof(ScriptHandler), false))
+                foreach (var attr in mi.GetCustomAttributes(typeof(ScriptHandlerAttribute), false))
                 {
-                    var script = ((ScriptHandler)attr).Script;
+                    var script = ((ScriptHandlerAttribute)attr).Script;
                     if (script.Length > MaxCharsInScriptName || script.Length == 0)
                     {
                         _logger.Write<ErrorLogGroup>($"Script name '{script}' is invalid on method {mi.Name}.");

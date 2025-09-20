@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Core.Event
+namespace SWLOR.Shared.Events.Constants
 {
     /// <summary>
     /// Constants for NWN script names used in NWNEventHandler attributes.

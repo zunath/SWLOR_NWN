@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
 using SWLOR.Shared.Abstractions.Delegates;
 
-namespace SWLOR.Shared.Core.Server;
+namespace SWLOR.Shared.Abstractions.Contracts;
 
 public interface IScriptRegistry
 {

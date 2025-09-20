@@ -1,9 +1,10 @@
 using Serilog;
 using Serilog.Core;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Configuration;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
+using ILogger = SWLOR.Shared.Abstractions.Contracts.ILogger;
 
 namespace SWLOR.Shared.Core.Log
 {

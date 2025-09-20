@@ -2,7 +2,8 @@
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {

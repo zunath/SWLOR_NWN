@@ -3,8 +3,9 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Feature
 {

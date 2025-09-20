@@ -1,21 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
 using Newtonsoft.Json;
 using NRediSearch;
 using NReJSON;
 using StackExchange.Redis;
 using SWLOR.Shared.Abstractions;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Configuration;
-using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
-using SWLOR.Shared.Core.Server;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Shared.Core.Data
 {
     public class DB: IDatabaseService
     {
@@ -49,7 +41,6 @@ namespace SWLOR.Game.Server.Service
             NReJSONSerializer.SerializerProxy = new JsonSerializer();
         }
 
-        [ScriptHandler(ScriptName.OnModulePreload)]
         public void Load()
         {
             Console.WriteLine("DB.Load() starting...");

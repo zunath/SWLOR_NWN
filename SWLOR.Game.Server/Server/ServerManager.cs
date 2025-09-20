@@ -1,27 +1,18 @@
 using System;
-using SWLOR.Shared.Core.Server.Contracts;
+using SWLOR.Shared.Abstractions.Contracts;
 
-namespace SWLOR.Shared.Core.Server
+namespace SWLOR.Game.Server.Server
 {
     public class ServerManager : IServerManager
     {
-        public IServerBootstrapper Bootstrapper { get; }
-        public INativeInteropManager NativeInterop { get; }
-        public IScriptRegistry Scripts { get; }
-        public IScriptExecutor Executor { get; }
-        public IMainLoopProcessor MainLoop { get; }
+        private IServerBootstrapper Bootstrapper { get; }
+        private IMainLoopProcessor MainLoop { get; }
 
         public ServerManager(
             IServerBootstrapper bootstrapper,
-            INativeInteropManager nativeInterop,
-            IScriptRegistry scriptRegistry,
-            IScriptExecutor scriptExecutor,
             IMainLoopProcessor mainLoop)
         {
             Bootstrapper = bootstrapper;
-            NativeInterop = nativeInterop;
-            Scripts = scriptRegistry;
-            Executor = scriptExecutor;
             MainLoop = mainLoop;
         }
 

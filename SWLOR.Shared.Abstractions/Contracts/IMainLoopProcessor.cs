@@ -1,6 +1,4 @@
-using System;
-
-namespace SWLOR.Shared.Core.Server;
+namespace SWLOR.Shared.Abstractions.Contracts;
 
 public interface IMainLoopProcessor
 {

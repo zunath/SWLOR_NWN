@@ -8,10 +8,11 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition

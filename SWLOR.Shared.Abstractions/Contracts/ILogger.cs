@@ -1,7 +1,4 @@
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Enums;
-
-namespace SWLOR.Shared.Core.Log
+namespace SWLOR.Shared.Abstractions.Contracts
 {
     /// <summary>
     /// Interface for the LogService to enable dependency injection and testing.

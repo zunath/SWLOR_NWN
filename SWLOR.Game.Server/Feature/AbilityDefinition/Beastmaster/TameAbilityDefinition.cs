@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Service;
 using Random = SWLOR.Game.Server.Service.Random;
 

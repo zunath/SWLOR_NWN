@@ -16,8 +16,9 @@ using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Core.Bioware;
-using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Service
 {

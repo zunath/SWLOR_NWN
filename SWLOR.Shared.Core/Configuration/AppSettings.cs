@@ -1,4 +1,5 @@
-﻿using SWLOR.Shared.Core.Enums;
+﻿using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Abstractions.Enums;
 
 namespace SWLOR.Shared.Core.Configuration
 {

@@ -1,7 +1,8 @@
 
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature

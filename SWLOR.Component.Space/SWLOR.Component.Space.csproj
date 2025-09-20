@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SWLOR.Shared.Abstractions\SWLOR.Shared.Abstractions.csproj" />
     <ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
+    <ProjectReference Include="..\SWLOR.Shared.Events\SWLOR.Shared.Events.csproj" />
   </ItemGroup>
 
 </Project>

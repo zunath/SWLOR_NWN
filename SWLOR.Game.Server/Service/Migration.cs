@@ -7,11 +7,12 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 using Exception = System.Exception;
 
 namespace SWLOR.Game.Server.Service

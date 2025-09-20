@@ -1,11 +1,11 @@
 using System;
 using NWN.Native.API;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
-using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 
-namespace SWLOR.Shared.Core.Server
+namespace SWLOR.Game.Server.Server
 {
     public class ScriptExecutor : IScriptExecutor
     {

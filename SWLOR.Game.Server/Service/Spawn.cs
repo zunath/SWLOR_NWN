@@ -9,9 +9,11 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
-using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Service
 {

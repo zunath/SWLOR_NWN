@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Events.EventAggregator
+namespace SWLOR.Shared.Abstractions.Contracts
 {
     /// <summary>
     /// Strongly-typed event aggregator for SWLOR events.

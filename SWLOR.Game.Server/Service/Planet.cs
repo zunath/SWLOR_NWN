@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Service
 {

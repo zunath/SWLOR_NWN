@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using NWNX.NET;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
-using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 
-namespace SWLOR.Shared.Core.Server
+namespace SWLOR.Game.Server.Server
 {
     /// <summary>
     /// Simple GameManager implementation. Used by default if no manager is specified during bootstrap.

@@ -1,4 +1,4 @@
-using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Shared.Events.EventAggregator
 {

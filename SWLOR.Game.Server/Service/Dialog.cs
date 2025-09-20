@@ -4,10 +4,12 @@ using System.Linq;
 
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Service
 {

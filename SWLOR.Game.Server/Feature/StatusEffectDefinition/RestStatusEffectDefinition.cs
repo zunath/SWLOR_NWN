@@ -6,7 +6,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {

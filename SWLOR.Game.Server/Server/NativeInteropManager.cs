@@ -1,14 +1,11 @@
 using System;
 using System.Runtime.InteropServices;
-using NWN.Core;
 using NWNX.NET;
 using NWNX.NET.Native;
-using SWLOR.Game.Server;
-using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Server.Contracts;
 
-namespace SWLOR.Shared.Core.Server
+namespace SWLOR.Game.Server.Server
 {
     public unsafe class NativeInteropManager : INativeInteropManager
     {

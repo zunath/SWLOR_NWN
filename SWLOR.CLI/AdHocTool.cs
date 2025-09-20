@@ -7,6 +7,7 @@ using SWLOR.Shared.Core.Service;
 
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Data;
 
 namespace SWLOR.CLI
 {

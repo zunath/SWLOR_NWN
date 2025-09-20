@@ -1,14 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using NWN.Core;
+using SWLOR.Game.Server.Server;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
-using SWLOR.Shared.Core.Server;
-using SWLOR.Shared.Core.Server.Contracts;
-using ScriptExecutionProvider = SWLOR.Shared.Core.Server.ScriptExecutionProvider;
+using ScriptExecutionProvider = SWLOR.Game.Server.Server.ScriptExecutionProvider;
 
 namespace SWLOR.Game.Server
 {

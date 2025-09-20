@@ -8,8 +8,9 @@ using SWLOR.Game.Server.Service.LanguageService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
 
 namespace SWLOR.Game.Server.Service

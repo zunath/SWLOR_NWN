@@ -1,6 +1,6 @@
-﻿using SWLOR.Shared.Core.Enums;
+﻿using SWLOR.Shared.Abstractions.Enums;
 
-namespace SWLOR.Shared.Core.Configuration;
+namespace SWLOR.Shared.Abstractions.Contracts;
 
 public interface IAppSettings
 {

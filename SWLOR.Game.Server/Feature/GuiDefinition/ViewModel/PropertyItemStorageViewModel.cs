@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel

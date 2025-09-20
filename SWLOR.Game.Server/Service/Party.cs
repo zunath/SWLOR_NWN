@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SWLOR.NWN.API.NWNX;
-using SWLOR.Shared.Core.Event;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Service
 {

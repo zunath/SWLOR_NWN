@@ -1,31 +1,33 @@
 using System;
 using NWN.Core;
 using SWLOR.NWN.API;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
-using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.Core.Server.Contracts;
 
-namespace SWLOR.Shared.Core.Server
+namespace SWLOR.Game.Server.Server
 {
     public class ServerBootstrapper : IServerBootstrapper
     {
         private readonly ILogger _logger;
-        private readonly ICoreFunctionHandler _closureManager;
+        private readonly IDatabaseService _databaseService;
+        private readonly ICoreFunctionHandler _coreFunctionHandler;
         private readonly INativeInteropManager _nativeInterop;
         private readonly IScriptRegistry _scriptRegistry;
         private readonly IScriptExecutionProvider _executionProvider;
 
         public ServerBootstrapper(
             ILogger logger,
+            IDatabaseService databaseService,
             INativeInteropManager nativeInterop,
-            ICoreFunctionHandler closureManager,
+            ICoreFunctionHandler coreFunctionHandler,
             IScriptRegistry scriptRegistry,
             IScriptExecutionProvider executionProvider)
         {
             _logger = logger;
+            _databaseService = databaseService;
             _nativeInterop = nativeInterop;
-            _closureManager = closureManager;
+            _coreFunctionHandler = coreFunctionHandler;
             _scriptRegistry = scriptRegistry;
             _executionProvider = executionProvider;
         }
@@ -41,6 +43,7 @@ namespace SWLOR.Shared.Core.Server
                 InitializeSWLORSystems();
                 RegisterEventHandlers();
                 LoadScripts();
+                _databaseService.Load();
 
                 Console.WriteLine("SWLOR Server bootstrap complete.");
             }
@@ -51,9 +54,10 @@ namespace SWLOR.Shared.Core.Server
             }
         }
 
+
         private void InitializeNWNCore()
         {
-            global::NWN.Core.NWNCore.Init(_closureManager);
+            NWNCore.Init(_coreFunctionHandler);
             Console.WriteLine("NWN.Core library initialized successfully.");
         }
 

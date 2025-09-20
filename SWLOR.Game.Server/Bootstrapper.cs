@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using SWLOR.Shared.Core.Server;
+using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Game.Server
 {
@@ -7,9 +7,8 @@ namespace SWLOR.Game.Server
     {
         public static void Bootstrap()
         {
-            // Initialize dependency injection container
             InitializeDependencyInjection();
-            
+
             // Bootstrap the server
             var serverManager = ServiceContainer.GetService<IServerManager>();
             serverManager.Bootstrap();

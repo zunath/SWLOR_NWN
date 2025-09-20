@@ -9,8 +9,9 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.NWN.API.Engine;
-using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Service
 {

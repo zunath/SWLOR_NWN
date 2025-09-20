@@ -4,8 +4,9 @@ using NWNX.NET;
 using SWLOR.NWN.API.NWScript.Enum;
 using System;
 using System.Runtime.InteropServices;
-using SWLOR.Shared.Core.Event;
-using SWLOR.Shared.Core.Server;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 using SavingThrow = NWN.Native.API.SavingThrow;
 
 namespace SWLOR.Game.Server.Native

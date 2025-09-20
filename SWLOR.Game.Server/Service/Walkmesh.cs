@@ -8,8 +8,9 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Entity;
-using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service

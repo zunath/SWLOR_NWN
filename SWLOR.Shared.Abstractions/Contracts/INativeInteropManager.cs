@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Core.Server.Contracts;
+namespace SWLOR.Shared.Abstractions.Contracts;
 
 public interface INativeInteropManager
 {

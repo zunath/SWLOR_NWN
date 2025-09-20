@@ -2,9 +2,9 @@ using SWLOR.Game.Server.Service.NPCService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using SWLOR.Shared.Core.Event;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Service
 {

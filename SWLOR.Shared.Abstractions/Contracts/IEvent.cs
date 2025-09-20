@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Events.EventAggregator
+namespace SWLOR.Shared.Abstractions.Contracts
 {
     /// <summary>
     /// Base interface for all events in the SWLOR event system.

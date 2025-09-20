@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private AppSettings _appSettings;
+        private readonly IAppSettings _appSettings;
         private readonly Dictionary<Type, string> _keyPrefixByType = new();
         private readonly Dictionary<Type, Client> _searchClientsByType = new();
         private readonly Dictionary<Type, List<string>> _indexedPropertiesByName = new();
@@ -40,9 +40,12 @@ namespace SWLOR.Game.Server.Service
         private readonly Dictionary<string, EntityBase> _cachedEntities = new();
         private readonly IMainLoopProcessor _mainLoopProcessor;
 
-        public DB(IMainLoopProcessor mainLoopProcessor)
+        public DB(
+            IMainLoopProcessor mainLoopProcessor,
+            IAppSettings appSettings)
         {
             _mainLoopProcessor = mainLoopProcessor;
+            _appSettings = appSettings;
             NReJSONSerializer.SerializerProxy = new JsonSerializer();
         }
 
@@ -50,7 +53,6 @@ namespace SWLOR.Game.Server.Service
         public void Load()
         {
             Console.WriteLine("DB.Load() starting...");
-            _appSettings = AppSettings.Get();
 
             var options = new ConfigurationOptions
             {

@@ -8,16 +8,7 @@ namespace SWLOR.Shared.Core.Configuration
         public string RedisIPAddress { get; }
         public ServerEnvironmentType ServerEnvironment { get; }
 
-        private static AppSettings _settings;
-        public static AppSettings Get()
-        {
-            if (_settings == null)
-                _settings = new AppSettings();
-
-            return _settings;
-        }
-
-        private AppSettings()
+        public AppSettings()
         {
             LogDirectory = Environment.GetEnvironmentVariable("SWLOR_APP_LOG_DIRECTORY");
             RedisIPAddress = Environment.GetEnvironmentVariable("NWNX_REDIS_HOST");

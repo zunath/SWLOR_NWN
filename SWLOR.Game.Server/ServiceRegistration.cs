@@ -3,6 +3,7 @@ using NWN.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Server;
@@ -39,6 +40,7 @@ namespace SWLOR.Game.Server
         private static void AddInfrastructureServices(IServiceCollection services)
         {
             services.AddSingleton<ILogger, LogService>();
+            services.AddSingleton<IAppSettings, AppSettings>();
         }
 
         private static void AddServerServices(IServiceCollection services)
@@ -53,6 +55,7 @@ namespace SWLOR.Game.Server
             // SWLOR Services
             services.AddSingleton<IMainLoopProcessor, MainLoopProcessor>();
             services.AddSingleton<INativeInteropManager, NativeInteropManager>();
+            services.AddSingleton<IScriptRegistry, ScriptRegistry>();
             services.AddSingleton<IScriptExecutor, ScriptExecutor>();
             services.AddSingleton<IServerBootstrapper, ServerBootstrapper>();
             services.AddSingleton<IServerManager, ServerManager>();

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class BugReportViewModel: GuiViewModelBase<BugReportViewModel, GuiPayloadBase>
     {
         public const int MaxBugReportLength = 1000;
-        private static readonly AppSettings _appSettings = AppSettings.Get();
+        private readonly IAppSettings _appSettings = ServiceContainer.GetService<IAppSettings>();
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {

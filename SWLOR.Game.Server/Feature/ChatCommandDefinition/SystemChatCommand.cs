@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     public class SystemChatCommand: IChatCommandListDefinition
     {
+        private readonly IAppSettings _appSettings = ServiceContainer.GetService<IAppSettings>();
         private readonly ChatCommandBuilder _builder = new();
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -60,10 +61,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    var appSettings = AppSettings.Get();
                     var authorization = Authorization.GetAuthorizationLevel(user);
 
-                    if (appSettings.ServerEnvironment == ServerEnvironmentType.Test || 
+                    if (_appSettings.ServerEnvironment == ServerEnvironmentType.Test || 
                         authorization == AuthorizationLevel.DM)
                     {
                         SendMessageToPC(user, ChatCommand.HelpTextDM);

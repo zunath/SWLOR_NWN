@@ -43,6 +43,15 @@ namespace SWLOR.Game.Server.Server
             _scripts.Clear();
             _conditionalScripts.Clear();
 
+            // Load traditional script handlers
+            LoadTraditionalHandlers();
+            
+            // Load event-based handlers
+            LoadEventHandlers();
+        }
+
+        private void LoadTraditionalHandlers()
+        {
             var handlers = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(a => a.GetTypes())
                 .SelectMany(t => t.GetMethods())
@@ -74,6 +83,121 @@ namespace SWLOR.Game.Server.Server
                     }
                 }
             }
+        }
+
+        private void LoadEventHandlers()
+        {
+            var eventHandlers = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a => a.GetTypes())
+                .SelectMany(t => t.GetMethods())
+                .Where(m => HasEventHandlerAttribute(m))
+                .ToArray();
+
+            foreach (var method in eventHandlers)
+            {
+                var eventHandlerAttributes = GetEventHandlerAttributes(method);
+                
+                foreach (var attr in eventHandlerAttributes)
+                {
+                    var eventType = GetEventTypeFromAttribute(attr);
+                    var scriptName = GetScriptNameFromEventType(eventType);
+
+                    if (string.IsNullOrEmpty(scriptName))
+                    {
+                        _logger.Write<ErrorLogGroup>($"No script name found for event type '{eventType.Name}' on method {method.Name}. This handler was NOT loaded.");
+                        continue;
+                    }
+
+                    if (scriptName.Length > MaxCharsInScriptName)
+                    {
+                        _logger.Write<ErrorLogGroup>($"Script name '{scriptName}' is too long for event type '{eventType.Name}' on method {method.Name}. This handler was NOT loaded.");
+                        continue;
+                    }
+
+                    if (method.ReturnType == typeof(bool))
+                    {
+                        RegisterConditionalScript(scriptName, method);
+                    }
+                    else if (method.ReturnType == typeof(void))
+                    {
+                        RegisterActionScript(scriptName, method);
+                    }
+                    else
+                    {
+                        _logger.Write<ErrorLogGroup>($"Method '{method.Name}' tied to event type '{eventType.Name}' has an invalid return type. This handler was NOT loaded.");
+                    }
+                }
+            }
+        }
+
+        private bool HasEventHandlerAttribute(MethodInfo method)
+        {
+            return method.GetCustomAttributes()
+                .Any(attr => attr.GetType().IsGenericType && 
+                            attr.GetType().GetGenericTypeDefinition() == typeof(ScriptHandlerAttribute<>));
+        }
+
+        private IEnumerable<Attribute> GetEventHandlerAttributes(MethodInfo method)
+        {
+            return method.GetCustomAttributes()
+                .Where(attr => attr.GetType().IsGenericType && 
+                              attr.GetType().GetGenericTypeDefinition() == typeof(ScriptHandlerAttribute<>));
+        }
+
+        private Type GetEventTypeFromAttribute(Attribute attr)
+        {
+            return attr.GetType().GetGenericArguments()[0];
+        }
+
+        private string GetScriptNameFromEventType(Type eventType)
+        {
+            // Convert event type name to script name using a simple convention
+            // OnModuleLoad -> mod_load
+            // OnPlayerDamaged -> pc_damaged
+            // etc.
+            
+            var eventName = eventType.Name;
+            
+            // Remove "On" prefix if present
+            if (eventName.StartsWith("On"))
+            {
+                eventName = eventName.Substring(2);
+            }
+            
+            // Convert PascalCase to snake_case
+            var scriptName = ConvertToSnakeCase(eventName);
+            
+            // Ensure it's within the 16-character limit
+            if (scriptName.Length > MaxCharsInScriptName)
+            {
+                scriptName = scriptName.Substring(0, MaxCharsInScriptName);
+            }
+            
+            return scriptName;
+        }
+
+        private string ConvertToSnakeCase(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            var result = new System.Text.StringBuilder();
+            result.Append(char.ToLower(input[0]));
+
+            for (int i = 1; i < input.Length; i++)
+            {
+                if (char.IsUpper(input[i]))
+                {
+                    result.Append('_');
+                    result.Append(char.ToLower(input[i]));
+                }
+                else
+                {
+                    result.Append(input[i]);
+                }
+            }
+
+            return result.ToString();
         }
 
         private void RegisterConditionalScript(string script, MethodInfo methodInfo)

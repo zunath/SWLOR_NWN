@@ -8,14 +8,11 @@ namespace SWLOR.Shared.Events.Service
 {
     public class EventRegistrationService : IEventRegistrationService
     {
-        private readonly IDatabaseService _db;
         private readonly IScheduler _scheduler;
 
         public EventRegistrationService(
-            IDatabaseService db,
             IScheduler scheduler)
         {
-            _db = db;
             _scheduler = scheduler;
         }
 

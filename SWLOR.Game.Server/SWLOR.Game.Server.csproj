@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <LangVersion>10</LangVersion>
+    <LangVersion>11</LangVersion>
     <OutputType>Library</OutputType>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>

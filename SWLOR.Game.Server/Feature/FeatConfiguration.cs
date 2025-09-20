@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, configure all custom feats.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandlerAttribute<OnModuleLoad>]
         public static void ConfigureFeats()
         {
             FeatPlugin.SetFeatModifier(FeatType.ShieldConcealment1, FeatModifierType.Concealment, 5);

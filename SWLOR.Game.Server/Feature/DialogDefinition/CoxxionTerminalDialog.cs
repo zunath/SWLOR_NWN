@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         /// <summary>
         /// When the module loads, store the doors for the Coxxion Base dungeon into cache.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandlerAttribute<OnModuleLoad>]
         public static void LoadDoors()
         {
             var area = Area.GetAreaByResref("v_cox_base");

@@ -1,13 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using NWN.Core;
 using SWLOR.Game.Server.Server;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
-using SWLOR.Shared.Events;
 using SWLOR.Shared.Events.Service;
 using ScriptExecutionProvider = SWLOR.Game.Server.Server.ScriptExecutionProvider;
 
@@ -46,7 +45,6 @@ namespace SWLOR.Game.Server
 
         private static void AddServerServices(IServiceCollection services)
         {
-            
             // NWN.Core services
             services.AddSingleton<IScriptExecutionProvider, ScriptExecutionProvider>();
             services.AddSingleton<ClosureManager>();
@@ -61,6 +59,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IServerBootstrapper, ServerBootstrapper>();
             services.AddSingleton<IServerManager, ServerManager>();
             services.AddSingleton<IEventRegistrationService, EventRegistrationService>();
+            services.AddSingleton<IScheduler, Scheduler>();
         }
 
         private static void AddGameServices(IServiceCollection services)

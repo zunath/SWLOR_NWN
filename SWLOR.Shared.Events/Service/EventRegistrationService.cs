@@ -2,6 +2,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Shared.Events.Service
@@ -16,6 +17,7 @@ namespace SWLOR.Shared.Events.Service
             _scheduler = scheduler;
         }
 
+        [ScriptHandler(ScriptName.OnServerLoaded)]
         public void RegisterEvents()
         {
             Console.WriteLine("Hooking all module events.");
@@ -35,7 +37,7 @@ namespace SWLOR.Shared.Events.Service
 
 
         [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
-        public void ExecuteHeartbeatEvent()
+        public static void ExecuteHeartbeatEvent()
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
@@ -48,12 +50,12 @@ namespace SWLOR.Shared.Events.Service
         /// Also add them to a UI processor list.
         /// </summary>
         [ScriptHandler(ScriptName.OnModuleEnter)]
-        public void EnterServer()
+        public static void EnterServer()
         {
             HookPlayerEvents();
         }
 
-        private void HookPlayerEvents()
+        private static void HookPlayerEvents()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) 
@@ -87,7 +89,7 @@ namespace SWLOR.Shared.Events.Service
             SetEventScript(module, EventScript.Module_OnClientExit, ScriptName.OnModuleExit);
             SetEventScript(module, EventScript.Module_OnPlayerCancelCutscene, ScriptName.OnModulePlayerCancelCutscene);
             SetEventScript(module, EventScript.Module_OnHeartbeat, ScriptName.OnModuleHeartbeat);
-            SetEventScript(module, EventScript.Module_OnModuleLoad, ScriptName.OnModuleLoad);
+            SetEventScript(module, EventScript.Module_OnModuleLoad, "mod_load");
             SetEventScript(module, EventScript.Module_OnPlayerChat, ScriptName.OnModuleChat);
             SetEventScript(module, EventScript.Module_OnPlayerDying, ScriptName.OnModuleDying);
             SetEventScript(module, EventScript.Module_OnPlayerDeath, ScriptName.OnModuleDeath);
@@ -573,7 +575,7 @@ namespace SWLOR.Shared.Events.Service
         /// A handful of NWNX functions require special calls to load persistence.
         /// When the module loads, run those methods here.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandlerAttribute<OnModuleLoad>]
         public void TriggerNWNXPersistence()
         {
             var firstObject = GetFirstObjectInArea(GetFirstArea());

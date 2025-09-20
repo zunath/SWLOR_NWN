@@ -7,9 +7,10 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Entity;
 using SWLOR.Shared.Core.Service;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using Vector3 = System.Numerics.Vector3;
 
@@ -72,7 +73,7 @@ namespace SWLOR.Game.Server.Service
         /// These locations can be used to spawn objects randomly throughout an area.
         /// This only runs if the module content has NOT changed since the last run.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandlerAttribute<OnModuleLoad>]
         public static void RetrieveWalkmeshes()
         {
             if (_bakingRan)

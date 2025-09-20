@@ -7,8 +7,9 @@ using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Service
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Service
         private static Gui.IdReservation _idReservation;
         private static readonly Dictionary<AchievementType, AchievementAttribute> _activeAchievements = new Dictionary<AchievementType, AchievementAttribute>();
 
-        [ScriptHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandlerAttribute<OnModuleLoad>]
         public static void ReserveGuiIds()
         {
             _idReservation = Gui.ReserveIds(nameof(Achievement), 6);

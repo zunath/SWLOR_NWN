@@ -5,9 +5,10 @@ using System.Linq;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Service;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Service
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Service
         /// Remove instance templates from the area cache on module load.
         /// This ensures player locations are not updated in places they shouldn't be.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandlerAttribute<OnModuleLoad>]
         public static void RemoveInstancesFromCache()
         {
             var propertyLayouts = Property.GetAllLayoutsByPropertyType(PropertyType.Apartment);

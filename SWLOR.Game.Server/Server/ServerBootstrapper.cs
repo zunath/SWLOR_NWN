@@ -14,7 +14,6 @@ namespace SWLOR.Game.Server.Server
         private readonly ICoreFunctionHandler _coreFunctionHandler;
         private readonly INativeInteropManager _nativeInterop;
         private readonly IScriptRegistry _scriptRegistry;
-        private readonly IScriptExecutor _scriptExecutor;
         private readonly IScriptExecutionProvider _executionProvider;
 
         public ServerBootstrapper(
@@ -23,7 +22,6 @@ namespace SWLOR.Game.Server.Server
             INativeInteropManager nativeInterop,
             ICoreFunctionHandler coreFunctionHandler,
             IScriptRegistry scriptRegistry,
-            IScriptExecutor scriptExecutor,
             IScriptExecutionProvider executionProvider)
         {
             _logger = logger;
@@ -31,7 +29,6 @@ namespace SWLOR.Game.Server.Server
             _nativeInterop = nativeInterop;
             _coreFunctionHandler = coreFunctionHandler;
             _scriptRegistry = scriptRegistry;
-            _scriptExecutor = scriptExecutor;
             _executionProvider = executionProvider;
         }
 

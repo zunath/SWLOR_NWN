@@ -9,9 +9,10 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Service;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, cache the actions taken for each type of custom item property.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandlerAttribute<OnModuleLoad>]
         public static void RegisterStatActions()
         {
             _statChangeActions[ItemPropertyType.HPBonus] = ApplyHPBonus;

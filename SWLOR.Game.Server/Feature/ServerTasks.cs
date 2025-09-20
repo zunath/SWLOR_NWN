@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
@@ -62,7 +64,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the server starts up, a log message will be written.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandlerAttribute<OnModuleLoad>]
         public static void ProcessBootUp()
         {
             _logger.Write<ServerLogGroup>("Server is starting up.");

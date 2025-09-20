@@ -8,10 +8,11 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, add all valid damage types to the cache.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandlerAttribute<OnModuleLoad>]
         public static void LoadDamageTypes()
         {
             var allValues = Enum.GetValues(typeof(CombatDamageType)).Cast<CombatDamageType>();

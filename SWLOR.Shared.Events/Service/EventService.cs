@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Events.EventAggregator;
-using SWLOR.Shared.Events.EventSystem;
+using SWLOR.Shared.Events.Model;
 
 namespace SWLOR.Shared.Events.Service
 {

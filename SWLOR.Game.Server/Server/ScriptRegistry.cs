@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Server
 
             // Load traditional script handlers
             LoadTraditionalHandlers();
-            
+
             // Load event-based handlers
             LoadEventHandlers();
         }
@@ -63,24 +63,7 @@ namespace SWLOR.Game.Server.Server
                 foreach (var attr in mi.GetCustomAttributes(typeof(ScriptHandlerAttribute), false))
                 {
                     var script = ((ScriptHandlerAttribute)attr).Script;
-                    if (script.Length > MaxCharsInScriptName || script.Length == 0)
-                    {
-                        _logger.Write<ErrorLogGroup>($"Script name '{script}' is invalid on method {mi.Name}.");
-                        throw new ApplicationException();
-                    }
-
-                    if (mi.ReturnType == typeof(bool))
-                    {
-                        RegisterConditionalScript(script, mi);
-                    }
-                    else if (mi.ReturnType == typeof(void))
-                    {
-                        RegisterActionScript(script, mi);
-                    }
-                    else
-                    {
-                        _logger.Write<ErrorLogGroup>($"Method '{mi.Name}' tied to script '{script}' has an invalid return type. This script was NOT loaded.");
-                    }
+                    RegisterScript(script, mi);
                 }
             }
         }
@@ -96,7 +79,7 @@ namespace SWLOR.Game.Server.Server
             foreach (var method in eventHandlers)
             {
                 var eventHandlerAttributes = GetEventHandlerAttributes(method);
-                
+
                 foreach (var attr in eventHandlerAttributes)
                 {
                     var eventType = GetEventTypeFromAttribute(attr);
@@ -114,18 +97,7 @@ namespace SWLOR.Game.Server.Server
                         continue;
                     }
 
-                    if (method.ReturnType == typeof(bool))
-                    {
-                        RegisterConditionalScript(scriptName, method);
-                    }
-                    else if (method.ReturnType == typeof(void))
-                    {
-                        RegisterActionScript(scriptName, method);
-                    }
-                    else
-                    {
-                        _logger.Write<ErrorLogGroup>($"Method '{method.Name}' tied to event type '{eventType.Name}' has an invalid return type. This handler was NOT loaded.");
-                    }
+                    RegisterScript(scriptName, method);
                 }
             }
         }
@@ -133,14 +105,14 @@ namespace SWLOR.Game.Server.Server
         private bool HasEventHandlerAttribute(MethodInfo method)
         {
             return method.GetCustomAttributes()
-                .Any(attr => attr.GetType().IsGenericType && 
+                .Any(attr => attr.GetType().IsGenericType &&
                             attr.GetType().GetGenericTypeDefinition() == typeof(ScriptHandlerAttribute<>));
         }
 
         private IEnumerable<Attribute> GetEventHandlerAttributes(MethodInfo method)
         {
             return method.GetCustomAttributes()
-                .Where(attr => attr.GetType().IsGenericType && 
+                .Where(attr => attr.GetType().IsGenericType &&
                               attr.GetType().GetGenericTypeDefinition() == typeof(ScriptHandlerAttribute<>));
         }
 
@@ -155,24 +127,24 @@ namespace SWLOR.Game.Server.Server
             // OnModuleLoad -> mod_load
             // OnPlayerDamaged -> pc_damaged
             // etc.
-            
+
             var eventName = eventType.Name;
-            
+
             // Remove "On" prefix if present
             if (eventName.StartsWith("On"))
             {
                 eventName = eventName.Substring(2);
             }
-            
+
             // Convert PascalCase to snake_case
             var scriptName = ConvertToSnakeCase(eventName);
-            
+
             // Ensure it's within the 16-character limit
             if (scriptName.Length > MaxCharsInScriptName)
             {
                 scriptName = scriptName.Substring(0, MaxCharsInScriptName);
             }
-            
+
             return scriptName;
         }
 
@@ -198,6 +170,28 @@ namespace SWLOR.Game.Server.Server
             }
 
             return result.ToString();
+        }
+
+        private void RegisterScript(string script, MethodInfo methodInfo)
+        {
+            if (script.Length > MaxCharsInScriptName || script.Length == 0)
+            {
+                _logger.Write<ErrorLogGroup>($"Script name '{script}' is invalid on method {methodInfo.Name}.");
+                throw new ApplicationException();
+            }
+
+            if (methodInfo.ReturnType == typeof(bool))
+            {
+                RegisterConditionalScript(script, methodInfo);
+            }
+            else if (methodInfo.ReturnType == typeof(void))
+            {
+                RegisterActionScript(script, methodInfo);
+            }
+            else
+            {
+                _logger.Write<ErrorLogGroup>($"Method '{methodInfo.Name}' tied to script '{script}' has an invalid return type. This script was NOT loaded.");
+            }
         }
 
         private void RegisterConditionalScript(string script, MethodInfo methodInfo)

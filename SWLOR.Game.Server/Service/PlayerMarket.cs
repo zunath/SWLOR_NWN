@@ -10,10 +10,11 @@ using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Service;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using MarketCategoryType = SWLOR.Game.Server.Service.PlayerMarketService.MarketCategoryType;
 
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Marks items as unlisted if they have been sitting on the market for longer than two weeks.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandlerAttribute<OnModuleLoad>]
         public static void RemoveOldListings()
         {
             var query = new DBQuery<MarketItem>()

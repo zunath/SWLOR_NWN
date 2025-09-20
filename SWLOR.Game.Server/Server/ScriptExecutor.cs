@@ -53,16 +53,32 @@ namespace SWLOR.Game.Server.Server
 
         private int RunScripts(string script)
         {
-            if (_scriptRegistry.HasConditionalScript(script))
+            var hasConditionalScripts = _scriptRegistry.HasConditionalScript(script);
+            var hasActionScripts = _scriptRegistry.HasScript(script);
+
+            if (!hasConditionalScripts && !hasActionScripts)
             {
-                return ExecuteConditionalScripts(script);
-            }
-            else if (_scriptRegistry.HasScript(script))
-            {
-                return ExecuteActionScripts(script);
+                return ScriptNotHandled;
             }
 
-            return ScriptNotHandled;
+            // Execute conditional scripts first if they exist
+            if (hasConditionalScripts)
+            {
+                var conditionalResult = ExecuteConditionalScripts(script);
+                // If conditional scripts return false, don't execute action scripts
+                if (conditionalResult == 0)
+                {
+                    return 0;
+                }
+            }
+
+            // Execute action scripts if they exist
+            if (hasActionScripts)
+            {
+                ExecuteActionScripts(script);
+            }
+
+            return ScriptHandled;
         }
 
         private int ExecuteConditionalScripts(string script)

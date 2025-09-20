@@ -10,11 +10,12 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// When the module loads, set up the category lists so they don't need
         /// to be initialized for every player.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandlerAttribute<OnModuleLoad>]
         public static void LoadCategories()
         {
             foreach (var (type, category) in PlayerMarket.GetActiveCategories())

@@ -15,8 +15,9 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -81,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private AppearanceArmorColor _selectedColorChannel;
         private ColorTarget _colorTarget;
 
-        [ScriptHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandlerAttribute<OnModuleLoad>]
         public static void LoadAppearances()
         {
             LoadRacialAppearances();

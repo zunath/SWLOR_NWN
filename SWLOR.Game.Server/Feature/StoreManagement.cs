@@ -6,6 +6,8 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Log;
@@ -27,7 +29,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, place all stores inside the cache and schedule the cleanup process.
         /// </summary>
-        [ScriptHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandlerAttribute<OnModuleLoad>]
         public static void ProcessStores()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())

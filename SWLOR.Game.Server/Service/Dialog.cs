@@ -5,10 +5,11 @@ using System.Linq;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
-using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Service
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_conversations.Count} conversations.");
         }
 
-        [ScriptHandler(ScriptName.OnModuleLoad)]
+        [ScriptHandlerAttribute<OnModuleLoad>]
         public static void InitializeDialogs()
         {
             for (var x = 1; x <= NumberOfDialogs; x++)

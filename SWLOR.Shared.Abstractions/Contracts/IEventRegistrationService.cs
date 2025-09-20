@@ -1,6 +1,7 @@
-namespace SWLOR.Shared.Events;
-
-public interface IEventRegistrationService
+namespace SWLOR.Shared.Abstractions.Contracts
 {
-    void RegisterEvents();
+    public interface IEventRegistrationService
+    {
+        void RegisterEvents();
+    }
 }

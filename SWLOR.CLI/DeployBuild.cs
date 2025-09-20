@@ -28,7 +28,7 @@ namespace SWLOR.CLI
             Directory.CreateDirectory(ModulesPath);
             Directory.CreateDirectory(TlkPath);
 
-            var source = new DirectoryInfo("../SWLOR.Game.Server/Docker");
+            var source = new DirectoryInfo("../SWLOR.Runner/Docker");
             var target = new DirectoryInfo(DebugServerPath);
 
             CopyAll(source, target, "swlor.env");

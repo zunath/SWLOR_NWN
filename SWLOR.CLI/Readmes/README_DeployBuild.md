@@ -48,7 +48,8 @@ The tool expects the following structure:
 SWLOR_NWN/
 ├── SWLOR.CLI/
 ├── SWLOR.Game.Server/
-│   ├── bin/Debug/net8.0/
+│   └── bin/Debug/net8.0/
+├── SWLOR.Runner/
 │   └── Docker/
 └── Module/
     └── Star Wars LOR v2.mod

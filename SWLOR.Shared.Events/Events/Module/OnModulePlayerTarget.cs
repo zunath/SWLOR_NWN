@@ -4,5 +4,6 @@ namespace SWLOR.Shared.Events.Events.Module
 {
     public class OnModulePlayerTarget : BaseEvent
     {
+        public override string ScriptName => "mod_target";
     }
 }

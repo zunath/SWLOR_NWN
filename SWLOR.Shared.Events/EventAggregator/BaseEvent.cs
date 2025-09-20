@@ -9,6 +9,7 @@ namespace SWLOR.Shared.Events.EventAggregator
     {
         public DateTime Timestamp { get; }
         public Guid EventId { get; }
+        public abstract string ScriptName { get; }
 
         protected BaseEvent()
         {

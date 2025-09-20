@@ -14,5 +14,11 @@ namespace SWLOR.Shared.Abstractions.Contracts
         /// The unique identifier for this event instance.
         /// </summary>
         Guid EventId { get; }
+
+        /// <summary>
+        /// The script name associated with this event type.
+        /// This is used by the ScriptRegistry to map events to their corresponding scripts.
+        /// </summary>
+        string ScriptName { get; }
     }
 }

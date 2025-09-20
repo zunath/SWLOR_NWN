@@ -4,5 +4,6 @@ namespace SWLOR.Shared.Events.Events.Module
 {
     public class OnModulePreload : BaseEvent
     {
+        public override string ScriptName => "mod_preload";
     }
 }

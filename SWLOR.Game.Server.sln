@@ -5,8 +5,6 @@ VisualStudioVersion = 17.1.32407.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Game.Server", "SWLOR.Game.Server\SWLOR.Game.Server.csproj", "{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Web", "SWLOR.Web\SWLOR.Web.csproj", "{4CF51B54-4FE9-4167-8BD6-742A067BBEF3}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.CLI", "SWLOR.CLI\SWLOR.CLI.csproj", "{0AF50AD5-8CAC-4CFD-92C9-A2AAAAEE64BE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Admin", "SWLOR.Admin\SWLOR.Admin.csproj", "{34607A71-B934-46A9-B08B-C9E0F7458E91}"
@@ -14,6 +12,21 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Runner", "SWLOR.Runner\SWLOR.Runner.csproj", "{CAD52F45-F4DC-4EE3-8008-068CC00E27B6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.NWN.API", "SWLOR.NWN.API\SWLOR.NWN.API.csproj", "{189C46D2-B341-4C01-B87D-CB2484F2110F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Readmes", "_Readmes", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		Readmes\8193.37.15.txt = Readmes\8193.37.15.txt
+		Readmes\AbilityDefinitions.md = Readmes\AbilityDefinitions.md
+		Readmes\Builders.md = Readmes\Builders.md
+		Readmes\CoreSystems.md = Readmes\CoreSystems.md
+		Readmes\Deployment.md = Readmes\Deployment.md
+		Readmes\Entities.md = Readmes\Entities.md
+		Readmes\Features.md = Readmes\Features.md
+		Readmes\ProjectStructure.md = Readmes\ProjectStructure.md
+		Readmes\README.md = Readmes\README.md
+		Readmes\Services.md = Readmes\Services.md
+		Readmes\Symbols_Readme.txt = Readmes\Symbols_Readme.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +38,6 @@ Global
 		{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4CF51B54-4FE9-4167-8BD6-742A067BBEF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4CF51B54-4FE9-4167-8BD6-742A067BBEF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4CF51B54-4FE9-4167-8BD6-742A067BBEF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4CF51B54-4FE9-4167-8BD6-742A067BBEF3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0AF50AD5-8CAC-4CFD-92C9-A2AAAAEE64BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0AF50AD5-8CAC-4CFD-92C9-A2AAAAEE64BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AF50AD5-8CAC-4CFD-92C9-A2AAAAEE64BE}.Release|Any CPU.ActiveCfg = Release|Any CPU

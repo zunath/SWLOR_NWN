@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service
         /// Remove instance templates from the area cache on module load.
         /// This ensures player locations are not updated in places they shouldn't be.
         /// </summary>
-        [ScriptHandlerAttribute<OnModuleLoad>]
+        [ScriptHandler(ScriptName.OnModuleCacheAfter)]
         public static void RemoveInstancesFromCache()
         {
             var propertyLayouts = Property.GetAllLayoutsByPropertyType(PropertyType.Apartment);

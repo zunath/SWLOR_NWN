@@ -2,6 +2,8 @@ using SWLOR.Game.Server.Service.NPCService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
@@ -10,7 +12,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class NPCGroup
     {
-        private static readonly Dictionary<NPCGroupType, NPCGroupAttribute> _npcGroups = new();
+        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        private static IEnumCache<NPCGroupType, NPCGroupAttribute> _npcGroupCache;
 
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
@@ -28,7 +31,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>An NPC group detail</returns>
         public static NPCGroupAttribute GetNPCGroup(NPCGroupType npcGroupType)
         {
-            return _npcGroups[npcGroupType];
+            return _npcGroupCache?.AllItems[npcGroupType] ?? throw new KeyNotFoundException($"NPC Group {npcGroupType} not found in cache");
         }
 
 
@@ -37,14 +40,11 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void RegisterNPCGroups()
         {
-            var npcGroups = Enum.GetValues(typeof(NPCGroupType)).Cast<NPCGroupType>();
-            foreach (var npcGroupType in npcGroups)
-            {
-                var npcGroupDetail = npcGroupType.GetAttribute<NPCGroupType, NPCGroupAttribute>();
-                _npcGroups[npcGroupType] = npcGroupDetail;
-            }
+            _npcGroupCache = _cacheService.BuildEnumCache<NPCGroupType, NPCGroupAttribute>()
+                .WithAllItems()
+                .Build();
 
-            Console.WriteLine($"Loaded {_npcGroups.Count} NPC groups.");
+            Console.WriteLine($"Loaded {_npcGroupCache.AllItems.Count} NPC groups.");
         }
     }
 }

@@ -4,6 +4,8 @@ using System.Linq;
 
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
@@ -12,6 +14,12 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Snippet
     {
+        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        
+        // Cached data
+        private static IInterfaceCache<string, SnippetDetail> _snippetCache;
+        
+        // Additional caches for complex data
         private static readonly Dictionary<string, SnippetDetail> _appearsWhenCommands = new();
         private static readonly Dictionary<string, SnippetDetail> _actionsTakenCommands = new();
 
@@ -21,27 +29,21 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(ISnippetListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+            _snippetCache = _cacheService.BuildInterfaceCache<ISnippetListDefinition, string, SnippetDetail>()
+                .WithDataExtractor(instance => instance.BuildSnippets())
+                .Build();
 
-            foreach (var type in types)
+            // Process snippets for additional caches
+            foreach (var (key, snippet) in _snippetCache.AllItems)
             {
-                var instance = (ISnippetListDefinition)Activator.CreateInstance(type);
-                var snippets = instance.BuildSnippets();
-
-                foreach (var (key, snippet) in snippets)
+                if (snippet.ConditionAction != null)
                 {
-                    if (snippet.ConditionAction != null)
-                    {
-                        _appearsWhenCommands.Add(key, snippet);
-                    }
+                    _appearsWhenCommands.Add(key, snippet);
+                }
 
-                    if (snippet.ActionsTakenAction != null)
-                    {
-                        _actionsTakenCommands.Add(key, snippet);
-                    }
-
+                if (snippet.ActionsTakenAction != null)
+                {
+                    _actionsTakenCommands.Add(key, snippet);
                 }
             }
 

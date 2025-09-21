@@ -18,6 +18,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
@@ -37,8 +38,13 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
-        private static readonly Dictionary<BeastType, BeastDetail> _beasts = new();
-        private static readonly Dictionary<BeastRoleType, BeastRoleAttribute> _beastRoles = new();
+        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        
+        // Cached data
+        private static IInterfaceCache<BeastType, BeastDetail> _beastCache;
+        private static IEnumCache<BeastRoleType, BeastRoleAttribute> _beastRoleCache;
+        
+        // Additional caches for complex data
         private static List<BeastFoodType> _beastFoods = new();
         private static readonly Dictionary<int, float> _incubationPercentages = new();
 
@@ -70,32 +76,18 @@ namespace SWLOR.Game.Server.Service
 
         private static void LoadBeasts()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IBeastListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+            _beastCache = _cacheService.BuildInterfaceCache<IBeastListDefinition, BeastType, BeastDetail>()
+                .WithDataExtractor(instance => instance.Build())
+                .Build();
 
-            foreach (var type in types)
-            {
-                var instance = (IBeastListDefinition)Activator.CreateInstance(type);
-                var beasts = instance.Build();
-
-                foreach (var (beastType, beastDetail) in beasts)
-                {
-                    _beasts[beastType] = beastDetail;
-                }
-            }
-
-            Console.WriteLine($"Loaded {_beasts.Count} beasts.");
+            Console.WriteLine($"Loaded {_beastCache.AllItems.Count} beasts.");
         }
 
         private static void LoadBeastRoles()
         {
-            var types = Enum.GetValues(typeof(BeastRoleType)).Cast<BeastRoleType>();
-            foreach (var type in types)
-            {
-                var detail = type.GetAttribute<BeastRoleType, BeastRoleAttribute>();
-                _beastRoles[type] = detail;
-            }
+            _beastRoleCache = _cacheService.BuildEnumCache<BeastRoleType, BeastRoleAttribute>()
+                .WithAllItems()
+                .Build();
         }
 
         private static void LoadFoods()
@@ -126,12 +118,12 @@ namespace SWLOR.Game.Server.Service
 
         public static BeastDetail GetBeastDetail(BeastType type)
         {
-            return _beasts[type];
+            return _beastCache?.AllItems[type] ?? throw new KeyNotFoundException($"Beast {type} not found in cache");
         }
 
         public static BeastRoleAttribute GetBeastRoleDetail(BeastRoleType type)
         {
-            return _beastRoles[type];
+            return _beastRoleCache?.AllItems[type] ?? throw new KeyNotFoundException($"Beast role {type} not found in cache");
         }
 
         public static string GetBeastId(uint beast)

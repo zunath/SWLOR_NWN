@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Server;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Service;
@@ -84,9 +85,11 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IGuiService, GuiService>();
             
             // Cache Services
+            services.AddSingleton<IGenericCacheService, GenericCacheService>();
             services.AddSingleton<IItemCacheService, ItemCacheService>();
             services.AddSingleton<IPortraitCacheService, PortraitCacheService>();
             services.AddSingleton<ISoundSetCacheService, SoundSetCacheService>();
+            services.AddSingleton<IModuleCacheService, ModuleCacheService>();
             
             // ViewModels
             AddViewModels(services);

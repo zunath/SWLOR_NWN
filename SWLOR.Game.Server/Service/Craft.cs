@@ -14,6 +14,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Enums;
@@ -33,19 +34,25 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
         public const int MaxResearchLevel = 10;
 
+        // Cached data
+        private static IInterfaceCache<RecipeType, RecipeDetail> _recipeCache;
+        private static IEnumCache<RecipeCategoryType, RecipeCategoryAttribute> _categoryCache;
+        private static IEnumCache<EnhancementSubType, EnhancementSubTypeAttribute> _enhancementSubTypeCache;
+        
+        // Additional caches for complex data
         private static readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
-        private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _allCategories = new();
-        private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _activeCategories = new();
         private static readonly Dictionary<SkillType, Dictionary<RecipeType, RecipeDetail>> _recipesBySkill = new();
         private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>> _recipesBySkillAndCategory = new();
         private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, RecipeCategoryAttribute>> _categoriesBySkill = new();
-        private static readonly Dictionary<EnhancementSubType, EnhancementSubTypeAttribute> _enhancementSubTypes = new();
-
         private static readonly Dictionary<RecipeType, RecipeDetail> _researchableRecipes = new();
         private static readonly Dictionary<SkillType, Dictionary<RecipeType, RecipeDetail>> _researchableRecipesBySkill = new();
         private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>> _researchableRecipesBySkillAndCategory = new();
+        
+        // Pre-computed caches for fast retrieval
+        private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _allCategories = new();
 
         private static readonly RecipeLevelChart _levelChart = new();
         private static readonly HashSet<string> _componentResrefs = new();
@@ -67,19 +74,22 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void CacheCategories()
         {
-            var categories = Enum.GetValues(typeof(RecipeCategoryType)).Cast<RecipeCategoryType>();
-            foreach (var category in categories)
-            {
-                var categoryDetail = category.GetAttribute<RecipeCategoryType, RecipeCategoryAttribute>();
-                _allCategories[category] = categoryDetail;
+            _categoryCache = _cacheService.BuildEnumCache<RecipeCategoryType, RecipeCategoryAttribute>()
+                .WithAllItems()
+                .WithFilteredCache("Active", c => c.IsActive)
+                .Build();
 
-                if (categoryDetail.IsActive)
+            // Populate pre-computed cache
+            var activeCategories = _categoryCache.GetFilteredCache("Active");
+            if (activeCategories != null)
+            {
+                foreach (var (categoryType, categoryAttribute) in activeCategories)
                 {
-                    _activeCategories[category] = categoryDetail;
+                    _allCategories[categoryType] = categoryAttribute;
                 }
             }
             
-            Console.WriteLine($"Loaded {_allCategories.Count} recipe category types.");
+            Console.WriteLine($"Loaded {_categoryCache.AllItems.Count} recipe category types.");
         }
 
         /// <summary>
@@ -104,84 +114,77 @@ namespace SWLOR.Game.Server.Service
                 DestroyObject(item);
             }
             
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IRecipeListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+            _recipeCache = _cacheService.BuildInterfaceCache<IRecipeListDefinition, RecipeType, RecipeDetail>()
+                .WithDataExtractor(instance => instance.BuildRecipes())
+                .Build();
 
-            foreach (var type in types)
+            // Populate the _recipes dictionary for backward compatibility
+            foreach (var (recipeType, recipe) in _recipeCache.AllItems)
             {
-                var instance = (IRecipeListDefinition)Activator.CreateInstance(type);
-                var recipes = instance.BuildRecipes();
+                _recipes[recipeType] = recipe;
+            }
 
-                foreach (var (recipeType, recipe) in recipes)
+            // Process recipes for additional caches and custom logic
+            foreach (var (recipeType, recipe) in _recipeCache.AllItems)
+            {
+                var isResearchable = IsResearchableRecipe(recipe);
+
+                if (isResearchable)
+                    _researchableRecipes[recipeType] = recipe;
+
+                UpdateCraftingStatus(recipe);
+
+                // Organize recipes by skill.
+                if (!_recipesBySkill.ContainsKey(recipe.Skill))
+                    _recipesBySkill[recipe.Skill] = new Dictionary<RecipeType, RecipeDetail>();
+                _recipesBySkill[recipe.Skill][recipeType] = recipe;
+
+                if (isResearchable)
                 {
-                    if (_recipes.ContainsKey(recipeType))
-                    {
-                        _logger.Write<ErrorLogGroup>($"ERROR: Duplicate recipe detected: {recipeType}");
-                        continue;
-                    }
+                    if (!_researchableRecipesBySkill.ContainsKey(recipe.Skill))
+                        _researchableRecipesBySkill[recipe.Skill] = new Dictionary<RecipeType, RecipeDetail>();
+                    _researchableRecipesBySkill[recipe.Skill][recipeType] = recipe;
+                }
 
-                    var isResearchable = IsResearchableRecipe(recipe);
+                // Organize recipe by skill and category.
+                if(!_recipesBySkillAndCategory.ContainsKey(recipe.Skill))
+                    _recipesBySkillAndCategory[recipe.Skill] = new Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>();
 
-                    _recipes[recipeType] = recipe;
-                    if (isResearchable)
-                        _researchableRecipes[recipeType] = recipe;
+                if(!_recipesBySkillAndCategory[recipe.Skill].ContainsKey(recipe.Category))
+                    _recipesBySkillAndCategory[recipe.Skill][recipe.Category] = new Dictionary<RecipeType, RecipeDetail>();
 
-                    UpdateCraftingStatus(recipe);
+                _recipesBySkillAndCategory[recipe.Skill][recipe.Category][recipeType] = recipe;
 
-                    // Organize recipes by skill.
-                    if (!_recipesBySkill.ContainsKey(recipe.Skill))
-                        _recipesBySkill[recipe.Skill] = new Dictionary<RecipeType, RecipeDetail>();
-                    _recipesBySkill[recipe.Skill][recipeType] = recipe;
+                if (isResearchable)
+                {
+                    if(!_researchableRecipesBySkillAndCategory.ContainsKey(recipe.Skill))
+                        _researchableRecipesBySkillAndCategory[recipe.Skill] = new Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>();
 
-                    if (isResearchable)
-                    {
-                        if (!_researchableRecipesBySkill.ContainsKey(recipe.Skill))
-                            _researchableRecipesBySkill[recipe.Skill] = new Dictionary<RecipeType, RecipeDetail>();
-                        _researchableRecipesBySkill[recipe.Skill][recipeType] = recipe;
-                    }
+                    if (!_researchableRecipesBySkillAndCategory[recipe.Skill].ContainsKey(recipe.Category))
+                        _researchableRecipesBySkillAndCategory[recipe.Skill][recipe.Category] = new Dictionary<RecipeType, RecipeDetail>();
 
-                    // Organize recipe by skill and category.
-                    if(!_recipesBySkillAndCategory.ContainsKey(recipe.Skill))
-                        _recipesBySkillAndCategory[recipe.Skill] = new Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>();
+                    _researchableRecipesBySkillAndCategory[recipe.Skill][recipe.Category][recipeType] = recipe;
+                }
 
-                    if(!_recipesBySkillAndCategory[recipe.Skill].ContainsKey(recipe.Category))
-                        _recipesBySkillAndCategory[recipe.Skill][recipe.Category] = new Dictionary<RecipeType, RecipeDetail>();
+                // Organize categories by skill based on whether there are any recipes under that category.
+                if (recipe.IsActive)
+                {
+                    if (!_categoriesBySkill.ContainsKey(recipe.Skill))
+                        _categoriesBySkill[recipe.Skill] = new Dictionary<RecipeCategoryType, RecipeCategoryAttribute>();
 
-                    _recipesBySkillAndCategory[recipe.Skill][recipe.Category][recipeType] = recipe;
+                    if (!_categoriesBySkill[recipe.Skill].ContainsKey(recipe.Category))
+                        _categoriesBySkill[recipe.Skill][recipe.Category] = _categoryCache.AllItems[recipe.Category];
+                }
 
-                    if (isResearchable)
-                    {
-                        if(!_researchableRecipesBySkillAndCategory.ContainsKey(recipe.Skill))
-                            _researchableRecipesBySkillAndCategory[recipe.Skill] = new Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>();
-
-                        if (!_researchableRecipesBySkillAndCategory[recipe.Skill].ContainsKey(recipe.Category))
-                            _researchableRecipesBySkillAndCategory[recipe.Skill][recipe.Category] = new Dictionary<RecipeType, RecipeDetail>();
-
-                        _researchableRecipesBySkillAndCategory[recipe.Skill][recipe.Category][recipeType] = recipe;
-                    }
-
-
-                    // Organize categories by skill based on whether there are any recipes under that category.
-                    if (recipe.IsActive)
-                    {
-                        if (!_categoriesBySkill.ContainsKey(recipe.Skill))
-                            _categoriesBySkill[recipe.Skill] = new Dictionary<RecipeCategoryType, RecipeCategoryAttribute>();
-
-                        if (!_categoriesBySkill[recipe.Skill].ContainsKey(recipe.Category))
-                            _categoriesBySkill[recipe.Skill][recipe.Category] = _allCategories[recipe.Category];
-
-                        // Cache the resrefs into a hashset for later use in determining if an item is a component
-                        foreach (var (resref, _) in recipe.Components)
-                        {
-                            if (!_componentResrefs.Contains(resref))
-                                _componentResrefs.Add(resref);
-                        }
-                    }
+                // Cache the resrefs into a hashset for later use in determining if an item is a component
+                foreach (var (resref, _) in recipe.Components)
+                {
+                    if (!_componentResrefs.Contains(resref))
+                        _componentResrefs.Add(resref);
                 }
             }
             
-            Console.WriteLine($"Loaded {_recipes.Count} recipes.");
+            Console.WriteLine($"Loaded {_recipeCache.AllItems.Count} recipes.");
         }
 
         private static bool IsResearchableRecipe(RecipeDetail recipe)
@@ -193,14 +196,11 @@ namespace SWLOR.Game.Server.Service
 
         private static void CacheEnhancementSubTypes()
         {
-            var subTypes = Enum.GetValues(typeof(EnhancementSubType)).Cast<EnhancementSubType>();
-            foreach (var type in subTypes)
-            {
-                var detail = type.GetAttribute<EnhancementSubType, EnhancementSubTypeAttribute>();
-                _enhancementSubTypes[type] = detail;
-            }
+            _enhancementSubTypeCache = _cacheService.BuildEnumCache<EnhancementSubType, EnhancementSubTypeAttribute>()
+                .WithAllItems()
+                .Build();
             
-            Console.WriteLine($"Loaded {_enhancementSubTypes.Count} enhancement sub types.");
+            Console.WriteLine($"Loaded {_enhancementSubTypeCache.AllItems.Count} enhancement sub types.");
         }
         
         /// <summary>
@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The recipe detail.</returns>
         public static RecipeDetail GetRecipe(RecipeType recipeType)
         {
-            return _recipes[recipeType];
+            return _recipeCache?.AllItems[recipeType] ?? throw new KeyNotFoundException($"Recipe {recipeType} not found in cache");
         }
 
         /// <summary>
@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The enhancement subtype detail.</returns>
         public static EnhancementSubTypeAttribute GetEnhancementSubType(EnhancementSubType subType)
         {
-            return _enhancementSubTypes[subType];
+            return _enhancementSubTypeCache?.AllItems[subType] ?? throw new KeyNotFoundException($"Enhancement sub type {subType} not found in cache");
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A dictionary containing all registered categories.</returns>
         public static Dictionary<RecipeCategoryType, RecipeCategoryAttribute> GetAllCategories()
         {
-            return _activeCategories.ToDictionary(x => x.Key, y => y.Value);
+            return _allCategories;
         }
 
         /// <summary>
@@ -325,7 +325,7 @@ namespace SWLOR.Game.Server.Service
             if(!_recipesBySkillAndCategory[skill].ContainsKey(category))
                 return new Dictionary<RecipeType, RecipeDetail>();
 
-            return _recipesBySkillAndCategory[skill][category].ToDictionary(x => x.Key, y => y.Value);
+            return _recipesBySkillAndCategory[skill][category];
         }
 
         /// <summary>
@@ -342,7 +342,7 @@ namespace SWLOR.Game.Server.Service
             if (!_researchableRecipesBySkillAndCategory[skill].ContainsKey(category))
                 return new Dictionary<RecipeType, RecipeDetail>();
 
-            return _researchableRecipesBySkillAndCategory[skill][category].ToDictionary(x => x.Key, y => y.Value);
+            return _researchableRecipesBySkillAndCategory[skill][category];
         }
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace SWLOR.Game.Server.Service
             if(!_categoriesBySkill.ContainsKey(skill))
                 return new Dictionary<RecipeCategoryType, RecipeCategoryAttribute>();
 
-            return _categoriesBySkill[skill].ToDictionary(x => x.Key, y => y.Value);
+            return _categoriesBySkill[skill];
         }
 
         /// <summary>

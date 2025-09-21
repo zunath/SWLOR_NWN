@@ -153,7 +153,7 @@ namespace SWLOR.Shared.UI.Service
                 partialViews,
                 () =>
             {
-                var dataModelInstance = Activator.CreateInstance<T>();
+                var dataModelInstance = (T)Activator.CreateInstance(typeof(T), _guiService);
                 return new GuiPlayerWindow(dataModelInstance);
             });
 

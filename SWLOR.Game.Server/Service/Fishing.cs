@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Extension;
@@ -22,11 +23,14 @@ namespace SWLOR.Game.Server.Service
     public static class Fishing
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly Dictionary<FishType, FishAttribute> _fish = new();
-        private static readonly Dictionary<FishingRodType, FishingRodAttribute> _rods = new();
-        private static readonly Dictionary<FishingBaitType, FishingBaitAttribute> _baits = new();
+        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
         private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
         private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        
+        // Cached data
+        private static IEnumCache<FishType, FishAttribute> _fishCache;
+        private static IEnumCache<FishingRodType, FishingRodAttribute> _rodCache;
+        private static IEnumCache<FishingBaitType, FishingBaitAttribute> _baitCache;
 
         private static readonly Dictionary<string, FishingRodType> _rodsByResref = new();
         private static readonly Dictionary<string, FishingBaitType> _baitsByResref = new();
@@ -60,45 +64,44 @@ namespace SWLOR.Game.Server.Service
 
         private static void LoadFish()
         {
-            var fishes = Enum.GetValues(typeof(FishType)).Cast<FishType>();
-            foreach (var fish in fishes)
-            {
-                var fishDetail = fish.GetAttribute<FishType, FishAttribute>();
-                _fish[fish] = fishDetail;
-            }
+            _fishCache = _cacheService.BuildEnumCache<FishType, FishAttribute>()
+                .WithAllItems()
+                .Build();
 
-            Console.WriteLine($"Loaded {_fish.Count} fish.");
+            Console.WriteLine($"Loaded {_fishCache.AllItems.Count} fish.");
         }
 
         private static void LoadRods()
         {
-            var rods = Enum.GetValues(typeof(FishingRodType)).Cast<FishingRodType>();
-            foreach (var rod in rods)
-            {
-                var rodDetail = rod.GetAttribute<FishingRodType, FishingRodAttribute>();
-                _rods[rod] = rodDetail;
+            _rodCache = _cacheService.BuildEnumCache<FishingRodType, FishingRodAttribute>()
+                .WithAllItems()
+                .Build();
 
-                _rodsByResref[rodDetail.Resref] = rod;
+            // Process rods for additional caches
+            foreach (var (rodType, rodDetail) in _rodCache.AllItems)
+            {
+                _rodsByResref[rodDetail.Resref] = rodType;
             }
 
-            Console.WriteLine($"Loaded {_rods.Count} fishing rods.");
+            Console.WriteLine($"Loaded {_rodCache.AllItems.Count} fishing rods.");
         }
 
         private static void LoadBaits()
         {
-            var baits = Enum.GetValues(typeof(FishingBaitType)).Cast<FishingBaitType>();
-            foreach (var bait in baits)
-            {
-                var baitDetail = bait.GetAttribute<FishingBaitType, FishingBaitAttribute>();
-                _baits[bait] = baitDetail;
+            _baitCache = _cacheService.BuildEnumCache<FishingBaitType, FishingBaitAttribute>()
+                .WithAllItems()
+                .Build();
 
+            // Process baits for additional caches
+            foreach (var (baitType, baitDetail) in _baitCache.AllItems)
+            {
                 foreach (var resref in baitDetail.Resrefs)
                 {
-                    _baitsByResref[resref] = bait;
+                    _baitsByResref[resref] = baitType;
                 }
             }
 
-            Console.WriteLine($"Loaded {_baits.Count} fishing baits.");
+            Console.WriteLine($"Loaded {_baitCache.AllItems.Count} fishing baits.");
         }
 
         private static void LoadFishingLocations()
@@ -138,7 +141,7 @@ namespace SWLOR.Game.Server.Service
                         {
                             foreach (var fish in list)
                             {
-                                var fishDetail = _fish[fish.Type];
+                                var fishDetail = _fishCache.AllItems[fish.Type];
                                 if (fishDetail.DisplayInDescription && 
                                     !_fishResrefsByLocation[locationType].Contains(fishDetail.Resref))
                                 {
@@ -385,11 +388,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             var rodType = _rodsByResref[rodResref];
-            var baitDetail = _baits[baitType];
+            var baitDetail = _baitCache.AllItems[baitType];
             var baitName = _itemCache.GetItemNameByResref(baitDetail.Resrefs.First());
             var locationDetail = _fishingLocations[locationId];
             var (fishType, isDefaultFish) = locationDetail.GetRandomFish(rodType, baitType);
-            var fish = _fish[fishType];
+            var fish = _fishCache.AllItems[fishType];
 
             // Default fish was picked - 80% to not get a bite.
             if (isDefaultFish)

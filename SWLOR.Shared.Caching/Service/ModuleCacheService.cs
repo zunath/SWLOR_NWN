@@ -1,5 +1,6 @@
 ﻿using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -7,7 +8,7 @@ using SWLOR.Shared.Events.Events.Infrastructure;
 
 namespace SWLOR.Shared.Caching.Service
 {
-    internal class ModuleCacheService
+    public class ModuleCacheService : IModuleCacheService
     {
         private readonly IDatabaseService _db;
 
@@ -17,9 +18,9 @@ namespace SWLOR.Shared.Caching.Service
         }
 
         [ScriptHandler<OnEventsHooked>]
-        public void OnDatabaseLoaded()
+        public void OnEventsHooked()
         {
-            var serverConfig = _db.Get<ModuleCache>(ModuleCache.DefaultId);
+            var serverConfig = _db.Get<ModuleCache>(ModuleCache.DefaultId) ?? new ModuleCache();
 
             // Module has changed since last run.
             // Run procedures dependent on the module file changing.
@@ -34,10 +35,6 @@ namespace SWLOR.Shared.Caching.Service
 
                 ExecuteScript(ScriptName.OnModuleContentChange, GetModule());
             }
-
-            // Fire off the mod_cache event which is used for caching data, before mod_load runs.
-            ExecuteScript(ScriptName.OnModuleCacheBefore, GetModule());
-            ExecuteScript(ScriptName.OnModuleCacheAfter, GetModule());
         }
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
@@ -11,7 +13,14 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Planet
     {
+        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        private static IEnumCache<PlanetType, PlanetAttribute>? _planetCache;
+        
+        // Additional cache for backward compatibility
         private static readonly Dictionary<PlanetType, PlanetAttribute> _planets = new();
+        
+        // Pre-computed cache for fast retrieval
+        private static readonly Dictionary<PlanetType, PlanetAttribute> _allPlanets = new();
 
         /// <summary>
         /// When the module loads, cache relevant data needed by the Planet service.
@@ -28,15 +37,16 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void CachePlanets()
         {
-            var planetTypes = Enum.GetValues(typeof(PlanetType)).Cast<PlanetType>();
-            foreach (var planetType in planetTypes)
-            {
-                var planetDetail = planetType.GetAttribute<PlanetType, PlanetAttribute>();
+            _planetCache = _cacheService.BuildEnumCache<PlanetType, PlanetAttribute>()
+                .WithAllItems()
+                .WithFilteredCache("Active", p => p.IsActive)
+                .Build();
 
-                if (planetDetail.IsActive)
-                {
-                    _planets[planetType] = planetDetail;
-                }
+            // Populate the _planets dictionary for backward compatibility
+            foreach (var (planetType, planetAttribute) in _planetCache.AllItems)
+            {
+                _planets[planetType] = planetAttribute;
+                _allPlanets[planetType] = planetAttribute;
             }
         }
 
@@ -83,7 +93,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A planet detail object.</returns>
         public static PlanetAttribute GetPlanetByType(PlanetType type)
         {
-            return _planets[type];
+            return _planetCache?.AllItems[type] ?? throw new KeyNotFoundException($"Planet {type} not found in cache");
         }
 
         /// <summary>
@@ -92,7 +102,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A dictionary containing the active planets.</returns>
         public static Dictionary<PlanetType, PlanetAttribute> GetAllPlanets()
         {
-            return _planets.ToDictionary(x => x.Key, y => y.Value);
+            return _allPlanets;
         }
     }
 }

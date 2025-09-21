@@ -10,6 +10,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
@@ -21,7 +22,15 @@ namespace SWLOR.Game.Server.Service
     public static class Ability
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
+        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        
+        // Cached data
+        private static IInterfaceCache<FeatType, AbilityDetail> _abilityCache;
+        
+        // Pre-computed cache for fast retrieval
+        private static readonly Dictionary<FeatType, AbilityDetail> _allAbilities = new();
+        
+        // Additional caches for complex data
         private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new();
         private static readonly Dictionary<AbilityToggleType, Action<uint, bool>> _toggleActions = new();
         private static readonly Dictionary<uint, PlayerAura> _playerAuras = new();
@@ -40,22 +49,17 @@ namespace SWLOR.Game.Server.Service
 
         private static void CacheAbilities()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IAbilityListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+            _abilityCache = _cacheService.BuildInterfaceCache<IAbilityListDefinition, FeatType, AbilityDetail>()
+                .WithDataExtractor(instance => instance.BuildAbilities())
+                .Build();
 
-            foreach (var type in types)
+            // Populate pre-computed cache
+            foreach (var (featType, abilityDetail) in _abilityCache.AllItems)
             {
-                var instance = (IAbilityListDefinition) Activator.CreateInstance(type);
-                var abilities = instance.BuildAbilities();
-
-                foreach (var (feat, ability) in abilities)
-                {
-                    _abilities[feat] = ability;
-                }
+                _allAbilities[featType] = abilityDetail;
             }
 
-            Console.WriteLine($"Loaded {_abilities.Count} abilities.");
+            Console.WriteLine($"Loaded {_abilityCache.AllItems.Count} abilities.");
         }
 
         private static void CacheToggleActions()
@@ -82,7 +86,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if feat is registered to an ability. false otherwise.</returns>
         public static bool IsFeatRegistered(FeatType featType)
         {
-            return _abilities.ContainsKey(featType);
+            return _abilityCache?.AllItems.ContainsKey(featType) == true;
         }
 
         /// <summary>
@@ -93,10 +97,9 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The ability detail</returns>
         public static AbilityDetail GetAbilityDetail(FeatType featType)
         {
-            if(!_abilities.ContainsKey(featType))
-                throw new KeyNotFoundException($"Feat '{featType}' is not registered to an ability.");
-
-            return _abilities[featType];
+            return _allAbilities.TryGetValue(featType, out var ability) 
+                ? ability 
+                : throw new KeyNotFoundException($"Ability {featType} not found in cache");
         }
 
 

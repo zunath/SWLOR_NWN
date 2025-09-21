@@ -85,9 +85,16 @@ namespace SWLOR.Game.Server.Server
             {
                 case "ON_MODULE_LOAD_FINISH":
                     _scriptExecutor.Initialize();
-                    ExecuteScript(ScriptName.OnServerLoaded, GetModule());
+                    RunPreModuleLoadEvents();
                     break;
             }
+        }
+
+        private static void RunPreModuleLoadEvents()
+        {
+            ExecuteScript(ScriptName.OnServerLoaded, GetModule());
+            ExecuteScript(ScriptName.OnModuleCacheBefore, GetModule());
+            ExecuteScript(ScriptName.OnModuleCacheAfter, GetModule());
         }
     }
 }

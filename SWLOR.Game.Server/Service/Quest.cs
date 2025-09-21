@@ -12,6 +12,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -24,7 +25,12 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
-        private static readonly Dictionary<string, QuestDetail> _quests = new();
+        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        
+        // Cached data
+        private static IInterfaceCache<string, QuestDetail> _questCache;
+        
+        // Additional caches for complex data
         private static readonly Dictionary<NPCGroupType, List<string>> _npcsWithKillQuests = new();
         private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _questsByGuildType = new();
 
@@ -42,52 +48,44 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void RegisterQuests()
         {
-            // Organize quests to make later reads quicker.
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IQuestListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+            _questCache = _cacheService.BuildInterfaceCache<IQuestListDefinition, string, QuestDetail>()
+                .WithDataExtractor(instance => instance.BuildQuests())
+                .Build();
 
-            foreach (var type in types)
+            // Process quests for additional caches
+            foreach (var (questId, questDetail) in _questCache.AllItems)
             {
-                var instance = (IQuestListDefinition) Activator.CreateInstance(type);
-                var quests = instance.BuildQuests();
-
-                foreach (var (questId, quest) in quests)
+                // If any state has a Kill Target objective, add the NPC Group ID to the cache
+                foreach (var state in questDetail.States)
                 {
-                    _quests[questId] = quest;
-
-                    // If any state has a Kill Target objective, add the NPC Group ID to the cache
-                    foreach (var state in quest.States)
+                    foreach (var objective in state.Value.GetObjectives())
                     {
-                        foreach (var objective in state.Value.GetObjectives())
+                        if (objective is KillTargetObjective killObjective)
                         {
-                            if (objective is KillTargetObjective killObjective)
-                            {
-                                if(!_npcsWithKillQuests.ContainsKey(killObjective.Group))
-                                    _npcsWithKillQuests[killObjective.Group] = new List<string>();
+                            if(!_npcsWithKillQuests.ContainsKey(killObjective.Group))
+                                _npcsWithKillQuests[killObjective.Group] = new List<string>();
 
-                                if(!_npcsWithKillQuests[killObjective.Group].Contains(questId))
-                                    _npcsWithKillQuests[killObjective.Group].Add(questId);
-                            }
+                            if(!_npcsWithKillQuests[killObjective.Group].Contains(questId))
+                                _npcsWithKillQuests[killObjective.Group].Add(questId);
                         }
                     }
+                }
 
-                    // If the quest is associated with a guild, add it to that guild's list.
-                    if (quest.GuildType != GuildType.Invalid &&
-                        quest.GuildRank >= 0)
-                    {
-                        if(!_questsByGuildType.ContainsKey(quest.GuildType))
-                            _questsByGuildType[quest.GuildType] = new Dictionary<int, List<QuestDetail>>();
+                // If the quest is associated with a guild, add it to that guild's list.
+                if (questDetail.GuildType != GuildType.Invalid &&
+                    questDetail.GuildRank >= 0)
+                {
+                    if(!_questsByGuildType.ContainsKey(questDetail.GuildType))
+                        _questsByGuildType[questDetail.GuildType] = new Dictionary<int, List<QuestDetail>>();
 
-                        if(!_questsByGuildType[quest.GuildType].ContainsKey(quest.GuildRank))
-                            _questsByGuildType[quest.GuildType][quest.GuildRank] = new List<QuestDetail>();
+                    if(!_questsByGuildType[questDetail.GuildType].ContainsKey(questDetail.GuildRank))
+                        _questsByGuildType[questDetail.GuildType][questDetail.GuildRank] = new List<QuestDetail>();
 
-                        _questsByGuildType[quest.GuildType][quest.GuildRank].Add(quest);
-                    }
+                    _questsByGuildType[questDetail.GuildType][questDetail.GuildRank].Add(questDetail);
                 }
             }
 
-            Console.WriteLine($"Loaded {_quests.Count} quests.");
+            Console.WriteLine($"Loaded {_questCache.AllItems.Count} quests.");
             ExecuteScript("qsts_registered", GetModule());
         }
 
@@ -124,7 +122,7 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var (questId, playerQuest) in dbPlayer.Quests)
                 {
-                    var quest = _quests[questId];
+                    var quest = _questCache.AllItems[questId];
                     var state = quest.States[playerQuest.CurrentState];
 
                     PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
@@ -151,10 +149,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The quest detail matching this Id.</returns>
         public static QuestDetail GetQuestById(string questId)
         {
-            if(!_quests.ContainsKey(questId))
-                throw new KeyNotFoundException($"Quest '{questId}' was not registered. Did you set the right Id?");
-
-            return _quests[questId];
+            return _questCache?.AllItems[questId] ?? throw new KeyNotFoundException($"Quest {questId} not found in cache");
         }
 
         /// <summary>
@@ -173,7 +168,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void AbandonQuest(uint player, string questId)
         {
-            _quests[questId].Abandon(player);
+            _questCache.AllItems[questId].Abandon(player);
         }
 
         /// <summary>
@@ -184,7 +179,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="questId">The Id of the quest to accept.</param>
         public static void AcceptQuest(uint player, string questId)
         {
-            _quests[questId].Accept(player, OBJECT_SELF);
+            _questCache.AllItems[questId].Accept(player, OBJECT_SELF);
         }
 
         /// <summary>
@@ -196,7 +191,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="questId">The Id of the quest to advance.</param>
         public static void AdvanceQuest(uint player, uint questSource, string questId)
         {
-            _quests[questId].Advance(player, questSource);
+            _questCache.AllItems[questId].Advance(player, questSource);
         }
 
         /// <summary>

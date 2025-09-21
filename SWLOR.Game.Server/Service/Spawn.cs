@@ -10,6 +10,7 @@ using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
@@ -25,6 +26,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
         public const int DespawnMinutes = 20;
         public const int DefaultRespawnMinutes = 5;
 
@@ -66,9 +68,11 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, List<QueuedSpawn>> _queuedSpawnsByArea = new();
         private static readonly Dictionary<uint, DateTime> _queuedAreaDespawns = new();
         private static readonly List<ResourceDespawn> _queuedResourceDespawns = new();
-        private static readonly Dictionary<string, SpawnTable> _spawnTables = new();
         private static readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new();
         private static readonly Dictionary<uint, List<ActiveSpawn>> _activeSpawnsByArea = new();
+        
+        // Cached data
+        private static IInterfaceCache<string, SpawnTable> _spawnTableCache;
 
         [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
@@ -83,33 +87,21 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void LoadSpawnTables()
         {
-            // Get all implementations of spawn table definitions.
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(ISpawnListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+            _spawnTableCache = _cacheService.BuildInterfaceCache<ISpawnListDefinition, string, SpawnTable>()
+                .WithDataExtractor(instance => instance.BuildSpawnTables())
+                .Build();
 
-            foreach (var type in types)
+            // Validate spawn tables
+            foreach (var (key, table) in _spawnTableCache.AllItems)
             {
-                var instance = (ISpawnListDefinition)Activator.CreateInstance(type);
-                var builtTables = instance.BuildSpawnTables();
-
-                foreach (var table in builtTables)
+                if (string.IsNullOrWhiteSpace(key))
                 {
-                    if (string.IsNullOrWhiteSpace(table.Key))
-                    {
-                        _logger.Write<ErrorLogGroup>($"Spawn table {table.Key} has an invalid key. Values must be greater than zero.");
-                        continue;
-                    }
-
-                    if (_spawnTables.ContainsKey(table.Key))
-                    {
-                        _logger.Write<ErrorLogGroup>($"Spawn table {table.Key} has already been registered. Please make sure all spawn tables use a unique ID.");
-                        continue;
-                    }
-
-                    _spawnTables[table.Key] = table.Value;
+                    _logger.Write<ErrorLogGroup>($"Spawn table {key} has an invalid key. Values must be greater than zero.");
+                    continue;
                 }
             }
+
+            Console.WriteLine($"Loaded {_spawnTableCache.AllItems.Count} spawn tables.");
         }
 
 
@@ -126,13 +118,13 @@ namespace SWLOR.Game.Server.Service
                 var spawnTableId = GetLocalString(area, variableName);
                 if (!string.IsNullOrWhiteSpace(spawnTableId))
                 {
-                    if (!_spawnTables.ContainsKey(spawnTableId))
+                    if (!_spawnTableCache!.AllItems.ContainsKey(spawnTableId))
                     {
                         _logger.Write<ErrorLogGroup>($"Area has an invalid spawn table Id. ({spawnTableId}) is not defined. Do you have the right spawn table Id?");
                         return;
                     }
                     
-                    var spawnTable = _spawnTables[spawnTableId];
+                    var spawnTable = _spawnTableCache.AllItems[spawnTableId];
                     if (spawnTable.Spawns == null || spawnTable.Spawns.Count == 0)
                     {
                         _logger.Write<ErrorLogGroup>($"Spawn table {spawnTableId} has no spawn objects defined. Skipping area spawn setup.");
@@ -201,9 +193,9 @@ namespace SWLOR.Game.Server.Service
                     else if (type == ObjectType.Waypoint)
                     {
                         var spawnTableId = GetTag(obj);
-                        if (_spawnTables.ContainsKey(spawnTableId))
+                        if (_spawnTableCache!.AllItems.ContainsKey(spawnTableId))
                         {
-                            var spawnTable = _spawnTables[spawnTableId];
+                            var spawnTable = _spawnTableCache.AllItems[spawnTableId];
                             _spawns.Add(id, new SpawnDetail
                             {
                                 SpawnTableId = spawnTableId,
@@ -734,7 +726,7 @@ namespace SWLOR.Game.Server.Service
             // Create the object at the stored location.
             else if (!string.IsNullOrWhiteSpace(detail.SpawnTableId))
             {
-                var spawnTable = _spawnTables[detail.SpawnTableId];
+                var spawnTable = _spawnTableCache!.AllItems[detail.SpawnTableId];
                 var spawnObject = spawnTable.GetNextSpawn();
 
                 // It's possible that the rules of the spawn table don't have a spawn ready to be created.

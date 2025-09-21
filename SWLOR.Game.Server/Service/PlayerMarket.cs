@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Data;
@@ -20,9 +21,18 @@ namespace SWLOR.Game.Server.Service
     public static class PlayerMarket
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
         public const int MaxListingsPerMarket = 25;
-        private static Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeMarketCategories = new();
-        private static readonly Dictionary<MarketRegionType, MarketRegionAttribute> _activeMarketRegions = new();
+        
+        // Cached data
+        private static IEnumCache<MarketCategoryType, MarketCategoryAttribute>? _marketCategoryCache;
+        private static IEnumCache<MarketRegionType, MarketRegionAttribute>? _marketRegionCache;
+        
+        // Additional caches for backward compatibility
+        private static readonly Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeMarketCategories = new();
+        
+        // Pre-computed cache for fast retrieval
+        private static readonly Dictionary<MarketCategoryType, MarketCategoryAttribute> _allActiveMarketCategories = new();
 
         /// <summary>
         /// When the module caches, cache all static player market data for quick retrieval.
@@ -87,17 +97,21 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void LoadMarketCategories()
         {
-            var categories = Enum.GetValues(typeof(MarketCategoryType)).Cast<MarketCategoryType>();
-            foreach (var category in categories)
+            _marketCategoryCache = _cacheService.BuildEnumCache<MarketCategoryType, MarketCategoryAttribute>()
+                .WithAllItems()
+                .WithFilteredCache("Active", c => c.IsActive)
+                .Build();
+
+            // Populate the _activeMarketCategories dictionary for backward compatibility
+            var activeCategories = _marketCategoryCache.GetFilteredCache("Active");
+            if (activeCategories != null)
             {
-                var attribute = category.GetAttribute<MarketCategoryType, MarketCategoryAttribute>();
-
-                if(attribute.IsActive)
-                    _activeMarketCategories[category] = attribute;
+                foreach (var (categoryType, categoryAttribute) in activeCategories)
+                {
+                    _activeMarketCategories[categoryType] = categoryAttribute;
+                    _allActiveMarketCategories[categoryType] = categoryAttribute;
+                }
             }
-
-            _activeMarketCategories = _activeMarketCategories.OrderBy(o => o.Value.Name)
-                .ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>
@@ -105,14 +119,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void LoadMarkets()
         {
-            var categories = Enum.GetValues(typeof(MarketRegionType)).Cast<MarketRegionType>();
-            foreach (var category in categories)
-            {
-                var attribute = category.GetAttribute<MarketRegionType, MarketRegionAttribute>();
-
-                if (attribute.IsActive)
-                    _activeMarketRegions[category] = attribute;
-            }
+            _marketRegionCache = _cacheService.BuildEnumCache<MarketRegionType, MarketRegionAttribute>()
+                .WithAllItems()
+                .WithFilteredCache("Active", r => r.IsActive)
+                .Build();
         }
 
         /// <summary>
@@ -121,7 +131,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A dictionary of active market categories.</returns>
         public static Dictionary<MarketCategoryType, MarketCategoryAttribute> GetActiveCategories()
         {
-            return _activeMarketCategories.ToDictionary(x => x.Key, y => y.Value);
+            return _allActiveMarketCategories;
         }
 
         /// <summary>
@@ -131,7 +141,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A market region detail</returns>
         public static MarketRegionAttribute GetMarketRegion(MarketRegionType regionType)
         {
-            return _activeMarketRegions[regionType];
+            return _marketRegionCache?.GetFilteredCache("Active")?[regionType] ?? throw new KeyNotFoundException($"Market region {regionType} not found in cache");
         }
 
         /// <summary>

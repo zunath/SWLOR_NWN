@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server
     /// </summary>
     public static class ServiceContainer
     {
-        private static IServiceProvider? _serviceProvider;
+        private static IServiceProvider _serviceProvider;
         private static readonly object _lock = new();
 
         /// <summary>

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Extension;
@@ -22,31 +23,21 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        // All categories, including inactive
-        private static readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _allCategories = new();
-
-        // Active categories only
-        private static readonly Dictionary<PerkGroupType, Dictionary<PerkCategoryType, PerkCategoryAttribute>> _activeCategories = new();
-
-        // All perks, including inactive
-        private static readonly Dictionary<PerkType, PerkDetail> _allPerks = new();
+        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        
+        // Cached data
+        private static IEnumCache<PerkCategoryType, PerkCategoryAttribute> _categoryCache;
+        private static IInterfaceCache<PerkType, PerkDetail> _perkCache;
+        private static IEnumCache<CharacterType, CharacterTypeAttribute> _characterTypeCache;
+        
+        // Additional caches for complex data
         private static readonly Dictionary<PerkCategoryType, List<PerkType>> _allPerksByCategory = new();
-
-        // Active perks only
-        private static readonly Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>> _activePerks = new();
-        private static readonly Dictionary<PerkCategoryType, Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>>> _activePerksByCategory = new();
-
-        // Trigger Actions
         private static readonly Dictionary<PerkType, List<PerkTriggerEquippedAction>> _equipTriggers = new();
         private static readonly Dictionary<PerkType, List<PerkTriggerUnequippedAction>> _unequipTriggers = new();
         private static readonly Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> _purchaseTriggers = new();
         private static readonly Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> _refundTriggers = new();
-
-        // Perks with unlock requirements
         private static readonly Dictionary<PerkType, PerkDetail> _perksWithUnlockRequirements = new();
         private static readonly Dictionary<PerkType, int> _perkMaxLevels = new();
-        private static readonly Dictionary<CharacterType, CharacterTypeAttribute> _characterTypes = new();
-
         private static readonly Dictionary<PerkType, Dictionary<int, int>> _perkLevelTiers = new();
         private static readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
 
@@ -59,6 +50,14 @@ namespace SWLOR.Game.Server.Service
         /// Gets the list of light armor perks
         /// </summary>
         public static List<PerkType> LightArmorPerks { get; } = new();
+        
+        // Pre-computed caches for fast retrieval
+        private static readonly Dictionary<PerkGroupType, Dictionary<PerkCategoryType, PerkCategoryAttribute>> _activeCategoriesByGroup = new();
+        private static readonly Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>> _activePerksByGroup = new();
+        private static readonly Dictionary<PerkGroupType, Dictionary<PerkCategoryType, Dictionary<PerkType, PerkDetail>>> _activePerksByGroupAndCategory = new();
+        private static readonly Dictionary<PerkType, PerkDetail> _allPerks = new();
+        private static readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _allPerkCategories = new();
+        private static readonly Dictionary<CharacterType, CharacterTypeAttribute> _allCharacterTypes = new();
 
         /// <summary>
         /// When the module loads, cache all perk and character type information.
@@ -68,6 +67,8 @@ namespace SWLOR.Game.Server.Service
         {
             CachePerks();
             CacheCharacterTypes();
+            
+            PopulatePreComputedCaches();
         }
 
         /// <summary>
@@ -75,130 +76,164 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void CachePerks()
         {
-            var categories = Enum.GetValues(typeof(PerkCategoryType)).Cast<PerkCategoryType>();
-            foreach (var category in categories)
+            Console.WriteLine("Perk.CachePerks() called - starting perk cache initialization...");
+            
+            // Cache perk categories
+            _categoryCache = _cacheService.BuildEnumCache<PerkCategoryType, PerkCategoryAttribute>()
+                .WithAllItems()
+                .WithFilteredCache("Active", c => c.IsActive)
+                .Build();
+
+            // Initialize category lists
+            foreach (var category in _categoryCache.AllItems.Keys)
             {
-                var categoryDetail = category.GetAttribute<PerkCategoryType, PerkCategoryAttribute>();
-                _allCategories[category] = categoryDetail;
                 _allPerksByCategory[category] = new List<PerkType>();
-
-                if (categoryDetail.IsActive)
-                {
-                    _activePerksByCategory[category] = new Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>>();
-                }
             }
 
-            // Organize perks to make later reads quicker.
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IPerkListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+            // Cache perks using interface discovery
+            _perkCache = _cacheService.BuildInterfaceCache<IPerkListDefinition, PerkType, PerkDetail>()
+                .WithDataExtractor(instance => instance.BuildPerks())
+                .WithFilteredCache("Active", p => p.IsActive)
+                .WithGroupedCache<PerkGroupType>("ByGroup", p => p.GroupType)
+                .WithFilteredGroupedCache<PerkGroupType>("ActiveByGroup", p => p.IsActive, p => p.GroupType)
+                .WithGroupedCache<PerkCategoryType>("ByCategory", p => p.Category)
+                .Build();
 
-            foreach (var type in types)
+            // Process all perks for additional caches
+            foreach (var (perkType, perkDetail) in _perkCache.AllItems)
             {
-                var instance = (IPerkListDefinition)Activator.CreateInstance(type);
-                var perks = instance.BuildPerks();
+                var categoryDetail = _categoryCache.AllItems[perkDetail.Category];
 
-                foreach (var (perkType, perkDetail) in perks)
+                // Add to active cache if the perk is active
+                if (perkDetail.IsActive)
                 {
-                    var categoryDetail = _allCategories[perkDetail.Category];
-
-                    // Add to the perks cache
-                    _allPerks[perkType] = perkDetail;
-
-                    // Add to active cache if the perk is active
-                    if (perkDetail.IsActive)
+                    if (perkDetail.Category == PerkCategoryType.ArmorHeavy)
                     {
-                        if (!_activePerks.ContainsKey(perkDetail.GroupType))
-                            _activePerks[perkDetail.GroupType] = new Dictionary<PerkType, PerkDetail>();
-
-                        _activePerks[perkDetail.GroupType][perkType] = perkDetail;
-
-                        if (!_activePerksByCategory.ContainsKey(perkDetail.Category))
-                            _activePerksByCategory[perkDetail.Category] = new Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>>();
-
-                        if (!_activePerksByCategory[perkDetail.Category].ContainsKey(perkDetail.GroupType))
-                            _activePerksByCategory[perkDetail.Category][perkDetail.GroupType] = new Dictionary<PerkType, PerkDetail>();
-
-                        _activePerksByCategory[perkDetail.Category][perkDetail.GroupType][perkType] = perkDetail;
-
-                        if (perkDetail.Category == PerkCategoryType.ArmorHeavy)
-                        {
-                            HeavyArmorPerks.Add(perkType);
-                        }
-                        else if (perkDetail.Category == PerkCategoryType.ArmorLight)
-                        {
-                            LightArmorPerks.Add(perkType);
-                        }
-
-                        // Add appropriate trigger entries if this perk is active and has them.
-                        CacheTriggers(perkDetail);
+                        HeavyArmorPerks.Add(perkType);
+                    }
+                    else if (perkDetail.Category == PerkCategoryType.ArmorLight)
+                    {
+                        LightArmorPerks.Add(perkType);
                     }
 
-                    // Add to active category cache if the perk and category are both active.
-                    if (perkDetail.IsActive && categoryDetail.IsActive)
-                    {
-                        if(!_activeCategories.ContainsKey(perkDetail.GroupType))
-                            _activeCategories[perkDetail.GroupType] = new Dictionary<PerkCategoryType, PerkCategoryAttribute>();
-
-                        _activeCategories[perkDetail.GroupType][perkDetail.Category] = categoryDetail;
-                    }
-
-                    foreach (var (level, perkLevel) in perkDetail.PerkLevels)
-                    {
-                        // If the perk has an "unlock requirement", add it to that cache.
-                        var reqExists = perkLevel.Requirements.Count(x => x.GetType() == typeof(PerkRequirementUnlock)) > 0;
-                        if (reqExists)
-                        {
-                            _perksWithUnlockRequirements[perkType] = perkDetail;
-                            break;
-                        }
-
-                        var skillReqs = perkLevel
-                            .Requirements.Where(x => x.GetType() == typeof(PerkRequirementSkill))
-                            .Cast<PerkRequirementSkill>();
-
-                        // Determine the tiers of each individual perk level.
-                        // Also track the skill types used by this perk for later retrieval by the skill/perk decay system.
-                        var highestRank = 0;
-                        foreach (var req in skillReqs)
-                        {
-                            if (req.RequiredRank > highestRank)
-                            {
-                                highestRank = req.RequiredRank;
-                            }
-
-                            if (!_perksWithSkillRequirement.ContainsKey(req.Type))
-                            {
-                                _perksWithSkillRequirement[req.Type] = new List<PerkType>();
-                            }
-
-                            if (!_perksWithSkillRequirement[req.Type].Contains(perkType))
-                            {
-                                _perksWithSkillRequirement[req.Type].Add(perkType);
-                            }
-                        }
-                        
-                        var tier = highestRank / 10 + 1;
-                        if (tier < 1)
-                            tier = 1;
-                        else if (tier > 5)
-                            tier = 5;
-
-                        if (!_perkLevelTiers.ContainsKey(perkType))
-                            _perkLevelTiers[perkType] = new Dictionary<int, int>();
-
-                        _perkLevelTiers[perkType][level] = tier;
-                    }
-
-                    // Add to the perks by category cache.
-                    _allPerksByCategory[perkDetail.Category].Add(perkType);
-
-                    // Determine the max level for the perk.
-                    _perkMaxLevels[perkType] = perkDetail.PerkLevels.Last().Key;
+                    // Add appropriate trigger entries if this perk is active and has them.
+                    CacheTriggers(perkDetail);
                 }
+
+                foreach (var (level, perkLevel) in perkDetail.PerkLevels)
+                {
+                    // If the perk has an "unlock requirement", add it to that cache.
+                    var reqExists = perkLevel.Requirements.Count(x => x.GetType() == typeof(PerkRequirementUnlock)) > 0;
+                    if (reqExists)
+                    {
+                        _perksWithUnlockRequirements[perkType] = perkDetail;
+                        break;
+                    }
+
+                    var skillReqs = perkLevel
+                        .Requirements.Where(x => x.GetType() == typeof(PerkRequirementSkill))
+                        .Cast<PerkRequirementSkill>();
+
+                    // Determine the tiers of each individual perk level.
+                    // Also track the skill types used by this perk for later retrieval by the skill/perk decay system.
+                    var highestRank = 0;
+                    foreach (var req in skillReqs)
+                    {
+                        if (req.RequiredRank > highestRank)
+                        {
+                            highestRank = req.RequiredRank;
+                        }
+
+                        if (!_perksWithSkillRequirement.ContainsKey(req.Type))
+                        {
+                            _perksWithSkillRequirement[req.Type] = new List<PerkType>();
+                        }
+
+                        if (!_perksWithSkillRequirement[req.Type].Contains(perkType))
+                        {
+                            _perksWithSkillRequirement[req.Type].Add(perkType);
+                        }
+                    }
+                    
+                    var tier = highestRank / 10 + 1;
+                    if (tier < 1)
+                        tier = 1;
+                    else if (tier > 5)
+                        tier = 5;
+
+                    if (!_perkLevelTiers.ContainsKey(perkType))
+                        _perkLevelTiers[perkType] = new Dictionary<int, int>();
+
+                    _perkLevelTiers[perkType][level] = tier;
+                }
+
+                // Add to the perks by category cache.
+                _allPerksByCategory[perkDetail.Category].Add(perkType);
+
+                // Determine the max level for the perk.
+                _perkMaxLevels[perkType] = perkDetail.PerkLevels.Last().Key;
             }
 
-            Console.WriteLine($"Loaded {_allPerks.Count} player perks.");
+            Console.WriteLine($"Loaded {_perkCache.AllItems.Count} player perks.");
+        }
+
+        /// <summary>
+        /// Populates pre-computed caches for fast retrieval without LINQ.
+        /// </summary>
+        private static void PopulatePreComputedCaches()
+        {
+            // Initialize group dictionaries
+            foreach (PerkGroupType groupType in Enum.GetValues<PerkGroupType>())
+            {
+                if (groupType == PerkGroupType.Invalid) continue;
+                
+                _activeCategoriesByGroup[groupType] = new Dictionary<PerkCategoryType, PerkCategoryAttribute>();
+                _activePerksByGroup[groupType] = new Dictionary<PerkType, PerkDetail>();
+                _activePerksByGroupAndCategory[groupType] = new Dictionary<PerkCategoryType, Dictionary<PerkType, PerkDetail>>();
+            }
+
+            // Populate all perks cache
+            foreach (var (perkType, perkDetail) in _perkCache!.AllItems)
+            {
+                _allPerks[perkType] = perkDetail;
+            }
+
+            // Populate all categories cache
+            foreach (var (categoryType, categoryAttribute) in _categoryCache!.AllItems)
+            {
+                _allPerkCategories[categoryType] = categoryAttribute;
+            }
+
+            // Populate all character types cache
+            foreach (var (characterType, characterTypeAttribute) in _characterTypeCache.AllItems)
+            {
+                _allCharacterTypes[characterType] = characterTypeAttribute;
+            }
+
+            // Populate caches by iterating through all perks once
+            foreach (var (perkType, perkDetail) in _perkCache!.AllItems)
+            {
+                if (!perkDetail.IsActive) continue;
+
+                var groupType = perkDetail.GroupType;
+                if (groupType == PerkGroupType.Invalid) continue;
+
+                // Add to active perks by group
+                _activePerksByGroup[groupType][perkType] = perkDetail;
+
+                // Add to active categories by group (if not already added)
+                if (!_activeCategoriesByGroup[groupType].ContainsKey(perkDetail.Category))
+                {
+                    _activeCategoriesByGroup[groupType][perkDetail.Category] = _categoryCache!.AllItems[perkDetail.Category];
+                }
+
+                // Add to active perks by group and category
+                if (!_activePerksByGroupAndCategory[groupType].ContainsKey(perkDetail.Category))
+                {
+                    _activePerksByGroupAndCategory[groupType][perkDetail.Category] = new Dictionary<PerkType, PerkDetail>();
+                }
+                _activePerksByGroupAndCategory[groupType][perkDetail.Category][perkType] = perkDetail;
+            }
         }
 
         /// <summary>
@@ -206,14 +241,11 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void CacheCharacterTypes()
         {
-            var categories = Enum.GetValues(typeof(CharacterType)).Cast<CharacterType>();
-            foreach (var type in categories)
-            {
-                var characterTypeDetail = type.GetAttribute<CharacterType, CharacterTypeAttribute>();
-                _characterTypes[type] = characterTypeDetail;
-            }
+            _characterTypeCache = _cacheService.BuildEnumCache<CharacterType, CharacterTypeAttribute>()
+                .WithAllItems()
+                .Build();
 
-            Console.WriteLine($"Loaded {_characterTypes.Count} character types.");
+            Console.WriteLine($"Loaded {_characterTypeCache.AllItems.Count} character types.");
         }
 
         /// <summary>
@@ -302,7 +334,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of all perks.</returns>
         public static Dictionary<PerkType, PerkDetail> GetAllPerks()
         {
-            return _allPerks.ToDictionary(x => x.Key, y => y.Value);
+            return _perkCache?.AllItems.ToDictionary(x => x.Key, y => y.Value) ?? new Dictionary<PerkType, PerkDetail>();
         }
 
         /// <summary>
@@ -311,8 +343,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of all active perks.</returns>
         public static Dictionary<PerkType, PerkDetail> GetAllActivePerks(PerkGroupType group)
         {
-            return _activePerks[group]
-                .ToDictionary(x => x.Key, y => y.Value);
+            return _activePerksByGroup.GetValueOrDefault(group) ?? new Dictionary<PerkType, PerkDetail>();
         }
 
         /// <summary>
@@ -321,29 +352,53 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A list of all perk categories.</returns>
         public static Dictionary<PerkCategoryType, PerkCategoryAttribute> GetAllPerkCategories()
         {
-            return _allCategories.ToDictionary(x => x.Key, y => y.Value);
+            return _categoryCache?.AllItems.ToDictionary(x => x.Key, y => y.Value) ?? new Dictionary<PerkCategoryType, PerkCategoryAttribute>();
         }
 
         /// <summary>
         /// Retrieves a list of all active perk categories, excluding inactive ones.
         /// </summary>
         /// <returns>A list of all active perk categories.</returns>
-        public static Dictionary<PerkCategoryType, PerkCategoryAttribute> GetAllActivePerkCategories(PerkGroupType group)
+        public static Dictionary<PerkCategoryType, PerkCategoryAttribute> GetAllActivePerkCategories()
         {
-            return _activeCategories[group]
-                .ToDictionary(x => x.Key, y => y.Value);
+            var activeCategories = _categoryCache?.GetFilteredCache("Active");
+            return activeCategories ?? new Dictionary<PerkCategoryType, PerkCategoryAttribute>();
         }
 
         /// <summary>
-        /// Retrieves a list of all active perks by the specified category, by group.
+        /// Retrieves a list of all active perk categories for a specific group, excluding inactive ones.
+        /// </summary>
+        /// <param name="group">The group to filter by.</param>
+        /// <returns>A list of all active perk categories for the specified group.</returns>
+        public static Dictionary<PerkCategoryType, PerkCategoryAttribute> GetAllActivePerkCategories(PerkGroupType group)
+        {
+            return _activeCategoriesByGroup.GetValueOrDefault(group) ?? new Dictionary<PerkCategoryType, PerkCategoryAttribute>();
+        }
+
+        /// <summary>
+        /// Retrieves a list of all active perks by the specified category.
+        /// </summary>
+        /// <param name="category">The category to search by.</param>
+        /// <returns>A list of all active perks in the specified category.</returns>
+        public static Dictionary<PerkType, PerkDetail> GetActivePerksInCategory(PerkCategoryType category)
+        {
+            var activeByCategory = _perkCache?.GetGroupedCache<PerkCategoryType>("ByCategory");
+            var categoryPerks = activeByCategory?.GetValueOrDefault(category);
+            return categoryPerks?.Where(x => x.Value.IsActive).ToDictionary(x => x.Key, y => y.Value) ?? new Dictionary<PerkType, PerkDetail>();
+        }
+
+        /// <summary>
+        /// Retrieves a list of all active perks by the specified category and group.
         /// </summary>
         /// <param name="group">The group to filter by.</param>
         /// <param name="category">The category to search by.</param>
-        /// <returns>A list of all active perks in the specified category.</returns>
+        /// <returns>A list of all active perks in the specified category and group.</returns>
         public static Dictionary<PerkType, PerkDetail> GetActivePerksInCategory(PerkGroupType group, PerkCategoryType category)
         {
-            return _activePerksByCategory[category][group]
-                .ToDictionary(x => x.Key, y => y.Value);
+            var groupPerks = _activePerksByGroupAndCategory.GetValueOrDefault(group);
+            if (groupPerks == null) return new Dictionary<PerkType, PerkDetail>();
+            
+            return groupPerks.GetValueOrDefault(category) ?? new Dictionary<PerkType, PerkDetail>();
         }
 
         /// <summary>
@@ -353,7 +408,30 @@ namespace SWLOR.Game.Server.Service
         /// <returns>An object containing a perk's details.</returns>
         public static PerkDetail GetPerkDetails(PerkType perkType)
         {
-            return _allPerks[perkType];
+            if (_allPerks.Count == 0)
+            {
+                Console.WriteLine($"ERROR: _allPerks is empty when trying to get {perkType}!");
+                Console.WriteLine($"_perkCache is null: {_perkCache == null}");
+                if (_perkCache != null)
+                {
+                    Console.WriteLine($"_perkCache.AllItems.Count: {_perkCache.AllItems.Count}");
+                }
+                
+                // Try to populate the cache on-demand as a fallback
+                Console.WriteLine("Attempting to populate perk cache on-demand...");
+                try
+                {
+                    CachePerks();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to populate perk cache on-demand: {ex.Message}");
+                }
+            }
+            
+            return _allPerks.TryGetValue(perkType, out var perk) 
+                ? perk 
+                : throw new KeyNotFoundException($"Perk {perkType} not found in cache");
         }
 
         /// <summary>
@@ -363,7 +441,9 @@ namespace SWLOR.Game.Server.Service
         /// <returns>An object containing a perk category's details.</returns>
         public static PerkCategoryAttribute GetPerkCategoryDetails(PerkCategoryType categoryType)
         {
-            return _allCategories[categoryType];
+            return _allPerkCategories.TryGetValue(categoryType, out var category) 
+                ? category 
+                : throw new KeyNotFoundException($"Perk category {categoryType} not found in cache");
         }
 
         /// <summary>
@@ -373,7 +453,9 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A character type detail.</returns>
         public static CharacterTypeAttribute GetCharacterType(CharacterType characterType)
         {
-            return _characterTypes[characterType];
+            return _allCharacterTypes.TryGetValue(characterType, out var characterTypeDetail) 
+                ? characterTypeDetail 
+                : throw new KeyNotFoundException($"Character type {characterType} not found in cache");
         }
 
         /// <summary>

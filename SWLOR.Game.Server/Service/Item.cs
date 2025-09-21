@@ -15,6 +15,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
@@ -28,7 +29,15 @@ namespace SWLOR.Game.Server.Service
     public static class Item
     {
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly Dictionary<string, ItemDetail> _items = new();
+        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        
+        // Cached data
+        private static IInterfaceCache<string, ItemDetail> _itemCache;
+        
+        // Pre-computed cache for fast retrieval
+        private static readonly Dictionary<string, ItemDetail> _allItems = new();
+        
+        // Additional caches for complex data
         private static readonly Dictionary<int, int[]> _2daCache = new();
         private static readonly Dictionary<BaseItem, AbilityType> _itemToDamageAbilityMapping = new();
         private static readonly Dictionary<BaseItem, AbilityType> _itemToAccuracyAbilityMapping = new();
@@ -45,22 +54,17 @@ namespace SWLOR.Game.Server.Service
         }
         private static void Load2DACache()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IItemListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+            _itemCache = _cacheService.BuildInterfaceCache<IItemListDefinition, string, ItemDetail>()
+                .WithDataExtractor(instance => instance.BuildItems())
+                .Build();
 
-            foreach (var type in types)
+            // Populate pre-computed cache
+            foreach (var (itemTag, itemDetail) in _itemCache.AllItems)
             {
-                var instance = (IItemListDefinition)Activator.CreateInstance(type);
-                var items = instance.BuildItems();
-
-                foreach (var (itemTag, itemDetail) in items)
-                {
-                    _items[itemTag] = itemDetail;
-                }
+                _allItems[itemTag] = itemDetail;
             }
 
-            Console.WriteLine($"Loaded {_items.Count} items.");
+            Console.WriteLine($"Loaded {_itemCache.AllItems.Count} items.");
 
             // Cache 2da values that we need.  Create a new array for each row, otherwise they
             // end up pointing to the same array object (and get overwritten).
@@ -280,7 +284,7 @@ namespace SWLOR.Game.Server.Service
             var itemTag = GetTag(item);
 
             // Not in the cache. Skip.
-            if (!_items.ContainsKey(itemTag))
+            if (!_allItems.ContainsKey(itemTag))
                 return;
 
             var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
@@ -292,7 +296,7 @@ namespace SWLOR.Game.Server.Service
             var targetLocation = GetIsObjectValid(target) ? GetLocation(target) : Location(area, targetPosition, 0.0f);
             var userPosition = GetPosition(user);
             var propertyIndex = Convert.ToInt32(EventsPlugin.GetEventData("ITEM_PROPERTY_INDEX"));
-            var itemDetail = _items[itemTag];
+            var itemDetail = _allItems[itemTag];
 
             // Bypass the NWN "item use" animation.
             EventsPlugin.SkipEvent();

@@ -3,11 +3,13 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Shared.Caching.Service;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class HuntersGuildQuestDefinition : IQuestListDefinition
     {
+        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
         private class RewardDetails
         {
             public int Gold { get; set; }
@@ -188,7 +190,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             int amount, 
             int guildRank)
         {
-            var itemName = Cache.GetItemNameByResref(resref);
+            var itemName = _cache.GetItemNameByResref(resref);
             var rewardDetails = _rewardDetails[guildRank];
 
             _builder.Create(questId, $"{amount}x {itemName}")

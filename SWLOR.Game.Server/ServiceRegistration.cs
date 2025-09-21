@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using NWN.Core;
 using SWLOR.Game.Server.Server;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Core.Data;
@@ -65,7 +67,7 @@ namespace SWLOR.Game.Server
 
         private static void AddGameServices(IServiceCollection services)
         {
-
+            services.AddSingleton<ICacheService, CacheService>();
         }
     }
 }

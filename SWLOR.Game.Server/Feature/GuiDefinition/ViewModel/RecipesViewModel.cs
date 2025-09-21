@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Caching.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
         IGuiRefreshable<PerkRefundedRefreshEvent>
     {
+        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
         private int _currentRecipeIndex;
         private readonly List<RecipeType> _recipeTypes = new();
         private const int RecordsPerPage = 20;
@@ -360,7 +362,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 recipes = recipes
                     .Where(x =>
-                        Cache.GetItemNameByResref(x.Value.Resref)
+                        _cache.GetItemNameByResref(x.Value.Resref)
                             .ToLower()
                             .Contains(SearchText.ToLower()))
                     .ToDictionary(x => x.Key, y => y.Value);
@@ -414,7 +416,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var canCraft = _mode == RecipesUIMode.Research
                     ? Craft.CanPlayerResearchRecipe(Player, type)
                     : Craft.CanPlayerCraftRecipe(Player, type);
-                var name = $"{Cache.GetItemNameByResref(detail.Resref)} [Lvl. {detail.Level}]";
+                var name = $"{_cache.GetItemNameByResref(detail.Resref)} [Lvl. {detail.Level}]";
 
                 recipeNames.Add(name);
                 recipeColors.Add(canCraft ? GuiColor.Green : GuiColor.Red);
@@ -640,7 +642,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void DisplayRecipeDetail(RecipeType recipe, BlueprintDetail blueprint)
         {
             var detail = Craft.GetRecipe(recipe);
-            var itemName = Cache.GetItemNameByResref(detail.Resref);
+            var itemName = _cache.GetItemNameByResref(detail.Resref);
             var enhancementSlotType = "N/A";
 
             if (detail.EnhancementType == RecipeEnhancementType.Weapon)

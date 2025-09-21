@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Service;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Service.QuestService
     public class XPReward : IQuestReward
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
         public int Amount { get; }
         public bool IsSelectable { get; }
         public string MenuName => Amount + " XP";
@@ -78,6 +80,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class ItemReward : IQuestReward
     {
+        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
         public bool IsSelectable { get; }
         public string MenuName { get; }
         private readonly string _resref;
@@ -89,7 +92,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             _quantity = quantity;
             IsSelectable = isSelectable;
 
-            var itemName = Cache.GetItemNameByResref(resref);
+            var itemName = _cache.GetItemNameByResref(resref);
 
             if (_quantity > 1)
                 MenuName = _quantity + "x " + itemName;

@@ -7,12 +7,14 @@ using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Service;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class RecipeItemDefinition: IItemListDefinition
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
         private readonly ItemBuilder _builder = new();
 
         public Dictionary<string, ItemDetail> BuildItems()
@@ -89,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                         var recipeDetail = Craft.GetRecipe(recipeType);
                         var skillDetail = Skill.GetSkillDetails(recipeDetail.Skill);
-                        var itemName = Cache.GetItemNameByResref(recipeDetail.Resref);
+                        var itemName = _cache.GetItemNameByResref(recipeDetail.Resref);
                         SendMessageToPC(user, $"You learn the {skillDetail.Name} recipe: {itemName}.");
                     }
 

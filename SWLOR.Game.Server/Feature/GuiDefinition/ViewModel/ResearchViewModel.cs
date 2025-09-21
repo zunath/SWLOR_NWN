@@ -12,6 +12,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -21,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     internal class ResearchViewModel: GuiViewModelBase<ResearchViewModel, ResearchPayload>
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
         
         private class ResearchJobDetails
         {
@@ -164,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return new ResearchJobDetails
             {
                 Quantity = recipe.Quantity,
-                RecipeName = Cache.GetItemNameByResref(recipe.Resref),
+                RecipeName = _cache.GetItemNameByResref(recipe.Resref),
                 CurrentLevel = currentLevel,
                 CreditReduction = blueprint.CreditReduction,
                 EnhancementSlots = blueprint.EnhancementSlots,
@@ -221,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var deltaTime = dbJob.DateCompleted - now;
                 var timeString = Time.GetTimeShortIntervals(deltaTime, false);
 
-                RecipeName = $"Recipe: {recipe.Quantity}x {Cache.GetItemNameByResref(recipe.Resref)}";
+                RecipeName = $"Recipe: {recipe.Quantity}x {_cache.GetItemNameByResref(recipe.Resref)}";
                 Level = $"Level: {dbJob.Level}";
                 JobProgress = progressPercentage > 1f ? 1f : progressPercentage;
                 JobProgressTime = $"Remaining: {timeString}";
@@ -233,7 +235,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var recipe = Craft.GetRecipe(dbJob.Recipe);
 
-                RecipeName = $"Recipe: {recipe.Quantity}x {Cache.GetItemNameByResref(recipe.Resref)}";
+                RecipeName = $"Recipe: {recipe.Quantity}x {_cache.GetItemNameByResref(recipe.Resref)}";
                 Level = $"Level: {dbJob.Level}";
                 JobProgress = 1f;
                 JobProgressTime = "COMPLETE";
@@ -396,7 +398,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (string.IsNullOrWhiteSpace(dbJob.SerializedItem))
             {
                 item = CreateItemOnObject("blueprint", Player);
-                SetName(item, $"Blueprint: {Cache.GetItemNameByResref(recipe.Resref)}");
+                SetName(item, $"Blueprint: {_cache.GetItemNameByResref(recipe.Resref)}");
                 isNewBlueprint = true;
             }
             else

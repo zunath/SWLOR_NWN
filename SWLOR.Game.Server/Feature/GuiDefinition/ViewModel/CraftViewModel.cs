@@ -16,6 +16,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
         public const string ViewName = "CraftView";
         public const string SetUpPartialName = "SetUpPartial";
         public const string CraftPartialName = "CraftPartial";
@@ -394,7 +396,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var blueprint = Craft.GetBlueprintDetails(_blueprintItem);
             _hasBlueprint = blueprint.Recipe != RecipeType.Invalid;
             
-            var itemName = Cache.GetItemNameByResref(recipe.Resref);
+            var itemName = _cache.GetItemNameByResref(recipe.Resref);
             
             SwitchToSetUpMode();
             StatusColor = GuiColor.Green;

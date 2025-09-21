@@ -12,6 +12,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Creature;
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Service
     public static class Quest
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
         private static readonly Dictionary<string, QuestDetail> _quests = new();
         private static readonly Dictionary<NPCGroupType, List<string>> _npcsWithKillQuests = new();
         private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _questsByGuildType = new();
@@ -332,7 +334,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var itemProgress in quest.ItemProgresses)
             {
-                var itemName = Cache.GetItemNameByResref(itemProgress.Key);
+                var itemName = _cache.GetItemNameByResref(itemProgress.Key);
                 text += $"{itemProgress.Value}x {itemName}\n";
             }
 
@@ -408,7 +410,7 @@ namespace SWLOR.Game.Server.Service
             _db.Set(dbPlayer);
 
             // Give the player an update and reduce the item stack.
-            var itemName = Cache.GetItemNameByResref(resref);
+            var itemName = _cache.GetItemNameByResref(resref);
             SendMessageToPC(player, $"You need {dbPlayer.Quests[questId].ItemProgresses[resref]}x {itemName} to complete this quest.");
             
             // Attempt to advance the quest.

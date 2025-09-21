@@ -2,11 +2,13 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Shared.Caching.Service;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class AgricultureGuildQuestDefinition : IQuestListDefinition
     {
+        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
         private class RewardDetails
         {
             public int Gold { get; }
@@ -237,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             int amount,
             int guildRank)
         {
-            var itemName = Cache.GetItemNameByResref(resref);
+            var itemName = _cache.GetItemNameByResref(resref);
             var rewardDetails = _rewardDetails[guildRank];
 
             builder.Create(questId, $"{amount}x {itemName}")

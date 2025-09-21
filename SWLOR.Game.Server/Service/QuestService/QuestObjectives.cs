@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Core.Service;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Service.QuestService
     public class CollectItemObjective : IQuestObjective
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
         private readonly string _resref;
         private readonly int _quantity;
 
@@ -51,7 +53,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             _db.Set(dbPlayer);
 
             var questDetail = Quest.GetQuestById(questId);
-            var itemName = Cache.GetItemNameByResref(_resref);
+            var itemName = _cache.GetItemNameByResref(_resref);
 
             var statusMessage = $"[{questDetail.Name}] {itemName} remaining: {quest.ItemProgresses[_resref]}";
 
@@ -90,7 +92,7 @@ namespace SWLOR.Game.Server.Service.QuestService
                 return "N/A";
 
             var numberRemaining = dbPlayer.Quests[questId].ItemProgresses[_resref];
-            var itemName = Cache.GetItemNameByResref(_resref);
+            var itemName = _cache.GetItemNameByResref(_resref);
             return $"{_quantity - numberRemaining} / {_quantity} {itemName}";
         }
     }

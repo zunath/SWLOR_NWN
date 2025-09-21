@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -8,26 +6,31 @@ using SWLOR.Shared.Core.Entity;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Shared.Caching.Service
 {
     /// <summary>
     /// This class is responsible for loading and retrieving NWN data which lives for the lifespan of the server.
     /// Nothing in here will be permanently stored, it's simply here to make queries quicker.
     /// If you need persistent storage, refer to the DB class.
     /// </summary>
-    public static class Cache
+    public class CacheService : ICacheService
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static bool _cachedThisRun;
-        private static Dictionary<string, string> ItemNamesByResref { get; set; } = new();
-        private static Dictionary<int, int> PortraitIdsByInternalId { get; } = new();
-        private static Dictionary<int, int> PortraitInternalIdsByPortraitId { get; } = new();
-        private static Dictionary<int, string> PortraitResrefByInternalId { get; } = new();
-        private static Dictionary<string, int> PortraitInternalIdsByPortraitResref { get; } = new();
-        private static Dictionary<int, string> SoundSets { get; set; } = new();
-        
+        private readonly IDatabaseService _db;
+        private bool _cachedThisRun;
+        private Dictionary<string, string> ItemNamesByResref { get; set; } = new();
+        private Dictionary<int, int> PortraitIdsByInternalId { get; } = new();
+        private Dictionary<int, int> PortraitInternalIdsByPortraitId { get; } = new();
+        private Dictionary<int, string> PortraitResrefByInternalId { get; } = new();
+        private Dictionary<string, int> PortraitInternalIdsByPortraitResref { get; } = new();
+        private Dictionary<int, string> SoundSets { get; set; } = new();
+
+        public CacheService(IDatabaseService db)
+        {
+            _db = db;
+        }
+
         [ScriptHandler<OnModuleContentChange>]
-        public static void CacheItemNamesByResref()
+        public void CacheItemNamesByResref()
         {
             var resref = UtilPlugin.GetFirstResRef(ResRefType.Item);
 
@@ -48,7 +51,7 @@ namespace SWLOR.Game.Server.Service
         /// Handles caching data into server memory for quicker lookup later.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheData()
+        public void CacheData()
         {
             LoadItemCache();
             CachePortraitsById();
@@ -59,7 +62,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {SoundSets.Count} soundsets.");
         }
 
-        private static void LoadItemCache()
+        private void LoadItemCache()
         {
             // No need to load from the DB, it's already in memory.
             if (_cachedThisRun)
@@ -73,7 +76,7 @@ namespace SWLOR.Game.Server.Service
         /// Stores the name of an individual item into the cache.
         /// </summary>
         /// <param name="resref">The resref of the item we want to cache.</param>
-        private static void CacheItemNameByResref(string resref)
+        private void CacheItemNameByResref(string resref)
         {
             var storageContainer = GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = CreateItemOnObject(resref, storageContainer);
@@ -86,7 +89,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="resref">The resref to search for.</param>
         /// <returns>The name of an item, or an empty string if it cannot be found.</returns>
-        public static string GetItemNameByResref(string resref)
+        public string GetItemNameByResref(string resref)
         {
             // Item couldn't be found in the cache. Spawn it, get its details, put them in the cache, then destroy it.
             if (!ItemNamesByResref.ContainsKey(resref))
@@ -100,9 +103,9 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the number of portraits registered in the system.
         /// </summary>
-        public static int PortraitCount => PortraitIdsByInternalId.Count;
+        public int PortraitCount => PortraitIdsByInternalId.Count;
 
-        private static void CachePortraitsById()
+        private void CachePortraitsById()
         {
             const string Portraits2DA = "portraits";
             var twoDACount = Get2DARowCount(Portraits2DA);
@@ -125,7 +128,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void CacheSoundSets()
+        private void CacheSoundSets()
         {
             const string SoundSets2DA = "soundset";
             var soundSetCount = Get2DARowCount(SoundSets2DA);
@@ -150,7 +153,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="portraitInternalId">The internal portrait Id to retrieve.</param>
         /// <returns>The 2DA Id of the portrait.</returns>
-        public static int GetPortraitByInternalId(int portraitInternalId)
+        public int GetPortraitByInternalId(int portraitInternalId)
         {
             return PortraitIdsByInternalId[portraitInternalId];
         }
@@ -160,7 +163,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="portraitId">The NWN portrait 2DA Id.</param>
         /// <returns>The internal Id of the portrait.</returns>
-        public static int GetPortraitInternalId(int portraitId)
+        public int GetPortraitInternalId(int portraitId)
         {
             return PortraitInternalIdsByPortraitId[portraitId];
         }
@@ -171,12 +174,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="portraitInternalId">The internal portrait Id</param>
         /// <returns>The resref of the portrait, excluding the size.</returns>
-        public static string GetPortraitResrefByInternalId(int portraitInternalId)
+        public string GetPortraitResrefByInternalId(int portraitInternalId)
         {
             return PortraitResrefByInternalId[portraitInternalId];
         }
 
-        public static int GetPortraitInternalIdByResref(string resref)
+        public int GetPortraitInternalIdByResref(string resref)
         {
             if (!PortraitInternalIdsByPortraitResref.ContainsKey(resref))
                 return -1;
@@ -184,7 +187,7 @@ namespace SWLOR.Game.Server.Service
             return PortraitInternalIdsByPortraitResref[resref];
         }
 
-        public static Dictionary<int, string> GetSoundSets()
+        public Dictionary<int, string> GetSoundSets()
         {
             return SoundSets.ToDictionary(x => x.Key, y => y.Value);
         }

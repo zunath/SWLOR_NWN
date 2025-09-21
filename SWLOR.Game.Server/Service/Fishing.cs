@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Service;
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Service
     public static class Fishing
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
         private static readonly Dictionary<FishType, FishAttribute> _fish = new();
         private static readonly Dictionary<FishingRodType, FishingRodAttribute> _rods = new();
         private static readonly Dictionary<FishingBaitType, FishingBaitAttribute> _baits = new();
@@ -384,7 +386,7 @@ namespace SWLOR.Game.Server.Service
 
             var rodType = _rodsByResref[rodResref];
             var baitDetail = _baits[baitType];
-            var baitName = Cache.GetItemNameByResref(baitDetail.Resrefs.First());
+            var baitName = _cache.GetItemNameByResref(baitDetail.Resrefs.First());
             var locationDetail = _fishingLocations[locationId];
             var (fishType, isDefaultFish) = locationDetail.GetRandomFish(rodType, baitType);
             var fish = _fish[fishType];

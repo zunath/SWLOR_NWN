@@ -16,6 +16,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Extension;
@@ -30,6 +31,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
         public const int MaxResearchLevel = 10;
 
         private static readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
@@ -382,7 +384,7 @@ namespace SWLOR.Game.Server.Service
             recipeDetailColors.Add(GuiColor.Cyan);
             foreach (var (resref, quantity) in detail.Components)
             {
-                var componentName = Cache.GetItemNameByResref(resref);
+                var componentName = _cache.GetItemNameByResref(resref);
                 recipeDetails.Add($"{quantity}x {componentName}");
                 recipeDetailColors.Add(GuiColor.White);
             }

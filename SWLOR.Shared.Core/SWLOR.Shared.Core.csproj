@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Beamdog\**" />
+    <EmbeddedResource Remove="Beamdog\**" />
+    <None Remove="Beamdog\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NReJSON" Version="4.0.0" />
     <PackageReference Include="NWN.Core" Version="8193.37.3" />
@@ -22,9 +28,5 @@
   <ItemGroup>
     <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
     <ProjectReference Include="..\SWLOR.Shared.Abstractions\SWLOR.Shared.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Beamdog\" />
   </ItemGroup>
 </Project>

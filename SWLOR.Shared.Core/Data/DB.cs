@@ -254,7 +254,7 @@ namespace SWLOR.Shared.Core.Data
                 RedisValue data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
                 
                 if (string.IsNullOrWhiteSpace(data))
-                    return default;
+                    return null;
 
                 var entity = JsonConvert.DeserializeObject<T>(data);
                 _cachedEntities[cacheKey] = entity;

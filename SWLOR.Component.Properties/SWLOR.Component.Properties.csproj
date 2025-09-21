@@ -13,4 +13,12 @@
     <ProjectReference Include="..\SWLOR.Shared.Events\SWLOR.Shared.Events.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Contracts\" />
+    <Folder Include="Entity\" />
+    <Folder Include="Enums\" />
+    <Folder Include="Model\" />
+    <Folder Include="Service\" />
+  </ItemGroup>
+
 </Project>

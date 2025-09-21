@@ -1,5 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using NWN.Core;
+using SWLOR.Component.Combat.Contracts;
+using SWLOR.Component.Combat.Service;
+using SWLOR.Component.Player.Contracts;
+using SWLOR.Component.Player.Service;
 using SWLOR.Game.Server.Server;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API;
@@ -71,6 +75,8 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IRandomService, RandomService>();
             services.AddSingleton<ITileMagicService, TileMagicService>();
             services.AddSingleton<ITaxiService, Taxi>();
+            services.AddSingleton<IAttackOfOpportunityService, AttackOfOpportunityService>();
+            services.AddSingleton<IClientVersionCheck, ClientVersionCheck>();
         }
     }
 }

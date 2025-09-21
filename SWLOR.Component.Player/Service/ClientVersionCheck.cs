@@ -1,23 +1,27 @@
-using System;
+using SWLOR.Component.Player.Contracts;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Component.Player.Service
 {
-    public static class ClientVersionCheck
+    public class ClientVersionCheck : IClientVersionCheck
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger;
+        public ClientVersionCheck(ILogger logger)
+        {
+            _logger = logger;
+        }
+
         /// <summary>
         /// When a player connects to the server, perform a version check on their client.
         /// All of the NUI window features require version 8193.33 or higher but we restrict to 8193.34 or higher
         /// due to fixes applied in .34.
         /// </summary>
         [ScriptHandler<OnClientConnectBefore>]
-        public static void CheckVersion()
+        public void CheckVersion()
         {
             const int RequiredMajorVersion = 8193;
             const int RequiredMinorVersion = 34;

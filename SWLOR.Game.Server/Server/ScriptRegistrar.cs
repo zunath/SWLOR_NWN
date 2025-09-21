@@ -185,7 +185,11 @@ namespace SWLOR.Game.Server.Server
                 {
                     del = (Action)methodInfo.CreateDelegate(typeof(Action));
                 }
-                // For non-static methods, we'll handle them differently
+                else
+                {
+                    // For non-static methods, create a wrapper that will be handled by ScriptMethodInvoker
+                    del = () => _methodInvoker.InvokeInstanceMethod(methodInfo);
+                }
             }
             else if (parameters.Length == 1)
             {

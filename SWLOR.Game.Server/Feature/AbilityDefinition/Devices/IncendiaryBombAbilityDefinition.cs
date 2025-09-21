@@ -11,7 +11,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class IncendiaryBombAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
 
@@ -95,18 +94,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            IncendiaryBomb1();
-            IncendiaryBomb2();
-            IncendiaryBomb3();
+            IncendiaryBomb1(builder);
+            IncendiaryBomb2(builder);
+            IncendiaryBomb3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
         
-        private void IncendiaryBomb1()
+        private void IncendiaryBomb1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.IncendiaryBomb1, PerkType.IncendiaryBomb)
+            builder.Create(FeatType.IncendiaryBomb1, PerkType.IncendiaryBomb)
                 .Name("Incendiary Bomb I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
@@ -133,9 +132,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void IncendiaryBomb2()
+        private void IncendiaryBomb2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.IncendiaryBomb2, PerkType.IncendiaryBomb)
+            builder.Create(FeatType.IncendiaryBomb2, PerkType.IncendiaryBomb)
                 .Name("Incendiary Bomb II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
@@ -162,9 +161,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void IncendiaryBomb3()
+        private void IncendiaryBomb3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.IncendiaryBomb3, PerkType.IncendiaryBomb)
+            builder.Create(FeatType.IncendiaryBomb3, PerkType.IncendiaryBomb)
                 .Name("Incendiary Bomb III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)

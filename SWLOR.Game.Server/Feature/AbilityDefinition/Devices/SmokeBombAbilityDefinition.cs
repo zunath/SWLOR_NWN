@@ -11,7 +11,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class SmokeBombAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
-        private readonly AbilityBuilder _builder = new();
 
         public SmokeBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService) 
             : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
@@ -41,18 +40,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            SmokeBomb1();
-            SmokeBomb2();
-            SmokeBomb3();
+            SmokeBomb1(builder);
+            SmokeBomb2(builder);
+            SmokeBomb3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
         
-        private void SmokeBomb1()
+        private void SmokeBomb1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.SmokeBomb1, PerkType.SmokeBomb)
+            builder.Create(FeatType.SmokeBomb1, PerkType.SmokeBomb)
                 .Name("Smoke Bomb I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
@@ -78,9 +77,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void SmokeBomb2()
+        private void SmokeBomb2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.SmokeBomb2, PerkType.SmokeBomb)
+            builder.Create(FeatType.SmokeBomb2, PerkType.SmokeBomb)
                 .Name("Smoke Bomb II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
@@ -106,9 +105,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void SmokeBomb3()
+        private void SmokeBomb3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.SmokeBomb3, PerkType.SmokeBomb)
+            builder.Create(FeatType.SmokeBomb3, PerkType.SmokeBomb)
                 .Name("Smoke Bomb III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)

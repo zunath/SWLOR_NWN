@@ -1,7 +1,4 @@
-//using Random = SWLOR.Game.Server.Service.Random;
-
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
@@ -19,7 +16,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
-        public CrescentMoonAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, IAbilityService abilityService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public CrescentMoonAbilityDefinition(
+            IItemService itemService, 
+            ICombatService combatService, 
+            IStatService statService, 
+            IAbilityService abilityService, 
+            ICombatPointService combatPointService, 
+            IEnmityService enmityService)
         {
             _itemService = itemService;
             _combatService = combatService;
@@ -102,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             _enmityService.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
-        private void CrescentMoon1(AbilityBuilder builder)
+        private void CrescentMoon1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CrescentMoon1, PerkType.CrescentMoon)
                 .Name("Crescent Moon I")
@@ -114,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void CrescentMoon2(AbilityBuilder builder)
+        private void CrescentMoon2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CrescentMoon2, PerkType.CrescentMoon)
                 .Name("Crescent Moon II")
@@ -126,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void CrescentMoon3(AbilityBuilder builder)
+        private void CrescentMoon3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CrescentMoon3, PerkType.CrescentMoon)
                 .Name("Crescent Moon III")

@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private void HardSlash1(AbilityBuilder builder)
+        private void HardSlash1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.HardSlash1, PerkType.HardSlash)
                 .Name("Hard Slash I")
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void HardSlash2(AbilityBuilder builder)
+        private void HardSlash2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.HardSlash2, PerkType.HardSlash)
                 .Name("Hard Slash II")
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void HardSlash3(AbilityBuilder builder)
+        private void HardSlash3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.HardSlash3, PerkType.HardSlash)
                 .Name("Hard Slash III")

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.AbilityService;
+
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
@@ -10,18 +10,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
     public class IronShellAbilityDefinition: IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
+        private readonly IStatusEffectService _statusEffectService;
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public IronShellAbilityDefinition(IStatusEffectService statusEffectService)
         {
-            IronShell();
-
-            return _builder.Build();
+            _statusEffectService = statusEffectService;
         }
 
-        private void IronShell()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.IronShell, PerkType.Invalid)
+            IronShell(builder);
+
+            return builder.Build();
+        }
+
+        private void IronShell(IAbilityBuilder builder)
+        {
+            builder.Create(FeatType.IronShell, PerkType.Invalid)
                 .Name("Iron Shell")
                 .HasActivationDelay(2.0f)
                 .HasRecastDelay(RecastGroup.IronShell, 60f)
@@ -30,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Magenta), activator, 1.0f);
-                    ServiceContainer.GetService<IStatusEffectService>().Apply(activator, activator, StatusEffectType.IronShell, 45f);
+                    _statusEffectService.Apply(activator, activator, StatusEffectType.IronShell, 45f);
                 });
         }
     }

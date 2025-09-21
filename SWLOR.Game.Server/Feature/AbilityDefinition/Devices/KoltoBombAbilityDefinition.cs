@@ -12,7 +12,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class KoltoBombAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
-        private readonly AbilityBuilder _builder = new();
 
         public KoltoBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService) 
             : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
@@ -84,18 +83,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            KoltoBomb1();
-            KoltoBomb2();
-            KoltoBomb3();
+            KoltoBomb1(builder);
+            KoltoBomb2(builder);
+            KoltoBomb3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
         
-        private void KoltoBomb1()
+        private void KoltoBomb1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.KoltoBomb1, PerkType.KoltoBomb)
+            builder.Create(FeatType.KoltoBomb1, PerkType.KoltoBomb)
                 .Name("Kolto Bomb I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
@@ -121,9 +120,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void KoltoBomb2()
+        private void KoltoBomb2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.KoltoBomb2, PerkType.KoltoBomb)
+            builder.Create(FeatType.KoltoBomb2, PerkType.KoltoBomb)
                 .Name("Kolto Bomb II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
@@ -149,9 +148,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void KoltoBomb3()
+        private void KoltoBomb3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.KoltoBomb3, PerkType.KoltoBomb)
+            builder.Create(FeatType.KoltoBomb3, PerkType.KoltoBomb)
                 .Name("Kolto Bomb III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)

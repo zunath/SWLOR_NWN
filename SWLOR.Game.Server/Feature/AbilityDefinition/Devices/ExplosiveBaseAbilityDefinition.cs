@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         }
         private const string ExplosiveItemResref = "explosives";
 
-        public abstract Dictionary<FeatType, AbilityDetail> BuildAbilities();
+        public abstract Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder);
 
         protected string ExplosiveValidation(uint activator, uint target, int level, Location location)
         {

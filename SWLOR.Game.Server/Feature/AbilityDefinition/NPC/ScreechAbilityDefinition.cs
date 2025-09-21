@@ -11,17 +11,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
     public class ScreechAbilityDefinition: IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Screech();
+            Screech(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Screech()
+        private void Screech(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Screech, PerkType.Invalid)
+            builder.Create(FeatType.Screech, PerkType.Invalid)
                 .Name("Screech")
                 .HasActivationDelay(4.0f)
                 .DisplaysVisualEffectWhenActivating(VisualEffect.Vfx_Dur_Aura_Blue)

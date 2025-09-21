@@ -10,18 +10,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class ShieldingAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        public ShieldingAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService, IStatusEffectService statusEffectService) : base(random, perkService, combatPoint, enmityService, abilityService, statusEffectService)
+        public ShieldingAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService, IStatusEffectService statusEffectService) : base(random, perkService, combatPointService, enmityService, abilityService, statusEffectService)
         {
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Shielding1();
-            Shielding2();
-            Shielding3();
-            Shielding4();
+            Shielding1(builder);
+            Shielding2(builder);
+            Shielding3(builder);
+            Shielding4(builder);
 
-            return Builder.Build();
+            return builder.Build();
         }
 
         private string Validation(uint activator, uint target, int level, Location location)
@@ -51,9 +51,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             TakeStimPack(activator);
         }
 
-        private void Shielding1()
+        private void Shielding1(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.Shielding1, PerkType.Shielding)
+            builder.Create(FeatType.Shielding1, PerkType.Shielding)
                 .Name("Shielding I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Shielding, 30f)
@@ -73,9 +73,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void Shielding2()
+        private void Shielding2(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.Shielding2, PerkType.Shielding)
+            builder.Create(FeatType.Shielding2, PerkType.Shielding)
                 .Name("Shielding II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Shielding, 30f)
@@ -95,9 +95,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void Shielding3()
+        private void Shielding3(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.Shielding3, PerkType.Shielding)
+            builder.Create(FeatType.Shielding3, PerkType.Shielding)
                 .Name("Shielding III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Shielding, 30f)
@@ -117,9 +117,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void Shielding4()
+        private void Shielding4(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.Shielding4, PerkType.Shielding)
+            builder.Create(FeatType.Shielding4, PerkType.Shielding)
                 .Name("Shielding IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.Shielding, 30f)

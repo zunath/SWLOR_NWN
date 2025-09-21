@@ -16,17 +16,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ICombatPointService combatPointService, 
             IEnmityService enmityService, 
             IAbilityService abilityService) 
-            : base(random, perkService, combatPoint, enmityService, abilityService)
+            : base(random, perkService, combatPointService, enmityService, abilityService)
         {
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Resuscitation1();
-            Resuscitation2();
-            Resuscitation3();
+            Resuscitation1(builder);
+            Resuscitation2(builder);
+            Resuscitation3(builder);
 
-            return Builder.Build();
+            return builder.Build();
         }
 
         private string Validation(uint activator, uint target, int level, Location location)
@@ -80,9 +80,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             TakeMedicalSupplies(activator);
         }
 
-        private void Resuscitation1()
+        private void Resuscitation1(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.Resuscitation1, PerkType.Resuscitation)
+            builder.Create(FeatType.Resuscitation1, PerkType.Resuscitation)
                 .Name("Resuscitation I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Resuscitation, 180f)
@@ -102,9 +102,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void Resuscitation2()
+        private void Resuscitation2(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.Resuscitation2, PerkType.Resuscitation)
+            builder.Create(FeatType.Resuscitation2, PerkType.Resuscitation)
                 .Name("Resuscitation II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Resuscitation, 180f)
@@ -124,9 +124,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void Resuscitation3()
+        private void Resuscitation3(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.Resuscitation3, PerkType.Resuscitation)
+            builder.Create(FeatType.Resuscitation3, PerkType.Resuscitation)
                 .Name("Resuscitation III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Resuscitation, 180f)

@@ -10,7 +10,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class IonGrenadeAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly IAbilityService _abilityService;
@@ -25,13 +24,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _combatPointService = combatPointService;
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            IonGrenade1();
-            IonGrenade2();
-            IonGrenade3();
+            IonGrenade1(builder);
+            IonGrenade2(builder);
+            IonGrenade3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
         
         private void Impact(uint activator, uint target, int dmg, int dc)
@@ -81,9 +80,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             EnmityService.ModifyEnmity(activator, target, 350);
         }
 
-        private void IonGrenade1()
+        private void IonGrenade1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.IonGrenade1, PerkType.IonGrenade)
+            builder.Create(FeatType.IonGrenade1, PerkType.IonGrenade)
                 .Name("Ion Grenade I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.IonGrenade, 12f)
@@ -110,9 +109,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void IonGrenade2()
+        private void IonGrenade2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.IonGrenade2, PerkType.IonGrenade)
+            builder.Create(FeatType.IonGrenade2, PerkType.IonGrenade)
                 .Name("Ion Grenade II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.IonGrenade, 12f)
@@ -140,9 +139,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void IonGrenade3()
+        private void IonGrenade3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.IonGrenade3, PerkType.IonGrenade)
+            builder.Create(FeatType.IonGrenade3, PerkType.IonGrenade)
                 .Name("Ion Grenade III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.IonGrenade, 12f)

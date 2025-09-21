@@ -10,7 +10,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class ConcussionGrenadeAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
@@ -21,13 +20,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _enmityService = enmityService;
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            ConcussionGrenade1();
-            ConcussionGrenade2();
-            ConcussionGrenade3();
+            ConcussionGrenade1(builder);
+            ConcussionGrenade2(builder);
+            ConcussionGrenade3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
         
         private void Impact(uint activator, uint target, int dmg, int dc)
@@ -71,9 +70,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _enmityService.ModifyEnmity(activator, target, 180);
         }
 
-        private void ConcussionGrenade1()
+        private void ConcussionGrenade1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ConcussionGrenade1, PerkType.ConcussionGrenade)
+            builder.Create(FeatType.ConcussionGrenade1, PerkType.ConcussionGrenade)
                 .Name("Concussion Grenade I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
@@ -97,9 +96,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void ConcussionGrenade2()
+        private void ConcussionGrenade2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ConcussionGrenade2, PerkType.ConcussionGrenade)
+            builder.Create(FeatType.ConcussionGrenade2, PerkType.ConcussionGrenade)
                 .Name("Concussion Grenade II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)
@@ -124,9 +123,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void ConcussionGrenade3()
+        private void ConcussionGrenade3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ConcussionGrenade3, PerkType.ConcussionGrenade)
+            builder.Create(FeatType.ConcussionGrenade3, PerkType.ConcussionGrenade)
                 .Name("Concussion Grenade III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ConcussionGrenade, 24f)

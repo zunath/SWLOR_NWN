@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.AbilityService;
+
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
@@ -10,18 +10,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
     public class VenomAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
+        private readonly IStatusEffectService _statusEffectService;
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public VenomAbilityDefinition(IStatusEffectService statusEffectService)
         {
-            Venom();
-
-            return _builder.Build();
+            _statusEffectService = statusEffectService;
         }
 
-        private void Venom()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Venom, PerkType.Invalid)
+            Venom(builder);
+
+            return builder.Build();
+        }
+
+        private void Venom(IAbilityBuilder builder)
+        {
+            builder.Create(FeatType.Venom, PerkType.Invalid)
                 .Name("Venom")
                 .HasActivationDelay(1.5f)
                 .HasRecastDelay(RecastGroup.Venom, 35f)
@@ -30,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Disease_S), target);
-                    ServiceContainer.GetService<IStatusEffectService>().Apply(activator, target, StatusEffectType.Poison, 120f);
+                    _statusEffectService.Apply(activator, target, StatusEffectType.Poison, 120f);
                 });
         }
 

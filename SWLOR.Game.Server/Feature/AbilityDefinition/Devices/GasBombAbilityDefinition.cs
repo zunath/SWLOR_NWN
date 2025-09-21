@@ -12,7 +12,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class GasBombAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
-        private readonly AbilityBuilder _builder = new();
 
         public GasBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService) 
             : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
@@ -86,18 +85,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            GasBomb1();
-            GasBomb2();
-            GasBomb3();
+            GasBomb1(builder);
+            GasBomb2(builder);
+            GasBomb3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
         
-        private void GasBomb1()
+        private void GasBomb1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.GasBomb1, PerkType.GasBomb)
+            builder.Create(FeatType.GasBomb1, PerkType.GasBomb)
                 .Name("Gas Bomb I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
@@ -124,9 +123,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void GasBomb2()
+        private void GasBomb2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.GasBomb2, PerkType.GasBomb)
+            builder.Create(FeatType.GasBomb2, PerkType.GasBomb)
                 .Name("Gas Bomb II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)
@@ -153,9 +152,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void GasBomb3()
+        private void GasBomb3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.GasBomb3, PerkType.GasBomb)
+            builder.Create(FeatType.GasBomb3, PerkType.GasBomb)
                 .Name("Gas Bomb III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Bombs, 60f)

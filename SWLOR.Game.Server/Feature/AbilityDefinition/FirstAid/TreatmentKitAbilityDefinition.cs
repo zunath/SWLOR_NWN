@@ -9,21 +9,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class TreatmentKitAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        public TreatmentKitAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService, IStatusEffectService statusEffectService) : base(random, perkService, combatPoint, enmityService, abilityService, statusEffectService)
+        public TreatmentKitAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService, IStatusEffectService statusEffectService) : base(random, perkService, combatPointService, enmityService, abilityService, statusEffectService)
         {
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            TreatmentKit1();
-            TreatmentKit2();
+            TreatmentKit1(builder);
+            TreatmentKit2(builder);
 
-            return Builder.Build();
+            return builder.Build();
         }
 
-        private void TreatmentKit1()
+        private void TreatmentKit1(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.TreatmentKit1, PerkType.TreatmentKit)
+            builder.Create(FeatType.TreatmentKit1, PerkType.TreatmentKit)
                 .Name("Treatment Kit I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.TreatmentKit, 6f)
@@ -65,9 +65,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
-        private void TreatmentKit2()
+        private void TreatmentKit2(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.TreatmentKit2, PerkType.TreatmentKit)
+            builder.Create(FeatType.TreatmentKit2, PerkType.TreatmentKit)
                 .Name("Treatment Kit II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.TreatmentKit, 6f)

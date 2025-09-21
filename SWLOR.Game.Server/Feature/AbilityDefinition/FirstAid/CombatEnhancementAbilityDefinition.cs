@@ -10,17 +10,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class CombatEnhancementAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        public CombatEnhancementAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPoint, enmityService, abilityService)
+        public CombatEnhancementAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPointService, enmityService, abilityService)
         {
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            CombatEnhancement1();
-            CombatEnhancement2();
-            CombatEnhancement3();
+            CombatEnhancement1(builder);
+            CombatEnhancement2(builder);
+            CombatEnhancement3(builder);
 
-            return Builder.Build();
+            return builder.Build();
         }
 
         private string Validation(uint activator, uint target, int level, Location location)
@@ -64,9 +64,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             TakeStimPack(activator);
         }
 
-        private void CombatEnhancement1()
+        private void CombatEnhancement1(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.CombatEnhancement1, PerkType.CombatEnhancement)
+            builder.Create(FeatType.CombatEnhancement1, PerkType.CombatEnhancement)
                 .Name("Combat Enhancement I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.CombatEnhancement, 30f)
@@ -84,9 +84,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     _combatPointService.AddCombatPoint(activator, target, SkillType.FirstAid, 3);
                 });
         }
-        private void CombatEnhancement2()
+        private void CombatEnhancement2(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.CombatEnhancement2, PerkType.CombatEnhancement)
+            builder.Create(FeatType.CombatEnhancement2, PerkType.CombatEnhancement)
                 .Name("Combat Enhancement II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.CombatEnhancement, 30f)
@@ -104,9 +104,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     _combatPointService.AddCombatPoint(activator, target, SkillType.FirstAid, 3);
                 });
         }
-        private void CombatEnhancement3()
+        private void CombatEnhancement3(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.CombatEnhancement3, PerkType.CombatEnhancement)
+            builder.Create(FeatType.CombatEnhancement3, PerkType.CombatEnhancement)
                 .Name("Combat Enhancement III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.CombatEnhancement, 30f)

@@ -11,16 +11,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private const string Tier1Tag = "ABILITY_INFUSION_1";
         private const string Tier2Tag = "ABILITY_INFUSION_2";
 
-        public InfusionAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPoint, enmityService, abilityService)
+        public InfusionAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPointService, enmityService, abilityService)
         {
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Infusion1();
-            Infusion2();
+            Infusion1(builder);
+            Infusion2(builder);
 
-            return Builder.Build();
+            return builder.Build();
         }
 
         private string Validation(uint activator, uint target, int level)
@@ -62,9 +62,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
         }
 
-        private void Infusion1()
+        private void Infusion1(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.Infusion1, PerkType.Infusion)
+            builder.Create(FeatType.Infusion1, PerkType.Infusion)
                 .Name("Infusion I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Infusion, 60f)
@@ -84,9 +84,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void Infusion2()
+        private void Infusion2(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.Infusion2, PerkType.Infusion)
+            builder.Create(FeatType.Infusion2, PerkType.Infusion)
                 .Name("Infusion II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Infusion, 60f)

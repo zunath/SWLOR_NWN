@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             }
         }
 
-        private void TranquilizerShot1(AbilityBuilder builder)
+        private void TranquilizerShot1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.TranquilizerShot1, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot I")
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void TranquilizerShot2(AbilityBuilder builder)
+        private void TranquilizerShot2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.TranquilizerShot2, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot II")
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void TranquilizerShot3(AbilityBuilder builder)
+        private void TranquilizerShot3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.TranquilizerShot3, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot III")

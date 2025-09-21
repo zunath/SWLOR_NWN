@@ -11,18 +11,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
     public class StrongStyleSaberstaffAbilityDefinition : IAbilityListDefinition
     {
         private readonly IAbilityService _abilityService;
-        private readonly AbilityBuilder _builder = new();
 
         public StrongStyleSaberstaffAbilityDefinition(IAbilityService abilityService)
         {
             _abilityService = abilityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            StrongStyleSaberstaff();
+            StrongStyleSaberstaff(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void DoToggle(uint activator, AbilityToggleType type)
@@ -40,9 +39,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             }
         }
 
-        private void StrongStyleSaberstaff()
+        private void StrongStyleSaberstaff(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.StrongStyleSaberstaff, PerkType.StrongStyleSaberstaff)
+            builder.Create(FeatType.StrongStyleSaberstaff, PerkType.StrongStyleSaberstaff)
                 .Name("Strong Style (Saberstaff)")
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()

@@ -10,19 +10,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
     public class FireBreathAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            FireBreath();
-            FlameBlast();
+            FireBreath(builder);
+            FlameBlast(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void FireBreath()
+        private void FireBreath(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.FireBreath, PerkType.Invalid)
+            builder.Create(FeatType.FireBreath, PerkType.Invalid)
                 .Name("Fire Breath")
                 .HasActivationDelay(2.0f)
                 .HasRecastDelay(RecastGroup.FireBreath, 60f)
@@ -58,9 +57,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 });
         }
 
-        private void FlameBlast()
+        private void FlameBlast(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.FlameBlast, PerkType.Invalid)
+            builder.Create(FeatType.FlameBlast, PerkType.Invalid)
                 .Name("Flame Blast")
                 .HasActivationDelay(4.0f)
                 .HasRecastDelay(RecastGroup.FlameBlast, 30f)

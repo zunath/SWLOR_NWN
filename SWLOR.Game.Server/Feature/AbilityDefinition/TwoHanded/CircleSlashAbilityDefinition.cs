@@ -19,7 +19,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
-        public CircleSlashAbilityDefinition(IItemService itemService, IAbilityService abilityService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public CircleSlashAbilityDefinition(
+            IItemService itemService, 
+            IAbilityService abilityService, 
+            ICombatService combatService, 
+            IStatService statService, 
+            ICombatPointService combatPointService, 
+            IEnmityService enmityService)
         {
             _itemService = itemService;
             _abilityService = abilityService;
@@ -112,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             AssignCommand(activator, () => ActionPlayAnimation(Animation.Whirlwind));
         }
 
-        private void CircleSlash1(AbilityBuilder builder)
+        private void CircleSlash1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CircleSlash1, PerkType.CircleSlash)
                 .Name("Circle Slash I")
@@ -126,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void CircleSlash2(AbilityBuilder builder)
+        private void CircleSlash2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CircleSlash2, PerkType.CircleSlash)
                 .Name("Circle Slash II")
@@ -140,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void CircleSlash3(AbilityBuilder builder)
+        private void CircleSlash3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CircleSlash3, PerkType.CircleSlash)
                 .Name("Circle Slash III")

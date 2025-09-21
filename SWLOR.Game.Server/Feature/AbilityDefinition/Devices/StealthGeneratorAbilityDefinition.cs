@@ -12,7 +12,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class StealthGeneratorAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
@@ -22,13 +21,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            StealthGenerator1();
-            StealthGenerator2();
-            StealthGenerator3();
+            StealthGenerator1(builder);
+            StealthGenerator2(builder);
+            StealthGenerator3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         [ScriptHandler(ScriptName.OnHarvesterUsed)]
@@ -38,9 +37,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             RemoveEffect(OBJECT_SELF, EffectTypeScript.Invisibility, EffectTypeScript.ImprovedInvisibility);
         }
 
-        private void StealthGenerator1()
+        private void StealthGenerator1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.StealthGenerator1, PerkType.StealthGenerator)
+            builder.Create(FeatType.StealthGenerator1, PerkType.StealthGenerator)
                 .Name("Stealth Generator I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.StealthGenerator, 360f)
@@ -58,9 +57,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void StealthGenerator2()
+        private void StealthGenerator2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.StealthGenerator2, PerkType.StealthGenerator)
+            builder.Create(FeatType.StealthGenerator2, PerkType.StealthGenerator)
                 .Name("Stealth Generator II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.StealthGenerator, 360f)
@@ -78,9 +77,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void StealthGenerator3()
+        private void StealthGenerator3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.StealthGenerator3, PerkType.StealthGenerator)
+            builder.Create(FeatType.StealthGenerator3, PerkType.StealthGenerator)
                 .Name("Stealth Generator III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.StealthGenerator, 360f)

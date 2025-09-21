@@ -10,7 +10,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
     public class TalonAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
 
@@ -20,16 +19,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             _statService = statService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Talon();
+            Talon(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Talon()
+        private void Talon(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Talon, PerkType.Invalid)
+            builder.Create(FeatType.Talon, PerkType.Invalid)
                 .Name("Talon")
                 .HasActivationDelay(2.0f)
                 .HasRecastDelay(RecastGroup.Talon, 40f)

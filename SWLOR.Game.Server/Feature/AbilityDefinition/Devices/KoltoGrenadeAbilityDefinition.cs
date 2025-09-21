@@ -11,20 +11,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class KoltoGrenadeAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
-        private readonly AbilityBuilder _builder = new();
 
         public KoltoGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService) 
             : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
         {
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            KoltoGrenade1();
-            KoltoGrenade2();
-            KoltoGrenade3();
+            KoltoGrenade1(builder);
+            KoltoGrenade2(builder);
+            KoltoGrenade3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
         
         private void Impact(uint activator, uint target, int regenAmount)
@@ -44,9 +43,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _enmityService.ModifyEnmityOnAll(activator, 180);
         }
 
-        private void KoltoGrenade1()
+        private void KoltoGrenade1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.KoltoGrenade1, PerkType.KoltoGrenade)
+            builder.Create(FeatType.KoltoGrenade1, PerkType.KoltoGrenade)
                 .Name("Kolto Grenade I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.KoltoGrenade, 30f)
@@ -66,9 +65,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void KoltoGrenade2()
+        private void KoltoGrenade2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.KoltoGrenade2, PerkType.KoltoGrenade)
+            builder.Create(FeatType.KoltoGrenade2, PerkType.KoltoGrenade)
                 .Name("Kolto Grenade II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.KoltoGrenade, 30f)
@@ -88,9 +87,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void KoltoGrenade3()
+        private void KoltoGrenade3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.KoltoGrenade3, PerkType.KoltoGrenade)
+            builder.Create(FeatType.KoltoGrenade3, PerkType.KoltoGrenade)
                 .Name("Kolto Grenade III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.KoltoGrenade, 30f)

@@ -11,7 +11,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class FlamethrowerAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly ICombatPointService _combatPointService;
@@ -27,13 +26,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _statusEffectService = statusEffectService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Flamethrower1();
-            Flamethrower2();
-            Flamethrower3();
+            Flamethrower1(builder);
+            Flamethrower2(builder);
+            Flamethrower3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void Impact(uint activator, Location targetLocation, int dmg, int dc)
@@ -90,9 +89,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        private void Flamethrower1()
+        private void Flamethrower1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Flamethrower1, PerkType.Flamethrower)
+            builder.Create(FeatType.Flamethrower1, PerkType.Flamethrower)
                 .Name("Flamethrower I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Flamethrower, 12f)
@@ -108,9 +107,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void Flamethrower2()
+        private void Flamethrower2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Flamethrower2, PerkType.Flamethrower)
+            builder.Create(FeatType.Flamethrower2, PerkType.Flamethrower)
                 .Name("Flamethrower II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Flamethrower, 12f)
@@ -127,9 +126,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void Flamethrower3()
+        private void Flamethrower3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Flamethrower3, PerkType.Flamethrower)
+            builder.Create(FeatType.Flamethrower3, PerkType.Flamethrower)
                 .Name("Flamethrower III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Flamethrower, 12f)

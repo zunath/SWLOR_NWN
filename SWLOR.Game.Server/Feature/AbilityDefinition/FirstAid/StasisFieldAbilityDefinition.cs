@@ -11,17 +11,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class StasisFieldAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        public StasisFieldAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPoint, enmityService, abilityService)
+        public StasisFieldAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPointService, enmityService, abilityService)
         {
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            StasisField1();
-            StasisField2();
-            StasisField3();
+            StasisField1(builder);
+            StasisField2(builder);
+            StasisField3(builder);
 
-            return Builder.Build();
+            return builder.Build();
         }
 
         private string Validation(uint activator, uint target, int level, Location location)
@@ -59,9 +59,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             TakeStimPack(activator);
         }
 
-        private void StasisField1()
+        private void StasisField1(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.StasisField1, PerkType.StasisField)
+            builder.Create(FeatType.StasisField1, PerkType.StasisField)
                 .Name("Stasis Field I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.StasisField, 30f)
@@ -81,9 +81,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void StasisField2()
+        private void StasisField2(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.StasisField2, PerkType.StasisField)
+            builder.Create(FeatType.StasisField2, PerkType.StasisField)
                 .Name("Stasis Field II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.StasisField, 30f)
@@ -103,9 +103,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void StasisField3()
+        private void StasisField3(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.StasisField3, PerkType.StasisField)
+            builder.Create(FeatType.StasisField3, PerkType.StasisField)
                 .Name("Stasis Field III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.StasisField, 30f)

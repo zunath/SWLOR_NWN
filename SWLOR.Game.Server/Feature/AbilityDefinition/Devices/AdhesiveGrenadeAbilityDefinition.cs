@@ -10,20 +10,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class AdhesiveGrenadeAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
-        private readonly AbilityBuilder _builder = new();
 
         public AdhesiveGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService) 
             : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
         {
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            AdhesiveGrenade1();
-            AdhesiveGrenade2();
-            AdhesiveGrenade3();
+            AdhesiveGrenade1(builder);
+            AdhesiveGrenade2(builder);
+            AdhesiveGrenade3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void Impact(uint activator, uint target, int immobilizeChance, float slowLength, int immobilizeDC)
@@ -48,9 +47,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _enmityService.ModifyEnmity(activator, target, 150);
         }
 
-        private void AdhesiveGrenade1()
+        private void AdhesiveGrenade1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.AdhesiveGrenade1, PerkType.AdhesiveGrenade)
+            builder.Create(FeatType.AdhesiveGrenade1, PerkType.AdhesiveGrenade)
                 .Name("Adhesive Grenade I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.AdhesiveGrenade, 24f)
@@ -70,9 +69,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void AdhesiveGrenade2()
+        private void AdhesiveGrenade2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.AdhesiveGrenade2, PerkType.AdhesiveGrenade)
+            builder.Create(FeatType.AdhesiveGrenade2, PerkType.AdhesiveGrenade)
                 .Name("Adhesive Grenade II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.AdhesiveGrenade, 24f)
@@ -92,9 +91,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void AdhesiveGrenade3()
+        private void AdhesiveGrenade3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.AdhesiveGrenade3, PerkType.AdhesiveGrenade)
+            builder.Create(FeatType.AdhesiveGrenade3, PerkType.AdhesiveGrenade)
                 .Name("Adhesive Grenade III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.AdhesiveGrenade, 24f)

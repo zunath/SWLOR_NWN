@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
@@ -10,17 +9,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
     public class BiteAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
+        private readonly IStatusEffectService _statusEffectService;
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public BiteAbilityDefinition(IStatusEffectService statusEffectService)
         {
-            Bite();
-            return _builder.Build();
+            _statusEffectService = statusEffectService;
         }
 
-        private void Bite()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Bite, PerkType.Invalid)
+            Bite(builder);
+            return builder.Build();
+        }
+
+        private void Bite(IAbilityBuilder builder)
+        {
+            builder.Create(FeatType.Bite, PerkType.Invalid)
                 .Name("Bite")
                 .HasActivationDelay(2f)
                 .IsCastedAbility()
@@ -29,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .HasRecastDelay(RecastGroup.Bite, 60f)
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ServiceContainer.GetService<IStatusEffectService>().Apply(activator, target, StatusEffectType.Bleed, 60f);
+                    _statusEffectService.Apply(activator, target, StatusEffectType.Bleed, 60f);
 
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Chunk_Red_Small), target);
                 });

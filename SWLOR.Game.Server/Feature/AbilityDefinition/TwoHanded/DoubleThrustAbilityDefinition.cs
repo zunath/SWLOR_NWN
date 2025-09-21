@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private void DoubleThrust1(AbilityBuilder builder)
+        private void DoubleThrust1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleThrust1, PerkType.DoubleThrust)
                 .Name("Double Thrust I")
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }
-        private void DoubleThrust2(AbilityBuilder builder)
+        private void DoubleThrust2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleThrust2, PerkType.DoubleThrust)
                 .Name("Double Thrust II")
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }
-        private void DoubleThrust3(AbilityBuilder builder)
+        private void DoubleThrust3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleThrust3, PerkType.DoubleThrust)
                 .Name("Double Thrust III")

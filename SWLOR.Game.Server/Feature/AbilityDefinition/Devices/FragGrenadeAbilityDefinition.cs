@@ -10,20 +10,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class FragGrenadeAbilityDefinition: ExplosiveBaseAbilityDefinition
     {
-        private readonly AbilityBuilder _builder = new();
 
         public FragGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService)
             : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService, statusEffectService)
         {
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            FragGrenade1();
-            FragGrenade2();
-            FragGrenade3();
+            FragGrenade1(builder);
+            FragGrenade2(builder);
+            FragGrenade3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
         
         private void Impact(uint activator, uint target, int dmg, int dc, float bleedLength)
@@ -67,9 +66,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _enmityService.ModifyEnmity(activator, target, 320);
         }
 
-        private void FragGrenade1()
+        private void FragGrenade1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.FragGrenade1, PerkType.FragGrenade)
+            builder.Create(FeatType.FragGrenade1, PerkType.FragGrenade)
                 .Name("Frag Grenade I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.FragGrenade, 12f)
@@ -90,9 +89,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void FragGrenade2()
+        private void FragGrenade2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.FragGrenade2, PerkType.FragGrenade)
+            builder.Create(FeatType.FragGrenade2, PerkType.FragGrenade)
                 .Name("Frag Grenade II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.FragGrenade, 12f)
@@ -115,9 +114,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void FragGrenade3()
+        private void FragGrenade3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.FragGrenade3, PerkType.FragGrenade)
+            builder.Create(FeatType.FragGrenade3, PerkType.FragGrenade)
                 .Name("Frag Grenade III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.FragGrenade, 12f)

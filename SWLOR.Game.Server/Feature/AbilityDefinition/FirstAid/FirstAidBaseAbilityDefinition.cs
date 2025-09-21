@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
@@ -10,7 +9,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
     public abstract class FirstAidBaseAbilityDefinition: IAbilityListDefinition
     {
         private readonly IRandomService _random;
-        protected readonly AbilityBuilder Builder = new();
         private readonly IPerkService _perkService;
         protected readonly ICombatPointService _combatPointService;
         protected readonly IEnmityService _enmityService;
@@ -29,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private const string MedicalSuppliesItemTag = "med_supplies";
         private const string StimPackItemTag = "stim_pack";
 
-        public abstract Dictionary<FeatType, AbilityDetail> BuildAbilities();
+        public abstract Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder);
 
         private void TakeItem(uint activator, string resref)
         {

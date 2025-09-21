@@ -12,7 +12,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class ReviveBeastAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IAbilityBuilder _builder;
         private readonly IDatabaseService _db;
         private readonly ICombatPointService _combatPointService;
         private readonly IBeastMasteryService _beastMastery;
@@ -22,21 +21,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             IDatabaseService db, 
             ICombatPointService combatPointService, 
             IBeastMasteryService beastMastery, 
-            IEnmityService enmityService,
-            IAbilityBuilder builder)
+            IEnmityService enmityService)
         {
             _db = db;
             _combatPointService = combatPointService;
             _beastMastery = beastMastery;
             _enmityService = enmityService;
-            _builder = builder;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            ReviveBeast1();
-            ReviveBeast2();
-            ReviveBeast3();
+            ReviveBeast1(builder);
+            ReviveBeast2(builder);
+            ReviveBeast3(builder);
 
             return builder.Build();
         }
@@ -71,9 +68,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             return string.Empty;
         }
 
-        private void ReviveBeast1()
+        private void ReviveBeast1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ReviveBeast1, PerkType.ReviveBeast)
+            builder.Create(FeatType.ReviveBeast1, PerkType.ReviveBeast)
                 .Name("Revive Beast I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)
@@ -99,9 +96,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 });
         }
 
-        private void ReviveBeast2()
+        private void ReviveBeast2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ReviveBeast2, PerkType.ReviveBeast)
+            builder.Create(FeatType.ReviveBeast2, PerkType.ReviveBeast)
                 .Name("Revive Beast II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)
@@ -128,9 +125,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 });
         }
 
-        private void ReviveBeast3()
+        private void ReviveBeast3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ReviveBeast3, PerkType.ReviveBeast)
+            builder.Create(FeatType.ReviveBeast3, PerkType.ReviveBeast)
                 .Name("Revive Beast III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ReviveBeast, 60f * 5)

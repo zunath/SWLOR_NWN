@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class SoothePetAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IAbilityBuilder _builder;
+        private readonly IAbilityBuilder builder;
         private readonly ICombatPointService _combatPointService;
         private readonly IBeastMasteryService _beastMastery;
         private readonly IEnmityService _enmityService;
@@ -21,26 +21,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             ICombatPointService combatPointService, 
             IBeastMasteryService beastMastery, 
             IEnmityService enmityService, 
-            IStatusEffectService statusEffectService,
-            IAbilityBuilder builder)
+            IStatusEffectService statusEffectService)
         {
             _combatPointService = combatPointService;
             _beastMastery = beastMastery;
             _enmityService = enmityService;
             _statusEffectService = statusEffectService;
-            _builder = builder;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            SoothePet();
+            SoothePet(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void SoothePet()
+        private void SoothePet(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.SoothePet, PerkType.SoothePet)
+            builder.Create(FeatType.SoothePet, PerkType.SoothePet)
                 .Name("Soothe Pet")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Tame, 60f * 3)

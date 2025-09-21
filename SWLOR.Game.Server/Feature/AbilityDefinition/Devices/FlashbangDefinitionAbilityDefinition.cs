@@ -10,20 +10,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class FlashbangDefinitionAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
-        private readonly AbilityBuilder _builder = new();
 
         public FlashbangDefinitionAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService) 
             : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
         {
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            FlashbangGrenade1();
-            FlashbangGrenade2();
-            FlashbangGrenade3();
+            FlashbangGrenade1(builder);
+            FlashbangGrenade2(builder);
+            FlashbangGrenade3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
         
         private void Impact(uint activator, uint target, int abReduce)
@@ -37,9 +36,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _enmityService.ModifyEnmity(activator, target, 250);
         }
 
-        private void FlashbangGrenade1()
+        private void FlashbangGrenade1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.FlashbangGrenade1, PerkType.FlashbangGrenade)
+            builder.Create(FeatType.FlashbangGrenade1, PerkType.FlashbangGrenade)
                 .Name("Flashbang Grenade I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.FlashbangGrenade, 24f)
@@ -59,9 +58,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void FlashbangGrenade2()
+        private void FlashbangGrenade2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.FlashbangGrenade2, PerkType.FlashbangGrenade)
+            builder.Create(FeatType.FlashbangGrenade2, PerkType.FlashbangGrenade)
                 .Name("Flashbang Grenade II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.FlashbangGrenade, 24f)
@@ -81,9 +80,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void FlashbangGrenade3()
+        private void FlashbangGrenade3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.FlashbangGrenade3, PerkType.FlashbangGrenade)
+            builder.Create(FeatType.FlashbangGrenade3, PerkType.FlashbangGrenade)
                 .Name("Flashbang Grenade III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.FlashbangGrenade, 24f)

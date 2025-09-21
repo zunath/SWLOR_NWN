@@ -10,7 +10,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
     public class SpikesAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly IStatService _statService;
         private readonly ICombatService _combatService;
         private readonly IStatusEffectService _statusEffectService;
@@ -22,16 +21,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             _statusEffectService = statusEffectService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Spikes();
+            Spikes(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Spikes()
+        private void Spikes(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Spikes, PerkType.Invalid)
+            builder.Create(FeatType.Spikes, PerkType.Invalid)
                 .Name("Spikes")
                 .HasActivationDelay(3.5f)
                 .HasRecastDelay(RecastGroup.Spikes, 20f)

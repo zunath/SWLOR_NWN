@@ -14,7 +14,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         private readonly IRandomService _random;
         private readonly IStatService _statService;
         private readonly ICombatService _combatService;
-        private readonly AbilityBuilder _builder = new();
 
         public EarthquakeAbilityDefinition(IRandomService random, IStatService statService, ICombatService combatService)
         {
@@ -23,17 +22,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             _combatService = combatService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Earthquake();
-            GreaterEarthquake();
+            Earthquake(builder);
+            GreaterEarthquake(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Earthquake()
+        private void Earthquake(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Earthquake, PerkType.Invalid)
+            builder.Create(FeatType.Earthquake, PerkType.Invalid)
                 .Name("Earthquake")
                 .HasActivationDelay(4.0f)
                 .DisplaysVisualEffectWhenActivating(VisualEffect.Vfx_Dur_Aura_Blue)
@@ -62,9 +61,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 });
         }
 
-        private void GreaterEarthquake()
+        private void GreaterEarthquake(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.GreaterEarthquake, PerkType.Invalid)
+            builder.Create(FeatType.GreaterEarthquake, PerkType.Invalid)
                 .Name("Greater Earthquake")
                 .HasActivationDelay(6.0f)
                 .DisplaysVisualEffectWhenActivating(VisualEffect.Vfx_Dur_Aura_Blue)

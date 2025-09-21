@@ -14,7 +14,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
     public class TameAbilityDefinition: IAbilityListDefinition
     {
         private readonly IRandomService _random;
-        private readonly IAbilityBuilder _builder;
         private readonly IDatabaseService _db;
         private readonly IPerkService _perkService;
         private readonly IStatService _statService;
@@ -27,8 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             IPerkService perkService, 
             IStatService statService, 
             IBeastMasteryService beastMastery, 
-            IEnmityService enmityService,
-            IAbilityBuilder builder)
+            IEnmityService enmityService)
         {
             _random = random;
             _db = db;
@@ -36,19 +34,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             _statService = statService;
             _beastMastery = beastMastery;
             _enmityService = enmityService;
-            _builder = builder;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Tame();
+            Tame(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Tame()
+        private void Tame(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Tame, PerkType.Tame)
+            builder.Create(FeatType.Tame, PerkType.Tame)
                 .Name("Tame")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Tame, 60f * 2f)

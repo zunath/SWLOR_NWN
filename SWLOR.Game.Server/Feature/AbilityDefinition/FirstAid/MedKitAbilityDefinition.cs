@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private readonly ISkillService _skillService;
         private readonly BeastMastery _beastMastery;
 
-        public MedKitAbilityDefinition(IRandomService random, IDatabaseService db, IStatService statService, ISkillService skillService, ICombatPointService combatPointService, IEnmityService enmityService, BeastMastery beastMastery, IAbilityService abilityService, IPerkService perkService) : base(random, perkService, combatPoint, enmityService, abilityService)
+        public MedKitAbilityDefinition(IRandomService random, IDatabaseService db, IStatService statService, ISkillService skillService, ICombatPointService combatPointService, IEnmityService enmityService, BeastMastery beastMastery, IAbilityService abilityService, IPerkService perkService) : base(random, perkService, combatPointService, enmityService, abilityService)
         {
             _random = random;
             _db = db;
@@ -29,15 +29,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             _beastMastery = beastMastery;
         }
         
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            MedKit1();
-            MedKit2();
-            MedKit3();
-            MedKit4();
-            MedKit5();
+            MedKit1(builder);
+            MedKit2(builder);
+            MedKit3(builder);
+            MedKit4(builder);
+            MedKit5(builder);
 
-            return Builder.Build();
+            return builder.Build();
         }
 
         private string Validation(uint activator, uint target, int level, Location location)
@@ -92,9 +92,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             }
         }
 
-        private void MedKit1()
+        private void MedKit1(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.MedKit1, PerkType.MedKit)
+            builder.Create(FeatType.MedKit1, PerkType.MedKit)
                 .Name("Med Kit I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
@@ -111,9 +111,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void MedKit2()
+        private void MedKit2(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.MedKit2, PerkType.MedKit)
+            builder.Create(FeatType.MedKit2, PerkType.MedKit)
                 .Name("Med Kit II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
@@ -130,9 +130,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void MedKit3()
+        private void MedKit3(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.MedKit3, PerkType.MedKit)
+            builder.Create(FeatType.MedKit3, PerkType.MedKit)
                 .Name("Med Kit III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
@@ -149,9 +149,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void MedKit4()
+        private void MedKit4(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.MedKit4, PerkType.MedKit)
+            builder.Create(FeatType.MedKit4, PerkType.MedKit)
                 .Name("Med Kit IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
@@ -167,9 +167,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     Impact(activator, target, 110);
                 });
         }
-        private void MedKit5()
+        private void MedKit5(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.MedKit5, PerkType.MedKit)
+            builder.Create(FeatType.MedKit5, PerkType.MedKit)
                 .Name("Med Kit V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.MedKit, 6f)

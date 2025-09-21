@@ -14,7 +14,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         private readonly IRandomService _random;
         private const string PetTreatTag = "pet_treat";
 
-        private readonly IAbilityBuilder _builder;
         private readonly IItemService _itemService;
         private readonly ICombatPointService _combatPointService;
         private readonly IBeastMasteryService _beastMastery;
@@ -25,25 +24,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             IItemService itemService, 
             ICombatPointService combatPointService, 
             IBeastMasteryService beastMastery, 
-            IEnmityService enmityService,
-            IAbilityBuilder builder)
+            IEnmityService enmityService)
         {
             _random = random;
             _itemService = itemService;
             _combatPointService = combatPointService;
             _beastMastery = beastMastery;
             _enmityService = enmityService;
-            _builder = builder;
         }
 
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Reward1();
-            Reward2();
-            Reward3();
+            Reward1(builder);
+            Reward2(builder);
+            Reward3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
         
         private bool HasPetTreat(uint activator)
@@ -109,9 +106,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             _combatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
         }
 
-        private void Reward1()
+        private void Reward1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Reward1, PerkType.Reward)
+            builder.Create(FeatType.Reward1, PerkType.Reward)
                 .Name("Reward I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Reward, 18f)
@@ -126,9 +123,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 });
         }
 
-        private void Reward2()
+        private void Reward2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Reward2, PerkType.Reward)
+            builder.Create(FeatType.Reward2, PerkType.Reward)
                 .Name("Reward II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Reward, 18f)
@@ -143,9 +140,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 });
         }
 
-        private void Reward3()
+        private void Reward3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Reward3, PerkType.Reward)
+            builder.Create(FeatType.Reward3, PerkType.Reward)
                 .Name("Reward III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Reward, 18f)

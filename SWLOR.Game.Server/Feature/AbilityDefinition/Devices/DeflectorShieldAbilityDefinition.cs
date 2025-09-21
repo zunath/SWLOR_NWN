@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
@@ -11,7 +10,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class DeflectorShieldAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
         private const string Tier1Tag = "ABILITY_DEFLECTOR_SHIELD_1";
@@ -24,13 +22,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            DeflectorShield1();
-            DeflectorShield2();
-            DeflectorShield3();
+            DeflectorShield1(builder);
+            DeflectorShield2(builder);
+            DeflectorShield3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private string Validation(uint target, int tier)
@@ -81,9 +79,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
         }
 
-        private void DeflectorShield1()
+        private void DeflectorShield1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.DeflectorShield1, PerkType.DeflectorShield)
+            builder.Create(FeatType.DeflectorShield1, PerkType.DeflectorShield)
                 .Name("Deflector Shield I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
@@ -99,9 +97,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void DeflectorShield2()
+        private void DeflectorShield2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.DeflectorShield2, PerkType.DeflectorShield)
+            builder.Create(FeatType.DeflectorShield2, PerkType.DeflectorShield)
                 .Name("Deflector Shield II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.DeflectorShield, 600f)
@@ -117,9 +115,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
         }
 
-        private void DeflectorShield3()
+        private void DeflectorShield3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.DeflectorShield3, PerkType.DeflectorShield)
+            builder.Create(FeatType.DeflectorShield3, PerkType.DeflectorShield)
                 .Name("Deflector Shield III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.DeflectorShield, 600f)

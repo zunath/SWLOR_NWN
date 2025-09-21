@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private readonly IPartyService _partyService;
         private readonly ICombatPointService _combatPointService;
 
-        public KoltoRecoveryAbilityDefinition(IRandomService random, IPerkService perkService, IPartyService partyService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPoint, enmityService, abilityService)
+        public KoltoRecoveryAbilityDefinition(IRandomService random, IPerkService perkService, IPartyService partyService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPointService, enmityService, abilityService)
         {
             _random = random;
             _perkService = perkService;
@@ -23,13 +23,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             _combatPointService = combatPointService;
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            KoltoRecovery1();
-            KoltoRecovery2();
-            KoltoRecovery3();
+            KoltoRecovery1(builder);
+            KoltoRecovery2(builder);
+            KoltoRecovery3(builder);
 
-            return Builder.Build();
+            return builder.Build();
         }
 
         private string Validation(uint activator, uint target, int level, Location location)
@@ -59,9 +59,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             TakeMedicalSupplies(activator);
         }
 
-        private void KoltoRecovery1()
+        private void KoltoRecovery1(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.KoltoRecovery1, PerkType.KoltoRecovery)
+            builder.Create(FeatType.KoltoRecovery1, PerkType.KoltoRecovery)
                 .Name("Kolto Recovery I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)
@@ -79,9 +79,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
-        private void KoltoRecovery2()
+        private void KoltoRecovery2(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.KoltoRecovery2, PerkType.KoltoRecovery)
+            builder.Create(FeatType.KoltoRecovery2, PerkType.KoltoRecovery)
                 .Name("Kolto Recovery II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)
@@ -99,9 +99,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
-        private void KoltoRecovery3()
+        private void KoltoRecovery3(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.KoltoRecovery3, PerkType.KoltoRecovery)
+            builder.Create(FeatType.KoltoRecovery3, PerkType.KoltoRecovery)
                 .Name("Kolto Recovery III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)

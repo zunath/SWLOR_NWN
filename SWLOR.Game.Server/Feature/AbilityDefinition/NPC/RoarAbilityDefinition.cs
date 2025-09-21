@@ -12,17 +12,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
     public class RoarAbilityDefinition: IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Roar();
-            return _builder.Build();
+            Roar(builder);
+            return builder.Build();
         }
 
-        private void Roar()
+        private void Roar(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Roar, PerkType.Invalid)
+            builder.Create(FeatType.Roar, PerkType.Invalid)
                 .Name("Roar")
                 .HasActivationDelay(2f)
                 .IsCastedAbility()

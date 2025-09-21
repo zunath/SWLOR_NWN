@@ -9,22 +9,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class AdrenalStimAbilityDefinition : FirstAidBaseAbilityDefinition
     {
-        public AdrenalStimAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService, IStatusEffectService statusEffectService) : base(random, perkService, combatPoint, enmityService, abilityService, statusEffectService)
+        public AdrenalStimAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService, IStatusEffectService statusEffectService) : base(random, perkService, combatPointService, enmityService, abilityService, statusEffectService)
         {
         }
 
-        public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public override Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            AdrenalStim1();
-            AdrenalStim2();
-            AdrenalStim3();
+            AdrenalStim1(builder);
+            AdrenalStim2(builder);
+            AdrenalStim3(builder);
 
-            return Builder.Build();
+            return builder.Build();
         }
 
-        private void AdrenalStim1()
+        private void AdrenalStim1(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.AdrenalStim1, PerkType.AdrenalStim)
+            builder.Create(FeatType.AdrenalStim1, PerkType.AdrenalStim)
                 .Name("Adrenal Stim I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.AdrenalStim, 60f * 3f)
@@ -60,9 +60,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void AdrenalStim2()
+        private void AdrenalStim2(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.AdrenalStim2, PerkType.AdrenalStim)
+            builder.Create(FeatType.AdrenalStim2, PerkType.AdrenalStim)
                 .Name("Adrenal Stim II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.AdrenalStim, 60f * 3f)
@@ -98,9 +98,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 });
         }
 
-        private void AdrenalStim3()
+        private void AdrenalStim3(IAbilityBuilder builder)
         {
-            Builder.Create(FeatType.AdrenalStim3, PerkType.AdrenalStim)
+            builder.Create(FeatType.AdrenalStim3, PerkType.AdrenalStim)
                 .Name("Adrenal Stim III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.AdrenalStim, 60f * 3f)

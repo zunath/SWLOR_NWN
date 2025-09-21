@@ -11,7 +11,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class SnarlGrowlAbilityDefinition : IAbilityListDefinition
     {
-        private readonly IAbilityBuilder _builder;
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
         private readonly IBeastMasteryService _beastMastery;
@@ -19,21 +18,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         public SnarlGrowlAbilityDefinition(
             ICombatPointService combatPointService, 
             IEnmityService enmityService, 
-            IBeastMasteryService beastMastery,
-            IAbilityBuilder builder)
+            IBeastMasteryService beastMastery)
         {
             _combatPointService = combatPointService;
             _enmityService = enmityService;
             _beastMastery = beastMastery;
-            _builder = builder;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Snarl();
-            Growl();
+            Snarl(builder);
+            Growl(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private string Validation(uint activator)
@@ -57,9 +54,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             return string.Empty;
         }
 
-        private void Snarl()
+        private void Snarl(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Snarl, PerkType.Snarl)
+            builder.Create(FeatType.Snarl, PerkType.Snarl)
                 .Name("Snarl")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.SnarlGrowl, 30f)
@@ -87,9 +84,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 });
         }
 
-        private void Growl()
+        private void Growl(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Growl, PerkType.Growl)
+            builder.Create(FeatType.Growl, PerkType.Growl)
                 .Name("Growl")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.SnarlGrowl, 30f)

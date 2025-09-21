@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private void CrossCut1(AbilityBuilder builder)
+        private void CrossCut1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CrossCut1, PerkType.CrossCut)
                 .Name("Cross Cut I")
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }
-        private void CrossCut2(AbilityBuilder builder)
+        private void CrossCut2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CrossCut2, PerkType.CrossCut)
                 .Name("Cross Cut II")
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }
-        private void CrossCut3(AbilityBuilder builder)
+        private void CrossCut3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CrossCut3, PerkType.CrossCut)
                 .Name("Cross Cut III")

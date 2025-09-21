@@ -11,15 +11,22 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class AchievementProgression
+    public class AchievementProgression
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly Achievement _achievement;
+
+        public AchievementProgression(IDatabaseService db, Achievement achievement)
+        {
+            _db = db;
+            _achievement = achievement;
+        }
         
         /// <summary>
         /// When a player enters the mod, increase their number of logins
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void LogIn()
+        public void LogIn()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -35,7 +42,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a player enters an area, if an achievement is assigned to the area grant it to them.
         /// </summary>
         [ScriptHandler<OnAreaEnter>]
-        public static void EnterArea()
+        public void EnterArea()
         {
             var area = OBJECT_SELF;
             var player = GetEnteringObject();
@@ -44,14 +51,14 @@ namespace SWLOR.Game.Server.Feature
             if (exploreAchievementType == AchievementType.Invalid)
                 return;
 
-            Achievement.GiveAchievement(player, exploreAchievementType);
+            _achievement.GiveAchievement(player, exploreAchievementType);
         }
 
         /// <summary>
         /// Handles the Kill Enemy line of achievements.
         /// </summary>
         [ScriptHandler<OnCreatureDeathBefore>]
-        public static void KillEnemy()
+        public void KillEnemy()
         {
             var killer = GetLastKiller();
             if (!GetIsPC(killer) || GetIsDM(killer)) return;
@@ -66,27 +73,27 @@ namespace SWLOR.Game.Server.Feature
 
             if (kills >= 10)
             {
-                Achievement.GiveAchievement(killer, AchievementType.KillEnemies1);
+                _achievement.GiveAchievement(killer, AchievementType.KillEnemies1);
             }
             if (kills >= 50)
             {
-                Achievement.GiveAchievement(killer, AchievementType.KillEnemies2);
+                _achievement.GiveAchievement(killer, AchievementType.KillEnemies2);
             }
             if (kills >= 500)
             {
-                Achievement.GiveAchievement(killer, AchievementType.KillEnemies3);
+                _achievement.GiveAchievement(killer, AchievementType.KillEnemies3);
             }
             if (kills >= 2000)
             {
-                Achievement.GiveAchievement(killer, AchievementType.KillEnemies4);
+                _achievement.GiveAchievement(killer, AchievementType.KillEnemies4);
             }
             if (kills >= 10000)
             {
-                Achievement.GiveAchievement(killer, AchievementType.KillEnemies5);
+                _achievement.GiveAchievement(killer, AchievementType.KillEnemies5);
             }
             if (kills >= 100000)
             {
-                Achievement.GiveAchievement(killer, AchievementType.KillEnemies6);
+                _achievement.GiveAchievement(killer, AchievementType.KillEnemies6);
             }
         }
 
@@ -94,7 +101,7 @@ namespace SWLOR.Game.Server.Feature
         /// Handles the Buy Perk line of achievements.
         /// </summary>
         [ScriptHandler(ScriptName.OnSwlorBuyPerk)]
-        public static void BuyPerk()
+        public void BuyPerk()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -109,23 +116,23 @@ namespace SWLOR.Game.Server.Feature
 
             if (numberLearned >= 1)
             {
-                Achievement.GiveAchievement(player, AchievementType.LearnPerks1);
+                _achievement.GiveAchievement(player, AchievementType.LearnPerks1);
             }
             if (numberLearned >= 20)
             {
-                Achievement.GiveAchievement(player, AchievementType.LearnPerks2);
+                _achievement.GiveAchievement(player, AchievementType.LearnPerks2);
             }
             if (numberLearned >= 50)
             {
-                Achievement.GiveAchievement(player, AchievementType.LearnPerks3);
+                _achievement.GiveAchievement(player, AchievementType.LearnPerks3);
             }
             if (numberLearned >= 100)
             {
-                Achievement.GiveAchievement(player, AchievementType.LearnPerks4);
+                _achievement.GiveAchievement(player, AchievementType.LearnPerks4);
             }
             if (numberLearned >= 500)
             {
-                Achievement.GiveAchievement(player, AchievementType.LearnPerks5);
+                _achievement.GiveAchievement(player, AchievementType.LearnPerks5);
             }
         }
 
@@ -133,7 +140,7 @@ namespace SWLOR.Game.Server.Feature
         /// Handles the Gain Skill line of achievements.
         /// </summary>
         [ScriptHandler(ScriptName.OnSwlorGainSkill)]
-        public static void GainSkillPoint()
+        public void GainSkillPoint()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -148,27 +155,27 @@ namespace SWLOR.Game.Server.Feature
 
             if (numberLearned >= 1)
             {
-                Achievement.GiveAchievement(player, AchievementType.GainSkills1);
+                _achievement.GiveAchievement(player, AchievementType.GainSkills1);
             }
             if (numberLearned >= 50)
             {
-                Achievement.GiveAchievement(player, AchievementType.GainSkills2);
+                _achievement.GiveAchievement(player, AchievementType.GainSkills2);
             }
             if (numberLearned >= 150)
             {
-                Achievement.GiveAchievement(player, AchievementType.GainSkills3);
+                _achievement.GiveAchievement(player, AchievementType.GainSkills3);
             }
             if (numberLearned >= 250)
             {
-                Achievement.GiveAchievement(player, AchievementType.GainSkills4);
+                _achievement.GiveAchievement(player, AchievementType.GainSkills4);
             }
             if (numberLearned >= 500)
             {
-                Achievement.GiveAchievement(player, AchievementType.GainSkills5);
+                _achievement.GiveAchievement(player, AchievementType.GainSkills5);
             }
             if (numberLearned >= 1000)
             {
-                Achievement.GiveAchievement(player, AchievementType.GainSkills6);
+                _achievement.GiveAchievement(player, AchievementType.GainSkills6);
             }
         }
 
@@ -176,7 +183,7 @@ namespace SWLOR.Game.Server.Feature
         /// Handles the Complete Quests line of achievements.
         /// </summary>
         [ScriptHandler(ScriptName.OnSwlorCompleteQuest)]
-        public static void CompleteQuests()
+        public void CompleteQuests()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -191,43 +198,43 @@ namespace SWLOR.Game.Server.Feature
 
             if (numberCompleted >= 1)
             {
-                Achievement.GiveAchievement(player, AchievementType.CompleteQuests1);
+                _achievement.GiveAchievement(player, AchievementType.CompleteQuests1);
             }
             if (numberCompleted >= 10)
             {
-                Achievement.GiveAchievement(player, AchievementType.CompleteQuests2);
+                _achievement.GiveAchievement(player, AchievementType.CompleteQuests2);
             }
             if (numberCompleted >= 50)
             {
-                Achievement.GiveAchievement(player, AchievementType.CompleteQuests3);
+                _achievement.GiveAchievement(player, AchievementType.CompleteQuests3);
             }
             if (numberCompleted >= 100)
             {
-                Achievement.GiveAchievement(player, AchievementType.CompleteQuests4);
+                _achievement.GiveAchievement(player, AchievementType.CompleteQuests4);
             }
             if (numberCompleted >= 500)
             {
-                Achievement.GiveAchievement(player, AchievementType.CompleteQuests5);
+                _achievement.GiveAchievement(player, AchievementType.CompleteQuests5);
             }
             if (numberCompleted >= 1000)
             {
-                Achievement.GiveAchievement(player, AchievementType.CompleteQuests6);
+                _achievement.GiveAchievement(player, AchievementType.CompleteQuests6);
             }
             if (numberCompleted >= 1500)
             {
-                Achievement.GiveAchievement(player, AchievementType.CompleteQuests7);
+                _achievement.GiveAchievement(player, AchievementType.CompleteQuests7);
             }
             if (numberCompleted >= 2000)
             {
-                Achievement.GiveAchievement(player, AchievementType.CompleteQuests8);
+                _achievement.GiveAchievement(player, AchievementType.CompleteQuests8);
             }
             if (numberCompleted >= 3500)
             {
-                Achievement.GiveAchievement(player, AchievementType.CompleteQuests9);
+                _achievement.GiveAchievement(player, AchievementType.CompleteQuests9);
             }
             if (numberCompleted >= 5000)
             {
-                Achievement.GiveAchievement(player, AchievementType.CompleteQuests10);
+                _achievement.GiveAchievement(player, AchievementType.CompleteQuests10);
             }
         }
 
@@ -235,7 +242,7 @@ namespace SWLOR.Game.Server.Feature
         /// Handles the Craft Item line of achievements
         /// </summary>
         [ScriptHandler(ScriptName.OnCraftSuccess)]
-        public static void CompleteCraftSuccessfully()
+        public void CompleteCraftSuccessfully()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -249,43 +256,43 @@ namespace SWLOR.Game.Server.Feature
             var numberCompleted = dbAccount.AchievementProgress.ItemsCrafted;
             if (numberCompleted >= 1)
             {
-                Achievement.GiveAchievement(player, AchievementType.CraftItems1);
+                _achievement.GiveAchievement(player, AchievementType.CraftItems1);
             }
             if (numberCompleted >= 10)
             {
-                Achievement.GiveAchievement(player, AchievementType.CraftItems2);
+                _achievement.GiveAchievement(player, AchievementType.CraftItems2);
             }
             if (numberCompleted >= 50)
             {
-                Achievement.GiveAchievement(player, AchievementType.CraftItems3);
+                _achievement.GiveAchievement(player, AchievementType.CraftItems3);
             }
             if (numberCompleted >= 100)
             {
-                Achievement.GiveAchievement(player, AchievementType.CraftItems4);
+                _achievement.GiveAchievement(player, AchievementType.CraftItems4);
             }
             if (numberCompleted >= 500)
             {
-                Achievement.GiveAchievement(player, AchievementType.CraftItems5);
+                _achievement.GiveAchievement(player, AchievementType.CraftItems5);
             }
             if (numberCompleted >= 1000)
             {
-                Achievement.GiveAchievement(player, AchievementType.CraftItems6);
+                _achievement.GiveAchievement(player, AchievementType.CraftItems6);
             }
             if (numberCompleted >= 1500)
             {
-                Achievement.GiveAchievement(player, AchievementType.CraftItems7);
+                _achievement.GiveAchievement(player, AchievementType.CraftItems7);
             }
             if (numberCompleted >= 2000)
             {
-                Achievement.GiveAchievement(player, AchievementType.CraftItems8);
+                _achievement.GiveAchievement(player, AchievementType.CraftItems8);
             }
             if (numberCompleted >= 3500)
             {
-                Achievement.GiveAchievement(player, AchievementType.CraftItems9);
+                _achievement.GiveAchievement(player, AchievementType.CraftItems9);
             }
             if (numberCompleted >= 5000)
             {
-                Achievement.GiveAchievement(player, AchievementType.CraftItems10);
+                _achievement.GiveAchievement(player, AchievementType.CraftItems10);
             }
         }
     }

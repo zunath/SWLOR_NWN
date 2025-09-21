@@ -11,17 +11,25 @@ using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Game.Server.Service.PropertyService
 {
-    public static class StructureChangedAction
+    public class StructureChangedAction
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly Property _property;
         private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _actions = new();
+
+        public StructureChangedAction(ILogger logger, IDatabaseService db, Property property)
+        {
+            _logger = logger;
+            _db = db;
+            _property = property;
+        }
 
         /// <summary>
         /// Builds the actions which are run when certain structures are changed in the game world.
         /// </summary>
         /// <returns>A dictionary of spawn actions.</returns>
-        public static Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> BuildSpawnActions()
+        public Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> BuildSpawnActions()
         {
             // Structure position changed actions
             Assign(StructureType.CityHall, StructureChangeType.PositionChanged, ChangeCityHall());
@@ -101,21 +109,21 @@ namespace SWLOR.Game.Server.Service.PropertyService
             var door = CreateObject(ObjectType.Placeable, "building_ent1", location);
             SetLocalObject(building, "PROPERTY_DOOR", door);
 
-            Property.AssignPropertyId(door, Property.GetPropertyId(building));
+            _property.AssignPropertyId(door, _property.GetPropertyId(building));
             SetName(door, name);
             AssignExitLocationToInstance(building, GetLocation(door));
         }
 
         private static void AssignExitLocationToInstance(uint building, Location location)
         {
-            var propertyId = Property.GetPropertyId(building);
+            var propertyId = _property.GetPropertyId(building);
             var dbBuilding = _db.Get<WorldProperty>(propertyId);
 
             if (!dbBuilding.ChildPropertyIds.ContainsKey(PropertyChildType.Interior))
                 return;
 
             var instancePropertyId = dbBuilding.ChildPropertyIds[PropertyChildType.Interior].Single();
-            var instance = Property.GetRegisteredInstance(instancePropertyId);
+            var instance = _property.GetRegisteredInstance(instancePropertyId);
 
             SetLocalLocation(instance.Area, "BUILDING_EXIT_LOCATION", location);
             SetLocalBool(instance.Area, "BUILDING_EXIT_SET", true);
@@ -140,7 +148,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 interior.CustomName = property.CustomName;
                 _db.Set(interior);
 
-                var instance = Property.GetRegisteredInstance(interiorId);
+                var instance = _property.GetRegisteredInstance(interiorId);
                 SetName(instance.Area, "{PC} " + property.CustomName);
             }
         }
@@ -196,7 +204,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 // of docking points.
                 var dbCity = _db.Get<WorldProperty>(property.ParentPropertyId);
                 var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
-                var instance = Property.GetRegisteredInstance(interiorId);
+                var instance = _property.GetRegisteredInstance(interiorId);
                 var dockPoint = GetLandingWaypoint(instance.Area);
 
                 Space.RemoveLandingPoint(dockPoint, cityArea);

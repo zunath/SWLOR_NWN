@@ -9,14 +9,20 @@ using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
     public class Music
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
         private static readonly Dictionary<int, Song> _songs = new();
         private static readonly Dictionary<int, Song> _playerBattleSongs = new();
+
+        public Music(IDatabaseService db)
+        {
+            _db = db;
+        }
 
         public class Song
         {
@@ -35,7 +41,7 @@ namespace SWLOR.Game.Server.Service
         /// Add these to the cache.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void LoadSongList()
+        public void LoadSongList()
         {
             const string File = "ambientmusic";
             var rowCount = Get2DARowCount(File);
@@ -69,7 +75,7 @@ namespace SWLOR.Game.Server.Service
         /// apply the battle theme to the player.
         /// </summary>
         [ScriptHandler<OnAreaEnter>]
-        public static void ApplyBattleThemeToPlayer()
+        public void ApplyBattleThemeToPlayer()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) 
@@ -93,7 +99,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves all of the songs loaded from the 2DA file.
         /// </summary>
         /// <returns>A list of available songs.</returns>
-        public static List<Song> GetAllSongs()
+        public List<Song> GetAllSongs()
         {
             return _songs.Values.ToList();
         }
@@ -103,7 +109,7 @@ namespace SWLOR.Game.Server.Service
         /// These battle songs are able to be selected by players.
         /// </summary>
         /// <returns>A list of available battle songs players can pick from.</returns>
-        public static Dictionary<int, Song> GetBattleSongs()
+        public Dictionary<int, Song> GetBattleSongs()
         {
             return _playerBattleSongs.ToDictionary(x => x.Key, y => y.Value);
         }

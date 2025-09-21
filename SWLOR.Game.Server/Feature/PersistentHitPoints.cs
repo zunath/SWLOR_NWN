@@ -8,15 +8,20 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class PersistentHitPoints
+    public class PersistentHitPoints
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+
+        public PersistentHitPoints(IDatabaseService db)
+        {
+            _db = db;
+        }
         
         /// <summary>
         /// When a player leaves the server, save their persistent HP.
         /// </summary>
         [ScriptHandler<OnModuleExit>]
-        public static void SaveHP()
+        public void SaveHP()
         {
             var player = GetExitingObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -33,7 +38,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a player enters the server, load their persistent HP.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void LoadHP()
+        public void LoadHP()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;

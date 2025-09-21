@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
@@ -12,6 +13,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         public const string HastenEffectTag = "BEAST_HASTEN";
 
         private readonly AbilityBuilder _builder = new();
+        private readonly IEnmityService _enmityService;
+
+        public HastenAbilityDefinition(IEnmityService enmityService)
+        {
+            _enmityService = enmityService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             Hasten1();
@@ -43,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), beastmaster);
             }
 
-            Enmity.ModifyEnmityOnAll(activator, 300 * numAttacks);
+            _enmityService.ModifyEnmityOnAll(activator, 300 * numAttacks);
         }
 
         private void Hasten1()

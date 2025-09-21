@@ -10,17 +10,25 @@ using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Events.Area;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
     public class Area
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly Property _property;
         private static Dictionary<string, uint> AreasByResref { get; } = new();
         private static Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
 
+        public Area(IDatabaseService db, Property property)
+        {
+            _db = db;
+            _property = property;
+        }
+
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheData()
+        public void CacheData()
         {
             CacheAreasByResref();
 
@@ -30,7 +38,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Caches all areas by their resref.
         /// </summary>
-        private static void CacheAreasByResref()
+        private void CacheAreasByResref()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
@@ -44,12 +52,12 @@ namespace SWLOR.Game.Server.Service
         /// This ensures player locations are not updated in places they shouldn't be.
         /// </summary>
         [ScriptHandler<OnModuleCacheAfter>]
-        public static void RemoveInstancesFromCache()
+        public void RemoveInstancesFromCache()
         {
-            var propertyLayouts = Property.GetAllLayoutsByPropertyType(PropertyType.Apartment);
+            var propertyLayouts = _property.GetAllLayoutsByPropertyType(PropertyType.Apartment);
             foreach (var type in propertyLayouts)
             {
-                var layout = Property.GetLayoutByType(type);
+                var layout = _property.GetLayoutByType(type);
                 if (AreasByResref.ContainsKey(layout.AreaInstanceResref))
                     AreasByResref.Remove(layout.AreaInstanceResref);
             }
@@ -60,7 +68,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="resref">The resref to use for the search.</param>
         /// <returns>The area ID or OBJECT_INVALID if area does not exist.</returns>
-        public static uint GetAreaByResref(string resref)
+        public uint GetAreaByResref(string resref)
         {
             if (!AreasByResref.ContainsKey(resref))
                 return OBJECT_INVALID;
@@ -73,7 +81,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param> </param>
         /// <returns>AreasByResref cache.</returns>
-        public static Dictionary<string, uint> GetAreas()
+        public Dictionary<string, uint> GetAreas()
         {
             return AreasByResref;
         }
@@ -84,7 +92,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="area">The area to search by.</param>
         /// <returns>A list of player objects</returns>
-        public static List<uint> GetPlayersInArea(uint area)
+        public List<uint> GetPlayersInArea(uint area)
         {
             if (!PlayersByArea.ContainsKey(area))
                 return new List<uint>();
@@ -96,7 +104,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player or DM enters an area, add them to the cache.
         /// </summary>
         [ScriptHandler<OnAreaEnter>]
-        public static void EnterArea()
+        public void EnterArea()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player))
@@ -136,7 +144,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player or DM leaves an area, remove them from the cache.
         /// </summary>
         [ScriptHandler<OnAreaExit>]
-        public static void ExitArea()
+        public void ExitArea()
         {
             var player = GetExitingObject();
             if (!GetIsPC(player))

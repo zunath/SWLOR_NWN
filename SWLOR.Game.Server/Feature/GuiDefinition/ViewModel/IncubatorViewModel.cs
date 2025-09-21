@@ -12,6 +12,8 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
@@ -26,13 +28,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly IPerkService _perkService;
         private readonly IItemService _itemService;
         private readonly IBeastMasteryService _beastMasteryService;
+        private readonly BeastMastery _beastMastery;
+        private readonly ITargetingService _targetingService;
 
-        public IncubatorViewModel(IGuiService guiService, ILogger logger, IPerkService perkService, IItemService itemService, IBeastMasteryService beastMasteryService) : base(guiService)
+        public IncubatorViewModel(IGuiService guiService, ILogger logger, IPerkService perkService, IItemService itemService, IBeastMasteryService beastMasteryService, BeastMastery beastMastery, ITargetingService targetingService) : base(guiService)
         {
             _logger = logger;
             _perkService = perkService;
             _itemService = itemService;
             _beastMasteryService = beastMasteryService;
+            _beastMastery = beastMastery;
+            _targetingService = targetingService;
         }
         public const string PartialElement = "PARTIAL_VIEW";
         public const string NewJobPartial = "NEW_JOB_PARTIAL";
@@ -348,13 +354,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private string FormatStat(int baseStat, int bonusStat, int additionalBonus)
         {
-            var bonusPercentage = BeastMastery.GetIncubationPercentageById(bonusStat);
+            var bonusPercentage = _beastMastery.GetIncubationPercentageById(bonusStat);
             if (bonusPercentage > 10f)
                 bonusPercentage = 10f;
 
             bonusPercentage += additionalBonus;
 
-            var baseStatText = BeastMastery.GetIncubationPercentageById(baseStat);
+            var baseStatText = _beastMastery.GetIncubationPercentageById(baseStat);
 
             return $"{baseStatText}% [+{bonusPercentage:0.0###}%]";
         }
@@ -429,7 +435,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             DNALabel = _dnaType == BeastType.Invalid
                 ? "DNA [N/A]"
-                : $"DNA [{BeastMastery.GetBeastDetail(_dnaType).Name}]";
+                : $"DNA [{_beastMastery.GetBeastDetail(_dnaType).Name}]";
 
             AttackPurity = FormatStat(_attack, _stageAttack, 0);
             AccuracyPurity = FormatStat(_accuracy, _stageAccuracy, 0);
@@ -563,9 +569,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a DNA item from your inventory.", item =>
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a DNA item from your inventory.", item =>
                 {
-                    if (GetResRef(item) != BeastMastery.DNAResref)
+                    if (GetResRef(item) != _beastMastery.DNAResref)
                     {
                         FloatingTextStringOnCreature("Only DNA items may be selected.", Player, false);
                         return;
@@ -811,10 +817,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Hydrolase item from your inventory.",
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a Hydrolase item from your inventory.",
                 item =>
                 {
-                    if (!GetResRef(item).StartsWith(BeastMastery.HydrolaseResrefPrefix))
+                    if (!GetResRef(item).StartsWith(_beastMastery.HydrolaseResrefPrefix))
                     {
                         FloatingTextStringOnCreature("Only Hydrolase items may be selected.", Player, false);
                         return;
@@ -857,10 +863,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Lyase item from your inventory.",
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a Lyase item from your inventory.",
                 item =>
                 {
-                    if (!GetResRef(item).StartsWith(BeastMastery.LyaseResrefPrefix))
+                    if (!GetResRef(item).StartsWith(_beastMastery.LyaseResrefPrefix))
                     {
                         FloatingTextStringOnCreature("Only Lyase items may be selected.", Player, false);
                         return;
@@ -903,7 +909,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select an Isomerase item from your inventory.",
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select an Isomerase item from your inventory.",
                 item =>
                 {
                     if (!GetResRef(item).StartsWith(_beastMasteryService.IsomeraseResrefPrefix))

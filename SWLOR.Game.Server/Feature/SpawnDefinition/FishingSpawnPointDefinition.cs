@@ -10,9 +10,15 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
     public class FishingSpawnPointDefinition: ISpawnListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
-        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        private readonly IRandomService _random;
+        private readonly IItemCacheService _itemCache;
         private readonly SpawnTableBuilder _builder = new();
+
+        public FishingSpawnPointDefinition(IRandomService random, IItemCacheService itemCache)
+        {
+            _random = random;
+            _itemCache = itemCache;
+        }
 
         public Dictionary<string, SpawnTable> BuildSpawnTables()
         {

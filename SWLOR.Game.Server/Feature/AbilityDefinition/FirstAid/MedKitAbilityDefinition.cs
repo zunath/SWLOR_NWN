@@ -5,6 +5,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -17,13 +18,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private readonly IDatabaseService _db;
         private readonly IStatService _statService;
         private readonly ISkillService _skillService;
+        private readonly BeastMastery _beastMastery;
 
-        public MedKitAbilityDefinition(IRandomService random, IDatabaseService db, IStatService statService, ISkillService skillService)
+        public MedKitAbilityDefinition(IRandomService random, IDatabaseService db, IStatService statService, ISkillService skillService, CombatPoint combatPoint, IEnmityService enmityService, BeastMastery beastMastery, IAbilityService abilityService, IPerkService perkService) : base(random, perkService, combatPoint, enmityService, abilityService)
         {
             _random = random;
             _db = db;
             _statService = statService;
             _skillService = skillService;
+            _beastMastery = beastMastery;
         }
         
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -54,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 return "You have no medical supplies.";
             }
 
-            if (BeastMastery.IsPlayerBeast(target))
+            if (_beastMastery.IsPlayerBeast(target))
             {
                 return "That ability cannot be used on beasts.";
             }
@@ -71,21 +74,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
             TakeMedicalSupplies(activator);
 
-            Enmity.ModifyEnmityOnAll(activator, 150 + amount);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
-            if (CombatPoint.GetTaggedCreatureCount(activator) == 0)
+            _enmityService.ModifyEnmityOnAll(activator, 150 + amount);
+            _combatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+            if (_combatPoint.GetTaggedCreatureCount(activator) == 0)
             {
                 // Scale XP to the thing we just fought -- only give XP if we're not in combat.
                 // Retrieve the level of our recent enemy from the CombatPoint service, and use the Skill service 
                 // delta function to get base XP based on relative level.
-                // If AddCombatPoint... returns 0, but GetRecentEnemyLevel returns > -1, then we are out of combat but recently were in combat.
-                var enemyLevel = CombatPoint.GetRecentEnemyLevel(activator);
+                // If Add_combatPoint... returns 0, but GetRecentEnemyLevel returns > -1, then we are out of combat but recently were in combat.
+                var enemyLevel = _combatPoint.GetRecentEnemyLevel(activator);
                 var playerId = GetObjectUUID(activator);
                 var dbPlayer = _db.Get<Player>(playerId);
                 var firstAidLevel = dbPlayer.Skills[SkillType.FirstAid].Rank;
                 var nXP = enemyLevel != -1 ? _skillService.GetDeltaXP(enemyLevel - firstAidLevel) : 0;
                 _skillService.GiveSkillXP(activator, SkillType.FirstAid, nXP);
-                CombatPoint.ClearRecentEnemyLevel(activator);
+                _combatPoint.ClearRecentEnemyLevel(activator);
             }
         }
 

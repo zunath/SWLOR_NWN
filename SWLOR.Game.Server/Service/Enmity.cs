@@ -4,6 +4,7 @@ using System.Linq;
 
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
@@ -13,19 +14,26 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Enmity
+    public class EnmityService : IEnmityService
     {
+        private readonly IPartyService _partyService;
+        
         // Enemy -> Creature -> EnmityAmount mapping
-        private static readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new();
+        private readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new();
 
         // Creature -> EnemyList mapping
-        private static readonly Dictionary<uint, List<uint>> _creatureToEnemies = new();
+        private readonly Dictionary<uint, List<uint>> _creatureToEnemies = new();
+
+        public EnmityService(IPartyService partyService)
+        {
+            _partyService = partyService;
+        }
 
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
         /// </summary>
         [ScriptHandler<OnCreatureDamagedBefore>]
-        public static void CreatureDamaged()
+        public void CreatureDamaged()
         {
             var enemy = OBJECT_SELF;
             var damager = GetLastDamager(enemy);
@@ -38,7 +46,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature attacks an enemy, increase enmity by 1.
         /// </summary>
         [ScriptHandler<OnCreatureAttackBefore>]
-        public static void CreatureAttacked()
+        public void CreatureAttacked()
         {
             var enemy = OBJECT_SELF;
             var attacker = GetLastAttacker(enemy);
@@ -50,7 +58,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature dies, remove all enmity tables it is associated with.
         /// </summary>
         [ScriptHandler<OnCreatureDeathAfter>]
-        public static void CreatureDeath()
+        public void CreatureDeath()
         {
             var enemy = OBJECT_SELF;
             ClearEnmityTables(enemy);
@@ -61,7 +69,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature is destroyed with DestroyObject, remove all enmity tables it is associated with.
         /// </summary>
         [ScriptHandler(ScriptName.OnObjectDestroyed)]
-        public static void CreatureDestroyed()
+        public void CreatureDestroyed()
         {
             var enemy = OBJECT_SELF;
             ClearEnmityTables(enemy);
@@ -72,7 +80,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player dies, remove them from all enmity tables.
         /// </summary>
         [ScriptHandler<OnModuleDeath>]
-        public static void PlayerDeath()
+        public void PlayerDeath()
         {
             var player = GetLastPlayerDied();
             RemoveCreatureEnmity(player);
@@ -83,7 +91,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler<OnModuleExit>]
         [ScriptHandler<OnAreaExit>]
-        public static void PlayerExit()
+        public void PlayerExit()
         {
             var player = GetExitingObject();
             RemoveCreatureEnmity(player);
@@ -93,7 +101,7 @@ namespace SWLOR.Game.Server.Service
         /// When a DM limbos creatures, ensure their enmity is wiped.
         /// </summary>
         [ScriptHandler<OnDMLimboBefore>]
-        public static void CreatureLimbo()
+        public void CreatureLimbo()
         {
             var count = Convert.ToInt32(EventsPlugin.GetEventData("NUM_TARGETS"));
 
@@ -129,7 +137,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="enemy">The enemy to retrieve the highest target for.</param>
         /// <returns>The target with the highest enmity</returns>
-        public static uint GetHighestEnmityTarget(uint enemy)
+        public uint GetHighestEnmityTarget(uint enemy)
         {
             var enmityTable = GetEnmityTable(enemy);
             var target = enmityTable.Count <= 0 
@@ -145,7 +153,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature whose enmity will be increased.</param>
         /// <param name="enemy">The enemy who will have raised enmity toward creature.</param>
         /// <param name="amount">The amount of enmity to adjust by</param>
-        public static void ModifyEnmity(uint creature, uint enemy, int amount)
+        public void ModifyEnmity(uint creature, uint enemy, int amount)
         {
             if (GetIsPC(enemy))
                 return;
@@ -159,7 +167,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             // Party members (droids, pets, associates) cannot gain enmity
-            if (Party.IsInParty(creature, enemy))
+            if (_partyService.IsInParty(creature, enemy))
                 return;
 
             // Player associates cannot gain enmity towards each other
@@ -239,7 +247,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature whose enmity will be increased.</param>
         /// <param name="amount">The amount of enmity to adjust by.</param>
-        public static void ModifyEnmityOnAll(uint creature, int amount)
+        public void ModifyEnmityOnAll(uint creature, int amount)
         {
             // Value is zero, no action necessary.
             if (amount == 0) return;
@@ -257,7 +265,7 @@ namespace SWLOR.Game.Server.Service
         /// Removes a creature from all enmity tables.
         /// </summary>
         /// <param name="creature">The creature to remove.</param>
-        public static void RemoveCreatureEnmity(uint creature)
+        public void RemoveCreatureEnmity(uint creature)
         {
             // Creature isn't on any enmity table.
             if (!_creatureToEnemies.ContainsKey(creature)) return;
@@ -313,7 +321,7 @@ namespace SWLOR.Game.Server.Service
         /// If creature does not have enmity, nothing will happen.
         /// If new target is the same as existing, nothing will happen.
         /// </summary>
-        public static void AttackHighestEnmityTarget(uint creature)
+        public void AttackHighestEnmityTarget(uint creature)
         {
             var target = GetHighestEnmityTarget(creature);
 

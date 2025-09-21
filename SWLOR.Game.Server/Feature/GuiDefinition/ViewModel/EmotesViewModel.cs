@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
@@ -10,8 +11,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class EmotesViewModel: GuiViewModelBase<EmotesViewModel, GuiPayloadBase>
     {
-        public EmotesViewModel(IGuiService guiService) : base(guiService)
+        private readonly IChatCommandService _chatCommandService;
+
+        public EmotesViewModel(IGuiService guiService, IChatCommandService chatCommandService) : base(guiService)
         {
+            _chatCommandService = chatCommandService;
         }
 
         public GuiBindingList<string> EmoteNames
@@ -42,10 +46,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            var emoteNames = ChatCommand.EmoteNames;
-            var emoteDescriptions = ChatCommand.EmoteDescriptions;
-            var emoteAnimations = ChatCommand.EmoteAnimations;
-            var isEmoteLoopingAnimations = ChatCommand.EmoteIsLooping;
+            var emoteNames = _chatCommandService.EmoteNames;
+            var emoteDescriptions = _chatCommandService.EmoteDescriptions;
+            var emoteAnimations = _chatCommandService.EmoteAnimations;
+            var isEmoteLoopingAnimations = _chatCommandService.EmoteIsLooping;
 
             SelectedEmoteIndex = -1;
 

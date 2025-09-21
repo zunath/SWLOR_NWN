@@ -20,19 +20,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IItemCacheService _itemCache;
+        private readonly Property _property;
 
-        public TrainingStoreViewModel(IGuiService guiService, IDatabaseService db, IItemCacheService itemCache) : base(guiService)
+        public TrainingStoreViewModel(IGuiService guiService, IDatabaseService db, IItemCacheService itemCache, Property property) : base(guiService)
         {
             _db = db;
             _itemCache = itemCache;
+            _property = property;
         }
         
         [ScriptHandler(ScriptName.OnOpenTrainingStore)]
         public void OpenTrainingStore()
         {
             var player = GetPCSpeaker();
-            var guiService = ServiceContainer.GetService<IGuiService>();
-            guiService.TogglePlayerWindow(player, GuiWindowType.TrainingStore, null, OBJECT_SELF);
+            _guiService.TogglePlayerWindow(player, GuiWindowType.TrainingStore, null, OBJECT_SELF);
         }
 
         private class TerminalItem
@@ -90,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
-            var cantinaBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel) * 0.1f;
+            var cantinaBonus = _property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel) * 0.1f;
 
             AvailableXP = $"Available XP: {dbPlayer.UnallocatedXP}";
 

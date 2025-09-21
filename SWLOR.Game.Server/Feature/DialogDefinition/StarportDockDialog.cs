@@ -16,8 +16,16 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class StarportDockDialog: DialogBase
     {
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly IPropertyService _propertyService;
+
+        public StarportDockDialog(ILogger logger, IDatabaseService db, IPropertyService propertyService)
+        {
+            _logger = logger;
+            _db = db;
+            _propertyService = propertyService;
+        }
         
         private class Model
         {
@@ -89,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 var dockName = dockPoint.IsNPC
                     ? $"[NPC] {dockPoint.Name}"
-                    : $"[PC] {GetName(Property.GetRegisteredInstance(dockPoint.PropertyId).Area)}";
+                    : $"[PC] {GetName(_propertyService.GetRegisteredInstance(dockPoint.PropertyId).Area)}";
 
                 page.AddResponse(dockName, () =>
                 {
@@ -183,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     dbProperty.Positions[PropertyLocationType.DockPosition] = new PropertyLocation
                     {
                         AreaResref = dockPoint.IsNPC ? landingAreaResref : string.Empty,
-                        InstancePropertyId = dockPoint.IsNPC ? string.Empty : Property.GetPropertyId(landingArea),
+                        InstancePropertyId = dockPoint.IsNPC ? string.Empty : _propertyService.GetPropertyId(landingArea),
                         X = landingPosition.X,
                         Y = landingPosition.Y,
                         Z = landingPosition.Z,

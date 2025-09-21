@@ -9,9 +9,14 @@ namespace SWLOR.Game.Server.Service.SpaceService
 {
     public class ShipBuilder
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger;
         private readonly Dictionary<string, ShipDetail> _ships = new();
         private ShipDetail _activeShip;
+
+        public ShipBuilder(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         /// <summary>
         /// Creates a new ship.

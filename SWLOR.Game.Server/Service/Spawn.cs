@@ -9,6 +9,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
@@ -27,12 +28,16 @@ namespace SWLOR.Game.Server.Service
         private readonly ILogger _logger;
         private readonly IRandomService _random;
         private readonly IGenericCacheService _cacheService;
+        private readonly Walkmesh _walkmesh;
+        private readonly AI _ai;
 
-        public SpawnService(ILogger logger, IRandomService random, IGenericCacheService cacheService)
+        public SpawnService(ILogger logger, IRandomService random, IGenericCacheService cacheService, Walkmesh walkmesh, AI ai)
         {
             _logger = logger;
             _random = random;
             _cacheService = cacheService;
+            _walkmesh = walkmesh;
+            _ai = ai;
         }
         public const int DespawnMinutes = 20;
         public const int DefaultRespawnMinutes = 5;
@@ -716,14 +721,14 @@ namespace SWLOR.Game.Server.Service
             {
                 var deserialized = ObjectPlugin.Deserialize(detail.SerializedObject);
                 var position = detail.UseRandomSpawnLocation ?
-                    GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)) :
+                    GetPositionFromLocation(_walkmesh.GetRandomLocation(detail.Area)) :
                     new Vector3(detail.X, detail.Y, detail.Z);
                 ObjectPlugin.AddToArea(deserialized, detail.Area, position);
 
                 var facing = detail.UseRandomSpawnLocation ? _random.Next(360) : detail.Facing;
                 AssignCommand(deserialized, () => SetFacing(facing));
                 SetLocalString(deserialized, "SPAWN_ID", spawnId.ToString());
-                AI.SetAIFlag(deserialized, AIFlag.ReturnHome);
+                _ai.SetAIFlag(deserialized, AIFlag.ReturnHome);
                 AdjustScripts(deserialized);
                 AdjustStats(deserialized);
 
@@ -744,7 +749,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var position = detail.UseRandomSpawnLocation ?
-                    GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)) :
+                    GetPositionFromLocation(_walkmesh.GetRandomLocation(detail.Area)) :
                     new Vector3(detail.X, detail.Y, detail.Z);
 
                 var facing = detail.UseRandomSpawnLocation ? _random.Next(360) : detail.Facing;
@@ -753,7 +758,7 @@ namespace SWLOR.Game.Server.Service
                 var spawn = CreateObject(spawnObject.Type, spawnObject.Resref, location);
                 SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());
 
-                AI.SetAIFlag(spawn, spawnObject.AIFlags);
+                _ai.SetAIFlag(spawn, spawnObject.AIFlags);
                 AdjustScripts(spawn);
                 AdjustStats(spawn);
 

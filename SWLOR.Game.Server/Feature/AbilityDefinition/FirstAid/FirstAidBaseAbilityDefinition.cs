@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 
@@ -13,11 +14,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private readonly IRandomService _random;
         protected readonly AbilityBuilder Builder = new();
         private readonly IPerkService _perkService;
+        protected readonly CombatPoint _combatPoint;
+        protected readonly IEnmityService _enmityService;
+        protected readonly IAbilityService _abilityService;
 
-        protected FirstAidBaseAbilityDefinition(IRandomService random, IPerkService perkService)
+        protected FirstAidBaseAbilityDefinition(IRandomService random, IPerkService perkService, CombatPoint combatPoint, IEnmityService enmityService, IAbilityService abilityService)
         {
             _random = random;
             _perkService = perkService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
+            _abilityService = abilityService;
         }
         private const string MedicalSuppliesItemTag = "med_supplies";
         private const string StimPackItemTag = "stim_pack";

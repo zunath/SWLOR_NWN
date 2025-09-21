@@ -22,12 +22,16 @@ namespace SWLOR.Game.Server.Service
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
         private readonly IPerkService _perkService;
+        private readonly IGuiService _guiService;
+        private readonly IGenericCacheService _cacheService;
 
-        public SkillService(IDatabaseService db, IRandomService random, IPerkService perkService)
+        public SkillService(IDatabaseService db, IRandomService random, IPerkService perkService, IGuiService guiService, IGenericCacheService cacheService)
         {
             _db = db;
             _random = random;
             _perkService = perkService;
+            _guiService = guiService;
+            _cacheService = cacheService;
         }
         /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.
@@ -243,8 +247,7 @@ namespace SWLOR.Game.Server.Service
             _db.Set(dbPlayer);
 
             modifiedSkills.Add(skill);
-            var guiService = ServiceContainer.GetService<IGuiService>();
-            guiService.PublishRefreshEvent(player, new SkillXPRefreshEvent(modifiedSkills));
+            _guiService.PublishRefreshEvent(player, new SkillXPRefreshEvent(modifiedSkills));
 
             // Send out an event signifying that a player has received a skill rank increase.
             if(receivedRankUp)

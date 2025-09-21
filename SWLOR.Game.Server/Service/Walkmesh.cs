@@ -13,11 +13,17 @@ using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Walkmesh
+    public class Walkmesh
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IDatabaseService _db;
+        private readonly IRandomService _random;
         private static readonly Dictionary<uint, List<uint>> _noSpawnZoneTriggers = new();
+
+        public Walkmesh(IDatabaseService db, IRandomService random)
+        {
+            _db = db;
+            _random = random;
+        }
         private static Dictionary<string, List<Vector3>> _walkmeshesByArea = new();
         private const int AreaBakeStep = 2;
         private static bool _bakingRan;
@@ -26,7 +32,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module content changes, rerun the baking process.
         /// </summary>
         [ScriptHandler<OnModuleContentChange>]
-        public static void LoadWalkmeshes()
+        public void LoadWalkmeshes()
         {
             StoreNoSpawnZoneTriggers();
 
@@ -72,7 +78,7 @@ namespace SWLOR.Game.Server.Service
         /// This only runs if the module content has NOT changed since the last run.
         /// </summary>
         [ScriptHandler<OnModuleLoad>]
-        public static void RetrieveWalkmeshes()
+        public void RetrieveWalkmeshes()
         {
             if (_bakingRan)
                 return;
@@ -143,7 +149,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="area">The area to retrieve a random location for.</param>
         /// <returns>A random location within an area.</returns>
-        public static Location GetRandomLocation(uint area)
+        public Location GetRandomLocation(uint area)
         {
             var resref = GetResRef(area);
             if (!_walkmeshesByArea.ContainsKey(resref)) 

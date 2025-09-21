@@ -17,12 +17,14 @@ using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class CombatPoint
+    public class CombatPoint
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly ISkillService _skillService = ServiceContainer.GetService<ISkillService>();
-        private static readonly IItemService _itemService = ServiceContainer.GetService<IItemService>();
-        private static readonly IStatService _statService = ServiceContainer.GetService<IStatService>();
+        private readonly IDatabaseService _db;
+        private readonly ISkillService _skillService;
+        private readonly IItemService _itemService;
+        private readonly IStatService _statService;
+        private readonly BeastMastery _beastMastery;
+        
         /// <summary>
         /// Tracks the combat points earned by players during combat.
         /// </summary>
@@ -33,11 +35,25 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static readonly Dictionary<uint, HashSet<uint>> _playerToCreatureTracker = new();
 
+        public CombatPoint(
+            IDatabaseService db,
+            ISkillService skillService,
+            IItemService itemService,
+            IStatService statService,
+            BeastMastery beastMastery)
+        {
+            _db = db;
+            _skillService = skillService;
+            _itemService = itemService;
+            _statService = statService;
+            _beastMastery = beastMastery;
+        }
+
         /// <summary>
         /// Adds a combat point to a given NPC creature for a given player and skill type.
         /// </summary>
         [ScriptHandler(ScriptName.OnItemHit)]
-        public static void OnHitCastSpell()
+        public void OnHitCastSpell()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player) || !GetIsObjectValid(player)) return;
@@ -68,8 +84,7 @@ namespace SWLOR.Game.Server.Service
 
             // If player has a beast active, add a combat point for Beast Mastery.
             var associate = GetAssociate(AssociateType.Henchman, player);
-            var beastMasteryService = ServiceContainer.GetService<BeastMastery>();
-            if (beastMasteryService.IsPlayerBeast(associate))
+            if (_beastMastery.IsPlayerBeast(associate))
             {
                 AddCombatPoint(player, target, SkillType.BeastMastery);
             }
@@ -80,7 +95,7 @@ namespace SWLOR.Game.Server.Service
         /// Then, those combat points are cleared out.
         /// </summary>
         [ScriptHandler<OnCreatureDeathAfter>]
-        public static void OnCreatureDeath()
+        public void OnCreatureDeath()
         {
             // Clears the combat point cache information for an NPC and all player associated.
             static void CleanUpCombatPoints()
@@ -170,8 +185,7 @@ namespace SWLOR.Game.Server.Service
                         {
                             // Skills that are exempt from CP sharing; XP gain is calculated directly on a rank vs NPC level basis
                             // As long as the player is on the ground, we always try to give them Armor XP
-                            var spaceService = ServiceContainer.GetService<Space>();
-                            if (!spaceService.IsPlayerInSpaceMode(player)) validSkills.Add(SkillType.Armor, dbPlayer.Skills[SkillType.Armor]);
+                            if (!Space.IsPlayerInSpaceMode(player)) validSkills.Add(SkillType.Armor, dbPlayer.Skills[SkillType.Armor]);
                             if (!validSkills.Any()) continue;
 
                             foreach (var (skillType, ps) in validSkills)
@@ -198,7 +212,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler<OnModuleExit>]
         [ScriptHandler<OnAreaExit>]
-        public static void OnPlayerExit()
+        public void OnPlayerExit()
         {
             var player = GetExitingObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -210,7 +224,7 @@ namespace SWLOR.Game.Server.Service
         /// Removes all combat points for a player as well as all other cache references.
         /// </summary>
         /// <param name="player">The player whose cache data we're removing</param>
-        private static void ClearPlayerCombatPoints(uint player)
+        private void ClearPlayerCombatPoints(uint player)
         {
             if (!_playerToCreatureTracker.ContainsKey(player)) return;
 
@@ -234,7 +248,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to associate this point with.</param>
         /// <param name="skill">The skill to associate with the point.</param>
         /// <param name="amount">The number of points to add.</param>
-        public static void AddCombatPoint(uint player, uint creature, SkillType skill, int amount = 1)
+        public void AddCombatPoint(uint player, uint creature, SkillType skill, int amount = 1)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (GetIsPC(creature) || GetIsDM(creature)) return;
@@ -273,7 +287,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to update.</param>
         /// <param name="level">The new level to assign.</param>
-        private static void UpdateLastCreatureLevel(uint player, int level)
+        private void UpdateLastCreatureLevel(uint player, int level)
         {
             var expiration = DateTime.UtcNow.AddMinutes(2);
             SetLocalInt(player, "COMBAT_POINT_LAST_NPC_LEVEL", level);
@@ -287,7 +301,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to retrieve from</param>
         /// <returns>The level of the last enemy a player was involved in combat with or zero if expired/unavailable.</returns>
-        public static int GetRecentEnemyLevel(uint player)
+        public int GetRecentEnemyLevel(uint player)
         {
             var now = DateTime.UtcNow;
             var expirationString = GetLocalString(player, "COMBAT_POINT_LAST_NPC_EXPIRATION");
@@ -307,7 +321,7 @@ namespace SWLOR.Game.Server.Service
         /// This should be called after using the value returned by GetRecentEnemyLevel.
         /// </summary>
         /// <param name="player">The player to clear.</param>
-        public static void ClearRecentEnemyLevel(uint player)
+        public void ClearRecentEnemyLevel(uint player)
         {
             DeleteLocalString(player, "COMBAT_POINT_LAST_NPC_EXPIRATION");
             DeleteLocalInt(player, "COMBAT_POINT_LAST_NPC_LEVEL");
@@ -321,7 +335,7 @@ namespace SWLOR.Game.Server.Service
         /// Number of creatures tagged by the player. 
         /// 0 is none, -1 if the player is not initialized in the playerToCreatureTracker.
         /// </returns>
-        public static int GetTaggedCreatureCount(uint player)
+        public int GetTaggedCreatureCount(uint player)
         {
             if (!_playerToCreatureTracker.ContainsKey(player))
                 return -1;
@@ -335,7 +349,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to receiving the point.</param>
         /// <param name="skill">The skill to associate with the point.</param>
         /// <param name="amount">The number of points to add.</param>
-        public static void AddCombatPointToAllTagged(uint player, SkillType skill, int amount = 1)
+        public void AddCombatPointToAllTagged(uint player, SkillType skill, int amount = 1)
         {
             if (!_playerToCreatureTracker.ContainsKey(player))
                 return;
@@ -351,7 +365,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player whose reference we're attaching.</param>
         /// <param name="creature">The creature we're referencing</param>
-        public static void AddPlayerToNPCReferenceToCache(uint player, uint creature)
+        public void AddPlayerToNPCReferenceToCache(uint player, uint creature)
         {
             if (!_playerToCreatureTracker.ContainsKey(player))
             {
@@ -369,7 +383,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player whose reference we're removing</param>
         /// <param name="npc">The creature we're referencing</param>
-        private static void RemovePlayerToNPCReferenceFromCache(uint player, uint npc)
+        private void RemovePlayerToNPCReferenceFromCache(uint player, uint npc)
         {
             if (!_playerToCreatureTracker.ContainsKey(player)) return;
 

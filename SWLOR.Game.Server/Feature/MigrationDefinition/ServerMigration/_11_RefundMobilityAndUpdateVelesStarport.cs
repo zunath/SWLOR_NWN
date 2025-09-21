@@ -11,8 +11,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _11_RefundMobilityAndUpdateVelesStarport: ServerMigrationBase, IServerMigration
     {
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public _11_RefundMobilityAndUpdateVelesStarport(ILogger logger, IDatabaseService db) : base(logger, db)
+        {
+        }
 
         private readonly Dictionary<(PerkType, int), int> _refundMap = new()
         {

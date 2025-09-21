@@ -11,6 +11,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Enums;
@@ -28,6 +29,7 @@ namespace SWLOR.Game.Server.Service
         private readonly ILogger _logger;
         private readonly IGenericCacheService _cacheService;
         private readonly IPerkService _perkService;
+        private readonly IActivityService _activityService;
         
         // Cached data
         private IInterfaceCache<string, ItemDetail> _itemCache;
@@ -40,11 +42,12 @@ namespace SWLOR.Game.Server.Service
         private readonly Dictionary<BaseItem, AbilityType> _itemToDamageAbilityMapping = new();
         private readonly Dictionary<BaseItem, AbilityType> _itemToAccuracyAbilityMapping = new();
 
-        public ItemService(ILogger logger, IGenericCacheService cacheService, IPerkService perkService)
+        public ItemService(ILogger logger, IGenericCacheService cacheService, IPerkService perkService, IActivityService activityService)
         {
             _logger = logger;
             _cacheService = cacheService;
             _perkService = perkService;
+            _activityService = activityService;
         }
 
         /// <summary>
@@ -276,7 +279,7 @@ namespace SWLOR.Game.Server.Service
                     position.Y != originalPosition.Y ||
                     position.Z != originalPosition.Z)
                 {
-                    Activity.ClearBusy(actionUser);
+                    _activityService.ClearBusy(actionUser);
                     SendMessageToPC(actionUser, "You move and interrupt your action.");
                     PlayerPlugin.StopGuiTimingBar(actionUser, string.Empty);
                     return;
@@ -314,7 +317,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // User is busy
-            if (Activity.IsBusy(user))
+            if (_activityService.IsBusy(user))
             {
                 SendMessageToPC(user, "You are busy.");
                 return;
@@ -395,14 +398,14 @@ namespace SWLOR.Game.Server.Service
             if (itemDetail.ApplyAction != null)
             {
                 var actionId = Guid.NewGuid().ToString();
-                Activity.SetBusy(user, ActivityStatusType.UseItem);
+                _activityService.SetBusy(user, ActivityStatusType.UseItem);
                 SetLocalBool(user, actionId, true);
                 CheckPosition(user, actionId, userPosition);
 
                 DelayCommand(delay + 0.1f, () =>
                 {
                     DeleteLocalBool(user, actionId);
-                    Activity.ClearBusy(user);
+                    _activityService.ClearBusy(user);
 
                     var updatedPosition = GetPosition(user);
 

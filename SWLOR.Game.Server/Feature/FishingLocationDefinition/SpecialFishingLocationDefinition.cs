@@ -9,8 +9,13 @@ namespace SWLOR.Game.Server.Feature.FishingLocationDefinition
 {
     public class SpecialFishingLocationDefinition: IFishingLocationDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         private readonly FishingLocationBuilder _builder = new();
+
+        public SpecialFishingLocationDefinition(IRandomService random)
+        {
+            _random = random;
+        }
 
         public Dictionary<FishingLocationType, FishingLocationDetail> Build()
         {

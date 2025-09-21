@@ -18,13 +18,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private readonly IItemService _itemService;
         private readonly IStatService _statService;
         private readonly IPerkService _perkService;
+        private readonly Ability _abilityService;
 
-        public OneHandedPerkDefinition(IRandomService random, IItemService itemService, IStatService statService, IPerkService perkService)
+        public OneHandedPerkDefinition(IRandomService random, IItemService itemService, IStatService statService, IPerkService perkService, Ability abilityService)
         {
             _random = random;
             _itemService = itemService;
             _statService = statService;
             _perkService = perkService;
+            _abilityService = abilityService;
         }
         private readonly PerkBuilder _builder = new();
         public Dictionary<PerkType, PerkDetail> BuildPerks()
@@ -340,22 +342,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             var item = GetSpellCastItem();
             var itemType = GetBaseItemType(item);
 
-            var itemService = ServiceContainer.GetService<IItemService>();
-            var randomService = ServiceContainer.GetService<IRandomService>();
-            var perkService = ServiceContainer.GetService<IPerkService>();
-            var statService = ServiceContainer.GetService<IStatService>();
-
-            if (itemService.ShieldBaseItemTypes.Contains(itemType))
+            if (_itemService.ShieldBaseItemTypes.Contains(itemType))
             {
-                if (randomService.D100(1) <= 10)
+                if (_random.D100(1) <= 10)
                 {
-                    if (perkService.GetPerkLevel(defender, PerkType.Alacrity) > 0)
+                    if (_perkService.GetPerkLevel(defender, PerkType.Alacrity) > 0)
                     {
-                        statService.RestoreStamina(defender, 4);
+                        _statService.RestoreStamina(defender, 4);
                     }
-                    else if (perkService.GetPerkLevel(defender, PerkType.Clarity) > 0)
+                    else if (_perkService.GetPerkLevel(defender, PerkType.Clarity) > 0)
                     {
-                        statService.RestoreFP(defender, 4);
+                        _statService.RestoreFP(defender, 4);
                     }
                 }
             }
@@ -899,13 +896,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Strong Style (Lightsaber)")
                 .TriggerRefund((player) =>
                 {
-                    var abilityService = ServiceContainer.GetService<Ability>();
-                    abilityService.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
+                    _abilityService.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
                 })
                 .TriggerPurchase((player) =>
                 {
-                    var abilityService = ServiceContainer.GetService<Ability>();
-                    abilityService.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
+                    _abilityService.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
                 })
                 
                 .AddPerkLevel()

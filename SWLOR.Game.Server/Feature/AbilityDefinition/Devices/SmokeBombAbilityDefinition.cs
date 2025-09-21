@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -12,6 +13,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public class SmokeBombAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
         private readonly AbilityBuilder _builder = new();
+
+        public SmokeBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, CombatPoint combatPoint, IEnmityService enmityService) 
+            : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
+        {
+        }
 
         private static void ApplyEffect(uint creature)
         {
@@ -68,8 +74,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_smoke_hb",
                         20f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 90);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 90);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -96,8 +102,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_smoke_hb",
                         40f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 180);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 180);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -124,8 +130,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_smoke_hb",
                         60f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 360);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 360);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
     }

@@ -5,6 +5,7 @@ using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
@@ -21,14 +22,16 @@ namespace SWLOR.Game.Server.Service
         private readonly IGenericCacheService _cacheService;
         private readonly IGuiService _guiService;
         private readonly IAbilityService _abilityService;
+        private readonly IMessagingService _messagingService;
 
-        public StatusEffectService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IGuiService guiService, IAbilityService abilityService)
+        public StatusEffectService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IGuiService guiService, IAbilityService abilityService, IMessagingService messagingService)
         {
             _logger = logger;
             _db = db;
             _cacheService = cacheService;
             _guiService = guiService;
             _abilityService = abilityService;
+            _messagingService = messagingService;
         }
         private class StatusEffectGroup
         {
@@ -314,7 +317,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             if(sendApplicationMessage)
-                Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.", 20f);
+                _messagingService.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.", 20f);
 
             _guiService.PublishRefreshEvent(target, new StatusEffectReceivedRefreshEvent());
         }
@@ -453,7 +456,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             if(showMessage)
-                Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)}'s {statusEffectDetail.Name} effect has worn off.");
+                _messagingService.SendMessageNearbyToPlayers(creature, $"{GetName(creature)}'s {statusEffectDetail.Name} effect has worn off.");
 
             _guiService.PublishRefreshEvent(creature, new StatusEffectRemovedRefreshEvent());
         }

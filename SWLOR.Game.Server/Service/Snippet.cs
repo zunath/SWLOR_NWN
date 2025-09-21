@@ -9,12 +9,13 @@ using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Snippet
+    public class Snippet
     {
-        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        private readonly IGenericCacheService _cacheService;
         
         // Cached data
         private static IInterfaceCache<string, SnippetDetail> _snippetCache;
@@ -23,11 +24,16 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, SnippetDetail> _appearsWhenCommands = new();
         private static readonly Dictionary<string, SnippetDetail> _actionsTakenCommands = new();
 
+        public Snippet(IGenericCacheService cacheService)
+        {
+            _cacheService = cacheService;
+        }
+
         /// <summary>
         /// When the module loads, all available conversation snippets are loaded into the cache.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheData()
+        public void CacheData()
         {
             _snippetCache = _cacheService.BuildInterfaceCache<ISnippetListDefinition, string, SnippetDetail>()
                 .WithDataExtractor(instance => instance.BuildSnippets())
@@ -59,7 +65,7 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler(ScriptName.OnDialogAppears)]
         [ScriptHandler(ScriptName.OnDialogCondition)]
         [ScriptHandler(ScriptName.OnDialogConditions)]
-        public static bool ConversationAppearsWhen()
+        public bool ConversationAppearsWhen()
         {
             var player = GetPCSpeaker();
             return ProcessConditions(player);
@@ -71,7 +77,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler(ScriptName.OnDialogAction)]
         [ScriptHandler(ScriptName.OnDialogActions)]
-        public static void ConversationAction()
+        public void ConversationAction()
         {
             var player = GetPCSpeaker();
             ProcessActions(player);
@@ -83,7 +89,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player running the conditions.</param>
         /// <returns>true if all commands passed successfully, false otherwise</returns>
-        private static bool ProcessConditions(uint player)
+        private bool ProcessConditions(uint player)
         {
             foreach (var condition in _appearsWhenCommands)
             {
@@ -120,7 +126,7 @@ namespace SWLOR.Game.Server.Service
         /// Handles processing action commands.
         /// </summary>
         /// <param name="player">The player to run the commands against</param>
-        private static void ProcessActions(uint player)
+        private void ProcessActions(uint player)
         {
             foreach (var action in _actionsTakenCommands)
             {

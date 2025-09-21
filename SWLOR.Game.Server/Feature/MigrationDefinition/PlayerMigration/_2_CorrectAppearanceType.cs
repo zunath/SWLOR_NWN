@@ -11,7 +11,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {
     public class _2_CorrectAppearanceType: IPlayerMigration
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+
+        public _2_CorrectAppearanceType(IDatabaseService db)
+        {
+            _db = db;
+        }
         
         public int Version => 2;
         public void Migrate(uint player)

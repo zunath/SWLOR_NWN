@@ -15,15 +15,21 @@ using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Achievement
+    public class Achievement
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IGuiService _guiService = ServiceContainer.GetService<IGuiService>();
+        private readonly IDatabaseService _db;
+        private readonly IGuiService _guiService;
         private static IdReservation _idReservation;
         private static readonly Dictionary<AchievementType, AchievementAttribute> _activeAchievements = new();
 
+        public Achievement(IDatabaseService db, IGuiService guiService)
+        {
+            _db = db;
+            _guiService = guiService;
+        }
+
         [ScriptHandler<OnModuleLoad>]
-        public static void ReserveGuiIds()
+        public void ReserveGuiIds()
         {
             _idReservation = _guiService.ReserveIds(nameof(Achievement), 6);
         }
@@ -32,7 +38,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module caches, read all achievement types and store them into the cache.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void LoadAchievements()
+        public void LoadAchievements()
         {
             var achievementTypes = Enum.GetValues(typeof(AchievementType)).Cast<AchievementType>();
             foreach (var achievement in achievementTypes)
@@ -52,7 +58,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to give the achievement to.</param>
         /// <param name="achievementType">The achievement to grant.</param>
-        public static void GiveAchievement(uint player, AchievementType achievementType)
+        public void GiveAchievement(uint player, AchievementType achievementType)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
@@ -77,7 +83,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Displays the achievement notification window with the achievement's name and description.
         /// </summary>
-        public static void DisplayAchievementNotificationWindow(uint player, string name)
+        public void DisplayAchievementNotificationWindow(uint player, string name)
         {
             const int WindowX = 4;
             const int WindowY = 4;
@@ -94,7 +100,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type of achievement to retrieve.</param>
         /// <returns>An achievement detail of the specified type.</returns>
-        public static AchievementAttribute GetAchievement(AchievementType type)
+        public AchievementAttribute GetAchievement(AchievementType type)
         {
             return _activeAchievements[type];
         }
@@ -103,7 +109,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves all of the active achievements.
         /// </summary>
         /// <returns>A dictionary containing all of the active achievements.</returns>
-        public static Dictionary<AchievementType, AchievementAttribute> GetActiveAchievements()
+        public Dictionary<AchievementType, AchievementAttribute> GetActiveAchievements()
         {
             return _activeAchievements.ToDictionary(x => x.Key, y => y.Value);
         }

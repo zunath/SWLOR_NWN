@@ -8,6 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
@@ -17,11 +18,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private readonly IPerkService _perkService;
         private readonly IItemService _itemService;
+        private readonly ITargetingService _targetingService;
 
-        public DroidAssemblyViewModel(IGuiService guiService, IPerkService perkService, IItemService itemService) : base(guiService)
+        public DroidAssemblyViewModel(IGuiService guiService, IPerkService perkService, IItemService itemService, ITargetingService targetingService) : base(guiService)
         {
             _perkService = perkService;
             _itemService = itemService;
+            _targetingService = targetingService;
         }
 
         private const string BlankTexture = "Blank";
@@ -467,7 +470,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a CPU part from your inventory.", item =>
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a CPU part from your inventory.", item =>
                 {
                     var error = _itemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
@@ -507,7 +510,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Head part from your inventory.", item =>
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a Head part from your inventory.", item =>
                 {
                     var error = _itemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
@@ -546,7 +549,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Body part from your inventory.", item =>
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a Body part from your inventory.", item =>
                 {
                     var error = _itemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
@@ -585,7 +588,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select an Arms part from your inventory.", item =>
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select an Arms part from your inventory.", item =>
                 {
                     var error = _itemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
@@ -624,7 +627,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Legs part from your inventory.", item =>
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select a Legs part from your inventory.", item =>
                 {
                     var error = _itemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))

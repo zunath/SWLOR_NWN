@@ -4,19 +4,26 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Contracts;
 using AuthorizationLevel = SWLOR.Shared.Core.Enums.AuthorizationLevel;
 
 namespace SWLOR.Game.Server.Service
 {
     public class Authorization
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+
+        public Authorization(IDatabaseService db)
+        {
+            _db = db;
+        }
+
         /// <summary>
         /// Retrieves the authorization level of a given player.
         /// </summary>
         /// <param name="player">The player whose authorization level we're checking</param>
         /// <returns>The authorization level (player, DM, or admin)</returns>
-        public static AuthorizationLevel GetAuthorizationLevel(uint player)
+        public AuthorizationLevel GetAuthorizationLevel(uint player)
         {
             var cdKey = GetPCPublicCDKey(player);
 

@@ -4,12 +4,17 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class TreatmentKitAbilityDefinition: FirstAidBaseAbilityDefinition
     {
+        public TreatmentKitAbilityDefinition(IRandomService random, IPerkService perkService, CombatPoint combatPoint, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPoint, enmityService, abilityService)
+        {
+        }
+
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             TreatmentKit1();
@@ -58,8 +63,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
                     TakeMedicalSupplies(activator);
 
-                    Enmity.ModifyEnmityOnAll(activator, 200);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 200);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
         private void TreatmentKit2()
@@ -105,8 +110,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
                     TakeMedicalSupplies(activator);
 
-                    Enmity.ModifyEnmityOnAll(activator, 350);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 350);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
     }

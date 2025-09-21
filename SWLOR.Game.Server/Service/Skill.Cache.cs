@@ -6,13 +6,12 @@ using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static partial class Skill
+    public partial class SkillService
     {
-        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
-        
         // Cached data
         private static IEnumCache<SkillCategoryType, SkillCategoryAttribute> _categoryCache;
         private static IEnumCache<SkillType, SkillAttribute> _skillCache;
@@ -39,7 +38,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, skills and categories are organized into dictionaries for quick look-ups later on.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheData()
+        public void CacheData()
         {
             Console.WriteLine("Skill.Cache.CacheData() called - starting skill cache initialization...");
             
@@ -97,7 +96,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Populates pre-computed caches for fast retrieval without LINQ.
         /// </summary>
-        private static void PopulatePreComputedCaches()
+        private void PopulatePreComputedCaches()
         {
             if (_skillCache == null)
             {
@@ -193,7 +192,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a list of all skills, including inactive ones.
         /// </summary>
         /// <returns>A list of all skills.</returns>
-        public static Dictionary<SkillType, SkillAttribute> GetAllSkills()
+        public Dictionary<SkillType, SkillAttribute> GetAllSkills()
         {
             return _allSkills;
         }
@@ -202,7 +201,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a list of all skills, excluding inactive ones.
         /// </summary>
         /// <returns>A list of active skills.</returns>
-        public static Dictionary<SkillType, SkillAttribute> GetAllActiveSkills()
+        public Dictionary<SkillType, SkillAttribute> GetAllActiveSkills()
         {
             return _activeSkills;
         }
@@ -211,7 +210,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a list of all skills which contribute towards the skill cap.
         /// </summary>
         /// <returns>A list of skills contributing towards the skill cap.</returns>
-        public static Dictionary<SkillType, SkillAttribute> GetAllContributingSkills()
+        public Dictionary<SkillType, SkillAttribute> GetAllContributingSkills()
         {
             return _contributingSkills;
         }
@@ -220,7 +219,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a list of active skills which contribute towards the skill cap.
         /// </summary>
         /// <returns>A list of active skills contributing towards the skill cap.</returns>
-        public static Dictionary<SkillType, SkillAttribute> GetActiveContributingSkills()
+        public Dictionary<SkillType, SkillAttribute> GetActiveContributingSkills()
         {
             return _activeContributingSkills;
         }
@@ -229,7 +228,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a list of all skill categories, including inactive ones.
         /// </summary>
         /// <returns>A list of all skill categories</returns>
-        public static Dictionary<SkillCategoryType, SkillCategoryAttribute> GetAllSkillCategories()
+        public Dictionary<SkillCategoryType, SkillCategoryAttribute> GetAllSkillCategories()
         {
             return _allCategories;
         }
@@ -238,7 +237,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a dictionary of all active skills which are displayed in the crafting menu.
         /// </summary>
         /// <returns>A dictionary of active skills which are displayed in the crafting menu.</returns>
-        public static Dictionary<SkillType, SkillAttribute> GetActiveCraftingSkills()
+        public Dictionary<SkillType, SkillAttribute> GetActiveCraftingSkills()
         {
             return _craftingSkills;
         }
@@ -247,7 +246,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a dictionary of all active skills which are displayed in the research menu.
         /// </summary>
         /// <returns>A dictionary of active skills which are displayed in the research menu.</returns>
-        public static Dictionary<SkillType, SkillAttribute> GetActiveResearchableCraftingSkills()
+        public Dictionary<SkillType, SkillAttribute> GetActiveResearchableCraftingSkills()
         {
             return _researchableSkills;
         }
@@ -256,7 +255,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a list of all skill categories, excluding inactive ones.
         /// </summary>
         /// <returns>A list of active skill categories.</returns>
-        public static Dictionary<SkillCategoryType, SkillCategoryAttribute> GetAllActiveSkillCategories()
+        public Dictionary<SkillCategoryType, SkillCategoryAttribute> GetAllActiveSkillCategories()
         {
             return _activeCategories;
         }
@@ -265,7 +264,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a list of all skill categories which have skills that contribute towards the skill cap.
         /// </summary>
         /// <returns>A list of skill categories which have skills that contribute towards the skill cap.</returns>
-        public static Dictionary<SkillCategoryType, SkillCategoryAttribute> GetAllContributingSkillCategories()
+        public Dictionary<SkillCategoryType, SkillCategoryAttribute> GetAllContributingSkillCategories()
         {
             return _contributingCategories;
         }
@@ -274,7 +273,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a list of active skill categories which have skills that contribute towards the skill cap.
         /// </summary>
         /// <returns>A list of skill categores which have skills that contribute towards the skill cap.</returns>
-        public static Dictionary<SkillCategoryType, SkillCategoryAttribute> GetActiveContributingSkillCategories()
+        public Dictionary<SkillCategoryType, SkillCategoryAttribute> GetActiveContributingSkillCategories()
         {
             return _activeContributingCategories;
         }
@@ -284,7 +283,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="category">The category of skills to retrieve.</param>
         /// <returns>A dictionary containing skills in the specified category.</returns>
-        public static Dictionary<SkillType, SkillAttribute> GetAllSkillsByCategory(SkillCategoryType category)
+        public Dictionary<SkillType, SkillAttribute> GetAllSkillsByCategory(SkillCategoryType category)
         {
             return _skillsByCategory.GetValueOrDefault(category) ?? new Dictionary<SkillType, SkillAttribute>();
         }
@@ -294,7 +293,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="category">The category of skills to retrieve.</param>
         /// <returns>A dictionary containing active skills in the specified category.</returns>
-        public static Dictionary<SkillType, SkillAttribute> GetActiveSkillsByCategory(SkillCategoryType category)
+        public Dictionary<SkillType, SkillAttribute> GetActiveSkillsByCategory(SkillCategoryType category)
         {
             return _activeSkillsByCategoryDict.GetValueOrDefault(category) ?? new Dictionary<SkillType, SkillAttribute>();
         }
@@ -304,7 +303,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="skillType">The skill whose details we will retrieve.</param>
         /// <returns>An object containing details about a skill.</returns>
-        public static SkillAttribute GetSkillDetails(SkillType skillType)
+        public SkillAttribute GetSkillDetails(SkillType skillType)
         {
             if (_allSkills.Count == 0)
             {
@@ -337,7 +336,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="category">The category whose details we will retrieve.</param>
         /// <returns>An object containing details about a skill category.</returns>
-        public static SkillCategoryAttribute GetSkillCategoryDetails(SkillCategoryType category)
+        public SkillCategoryAttribute GetSkillCategoryDetails(SkillCategoryType category)
         {
             return _allCategories.TryGetValue(category, out var categoryDetail) 
                 ? categoryDetail 

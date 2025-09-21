@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
@@ -12,11 +13,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     {
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
 
-        public ForceLightningAbilityDefinition(ICombatService combatService, IStatService statService)
+        public ForceLightningAbilityDefinition(ICombatService combatService, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -83,8 +88,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         ApplyEffectToObject(DurationType.Instant, elecBurst, dTarget);
                     });
 
-                    CombatPoint.AddCombatPoint(activator, creature, SkillType.Force, 3);
-                    Enmity.ModifyEnmity(activator, creature, 100 * level + damage);
+                    _combatPoint.AddCombatPoint(activator, creature, SkillType.Force, 3);
+                    _enmityService.ModifyEnmity(activator, creature, 100 * level + damage);
                     count++;
                 }
                 creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Huge, GetLocation(target), true, ObjectType.Creature);

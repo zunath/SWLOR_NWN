@@ -17,10 +17,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class RentApartmentViewModel: GuiViewModelBase<RentApartmentViewModel, GuiPayloadBase>
     {
         private readonly IDatabaseService _db;
+        private readonly Property _property;
 
-        public RentApartmentViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        public RentApartmentViewModel(IGuiService guiService, IDatabaseService db, Property property) : base(guiService)
         {
             _db = db;
+            _property = property;
         }
         
         public string Instructions
@@ -85,9 +87,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
-                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
+                .AddFieldSearch(nameof(World_property.OwnerPlayerId), playerId, false)
+                .AddFieldSearch(nameof(World_property.PropertyType), (int)PropertyType.Apartment)
+                .AddFieldSearch(nameof(World_property.IsQueuedForDeletion), false);
             var dbApartment = _db.Search(query).FirstOrDefault();
 
             return dbApartment == null;
@@ -101,9 +103,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var layoutToggles = new GuiBindingList<bool>();
             _layoutTypes.Clear();
 
-            foreach (var layoutType in Property.GetAllLayoutsByPropertyType(PropertyType.Apartment))
+            foreach (var layoutType in _property.GetAllLayoutsByPropertyType(PropertyType.Apartment))
             {
-                var layout = Property.GetLayoutByType(layoutType);
+                var layout = _property.GetLayoutByType(layoutType);
 
                 layoutNames.Add(layout.Name);
                 layoutToggles.Add(false);
@@ -122,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadLayout()
         {
             var layoutType = _layoutTypes[SelectedLayout];
-            var layout = Property.GetLayoutByType(layoutType);
+            var layout = _property.GetLayoutByType(layoutType);
 
             Name = layout.Name;
             FurnitureLimit = $"Structure Limit: {layout.StructureLimit} items";
@@ -144,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnBuyApartment() => () =>
         {
             var layoutType = _layoutTypes[SelectedLayout];
-            var layout = Property.GetLayoutByType(layoutType);
+            var layout = _property.GetLayoutByType(layoutType);
 
             ShowModal($"Are you sure you want to buy this apartment layout for {layout.InitialPrice} credits? " +
                       $"Your lease will last for seven days and can be extended up to thirty days for {layout.PricePerDay} credits per day.",
@@ -161,9 +163,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     var playerId = GetObjectUUID(Player);
                     var query = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
-                        .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
-                        .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
+                        .AddFieldSearch(nameof(World_property.OwnerPlayerId), playerId, false)
+                        .AddFieldSearch(nameof(World_property.PropertyType), (int)PropertyType.Apartment)
+                        .AddFieldSearch(nameof(World_property.IsQueuedForDeletion), false);
                     var apartments = _db.Search(query).ToList();
 
                     if (apartments.Count > 0)
@@ -175,8 +177,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     AssignCommand(Player, () => TakeGoldFromCreature(layout.InitialPrice, Player, true));
 
-                    var property = Property.CreateApartment(Player, layoutType);
-                    Property.EnterProperty(Player, property.Id);
+                    var property = _property.CreateApartment(Player, layoutType);
+                    _property.EnterProperty(Player, property.Id);
 
                     _guiService.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
 
@@ -191,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var layoutType = _layoutTypes[SelectedLayout];
 
-            Property.PreviewProperty(Player, layoutType);
+            _property.PreviewProperty(Player, layoutType);
             _guiService.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
         };
     }

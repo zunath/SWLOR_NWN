@@ -4,25 +4,31 @@ using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Planet
+    public class PlanetService : IPlanetService
     {
-        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
-        private static IEnumCache<PlanetType, PlanetAttribute>? _planetCache;
+        private readonly IGenericCacheService _cacheService;
+        private IEnumCache<PlanetType, PlanetAttribute>? _planetCache;
         
         // Additional cache for backward compatibility
-        private static readonly Dictionary<PlanetType, PlanetAttribute> _planets = new();
+        private readonly Dictionary<PlanetType, PlanetAttribute> _planets = new();
         
         // Pre-computed cache for fast retrieval
-        private static readonly Dictionary<PlanetType, PlanetAttribute> _allPlanets = new();
+        private readonly Dictionary<PlanetType, PlanetAttribute> _allPlanets = new();
+
+        public PlanetService(IGenericCacheService cacheService)
+        {
+            _cacheService = cacheService;
+        }
 
         /// <summary>
         /// When the module loads, cache relevant data needed by the Planet service.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheData()
+        public void CacheData()
         {
             CachePlanets();
             RegisterAreaPlanetIds();
@@ -31,7 +37,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all the different planet types.
         /// </summary>
-        private static void CachePlanets()
+        private void CachePlanets()
         {
             _planetCache = _cacheService.BuildEnumCache<PlanetType, PlanetAttribute>()
                 .WithAllItems()
@@ -49,7 +55,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, assign a planet Id to every area that is considered to be a planet.
         /// </summary>
-        private static void RegisterAreaPlanetIds()
+        private void RegisterAreaPlanetIds()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
@@ -74,7 +80,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="area">The area to check</param>
         /// <returns>A planet type. Returns PlanetType.Invalid on failure.</returns>
-        public static PlanetType GetPlanetType(uint area)
+        public PlanetType GetPlanetType(uint area)
         {
             var planetTypeId = GetLocalInt(area, "PLANET_TYPE_ID");
 
@@ -87,7 +93,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type of planet to retrieve.</param>
         /// <returns>A planet detail object.</returns>
-        public static PlanetAttribute GetPlanetByType(PlanetType type)
+        public PlanetAttribute GetPlanetByType(PlanetType type)
         {
             return _planetCache?.AllItems[type] ?? throw new KeyNotFoundException($"Planet {type} not found in cache");
         }
@@ -96,7 +102,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves all of the active planets available.
         /// </summary>
         /// <returns>A dictionary containing the active planets.</returns>
-        public static Dictionary<PlanetType, PlanetAttribute> GetAllPlanets()
+        public Dictionary<PlanetType, PlanetAttribute> GetAllPlanets()
         {
             return _allPlanets;
         }

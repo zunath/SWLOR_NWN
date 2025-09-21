@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -10,9 +11,17 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
     public class QuestSnippetDefinition: ISnippetListDefinition
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly IDatabaseService _db;
+        private readonly ILogger _logger;
+        private readonly IQuestService _questService;
         private readonly SnippetBuilder _builder = new();
+
+        public QuestSnippetDefinition(IDatabaseService db, ILogger logger, IQuestService questService)
+        {
+            _db = db;
+            _logger = logger;
+            _questService = questService;
+        }
 
         public Dictionary<string, SnippetDetail> BuildSnippets()
         {
@@ -144,7 +153,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     }
 
                     var questId = args[0];
-                    Quest.AcceptQuest(player, questId);
+                    _questService.AcceptQuest(player, questId);
                 });
         }
 
@@ -163,7 +172,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     }
 
                     var questId = args[0];
-                    Quest.AdvanceQuest(player, OBJECT_SELF, questId);
+                    _questService.AdvanceQuest(player, OBJECT_SELF, questId);
                 });
         }
 
@@ -184,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     }
 
                     var questId = args[0];
-                    Quest.RequestItemsFromPlayer(player, questId);
+                    _questService.RequestItemsFromPlayer(player, questId);
                 });
         }
 

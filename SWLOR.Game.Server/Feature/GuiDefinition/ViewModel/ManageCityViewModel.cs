@@ -19,11 +19,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
+        private readonly Property _property;
 
-        public ManageCityViewModel(IGuiService guiService, ILogger logger, IDatabaseService db) : base(guiService)
+        public ManageCityViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, Property property) : base(guiService)
         {
             _logger = logger;
             _db = db;
+            _property = property;
         }
         
         private const int MaxUpgradeLevel = 5;
@@ -206,9 +208,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             var area = GetArea(TetherObject);
-            var propertyId = Property.GetPropertyId(area);
+            var propertyId = _property.GetPropertyId(area);
             var dbProperty = _db.Get<WorldProperty>(propertyId);
-            var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
+            var dbBuilding = _db.Get<WorldProperty>(db_property.ParentPropertyId);
             _cityId = dbBuilding.ParentPropertyId;
             
             RefreshPermissions();
@@ -298,7 +300,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             InstructionsColor = GuiColor.Green;
             CityName = dbCity.CustomName;
             Treasury = $"Treasury: {dbCity.Treasury} cr";
-            CityLevel = $"Level: {Property.GetCityLevelName(level)} (Lvl. {level})";
+            CityLevel = $"Level: {_property.GetCityLevelName(level)} (Lvl. {level})";
         }
         
         private void RefreshUpkeep()
@@ -474,7 +476,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     _logger.Write<PropertyLogGroup>($"City upgrade '{upgradeType}' purchased by {GetName(Player)} for property '{dbCity.CustomName}' ({dbCity.Id}).");
 
-                    var structureTypes = Property.GetStructuresByInteriorPropertyType(propertyType);
+                    var structureTypes = _property.GetStructuresByInteriorPropertyType(propertyType);
                     var structureTypeIds = structureTypes.Select(s => (int)s).ToList();
 
                     if (structureTypeIds.Count > 0)
@@ -482,14 +484,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         // Retrieve all interior property Ids in this city of the given type of property.
                         // I.E: All banks, all medical centers, etc.
                         var instancePropertyIds = _db.Search(new DBQuery<WorldProperty>()
-                            .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), _cityId, false)
-                            .AddFieldSearch(nameof(WorldProperty.StructureType), structureTypeIds))
+                            .AddFieldSearch(nameof(World_property.ParentPropertyId), _cityId, false)
+                            .AddFieldSearch(nameof(World_property.StructureType), structureTypeIds))
                             .SelectMany(s => s.ChildPropertyIds[PropertyChildType.Interior]);
 
                         foreach (var propertyId in instancePropertyIds)
                         {
-                            var instance = Property.GetRegisteredInstance(propertyId);
-                            var layout = Property.GetLayoutByType(instance.LayoutType);
+                            var instance = _property.GetRegisteredInstance(propertyId);
+                            var layout = _property.GetLayoutByType(instance.LayoutType);
 
                             if (layout.OnCityUpgradeAction != null)
                             {

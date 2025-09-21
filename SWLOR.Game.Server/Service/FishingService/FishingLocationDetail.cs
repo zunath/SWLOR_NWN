@@ -8,12 +8,13 @@ namespace SWLOR.Game.Server.Service.FishingService
 {
     public class FishingLocationDetail
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         public Dictionary<Tuple<FishingRodType, FishingBaitType>, List<FishDetail>> FishMap { get; } = new();
         private FishType _defaultFish;
 
-        public FishingLocationDetail()
+        public FishingLocationDetail(IRandomService randomService)
         {
+            _random = randomService;
             _defaultFish = FishType.MoatCarp;
         }
 

@@ -8,7 +8,6 @@ using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Core.Contracts;
-using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -34,10 +33,9 @@ namespace SWLOR.Game.Server.Feature
         /// 
         /// </summary>
         [ScriptHandler(ScriptName.OnScavengeOpened)]
-        public static void OnOpened()
+        public void OnOpened()
         {
-            var scavengePoint = ServiceContainer.GetService<ScavengePoint>();
-            scavengePoint.OnOpenedInternal();
+            OnOpenedInternal();
         }
 
         private void OnOpenedInternal()
@@ -137,10 +135,9 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is removed from a scavenge point, if there are no more items in the inventory, destroy the placeable.
         /// </summary>
         [ScriptHandler(ScriptName.OnScavengeDisturbed)]
-        public static void OnDisturbed()
+        public void OnDisturbed()
         {
-            var scavengePoint = ServiceContainer.GetService<ScavengePoint>();
-            scavengePoint.OnDisturbedInternal();
+            OnDisturbedInternal();
         }
 
         private void OnDisturbedInternal()
@@ -174,10 +171,9 @@ namespace SWLOR.Game.Server.Feature
         /// When a scavenge site is closed by a player, if there are no more items in the inventory, destroy the scavenge point.
         /// </summary>
         [ScriptHandler(ScriptName.OnScavengeClosed)]
-        public static void OnClosed()
+        public void OnClosed()
         {
-            var scavengePoint = ServiceContainer.GetService<ScavengePoint>();
-            scavengePoint.OnClosedInternal();
+            OnClosedInternal();
         }
 
         private void OnClosedInternal()

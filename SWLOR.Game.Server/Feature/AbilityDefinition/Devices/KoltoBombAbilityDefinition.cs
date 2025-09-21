@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -13,6 +14,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public class KoltoBombAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
         private readonly AbilityBuilder _builder = new();
+
+        public KoltoBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, CombatPoint combatPoint, IEnmityService enmityService) 
+            : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
+        {
+        }
 
         private static void ApplyEffect(uint creature, int hpRegen)
         {
@@ -111,8 +117,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_kolt1_hb",
                         20f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 220);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 220);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -139,8 +145,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_kolt2_hb",
                         40f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 340);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 340);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -167,8 +173,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_kolt3_hb",
                         60f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 480);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 480);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
     }

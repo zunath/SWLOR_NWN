@@ -13,10 +13,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public class MindTrickAbilityDefinition : IAbilityListDefinition
     {
         private readonly ICombatService _combatService;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
 
-        public MindTrickAbilityDefinition(ICombatService combatService)
+        public MindTrickAbilityDefinition(ICombatService combatService, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _combatService = combatService;
+            _combatPoint = combatPoint;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -63,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 effect = TagEffect(effect, EffectTag);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6f);
             }
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
             Enmity.ModifyEnmity(activator, target, 400);
         }
 
@@ -112,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         }
                         targetCreature = GetNextObjectInShape(Shape.Sphere, Radius, GetLocation(target), true);
                     }
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
                 });
         }
     }

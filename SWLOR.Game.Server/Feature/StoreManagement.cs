@@ -150,40 +150,36 @@ namespace SWLOR.Game.Server.Feature
         /// When the module loads, place all stores inside the cache and schedule the cleanup process.
         /// </summary>
         [ScriptHandler<OnModuleLoad>]
-        public static void OnModuleLoad()
+        public void OnModuleLoad()
         {
-            var storeManagement = ServiceContainer.GetService<StoreManagement>();
-            storeManagement.ProcessStores();
+            ProcessStores();
         }
 
         /// <summary>
         /// When a store item is acquired, destroy the local flag indicating it's a store item.
         /// </summary>
         [ScriptHandler<OnModuleAcquire>]
-        public static void OnModuleAcquire()
+        public void OnModuleAcquire()
         {
-            var storeManagement = ServiceContainer.GetService<StoreManagement>();
-            storeManagement.AcquireItem();
+            AcquireItem();
         }
 
         /// <summary>
         /// Destroys items sold to NPC stores immediately.
         /// </summary>
         [ScriptHandler<OnStoreSellAfter>]
-        public static void OnStoreSellAfter()
+        public void OnStoreSellAfter()
         {
-            var storeManagement = ServiceContainer.GetService<StoreManagement>();
-            storeManagement.DestroySoldItem();
+            DestroySoldItem();
         }
 
         /// <summary>
         /// Prevents items from being sold from a henchman's inventory.
         /// </summary>
         [ScriptHandler<OnStoreSellBefore>]
-        public static void OnStoreSellBefore()
+        public void OnStoreSellBefore()
         {
-            var storeManagement = ServiceContainer.GetService<StoreManagement>();
-            storeManagement.PreventSalesFromHenchmenInventory();
+            PreventSalesFromHenchmenInventory();
         }
     }
 }

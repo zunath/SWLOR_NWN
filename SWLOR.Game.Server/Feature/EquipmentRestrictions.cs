@@ -40,17 +40,16 @@ namespace SWLOR.Game.Server.Feature
         /// If not able to be used, an error message will be sent and item will not be equipped.
         /// </summary>
         [ScriptHandler<OnItemEquipValidateBefore>]
-        public static void ValidateItemEquip()
+        public void ValidateItemEquip()
         {
             var creature = OBJECT_SELF;
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
-            var equipmentRestrictions = ServiceContainer.GetService<EquipmentRestrictions>();
 
-            var isSwapping = equipmentRestrictions.IsItemSwapping(creature, item, slot);
-            var canUseItem = equipmentRestrictions.CanItemBeUsed(creature, item);
-            var canDualWield = equipmentRestrictions.ValidateDualWield(item, slot);
-            var isRingSwappingPositions = equipmentRestrictions.IsRingSwappingPositions(creature, item, slot);
+            var isSwapping = IsItemSwapping(creature, item, slot);
+            var canUseItem = CanItemBeUsed(creature, item);
+            var canDualWield = ValidateDualWield(item, slot);
+            var isRingSwappingPositions = IsRingSwappingPositions(creature, item, slot);
 
             if (string.IsNullOrWhiteSpace(canUseItem) &&
                 canDualWield && 
@@ -269,26 +268,25 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is equipped, if any of a player's perks has an Equipped Trigger, run those actions now.
         /// </summary>
         [ScriptHandler<OnSWLORItemEquipValidBefore>]
-        public static void ApplyEquipTriggers()
+        public void ApplyEquipTriggers()
         {
             var player = OBJECT_SELF;
             if (GetIsDM(player)) return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
-            var equipmentRestrictions = ServiceContainer.GetService<EquipmentRestrictions>();
 
             // The unequip event doesn't fire if an item is being swapped out. 
             // If there's an item in the slot, run the unequip triggers first.
             var existingItemInSlot = GetItemInSlot(slot, player);
             if (GetIsObjectValid(existingItemInSlot))
             {
-                equipmentRestrictions.RunUnequipTriggers(player, existingItemInSlot);
+                RunUnequipTriggers(player, existingItemInSlot);
             }
 
-            foreach (var (perkType, actionList) in equipmentRestrictions._perkService.GetAllEquipTriggers())
+            foreach (var (perkType, actionList) in _perkService.GetAllEquipTriggers())
             {
-                var playerPerkLevel = equipmentRestrictions._perkService.GetPerkLevel(player, perkType);
+                var playerPerkLevel = _perkService.GetPerkLevel(player, perkType);
                 if (playerPerkLevel <= 0) continue;
 
                 foreach (var action in actionList)
@@ -318,14 +316,13 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is unequipped, if any of a player's perks has an Unequipped Trigger, run those actions now.
         /// </summary>
         [ScriptHandler<OnItemUnequipBefore>]
-        public static void ApplyUnequipTriggers()
+        public void ApplyUnequipTriggers()
         {
             var player = OBJECT_SELF;
             if (GetIsDM(player)) return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var equipmentRestrictions = ServiceContainer.GetService<EquipmentRestrictions>();
-            equipmentRestrictions.RunUnequipTriggers(player, item);
+            RunUnequipTriggers(player, item);
         }
     }
 }

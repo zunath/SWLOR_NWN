@@ -3,12 +3,15 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _4_ResaveNotes : ServerMigrationBase, IServerMigration
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public _4_ResaveNotes(ILogger logger, IDatabaseService db) : base(logger, db)
+        {
+        }
         
         public int Version => 4;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;

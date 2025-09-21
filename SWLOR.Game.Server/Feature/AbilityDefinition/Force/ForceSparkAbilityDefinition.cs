@@ -12,14 +12,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
         private const string Tier1Tag = "ABILITY_FORCE_SPARK_1";
         private const string Tier2Tag = "ABILITY_FORCE_SPARK_2";
         private const string Tier3Tag = "ABILITY_FORCE_SPARK_3";
 
-        public ForceSparkAbilityDefinition(ICombatService combatService, IStatService statService)
+        public ForceSparkAbilityDefinition(ICombatService combatService, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -74,8 +78,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
             else { _statService.ReduceFP(activator, 2 + tier); }
 
-            Enmity.ModifyEnmity(activator, target, 150 + damage);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+            _enmityService.ModifyEnmity(activator, target, 150 + damage);
+            _combatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 
         private void ForceSpark1()

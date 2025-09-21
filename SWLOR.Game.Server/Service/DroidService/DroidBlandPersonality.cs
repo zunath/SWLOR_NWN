@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Service.DroidService
 {
     public class DroidBlandPersonality: IDroidPersonality
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         private readonly List<string> _greetingPhrases = new()
         {
             "Good to see you again.",
@@ -36,7 +36,10 @@ namespace SWLOR.Game.Server.Service.DroidService
             "You're leaving?"
         };
 
-
+        public DroidBlandPersonality(IRandomService randomService)
+        {
+            _random = randomService;
+        }
 
         public string GreetingPhrase()
         {

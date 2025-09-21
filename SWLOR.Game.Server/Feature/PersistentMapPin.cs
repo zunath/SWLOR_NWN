@@ -9,13 +9,14 @@ using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Contracts;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class PersistentMapPin
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
         private struct MapPinDetails
         {
             public string Text { get; set; }
@@ -23,12 +24,17 @@ namespace SWLOR.Game.Server.Feature
             public float PositionY { get; set; }
         }
 
+        public PersistentMapPin(IDatabaseService db)
+        {
+            _db = db;
+        }
+
         /// <summary>
         /// Loads a map pin's data into an object.
         /// Only call this from within one of the map pin event handlers.
         /// </summary>
         /// <returns>An object containing the active map pin's details.</returns>
-        private static MapPin LoadMapPin(bool getId = true, bool isDestroying = false)
+        private MapPin LoadMapPin(bool getId = true, bool isDestroying = false)
         {
             return new MapPin
             {
@@ -43,7 +49,7 @@ namespace SWLOR.Game.Server.Feature
         /// Adds a map pin to the PC entity and saves it to the DB.
         /// </summary>
         [ScriptHandler<OnMapPinAddPinBefore>]
-        public static void AddMapPin()
+        public void AddMapPin()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -68,7 +74,7 @@ namespace SWLOR.Game.Server.Feature
         /// Removes a map pin from the PC entity and saves it to the DB.
         /// </summary>
         [ScriptHandler<OnMapPinDestroyPinBefore>]
-        public static void DeleteMapPin()
+        public void DeleteMapPin()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -100,7 +106,7 @@ namespace SWLOR.Game.Server.Feature
         /// Updates an existing map pin and saves the changes to the DB.
         /// </summary>
         [ScriptHandler<OnMapPinChangePinBefore>]
-        public static void ChangeMapPin()
+        public void ChangeMapPin()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -134,7 +140,7 @@ namespace SWLOR.Game.Server.Feature
         /// Loads map pins on all areas for a player. This only happens one time per reset.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void LoadMapPins()
+        public void LoadMapPins()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player) || GetLocalBool(player, "MAP_PINS_LOADED")) return;
@@ -170,7 +176,7 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         /// <param name="player">The player whose map pin count we're retrieving</param>
         /// <returns>The number of map pins assigned to a player</returns>
-        private static int GetNumberOfMapPins(uint player)
+        private int GetNumberOfMapPins(uint player)
         {
             return GetLocalInt(player, "NW_TOTAL_MAP_PINS");
         }
@@ -180,7 +186,7 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         /// <param name="player">The player whose map pin count we're adjusting</param>
         /// <param name="numberOfMapPins">The new value to set.</param>
-        public static void SetNumberOfMapPins(uint player, int numberOfMapPins)
+        public void SetNumberOfMapPins(uint player, int numberOfMapPins)
         {
             SetLocalInt(player, "NW_TOTAL_MAP_PINS", numberOfMapPins);
         }
@@ -191,7 +197,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player whose map pin information we're retrieving</param>
         /// <param name="index">The index of the map pin.</param>
         /// <returns>A strongly-typed struct containing a specific map pin's details.</returns>
-        private static MapPinDetails GetMapPinDetails(uint player, int index)
+        private MapPinDetails GetMapPinDetails(uint player, int index)
         {
             index++;
             MapPinDetails mapPin = new MapPinDetails()
@@ -212,7 +218,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="x">The X position of the map pin.</param>
         /// <param name="y">The Y position of the map pin.</param>
         /// <param name="area">The area to add the map pin to.</param>
-        private static void SetMapPin(uint player, string note, float x, float y, uint area)
+        private void SetMapPin(uint player, string note, float x, float y, uint area)
         {
             int numberOfMapPins = GetNumberOfMapPins(player);
             int storeAtIndex = -1;

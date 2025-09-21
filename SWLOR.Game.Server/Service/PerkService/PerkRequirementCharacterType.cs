@@ -7,11 +7,14 @@ namespace SWLOR.Game.Server.Service.PerkService
 {
     public class PerkRequirementCharacterType: IPerkRequirement
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IPerkService _perkService;
         private readonly CharacterType _requiredCharacterType;
 
-        public PerkRequirementCharacterType(CharacterType type)
+        public PerkRequirementCharacterType(IDatabaseService db, IPerkService perkService, CharacterType type)
         {
+            _db = db;
+            _perkService = perkService;
             _requiredCharacterType = type;
         }
 
@@ -32,8 +35,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         {
             get
             {
-                var perkService = ServiceContainer.GetService<IPerkService>();
-                return $"Character Type: {perkService.GetCharacterType(_requiredCharacterType).Name}";
+                return $"Character Type: {_perkService.GetCharacterType(_requiredCharacterType).Name}";
             }
         }
     }

@@ -8,7 +8,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class MedicalRegistrationDialog: DialogBase
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+
+        public MedicalRegistrationDialog(IDatabaseService db)
+        {
+            _db = db;
+        }
         
         private const string MainPageId = "MAIN_PAGE";
 

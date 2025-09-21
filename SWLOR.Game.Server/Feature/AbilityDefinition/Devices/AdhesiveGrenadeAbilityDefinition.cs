@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -11,8 +12,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     {
         private readonly AbilityBuilder _builder = new();
 
-        public AdhesiveGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService) 
-            : base(random, itemService, perkService, statService, combatService)
+        public AdhesiveGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, CombatPoint combatPoint, IEnmityService enmityService) 
+            : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
         {
         }
 
@@ -43,8 +44,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             
             ApplyEffectToObject(DurationType.Temporary, effect, target, slowLength);
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            Enmity.ModifyEnmity(activator, target, 150);
+            _combatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
+            _enmityService.ModifyEnmity(activator, target, 150);
         }
 
         private void AdhesiveGrenade1()

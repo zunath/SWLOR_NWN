@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
@@ -18,13 +19,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         private readonly IDatabaseService _db;
         private readonly IPerkService _perkService;
         private readonly IStatService _statService;
+        private readonly BeastMastery _beastMastery;
+        private readonly IEnmityService _enmityService;
 
-        public TameAbilityDefinition(IRandomService random, IDatabaseService db, IPerkService perkService, IStatService statService)
+        public TameAbilityDefinition(IRandomService random, IDatabaseService db, IPerkService perkService, IStatService statService, BeastMastery beastMastery, IEnmityService enmityService)
         {
             _random = random;
             _db = db;
             _perkService = perkService;
             _statService = statService;
+            _beastMastery = beastMastery;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -70,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         return "That target cannot be tamed.";
                     }
 
-                    var type = BeastMastery.GetBeastType(target);
+                    var type = _beastMastery.GetBeastType(target);
                     if (type == BeastType.Invalid)
                     {
                         return "That target cannot be tamed.";
@@ -99,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 {
                     var playerId = GetObjectUUID(activator);
                     var dbPlayer = _db.Get<Player>(playerId);
-                    var type = BeastMastery.GetBeastType(target);
+                    var type = _beastMastery.GetBeastType(target);
                     var skill = dbPlayer.Skills[SkillType.BeastMastery].Rank;
                     var npcStats = _statService.GetNPCStats(target);
                     var socialMod = GetAbilityModifier(AbilityType.Social, activator);
@@ -111,11 +116,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     if (_random.D100(1) > chance)
                     {
                         SendMessageToPC(activator, ColorToken.Red($"Failed to tame {GetName(target)}..."));
-                        Enmity.ModifyEnmity(activator, target, 600);
+                        _enmityService.ModifyEnmity(activator, target, 600);
                         return;
                     }
 
-                    var (likedFood, hatedFood) = BeastMastery.GetLikedAndHatedFood();
+                    var (likedFood, hatedFood) = _beastMastery.GetLikedAndHatedFood();
 
                     var dbBeast = new Beast
                     {

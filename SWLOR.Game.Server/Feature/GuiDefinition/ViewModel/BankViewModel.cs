@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
@@ -22,19 +23,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly IDatabaseService _db;
         private readonly IItemService _itemService;
         private readonly IPerkService _perkService;
+        private readonly ITargetingService _targetingService;
 
-        public BankViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService, IPerkService perkService) : base(guiService)
+        public BankViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService, IPerkService perkService, ITargetingService targetingService) : base(guiService)
         {
             _db = db;
             _itemService = itemService;
             _perkService = perkService;
+            _targetingService = targetingService;
         }
         
         /// <summary>
         /// When a bank placeable is used, display this UI view.
         /// </summary>
         [ScriptHandler(ScriptName.OnOpenBank)]
-        public static void ShowBank()
+        public void ShowBank()
         {
             var player = GetLastUsedBy();
 
@@ -44,8 +47,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var guiService = ServiceContainer.GetService<IGuiService>();
-            guiService.TogglePlayerWindow(player, GuiWindowType.Bank, null, OBJECT_SELF);
+            _guiService.TogglePlayerWindow(player, GuiWindowType.Bank, null, OBJECT_SELF);
         }
 
         private readonly List<string> _itemIds = new();
@@ -191,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickDeposit() => () =>
         {
-            Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.",
+            _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.",
                 item =>
             {
                 var canStore = _itemService.CanBePersistentlyStored(Player, item);

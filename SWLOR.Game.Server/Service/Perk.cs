@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
@@ -21,6 +22,7 @@ namespace SWLOR.Game.Server.Service
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IGenericCacheService _cacheService;
+        private readonly IBeastMasteryService _beastMasteryService;
         
         // Cached data
         private IEnumCache<PerkCategoryType, PerkCategoryAttribute> _categoryCache;
@@ -38,11 +40,12 @@ namespace SWLOR.Game.Server.Service
         private readonly Dictionary<PerkType, Dictionary<int, int>> _perkLevelTiers = new();
         private readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
 
-        public PerkService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService)
+        public PerkService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IBeastMasteryService beastMasteryService)
         {
             _logger = logger;
             _db = db;
             _cacheService = cacheService;
+            _beastMasteryService = beastMasteryService;
         }
 
         /// <summary>
@@ -80,7 +83,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void CachePerks()
         {
-            Console.WriteLine("Perk.CachePerks() called - starting perk cache initialization...");
+            Console.WriteLine("PerkService.CachePerks() called - starting perk cache initialization...");
             
             // Cache perk categories
             _categoryCache = _cacheService.BuildEnumCache<PerkCategoryType, PerkCategoryAttribute>()
@@ -501,7 +504,7 @@ namespace SWLOR.Game.Server.Service
                 return GetPlayerPerkLevel(creature, perkType);
             }
             // Beasts
-            else if (ServiceContainer.GetService<BeastMastery>().IsPlayerBeast(creature))
+            else if (_beastMasteryService.IsPlayerBeast(creature))
             {
                 return GetBeastPerkLevel(creature, perkType);
             }
@@ -564,7 +567,7 @@ namespace SWLOR.Game.Server.Service
             if (playerPerkLevel <= 0) return 0;
 
             // Retrieve perk levels at or below player's perk level and then order them from highest level to lowest.
-            var perk = GetPerkDetails(perkType);
+            var perk = _perkService.GetPerkDetails(perkType);
             var perkLevels = perk.PerkLevels
                 .Where(x => x.Key <= playerPerkLevel)
                 .OrderByDescending(o => o.Key);
@@ -603,12 +606,11 @@ namespace SWLOR.Game.Server.Service
         /// <param name="beast"></param>
         /// <param name="perkType"></param>
         /// <returns></returns>
-        private static int GetBeastPerkLevel(uint beast, PerkType perkType)
+        private int GetBeastPerkLevel(uint beast, PerkType perkType)
         {
 
             // todo: merge with player branch
-            var beastMasteryService = ServiceContainer.GetService<BeastMastery>();
-            var beastId = beastMasteryService.GetBeastId(beast);
+            var beastId = _beastMasteryService.GetBeastId(beast);
             var dbBeast = _db.Get<Beast>(beastId);
 
             if (dbBeast == null)
@@ -624,7 +626,7 @@ namespace SWLOR.Game.Server.Service
             if (beastPerkLevel <= 0) return 0;
 
             // Retrieve perk levels at or below player's perk level and then order them from highest level to lowest.
-            var perk = GetPerkDetails(perkType);
+            var perk = _perkService.GetPerkDetails(perkType);
             var perkLevels = perk.PerkLevels
                 .Where(x => x.Key <= beastPerkLevel)
                 .OrderByDescending(o => o.Key);
@@ -694,7 +696,7 @@ namespace SWLOR.Game.Server.Service
                 if (!dbPlayer.Perks.ContainsKey(perkType))
                     continue;
 
-                var perkDetail = GetPerkDetails(perkType);
+                var perkDetail = _perkService.GetPerkDetails(perkType);
                 var effectiveLevel = GetPlayerEffectivePerkLevel(player, perkType);
                 var currentLevel = dbPlayer.Perks[perkType];
 

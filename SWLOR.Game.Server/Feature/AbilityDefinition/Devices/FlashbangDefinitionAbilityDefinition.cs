@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -10,6 +11,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public class FlashbangDefinitionAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
         private readonly AbilityBuilder _builder = new();
+
+        public FlashbangDefinitionAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, CombatPoint combatPoint, IEnmityService enmityService) 
+            : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
+        {
+        }
 
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -27,8 +33,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             ApplyEffectToObject(DurationType.Temporary, EffectAccuracyDecrease(abReduce), target, 20f);
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            Enmity.ModifyEnmity(activator, target, 250);
+            _combatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
+            _enmityService.ModifyEnmity(activator, target, 250);
         }
 
         private void FlashbangGrenade1()

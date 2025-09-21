@@ -5,6 +5,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 
@@ -14,11 +15,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
     {
         private readonly IRandomService _random;
         private readonly IPerkService _perkService;
+        private readonly IPartyService _partyService;
+        private readonly CombatPoint _combatPoint;
 
-        public KoltoRecoveryAbilityDefinition(IRandomService random, IPerkService perkService)
+        public KoltoRecoveryAbilityDefinition(IRandomService random, IPerkService perkService, IPartyService partyService, CombatPoint combatPoint, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPoint, enmityService, abilityService)
         {
             _random = random;
             _perkService = perkService;
+            _partyService = partyService;
+            _combatPoint = combatPoint;
         }
 
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -44,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
             var distance = 6f + _perkService.GetPerkLevel(activator, PerkType.RangedHealing);
-            var party = Party.GetAllPartyMembersWithinRange(activator, distance);
+            var party = _partyService.GetAllPartyMembersWithinRange(activator, distance);
 
             foreach (var member in party)
             {
@@ -73,8 +78,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 {
                     Impact(activator, 15);
 
-                    Enmity.ModifyEnmityOnAll(activator, 150);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 150);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
         private void KoltoRecovery2()
@@ -93,8 +98,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 {
                     Impact(activator, 60);
 
-                    Enmity.ModifyEnmityOnAll(activator, 300);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 300);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
         private void KoltoRecovery3()
@@ -113,8 +118,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 {
                     Impact(activator, 100);
 
-                    Enmity.ModifyEnmityOnAll(activator, 450);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 450);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
     }

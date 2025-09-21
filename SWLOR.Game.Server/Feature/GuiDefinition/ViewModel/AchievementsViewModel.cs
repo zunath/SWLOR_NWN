@@ -18,10 +18,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<AchievementUnlockedRefreshEvent>
     {
         private readonly IDatabaseService _db;
+        private readonly Achievement _achievement;
 
-        public AchievementsViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        public AchievementsViewModel(IGuiService guiService, IDatabaseService db, Achievement achievement) : base(guiService)
         {
             _db = db;
+            _achievement = achievement;
         }
         
         private const int EntriesPerPage = 25;
@@ -95,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var cdKey = GetPCPublicCDKey(Player);
             var dbAccount = _db.Get<Account>(cdKey) ?? new Account(cdKey);
-            var achievements = Achievement.GetActiveAchievements()
+            var achievements = _achievement.GetActiveAchievements()
                 .Skip(SelectedPageIndex * EntriesPerPage)
                 .Take(EntriesPerPage);
 
@@ -133,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var type = _types[SelectedIndex];
-            var achievement = Achievement.GetAchievement(type);
+            var achievement = _achievement.GetAchievement(type);
             var cdKey = GetPCPublicCDKey(Player);
             var dbAccount = _db.Get<Account>(cdKey) ?? new Account(cdKey);
 
@@ -146,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpdatePagination()
         {
-            var totalRecordCount = Achievement.GetActiveAchievements().Count;
+            var totalRecordCount = _achievement.GetActiveAchievements().Count;
             var pageNumbers = new GuiBindingList<GuiComboEntry>();
             var pages = (int)(totalRecordCount / EntriesPerPage + (totalRecordCount % EntriesPerPage == 0 ? 0 : 1));
 

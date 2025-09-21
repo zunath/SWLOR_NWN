@@ -19,11 +19,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
+        private readonly Property _property;
 
-        public ManageCitizenshipViewModel(IGuiService guiService, ILogger logger, IDatabaseService db) : base(guiService)
+        public ManageCitizenshipViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, Property property) : base(guiService)
         {
             _logger = logger;
             _db = db;
+            _property = property;
         }
         
         private string _cityPropertyId;
@@ -70,9 +72,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
             var area = GetArea(TetherObject);
-            var propertyId = Property.GetPropertyId(area);
+            var propertyId = _property.GetPropertyId(area);
             var dbProperty = _db.Get<WorldProperty>(propertyId);
-            var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
+            var dbBuilding = _db.Get<WorldProperty>(db_property.ParentPropertyId);
             var dbCity = _db.Get<WorldProperty>(dbBuilding.ParentPropertyId);
             var dbMayorPlayer = _db.Get<Player>(dbCity.OwnerPlayerId);
             var dbElection = _db.Search(new DBQuery<Election>()
@@ -87,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             cityDetails.Add($"City Name: {dbCity.CustomName}");
             cityDetails.Add($"Mayor: {dbMayorPlayer.Name}");
             cityDetails.Add($"# Citizens: {dbCitizenCount}");
-            cityDetails.Add($"Level: {Property.GetCityLevelName(dbCity.Upgrades[PropertyUpgradeType.CityLevel])}");
+            cityDetails.Add($"Level: {_property.GetCityLevelName(dbCity.Upgrades[PropertyUpgradeType.CityLevel])}");
             cityDetails.Add($"Established: {dbCity.DateCreated:yyyy-MM-dd hh:mm:ss}");
 
             cityDetails.Add($"Taxes & Fees:");
@@ -104,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (dbElection.Stage == ElectionStageType.Registration)
             {
                 var openUntil = dbCity.Dates[PropertyDateType.ElectionStart]
-                    .AddDays(Property.ElectionRegistrationDays);
+                    .AddDays(_property.ElectionRegistrationDays);
                 cityDetails.Add($"Election registrations are currently OPEN to citizens until:");
                 cityDetails.Add($"    {openUntil:yyyy-MM-dd hh:mm:ss}");
             }
@@ -112,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (dbElection.Stage == ElectionStageType.Voting)
             {
                 var openUntil = dbCity.Dates[PropertyDateType.ElectionStart]
-                    .AddDays(Property.ElectionRegistrationDays + Property.ElectionVotingDays);
+                    .AddDays(_property.ElectionRegistrationDays + _property.ElectionVotingDays);
                 cityDetails.Add($"Election voting is currently OPEN to citizens until:");
                 cityDetails.Add($"    {openUntil:yyyy-MM-dd hh:mm:ss}");
             }
@@ -191,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                         // Pull back the full structure information
                         var structures = _db.Search(new DBQuery<WorldProperty>()
-                            .AddFieldSearch(nameof(WorldProperty.Id), structureIds));
+                            .AddFieldSearch(nameof(World_property.Id), structureIds));
 
                         // Look for any structures that have interior children and return their Ids
                         var interiorPropertyIds = structures.SelectMany(s =>

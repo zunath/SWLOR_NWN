@@ -15,21 +15,24 @@ namespace SWLOR.Game.Server.Service
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IPropertyService _propertyService;
+        private readonly Area _areaService;
+        private readonly IMessagingService _messagingService;
 
-        public Death(ILogger logger, IDatabaseService db, IPropertyService propertyService)
+        public Death(ILogger logger, IDatabaseService db, IPropertyService propertyService, Area areaService, IMessagingService messagingService)
         {
             _logger = logger;
             _db = db;
             _propertyService = propertyService;
+            _areaService = areaService;
+            _messagingService = messagingService;
         }
         /// <summary>
         /// When a player starts dying, instantly kill them.
         /// </summary>
         [ScriptHandler<OnModuleDying>]
-        public static void OnPlayerDying()
+        public void OnPlayerDying()
         {
-            var death = ServiceContainer.GetService<Death>();
-            death.OnPlayerDyingInternal();
+            OnPlayerDyingInternal();
         }
 
         private void OnPlayerDyingInternal()
@@ -41,10 +44,9 @@ namespace SWLOR.Game.Server.Service
         /// Handles resetting a player's standard faction reputations and displaying the respawn pop-up menu.
         /// </summary>
         [ScriptHandler<OnModuleDeath>]
-        public static void OnPlayerDeath()
+        public void OnPlayerDeath()
         {
-            var death = ServiceContainer.GetService<Death>();
-            death.OnPlayerDeathInternal();
+            OnPlayerDeathInternal();
         }
 
         private void OnPlayerDeathInternal()
@@ -70,7 +72,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbHostilePlayer != null && dbHostilePlayer.Settings.IsSubdualModeEnabled)
                 {
                     SendMessageToPC(player, "You have been subdued.");
-                    Messaging.SendMessageNearbyToPlayers(player, $"{GetName(player)} has been subdued by {GetName(hostile)}.");
+                    _messagingService.SendMessageNearbyToPlayers(player, $"{GetName(player)} has been subdued by {GetName(hostile)}.");
                     ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
                     ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 60f);
                     ApplyEffectToObject(DurationType.Temporary, EffectSlow(), player, 300f);
@@ -92,10 +94,9 @@ namespace SWLOR.Game.Server.Service
         /// applies penalties for death, and teleports him or her to their home point.
         /// </summary>
         [ScriptHandler<OnModuleRespawn>]
-        public static void OnPlayerRespawn()
+        public void OnPlayerRespawn()
         {
-            var death = ServiceContainer.GetService<Death>();
-            death.OnPlayerRespawnInternal();
+            OnPlayerRespawnInternal();
         }
 
         private void OnPlayerRespawnInternal()
@@ -117,10 +118,9 @@ namespace SWLOR.Game.Server.Service
         /// Handles setting a player's respawn point if they don't have one set already.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void InitializeRespawnPoint()
+        public void InitializeRespawnPoint()
         {
-            var death = ServiceContainer.GetService<Death>();
-            death.InitializeRespawnPointInternal();
+            InitializeRespawnPointInternal();
         }
 
         private void InitializeRespawnPointInternal()
@@ -176,8 +176,7 @@ namespace SWLOR.Game.Server.Service
         {
             var playerId = GetObjectUUID(player);
             var entity = _db.Get<Player>(playerId);
-            var areaService = ServiceContainer.GetService<Area>();
-            var area = areaService.GetAreaByResref(entity.RespawnAreaResref);
+            var area = _areaService.GetAreaByResref(entity.RespawnAreaResref);
             var position = Vector3(
                 entity.RespawnLocationX,
                 entity.RespawnLocationY,

@@ -10,6 +10,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
     public class DedicationAbilityDefinition: IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly IAbilityService _abilityService;
+
+        public DedicationAbilityDefinition(IAbilityService abilityService)
+        {
+            _abilityService = abilityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -30,13 +36,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    var abilityService = ServiceContainer.GetService<IAbilityService>();
-                    return abilityService.ToggleAura(activator, StatusEffectType.Dedication);
+                    return _abilityService.ToggleAura(activator, StatusEffectType.Dedication);
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    var abilityService = ServiceContainer.GetService<IAbilityService>();
-                    abilityService.ApplyAura(activator, StatusEffectType.Dedication, true, true, false);
+                    _abilityService.ApplyAura(activator, StatusEffectType.Dedication, true, true, false);
                 });
         }
     }

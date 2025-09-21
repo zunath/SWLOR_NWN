@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Party
+    public class PartyService : IPartyService
     {
-        private static readonly Dictionary<Guid, List<uint>> _parties = new();
-        private static readonly Dictionary<uint, Guid> _creatureToParty = new();
-        private static readonly Dictionary<Guid, uint> _partyLeaders = new();
+        private readonly Dictionary<Guid, List<uint>> _parties = new();
+        private readonly Dictionary<uint, Guid> _creatureToParty = new();
+        private readonly Dictionary<Guid, uint> _partyLeaders = new();
 
         /// <summary>
         /// When a member of a party accepts an invitation, add them to the caches.
         /// </summary>
         [ScriptHandler<OnPartyAcceptInvitationBefore>]
-        public static void JoinParty()
+        public void JoinParty()
         {
             var creature = OBJECT_SELF;
             var requester = StringToObject(EventsPlugin.GetEventData("INVITED_BY"));
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Service
             AddToParty(requester, creature);
         }
 
-        private static void AddToParty(uint requester, uint creature)
+        private void AddToParty(uint requester, uint creature)
         {
             // This is a brand new party.
             // Add both the requester and the creature to the cache.
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.Service
         /// When an associate (droid, pet, henchman, etc.) joins a party, add them to the caches.
         /// </summary>
         [ScriptHandler<OnAssociateAddBefore>]
-        public static void AssociateJoinParty()
+        public void AssociateJoinParty()
         {
             var owner = OBJECT_SELF;
             var associate = StringToObject(EventsPlugin.GetEventData("ASSOCIATE_OBJECT_ID"));
@@ -70,7 +71,7 @@ namespace SWLOR.Game.Server.Service
         /// When an associate (droid, pet, henchman, etc.) is removed from the party or leaves, remove them from the caches.
         /// </summary>
         [ScriptHandler<OnAssociateRemoveBefore>]
-        public static void AssociateLeaveParty()
+        public void AssociateLeaveParty()
         {
             var associate = StringToObject(EventsPlugin.GetEventData("ASSOCIATE_OBJECT_ID"));
             RemoveCreatureFromParty(associate);
@@ -80,7 +81,7 @@ namespace SWLOR.Game.Server.Service
         /// When a member of a party leaves, update the caches.
         /// </summary>
         [ScriptHandler<OnPartyLeaveBefore>]
-        public static void LeaveParty()
+        public void LeaveParty()
         {
             var creature = StringToObject(EventsPlugin.GetEventData("LEAVING"));
             RemoveCreatureFromParty(creature);
@@ -90,7 +91,7 @@ namespace SWLOR.Game.Server.Service
         /// When the leader of a party changes, update the caches.
         /// </summary>
         [ScriptHandler<OnPartyTransferLeadershipBefore>]
-        public static void TransferLeadership()
+        public void TransferLeadership()
         {
             var creature = StringToObject(EventsPlugin.GetEventData("NEW_LEADER"));
             var partyId = _creatureToParty[creature];
@@ -101,7 +102,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player leaves the server, remove them from the party caches.
         /// </summary>
         [ScriptHandler<OnModuleExit>]
-        public static void LeaveServer()
+        public void LeaveServer()
         {
             var creature = GetExitingObject();
             RemoveCreatureFromParty(creature);
@@ -113,7 +114,7 @@ namespace SWLOR.Game.Server.Service
         /// Otherwise if the leader leaves, a new one is assigned.
         /// </summary>
         /// <param name="creature">The creature being removed from the party.</param>
-        private static void RemoveCreatureFromParty(uint creature)
+        private void RemoveCreatureFromParty(uint creature)
         {
             if (!_creatureToParty.ContainsKey(creature)) return;
             
@@ -151,7 +152,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to check.</param>
         /// <returns>A list of party members.</returns>
-        public static List<uint> GetAllPartyMembers(uint creature)
+        public List<uint> GetAllPartyMembers(uint creature)
         {
             // Creature isn't in a party. Simply return them in a list.
             if(!_creatureToParty.ContainsKey(creature))
@@ -173,7 +174,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to check and use as a distance check.</param>
         /// <param name="distance">The amount of distance to use.</param>
         /// <returns>A list of party members within the specified distance.</returns>
-        public static List<uint> GetAllPartyMembersWithinRange(uint creature, float distance)
+        public List<uint> GetAllPartyMembersWithinRange(uint creature, float distance)
         {
             if (distance <= 0.0f) distance = 0.0f;
             var members = GetAllPartyMembers(creature);
@@ -206,7 +207,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature whose party will be checked</param>
         /// <param name="toCheck">The creature to determine if is in party</param>
         /// <returns>true if in party, false otherwise</returns>
-        public static bool IsInParty(uint creature, uint toCheck)
+        public bool IsInParty(uint creature, uint toCheck)
         {
             var members = GetAllPartyMembers(creature);
             return members.Contains(toCheck);

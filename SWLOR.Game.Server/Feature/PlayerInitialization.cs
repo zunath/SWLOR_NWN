@@ -38,15 +38,14 @@ namespace SWLOR.Game.Server.Feature
         /// Handles 
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void InitializePlayer()
+        public void InitializePlayer()
         {
             var player = GetEnteringObject();
 
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var playerInitialization = ServiceContainer.GetService<PlayerInitialization>();
             var playerId = GetObjectUUID(player);
-            var dbPlayer = playerInitialization._db.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
 
             // Already been initialized. Don't do it again.
             if (dbPlayer.Version >= 1 || dbPlayer.Version == -1) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
@@ -55,24 +54,24 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            playerInitialization.ClearInventory(player);
-            playerInitialization.AutoLevelPlayer(player);
-            playerInitialization.InitializeSkills(player);
-            playerInitialization.RemoveNWNSpells(player);
-            playerInitialization.ClearFeats(player);
-            playerInitialization.GrantBasicFeats(player);
-            playerInitialization.InitializeHotBar(player);
-            playerInitialization.AdjustStats(player, dbPlayer);
-            playerInitialization.AdjustAlignment(player);
-            playerInitialization.InitializeSavingThrows(player);
-            playerInitialization.InitializeLanguages(player, dbPlayer);
-            playerInitialization.AssignRacialAppearance(player, dbPlayer);
-            playerInitialization.GiveStartingItems(player);
-            playerInitialization.AssignCharacterType(player, dbPlayer);
-            playerInitialization.RegisterDefaultRespawnPoint(dbPlayer);
-            playerInitialization.ApplyMovementRate(player);
+            ClearInventory(player);
+            AutoLevelPlayer(player);
+            InitializeSkills(player);
+            RemoveNWNSpells(player);
+            ClearFeats(player);
+            GrantBasicFeats(player);
+            InitializeHotBar(player);
+            AdjustStats(player, dbPlayer);
+            AdjustAlignment(player);
+            InitializeSavingThrows(player);
+            InitializeLanguages(player, dbPlayer);
+            AssignRacialAppearance(player, dbPlayer);
+            GiveStartingItems(player);
+            AssignCharacterType(player, dbPlayer);
+            RegisterDefaultRespawnPoint(dbPlayer);
+            ApplyMovementRate(player);
 
-            playerInitialization._db.Set(dbPlayer);
+            _db.Set(dbPlayer);
 
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
         }

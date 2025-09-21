@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 
@@ -11,9 +12,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public class DeflectorShieldAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
         private const string Tier1Tag = "ABILITY_DEFLECTOR_SHIELD_1";
         private const string Tier2Tag = "ABILITY_DEFLECTOR_SHIELD_2";
         private const string Tier3Tag = "ABILITY_DEFLECTOR_SHIELD_3";
+
+        public DeflectorShieldAbilityDefinition(CombatPoint combatPoint, IEnmityService enmityService)
+        {
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -55,8 +64,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 }
             }
 
-            Enmity.ModifyEnmityOnAll(activator, 220);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+            _enmityService.ModifyEnmityOnAll(activator, 220);
+            _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
         }
 
         private void ApplyEffect(uint target, float percent, float duration, string tag)

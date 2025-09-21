@@ -13,10 +13,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private const float AOESize = RadiusSize.Medium;
         private readonly ICombatService _combatService;
         private readonly IAbilityService _abilityService;
+        private readonly CombatPoint _combatPoint;
 
-        public ForceStunAbilityDefinition(ICombatService combatService)
+        public ForceStunAbilityDefinition(ICombatService combatService, CombatPoint combatPoint)
         {
             _combatService = combatService;
+            _combatPoint = combatPoint;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -53,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6.1f);
             }
 
-            CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
+            _combatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
 
             Enmity.ModifyEnmity(source, target, 850);
         }

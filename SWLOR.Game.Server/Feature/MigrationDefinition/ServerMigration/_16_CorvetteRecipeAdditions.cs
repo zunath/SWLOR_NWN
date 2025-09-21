@@ -5,12 +5,15 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _16_CorvetteRecipeAdditions: ServerMigrationBase, IServerMigration
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public _16_CorvetteRecipeAdditions(ILogger logger, IDatabaseService db) : base(logger, db)
+        {
+        }
         
         public int Version => 16;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;

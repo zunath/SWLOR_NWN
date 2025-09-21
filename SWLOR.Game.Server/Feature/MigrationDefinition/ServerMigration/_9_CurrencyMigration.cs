@@ -11,8 +11,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _9_CurrencyMigration : ServerMigrationBase, IServerMigration
     {
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public _9_CurrencyMigration(ILogger logger, IDatabaseService db) : base(logger, db)
+        {
+        }
         public int Version => 9;
 
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;

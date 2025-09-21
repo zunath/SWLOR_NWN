@@ -30,13 +30,15 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private readonly IDatabaseService _db;
         private readonly IAbilityService _abilityService;
         private readonly IStatService _statService;
+        private readonly BeastMastery _beastMastery;
 
-        public DMChatCommand(IGuiService guiService, IDatabaseService db, IAbilityService abilityService, IStatService statService)
+        public DMChatCommand(IGuiService guiService, IDatabaseService db, IAbilityService abilityService, IStatService statService, BeastMastery beastMastery)
         {
             _guiService = guiService;
             _db = db;
             _abilityService = abilityService;
             _statService = statService;
+            _beastMastery = beastMastery;
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -598,10 +600,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         SendMessageToPC(target, $"A DM has awarded you with {amount} roleplay XP.");
                         _guiService.PublishRefreshEvent(target, new RPXPRefreshEvent());
                     }
-                    else if (BeastMastery.IsPlayerBeast(target))
+                    else if (_beastMastery.IsPlayerBeast(target))
                     {
                         var player = GetMaster(target);
-                        BeastMastery.GiveBeastXP(target, amount, true);
+                        _beastMastery.GiveBeastXP(target, amount, true);
 
                         SendMessageToPC(player, $"A DM has awarded your beast with {amount} XP.");
                     }

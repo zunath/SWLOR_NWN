@@ -14,8 +14,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class MarketDialog: DialogBase
     {
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger;
+        private readonly IGuiService _guiService;
         private const string MainPageId = "MAIN_PAGE";
+
+        public MarketDialog(IGuiService guiService, ILogger logger)
+        {
+            _guiService = guiService;
+            _logger = logger;
+        }
 
         public override PlayerDialog SetUp(uint player)
         {
@@ -44,13 +51,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.AddResponse("Buy", () =>
             {
-                ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.MarketBuying, new MarketPayload(regionType), terminal);
+                _guiService.TogglePlayerWindow(player, GuiWindowType.MarketBuying, new MarketPayload(regionType), terminal);
                 EndConversation();
             });
 
             page.AddResponse("Sell", () =>
             {
-                ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.MarketListing, new MarketPayload(regionType), terminal);
+                _guiService.TogglePlayerWindow(player, GuiWindowType.MarketListing, new MarketPayload(regionType), terminal);
                 EndConversation();
             });
         }

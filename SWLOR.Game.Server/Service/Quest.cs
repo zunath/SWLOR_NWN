@@ -15,6 +15,7 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -25,6 +26,8 @@ namespace SWLOR.Game.Server.Service
         private readonly IGenericCacheService _cacheService;
         private readonly IItemService _itemService;
         private readonly IPerkService _perkService;
+        private readonly IEnmityService _enmityService;
+        private readonly IActivityService _activityService;
         
         // Cached data
         private IInterfaceCache<string, QuestDetail> _questCache;
@@ -38,13 +41,17 @@ namespace SWLOR.Game.Server.Service
             IItemCacheService itemCache,
             IGenericCacheService cacheService,
             IItemService itemService,
-            IPerkService perkService)
+            IPerkService perkService,
+            IEnmityService enmityService,
+            IActivityService activityService)
         {
             _db = db;
             _itemCache = itemCache;
             _cacheService = cacheService;
             _itemService = itemService;
             _perkService = perkService;
+            _enmityService = enmityService;
+            _activityService = activityService;
         }
 
         /// <summary>
@@ -262,7 +269,7 @@ namespace SWLOR.Game.Server.Service
             // did the most attacks).  If we can't find one for some reason, pull the nearest PC.
             // Note: this event needs to be called before the Enmity tables are cleared up after
             // creature death. 
-            var killer = Enmity.GetHighestEnmityTarget(creature);
+            var killer = _enmityService.GetHighestEnmityTarget(creature);
             if (killer == OBJECT_INVALID) killer = GetNearestCreature(CreatureType.PlayerCharacter, 1, creature);
 
             // Iterate over every player in the killer's party.
@@ -348,7 +355,7 @@ namespace SWLOR.Game.Server.Service
 
             SendMessageToPC(player, text);
 
-            Activity.SetBusy(player, ActivityStatusType.Quest);
+            _activityService.SetBusy(player, ActivityStatusType.Quest);
         }
 
         /// <summary>
@@ -368,7 +375,7 @@ namespace SWLOR.Game.Server.Service
                 DestroyObject(OBJECT_SELF);
             });
 
-            Activity.ClearBusy(player);
+            _activityService.ClearBusy(player);
         }
 
         /// <summary>

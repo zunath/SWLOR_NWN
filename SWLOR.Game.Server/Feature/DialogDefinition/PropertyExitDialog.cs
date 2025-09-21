@@ -11,7 +11,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class PropertyExitDialog: DialogBase
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly Property _property;
+
+        public PropertyExitDialog(IDatabaseService db, Property property)
+        {
+            _db = db;
+            _property = property;
+        }
         
         private const string MainPageId = "MAIN_PAGE";
 
@@ -27,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private void ReturnToLastDockedPosition(uint player, PropertyLocation propertyLocation)
         {
             var returningArea = string.IsNullOrWhiteSpace(propertyLocation.AreaResref)
-                ? Property.GetRegisteredInstance(propertyLocation.InstancePropertyId).Area
+                ? _property.GetRegisteredInstance(propertyLocation.InstancePropertyId).Area
                 : Area.GetAreaByResref(propertyLocation.AreaResref);
             
             var location = Location(
@@ -42,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var player = GetPC();
             var area = GetArea(player);
-            var propertyId = Property.GetPropertyId(area);
+            var propertyId = _property.GetPropertyId(area);
             var property = _db.Get<WorldProperty>(propertyId);
 
             page.Header = $"What would you like to do?";
@@ -87,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     // Otherwise jump the player to their original location.
                     else
                     {
-                        Property.JumpToOriginalLocation(player);
+                        _property.JumpToOriginalLocation(player);
                     }
                 });
             }

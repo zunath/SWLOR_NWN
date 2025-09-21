@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 
@@ -11,8 +12,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class InnervateAbilityDefinition : IAbilityListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         private readonly AbilityBuilder _builder = new();
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
+
+        public InnervateAbilityDefinition(IRandomService random, CombatPoint combatPoint, IEnmityService enmityService)
+        {
+            _random = random;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -36,8 +46,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
 
-            Enmity.ModifyEnmityOnAll(activator, 200 + amount);
-            CombatPoint.AddCombatPointToAllTagged(beastmaster, SkillType.BeastMastery, 3);
+            _enmityService.ModifyEnmityOnAll(activator, 200 + amount);
+            _combatPoint.AddCombatPointToAllTagged(beastmaster, SkillType.BeastMastery, 3);
         }
 
         private void Innervate1()

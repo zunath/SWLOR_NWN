@@ -40,6 +40,9 @@ namespace SWLOR.Game.Server.Service
         private readonly IStatService _statService;
         private readonly IGuiService _guiService;
         private readonly IPropertyService _propertyService;
+        private readonly Planet _planetService;
+        private readonly Area _areaService;
+        private readonly IMessagingService _messagingService;
 
         public SpaceService(
             ILogger logger,
@@ -51,7 +54,10 @@ namespace SWLOR.Game.Server.Service
             IAbilityService abilityService,
             IStatService statService,
             IGuiService guiService,
-            IPropertyService propertyService)
+            IPropertyService propertyService,
+            Planet planetService,
+            Area areaService,
+            IMessagingService messagingService)
         {
             _logger = logger;
             _db = db;
@@ -63,6 +69,9 @@ namespace SWLOR.Game.Server.Service
             _statService = statService;
             _guiService = guiService;
             _propertyService = propertyService;
+            _planetService = planetService;
+            _areaService = areaService;
+            _messagingService = messagingService;
         }
 
         public const int MaxRegisteredShips = 10;
@@ -159,8 +168,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var planetService = ServiceContainer.GetService<Planet>();
-            var planet = planetService.GetPlanetType(area);
+            var planet = _planetService.GetPlanetType(area);
 
             // Only waypoints in recognized planets are tracked.
             if (planet == PlanetType.Invalid)
@@ -191,8 +199,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="cityArea">The area to remove from.</param>
         public void RemoveLandingPoint(uint waypoint, uint cityArea)
         {
-            var planetService = ServiceContainer.GetService<Planet>();
-            var planet = planetService.GetPlanetType(cityArea);
+            var planet = _planetService.GetPlanetType(cityArea);
 
             // Only waypoints in recognized planets are tracked.
             if (planet == PlanetType.Invalid)
@@ -515,8 +522,7 @@ namespace SWLOR.Game.Server.Service
             var area = GetArea(OBJECT_SELF);
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
-            var propertyService = ServiceContainer.GetService<Property>();
-            var propertyId = propertyService.GetPropertyId(area);
+            var propertyId = _propertyService.GetPropertyId(area);
             var permissionQuery = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
@@ -564,8 +570,7 @@ namespace SWLOR.Game.Server.Service
                 ? dbProperty.Positions[PropertyLocationType.CurrentPosition]
                 : dbProperty.Positions[PropertyLocationType.SpacePosition];
 
-            var areaService = ServiceContainer.GetService<Area>();
-            var spaceArea = areaService.GetAreaByResref(propertyLocation.AreaResref);
+            var spaceArea = _areaService.GetAreaByResref(propertyLocation.AreaResref);
             var spacePosition = Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z);
             var location = Location(spaceArea, spacePosition, propertyLocation.Orientation);
 
@@ -1687,7 +1692,7 @@ namespace SWLOR.Game.Server.Service
                     var targetPlayerId = GetObjectUUID(target);
                     var dbTargetPlayer = _db.Get<Player>(targetPlayerId);
                     var dbPlayerShip = _db.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
-                    var instance = ServiceContainer.GetService<Property>().GetRegisteredInstance(dbPlayerShip.PropertyId);
+                    var instance = _propertyService.GetRegisteredInstance(dbPlayerShip.PropertyId);
                     var location = Location(instance.Area, Vector3.Zero, 0.0f);
 
                     ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
@@ -1707,7 +1712,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Notify nearby players of damage taken by target.
-            Messaging.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage to {GetName(target)}.");
+            _messagingService.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage to {GetName(target)}.");
             
             if(GetIsPC(attacker))
                 ExecuteScript("pc_target_upd", attacker);
@@ -1754,7 +1759,7 @@ namespace SWLOR.Game.Server.Service
                     var targetPlayerId = GetObjectUUID(target);
                     var dbTargetPlayer = _db.Get<Player>(targetPlayerId);
                     var dbPlayerShip = _db.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
-                    var instance = ServiceContainer.GetService<Property>().GetRegisteredInstance(dbPlayerShip.PropertyId);
+                    var instance = _propertyService.GetRegisteredInstance(dbPlayerShip.PropertyId);
                     var location = Location(instance.Area, Vector3.Zero, 0.0f);
 
                     ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
@@ -1774,7 +1779,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Notify nearby players of damage taken by target.
-            Messaging.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage directly to hull of {GetName(target)}.");
+            _messagingService.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage directly to hull of {GetName(target)}.");
 
             if (GetIsPC(attacker))
                 ExecuteScript("pc_target_upd", attacker);
@@ -1811,7 +1816,7 @@ namespace SWLOR.Game.Server.Service
                 var dbPlayer = _db.Get<Player>(playerId);
                 var dbPlayerShip = _db.Get<PlayerShip>(dbPlayer.ActiveShipId);
                 var dbProperty = _db.Get<WorldProperty>(dbPlayerShip.PropertyId);
-                var instance = ServiceContainer.GetService<Property>().GetRegisteredInstance(dbPlayerShip.PropertyId);
+                var instance = _propertyService.GetRegisteredInstance(dbPlayerShip.PropertyId);
 
                 // Give a chance to drop each installed module.
                 foreach (var (_, shipModule) in dbPlayerShip.Status.HighPowerModules)
@@ -2034,14 +2039,12 @@ namespace SWLOR.Game.Server.Service
         /// and no one is currently piloting the ship.
         /// </summary>
         /// <param name="instance">The area instance</param>
-        public static void PerformEmergencyExit(uint instance)
+        public void PerformEmergencyExit(uint instance)
         {
-            var propertyService = ServiceContainer.GetService<IPropertyService>();
-            var db = ServiceContainer.GetService<IDatabaseService>();
-            var propertyId = propertyService.GetPropertyId(instance);
+            var propertyId = _propertyService.GetPropertyId(instance);
             var shipQuery = new DBQuery<PlayerShip>()
                 .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyId, false);
-            var dbShip = db.Search(shipQuery).FirstOrDefault();
+            var dbShip = _db.Search(shipQuery).FirstOrDefault();
 
             if (dbShip == null)
                 return;

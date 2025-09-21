@@ -1,4 +1,5 @@
 ﻿using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
 
@@ -6,11 +7,14 @@ namespace SWLOR.Game.Server.Service.PerkService
 {
     public class PerkRequirementQuest : IPerkRequirement
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IQuestService _questService;
         private readonly string _questId;
 
-        public PerkRequirementQuest(string questId)
+        public PerkRequirementQuest(IDatabaseService db, IQuestService questService, string questId)
         {
+            _db = db;
+            _questService = questService;
             _questId = questId;
         }
 

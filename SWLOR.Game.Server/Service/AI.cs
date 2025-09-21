@@ -7,6 +7,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -15,41 +16,58 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class AI
+    public class AI
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
+        private readonly IStatService _statService;
+        private readonly Enmity _enmity;
+        private readonly IAbilityService _abilityService;
+        private readonly IPerkService _perkService;
+        private readonly IStatusEffectService _statusEffectService;
+        private readonly IPartyService _partyService;
+        private readonly IActivityService _activityService;
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
         private static readonly Dictionary<AIDefinitionType, IAIDefinition> _aiDefinitions = new();
 
-        [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheAIData()
+        public AI(IRandomService random, IStatService statService, Enmity enmity, IAbilityService abilityService, IPerkService perkService, IStatusEffectService statusEffectService, IPartyService partyService, IActivityService activityService)
         {
-            _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition();
-            _aiDefinitions[AIDefinitionType.Droid] = new DroidAIDefinition();
-            _aiDefinitions[AIDefinitionType.Beast] = new BeastAIDefinition();
+            _random = random;
+            _statService = statService;
+            _enmity = enmity;
+            _abilityService = abilityService;
+            _perkService = perkService;
+            _statusEffectService = statusEffectService;
+            _partyService = partyService;
+            _activityService = activityService;
+        }
+
+        [ScriptHandler<OnModuleCacheBefore>]
+        public void CacheAIData()
+        {
+            _aiDefinitions[AIDefinitionType.Generic] = new GenericAIDefinition(_abilityService, _perkService, _statusEffectService);
+            _aiDefinitions[AIDefinitionType.Droid] = new DroidAIDefinition(_abilityService, _perkService, _statusEffectService);
+            _aiDefinitions[AIDefinitionType.Beast] = new BeastAIDefinition(_abilityService, _perkService, _statusEffectService);
         }
 
         /// <summary>
         /// Entry point for creature heartbeat logic.
         /// </summary>
         [ScriptHandler<OnCreatureHeartbeatAfter>]
-        public static void CreatureHeartbeat()
+        public void CreatureHeartbeat()
         {
             if (GetAILevel(OBJECT_SELF) == AILevel.VeryLow)
                 return;
 
-            var statService = ServiceContainer.GetService<IStatService>();
-            statService.RestoreNPCStats(true);
+            _statService.RestoreNPCStats(true);
             ProcessFlags();
-            var enmityService = ServiceContainer.GetService<Enmity>();
-            enmityService.AttackHighestEnmityTarget(OBJECT_SELF);
+            _enmity.AttackHighestEnmityTarget(OBJECT_SELF);
         }
 
         /// <summary>
         /// Entry point for creature perception logic.
         /// </summary>
         [ScriptHandler<OnCreaturePerceptionAfter>]
-        public static void CreaturePerception()
+        public void CreaturePerception()
         {
             // This is a stripped-down version of the default NWN perception event.
             // We handle most of our perception logic with the aggro aura effect.
@@ -60,16 +78,15 @@ namespace SWLOR.Game.Server.Service
         /// Entry point for creature combat round end logic.
         /// </summary>
         [ScriptHandler<OnCreatureRoundEndAfter>]
-        public static void CreatureCombatRoundEnd()
+        public void CreatureCombatRoundEnd()
         {
             var creature = OBJECT_SELF;
-            if (!Activity.IsBusy(creature))
+            if (!_activityService.IsBusy(creature))
             {
                 ProcessPerkAI(AIDefinitionType.Generic, creature, true);
             }
 
-            var enmityService = ServiceContainer.GetService<Enmity>();
-            enmityService.AttackHighestEnmityTarget(creature);
+            _enmity.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -90,18 +107,18 @@ namespace SWLOR.Game.Server.Service
         /// Entry point for creature physical attacked logic
         /// </summary>
         [ScriptHandler<OnCreatureAttackAfter>]
-        public static void CreaturePhysicalAttacked()
+        public void CreaturePhysicalAttacked()
         {
-            ServiceContainer.GetService<Enmity>().AttackHighestEnmityTarget(OBJECT_SELF);
+            _enmity.AttackHighestEnmityTarget(OBJECT_SELF);
         }
 
         /// <summary>
         /// Entry point for creature damaged logic
         /// </summary>
         [ScriptHandler<OnCreatureDamagedAfter>]
-        public static void CreatureDamaged()
+        public void CreatureDamaged()
         {
-            ServiceContainer.GetService<Enmity>().AttackHighestEnmityTarget(OBJECT_SELF);
+            _enmity.AttackHighestEnmityTarget(OBJECT_SELF);
         }
 
         /// <summary>
@@ -117,21 +134,20 @@ namespace SWLOR.Game.Server.Service
         /// Entry point for creature disturbed logic
         /// </summary>
         [ScriptHandler<OnCreatureDisturbedAfter>]
-        public static void CreatureDisturbed()
+        public void CreatureDisturbed()
         {
-            ServiceContainer.GetService<Enmity>().AttackHighestEnmityTarget(OBJECT_SELF);
+            _enmity.AttackHighestEnmityTarget(OBJECT_SELF);
         }
 
         /// <summary>
         /// Entry point for creature spawn logic
         /// </summary>
         [ScriptHandler<OnCreatureSpawnAfter>]
-        public static void CreatureSpawn()
+        public void CreatureSpawn()
         {
             SetLocalString(OBJECT_SELF, "X2_SPECIAL_COMBAT_AI_SCRIPT", "xxx");
 
-            var statService = ServiceContainer.GetService<IStatService>();
-            statService.LoadNPCStats();
+            _statService.LoadNPCStats();
             LoadAggroEffect();
             DoVFX();
             SetLocalLocation(OBJECT_SELF, "HOME_LOCATION", GetLocation(OBJECT_SELF));
@@ -174,7 +190,7 @@ namespace SWLOR.Game.Server.Service
         /// Invisible creatures do not trigger this.
         /// </summary>
         [ScriptHandler<OnCreatureAggroEnter>]
-        public static void CreatureAggroEnter()
+        public void CreatureAggroEnter()
         {
             var entering = GetEnteringObject();
             var self = GetAreaOfEffectCreator(OBJECT_SELF);
@@ -191,20 +207,18 @@ namespace SWLOR.Game.Server.Service
 
             if (!GetIsEnemy(entering, self))
             {
-                var enmityService = ServiceContainer.GetService<Enmity>();
-                var attackTarget = enmityService.GetHighestEnmityTarget(entering);
+                var attackTarget = _enmity.GetHighestEnmityTarget(entering);
                 // Non-enemy entered aggro range. If they're the same faction and fighting someone, help them out!
                 if (GetFactionEqual(entering, self) &&
                     GetIsEnemy(attackTarget, self))
                 {
-                    enmityService.ModifyEnmity(attackTarget, self, 1);
+                    _enmity.ModifyEnmity(attackTarget, self, 1);
                 }
 
                 return;
             }
 
-            var enmityService = ServiceContainer.GetService<Enmity>();
-            enmityService.ModifyEnmity(entering, self, 1);
+            _enmity.ModifyEnmity(entering, self, 1);
 
             // All allies within 5m should also aggro the player if they're not already in combat.
             if (_creatureAllies.TryGetValue(self, out var allies))
@@ -214,7 +228,7 @@ namespace SWLOR.Game.Server.Service
                     if (!GetIsEnemy(entering, ally)) continue;
                     if (GetDistanceBetween(self, ally) > 5f) continue;
 
-                    enmityService.ModifyEnmity(entering, ally, 1);
+                    _enmity.ModifyEnmity(entering, ally, 1);
                 }
             }
 
@@ -231,7 +245,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles custom perk usage
         /// </summary>
-        public static void ProcessPerkAI(AIDefinitionType aiType, uint creature, bool usesEnmity)
+        public void ProcessPerkAI(AIDefinitionType aiType, uint creature, bool usesEnmity)
         {
             // Petrified - do nothing else.
             if (GetHasEffect(creature, EffectTypeScript.Petrify)) 
@@ -239,8 +253,7 @@ namespace SWLOR.Game.Server.Service
 
             // Attempt to target the highest enmity creature.
             // If no target can be determined, exit early.
-            var enmityService = ServiceContainer.GetService<Enmity>();
-            var target = enmityService.GetHighestEnmityTarget(creature);
+            var target = _enmity.GetHighestEnmityTarget(creature);
             if (usesEnmity && !GetIsObjectValid(target))
             {
                 ClearAllActions();
@@ -268,7 +281,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (hasPCMaster)
                 {
-                    allies = Party.GetAllPartyMembers(creature);
+                    allies = _partyService.GetAllPartyMembers(creature);
                 }
                 else
                 {
@@ -369,7 +382,7 @@ namespace SWLOR.Game.Server.Service
                 GetIsInCombat(self) ||
                 GetCurrentAction(self) == ActionType.RandomWalk ||
                 GetCurrentAction(self) == ActionType.MoveToPoint ||
-                GetIsObjectValid(ServiceContainer.GetService<Enmity>().GetHighestEnmityTarget(self)))
+                GetIsObjectValid(_enmity.GetHighestEnmityTarget(self)))
                 return;
 
             // Return Home flag

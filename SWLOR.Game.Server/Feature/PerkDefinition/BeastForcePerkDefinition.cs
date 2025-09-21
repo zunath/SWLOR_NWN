@@ -18,12 +18,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private readonly IPerkService _perkService;
         private readonly IStatService _statService;
         private readonly PerkBuilder _builder = new();
+        private readonly BeastMastery _beastMastery;
 
-        public BeastForcePerkDefinition(IRandomService random, IPerkService perkService, IStatService statService)
+        public BeastForcePerkDefinition(IRandomService random, IPerkService perkService, IStatService statService, BeastMastery beastMastery)
         {
             _random = random;
             _perkService = perkService;
             _statService = statService;
+            _beastMastery = beastMastery;
         }
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
@@ -125,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             var beast = OBJECT_SELF;
             var item = GetSpellCastItem();
 
-            if (!BeastMastery.IsPlayerBeast(beast) || GetResRef(item) != BeastMastery.BeastClawResref)
+            if (!_beastMastery.IsPlayerBeast(beast) || GetResRef(item) != _beastMastery.BeastClawResref)
             {
                 return;
             }

@@ -1,8 +1,9 @@
 ﻿using System;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Time
+    public class TimeService : ITimeService
     {
         /// <summary>
         /// Returns time in the following manner:
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="secondDate">Second date to compare</param>
         /// <param name="showIfZero">Will show the units if they are zero.</param>
         /// <returns>String containing the formatted time.</returns>
-        public static string GetTimeToWaitLongIntervals(DateTime firstDate, DateTime secondDate, bool showIfZero)
+        public string GetTimeToWaitLongIntervals(DateTime firstDate, DateTime secondDate, bool showIfZero)
         {
             TimeSpan period;
 
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="secondDate">Second date to compare</param>
         /// <param name="showIfZero">Will show the units if they are zero.</param>
         /// <returns>String containing the formatted time.</returns>
-        public static string GetTimeToWaitShortIntervals(DateTime firstDate, DateTime secondDate, bool showIfZero)
+        public string GetTimeToWaitShortIntervals(DateTime firstDate, DateTime secondDate, bool showIfZero)
         {
             TimeSpan period;
 
@@ -62,7 +63,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="seconds">The number of seconds</param>
         /// <param name="showIfZero">Will show the units if they are zero.</param>
         /// <returns>String containing a formatted time.</returns>
-        public static string GetTimeLongIntervals(int days, int hours, int minutes, int seconds, bool showIfZero)
+        public string GetTimeLongIntervals(int days, int hours, int minutes, int seconds, bool showIfZero)
         {
             string result = "";
 
@@ -86,7 +87,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="time">The time span</param>
         /// <param name="showIfZero">Will show the units if they are zero.</param>
         /// <returns>String containing a formatted time.</returns>
-        public static string GetTimeLongIntervals(TimeSpan time, bool showIfZero)
+        public string GetTimeLongIntervals(TimeSpan time, bool showIfZero)
         {
             return GetTimeLongIntervals(time.Days, time.Hours, time.Minutes, time.Seconds, showIfZero);
         }
@@ -101,7 +102,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="seconds">The number of seconds</param>
         /// <param name="showIfZero">Will show the units if they are zero.</param>
         /// <returns>String containing the formatted time.</returns>
-        public static string GetTimeShortIntervals(int days, int hours, int minutes, int seconds, bool showIfZero)
+        public string GetTimeShortIntervals(int days, int hours, int minutes, int seconds, bool showIfZero)
         {
             var result = "";
 
@@ -127,7 +128,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="timespan">The timespan</param>
         /// <param name="showIfZero">Will show the units if they are zero.</param>
         /// <returns>String containing the formatted time.</returns>
-        public static string GetTimeShortIntervals(TimeSpan timespan, bool showIfZero)
+        public string GetTimeShortIntervals(TimeSpan timespan, bool showIfZero)
         {
             return GetTimeShortIntervals(timespan.Days, timespan.Hours, timespan.Minutes, timespan.Seconds, showIfZero);
         }

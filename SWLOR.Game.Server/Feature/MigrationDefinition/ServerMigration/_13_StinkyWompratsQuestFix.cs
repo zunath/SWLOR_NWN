@@ -3,12 +3,15 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _13_StinkyWompratsQuestFix: ServerMigrationBase, IServerMigration
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public _13_StinkyWompratsQuestFix(ILogger logger, IDatabaseService db) : base(logger, db)
+        {
+        }
         
         public int Version => 13;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;

@@ -10,6 +10,7 @@ using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Core.Contracts;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 
@@ -17,14 +18,21 @@ namespace SWLOR.Game.Server.Feature
 {
     public class RoleplayXP
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly Property _property;
         private const string RPTimestampVariable = "RP_SYSTEM_LAST_MESSAGE_TIMESTAMP";
+
+        public RoleplayXP(IDatabaseService db, Property property)
+        {
+            _db = db;
+            _property = property;
+        }
 
         /// <summary>
         /// Once every 30 minutes, the RP system will check all players and distribute RP XP if applicable.
         /// </summary>
         [ScriptHandler<OnPlayerHeartbeat>]
-        public static void DistributeRoleplayXP()
+        public void DistributeRoleplayXP()
         {
             const string TrackerVariableName = "RP_SYSTEM_TICKS";
             var player = OBJECT_SELF;
@@ -45,7 +53,7 @@ namespace SWLOR.Game.Server.Feature
         /// If it is, XP will be sent to their UnallocatedRPXP property for later distribution via the skills menu.
         /// </summary>
         /// <param name="player">The player to process</param>
-        private static void ProcessPlayerRoleplayXP(uint player)
+        private void ProcessPlayerRoleplayXP(uint player)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
@@ -59,7 +67,7 @@ namespace SWLOR.Game.Server.Feature
                 var delta = dbPlayer.RoleplayProgress.RPPoints - 50;
                 var bonusXP = delta * 25;
                 var xp = BaseXP + bonusXP + socialModifier * (BaseXP / 4);
-                var cantinaBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel);
+                var cantinaBonus = _property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel);
                 xp += (int)(BaseXP * (cantinaBonus * 0.05f));
 
                 dbPlayer.RoleplayProgress.RPPoints = 0;

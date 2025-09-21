@@ -19,7 +19,6 @@ using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model.Payload;
 using SWLOR.Shared.UI.Model.RefreshEvent;
 using SWLOR.Shared.UI.Service;
-using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -40,8 +39,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly IAbilityService _abilityService;
         private readonly ISpaceService _spaceService;
         private readonly IBeastMasteryService _beastMasteryService;
+        private readonly BeastMastery _beastMastery;
 
-        public CharacterSheetViewModel(IGuiService guiService, IDatabaseService db, IStatService statService, ISkillService skillService, IItemService itemService, ICombatService combatService, IAbilityService abilityService, ISpaceService spaceService, IBeastMasteryService beastMasteryService) : base(guiService)
+        public CharacterSheetViewModel(IGuiService guiService, IDatabaseService db, IStatService statService, ISkillService skillService, IItemService itemService, ICombatService combatService, IAbilityService abilityService, ISpaceService spaceService, IBeastMasteryService beastMasteryService, BeastMastery beastMastery) : base(guiService)
         {
             _db = db;
             _statService = statService;
@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _abilityService = abilityService;
             _spaceService = spaceService;
             _beastMasteryService = beastMasteryService;
+            _beastMastery = beastMastery;
         }
         
         private const int MaxUpgrades = 10;
@@ -576,10 +577,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AbilityType damageStat;
             AbilityType accuracyStatOverride;
 
-            if (BeastMastery.IsPlayerBeast(_target))
+            if (_beastMastery.IsPlayerBeast(_target))
             {
-                var beastType = BeastMastery.GetBeastType(_target);
-                var beastDetails = BeastMastery.GetBeastDetail(beastType);
+                var beastType = _beastMastery.GetBeastType(_target);
+                var beastDetails = _beastMastery.GetBeastDetail(beastType);
                 damageStat = beastDetails.DamageStat;
                 accuracyStatOverride = beastDetails.AccuracyStat;
                 mainHand = GetItemInSlot(InventorySlot.CreatureArmor, _target);
@@ -668,14 +669,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SP = $"{dbPlayer.TotalSPAcquired} / {_skillService.SkillCap} ({dbPlayer.UnallocatedSP})";
                 APOrLevel = $"{dbPlayer.TotalAPAcquired} / {_skillService.APCap} ({dbPlayer.UnallocatedAP})";
             }
-            else if (BeastMastery.IsPlayerBeast(_target))
+            else if (_beastMastery.IsPlayerBeast(_target))
             {
-                var beastId = BeastMastery.GetBeastId(_target);
+                var beastId = _beastMastery.GetBeastId(_target);
                 var dbBeast = _db.Get<Beast>(beastId);
 
-                SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
-                APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
-                APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
+                SP = $"{dbBeast.Level} / {_beastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
+                APOrLevel = $"{dbBeast.Level} / {_beastMastery.MaxLevel}";
+                APOrLevelTooltip = $"XP: {dbBeast.XP} / {_beastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
             }
         }
 

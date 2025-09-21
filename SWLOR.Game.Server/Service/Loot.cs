@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IStatService _statService;
         private readonly IBeastMasteryService _beastMasteryService;
         private readonly IItemService _itemService;
+        private readonly BeastMastery _beastMastery;
         private static readonly Dictionary<string, LootTable> _lootTables = new();
 
         private const float CorpseLifespanSeconds = 360f;
@@ -35,7 +36,8 @@ namespace SWLOR.Game.Server.Service
             IPerkService perkService,
             IStatService statService,
             IBeastMasteryService beastMasteryService,
-            IItemService itemService)
+            IItemService itemService,
+            BeastMastery beastMastery)
         {
             _logger = logger;
             _random = random;
@@ -43,13 +45,13 @@ namespace SWLOR.Game.Server.Service
             _statService = statService;
             _beastMasteryService = beastMasteryService;
             _itemService = itemService;
+            _beastMastery = beastMastery;
         }
 
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void RegisterLootTables()
+        public void RegisterLootTables()
         {
-            var loot = ServiceContainer.GetService<Loot>();
-            loot.RegisterLootTablesInternal();
+            RegisterLootTablesInternal();
         }
 
         private void RegisterLootTablesInternal()
@@ -88,10 +90,9 @@ namespace SWLOR.Game.Server.Service
         /// These items are only available with the Thief ability "Steal" and related perks.
         /// </summary>
         [ScriptHandler<OnCreatureSpawnBefore>]
-        public static void SpawnStealLoot()
+        public void SpawnStealLoot()
         {
-            var loot = ServiceContainer.GetService<Loot>();
-            loot.SpawnStealLootInternal();
+            SpawnStealLootInternal();
         }
 
         private void SpawnStealLootInternal()
@@ -212,10 +213,9 @@ namespace SWLOR.Game.Server.Service
         /// When a creature dies, loot tables are spawned based on local variables.
         /// </summary>
         [ScriptHandler<OnCreatureDeathBefore>]
-        public static void SpawnLootOnCreatureDeath()
+        public void SpawnLootOnCreatureDeath()
         {
-            var loot = ServiceContainer.GetService<Loot>();
-            loot.SpawnLoot(OBJECT_SELF, OBJECT_SELF, "LOOT_TABLE_");
+            SpawnLoot(OBJECT_SELF, OBJECT_SELF, "LOOT_TABLE_");
         }
 
         /// <summary>
@@ -276,10 +276,9 @@ namespace SWLOR.Game.Server.Service
         /// These will be checked later when the creature dies and loot is spawned.
         /// </summary>
         [ScriptHandler(ScriptName.OnItemHit)]
-        public static void MarkCreditfinderAndTreasureHunterOnTarget()
+        public void MarkCreditfinderAndTreasureHunterOnTarget()
         {
-            var loot = ServiceContainer.GetService<Loot>();
-            loot.MarkCreditfinderAndTreasureHunterOnTargetInternal();
+            MarkCreditfinderAndTreasureHunterOnTargetInternal();
         }
 
         private void MarkCreditfinderAndTreasureHunterOnTargetInternal()
@@ -332,10 +331,9 @@ namespace SWLOR.Game.Server.Service
         /// and changing the name of the placeable to match the creature.
         /// </summary>
         [ScriptHandler<OnCreatureDeathBefore>]
-        public static void ProcessCorpse()
+        public void ProcessCorpse()
         {
-            var loot = ServiceContainer.GetService<Loot>();
-            loot.ProcessCorpseInternal();
+            ProcessCorpseInternal();
         }
 
         private void ProcessCorpseInternal()
@@ -353,8 +351,8 @@ namespace SWLOR.Game.Server.Service
             var container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
             SetLocalObject(container, CorpseBodyVariable, self);
             SetName(container, $"{GetName(self)}'s Corpse");
-            SetLocalInt(container, BeastMastery.BeastTypeVariable, GetLocalInt(self, BeastMastery.BeastTypeVariable));
-            SetLocalInt(container, BeastMastery.BeastLevelVariable, npcStats.Level);
+            SetLocalInt(container, _beastMastery.BeastTypeVariable, GetLocalInt(self, _beastMastery.BeastTypeVariable));
+            SetLocalInt(container, _beastMastery.BeastLevelVariable, npcStats.Level);
 
             AssignCommand(container, () =>
             {
@@ -429,10 +427,9 @@ namespace SWLOR.Game.Server.Service
         /// or remove the dead creature from the game.
         /// </summary>
         [ScriptHandler(ScriptName.OnCorpseClosed)]
-        public static void CloseCorpseContainer()
+        public void CloseCorpseContainer()
         {
-            var loot = ServiceContainer.GetService<Loot>();
-            loot.CloseCorpseContainerInternal();
+            CloseCorpseContainerInternal();
         }
 
         private void CloseCorpseContainerInternal()
@@ -440,8 +437,8 @@ namespace SWLOR.Game.Server.Service
             var container = OBJECT_SELF;
             var firstItem = GetFirstItemInInventory(container);
             var corpseOwner = GetLocalObject(container, CorpseBodyVariable);
-            var beastTypeId = GetLocalInt(container, BeastMastery.BeastTypeVariable);
-            var level = GetLocalInt(container, BeastMastery.BeastLevelVariable);
+            var beastTypeId = GetLocalInt(container, _beastMastery.BeastTypeVariable);
+            var level = GetLocalInt(container, _beastMastery.BeastLevelVariable);
 
             if (!GetIsObjectValid(firstItem))
             {
@@ -458,10 +455,10 @@ namespace SWLOR.Game.Server.Service
                 {
                     var beastType = (BeastType)beastTypeId;
                     var beastDetail = _beastMasteryService.GetBeastDetail(beastType);
-                    var extractCorpse = CreateObject(ObjectType.Placeable, BeastMastery.ExtractCorpseObjectResref, GetLocation(container));
+                    var extractCorpse = CreateObject(ObjectType.Placeable, _beastMastery.ExtractCorpseObjectResref, GetLocation(container));
                     SetLocalObject(extractCorpse, CorpseBodyVariable, corpseOwner);
-                    SetLocalInt(extractCorpse, BeastMastery.BeastTypeVariable, beastTypeId);
-                    SetLocalInt(extractCorpse, BeastMastery.BeastLevelVariable, level);
+                    SetLocalInt(extractCorpse, _beastMastery.BeastTypeVariable, beastTypeId);
+                    SetLocalInt(extractCorpse, _beastMastery.BeastLevelVariable, level);
                     
                     AssignCommand(extractCorpse, () =>
                     {
@@ -477,10 +474,9 @@ namespace SWLOR.Game.Server.Service
         /// When a player removes an item from the corpse, update the connected creature's appearance if needed.
         /// </summary>
         [ScriptHandler(ScriptName.OnCorpseDisturbed)]
-        public static void DisturbCorpseContainer()
+        public void DisturbCorpseContainer()
         {
-            var loot = ServiceContainer.GetService<Loot>();
-            loot.DisturbCorpseContainerInternal();
+            DisturbCorpseContainerInternal();
         }
 
         private void DisturbCorpseContainerInternal()

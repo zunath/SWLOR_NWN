@@ -28,11 +28,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
         }
 
         [ScriptHandler(ScriptName.OnSpaceEnter)]
-        public static void EnterSpace()
+        public void EnterSpace()
         {
             var player = OBJECT_SELF;
-            var abilityService = ServiceContainer.GetService<IAbilityService>();
-            abilityService.ToggleAbility(player, AbilityToggleType.Dash, false);
+            _abilityService.ToggleAbility(player, AbilityToggleType.Dash, false);
         }
 
         private void Dash()

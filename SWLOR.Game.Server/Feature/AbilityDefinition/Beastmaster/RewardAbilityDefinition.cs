@@ -13,15 +13,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class RewardAbilityDefinition : IAbilityListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         private const string PetTreatTag = "pet_treat";
 
         private readonly AbilityBuilder _builder = new();
         private readonly IItemService _itemService;
+        private readonly CombatPoint _combatPoint;
+        private readonly BeastMastery _beastMastery;
+        private readonly IEnmityService _enmityService;
 
-        public RewardAbilityDefinition(IItemService itemService)
+        public RewardAbilityDefinition(IRandomService random, IItemService itemService, CombatPoint combatPoint, BeastMastery beastMastery, IEnmityService enmityService)
         {
+            _random = random;
             _itemService = itemService;
+            _combatPoint = combatPoint;
+            _beastMastery = beastMastery;
+            _enmityService = enmityService;
         }
 
 
@@ -69,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             }
 
             var beast = GetAssociate(AssociateType.Henchman, activator);
-            if (!BeastMastery.IsPlayerBeast(beast))
+            if (!_beastMastery.IsPlayerBeast(beast))
             {
                 return "You do not have an active beast.";
             }
@@ -93,8 +100,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), beast);
 
             TakePetTreat(activator);
-            Enmity.ModifyEnmityOnAll(activator, 300 + amount);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+            _enmityService.ModifyEnmityOnAll(activator, 300 + amount);
+            _combatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
         }
 
         private void Reward1()

@@ -2,12 +2,13 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class HoloCom
+    public class HoloComService : IHoloComService
     {
         // Local variable name constants
         private const string HolocomCallConnected = "HOLOCOM_CALL_CONNECTED";
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.Service
         private const string HolocomCallImmobilize = "HOLOCOM_CALL_IMMOBILIZE";
 
         [ScriptHandler<OnModuleDeath>]
-        public static void OnModuleDeath()
+        public void OnModuleDeath()
         {
             var player = GetLastPlayerDied();
             if (IsInCall(player)) 
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler<OnModuleEnter>]
-        public static void OnModuleEnter()
+        public void OnModuleEnter()
         {
             var player = GetEnteringObject();
             RemoveEffectByTag(player, HolocomCallImmobilize);

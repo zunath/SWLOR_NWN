@@ -12,11 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     {
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
 
-        public ThrowRockAbilityDefinition(ICombatService combatService, IStatService statService)
+        public ThrowRockAbilityDefinition(ICombatService combatService, IStatService statService, CombatPoint combatPoint)
         {
             _combatService = combatService;
             _statService = statService;
+            _combatPoint = combatPoint;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -77,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Dust_Explosion);
 
             Enmity.ModifyEnmity(activator, target, damage);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+            _combatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
 
             DelayCommand(delay, () =>
             {

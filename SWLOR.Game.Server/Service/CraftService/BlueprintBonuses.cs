@@ -7,11 +7,12 @@ namespace SWLOR.Game.Server.Service.CraftService
 {
     internal class BlueprintBonuses
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         private readonly Dictionary<RecipeEnhancementType, Dictionary<bool, Dictionary<int, List<BlueprintBonus>>>> _bonusesByEnhancementType = new();
 
-        public BlueprintBonuses()
+        public BlueprintBonuses(IRandomService random)
         {
+            _random = random;
             _bonusesByEnhancementType[RecipeEnhancementType.Weapon] = new Dictionary<bool, Dictionary<int, List<BlueprintBonus>>>();
             _bonusesByEnhancementType[RecipeEnhancementType.Weapon][false] = new Dictionary<int, List<BlueprintBonus>>();
             _bonusesByEnhancementType[RecipeEnhancementType.Weapon][false][1] = Tier1WeaponCombatBonuses();

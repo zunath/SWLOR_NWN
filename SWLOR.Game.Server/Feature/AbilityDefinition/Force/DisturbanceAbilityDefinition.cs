@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
@@ -12,14 +13,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
         private const string Tier1Tag = "EFFECT_DISTURBANCE_1";
         private const string Tier2Tag = "EFFECT_DISTURBANCE_2";
         private const string Tier3Tag = "EFFECT_DISTURBANCE_3";
 
-        public DisturbanceAbilityDefinition(ICombatService combatService, IStatService statService)
+        public DisturbanceAbilityDefinition(ICombatService combatService, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -66,8 +71,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Green), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Holy), target);
 
-            Enmity.ModifyEnmityOnAll(activator, 150 + damage);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+            _enmityService.ModifyEnmityOnAll(activator, 150 + damage);
+            _combatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 
         private void Disturbance1()

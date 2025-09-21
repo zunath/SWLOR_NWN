@@ -14,24 +14,34 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class ChatCommand
+    public class ChatCommandService : IChatCommandService
     {
-        private static readonly IAppSettings _appSettings = ServiceContainer.GetService<IAppSettings>();
+        private readonly IAppSettings _appSettings;
+        private readonly Authorization _authorization;
+        private readonly ITargetingService _targetingService;
 
-        private static readonly Dictionary<string, ChatCommandDetail> _chatCommands = new();
-        private static readonly Dictionary<string, ChatCommandDetail> _emoteCommands = new();
-        public static string HelpTextPlayer { get; private set; }
-        public static string HelpTextEmote { get; private set; }
-        public static string HelpTextDM { get; private set; }
-        public static string HelpTextAdmin { get; private set; }
+        private readonly Dictionary<string, ChatCommandDetail> _chatCommands = new();
+        private readonly Dictionary<string, ChatCommandDetail> _emoteCommands = new();
+        public string HelpTextPlayer { get; private set; }
+        public string HelpTextEmote { get; private set; }
+        public string HelpTextDM { get; private set; }
+        public string HelpTextAdmin { get; private set; }
 
-        public static GuiBindingList<string> EmoteNames { get; } = new();
-        public static GuiBindingList<string> EmoteDescriptions { get; } = new();
-        public static List<Animation> EmoteAnimations { get; } = new();
-        public static GuiBindingList<bool> EmoteIsLooping { get; } = new();
+        public GuiBindingList<string> EmoteNames { get; } = new();
+        public GuiBindingList<string> EmoteDescriptions { get; } = new();
+        public List<Animation> EmoteAnimations { get; } = new();
+        public GuiBindingList<bool> EmoteIsLooping { get; } = new();
+
+        public ChatCommand(IAppSettings appSettings, Authorization authorization, ITargetingService targetingService)
+        {
+            _appSettings = appSettings;
+            _authorization = authorization;
+            _targetingService = targetingService;
+        }
 
         private const string InvalidChatCommandMessage = "Invalid chat command. Use '/help' to get a list of available commands.";
 
@@ -39,7 +49,7 @@ namespace SWLOR.Game.Server.Service
         /// Loads all chat commands into cache and builds the related help text.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void OnModuleLoad()
+        public void OnModuleLoad()
         {
             LoadChatCommands();
             BuildHelpText();
@@ -50,7 +60,7 @@ namespace SWLOR.Game.Server.Service
         /// Handles validating and processing chat commands sent by players and DMs.
         /// </summary>
         [ScriptHandler<OnNWNXChat>]
-        public static void HandleChatMessage()
+        public void HandleChatMessage()
         {
             var sender = OBJECT_SELF;
             var originalMessage = ChatPlugin.GetMessage().Trim();
@@ -96,12 +106,12 @@ namespace SWLOR.Game.Server.Service
                 }
 
 
-                var authorization = Authorization.GetAuthorizationLevel(sender);
+                var authorization = _authorization.GetAuthorizationLevel(sender);
 
                 if ((_appSettings.ServerEnvironment == ServerEnvironmentType.Test && chatCommand.AvailableToAllOnTestEnvironment) ||
                     chatCommand.Authorization.HasFlag(authorization))
                 {
-                    Targeting.EnterTargetingMode(sender, chatCommand.ValidTargetTypes, "Please click on a target for this chat command.",
+                    _targetingService.EnterTargetingMode(sender, chatCommand.ValidTargetTypes, "Please click on a target for this chat command.",
                     target =>
                     {
                         var location = GetIsObjectValid(target)
@@ -125,7 +135,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="sender">The sender of the message.</param>
         /// <param name="message">The message sent.</param>
         /// <returns>true if this is a chat command, false otherwise</returns>
-        private static bool CanHandleChat(uint sender, string message)
+        private bool CanHandleChat(uint sender, string message)
         {
             var validTarget = GetIsPC(sender) || GetIsDM(sender) || GetIsDMPossessed(sender);
             var validMessage = message.Length >= 2 && message[0] == '/' && message[1] != '/';
@@ -140,7 +150,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="target">The target of the command. OBJECT_INVALID if no target is necessary.</param>
         /// <param name="targetLocation">The target location of the command. null if no target is necessary.</param>
         /// <param name="args">User-entered arguments</param>
-        private static void ProcessChatCommand(string commandName, uint sender, uint target, Location targetLocation, string args)
+        private void ProcessChatCommand(string commandName, uint sender, uint target, Location targetLocation, string args)
         {
             var command = _chatCommands[commandName];
             if (targetLocation == null)
@@ -148,7 +158,7 @@ namespace SWLOR.Game.Server.Service
                 targetLocation = new Location(IntPtr.Zero);
             }
 
-            var authorization = Authorization.GetAuthorizationLevel(sender);
+            var authorization = _authorization.GetAuthorizationLevel(sender);
 
             if ((_appSettings.ServerEnvironment == ServerEnvironmentType.Test && command.AvailableToAllOnTestEnvironment) ||
                 command.Authorization.HasFlag(authorization))
@@ -174,7 +184,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Builds all chat commands and puts them into cache.
         /// </summary>
-        private static void LoadChatCommands()
+        private void LoadChatCommands()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
@@ -203,7 +213,7 @@ namespace SWLOR.Game.Server.Service
         /// Builds text used by the /help command for each authorization level.
         /// This must be called after LoadChatCommands or there will be nothing to process.
         /// </summary>
-        private static void BuildHelpText()
+        private void BuildHelpText()
         {
             var orderedCommands = _chatCommands.OrderBy(o => o.Key);
 
@@ -238,7 +248,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void BuildEmoteUILists()
+        private void BuildEmoteUILists()
         {
             foreach (var (text, command) in _emoteCommands)
             {

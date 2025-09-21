@@ -17,12 +17,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         private readonly IItemService _itemService;
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
 
-        public ElectricFistAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService)
+        public ElectricFistAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, CombatPoint combatPoint)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
+            _combatPoint = combatPoint;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -77,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
             dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.MartialArts);
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
+            _combatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);

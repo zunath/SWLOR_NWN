@@ -1,18 +1,19 @@
 
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Activity
+    public class ActivityService : IActivityService
     {
         /// <summary>
         /// Marks a target as being busy with a particular type of action.
         /// </summary>
         /// <param name="target">The target to modify.</param>
         /// <param name="type">The type of activity to assign.</param>
-        public static void SetBusy(uint target, ActivityStatusType type)
+        public void SetBusy(uint target, ActivityStatusType type)
         {
             SetLocalBool(target, "IS_BUSY", true);
             SetLocalInt(target, "BUSY_TYPE", (int)type);
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="target">The target to check.</param>
         /// <returns>true if busy, false otherwise</returns>
-        public static bool IsBusy(uint target)
+        public bool IsBusy(uint target)
         {
             return GetLocalBool(target, "IS_BUSY");
         }
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="target">The target to check.</param>
         /// <returns>The type of activity status.</returns>
-        public static ActivityStatusType GetBusyType(uint target)
+        public ActivityStatusType GetBusyType(uint target)
         {
             if (!IsBusy(target))
                 return ActivityStatusType.Invalid;
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Service
         /// Clears the busy status of a single target.
         /// </summary>
         /// <param name="target">The target whose status will be cleared.</param>
-        public static void ClearBusy(uint target)
+        public void ClearBusy(uint target)
         {
             DeleteLocalBool(target, "IS_BUSY");
             DeleteLocalInt(target, "BUSY_TYPE");
@@ -56,7 +57,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the module, wipe their temporary "busy" status.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void WipeStatusOnEntry()
+        public void WipeStatusOnEntry()
         {
             var player = GetEnteringObject();
             ClearBusy(player);
@@ -66,7 +67,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player dies, wipe their temporary "busy" status.
         /// </summary>
         [ScriptHandler<OnModuleDeath>]
-        public static void WipeStatusOnDeath()
+        public void WipeStatusOnDeath()
         {
             var player = GetLastPlayerDied();
             ClearBusy(player);

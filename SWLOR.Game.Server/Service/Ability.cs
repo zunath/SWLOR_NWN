@@ -23,7 +23,11 @@ namespace SWLOR.Game.Server.Service
         private readonly IDatabaseService _db;
         private readonly IGenericCacheService _cacheService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
         private readonly IPerkService _perkService;
+        private readonly IPartyService _partyService;
+        private readonly IActivityService _activityService;
+        private readonly IMessagingService _messagingService;
         
         // Cached data
         private IInterfaceCache<FeatType, AbilityDetail> _abilityCache;
@@ -36,12 +40,16 @@ namespace SWLOR.Game.Server.Service
         private readonly Dictionary<AbilityToggleType, Action<uint, bool>> _toggleActions = new();
         private readonly Dictionary<uint, PlayerAura> _playerAuras = new();
 
-        public AbilityService(IDatabaseService db, IGenericCacheService cacheService, IStatService statService, IPerkService perkService)
+        public AbilityService(IDatabaseService db, IGenericCacheService cacheService, IStatService statService, IPerkService perkService, IPartyService partyService, CombatPoint combatPoint, IActivityService activityService, IMessagingService messagingService)
         {
             _db = db;
             _cacheService = cacheService;
             _statService = statService;
             _perkService = perkService;
+            _partyService = partyService;
+            _combatPoint = combatPoint;
+            _activityService = activityService;
+            _messagingService = messagingService;
         }
 
         private const int MaxNumberOfAuras = 4;
@@ -168,7 +176,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Must not be busy
-            if (Activity.IsBusy(activator))
+            if (_activityService.IsBusy(activator))
             {
                 SendMessageToPC(activator, "You are busy.");
                 return false;
@@ -325,7 +333,7 @@ namespace SWLOR.Game.Server.Service
             _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(target, feat, statusEffectType);
             StatusEffect.Apply(creature, target, statusEffectType, 0.0f, null, feat);
 
-            Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
+            _messagingService.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
             SetLocalBool(creature, "CONCENTRATION_FIRST_USE", true);
         }
 
@@ -480,7 +488,7 @@ namespace SWLOR.Game.Server.Service
             if (aura.Auras.Count <= 0)
                 return;
 
-            CombatPoint.AddCombatPoint(player, target, SkillType.Leadership);
+            _combatPoint.AddCombatPoint(player, target, SkillType.Leadership);
         }
 
         private static int GetMaxNumberOfAuras(uint activator)
@@ -720,7 +728,7 @@ namespace SWLOR.Game.Server.Service
                 _playerAuras.Add(self, new PlayerAura());
 
             // Party Members
-            if (Party.IsInParty(self, entering))
+            if (_partyService.IsInParty(self, entering))
             {
                 if (_playerAuras[self].PartyMembersInRange.Contains(entering))
                     return;
@@ -766,7 +774,7 @@ namespace SWLOR.Game.Server.Service
             if (!_playerAuras.ContainsKey(self))
                 _playerAuras.Add(self, new PlayerAura());
 
-            if (Party.IsInParty(self, exiting))
+            if (_partyService.IsInParty(self, exiting))
             {
                 if (!_playerAuras[self].PartyMembersInRange.Contains(exiting))
                     return;

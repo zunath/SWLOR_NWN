@@ -7,15 +7,20 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class ArmorDisplay
+    public class ArmorDisplay
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+
+        public ArmorDisplay(IDatabaseService db)
+        {
+            _db = db;
+        }
         
         /// <summary>
         /// When a player equips a type of armor which can be hidden, set whether it is hidden based on the player's setting.
         /// </summary>
         [ScriptHandler<OnModuleEquip>]
-        public static void EquipHelmet()
+        public void EquipHelmet()
         {
             var player = GetPCItemLastEquippedBy();
             var item = GetPCItemLastEquipped();

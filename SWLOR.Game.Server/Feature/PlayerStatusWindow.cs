@@ -12,121 +12,127 @@ using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class PlayerStatusWindow
+    public class PlayerStatusWindow
     {
+        private readonly IGuiService _guiService;
+
+        public PlayerStatusWindow(IGuiService guiService)
+        {
+            _guiService = guiService;
+        }
 
         [ScriptHandler<OnSWLORItemEquipValidBefore>]
-        public static void PlayerEquipItem()
+        public void PlayerEquipItem()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) 
                 return;
 
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
+            _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+            _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+            _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
         [ScriptHandler<OnItemUnequipBefore>]
-        public static void PlayerUnequipItem()
+        public void PlayerUnequipItem()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) 
                 return;
 
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
+            _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+            _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+            _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
         [ScriptHandler<OnPlayerDamaged>]
-        public static void PlayerDamaged()
+        public void PlayerDamaged()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+            _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
 
         [ScriptHandler<OnPlayerFPAdjusted>]
-        public static void PlayerFPAdjusted()
+        public void PlayerFPAdjusted()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+            _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
         }
 
         [ScriptHandler<OnPlayerStaminaAdjusted>]
-        public static void PlayerSTMAdjusted()
+        public void PlayerSTMAdjusted()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
+            _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
         [ScriptHandler<OnHealAfter>]
-        public static void PlayerHealed()
+        public void PlayerHealed()
         {
             var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(target, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+            _guiService.PublishRefreshEvent(target, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
 
         [ScriptHandler<OnPlayerShieldAdjusted>]
-        public static void PlayerShieldAdjusted()
+        public void PlayerShieldAdjusted()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Shield));
+            _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Shield));
         }
 
         [ScriptHandler<OnPlayerHullAdjusted>]
-        public static void PlayerHullAdjusted()
+        public void PlayerHullAdjusted()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Hull));
+            _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Hull));
         }
 
         [ScriptHandler<OnPlayerCapAdjusted>]
-        public static void PlayerCapacitorAdjusted()
+        public void PlayerCapacitorAdjusted()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Capacitor));
+            _guiService.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Capacitor));
         }
 
         [ScriptHandler<OnPlayerTargetUpdated>]
-        public static void PlayerSpaceTargetAdjusted()
+        public void PlayerSpaceTargetAdjusted()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new TargetStatusRefreshEvent());
+            _guiService.PublishRefreshEvent(player, new TargetStatusRefreshEvent());
         }
 
         [ScriptHandler<OnModuleEnter>]
         [ScriptHandler<OnAreaEnter>]
-        public static void LoadPlayerStatusWindow()
+        public void LoadPlayerStatusWindow()
         {
             var player = GetEnteringObject();
 
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            if(!ServiceContainer.GetService<IGuiService>().IsWindowOpen(player, GuiWindowType.PlayerStatus))
-                ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.PlayerStatus);
+            if(!_guiService.IsWindowOpen(player, GuiWindowType.PlayerStatus))
+                _guiService.TogglePlayerWindow(player, GuiWindowType.PlayerStatus);
         }
     }
 }

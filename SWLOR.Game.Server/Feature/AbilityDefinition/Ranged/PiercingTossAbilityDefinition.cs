@@ -15,12 +15,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         private readonly IItemService _itemService;
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
 
-        public PiercingTossAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService)
+        public PiercingTossAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, CombatPoint combatPoint)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
+            _combatPoint = combatPoint;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -94,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 StatusEffect.Apply(activator, target, StatusEffectType.Bleed, duration);
             }
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+            _combatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
             Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 

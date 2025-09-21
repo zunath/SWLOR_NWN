@@ -35,6 +35,8 @@ namespace SWLOR.Game.Server.Service
         private readonly Race _raceService;
         private readonly IStatService _statService;
         private readonly IStatusEffectService _statusEffectService;
+        private readonly AI _aiService;
+        private readonly IActivityService _activityService;
 
         public const string DroidResref = "pc_droid";
         public const string DroidControlItemResref = "droid_control";
@@ -51,7 +53,9 @@ namespace SWLOR.Game.Server.Service
             IItemService itemService,
             Race raceService,
             IStatService statService,
-            IStatusEffectService statusEffectService)
+            IStatusEffectService statusEffectService,
+            AI aiService,
+            IActivityService activityService)
         {
             _perkService = perkService;
             _guiService = guiService;
@@ -59,18 +63,19 @@ namespace SWLOR.Game.Server.Service
             _raceService = raceService;
             _statService = statService;
             _statusEffectService = statusEffectService;
+            _aiService = aiService;
+            _activityService = activityService;
         }
 
         /// <summary>
         /// When the module loads, cache all relevant droid data into memory.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheData()
+        public void CacheData()
         {
-            var droid = ServiceContainer.GetService<Droid>();
-            droid.CacheDroidLevels();
-            droid.CachePersonalities();
-            droid.CacheDefaultTierPerks();
+            CacheDroidLevels();
+            CachePersonalities();
+            CacheDefaultTierPerks();
         }
 
         private void CacheDroidLevels()
@@ -233,10 +238,9 @@ namespace SWLOR.Game.Server.Service
         /// Player will receive an error if they don't have any ranks in the Droid Assembly perk.
         /// </summary>
         [ScriptHandler(ScriptName.OnDroidAssociateUsed)]
-        public static void UseDroidAssemblyTerminal()
+        public void UseDroidAssemblyTerminal()
         {
-            var droid = ServiceContainer.GetService<Droid>();
-            droid.UseDroidAssemblyTerminalInternal();
+            UseDroidAssemblyTerminalInternal();
         }
 
         private void UseDroidAssemblyTerminalInternal()
@@ -258,10 +262,9 @@ namespace SWLOR.Game.Server.Service
         /// When a player leaves the server, any droids they have actives are despawned.
         /// </summary>
         [ScriptHandler<OnModuleExit>]
-        public static void OnPlayerExit()
+        public void OnPlayerExit()
         {
-            var droid = ServiceContainer.GetService<Droid>();
-            droid.OnPlayerExitInternal();
+            OnPlayerExitInternal();
         }
 
         private void OnPlayerExitInternal()
@@ -289,10 +292,9 @@ namespace SWLOR.Game.Server.Service
         /// When a droid acquires an item, it is stored into a persistent variable on the controller item.
         /// </summary>
         [ScriptHandler<OnModuleAcquire>]
-        public static void OnAcquireItem()
+        public void OnAcquireItem()
         {
-            var droid = ServiceContainer.GetService<Droid>();
-            droid.OnAcquireItemInternal();
+            OnAcquireItemInternal();
         }
 
         private void OnAcquireItemInternal()
@@ -337,10 +339,9 @@ namespace SWLOR.Game.Server.Service
         /// When a droid loses an item, it is removed from the persistent variable on the controller item.
         /// </summary>
         [ScriptHandler<OnModuleUnacquire>]
-        public static void OnLostItem()
+        public void OnLostItem()
         {
-            var droid = ServiceContainer.GetService<Droid>();
-            droid.OnLostItemInternal();
+            OnLostItemInternal();
         }
 
         private void OnLostItemInternal()
@@ -357,10 +358,9 @@ namespace SWLOR.Game.Server.Service
         /// When a droid equips an item, it is removed from its inventory and added to its equipped items.
         /// </summary>
         [ScriptHandler<OnSWLORItemEquipValidBefore>]
-        public static void OnEquipItem()
+        public void OnEquipItem()
         {
-            var droid = ServiceContainer.GetService<Droid>();
-            droid.OnEquipItemInternal();
+            OnEquipItemInternal();
         }
 
         private void OnEquipItemInternal()
@@ -402,10 +402,9 @@ namespace SWLOR.Game.Server.Service
         /// When a droid unequips an item, it is removed from its equipped items and added to its inventory.
         /// </summary>
         [ScriptHandler<OnItemUnequipBefore>]
-        public static void OnUnequipItem()
+        public void OnUnequipItem()
         {
-            var droid = ServiceContainer.GetService<Droid>();
-            droid.OnUnequipItemInternal();
+            OnUnequipItemInternal();
         }
 
         private void OnUnequipItemInternal()
@@ -899,10 +898,9 @@ namespace SWLOR.Game.Server.Service
         /// When the appearance of a droid is changed, update the data on the local variable.
         /// </summary>
         [ScriptHandler(ScriptName.OnAppearanceEdit)]
-        public static void EditDroidAppearance()
+        public void EditDroidAppearance()
         {
-            var droid = ServiceContainer.GetService<Droid>();
-            droid.EditDroidAppearanceInternal();
+            EditDroidAppearanceInternal();
         }
 
         private void EditDroidAppearanceInternal()
@@ -946,10 +944,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler(ScriptName.OnSpaceEnter)]
         [ScriptHandler<OnAssociateRemoveBefore>]
-        public static void RemoveAssociate()
+        public void RemoveAssociate()
         {
-            var droid = ServiceContainer.GetService<Droid>();
-            droid.RemoveAssociateInternal();
+            RemoveAssociateInternal();
         }
 
         private void RemoveAssociateInternal()
@@ -1035,20 +1032,18 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnDroidRoundEnd)]
-        public static void DroidOnEndCombatRound()
+        public void DroidOnEndCombatRound()
         {
-            var droid = ServiceContainer.GetService<Droid>();
-            droid.DroidOnEndCombatRoundInternal();
+            DroidOnEndCombatRoundInternal();
         }
 
         private void DroidOnEndCombatRoundInternal()
         {
             var droid = OBJECT_SELF;
-            if (!Activity.IsBusy(droid))
+            if (!_activityService.IsBusy(droid))
             {
                 ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
-                var aiService = ServiceContainer.GetService<AI>();
-                aiService.ProcessPerkAI(AIDefinitionType.Droid, droid, false);
+                _aiService.ProcessPerkAI(AIDefinitionType.Droid, droid, false);
             }
         }
 
@@ -1089,10 +1084,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnDroidHeartbeat)]
-        public static void DroidOnHeartbeat()
+        public void DroidOnHeartbeat()
         {
-            var droid = ServiceContainer.GetService<Droid>();
-            droid.DroidOnHeartbeatInternal();
+            DroidOnHeartbeatInternal();
         }
 
         private void DroidOnHeartbeatInternal()
@@ -1116,10 +1110,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnDroidRest)]
-        public static void DroidOnRested()
+        public void DroidOnRested()
         {
-            var droid = ServiceContainer.GetService<Droid>();
-            droid.DroidOnRestedInternal();
+            DroidOnRestedInternal();
         }
 
         private void DroidOnRestedInternal()
@@ -1133,10 +1126,9 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnDroidSpawn)]
-        public static void DroidOnSpawn()
+        public void DroidOnSpawn()
         {
-            var droid = ServiceContainer.GetService<Droid>();
-            droid.DroidOnSpawnInternal();
+            DroidOnSpawnInternal();
         }
 
         private void DroidOnSpawnInternal()

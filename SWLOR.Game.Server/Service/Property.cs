@@ -28,10 +28,11 @@ using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Property
+    public class Property
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly IGuiService _guiService;
         private static readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
         private static readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();
         private static readonly Dictionary<PropertyLayoutType, PropertyLayout> _activeLayouts = new();
@@ -56,6 +57,13 @@ namespace SWLOR.Game.Server.Service
         };
 
         private static readonly Dictionary<PropertyType, List<StructureType>> _structureTypesByPropertyType = new();
+
+        public Property(ILogger logger, IDatabaseService db, IGuiService guiService)
+        {
+            _logger = logger;
+            _db = db;
+            _guiService = guiService;
+        }
 
         /// <summary>
         /// Determines the number of hours before the city will be destroyed due to
@@ -82,7 +90,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, cache all relevant data into memory.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheData()
+        public void CacheData()
         {
             CachePropertyTypes();
             CachePropertyLayoutTypes();
@@ -96,7 +104,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, clean up any deleted data, refreshes permissions and then load properties.
         /// </summary>
         [ScriptHandler<OnModuleLoad>]
-        public static void OnModuleLoad()
+        public void OnModuleLoad()
         {
             RefreshPermissions();
             ProcessCities();
@@ -336,7 +344,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="obj">The object to assign</param>
         /// <param name="propertyId">The property Id to assign.</param>
-        public static void AssignPropertyId(uint obj, string propertyId)
+        public void AssignPropertyId(uint obj, string propertyId)
         {
             SetLocalString(obj, "PROPERTY_ID", propertyId);
         }
@@ -347,7 +355,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="obj">The object to check.</param>
         /// <returns>The property Id or an empty string if not found.</returns>
-        public static string GetPropertyId(uint obj)
+        public string GetPropertyId(uint obj)
         {
             return GetLocalString(obj, "PROPERTY_ID");
         }
@@ -357,7 +365,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="propertyId">The property Id</param>
         /// <param name="instance">The area instance to register</param>
-        public static void RegisterInstance(string propertyId, uint instance, PropertyLayoutType layoutType)
+        public void RegisterInstance(string propertyId, uint instance, PropertyLayoutType layoutType)
         {
             AssignPropertyId(instance, propertyId);
             _propertyInstances[propertyId] = new PropertyInstance(instance, layoutType);
@@ -368,7 +376,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="propertyId">The property Id</param>
         /// <returns>An area associated with the property Id.</returns>
-        public static PropertyInstance GetRegisteredInstance(string propertyId)
+        public PropertyInstance GetRegisteredInstance(string propertyId)
         {
             return _propertyInstances[propertyId];
         }
@@ -852,7 +860,7 @@ namespace SWLOR.Game.Server.Service
             _logger.Write<PropertyLogGroup>( $"Finished processing citizenship fees for '{city.CustomName}' ({city.Id})");
         }
 
-        public static void DeleteProperty(WorldProperty property)
+        public void DeleteProperty(WorldProperty property)
         {
             // Recursively clear any children properties tied to this property.
             foreach (var (childType, propertyIds) in property.ChildPropertyIds)
@@ -1248,7 +1256,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to associate the apartment with.</param>
         /// <param name="layout">The layout to use.</param>
         /// <returns>The new world property.</returns>
-        public static WorldProperty CreateApartment(uint player, PropertyLayoutType layout)
+        public WorldProperty CreateApartment(uint player, PropertyLayoutType layout)
         {
             var playerId = GetObjectUUID(player);
             var propertyName = $"{GetName(player)}'s Apartment";
@@ -1267,7 +1275,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="spaceLocation">Location of the space transfer point (when a player is converted to a ship)</param>
         /// <param name="landingLocation">Location of the ground transfer point (when a player is converted back to normal)</param>
         /// <returns>The new world property.</returns>
-        public static WorldProperty CreateStarship(
+        public WorldProperty CreateStarship(
             uint player, 
             PropertyLayoutType layout, 
             PlanetType planetType,
@@ -1340,7 +1348,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="area">The area to claim.</param>
         /// <param name="item">The item used to place the city hall</param>
         /// <param name="location">The location to spawn city hall.</param>
-        public static void CreateCity(uint player, uint area, uint item, Location location)
+        public void CreateCity(uint player, uint area, uint item, Location location)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
@@ -1399,7 +1407,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="structureType">The type of structure to create.</param>
         /// <param name="location">The location to spawn the structure.</param>
         /// <returns>The new world property.</returns>
-        public static void CreateBuilding(
+        public void CreateBuilding(
             uint player, 
             uint item, 
             string parentCityId, 
@@ -1445,7 +1453,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="item">The item used to spawn the structure.</param>
         /// <param name="type">The type of structure to spawn.</param>
         /// <param name="location">The location to spawn the structure at.</param>
-        public static WorldProperty CreateStructure(
+        public WorldProperty CreateStructure(
             string parentPropertyId, 
             uint item,
             StructureType type, 
@@ -1514,7 +1522,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="playerId">The player Id to search for</param>
         /// <param name="propertyId">The property Id to search for</param>
         /// <returns>A list of permissions</returns>
-        public static List<WorldPropertyPermission> GetCategoryPermissions(string playerId, string propertyId)
+        public List<WorldPropertyPermission> GetCategoryPermissions(string playerId, string propertyId)
         {
             var categoriesQuery = new DBQuery<WorldPropertyCategory>()
                 .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), propertyId, false);
@@ -1534,7 +1542,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type of layout to retrieve.</param>
         /// <returns>A property layout</returns>
-        public static PropertyLayout GetLayoutByType(PropertyLayoutType type)
+        public PropertyLayout GetLayoutByType(PropertyLayoutType type)
         {
             return _activeLayouts[type];
         }
@@ -1544,7 +1552,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="structure"></param>
         /// <returns></returns>
-        public static StructureAttribute GetStructureByType(StructureType structure)
+        public StructureAttribute GetStructureByType(StructureType structure)
         {
             return _activeStructures[structure];
         }
@@ -1554,7 +1562,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type of property to search for</param>
         /// <returns>A list of layouts for the given property type.</returns>
-        public static List<PropertyLayoutType> GetAllLayoutsByPropertyType(PropertyType type)
+        public List<PropertyLayoutType> GetAllLayoutsByPropertyType(PropertyType type)
         {
             return _layoutsByPropertyType[type].ToList();
         }
@@ -1564,7 +1572,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The layout type</param>
         /// <returns>The entrance position for the layout.</returns>
-        public static Vector4 GetEntrancePosition(PropertyLayoutType type)
+        public Vector4 GetEntrancePosition(PropertyLayoutType type)
         {
             return _entrancesByLayout[type];
         }
@@ -1574,7 +1582,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type to search for.</param>
         /// <returns>The instance template area associated with this type.</returns>
-        public static uint GetInstanceTemplate(PropertyLayoutType type)
+        public uint GetInstanceTemplate(PropertyLayoutType type)
         {
             var layout = _activeLayouts[type];
             return _instanceTemplates[layout.AreaInstanceResref];
@@ -1585,7 +1593,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="permission">The type of permission to retrieve.</param>
         /// <returns>A permission detail</returns>
-        public static PropertyPermissionAttribute GetPermissionByType(PropertyPermissionType permission)
+        public PropertyPermissionAttribute GetPermissionByType(PropertyPermissionType permission)
         {
             return _activePermissions[permission];
         }
@@ -1595,7 +1603,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type of property</param>
         /// <returns>A list of available permissions</returns>
-        public static List<PropertyPermissionType> GetPermissionsByPropertyType(PropertyType type)
+        public List<PropertyPermissionType> GetPermissionsByPropertyType(PropertyType type)
         {
             return _permissionsByPropertyType[type];
         }
@@ -1605,7 +1613,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type of property to get.</param>
         /// <returns>A property detail for the given type.</returns>
-        public static PropertyTypeAttribute GetPropertyDetail(PropertyType type)
+        public PropertyTypeAttribute GetPropertyDetail(PropertyType type)
         {
             return _propertyTypes[type];
         }
@@ -1615,7 +1623,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="propertyId">The property Id to search for</param>
         /// <returns>A placeable or OBJECT_INVALID if not found.</returns>
-        public static uint GetPlaceableByPropertyId(string propertyId)
+        public uint GetPlaceableByPropertyId(string propertyId)
         {
             return !_structurePropertyIdToPlaceable.ContainsKey(propertyId) 
                 ? OBJECT_INVALID 
@@ -1627,7 +1635,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="propertyType">The property type to search for.</param>
         /// <returns>A list of structure types.</returns>
-        public static List<StructureType> GetStructuresByInteriorPropertyType(PropertyType propertyType)
+        public List<StructureType> GetStructuresByInteriorPropertyType(PropertyType propertyType)
         {
             if (!_structureTypesByPropertyType.ContainsKey(propertyType))
                 return new List<StructureType>();
@@ -1639,13 +1647,13 @@ namespace SWLOR.Game.Server.Service
         /// When an apartment terminal is used, open the Apartment NUI
         /// </summary>
         [ScriptHandler(ScriptName.OnApartmentTerminal)]
-        public static void StartApartmentConversation()
+        public void StartApartmentConversation()
         {
             var player = GetLastUsedBy();
             var terminal = OBJECT_SELF;
             
-            var guiService = ServiceContainer.GetService<IGuiService>();
-            guiService.TogglePlayerWindow(player, GuiWindowType.ManageApartment, null, terminal);
+            _guiService
+            _guiService.TogglePlayerWindow(player, GuiWindowType.ManageApartment, null, terminal);
         }
 
         /// <summary>
@@ -1656,7 +1664,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="propertyId">The property Id to check.</param>
         /// <param name="permission">The type of permission to check.</param>
         /// <returns>true if player has permission, false otherwise</returns>
-        public static bool HasPropertyPermission(uint player, string propertyId, PropertyPermissionType permission)
+        public bool HasPropertyPermission(uint player, string propertyId, PropertyPermissionType permission)
         {
             // DMs always have permission.
             if (GetIsDM(player) || GetIsDMPossessed(player))
@@ -1687,7 +1695,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="propertyId">The property Id to check.</param>
         /// <param name="permission">The type of permission to check.</param>
         /// <returns>true if player can grant the permission, false otherwise</returns>
-        public static bool CanGrantPermission(uint player, string propertyId, PropertyPermissionType permission)
+        public bool CanGrantPermission(uint player, string propertyId, PropertyPermissionType permission)
         {
             // DMs always have permission.
             if (GetIsDM(player) || GetIsDMPossessed(player))
@@ -1715,7 +1723,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to send.</param>
         /// <param name="layout">The layout type to send them to.</param>
-        public static void PreviewProperty(uint player, PropertyLayoutType layout)
+        public void PreviewProperty(uint player, PropertyLayoutType layout)
         {
             var entrance = GetEntrancePosition(layout);
             var area = GetInstanceTemplate(layout);
@@ -1733,7 +1741,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters a property instance, add them to the list of players.
         /// </summary>
         [ScriptHandler<OnAreaEnter>]
-        public static void EnterPropertyInstance()
+        public void EnterPropertyInstance()
         {
             var player = GetExitingObject();
             if (!GetIsPC(player) || GetIsDM(player))
@@ -1752,7 +1760,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player exits a property instance, remove them from the list of players.
         /// </summary>
         [ScriptHandler<OnAreaExit>]
-        public static void ExitPropertyInstance()
+        public void ExitPropertyInstance()
         {
             var player = GetExitingObject();
             if (!GetIsPC(player) || GetIsDM(player))
@@ -1773,7 +1781,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to send.</param>
         /// <param name="propertyId">The property Id</param>
-        public static void EnterProperty(uint player, string propertyId)
+        public void EnterProperty(uint player, string propertyId)
         {
             if (!HasPropertyPermission(player, propertyId, PropertyPermissionType.EnterProperty))
             {
@@ -1798,7 +1806,7 @@ namespace SWLOR.Game.Server.Service
         /// Stores the original location of a player, before being ported into a property instance.
         /// </summary>
         /// <param name="player">The player whose location will be stored.</param>
-        public static void StoreOriginalLocation(uint player)
+        public void StoreOriginalLocation(uint player)
         {
             var position = GetPosition(player);
             var facing = GetFacing(player);
@@ -1816,7 +1824,7 @@ namespace SWLOR.Game.Server.Service
         /// This will also clear the temporary data related to the original location.
         /// </summary>
         /// <param name="player">The player who will jump.</param>
-        public static void JumpToOriginalLocation(uint player)
+        public void JumpToOriginalLocation(uint player)
         {
             var position = Vector3(
                 GetLocalFloat(player, "PROPERTY_STORED_LOCATION_X"),
@@ -1839,7 +1847,7 @@ namespace SWLOR.Game.Server.Service
         /// When the property menu feat is used, open the GUI window.
         /// </summary>
         [ScriptHandler<OnFeatUseBefore>]
-        public static void PropertyMenu()
+        public void PropertyMenu()
         {
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
 
@@ -1847,10 +1855,10 @@ namespace SWLOR.Game.Server.Service
 
             var player = OBJECT_SELF;
 
-            var guiService = ServiceContainer.GetService<IGuiService>();
-            if (guiService.IsWindowOpen(player, GuiWindowType.ManageStructures))
+            _guiService
+            if (_guiService.IsWindowOpen(player, GuiWindowType.ManageStructures))
             {
-                guiService.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
+                _guiService.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
                 return;
             }
 
@@ -1893,7 +1901,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
             
-            guiService.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
+            _guiService.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
         }
 
         /// <summary>
@@ -1904,7 +1912,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to retrieve from.</param>
         /// <returns>A structure type associated with the item.</returns>
-        public static StructureType GetStructureTypeFromItem(uint item)
+        public StructureType GetStructureTypeFromItem(uint item)
         {
             var resref = GetResRef(item);
             if (!resref.StartsWith("structure_")) return StructureType.Invalid;
@@ -1923,7 +1931,7 @@ namespace SWLOR.Game.Server.Service
         /// Before an item is used, if it is a structure item, place it at the specified location.
         /// </summary>
         [ScriptHandler<OnItemUseBefore>]
-        public static void PlaceStructure()
+        public void PlaceStructure()
         {
             var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
             if (!GetResRef(item).StartsWith("structure_"))
@@ -2127,7 +2135,7 @@ namespace SWLOR.Game.Server.Service
         /// or display an error message saying they don't have permission to enter.
         /// </summary>
         [ScriptHandler(ScriptName.OnEnterProperty)]
-        public static void EnterBuilding()
+        public void EnterBuilding()
         {
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
@@ -2169,7 +2177,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="changeType">The type of change.</param>
         /// <param name="property">The world property to target</param>
         /// <param name="placeable">The placeable to target</param>
-        public static void RunStructureChangedEvent(StructureType structureType, StructureChangeType changeType, WorldProperty property, uint placeable)
+        public void RunStructureChangedEvent(StructureType structureType, StructureChangeType changeType, WorldProperty property, uint placeable)
         {
             if (!_structureChangedActions.ContainsKey(structureType))
                 return;
@@ -2184,7 +2192,7 @@ namespace SWLOR.Game.Server.Service
         /// When the Citizenship terminal is used, open the Manage Citizenship UI.
         /// </summary>
         [ScriptHandler(ScriptName.OnOpenCitizenship)]
-        public static void OpenCitizenshipMenu()
+        public void OpenCitizenshipMenu()
         {
             var player = GetLastUsedBy();
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
@@ -2212,8 +2220,8 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                var guiService = ServiceContainer.GetService<IGuiService>();
-                guiService.TogglePlayerWindow(player, GuiWindowType.ManageCitizenship, null, terminal);
+                _guiService
+                _guiService.TogglePlayerWindow(player, GuiWindowType.ManageCitizenship, null, terminal);
             }
         }
 
@@ -2221,7 +2229,7 @@ namespace SWLOR.Game.Server.Service
         /// When the City Management terminal is used, open the City Management UI.
         /// </summary>
         [ScriptHandler(ScriptName.OnOpenCityManage)]
-        public static void OpenCityManagementMenu()
+        public void OpenCityManagementMenu()
         {
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
@@ -2243,8 +2251,8 @@ namespace SWLOR.Game.Server.Service
                                        permission.Permissions[PropertyPermissionType.ManageUpgrades] ||
                                        permission.Permissions[PropertyPermissionType.ManageUpkeep]))
             {
-                var guiService = ServiceContainer.GetService<IGuiService>();
-                guiService.TogglePlayerWindow(player, GuiWindowType.ManageCity, null, terminal);
+                _guiService
+                _guiService.TogglePlayerWindow(player, GuiWindowType.ManageCity, null, terminal);
             }
             else
             {
@@ -2257,7 +2265,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="level">The level to retrieve</param>
         /// <returns>A string representing the city level.</returns>
-        public static string GetCityLevelName(int level)
+        public string GetCityLevelName(int level)
         {
             switch (level)
             {
@@ -2282,7 +2290,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="level">The level to retrieve</param>
         /// <returns>The number of citizens required to level up the city.</returns>
-        public static int GetCitizensRequiredForNextCityLevel(int level)
+        public int GetCitizensRequiredForNextCityLevel(int level)
         {
             return _citizensRequired.ContainsKey(level)
                 ? _citizensRequired[level]
@@ -2296,7 +2304,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="cityId">The property Id of the city.</param>
         /// <param name="upgradeType">The type of upgrade to check</param>
         /// <returns>A value ranging between 0 and 5.</returns>
-        public static int GetEffectiveUpgradeLevel(string cityId, PropertyUpgradeType upgradeType)
+        public int GetEffectiveUpgradeLevel(string cityId, PropertyUpgradeType upgradeType)
         {
             if (string.IsNullOrWhiteSpace(cityId))
                 return 0;

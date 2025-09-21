@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -12,10 +13,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public class IncendiaryBombAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
         private readonly AbilityBuilder _builder = new();
-        private static readonly ICombatService _combatService = ServiceContainer.GetService<ICombatService>();
-        private static readonly IStatService _statService = ServiceContainer.GetService<IStatService>();
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
 
-        private static void ApplyEffect(uint creature, int dmg)
+        public IncendiaryBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, CombatPoint combatPoint, IEnmityService enmityService) 
+            : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
+        {
+            _combatService = combatService;
+            _statService = statService;
+        }
+
+        private void ApplyEffect(uint creature, int dmg)
         {
             var attackerStat = GetLocalInt(OBJECT_SELF, "DEVICE_ACC");
             var attack = GetLocalInt(OBJECT_SELF, "DEVICE_ATK");
@@ -35,14 +43,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         }
 
         [ScriptHandler(ScriptName.OnGrenadeIncendiary1Enable)]
-        public static void IncendiaryBomb1Enter()
+        public void IncendiaryBomb1Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 4);
         }
 
         [ScriptHandler(ScriptName.OnGrenadeIncendiary1Heartbeat)]
-        public static void IncendiaryBomb1Heartbeat()
+        public void IncendiaryBomb1Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
@@ -60,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         }
 
         [ScriptHandler(ScriptName.OnGrenadeIncendiary2Heartbeat)]
-        public static void IncendiaryBomb2Heartbeat()
+        public void IncendiaryBomb2Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
@@ -71,14 +79,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         }
 
         [ScriptHandler(ScriptName.OnGrenadeIncendiary3Enable)]
-        public static void IncendiaryBomb3Enter()
+        public void IncendiaryBomb3Enter()
         {
             var creature = GetEnteringObject();
             ApplyEffect(creature, 16);
         }
 
         [ScriptHandler(ScriptName.OnGrenadeIncendiary3Heartbeat)]
-        public static void IncendiaryBomb3Heartbeat()
+        public void IncendiaryBomb3Heartbeat()
         {
             var creature = GetFirstInPersistentObject(OBJECT_SELF);
             while (GetIsObjectValid(creature))
@@ -121,8 +129,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_inc1_hb",
                         20f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 250);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 250);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -150,8 +158,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_inc2_hb",
                         40f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 350);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 350);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -179,8 +187,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_inc3_hb",
                         60f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 450);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 450);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                });
+        }
+    }
+}
+
+                    _enmityService.ModifyEnmityOnAll(activator, 450);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
     }

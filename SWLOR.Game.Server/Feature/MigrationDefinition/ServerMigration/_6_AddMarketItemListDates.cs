@@ -9,7 +9,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _6_AddMarketItemListDates : IServerMigration
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+
+        public _6_AddMarketItemListDates(IDatabaseService db)
+        {
+            _db = db;
+        }
         
         public int Version => 6;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;

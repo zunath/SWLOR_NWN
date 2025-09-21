@@ -17,13 +17,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         private readonly IAbilityService _abilityService;
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
 
-        public CircleSlashAbilityDefinition(IItemService itemService, IAbilityService abilityService, ICombatService combatService, IStatService statService)
+        public CircleSlashAbilityDefinition(IItemService itemService, IAbilityService abilityService, ICombatService combatService, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _itemService = itemService;
             _abilityService = abilityService;
             _combatService = combatService;
             _statService = statService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -99,8 +103,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     DelayCommand(0.1f, () =>
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), dTarget));
 
-                    CombatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
-                    Enmity.ModifyEnmity(activator, creature, 100 * level + damage);
+                    _combatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
+                    _enmityService.ModifyEnmity(activator, creature, 100 * level + damage);
                     count++;
                 }
 

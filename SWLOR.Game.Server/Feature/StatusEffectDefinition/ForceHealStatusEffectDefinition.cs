@@ -13,10 +13,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public class ForceHealStatusEffectDefinition : IStatusEffectListDefinition
     {
         private readonly IRandomService _random;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
 
-        public ForceHealStatusEffectDefinition(IRandomService random)
+        public ForceHealStatusEffectDefinition(IRandomService random, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _random = random;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
         }
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
@@ -44,8 +48,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_S), target);
 
-            Enmity.ModifyEnmityOnAll(source, 30 + amount);
-            CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);
+            _enmityService.ModifyEnmityOnAll(source, 30 + amount);
+            _combatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);
         }
 
         private void ForceHeal1(StatusEffectBuilder builder)

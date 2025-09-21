@@ -15,13 +15,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly IAbilityService _abilityService;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
 
-        public LegSweepAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, IAbilityService abilityService)
+        public LegSweepAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, IAbilityService abilityService, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
             _abilityService = abilityService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -46,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
 
             int dmg;
@@ -70,25 +74,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     break;
             }
 
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.MartialArts);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.MartialArts);
 
-            Enmity.ModifyEnmityOnAll(activator, 250 * level);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
+            _enmityService.ModifyEnmityOnAll(activator, 250 * level);
+            _combatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
-            var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
+            var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
             int attack;
 
             if(GetHasFeat(FeatType.FlurryStyle, activator))
             {
-                attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.MartialArts);
+                attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.MartialArts);
             } 
             else
             {
-                attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
+                attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
             }
-            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = CombatService.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -97,16 +101,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
 
-            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
+            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
-                AbilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
+                _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
             }
         }
 
-        private static void LegSweep1(AbilityBuilder builder)
+        private void LegSweep1(AbilityBuilder builder)
         {
             builder.Create(FeatType.LegSweep1, PerkType.LegSweep)
                 .Name("Leg Sweep I")
@@ -118,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void LegSweep2(AbilityBuilder builder)
+        private void LegSweep2(AbilityBuilder builder)
         {
             builder.Create(FeatType.LegSweep2, PerkType.LegSweep)
                 .Name("Leg Sweep II")
@@ -130,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void LegSweep3(AbilityBuilder builder)
+        private void LegSweep3(AbilityBuilder builder)
         {
             builder.Create(FeatType.LegSweep3, PerkType.LegSweep)
                 .Name("Leg Sweep III")

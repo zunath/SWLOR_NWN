@@ -3,11 +3,18 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class ForceRestoreStatusEffectDefinition : IStatusEffectListDefinition
     {
+        private readonly IStatService _statService;
+
+        public ForceRestoreStatusEffectDefinition(IStatService statService)
+        {
+            _statService = statService;
+        }
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
             var builder = new StatusEffectBuilder();
@@ -36,12 +43,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             if (forceBody)
             {
-                Stat.RestoreFP(target, forceAmount);
+                _statService.RestoreFP(target, forceAmount);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration_Lesser), target);
             }
             else
             {
-                Stat.RestoreStamina(target, staminaAmount);
+                _statService.RestoreStamina(target, staminaAmount);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Holy), target);
             }
         }

@@ -15,10 +15,19 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {
     public class _1_LegacyPlayerMigration: LegacyMigrationBase, IPlayerMigration
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly CatharRacialAppearanceDefinition _catharAppearance = new();
-        private static readonly IStatService _statService = ServiceContainer.GetService<IStatService>();
-        private static readonly IItemService _itemService = ServiceContainer.GetService<IItemService>();
+        private readonly IDatabaseService _db;
+        private readonly CatharRacialAppearanceDefinition _catharAppearance;
+        private readonly IStatService _statService;
+
+        private readonly IItemService _itemService;
+
+        public _1_LegacyPlayerMigration(IDatabaseService db, IStatService statService, IItemService itemService)
+        {
+            _db = db;
+            _catharAppearance = new();
+            _statService = statService;
+            _itemService = itemService;
+        }
 
         public int Version => 1;
         public void Migrate(uint player)

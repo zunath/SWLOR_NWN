@@ -1,8 +1,9 @@
 ﻿using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Messaging
+    public class MessagingService : IMessagingService
     {
         /// <summary>
         /// Sends a message to all nearby players within a certain distance.
@@ -10,7 +11,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="sender">The sender of the message.</param>
         /// <param name="message">The message to send to all nearby players.</param>
         /// <param name="range">The range, in meters, to deliver the message. Any creatures outside this range will not see the message.</param>
-        public static void SendMessageNearbyToPlayers(uint sender, string message, float range = 10f)
+        public void SendMessageNearbyToPlayers(uint sender, string message, float range = 10f)
         {
             SendMessageToPC(sender, message);
 

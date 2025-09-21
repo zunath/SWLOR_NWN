@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
@@ -20,11 +21,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IItemService _itemService;
+        private readonly ITargetingService _targetingService;
 
-        public MarketListingViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService) : base(guiService)
+        public MarketListingViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService, ITargetingService targetingService) : base(guiService)
         {
             _db = db;
             _itemService = itemService;
+            _targetingService = targetingService;
         }
         
         private MarketRegionType _regionType;
@@ -174,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             ClosePriceWindow();
 
-            Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.", AddItem);
+            _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.", AddItem);
             EnterTargetingMode(Player, ObjectType.Item);
             SetLocalBool(Player, "MARKET_LISTING_TARGETING_MODE", true);
         };

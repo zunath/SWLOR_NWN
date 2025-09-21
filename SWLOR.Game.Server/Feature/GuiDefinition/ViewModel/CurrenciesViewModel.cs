@@ -12,11 +12,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class CurrenciesViewModel: GuiViewModelBase<CurrenciesViewModel, GuiPayloadBase>,
         IGuiRefreshable<CurrencyRefreshEvent>
     {
-        public CurrenciesViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public CurrenciesViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        {
+            _db = db;
+        }
 
         public GuiBindingList<string> CurrencyNames
         {

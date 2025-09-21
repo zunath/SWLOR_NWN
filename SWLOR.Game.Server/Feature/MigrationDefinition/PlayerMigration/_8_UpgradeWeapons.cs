@@ -12,13 +12,16 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {
     public class _8_UpgradeWeapons : PlayerMigrationBase
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public _8_UpgradeWeapons(ILogger logger, IDatabaseService database, IStatService statService, ISkillService skillService, ICombatService combatService, IPerkService perkService, IItemService itemService) 
+            : base(logger, database, statService, skillService, combatService, perkService, itemService)
+        {
+        }
         
         public override int Version => 8;
         public override void Migrate(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId);
+            var dbPlayer = Database.Get<Player>(playerId);
 
             RefundPerks(dbPlayer, player);
             UpdateWeapons(player);
@@ -97,8 +100,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 dbPlayer.UnallocatedSP += refundAmount;
                 dbPlayer.Perks.Remove(PerkType.RapidShot);
 
-                var perkService = ServiceContainer.GetService<IPerkService>();
-                var perkDetail = perkService.GetPerkDetails(PerkType.RapidShot);
+                var perkDetail = PerkService.GetPerkDetails(PerkType.RapidShot);
 
                 foreach (var action in perkDetail.RefundedTriggers)
                 {
@@ -127,8 +129,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
         private void Update (uint item)
         {
             var baseItem = GetBaseItemType(item);
-            var itemService = ServiceContainer.GetService<IItemService>();
-            if (!itemService.RifleBaseItemTypes.Contains(baseItem) && !itemService.SaberstaffBaseItemTypes.Contains(baseItem) && !itemService.TwinBladeBaseItemTypes.Contains(baseItem))
+            // Use injected itemService
+            if (!_itemService.RifleBaseItemTypes.Contains(baseItem) && !_itemService.SaberstaffBaseItemTypes.Contains(baseItem) && !_itemService.TwinBladeBaseItemTypes.Contains(baseItem))
                 return;
 
             var itemResRef = GetResRef(item);

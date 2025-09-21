@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -14,11 +15,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
 
-        public FlamethrowerAbilityDefinition(ICombatService combatService, IStatService statService)
+        public FlamethrowerAbilityDefinition(ICombatService combatService, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -61,8 +66,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         0);
 
                     var eDMG = EffectDamage(damage, DamageType.Fire);
-                    Enmity.ModifyEnmity(activator, target, 280);
-                    CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmity(activator, target, 280);
+                    _combatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
                     
                     // Copying the target is needed because the variable gets adjusted outside the scope of the internal lambda.
                     var targetCopy = target;

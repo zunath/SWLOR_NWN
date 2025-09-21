@@ -12,11 +12,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     {
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
 
-        public ForceBurstAbilityDefinition(ICombatService combatService, IStatService statService)
+        public ForceBurstAbilityDefinition(ICombatService combatService, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -95,8 +99,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Wind), target);
                     });
 
-                    CombatPoint.AddCombatPoint(activator, creature, SkillType.Force, 3);
-                    Enmity.ModifyEnmity(activator, creature, 250 * level + damage);
+                    _combatPoint.AddCombatPoint(activator, creature, SkillType.Force, 3);
+                    _enmityService.ModifyEnmity(activator, creature, 250 * level + damage);
                 }
                 creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Medium, GetLocation(target), true , ObjectType.Creature);
             }

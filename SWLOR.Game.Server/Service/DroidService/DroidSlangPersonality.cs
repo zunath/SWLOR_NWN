@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Service.DroidService
 {
     public class DroidSlangPersonality: IDroidPersonality
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         private readonly List<string> _greetingPhrases = new()
         {
             "Good t'see ya!",
@@ -40,7 +40,10 @@ namespace SWLOR.Game.Server.Service.DroidService
             "Wuz an honor ter see ya. Honest."
         };
 
-
+        public DroidSlangPersonality(IRandomService randomService)
+        {
+            _random = randomService;
+        }
 
         public string GreetingPhrase()
         {

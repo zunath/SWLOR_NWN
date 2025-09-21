@@ -16,12 +16,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         private readonly IItemService _itemService;
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
 
-        public CripplingShotAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService)
+        public CripplingShotAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, CombatPoint combatPoint)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
+            _combatPoint = combatPoint;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -73,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
             dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+            _combatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
 
             var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
             var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Ranged);

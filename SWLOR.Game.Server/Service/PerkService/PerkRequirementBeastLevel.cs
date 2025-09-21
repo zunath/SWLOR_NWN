@@ -6,11 +6,12 @@ namespace SWLOR.Game.Server.Service.PerkService
 {
     public class PerkRequirementBeastLevel: IPerkRequirement
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
         private readonly int _requiredLevel;
 
-        public PerkRequirementBeastLevel(int requiredLevel)
+        public PerkRequirementBeastLevel(IDatabaseService db, int requiredLevel)
         {
+            _db = db;
             _requiredLevel = requiredLevel;
         }
 

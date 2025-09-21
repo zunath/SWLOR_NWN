@@ -15,12 +15,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         private readonly IItemService _itemService;
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
 
-        public CrossCutAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService)
+        public CrossCutAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -104,8 +108,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
             });
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
-            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
+            _combatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private void CrossCut1(AbilityBuilder builder)

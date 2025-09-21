@@ -10,10 +10,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
     public class MonCalaQuestDefinition : IQuestListDefinition
     {
         private readonly QuestBuilder _builder;
+        private readonly Achievement _achievement;
 
-        public MonCalaQuestDefinition(IServiceProvider serviceProvider, IQuestService questService)
+        public MonCalaQuestDefinition(IServiceProvider serviceProvider, IQuestService questService, Achievement achievement)
         {
             _builder = new QuestBuilder(serviceProvider, questService);
+            _achievement = achievement;
         }
 
         public Dictionary<string, QuestDetail> BuildQuests()
@@ -117,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddItemReward("lushang_rod", 1)
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    Achievement.GiveAchievement(player, AchievementType.TheLegendaryRod);
+                    _achievement.GiveAchievement(player, AchievementType.TheLegendaryRod);
                 });
         }
 

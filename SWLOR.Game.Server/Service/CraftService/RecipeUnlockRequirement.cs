@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Service.CraftService
 {
     public class RecipeUnlockRequirement: IRecipeRequirement
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
         private readonly RecipeType _recipe;
-        public RecipeUnlockRequirement(RecipeType recipe)
+        public RecipeUnlockRequirement(IDatabaseService db, RecipeType recipe)
         {
+            _db = db;
             _recipe = recipe;
         }
 

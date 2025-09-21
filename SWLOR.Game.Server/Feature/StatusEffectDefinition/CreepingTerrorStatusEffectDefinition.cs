@@ -14,11 +14,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly StatusEffectBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IAbilityService _abilityService;
+        private readonly CombatPoint _combatPoint;
 
-        public CreepingTerrorStatusEffectDefinition(ICombatService combatService, IAbilityService abilityService)
+        public CreepingTerrorStatusEffectDefinition(ICombatService combatService, IAbilityService abilityService, CombatPoint combatPoint)
         {
             _combatService = combatService;
             _abilityService = abilityService;
+            _combatPoint = combatPoint;
         }
 
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
@@ -64,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                 var enmity = level * 50 + damage + 6;
                 Enmity.ModifyEnmity(source, target, enmity);
-                CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
+                _combatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
             }
 
             _builder.Create(StatusEffectType.CreepingTerror)

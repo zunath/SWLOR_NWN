@@ -9,6 +9,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
     public class KnockdownAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly CombatPoint _combatPoint;
+        private readonly ICombatService _combatService;
+        private readonly IAbilityService _abilityService;
+
+        public KnockdownAbilityDefinition(CombatPoint combatPoint, ICombatService combatService, IAbilityService abilityService)
+        {
+            _combatPoint = combatPoint;
+            _combatService = combatService;
+            _abilityService = abilityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -28,17 +38,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 {
                     const float Duration = 4f;
 
-                    var combatService = ServiceContainer.GetService<ICombatService>();
-                    var dc = combatService.CalculateSavingThrowDC(activator, 12, 0, 0);
+                    var dc = _combatService.CalculateSavingThrowDC(activator, 12, 0, 0);
                     var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                     if (checkResult == SavingThrowResultType.Failed)
                     {
                         ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
-                        var abilityService = ServiceContainer.GetService<IAbilityService>();
-                        abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
+                        _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
                     }
 
-                    CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
+                    _combatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
                     Enmity.ModifyEnmity(activator, target, 670);
                 });
         }

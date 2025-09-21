@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
@@ -13,12 +14,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         private readonly IItemService _itemService;
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
 
-        public PoisonStabAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService)
+        public PoisonStabAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -70,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
             dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+            _combatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.OneHanded);
@@ -93,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 StatusEffect.Apply(activator, target, StatusEffectType.Poison, 60f);
             }
 
-            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
+            _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private static void PoisonStab1(AbilityBuilder builder)

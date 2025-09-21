@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     {
         private readonly AbilityBuilder _builder = new();
 
-        public GasBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService) 
-            : base(random, itemService, perkService, statService, combatService)
+        public GasBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, CombatPoint combatPoint, IEnmityService enmityService) 
+            : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
         {
         }
 
@@ -120,8 +120,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_gas1_hb",
                         18f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 250);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 250);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -149,8 +149,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_gas2_hb",
                         30f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 350);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 350);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -178,8 +178,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         "grenade_gas3_hb",
                         48f);
 
-                    Enmity.ModifyEnmityOnAll(activator, 450);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 450);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
     }

@@ -5,11 +5,16 @@ using SWLOR.Game.Server.Service;
 using System;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature.AIDefinition
 {
     public abstract class AIBase : IAIDefinition
     {
+        private readonly IAbilityService _abilityService;
+        private readonly IPerkService _perkService;
+        private readonly IStatusEffectService _statusEffectService;
+
         protected uint Self { get; private set; }
         protected uint Target { get; private set; }
         protected RacialType SelfRace { get; private set; }
@@ -21,6 +26,13 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected FeatType SelfActiveConcentration { get; private set; }
         protected uint AllyWithTreatmentKit1StatusEffect { get; private set; }
         protected uint AllyWithTreatmentKit2StatusEffect { get; private set; }
+
+        protected AIBase(IAbilityService abilityService, IPerkService perkService, IStatusEffectService statusEffectService)
+        {
+            _abilityService = abilityService;
+            _perkService = perkService;
+            _statusEffectService = statusEffectService;
+        }
 
         private void ResetCachedData()
         {
@@ -58,10 +70,10 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             foreach (var ally in allies)
             {
                 if (!GetIsObjectValid(AllyWithTreatmentKit1StatusEffect) &&  
-                    StatusEffect.HasStatusEffect(ally, StatusEffectType.Bleed, StatusEffectType.Poison))
+                    _statusEffectService.HasStatusEffect(ally, StatusEffectType.Bleed, StatusEffectType.Poison))
                     AllyWithTreatmentKit1StatusEffect = ally;
                 if (!GetIsObjectValid(AllyWithTreatmentKit2StatusEffect) && 
-                    StatusEffect.HasStatusEffect(ally, StatusEffectType.Shock, StatusEffectType.Burn))
+                    _statusEffectService.HasStatusEffect(ally, StatusEffectType.Shock, StatusEffectType.Burn))
                     AllyWithTreatmentKit2StatusEffect = ally;
 
                 // Exit if we've found a target for both abilities.
@@ -75,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             SelfRace = GetRacialType(Self);
             LowestHPAllyRace = GetRacialType(LowestHPAlly);
             AllyCount = allies.Count;
-            SelfActiveConcentration = Ability.GetActiveConcentration(self).Feat;
+            SelfActiveConcentration = _abilityService.GetActiveConcentration(self).Feat;
         }
 
         /// <summary>
@@ -87,16 +99,16 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         /// <param name="feat">The feat to check</param>
         /// <param name="condition">The custom condition to check</param>
         /// <returns>true if feat can be used, false otherwise</returns>
-        protected static bool CheckIfCanUseFeat(uint creature, uint target, FeatType feat, Func<bool> condition = null)
+        protected bool CheckIfCanUseFeat(uint creature, uint target, FeatType feat, Func<bool> condition = null)
         {
             if (!GetHasFeat(feat, creature)) return false;
             if (condition != null && !condition()) return false;
             if (!GetIsObjectValid(target)) return false;
 
             var targetLocation = GetLocation(target);
-            var abilityDetail = Ability.GetAbilityDetail(feat);
-            var effectiveLevel = Perk.GetPerkLevel(creature, abilityDetail.EffectiveLevelPerkType);
-            return Ability.CanUseAbility(creature, target, feat, effectiveLevel, targetLocation);
+            var abilityDetail = _abilityService.GetAbilityDetail(feat);
+            var effectiveLevel = _perkService.GetPerkLevel(creature, abilityDetail.EffectiveLevelPerkType);
+            return _abilityService.CanUseAbility(creature, target, feat, effectiveLevel, targetLocation);
         }
 
         /// <inheritdoc />
@@ -722,19 +734,19 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         protected (bool, (FeatType, uint)) Shielding()
         {
             // Shielding
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding4, () => !StatusEffect.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding4, () => !_statusEffectService.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
             {
                 return (true, (FeatType.Shielding4, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding3, () => !StatusEffect.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding3, () => !_statusEffectService.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
             {
                 return (true, (FeatType.Shielding3, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding2, () => !StatusEffect.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding2, () => !_statusEffectService.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
             {
                 return (true, (FeatType.Shielding2, Self));
             }
-            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding1, () => !StatusEffect.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
+            if (CheckIfCanUseFeat(Self, Self, FeatType.Shielding1, () => !_statusEffectService.HasStatusEffect(Self, StatusEffectType.Shielding1, StatusEffectType.Shielding2, StatusEffectType.Shielding3, StatusEffectType.Shielding4)))
             {
                 return (true, (FeatType.Shielding1, Self));
             }

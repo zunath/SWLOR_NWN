@@ -14,8 +14,17 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 {
     public class StarportLayoutDefinition: IPropertyLayoutListDefinition
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IPlanetService _planetService;
+        private readonly IPropertyService _propertyService;
         private readonly PropertyLayoutBuilder _builder = new();
+
+        public StarportLayoutDefinition(IDatabaseService db, IPlanetService planetService, IPropertyService propertyService)
+        {
+            _db = db;
+            _planetService = planetService;
+            _propertyService = propertyService;
+        }
 
         public Dictionary<PropertyLayoutType, PropertyLayout> Build()
         {
@@ -36,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             var dbPlayer = _db.Get<Player>(playerId);
             var terminal = OBJECT_SELF;
             var area = GetArea(terminal);
-            var propertyId = Property.GetPropertyId(area);
+            var propertyId = _propertyService.GetPropertyId(area);
             var dbProperty = _db.Get<WorldProperty>(propertyId);
             var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
             var cityId = dbBuilding.ParentPropertyId;
@@ -69,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 
         private void SpawnStarportFlightTerminals(uint area, PlanetType planetType)
         {
-            var planet = Planet.GetPlanetByType(planetType);
+            var planet = _planetService.GetPlanetByType(planetType);
             void SpawnTerminal(uint waypoint)
             {
                 var location = GetLocation(waypoint);
@@ -112,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 
         private void SpawnDockhands(uint area, PlanetType planetType)
         {
-            var planet = Planet.GetPlanetByType(planetType);
+            var planet = _planetService.GetPlanetByType(planetType);
             void SpawnDockhand(uint waypoint)
             {
                 var location = GetLocation(waypoint);
@@ -160,12 +169,12 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .AreaInstance("starport")
                 .OnSpawn(instance =>
                 {
-                    var propertyId = Property.GetPropertyId(instance);
+                    var propertyId = _propertyService.GetPropertyId(instance);
                     var dbProperty = _db.Get<WorldProperty>(propertyId);
                     var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
                     var dbCity = _db.Get<WorldProperty>(dbBuilding.ParentPropertyId);
                     var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
-                    var planet = Planet.GetPlanetType(cityArea);
+                    var planet = _planetService.GetPlanetType(cityArea);
 
                     if (planet == PlanetType.Invalid)
                         return;

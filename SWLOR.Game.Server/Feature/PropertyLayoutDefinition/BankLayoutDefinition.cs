@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -13,8 +14,15 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 {
     public class BankLayoutDefinition: IPropertyLayoutListDefinition
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
         private readonly PropertyLayoutBuilder _builder = new();
+        private readonly Property _property;
+
+        public BankLayoutDefinition(IDatabaseService db, Property property)
+        {
+            _db = db;
+            _property = property;
+        }
 
         public Dictionary<PropertyLayoutType, PropertyLayout> Build()
         {
@@ -30,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
         /// ensure the user is a citizen of the city the bank is associated with.
         /// </summary>
         [ScriptHandler(ScriptName.OnOpenPropertyBank)]
-        public static void OpenPropertyBank()
+        public void OpenPropertyBank()
         {
             var player = GetLastUsedBy();
 
@@ -106,10 +114,10 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .AreaInstance("bank")
                 .OnSpawn(area =>
                 {
-                    var propertyId = Property.GetPropertyId(area);
+                    var propertyId = _property.GetPropertyId(area);
                     var dbProperty = _db.Get<WorldProperty>(propertyId);
-                    var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
-                    var upgradeLevel = Property.GetEffectiveUpgradeLevel(dbBuilding.ParentPropertyId, PropertyUpgradeType.BankLevel);
+                    var dbBuilding = _db.Get<WorldProperty>(db_property.ParentPropertyId);
+                    var upgradeLevel = _property.GetEffectiveUpgradeLevel(dbBuilding.ParentPropertyId, PropertyUpgradeType.BankLevel);
                     var storageCap = CalculateStorageCap(upgradeLevel);
                     var bankId = dbBuilding.ParentPropertyId;
 

@@ -6,17 +6,23 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class Auditing
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger;
+
+        public Auditing(ILogger logger)
+        {
+            _logger = logger;
+        }
         /// <summary>
         /// Writes an audit log when a player connects to the server.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void AuditClientConnection()
+        public void AuditClientConnection()
         {
             var player = GetEnteringObject();
             var ipAddress = GetPCIPAddress(player);
@@ -32,7 +38,7 @@ namespace SWLOR.Game.Server.Feature
         /// Writes an audit log when a player disconnects from the server.
         /// </summary>
         [ScriptHandler<OnModuleExit>]
-        public static void AuditClientDisconnection()
+        public void AuditClientDisconnection()
         {
             var player = GetExitingObject();
             var ipAddress = GetPCIPAddress(player);
@@ -48,7 +54,7 @@ namespace SWLOR.Game.Server.Feature
         /// Writes an audit log when a player sends a chat message.
         /// </summary>
         [ScriptHandler<OnNWNXChat>]
-        public static void AuditChatMessages()
+        public void AuditChatMessages()
         {
             static string BuildRegularLog()
             {

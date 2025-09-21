@@ -29,14 +29,18 @@ namespace SWLOR.Game.Server.Feature
         private readonly IItemService _itemService;
         private readonly IRecastService _recastService;
         private readonly IEnmityService _enmityService;
+        private readonly IActivityService _activityService;
+        private readonly IMessagingService _messagingService;
 
-        public UsePerkFeat(IAbilityService abilityService, IPerkService perkService, IItemService itemService, IRecastService recastService, IEnmityService enmityService)
+        public UsePerkFeat(IAbilityService abilityService, IPerkService perkService, IItemService itemService, IRecastService recastService, IEnmityService enmityService, IActivityService activityService, IMessagingService messagingService)
         {
             _abilityService = abilityService;
             _perkService = perkService;
             _itemService = itemService;
             _recastService = recastService;
             _enmityService = enmityService;
+            _activityService = activityService;
+            _messagingService = messagingService;
         }
         private enum ActivationStatus
         {
@@ -109,7 +113,7 @@ namespace SWLOR.Game.Server.Feature
                 if (_abilityService.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
                     if(ability.DisplaysActivationMessage)
-                        Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} queues {ability.Name} for the next attack.");
+                        _messagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} queues {ability.Name} for the next attack.");
                     QueueWeaponAbility(activator, ability, feat);
                 }
             }
@@ -138,12 +142,12 @@ namespace SWLOR.Game.Server.Feature
                     if (GetIsObjectValid(target))
                     {
                         if (ability.DisplaysActivationMessage)
-                            Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
+                            _messagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
                     }
                     else
                     {
                         if (ability.DisplaysActivationMessage)
-                            Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
+                            _messagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
                     }
                     
                     ActivateAbility(activator, target, feat, ability, targetLocation);
@@ -260,7 +264,7 @@ namespace SWLOR.Game.Server.Feature
                 {
                     RemoveEffectByTag(activator, "ACTIVATION_VFX");
                     PlayerPlugin.StopGuiTimingBar(activator, string.Empty);
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)}'s ability has been interrupted.");
+                    _messagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)}'s ability has been interrupted.");
                     SetLocalInt(activator, activationId, (int)ActivationStatus.Interrupted);
                     return;
                 }
@@ -271,7 +275,7 @@ namespace SWLOR.Game.Server.Feature
             // This method is called after the delay of the ability has finished.
             void CompleteActivation(string activationId, float abilityRecastDelay)
             {
-                Activity.ClearBusy(activator);
+                _activityService.ClearBusy(activator);
 
                 // Moved during casting or activator died. Cancel the activation.
                 if (GetLocalInt(activator, activationId) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0)
@@ -326,7 +330,7 @@ namespace SWLOR.Game.Server.Feature
                     }
                 }
 
-                Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
+                _activityService.SetBusy(activator, ActivityStatusType.AbilityActivation);
                 DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay));
 
                 // If currently attacking a target, re-attack it after the end of the activation period.
@@ -393,7 +397,7 @@ namespace SWLOR.Game.Server.Feature
             SendMessageToPC(target, $"Your weapon ability {abilityDetail.Name} is no longer queued.");
 
             if (sendMessage)
-                Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} no longer has weapon ability {abilityDetail.Name} readied.");
+                _messagingService.SendMessageNearbyToPlayers(target, $"{GetName(target)} no longer has weapon ability {abilityDetail.Name} readied.");
         }
 
         /// <summary>
@@ -431,32 +435,28 @@ namespace SWLOR.Game.Server.Feature
         /// will be removed from their PC.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void ClearTemporaryQueuedVariables()
+        public void ClearTemporaryQueuedVariables()
         {
             var player = GetEnteringObject();
-            var usePerkFeat = ServiceContainer.GetService<UsePerkFeat>();
-
-            usePerkFeat.ClearQueuedAbility(player);
+            ClearQueuedAbility(player);
         }
 
         /// <summary>
         /// Whenever a player starts resting, clear any queued abilities.
         /// </summary>
         [ScriptHandler(ScriptName.OnRestStarted)]
-        public static void ClearTemporaryQueuedVariablesOnRest()
+        public void ClearTemporaryQueuedVariablesOnRest()
         {
-            var usePerkFeat = ServiceContainer.GetService<UsePerkFeat>();
-            usePerkFeat.ClearQueuedAbility(OBJECT_SELF);
+            ClearQueuedAbility(OBJECT_SELF);
         }
 
         /// <summary>
         /// Whenever a player equips an item, clear any queued abilities.
         /// </summary>
         [ScriptHandler<OnSWLORItemEquipValidBefore>]
-        public static void ClearTemporaryQueuedVariablesOnEquip()
+        public void ClearTemporaryQueuedVariablesOnEquip()
         {
-            var usePerkFeat = ServiceContainer.GetService<UsePerkFeat>();
-            usePerkFeat.ClearQueuedAbility(OBJECT_SELF);
+            ClearQueuedAbility(OBJECT_SELF);
         }
 
         /// <summary>

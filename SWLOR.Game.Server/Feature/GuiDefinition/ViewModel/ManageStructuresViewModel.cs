@@ -22,10 +22,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class ManageStructuresViewModel: GuiViewModelBase<ManageStructuresViewModel, GuiPayloadBase>
     {
         private readonly IDatabaseService _db;
+        private readonly Property _property;
 
-        public ManageStructuresViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        public ManageStructuresViewModel(IGuiService guiService, IDatabaseService db, Property property) : base(guiService)
         {
             _db = db;
+            _property = property;
         }
         
         private const int StructuresPerPage = 20;
@@ -163,15 +165,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void Search()
         {
             var area = GetArea(Player);
-            var propertyId = Property.GetPropertyId(area);
+            var propertyId = _property.GetPropertyId(area);
 
             SelectedStructureIndex = -1;
 
             var structureNames = new GuiBindingList<string>();
             var structureToggles = new GuiBindingList<bool>();
             var query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), propertyId, false)
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Structure);
+                .AddFieldSearch(nameof(World_property.ParentPropertyId), propertyId, false)
+                .AddFieldSearch(nameof(World_property.PropertyType), (int)PropertyType.Structure);
             var structureCount = _db.SearchCount(query);
             UpdatePagination(structureCount);
 
@@ -196,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var area = GetArea(Player);
-            var propertyId = Property.GetPropertyId(area);
+            var propertyId = _property.GetPropertyId(area);
             var query = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
@@ -227,10 +229,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Item storage permissions
             var area = GetArea(Player);
-            var propertyId = Property.GetPropertyId(area);
+            var propertyId = _property.GetPropertyId(area);
             var playerId = GetObjectUUID(Player);
-            var permissions = Property.GetCategoryPermissions(playerId, propertyId);
-            var propertyTypeDetail = Property.GetPropertyDetail(property.PropertyType);
+            var permissions = _property.GetCategoryPermissions(playerId, propertyId);
+            var propertyTypeDetail = _property.GetPropertyDetail(property.PropertyType);
 
             IsOpenStorageEnabled = propertyTypeDetail.HasStorage && 
                                    (permissions.Count > 0 || canEditCategories);
@@ -243,7 +245,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             InstructionColor = GuiColor.Green;
 
             var area = GetArea(Player);
-            var propertyId = Property.GetPropertyId(area);
+            var propertyId = _property.GetPropertyId(area);
 
             // Safety check to ensure we've got a property Id.
             if (string.IsNullOrWhiteSpace(propertyId))
@@ -280,9 +282,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var propertyId = _structurePropertyIds[SelectedStructureIndex];
                 var structure = GetStructure();
-                var placeable = Property.GetPlaceableByPropertyId(propertyId);
+                var placeable = _property.GetPlaceableByPropertyId(propertyId);
                 var permission = GetPermission();
-                var structureDetail = Property.GetStructureByType(structure.StructureType);
+                var structureDetail = _property.GetStructureByType(structure.StructureType);
 
                 PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffect.Vfx_Dur_Aura_Green);
                 _currentPosition = GetPosition(placeable);
@@ -300,7 +302,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var propertyId = _structurePropertyIds[SelectedStructureIndex];
-            var placeable = Property.GetPlaceableByPropertyId(propertyId);
+            var placeable = _property.GetPlaceableByPropertyId(propertyId);
             PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffect.None);
         }
 
@@ -358,7 +360,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnManageProperty() => () =>
         {
             var area = GetArea(Player);
-            var propertyId = Property.GetPropertyId(area);
+            var propertyId = _property.GetPropertyId(area);
             var property = _db.Get<WorldProperty>(propertyId);
 
             // Apartments have their own management menu.
@@ -400,7 +402,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var structure = GetStructure();
                 var parentProperty = _db.Get<WorldProperty>(structure.ParentPropertyId);
-                var placeable = Property.GetPlaceableByPropertyId(structure.Id);
+                var placeable = _property.GetPlaceableByPropertyId(structure.Id);
                 var permission = GetPermission();
 
                 // Permissions are missing now.
@@ -411,7 +413,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                var structureDetail = Property.GetStructureByType(structure.StructureType);
+                var structureDetail = _property.GetStructureByType(structure.StructureType);
 
                 if (!structureDetail.CanBeRetrieved)
                 {
@@ -427,7 +429,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var categories = _db.Search(query).ToList();
                 var itemCount = categories.Sum(x => x.Items.Count);
 
-                if (itemCount > parentProperty.ItemStorageCount - structure.ItemStorageCount)
+                if (itemCount > parent_property.ItemStorageCount - structure.ItemStorageCount)
                 {
                     Instructions = $"Remove items from storage first.";
                     InstructionColor = GuiColor.Red;
@@ -438,15 +440,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ObjectPlugin.AcquireItem(Player, item);
                 
                 // Remove the structure from the parent's child list.
-                parentProperty.ChildPropertyIds[PropertyChildType.Structure].Remove(structure.Id);
-                parentProperty.ItemStorageCount -= structure.ItemStorageCount;
+                parent_property.ChildPropertyIds[PropertyChildType.Structure].Remove(structure.Id);
+                parent_property.ItemStorageCount -= structure.ItemStorageCount;
 
                 _db.Set(parentProperty);
 
                 // Some structures have specific logic which must be run when they're picked up. Do that now.
-                Property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.Retrieved, structure, placeable);
+                _property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.Retrieved, structure, placeable);
                 
-                Property.DeleteProperty(structure);
+                _property.DeleteProperty(structure);
 
                 StructureNames.RemoveAt(SelectedStructureIndex);
                 StructureToggles.RemoveAt(SelectedStructureIndex);
@@ -468,7 +470,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var structure = GetStructure();
-            var placeable = Property.GetPlaceableByPropertyId(structure.Id);
+            var placeable = _property.GetPlaceableByPropertyId(structure.Id);
             _currentFacing = GetFacing(placeable);
             _currentPosition = GetPosition(placeable);
 
@@ -490,7 +492,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Instructions = $"Structure saved!";
             InstructionColor = GuiColor.Green;
 
-            Property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.PositionChanged, structure, placeable);
+            _property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.PositionChanged, structure, placeable);
         };
 
         private void DiscardChanges()
@@ -499,7 +501,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var structure = GetStructure();
-            var placeable = Property.GetPlaceableByPropertyId(structure.Id);
+            var placeable = _property.GetPlaceableByPropertyId(structure.Id);
             StructureName = structure.CustomName;
 
             // Copy the values since there is a delay before the action is fired and another
@@ -521,7 +523,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnRotateClockwise() => () =>
         {
             var structure = GetStructure();
-            var placeable = Property.GetPlaceableByPropertyId(structure.Id);
+            var placeable = _property.GetPlaceableByPropertyId(structure.Id);
             var facing = GetFacing(placeable) + 20f;
 
             while (facing > 360f)
@@ -533,7 +535,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnRotateCounterClockwise() => () =>
         {
             var structure = GetStructure();
-            var placeable = Property.GetPlaceableByPropertyId(structure.Id);
+            var placeable = _property.GetPlaceableByPropertyId(structure.Id);
             var facing = GetFacing(placeable) - 20f;
 
             while (facing > 360f)
@@ -545,7 +547,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void AdjustFacing(float facing)
         {
             var structure = GetStructure();
-            var placeable = Property.GetPlaceableByPropertyId(structure.Id);
+            var placeable = _property.GetPlaceableByPropertyId(structure.Id);
             AssignCommand(placeable, () => SetFacing(facing));
         }
 
@@ -572,7 +574,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void AdjustPosition(float x, float y, float z)
         {
             var structure = GetStructure();
-            var placeable = Property.GetPlaceableByPropertyId(structure.Id);
+            var placeable = _property.GetPlaceableByPropertyId(structure.Id);
             var position = GetPosition(placeable);
             position.X += x;
             position.Y += y;
@@ -615,7 +617,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnZAxisReset() => () =>
         {
             var structure = GetStructure();
-            var placeable = Property.GetPlaceableByPropertyId(structure.Id);
+            var placeable = _property.GetPlaceableByPropertyId(structure.Id);
             var location = GetLocation(placeable);
             var position = GetPosition(placeable);
             var z = GetGroundHeight(location);

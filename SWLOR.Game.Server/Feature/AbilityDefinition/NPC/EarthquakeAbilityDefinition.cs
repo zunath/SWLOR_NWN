@@ -13,11 +13,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
     public class EarthquakeAbilityDefinition : IAbilityListDefinition
     {
         private readonly IRandomService _random;
+        private readonly IStatService _statService;
+        private readonly ICombatService _combatService;
         private readonly AbilityBuilder _builder = new();
 
-        public EarthquakeAbilityDefinition(IRandomService random)
+        public EarthquakeAbilityDefinition(IRandomService random, IStatService statService, ICombatService combatService)
         {
             _random = random;
+            _statService = statService;
+            _combatService = combatService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -86,12 +90,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
                             SendMessageToPC(nearest, "The earthquake knocks you down!");
 
-                            var statService = ServiceContainer.GetService<IStatService>();
-                            var combatService = ServiceContainer.GetService<ICombatService>();
-                            var attack = statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                            var defense = statService.GetDefense(nearest, CombatDamageType.Physical, AbilityType.Vitality);
+                            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                            var defense = _statService.GetDefense(nearest, CombatDamageType.Physical, AbilityType.Vitality);
                             var defenderStat = GetAbilityScore(nearest, AbilityType.Vitality);
-                            var damage = combatService.CalculateDamage(
+                            var damage = _combatService.CalculateDamage(
                                 attack,
                                 dmg,
                                 attackerStat,

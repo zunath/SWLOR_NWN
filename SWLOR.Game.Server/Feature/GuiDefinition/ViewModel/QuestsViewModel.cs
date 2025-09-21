@@ -21,11 +21,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly IQuestService _questService;
+        private readonly IActivityService _activityService;
 
-        public QuestsViewModel(IGuiService guiService, IDatabaseService db, IQuestService questService) : base(guiService)
+        public QuestsViewModel(IGuiService guiService, IDatabaseService db, IQuestService questService, IActivityService activityService) : base(guiService)
         {
             _db = db;
             _questService = questService;
+            _activityService = activityService;
         }
         
         public string SearchText
@@ -183,7 +185,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal("Are you sure you wish to abandon this quest?", () =>
             {
-                if (Activity.IsBusy(Player))
+                if (_activityService.IsBusy(Player))
                 {
                     SendMessageToPC(Player, "You are busy.");
                     return;

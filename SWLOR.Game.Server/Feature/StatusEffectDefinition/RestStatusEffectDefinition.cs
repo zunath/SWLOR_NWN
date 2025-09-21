@@ -19,11 +19,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         private readonly IAbilityService _abilityService;
         private readonly IStatService _statService;
+        private readonly IActivityService _activityService;
 
-        public RestStatusEffectDefinition(IAbilityService abilityService, IStatService statService)
+        public RestStatusEffectDefinition(IAbilityService abilityService, IStatService statService, IActivityService activityService)
         {
             _abilityService = abilityService;
             _statService = statService;
+            _activityService = activityService;
         }
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
@@ -104,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     SetLocalFloat(target, "REST_POSITION_Y", position.Y);
                     SetLocalFloat(target, "REST_POSITION_Z", position.Z);
 
-                    Activity.SetBusy(target, ActivityStatusType.Resting);
+                    _activityService.SetBusy(target, ActivityStatusType.Resting);
                     _abilityService.EndConcentrationAbility(target);
                     
                     DelayCommand(0.5f, () => CheckMovement(target));
@@ -149,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     DeleteLocalFloat(target, "REST_POSITION_Y");
                     DeleteLocalFloat(target, "REST_POSITION_Z");
 
-                    Activity.ClearBusy(target);
+                    _activityService.ClearBusy(target);
                 });
         }
     }

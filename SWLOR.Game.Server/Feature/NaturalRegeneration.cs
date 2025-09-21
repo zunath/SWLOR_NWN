@@ -28,10 +28,9 @@ namespace SWLOR.Game.Server.Feature
         /// On module heartbeat, process a player's HP/FP/STM regeneration.
         /// </summary>
         [ScriptHandler<OnPlayerHeartbeat>]
-        public static void ProcessRegeneration()
+        public void ProcessRegeneration()
         {
-            var naturalRegeneration = ServiceContainer.GetService<NaturalRegeneration>();
-            naturalRegeneration.ProcessRegenerationInternal();
+            ProcessRegenerationInternal();
         }
 
         private void ProcessRegenerationInternal()

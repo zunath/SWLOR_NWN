@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
@@ -9,8 +10,17 @@ namespace SWLOR.Game.Server.Feature
 {
     public class TlkOverrides
     {
+        private readonly IAbilityService _abilityService;
+        private readonly IPerkService _perkService;
+
+        public TlkOverrides(IAbilityService abilityService, IPerkService perkService)
+        {
+            _abilityService = abilityService;
+            _perkService = perkService;
+        }
+
         [ScriptHandler<OnModuleLoad>]
-        public static void OverrideTlks()
+        public void OverrideTlks()
         {
             OverrideAttributeNames();
             OverrideMenuNames();
@@ -18,7 +28,7 @@ namespace SWLOR.Game.Server.Feature
             OverrideAttackBonus();
         }
 
-        private static void OverrideAttributeNames()
+        private void OverrideAttributeNames()
         {
             SetTlkOverride(131, "Social"); // Charisma
             SetTlkOverride(132, "Vitality"); // Constitution
@@ -147,7 +157,7 @@ namespace SWLOR.Game.Server.Feature
             SetTlkOverride(83393, "Poison"); // Acid
         }
 
-        private static string BuildRecommendedButtonText()
+        private string BuildRecommendedButtonText()
         {
             return "Your character is guided by six core attributes: Might, Vitality, Perception, Willpower, Agility, and Social.\n\n" +
                    "Might: Improves damage dealt by melee weapons and increases carrying capacity.\n" +
@@ -158,7 +168,7 @@ namespace SWLOR.Game.Server.Feature
                    "Social: Improves your XP gain and leadership capabilities.\n\n";
         }
 
-        private static void OverrideMenuNames()
+        private void OverrideMenuNames()
         {
             // Journal - List as Quests
             SetTlkOverride(7037, "Quests");
@@ -167,7 +177,7 @@ namespace SWLOR.Game.Server.Feature
             SetTlkOverride(7038, "Player Guide");
         }
 
-        private static void OverrideFeatDescriptions()
+        private void OverrideFeatDescriptions()
         {
             var template = "Name: {0}\n" +
                            "FP: {1}\n" +
@@ -175,7 +185,7 @@ namespace SWLOR.Game.Server.Feature
                            "Recast: {3}s\n" +
                            "Description: {4}\n";
 
-            foreach (var (_, detail) in Perk.GetAllPerks())
+            foreach (var (_, detail) in _perkService.GetAllPerks())
             {
                 var levelOneFeatDescriptionId = -1;
                 var levelOneSpellDescriptionId = -1;
@@ -189,7 +199,7 @@ namespace SWLOR.Game.Server.Feature
                             continue;
                         if (!int.TryParse(Get2DAString("feat", "DESCRIPTION", (int)feat), out var featDescriptionId))
                             continue;
-                        if (!Ability.IsFeatRegistered(feat))
+                        if (!_abilityService.IsFeatRegistered(feat))
                             continue;
 
                         var spellDescriptionId = 0;
@@ -200,7 +210,7 @@ namespace SWLOR.Game.Server.Feature
                             int.TryParse(Get2DAString("spells", "SpellDesc", spellId), out spellDescriptionId);
                         }
 
-                        var abilityDetail = Ability.GetAbilityDetail(feat);
+                        var abilityDetail = _abilityService.GetAbilityDetail(feat);
                         var fp = 0;
                         var stm = 0;
                         var recast = abilityDetail.RecastDelay?.Invoke(OBJECT_INVALID) ?? 0f;
@@ -257,7 +267,7 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        private static void OverrideAttackBonus()
+        private void OverrideAttackBonus()
         {
             SetTlkOverride(660, "Accuracy and Damage Penalty");
             SetTlkOverride(734, "Accuracy vs. Alignment Group");

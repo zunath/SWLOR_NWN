@@ -1,4 +1,5 @@
 ﻿using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -10,14 +11,17 @@ namespace SWLOR.Game.Server.Service.PerkService
     /// </summary>
     public class PerkRequirementSkill : IPerkRequirement
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly ISkillService _skillService;
         public SkillType Type { get; }
         public int RequiredRank { get; }
 
-        public PerkRequirementSkill(SkillType type, int requiredRank)
+        public PerkRequirementSkill(SkillType type, int requiredRank, IDatabaseService db, ISkillService skillService)
         {
             Type = type;
             RequiredRank = requiredRank;
+            _db = db;
+            _skillService = skillService;
         }
 
         public string CheckRequirements(uint player)
@@ -37,7 +41,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         {
             get
             {
-                var skillDetails = Skill.GetSkillDetails(Type);
+                var skillDetails = _skillService.GetSkillDetails(Type);
                 return $"{skillDetails.Name} rank {RequiredRank}";
             }
         }

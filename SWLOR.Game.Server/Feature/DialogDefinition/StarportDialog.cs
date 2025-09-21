@@ -16,16 +16,22 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class StarportDialog: DialogBase
     {
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
         private readonly IKeyItemService _keyItemService;
         private readonly IPropertyService _propertyService;
+        private readonly IGuiService _guiService;
+        private readonly IPlanetService _planetService;
         private const string MainPageId = "MAIN_PAGE";
 
-        public StarportDialog(IKeyItemService keyItemService, IPropertyService propertyService)
+        public StarportDialog(ILogger logger, IDatabaseService db, IKeyItemService keyItemService, IPropertyService propertyService, IGuiService guiService, IPlanetService planetService)
         {
+            _logger = logger;
+            _db = db;
             _keyItemService = keyItemService;
             _propertyService = propertyService;
+            _guiService = guiService;
+            _planetService = planetService;
         }
 
         public override PlayerDialog SetUp(uint player)
@@ -68,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     // NPC starports can retrieve the planet based on the name of the planet.
                     if (string.IsNullOrWhiteSpace(propertyId))
                     {
-                        planetType = Planet.GetPlanetType(area);
+                        planetType = _planetService.GetPlanetType(area);
                     }
                     // PC starports need to look at the city's area to determine this.
                     else
@@ -78,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         var dbCity = _db.Get<WorldProperty>(dbBuilding.ParentPropertyId);
                         var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
 
-                        planetType = Planet.GetPlanetType(cityArea);
+                        planetType = _planetService.GetPlanetType(cityArea);
                     }
 
                     if (planetType == PlanetType.Invalid)
@@ -94,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         : GetLocation(GetWaypointByTag(landingWaypointTag));
 
                     var payload = new ShipManagementPayload(planetType, spaceLocation, landingLocation);
-                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.ShipManagement, payload, OBJECT_SELF);
+                    _guiService.TogglePlayerWindow(player, GuiWindowType.ShipManagement, payload, OBJECT_SELF);
                 });
 
             }

@@ -15,13 +15,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         private readonly IAbilityService _abilityService;
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
 
-        public ForceLeapAbilityDefinition(IItemService itemService, IAbilityService abilityService, ICombatService combatService, IStatService statService)
+        public ForceLeapAbilityDefinition(IItemService itemService, IAbilityService abilityService, ICombatService combatService, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _itemService = itemService;
             _abilityService = abilityService;
             _combatService = combatService;
             _statService = statService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -83,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 SetCommandable(false, activator);
             });
             
-            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+            _combatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var stat = AbilityType.Perception;
             if (_abilityService.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber))
@@ -125,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     ActionJumpToObject(target);
                 });
             });
-            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
+            _enmityService.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
         private static void ForceLeap1(AbilityBuilder builder)

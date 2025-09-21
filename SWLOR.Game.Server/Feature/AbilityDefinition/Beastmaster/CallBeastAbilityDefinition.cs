@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -13,7 +14,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
     public class CallBeastAbilityDefinition: IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
-        private readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly CombatPoint _combatPoint;
+        private readonly BeastMastery _beastMastery;
+        private readonly IEnmityService _enmityService;
+
+        public CallBeastAbilityDefinition(IDatabaseService db, CombatPoint combatPoint, BeastMastery beastMastery, IEnmityService enmityService)
+        {
+            _db = db;
+            _combatPoint = combatPoint;
+            _beastMastery = beastMastery;
+            _enmityService = enmityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -78,10 +90,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     var playerId = GetObjectUUID(activator);
                     var dbPlayer = _db.Get<Player>(playerId);
                     
-                    BeastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 50);
+                    _beastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 50);
 
-                    Enmity.ModifyEnmityOnAll(activator, 230);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    _enmityService.ModifyEnmityOnAll(activator, 230);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
     }

@@ -17,14 +17,18 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class CollectItemObjective : IQuestObjective
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
-        private static readonly IQuestService _questService = ServiceContainer.GetService<IQuestService>();
+        private readonly IDatabaseService _db;
+        private readonly IItemCacheService _itemCache;
+        private readonly IQuestService _questService;
+
         private readonly string _resref;
         private readonly int _quantity;
 
-        public CollectItemObjective(string resref, int quantity)
+        public CollectItemObjective(IDatabaseService db, IItemCacheService itemCache, IQuestService questService, string resref, int quantity)
         {
+            _db = db;
+            _itemCache = itemCache;
+            _questService = questService;
             _resref = resref;
             _quantity = quantity;
         }
@@ -100,12 +104,13 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class KillTargetObjective : IQuestObjective
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
         public NPCGroupType Group { get; }
         private readonly int _amount;
 
-        public KillTargetObjective(NPCGroupType group, int amount)
+        public KillTargetObjective(IDatabaseService db, NPCGroupType group, int amount)
         {
+            _db = db;
             Group = group;
             _amount = amount;
         }

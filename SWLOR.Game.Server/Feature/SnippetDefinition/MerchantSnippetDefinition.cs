@@ -10,8 +10,13 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
     public class MerchantSnippetDefinition: ISnippetListDefinition
     {
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger;
         private readonly SnippetBuilder _builder = new();
+
+        public MerchantSnippetDefinition(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         public Dictionary<string, SnippetDetail> BuildSnippets()
         {

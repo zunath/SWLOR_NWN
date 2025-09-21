@@ -1,12 +1,13 @@
 ﻿using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class AnimationPlayer
+    public class AnimationPlayerService : IAnimationPlayerService
     {
-        public static void Play(uint oObject, AnimationEvent animationEvent)
+        public void Play(uint oObject, AnimationEvent animationEvent)
         {
             var vfx = (VisualEffect)GetLocalInt(oObject, animationEvent.IdKey);
 

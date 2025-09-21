@@ -8,8 +8,13 @@ namespace SWLOR.Game.Server.Service.LootService
 {
     public class LootTable : List<LootTableItem>
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         public bool IsRare { get; set; }
+
+        public LootTable(IRandomService random)
+        {
+            _random = random;
+        }
 
         /// <summary>
         /// Retrieves a random item from the loot table.

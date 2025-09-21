@@ -13,11 +13,12 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class RequiredQuestPrerequisite : IQuestPrerequisite
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
         private readonly string _questID;
 
-        public RequiredQuestPrerequisite(string questID)
+        public RequiredQuestPrerequisite(IDatabaseService db, string questID)
         {
+            _db = db;
             _questID = questID;
         }
 
@@ -49,12 +50,13 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class RequiredFactionStandingPrerequisite : IQuestPrerequisite
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
         private readonly FactionType _factionType;
         private readonly int _requiredAmount;
 
-        public RequiredFactionStandingPrerequisite(FactionType faction, int requiredAmount)
+        public RequiredFactionStandingPrerequisite(IDatabaseService db, FactionType faction, int requiredAmount)
         {
+            _db = db;
             _factionType = faction;
             _requiredAmount = requiredAmount;
         }

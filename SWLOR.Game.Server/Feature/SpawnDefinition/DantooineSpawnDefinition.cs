@@ -8,8 +8,13 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
     public class DantooineSpawnDefinition : ISpawnListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         private readonly SpawnTableBuilder _builder = new();
+
+        public DantooineSpawnDefinition(IRandomService random)
+        {
+            _random = random;
+        }
 
         public Dictionary<string, SpawnTable> BuildSpawnTables()
         {

@@ -11,17 +11,23 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Recast
+    public class Recast
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
         // Recast Group Descriptions
         private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new();
 
+        public Recast(IDatabaseService db)
+        {
+            _db = db;
+        }
+
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheRecastGroups()
+        public void CacheRecastGroups()
         {
             CacheRecastGroupNames();
         }
@@ -29,7 +35,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Reads all of the enum values on the RecastGroup enumeration and stores their short name into the cache.
         /// </summary>
-        private static void CacheRecastGroupNames()
+        private void CacheRecastGroupNames()
         {
             foreach (var recast in Enum.GetValues(typeof(RecastGroup)).Cast<RecastGroup>())
             {
@@ -43,7 +49,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="recastGroup">The recast group to retrieve.</param>
         /// <returns>The name of a recast group.</returns>
-        public static string GetRecastGroupName(RecastGroup recastGroup)
+        public string GetRecastGroupName(RecastGroup recastGroup)
         {
             if (!_recastDescriptions.ContainsKey(recastGroup))
                 throw new KeyNotFoundException($"Recast group {recastGroup} has not been registered. Did you forget the Description attribute?");
@@ -59,7 +65,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to check</param>
         /// <param name="recastGroup">The recast group to check</param>
         /// <returns>true if recast delay hasn't passed. false otherwise. If true, also returns a string containing a user-readable amount of time they need to wait. Otherwise it will be an empty string.</returns>
-        public static (bool, string) IsOnRecastDelay(uint creature, RecastGroup recastGroup)
+        public (bool, string) IsOnRecastDelay(uint creature, RecastGroup recastGroup)
         {
             if (GetIsDM(creature)) return (false, string.Empty);
             var now = DateTime.UtcNow;
@@ -100,7 +106,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="group">The recast group to put this delay under.</param>
         /// <param name="delaySeconds">The number of seconds to delay.</param>
         /// <param name="ignoreRecastReduction">If true, recast reduction bonuses are ignored.</param>
-        public static void ApplyRecastDelay(uint activator, RecastGroup group, float delaySeconds, bool ignoreRecastReduction)
+        public void ApplyRecastDelay(uint activator, RecastGroup group, float delaySeconds, bool ignoreRecastReduction)
         {
             if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || delaySeconds <= 0.0f) return;
 

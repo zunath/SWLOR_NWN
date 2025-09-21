@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 return;
             }
 
-            if (HoloCom.IsInCall(player))
+            if (ServiceContainer.GetService<IHoloComService>().IsInCall(player))
             {
                 var activeCallTarget = HoloCom.GetTargetForActiveCall(player);
                 page.AddResponse($"End current call with {GetName(activeCallTarget)}", () =>

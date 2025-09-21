@@ -16,12 +16,16 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
     {
         private readonly IAppSettings _appSettings;
         private readonly IGuiService _guiService;
+        private readonly Authorization _authorization;
+        private readonly ChatCommand _chatCommand;
         private readonly ChatCommandBuilder _builder = new();
 
-        public SystemChatCommand(IAppSettings appSettings, IGuiService guiService)
+        public SystemChatCommand(IAppSettings appSettings, IGuiService guiService, Authorization authorization, ChatCommand chatCommand)
         {
             _appSettings = appSettings;
             _guiService = guiService;
+            _authorization = authorization;
+            _chatCommand = chatCommand;
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -69,20 +73,20 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    var authorization = Authorization.GetAuthorizationLevel(user);
+                    var authorization = _authorization.GetAuthorizationLevel(user);
 
                     if (_appSettings.ServerEnvironment == ServerEnvironmentType.Test || 
                         authorization == AuthorizationLevel.DM)
                     {
-                        SendMessageToPC(user, ChatCommand.HelpTextDM);
+                        SendMessageToPC(user, _chatCommand.HelpTextDM);
                     }
                     else if (authorization == AuthorizationLevel.Admin)
                     {
-                        SendMessageToPC(user, ChatCommand.HelpTextAdmin);
+                        SendMessageToPC(user, _chatCommand.HelpTextAdmin);
                     }
                     else
                     {
-                        SendMessageToPC(user, ChatCommand.HelpTextPlayer);
+                        SendMessageToPC(user, _chatCommand.HelpTextPlayer);
                     }
                 });
         }
@@ -93,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    SendMessageToPC(user, ChatCommand.HelpTextEmote);
+                    SendMessageToPC(user, _chatCommand.HelpTextEmote);
                 });
         }
         private void StuckCommand()

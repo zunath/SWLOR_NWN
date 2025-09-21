@@ -17,10 +17,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class ElectionViewModel: GuiViewModelBase<ElectionViewModel, GuiPayloadBase>
     {
         private readonly IDatabaseService _db;
+        private readonly Property _property;
 
-        public ElectionViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        public ElectionViewModel(IGuiService guiService, IDatabaseService db, Property property) : base(guiService)
         {
             _db = db;
+            _property = property;
         }
         
         private readonly List<string> _candidatePlayerIds = new();
@@ -68,9 +70,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var cdKey = GetPCPublicCDKey(Player);
             var playerId = GetObjectUUID(Player);
             var area = GetArea(TetherObject);
-            var propertyId = Property.GetPropertyId(area);
+            var propertyId = _property.GetPropertyId(area);
             var dbProperty = _db.Get<WorldProperty>(propertyId);
-            var dbBuilding = _db.Get<WorldProperty>(dbProperty.ParentPropertyId);
+            var dbBuilding = _db.Get<WorldProperty>(db_property.ParentPropertyId);
             var election = _db.Search(new DBQuery<Election>()
                 .AddFieldSearch(nameof(Election.PropertyId), dbBuilding.ParentPropertyId, false))
                 .Single();

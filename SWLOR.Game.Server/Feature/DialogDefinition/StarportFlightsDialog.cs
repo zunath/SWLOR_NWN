@@ -13,8 +13,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class StarportFlightsDialog: DialogBase
     {
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly IPlanetService _planetService;
+        private readonly IPropertyService _propertyService;
+
+        public StarportFlightsDialog(ILogger logger, IDatabaseService db, IPlanetService planetService, IPropertyService propertyService)
+        {
+            _logger = logger;
+            _db = db;
+            _planetService = planetService;
+            _propertyService = propertyService;
+        }
         
         private class Model
         {
@@ -43,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var terminal = GetDialogTarget();
             var area = GetArea(terminal);
-            var propertyId = Property.GetPropertyId(area);
+            var propertyId = _propertyService.GetPropertyId(area);
             var model = GetDataModel<Model>();
 
             if (string.IsNullOrWhiteSpace(propertyId))
@@ -66,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.Header = "Charter flights leave hourly. Please select one our available destinations below.";
 
-            var planets = Planet.GetAllPlanets();
+            var planets = _planetService.GetAllPlanets();
 
             foreach (var (type, planet) in planets)
             {

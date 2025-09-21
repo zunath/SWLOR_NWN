@@ -10,6 +10,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class AdrenalStimAbilityDefinition : FirstAidBaseAbilityDefinition
     {
+        public AdrenalStimAbilityDefinition(IRandomService random, IPerkService perkService, CombatPoint combatPoint, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPoint, enmityService, abilityService)
+        {
+        }
+
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             AdrenalStim1();

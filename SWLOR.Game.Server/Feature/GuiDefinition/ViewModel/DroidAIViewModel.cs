@@ -24,11 +24,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private readonly ILogger _logger;
         private readonly IPerkService _perkService;
+        private readonly ITargetingService _targetingService;
 
-        public DroidAIViewModel(IGuiService guiService, ILogger logger, IPerkService perkService) : base(guiService)
+        public DroidAIViewModel(IGuiService guiService, ILogger logger, IPerkService perkService, ITargetingService targetingService) : base(guiService)
         {
             _logger = logger;
             _perkService = perkService;
+            _targetingService = targetingService;
         }
         private uint _controller;
         private List<DroidPerk> _availableDroidPerks;
@@ -156,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action AddInstructionDisk() => () =>
         {
-            Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please select an instruction disc from your inventory.",
+            _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please select an instruction disc from your inventory.",
                 item =>
                 {
                     var constructedDroid = Droid.LoadConstructedDroid(_controller);

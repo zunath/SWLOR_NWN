@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -14,8 +15,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private readonly IStatService _statService;
         private readonly IAbilityService _abilityService;
 
-        public IonGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, IAbilityService abilityService) 
-            : base(random, itemService, perkService, statService, combatService)
+        public IonGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, IAbilityService abilityService, CombatPoint combatPoint, IEnmityService enmityService) 
+            : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
         {
             _combatService = combatService;
             _statService = statService;

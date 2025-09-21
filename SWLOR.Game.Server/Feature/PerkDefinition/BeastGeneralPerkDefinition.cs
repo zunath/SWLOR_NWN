@@ -12,10 +12,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
     {
         private readonly PerkBuilder _builder = new();
         private readonly IStatService _statService;
+        private readonly BeastMastery _beastMastery;
 
-        public BeastGeneralPerkDefinition(IStatService statService)
+        public BeastGeneralPerkDefinition(IStatService statService, BeastMastery beastMastery)
         {
             _statService = statService;
+            _beastMastery = beastMastery;
         }
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
@@ -147,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .TriggerPurchase((player) =>
                 {
                     var beast = GetAssociate(AssociateType.Henchman, player);
-                    if (!BeastMastery.IsPlayerBeast(beast))
+                    if (!_beastMastery.IsPlayerBeast(beast))
                         return;
 
                     _statService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
@@ -155,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .TriggerRefund((player) =>
                 {
                     var beast = GetAssociate(AssociateType.Henchman, player);
-                    if (!BeastMastery.IsPlayerBeast(beast))
+                    if (!_beastMastery.IsPlayerBeast(beast))
                         return;
 
                     _statService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));

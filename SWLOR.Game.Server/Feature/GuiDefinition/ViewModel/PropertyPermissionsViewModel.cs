@@ -18,10 +18,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class PropertyPermissionsViewModel: GuiViewModelBase<PropertyPermissionsViewModel, PropertyPermissionPayload>
     {
         private readonly IDatabaseService _db;
+        private readonly Property _property;
 
-        public PropertyPermissionsViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        public PropertyPermissionsViewModel(IGuiService guiService, IDatabaseService db, Property property) : base(guiService)
         {
             _db = db;
+            _property = property;
         }
         
         private bool _isCategory;
@@ -136,8 +138,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 PropertyId = PropertyId,
                 PlayerId = targetPlayerId,
-                Permissions = Property.GetPermissionsByPropertyType(_propertyType).ToDictionary(x => x, _ => false),
-                GrantPermissions = Property.GetPermissionsByPropertyType(_propertyType).ToDictionary(x => x, _ => false)
+                Permissions = _property.GetPermissionsByPropertyType(_propertyType).ToDictionary(x => x, _ => false),
+                GrantPermissions = _property.GetPermissionsByPropertyType(_propertyType).ToDictionary(x => x, _ => false)
             };
         }
 
@@ -200,17 +202,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var dbCategory = _db.Get<WorldPropertyCategory>(PropertyId);
                 var dbProperty = _db.Get<WorldProperty>(dbCategory.ParentPropertyId);
-                ownerPlayerId = dbProperty.OwnerPlayerId;
+                ownerPlayerId = db_property.OwnerPlayerId;
             }
             else
             {
                 var dbProperty = _db.Get<WorldProperty>(PropertyId);
-                ownerPlayerId = dbProperty.OwnerPlayerId;
+                ownerPlayerId = db_property.OwnerPlayerId;
             }
 
             foreach (var type in AvailablePermissions)
             {
-                var permission = Property.GetPermissionByType(type);
+                var permission = _property.GetPermissionByType(type);
                 permissionNames.Add(permission.Name);
                 permissionDescriptions.Add(permission.Description);
 
@@ -248,7 +250,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _cityId = initialPayload.CityId;
             IsPlayerSelected = false;
             
-            AvailablePermissions = Property.GetPermissionsByPropertyType(_propertyType);
+            AvailablePermissions = _property.GetPermissionsByPropertyType(_propertyType);
 
             if (_isCategory)
             {
@@ -266,7 +268,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     .First();
 
                 var property = _db.Get<WorldProperty>(PropertyId);
-                var propertyDetail = Property.GetPropertyDetail(property.PropertyType);
+                var propertyDetail = _property.GetPropertyDetail(property.PropertyType);
 
                 PropertyName = property.CustomName;
                 CanChangePublicSetting = grantorPermissions.GrantPermissions.ContainsKey(PropertyPermissionType.EnterProperty) &&
@@ -432,12 +434,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (dbProperty == null)
                 return;
 
-            var propertyDetail = Property.GetPropertyDetail(dbProperty.PropertyType);
+            var propertyDetail = _property.GetPropertyDetail(db_property.PropertyType);
 
             if (propertyDetail.PublicSetting == PropertyPublicType.Adjustable &&
                 grantorPermissions.GrantPermissions[PropertyPermissionType.EnterProperty])
             {
-                dbProperty.IsPubliclyAccessible = IsPublic;
+                db_property.IsPubliclyAccessible = IsPublic;
                 _db.Set(dbProperty);
             }
 
@@ -473,7 +475,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var dbProperty = _db.Get<WorldProperty>(PropertyId);
-            IsPublic = dbProperty.IsPubliclyAccessible;
+            IsPublic = db_property.IsPubliclyAccessible;
         };
     }
 }

@@ -12,10 +12,22 @@ namespace SWLOR.Game.Server.Feature
 {
     public class DMActions
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IGuiService _guiService;
+
+        public DMActions(IDatabaseService db, IGuiService guiService)
+        {
+            _db = db;
+            _guiService = guiService;
+        }
         
         [ScriptHandler<OnDMSpawnObjectAfter>]
-        public static void OnDMSpawnObject()
+        public void OnDMSpawnObject()
+        {
+            OnDMSpawnObjectInstance();
+        }
+
+        public void OnDMSpawnObjectInstance()
         {
             var obj = StringToObject(EventsPlugin.GetEventData("OBJECT"));
             var type = GetObjectType(obj);
@@ -30,7 +42,12 @@ namespace SWLOR.Game.Server.Feature
         }
 
         [ScriptHandler<OnDMGiveXPBefore>]
-        public static void GrantRPXPViaDMCommand()
+        public void GrantRPXPViaDMCommand()
+        {
+            GrantRPXPViaDMCommandInstance();
+        }
+
+        public void GrantRPXPViaDMCommandInstance()
         {
             var dm = OBJECT_SELF;
             var target = StringToObject(EventsPlugin.GetEventData("OBJECT"));
@@ -55,8 +72,7 @@ namespace SWLOR.Game.Server.Feature
                 _db.Set(dbPlayer);
                 SendMessageToPC(target, $"A DM has awarded you with {amount} roleplay XP.");
                 SendMessageToPC(dm, $"You award {GetName(target)} with {amount} roleplay XP.");
-                var guiService = ServiceContainer.GetService<IGuiService>();
-                guiService.PublishRefreshEvent(target, new RPXPRefreshEvent());
+                _guiService.PublishRefreshEvent(target, new RPXPRefreshEvent());
             }
             else
             {
@@ -64,7 +80,12 @@ namespace SWLOR.Game.Server.Feature
             }
         }
         [ScriptHandler<OnDMGiveLevelBefore>]
-        public static void DisableGiveLevel()
+        public void DisableGiveLevel()
+        {
+            DisableGiveLevelInstance();
+        }
+
+        public void DisableGiveLevelInstance()
         {
             var dm = OBJECT_SELF;
             EventsPlugin.SkipEvent();

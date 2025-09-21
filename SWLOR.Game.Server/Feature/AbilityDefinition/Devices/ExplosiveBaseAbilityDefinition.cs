@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 
@@ -17,14 +18,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         protected readonly IPerkService _perkService;
         protected readonly IStatService _statService;
         protected readonly ICombatService _combatService;
+        protected readonly CombatPoint _combatPoint;
+        protected readonly IEnmityService _enmityService;
 
-        protected ExplosiveBaseAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService)
+        protected ExplosiveBaseAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _random = random;
             _itemService = itemService;
             _perkService = perkService;
             _statService = statService;
             _combatService = combatService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
         }
         private const string ExplosiveItemResref = "explosives";
 
@@ -46,13 +51,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             return string.Empty;
         }
 
-        protected static void TakeExplosives(uint activator)
+        protected void TakeExplosives(uint activator)
         {
             if (!GetIsPC(activator))
                 return;
 
-            var chanceToNotConsume = 10 * PerkService.GetPerkLevel(activator, PerkType.DemolitionExpert);
-            if (Random.D100(1) <= chanceToNotConsume)
+            var chanceToNotConsume = 10 * _perkService.GetPerkLevel(activator, PerkType.DemolitionExpert);
+            if (_random.D100(1) <= chanceToNotConsume)
                 return;
 
             var item = GetItemPossessedBy(activator, ExplosiveItemResref);
@@ -128,8 +133,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var delay = GetDistanceBetweenLocations(activatorLocation, targetLocation) / 18f;
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var dmgBonus = CombatService.GetAbilityDamageBonus(activator, SkillType.Devices);
+            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var dmgBonus = _combatService.GetAbilityDamageBonus(activator, SkillType.Devices);
             dmgBonus += attackerStat / 2;
 
             DelayCommand(delay, () =>

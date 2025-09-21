@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Service.CraftService
@@ -8,17 +9,19 @@ namespace SWLOR.Game.Server.Service.CraftService
         private readonly PerkType _perk;
         private readonly int _requiredLevel;
         private readonly PerkDetail _perkDetail;
+        private readonly IPerkService _perkService;
 
-        public RecipePerkRequirement(PerkType perk, int requiredLevel)
+        public RecipePerkRequirement(PerkType perk, int requiredLevel, IPerkService perkService)
         {
             _perk = perk;
             _requiredLevel = requiredLevel;
-            _perkDetail = Perk.GetPerkDetails(_perk);
+            _perkService = perkService;
+            _perkDetail = _perkService.GetPerkDetails(_perk);
         }
 
         public string CheckRequirements(uint player)
         {
-            var effectiveLevel = Perk.GetPerkLevel(player, _perk);
+            var effectiveLevel = _perkService.GetPerkLevel(player, _perk);
 
             if (effectiveLevel < _requiredLevel)
             {

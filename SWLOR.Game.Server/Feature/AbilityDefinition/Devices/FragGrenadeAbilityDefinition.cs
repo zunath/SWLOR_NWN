@@ -4,6 +4,8 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
@@ -11,13 +13,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public class FragGrenadeAbilityDefinition: ExplosiveBaseAbilityDefinition
     {
         private readonly AbilityBuilder _builder = new();
-        private readonly ICombatService _combatService;
-        private readonly IStatService _statService;
 
-        public FragGrenadeAbilityDefinition(ICombatService combatService, IStatService statService)
+        public FragGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, CombatPoint combatPoint, IEnmityService enmityService)
+            : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
         {
-            _combatService = combatService;
-            _statService = statService;
         }
 
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -66,8 +65,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
             });
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            Enmity.ModifyEnmity(activator, target, 320);
+            _combatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
+            _enmityService.ModifyEnmity(activator, target, 320);
         }
 
         private void FragGrenade1()

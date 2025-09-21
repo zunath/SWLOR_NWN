@@ -1,6 +1,7 @@
 
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;
@@ -12,14 +13,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class DebugEnmityViewModel: GuiViewModelBase<DebugEnmityViewModel, GuiPayloadBase>,
         IGuiRefreshable<EnmityChangedRefreshEvent>
     {
-        public DebugEnmityViewModel(IGuiService guiService) : base(guiService)
+        private readonly IPartyService _partyService;
+        private readonly IEnmityService _enmityService;
+
+        public DebugEnmityViewModel(IGuiService guiService, IPartyService partyService, IEnmityService enmityService) : base(guiService)
         {
+            _partyService = partyService;
+            _enmityService = enmityService;
         }
 
         [ScriptHandler(ScriptName.OnEnmityChanged)]
         public void OnEnmityChanged()
         {
-            foreach (var member in Party.GetAllPartyMembers(OBJECT_SELF))
+            foreach (var member in _partyService.GetAllPartyMembers(OBJECT_SELF))
             {
                 _guiService.PublishRefreshEvent(member, new EnmityChangedRefreshEvent());
             }
@@ -35,9 +41,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var enmityDetails = new GuiBindingList<string>();
 
-            foreach (var member in Party.GetAllPartyMembers(Player))
+            foreach (var member in _partyService.GetAllPartyMembers(Player))
             {
-                var enmityValues = Enmity.GetEnmityTowardsAllEnemies(member);
+                var enmityValues = _enmityService.GetEnmityTowardsAllEnemies(member);
 
                 foreach (var (enemy, value) in enmityValues)
                 {

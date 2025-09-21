@@ -6,6 +6,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
@@ -15,7 +16,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _7_UpdateStoredWeapons: ServerMigrationBase, IServerMigration
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IItemService _itemService;
+
+        public _7_UpdateStoredWeapons(IDatabaseService db, IItemService itemService)
+        {
+            _db = db;
+            _itemService = itemService;
+        }
         
         public int Version => 7;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
@@ -97,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         private void UpdateWeapon(uint item)
         {
             var baseItem = GetBaseItemType(item);
-            if (!Item.RifleBaseItemTypes.Contains(baseItem) && !Item.SaberstaffBaseItemTypes.Contains(baseItem) && !Item.TwinBladeBaseItemTypes.Contains(baseItem))
+            if (!_itemService.RifleBaseItemTypes.Contains(baseItem) && !_itemService.SaberstaffBaseItemTypes.Contains(baseItem) && !_itemService.TwinBladeBaseItemTypes.Contains(baseItem))
                 return;
 
             var itemResRef = GetResRef(item);

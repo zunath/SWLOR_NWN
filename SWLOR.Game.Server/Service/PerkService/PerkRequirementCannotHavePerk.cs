@@ -7,11 +7,12 @@ namespace SWLOR.Game.Server.Service.PerkService
 {
     public class PerkRequirementCannotHavePerk: IPerkRequirement
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
         private readonly PerkType _cannotHavePerkType;
 
-        public PerkRequirementCannotHavePerk(PerkType cannotHavePerkType)
+        public PerkRequirementCannotHavePerk(IDatabaseService db, PerkType cannotHavePerkType)
         {
+            _db = db;
             _cannotHavePerkType = cannotHavePerkType;
         }
 

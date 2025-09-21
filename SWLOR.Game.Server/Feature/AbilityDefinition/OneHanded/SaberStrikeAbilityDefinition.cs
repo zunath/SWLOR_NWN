@@ -15,13 +15,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         private readonly IAbilityService _abilityService;
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly ICombatPointService _combatPointService;
+        private readonly IEnmityService _enmityService;
 
-        public SaberStrikeAbilityDefinition(IItemService itemService, IAbilityService abilityService, ICombatService combatService, IStatService statService)
+        public SaberStrikeAbilityDefinition(IItemService itemService, IAbilityService abilityService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
         {
             _itemService = itemService;
             _abilityService = abilityService;
             _combatService = combatService;
             _statService = statService;
+            _combatPointService = combatPointService;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -34,11 +38,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
-            // Using injected service
 
             if (_itemService.LightsaberBaseItemTypes.Contains(rightHandType))
             {
@@ -48,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 return "A lightsaber must be equipped in your right hand to use this ability.";
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
 
 
@@ -77,8 +80,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
-            var combatPointService = ServiceContainer.GetService<ICombatPointService>();
-            var enmityService = ServiceContainer.GetService<IEnmityService>();
+            _combatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+            _enmityService.ModifyEnmity(activator, target, 650);
 
             dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 

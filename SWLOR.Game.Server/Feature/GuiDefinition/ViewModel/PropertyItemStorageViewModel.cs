@@ -23,12 +23,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly IDatabaseService _db;
         private readonly IItemService _itemService;
         private readonly IPropertyService _propertyService;
+        private readonly ITargetingService _targetingService;
 
-        public PropertyItemStorageViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService, IPropertyService propertyService) : base(guiService)
+        public PropertyItemStorageViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService, IPropertyService propertyService, ITargetingService targetingService) : base(guiService)
         {
             _db = db;
             _itemService = itemService;
             _propertyService = propertyService;
+            _targetingService = targetingService;
         }
         
         private const int MaxNumberOfCategories = 20;
@@ -464,7 +466,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             ClearInstructions();
 
-            Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.", item =>
+            _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.", item =>
             {
                 var canBeStored = _itemService.CanBePersistentlyStored(Player, item);
                 if (!string.IsNullOrWhiteSpace(canBeStored))

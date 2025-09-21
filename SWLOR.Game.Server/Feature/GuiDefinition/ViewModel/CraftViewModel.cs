@@ -22,7 +22,6 @@ using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
-using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -38,8 +37,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly ISkillService _skillService;
         private readonly IPerkService _perkService;
         private readonly IStatService _statService;
+        private readonly ITargetingService _targetingService;
 
-        public CraftViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IItemCacheService itemCache, IRandomService random, IItemService itemService, ICraftService craftService, ISkillService skillService, IPerkService perkService, IStatService statService) : base(guiService)
+        public CraftViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IItemCacheService itemCache, IRandomService random, IItemService itemService, ICraftService craftService, ISkillService skillService, IPerkService perkService, IStatService statService, ITargetingService targetingService) : base(guiService)
         {
             _logger = logger;
             _db = db;
@@ -50,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _skillService = skillService;
             _perkService = perkService;
             _statService = statService;
+            _targetingService = targetingService;
         }
         public const string ViewName = "CraftView";
         public const string SetUpPartialName = "SetUpPartial";
@@ -843,7 +844,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement1))
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                 {
                     if (!IsValidEnhancement(item))
@@ -881,7 +882,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement2))
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                 {
                     if (!IsValidEnhancement(item))
@@ -919,7 +920,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement3))
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                     {
                         if (!IsValidEnhancement(item))
@@ -957,7 +958,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement4))
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                     {
                         if (!IsValidEnhancement(item))
@@ -995,7 +996,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement5))
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                     {
                         if (!IsValidEnhancement(item))
@@ -1033,7 +1034,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement6))
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                     {
                         if (!IsValidEnhancement(item))
@@ -1071,7 +1072,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement7))
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                     {
                         if (!IsValidEnhancement(item))
@@ -1109,7 +1110,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (string.IsNullOrWhiteSpace(_enhancement8))
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on an enhancement within your inventory.",
                     item =>
                     {
                         if (!IsValidEnhancement(item))

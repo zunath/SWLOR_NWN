@@ -2,12 +2,22 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class BattleInsightStatusEffectDefinition: IStatusEffectListDefinition
     {
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
+
+        public BattleInsightStatusEffectDefinition(CombatPoint combatPoint, IEnmityService enmityService)
+        {
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
+        }
+
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
             var builder = new StatusEffectBuilder();
@@ -43,8 +53,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }
 
-                    Enmity.ModifyEnmityOnAll(source, 80);
-                    CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);
+                    _enmityService.ModifyEnmityOnAll(source, 80);
+                    _combatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);
                 });
         }
         private void BattleInsight2(StatusEffectBuilder builder)
@@ -73,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }
 
-                    Enmity.ModifyEnmityOnAll(source, 120);
-                    CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);
+                    _enmityService.ModifyEnmityOnAll(source, 120);
+                    _combatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);
                 });
         }
     }

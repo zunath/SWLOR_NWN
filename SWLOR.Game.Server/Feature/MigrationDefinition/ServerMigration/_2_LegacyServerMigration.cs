@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
@@ -12,7 +13,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _2_LegacyServerMigration: LegacyMigrationBase, IServerMigration
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IItemService _itemService;
+        
+        public _2_LegacyServerMigration(IDatabaseService db, IItemService itemService)
+        {
+            _db = db;
+            _itemService = itemService;
+        }
         
         public int Version => 2;
         public MigrationExecutionType ExecutionType => MigrationExecutionType.PostDatabaseLoad;
@@ -43,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 ObjectPlugin.AcquireItem(tempStorage, deserialized);
 
                 WipeItemProperties(deserialized);
-                Item.MarkLegacyItem(deserialized);
+                _itemService.MarkLegacyItem(deserialized);
                 WipeDescription(deserialized);
                 WipeVariables(deserialized);
                 CleanItemName(deserialized);

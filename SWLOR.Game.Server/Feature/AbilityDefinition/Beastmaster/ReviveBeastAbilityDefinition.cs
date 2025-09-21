@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -13,8 +14,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
     public class ReviveBeastAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly CombatPoint _combatPoint;
+        private readonly BeastMastery _beastMastery;
+        private readonly IEnmityService _enmityService;
 
+        public ReviveBeastAbilityDefinition(IDatabaseService db, CombatPoint combatPoint, BeastMastery beastMastery, IEnmityService enmityService)
+        {
+            _db = db;
+            _combatPoint = combatPoint;
+            _beastMastery = beastMastery;
+            _enmityService = enmityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -77,9 +88,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     _db.Set(dbBeast);
 
-                    BeastMastery.SpawnBeast(activator, dbBeast.Id, 0);
-                    Enmity.ModifyEnmityOnAll(activator, 500);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    _beastMastery.SpawnBeast(activator, dbBeast.Id, 0);
+                    _enmityService.ModifyEnmityOnAll(activator, 500);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
 
@@ -106,9 +117,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     _db.Set(dbBeast);
 
                     var hpPercentage = 10 + GetAbilityScore(activator, AbilityType.Social);
-                    BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
-                    Enmity.ModifyEnmityOnAll(activator, 500);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    _beastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
+                    _enmityService.ModifyEnmityOnAll(activator, 500);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
 
@@ -135,9 +146,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     _db.Set(dbBeast);
 
                     var hpPercentage = 30 + GetAbilityScore(activator, AbilityType.Social) * 2;
-                    BeastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
-                    Enmity.ModifyEnmityOnAll(activator, 500);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    _beastMastery.SpawnBeast(activator, dbBeast.Id, hpPercentage);
+                    _enmityService.ModifyEnmityOnAll(activator, 500);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
     }

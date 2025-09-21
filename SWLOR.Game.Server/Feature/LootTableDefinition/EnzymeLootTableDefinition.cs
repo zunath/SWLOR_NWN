@@ -10,8 +10,13 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 {
     public class EnzymeLootTableDefinition: ILootTableDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         private readonly LootTableBuilder _builder = new();
+
+        public EnzymeLootTableDefinition(IRandomService random)
+        {
+            _random = random;
+        }
 
         private static readonly int[] _primaryWeights =
         {

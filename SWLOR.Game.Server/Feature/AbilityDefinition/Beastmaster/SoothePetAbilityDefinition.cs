@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
@@ -12,7 +13,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
     public class SoothePetAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly CombatPoint _combatPoint;
+        private readonly BeastMastery _beastMastery;
+        private readonly IEnmityService _enmityService;
 
+        public SoothePetAbilityDefinition(CombatPoint combatPoint, BeastMastery beastMastery, IEnmityService enmityService)
+        {
+            _combatPoint = combatPoint;
+            _beastMastery = beastMastery;
+            _enmityService = enmityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -40,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     }
 
                     var beast = GetAssociate(AssociateType.Henchman, activator);
-                    if (!BeastMastery.IsPlayerBeast(beast))
+                    if (!_beastMastery.IsPlayerBeast(beast))
                     {
                         return "You do not have an active beast.";
                     }
@@ -72,8 +82,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         EffectTypeScript.Slow);
 
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), beast);
-                    Enmity.ModifyEnmityOnAll(activator, 500);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    _enmityService.ModifyEnmityOnAll(activator, 500);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
     }

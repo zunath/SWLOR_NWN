@@ -64,21 +64,19 @@ namespace SWLOR.Game.Server.Service
         /// When the module caches, cache all static player market data for quick retrieval.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheData()
+        public void CacheData()
         {
-            var playerMarket = ServiceContainer.GetService<PlayerMarket>();
-            playerMarket.LoadMarketCategories();
-            playerMarket.LoadMarkets();
+            LoadMarketCategories();
+            LoadMarkets();
         }
 
         /// <summary>
         /// Marks items as unlisted if they have been sitting on the market for longer than two weeks.
         /// </summary>
         [ScriptHandler<OnModuleLoad>]
-        public static void RemoveOldListings()
+        public void RemoveOldListings()
         {
-            var playerMarket = ServiceContainer.GetService<PlayerMarket>();
-            playerMarket.RemoveOldListingsInternal();
+            RemoveOldListingsInternal();
         }
 
         private void RemoveOldListingsInternal()
@@ -105,10 +103,9 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, if they have credits in their market till, send them a message stating so.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void CheckMarketTill()
+        public void CheckMarketTill()
         {
-            var playerMarket = ServiceContainer.GetService<PlayerMarket>();
-            playerMarket.CheckMarketTillInternal();
+            CheckMarketTillInternal();
         }
 
         private void CheckMarketTillInternal()

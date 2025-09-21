@@ -7,11 +7,12 @@ namespace SWLOR.Game.Server.Service.PerkService
 {
     public class PerkRequirementUnlock: IPerkRequirement
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
         private readonly PerkType _perkType;
 
-        public PerkRequirementUnlock(PerkType perkType)
+        public PerkRequirementUnlock(IDatabaseService db, PerkType perkType)
         {
+            _db = db;
             _perkType = perkType;
         }
 

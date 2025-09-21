@@ -11,10 +11,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public class ConcussionGrenadeAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly CombatPoint _combatPointService;
+        private readonly IEnmityService _enmityService;
 
-        public ConcussionGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService) 
-            : base(random, itemService, perkService, statService, combatService)
+        public ConcussionGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, CombatPoint combatPointService, IEnmityService enmityService) 
+            : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService)
         {
+            _combatPointService = combatPointService;
+            _enmityService = enmityService;
         }
 
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -63,10 +67,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
             });
 
-            var combatPointService = ServiceContainer.GetService<CombatPoint>();
-            combatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            var enmityService = ServiceContainer.GetService<Enmity>();
-            enmityService.ModifyEnmity(activator, target, 180);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
+            _enmityService.ModifyEnmity(activator, target, 180);
         }
 
         private void ConcussionGrenade1()

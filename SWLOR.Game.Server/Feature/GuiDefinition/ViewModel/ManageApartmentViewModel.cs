@@ -18,10 +18,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class ManageApartmentViewModel: GuiViewModelBase<ManageApartmentViewModel, ManageApartmentPayload>
     {
         private readonly IDatabaseService _db;
+        private readonly Property _property;
 
-        public ManageApartmentViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        public ManageApartmentViewModel(IGuiService guiService, IDatabaseService db, Property property) : base(guiService)
         {
             _db = db;
+            _property = property;
         }
         
         public const int MaxNameLength = 50;
@@ -180,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var selectedPropertyId = _propertyIds[SelectedApartmentIndex];
             var query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.Id), selectedPropertyId, false);
+                .AddFieldSearch(nameof(World_property.Id), selectedPropertyId, false);
             var apartment = _db.Search(query).Single();
 
             return apartment;
@@ -229,9 +231,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var propertyIds = dbPermissions.Select(s => s.PropertyId);
                     var propertyQuery = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
-                        .AddFieldSearch(nameof(WorldProperty.Id), propertyIds)
-                        .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
+                        .AddFieldSearch(nameof(World_property.PropertyType), (int)PropertyType.Apartment)
+                        .AddFieldSearch(nameof(World_property.Id), propertyIds)
+                        .AddFieldSearch(nameof(World_property.IsQueuedForDeletion), false);
                     var propertyCount = (int)_db.SearchCount(propertyQuery);
 
                     var properties = _db.Search(propertyQuery
@@ -280,7 +282,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var apartment = GetApartment();
                 var permissions = GetPermissions();
-                var layout = Property.GetLayoutByType(apartment.Layout);
+                var layout = _property.GetLayoutByType(apartment.Layout);
                 var furnitureCount = 
                     apartment.ChildPropertyIds.ContainsKey(PropertyChildType.Structure)
                     ? apartment.ChildPropertyIds[PropertyChildType.Structure].Count
@@ -334,7 +336,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var apartment = GetApartment();
-            var layout = Property.GetLayoutByType(apartment.Layout);
+            var layout = _property.GetLayoutByType(apartment.Layout);
             var leasedUntilDate = apartment.Dates[PropertyDateType.Lease];
             var dayPrice = layout.PricePerDay;
             var weekPrice = layout.PricePerDay * 7;
@@ -408,7 +410,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 _db.Set(apartment);
 
-                var instance = Property.GetRegisteredInstance(apartment.Id);
+                var instance = _property.GetRegisteredInstance(apartment.Id);
                 SetName(instance.Area, "{PC} " + CustomName);
 
                 Instruction = $"Saved successfully.";
@@ -424,7 +426,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!permissions.Permissions[PropertyPermissionType.ExtendLease])
                 return;
 
-            var layout = Property.GetLayoutByType(apartment.Layout);
+            var layout = _property.GetLayoutByType(apartment.Layout);
             var price = days * layout.PricePerDay;
             var dayWord = days == 1 ? "day" : "days";
             var currentLease = apartment.Dates[PropertyDateType.Lease];
@@ -513,7 +515,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var apartment = GetApartment();
-            Property.EnterProperty(Player, apartment.Id);
+            _property.EnterProperty(Player, apartment.Id);
 
             _guiService.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);
         };

@@ -13,20 +13,30 @@ using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Contracts;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
 using SkillType = SWLOR.Shared.Core.Enums.SkillType;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Communication
+    public class Communication
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IActivityService _activityService;
+        private readonly IHoloComService _holoComService;
         private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
         private const int HolonetDelayMinutes = 5;
 
         public static (byte, byte, byte) OOCChatColor { get; } = (64, 64, 64);
         public static (byte, byte, byte) EmoteChatColor { get; } = (0, 255, 0);
+
+        public Communication(IDatabaseService db, IActivityService activityService, IHoloComService holoComService)
+        {
+            _db = db;
+            _activityService = activityService;
+            _holoComService = holoComService;
+        }
 
         private class CommunicationComponent
         {
@@ -52,7 +62,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler<OnDMPossessBefore>]
         [ScriptHandler<OnDMPossessFullPowerBefore>]
-        public static void OnDMPossess()
+        public void OnDMPossess()
         {
             var dm = OBJECT_SELF;
             var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
@@ -69,7 +79,7 @@ namespace SWLOR.Game.Server.Service
                 SetLocalObject(dm, DMPossessedCreature, target);
                 
                 // Clear busy status of the possessed creature to prevent ability usage issues
-                Activity.ClearBusy(target);
+                _activityService.ClearBusy(target);
             }
         }
 
@@ -78,7 +88,7 @@ namespace SWLOR.Game.Server.Service
         /// the current state of their holonet visibility.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void LoadHolonetSetting()
+        public void LoadHolonetSetting()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -95,7 +105,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
 
         [ScriptHandler<OnModuleGuiEvent>]
-        public static void TypingIndicator()
+        public void TypingIndicator()
         {
             var player = GetLastGuiEventPlayer();
             var type = GetLastGuiEventType();
@@ -113,13 +123,13 @@ namespace SWLOR.Game.Server.Service
 
         // Register DMFI Voice Command Handler which lives in nwscript land.
         [ScriptHandler<OnModuleChat>]
-        public static void ProcessNativeChatMessage()
+        public void ProcessNativeChatMessage()
         {
             ExecuteScript("dmfi_onplychat", OBJECT_SELF);
         }
 
         [ScriptHandler<OnNWNXChat>]
-        public static void ProcessChatMessage()
+        public void ProcessChatMessage()
         {
             var channel = ChatPlugin.GetChannel();
 
@@ -385,9 +395,9 @@ namespace SWLOR.Game.Server.Service
 
                 var originalSender = sender;
                 // temp set sender to hologram owner for holocoms
-                if (GetIsObjectValid(HoloCom.GetHoloGramOwner(sender)))
+                if (GetIsObjectValid(_holoComService.GetHoloGramOwner(sender)))
                 {
-                    sender = HoloCom.GetHoloGramOwner(sender);
+                    sender = _holoComService.GetHoloGramOwner(sender);
                 }
 
                 var language = Language.GetActiveLanguage(sender);
@@ -507,7 +517,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        private static List<CommunicationComponent> SplitMessageIntoComponents_Regular(string message)
+        private List<CommunicationComponent> SplitMessageIntoComponents_Regular(string message)
         {
             var components = new List<CommunicationComponent>();
 
@@ -654,7 +664,7 @@ namespace SWLOR.Game.Server.Service
             return components;
         }
 
-        private static List<CommunicationComponent> SplitMessageIntoComponents_Novel(string message)
+        private List<CommunicationComponent> SplitMessageIntoComponents_Novel(string message)
         {
             var components = new List<CommunicationComponent>();
 
@@ -743,7 +753,7 @@ namespace SWLOR.Game.Server.Service
             return components;
         }
 
-        public static EmoteStyle GetEmoteStyle(uint player)
+        public EmoteStyle GetEmoteStyle(uint player)
         {
             if (GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player))
             {
@@ -756,7 +766,7 @@ namespace SWLOR.Game.Server.Service
             return EmoteStyle.Regular;
         }
 
-        public static void SetEmoteStyle(uint player, EmoteStyle style)
+        public void SetEmoteStyle(uint player, EmoteStyle style)
         {
             if (GetIsPC(player) && !GetIsDM(player))
             {

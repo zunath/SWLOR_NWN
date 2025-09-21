@@ -8,6 +8,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Bioware;
@@ -31,8 +32,9 @@ namespace SWLOR.Game.Server.Service
         private readonly IGuiService _guiService;
         private readonly IPerkService _perkService;
         private readonly IItemService _itemService;
+        private readonly IPropertyService _propertyService;
 
-        public CraftService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IItemCacheService itemCache, IGuiService guiService, IPerkService perkService, IItemService itemService)
+        public CraftService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IItemCacheService itemCache, IGuiService guiService, IPerkService perkService, IItemService itemService, IPropertyService propertyService)
         {
             _logger = logger;
             _db = db;
@@ -41,6 +43,7 @@ namespace SWLOR.Game.Server.Service
             _guiService = guiService;
             _perkService = perkService;
             _itemService = itemService;
+            _propertyService = propertyService;
         }
         public const int MaxResearchLevel = 10;
 
@@ -753,8 +756,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
             
-            var propertyService = ServiceContainer.GetService<Property>();
-            var propertyId = propertyService.GetPropertyId(terminal);
+            var propertyId = _propertyService.GetPropertyId(terminal);
 
             if (string.IsNullOrWhiteSpace(propertyId))
             {

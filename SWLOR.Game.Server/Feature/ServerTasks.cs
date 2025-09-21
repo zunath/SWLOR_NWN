@@ -15,11 +15,19 @@ using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class ServerTasks
+    public class ServerTasks
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IScheduler _scheduler = ServiceContainer.GetService<IScheduler>();
+        private readonly ILogger _logger;
+
+        private readonly IDatabaseService _db;
+        private readonly IScheduler _scheduler;
+
+        public ServerTasks(ILogger logger, IDatabaseService db, IScheduler scheduler)
+        {
+            _logger = logger;
+            _db = db;
+            _scheduler = scheduler;
+        }
 
         // This determines what time the server will restart.
         // Restarts happen within a range of 30 seconds of this specified time. 
@@ -35,7 +43,7 @@ namespace SWLOR.Game.Server.Feature
         /// This isn't handled by the C# code and should be set up on your server.
         /// </summary>
         [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
-        public static void ProcessAutoRestart()
+        public void ProcessAutoRestart()
         {
             var now = DateTime.UtcNow.TimeOfDay;
             var restartRange = RestartTime.Add(new TimeSpan(0, 0, 0, 30));
@@ -62,7 +70,7 @@ namespace SWLOR.Game.Server.Feature
         /// When the server starts up, a log message will be written.
         /// </summary>
         [ScriptHandler<OnModuleLoad>]
-        public static void ProcessBootUp()
+        public void ProcessBootUp()
         {
             _logger.Write<ServerLogGroup>("Server is starting up.");
             ConfigureServerSettings();
@@ -134,7 +142,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a player enters the server, send them a greeting and a link to the Discord server.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void WelcomeMessage()
+        public void WelcomeMessage()
         {
             var player = GetEnteringObject();
             DelayCommand(2f, () =>

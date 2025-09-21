@@ -55,14 +55,16 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class XPReward : IQuestReward
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        private readonly IDatabaseService _db;
+        private readonly IItemCacheService _itemCache;
         public int Amount { get; }
         public bool IsSelectable { get; }
         public string MenuName => Amount + " XP";
 
-        public XPReward(int amount, bool isSelectable)
+        public XPReward(IDatabaseService db, IItemCacheService itemCache, int amount, bool isSelectable)
         {
+            _db = db;
+            _itemCache = itemCache;
             Amount = amount;
             IsSelectable = isSelectable;
         }
@@ -81,14 +83,15 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class ItemReward : IQuestReward
     {
-        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        private readonly IItemCacheService _itemCache;
         public bool IsSelectable { get; }
         public string MenuName { get; }
         private readonly string _resref;
         private readonly int _quantity;
 
-        public ItemReward(string resref, int quantity, bool isSelectable)
+        public ItemReward(IItemCacheService itemCache, string resref, int quantity, bool isSelectable)
         {
+            _itemCache = itemCache;
             _resref = resref;
             _quantity = quantity;
             IsSelectable = isSelectable;

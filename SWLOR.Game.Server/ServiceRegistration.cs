@@ -140,6 +140,20 @@ namespace SWLOR.Game.Server
         services.AddSingleton<SWLOR.Game.Server.Feature.EquipmentStats>();
         services.AddSingleton<SWLOR.Game.Server.Feature.ScavengePoint>();
         services.AddSingleton<SWLOR.Game.Server.Feature.StoreManagement>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.HoloNetTerminal>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.PlayerStatusWindow>();
+        
+        // Party Service
+        services.AddSingleton<SWLOR.Game.Server.Service.IPartyService, SWLOR.Game.Server.Service.PartyService>();
+        
+        // Enmity Service
+        services.AddSingleton<SWLOR.Game.Server.Service.IEnmityService, SWLOR.Game.Server.Service.EnmityService>();
+        
+        // Planet Service
+        services.AddSingleton<SWLOR.Game.Server.Service.IPlanetService, SWLOR.Game.Server.Service.PlanetService>();
+        
+        // ChatCommand Service
+        services.AddSingleton<SWLOR.Game.Server.Service.IChatCommandService, SWLOR.Game.Server.Service.ChatCommandService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.PlayerInitialization>();
             services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.GuildMasterDialog>();
             services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.PlaceCityHallDialog>();
@@ -296,6 +310,19 @@ namespace SWLOR.Game.Server
             services.AddSingleton<SWLOR.Shared.Core.Contracts.IGuildService, SWLOR.Game.Server.Service.GuildService>();
             services.AddSingleton<SWLOR.Shared.Core.Contracts.ICurrencyService, SWLOR.Game.Server.Service.CurrencyService>();
             services.AddSingleton<SWLOR.Shared.Core.Contracts.ILanguageService, SWLOR.Game.Server.Service.LanguageService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IActivityService, SWLOR.Game.Server.Service.ActivityService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IMessagingService, SWLOR.Game.Server.Service.MessagingService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ITimeService, SWLOR.Game.Server.Service.TimeService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ITargetingService, SWLOR.Game.Server.Service.TargetingService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IHoloComService, SWLOR.Game.Server.Service.HoloComService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IAnimationPlayerService, SWLOR.Game.Server.Service.AnimationPlayerService>();
+            
+        // Static service conversions
+        services.AddSingleton<SWLOR.Game.Server.Service.CombatPoint>();
+        services.AddSingleton<SWLOR.Game.Server.Service.BeastMastery>();
+        services.AddSingleton<SWLOR.Game.Server.Service.AI>();
+        services.AddSingleton<SWLOR.Game.Server.Service.Property>();
+        services.AddSingleton<SWLOR.Game.Server.Service.Achievement>();
         }
         
     }

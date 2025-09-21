@@ -35,10 +35,9 @@ namespace SWLOR.Game.Server.Feature
         /// When the module loads, cache the actions taken for each type of custom item property.
         /// </summary>
         [ScriptHandler<OnModuleLoad>]
-        public static void RegisterStatActions()
+        public void RegisterStatActions()
         {
-            var equipmentStats = ServiceContainer.GetService<EquipmentStats>();
-            equipmentStats.InitializeStatActions();
+            InitializeStatActions();
         }
 
         private void InitializeStatActions()
@@ -97,10 +96,9 @@ namespace SWLOR.Game.Server.Feature
         /// This should be run in the "after" event because any restrictions should be checked first.
         /// </summary>
         [ScriptHandler<OnSWLORItemEquipValidBefore>]
-        public static void ApplyStats()
+        public void ApplyStats()
         {
-            var equipmentStats = ServiceContainer.GetService<EquipmentStats>();
-            equipmentStats.ApplyStatsInternal();
+            ApplyStatsInternal();
         }
 
         private void ApplyStatsInternal()
@@ -136,10 +134,9 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is unequipped, if it has any custom stats, remove them now.
         /// </summary>
         [ScriptHandler<OnItemUnequipBefore>]
-        public static void RemoveStats()
+        public void RemoveStats()
         {
-            var equipmentStats = ServiceContainer.GetService<EquipmentStats>();
-            equipmentStats.RemoveStatsInternal();
+            RemoveStatsInternal();
         }
 
         private void RemoveStatsInternal()

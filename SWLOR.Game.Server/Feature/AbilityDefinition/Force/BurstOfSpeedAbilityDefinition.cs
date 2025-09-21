@@ -16,7 +16,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     {
         private const string Tier1Tag = "EFFECT_BURST_OF_SPEED_1";
         private const string Tier2Tag = "EFFECT_BURST_OF_SPEED_2";
-        private static IStatService StatService => ServiceContainer.GetService<IStatService>();
+        private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
+
+        public BurstOfSpeedAbilityDefinition(IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
+        {
+            _statService = statService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -70,14 +79,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             ApplyEffectToObject(DurationType.Temporary, effect, target, 600f);
 
-            StatService.ApplyPlayerMovementRate(target);
+            _statService.ApplyPlayerMovementRate(target);
         }
 
         [ScriptHandler(ScriptName.OnBurstOfSpeedRemoved)]
         public static void RemoveEffect()
         {
             var target = OBJECT_SELF;
-            StatService.ApplyPlayerMovementRate(target);
+            _statService.ApplyPlayerMovementRate(target);
         }
 
         private static void Impact(uint activator, uint target, int tier, string effectTag)
@@ -88,8 +97,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             effect = TagEffect(effect, effectTag);
             ApplyEffectToObject(DurationType.Temporary, effect, target, 600f);
 
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-            Enmity.ModifyEnmityOnAll(activator, 250);
+            _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            _enmityService.ModifyEnmityOnAll(activator, 250);
         }
 
         private static void BurstOfSpeed1(AbilityBuilder builder)

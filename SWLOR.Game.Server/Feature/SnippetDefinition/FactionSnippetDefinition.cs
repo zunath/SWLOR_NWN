@@ -12,10 +12,15 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
     public class FactionSnippetDefinition: ISnippetListDefinition
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-
+        private readonly IDatabaseService _db;
+        private readonly ILogger _logger;
         private readonly SnippetBuilder _builder = new();
+
+        public FactionSnippetDefinition(IDatabaseService db, ILogger logger)
+        {
+            _db = db;
+            _logger = logger;
+        }
 
         public Dictionary<string, SnippetDetail> BuildSnippets()
         {

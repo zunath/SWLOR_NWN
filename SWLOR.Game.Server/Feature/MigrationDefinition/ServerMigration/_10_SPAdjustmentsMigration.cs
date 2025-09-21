@@ -13,8 +13,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {
     public class _10_SPAdjustmentsMigration : ServerMigrationBase, IServerMigration
     {
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public _10_SPAdjustmentsMigration(ILogger logger, IDatabaseService db) : base(logger, db)
+        {
+        }
         private readonly Dictionary<(PerkType, int), int> _refundMap = new()
         {
             // Force - Universal Price Changes

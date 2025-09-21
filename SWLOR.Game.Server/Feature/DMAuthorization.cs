@@ -6,23 +6,31 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class DMAuthorization
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger;
+        private readonly Authorization _authorization;
+
+        public DMAuthorization(ILogger logger, Authorization authorization)
+        {
+            _logger = logger;
+            _authorization = authorization;
+        }
         /// <summary>
         /// Verifies that a logging in player is an authorized DM.
         /// The player will be booted if they are not authorized.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void VerifyDM()
+        public void VerifyDM()
         {
             var dm = GetEnteringObject();
             if (!GetIsDM(dm) && !GetIsDMPossessed(dm)) return;
 
-            var authorizationLevel = Authorization.GetAuthorizationLevel(dm);
+            var authorizationLevel = _authorization.GetAuthorizationLevel(dm);
 
             if (authorizationLevel != AuthorizationLevel.DM &&
                 authorizationLevel != AuthorizationLevel.Admin)
@@ -40,7 +48,7 @@ namespace SWLOR.Game.Server.Feature
         /// Logs whether an authorization attempt was successful.
         /// </summary>
         /// <param name="success">if true, will be logged as a successful attempt. if false, will be logged as unsuccessful.</param>
-        private static void LogDMAuthorization(bool success)
+        private void LogDMAuthorization(bool success)
         {
             var player = GetEnteringObject();
             string ipAddress = GetPCIPAddress(player);

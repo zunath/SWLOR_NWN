@@ -13,12 +13,24 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     public abstract class PlayerMigrationBase: IPlayerMigration
     {
-        protected static ILogger Logger => ServiceContainer.GetService<ILogger>();
-        protected static IDatabaseService Database => ServiceContainer.GetService<IDatabaseService>();
-        protected static IStatService StatService => ServiceContainer.GetService<IStatService>();
-        protected static ISkillService SkillService => ServiceContainer.GetService<ISkillService>();
-        protected static ICombatService CombatService => ServiceContainer.GetService<ICombatService>();
-        protected static IPerkService PerkService => ServiceContainer.GetService<IPerkService>();
+        protected readonly ILogger Logger;
+        protected readonly IDatabaseService Database;
+        protected readonly IStatService StatService;
+        protected readonly ISkillService SkillService;
+        protected readonly ICombatService CombatService;
+        protected readonly IPerkService PerkService;
+        protected readonly IItemService ItemService;
+
+        protected PlayerMigrationBase(ILogger logger, IDatabaseService database, IStatService statService, ISkillService skillService, ICombatService combatService, IPerkService perkService, IItemService itemService)
+        {
+            Logger = logger;
+            Database = database;
+            StatService = statService;
+            SkillService = skillService;
+            CombatService = combatService;
+            PerkService = perkService;
+            ItemService = itemService;
+        }
         public abstract int Version { get; }
         public abstract void Migrate(uint player);
 

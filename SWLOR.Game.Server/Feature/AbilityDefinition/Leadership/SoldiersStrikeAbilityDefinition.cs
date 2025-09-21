@@ -44,8 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    var abilityService = ServiceContainer.GetService<IAbilityService>();
-                    abilityService.ApplyAura(activator, StatusEffectType.SoldiersStrike, false, true, false);
+                    _abilityService.ApplyAura(activator, StatusEffectType.SoldiersStrike, false, true, false);
                 });
         }
     }

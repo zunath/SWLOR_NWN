@@ -11,14 +11,15 @@ namespace SWLOR.Game.Server.Service.SpawnService
 {
     public class SpawnTable
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         public string Name { get; set; }
         public int RespawnDelayMinutes { get; set; }
         public int ResourceDespawnMinutes { get; set; }
         public List<SpawnObject> Spawns { get; set; }
 
-        public SpawnTable(string name)
+        public SpawnTable(IRandomService random, string name)
         {
+            _random = random;
             Name = name;
             RespawnDelayMinutes = Spawn.DefaultRespawnMinutes;
             ResourceDespawnMinutes = 180; // Default: 3 hours for resources

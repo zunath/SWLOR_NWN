@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Service.DroidService
 {
     public class DroidGeekyPersonality: IDroidPersonality
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         private readonly List<string> _greetingPhrases = new()
         {
             "Approaching entity: this unit's databank shows you as welcome.",
@@ -33,7 +33,10 @@ namespace SWLOR.Game.Server.Service.DroidService
             "Optic sensors detect withdrawal of entity."
         };
 
-
+        public DroidGeekyPersonality(IRandomService randomService)
+        {
+            _random = randomService;
+        }
 
         public string GreetingPhrase()
         {

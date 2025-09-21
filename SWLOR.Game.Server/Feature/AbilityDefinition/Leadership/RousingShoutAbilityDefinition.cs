@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
@@ -10,10 +11,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
     {
         private readonly AbilityBuilder _builder = new();
         private readonly IPerkService _perkService;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
 
-        public RousingShoutAbilityDefinition(IPerkService perkService)
+        public RousingShoutAbilityDefinition(IPerkService perkService, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _perkService = perkService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -76,8 +81,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(hp), target);
                     }
 
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 3);
-                    Enmity.ModifyEnmityOnAll(activator, 850);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 850);
                 });
         }
     }

@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
 
@@ -7,7 +8,14 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {
     public class _12_RemoveDecayedPerks: PlayerMigrationBase
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IPerkService _perkService;
+        
+        public _12_RemoveDecayedPerks(IDatabaseService db, IPerkService perkService)
+        {
+            _db = db;
+            _perkService = perkService;
+        }
         
         public override int Version => 12;
         public override void Migrate(uint player)
@@ -17,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 
             foreach (var (perkType, level) in dbPlayer.Perks)
             {
-                var effectiveLevel = Perk.GetPlayerEffectivePerkLevel(player, perkType);
+                var effectiveLevel = _perkService.GetPlayerEffectivePerkLevel(player, perkType);
 
                 if (level != effectiveLevel)
                 {

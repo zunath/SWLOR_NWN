@@ -26,12 +26,16 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private readonly IDatabaseService _db;
         private readonly IAbilityService _abilityService;
         private readonly IGuiService _guiService;
+        private readonly Communication _communication;
+        private readonly IHoloComService _holoComService;
 
-        public CharacterChatCommand(IDatabaseService db, IAbilityService abilityService, IGuiService guiService)
+        public CharacterChatCommand(IDatabaseService db, IAbilityService abilityService, IGuiService guiService, Communication communication, IHoloComService holoComService)
         {
             _db = db;
             _abilityService = abilityService;
             _guiService = guiService;
+            _communication = communication;
+            _holoComService = holoComService;
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -141,16 +145,16 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     // Handle active calls
-                    if (HoloCom.IsInCall(user))
+                    if (_holoComService.IsInCall(user))
                     {
-                        var callTarget = HoloCom.GetTargetForActiveCall(user);
-                        HoloCom.SetIsInCall(user, callTarget, false);
+                        var callTarget = _holoComService.GetTargetForActiveCall(user);
+                        _holoComService.SetIsInCall(user, callTarget, false);
                         SendMessageToPC(user, "You end your HoloCom call.");
                     }
                     // Handle outgoing call attempts
-                    else if (HoloCom.IsCallSender(user))
+                    else if (_holoComService.IsCallSender(user))
                     {
-                        var callReceiver = HoloCom.GetCallReceiver(user);
+                        var callReceiver = _holoComService.GetCallReceiver(user);
                         if (GetIsObjectValid(callReceiver))
                         {
                             // Notify the receiver that the call attempt has ended
@@ -158,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         }
                         
                         // Clean up call attempt state
-                        HoloCom.CleanupCallAttempt(user, callReceiver);
+                        _holoComService.CleanupCallAttempt(user, callReceiver);
                         SendMessageToPC(user, "You cancel your HoloCom call.");
                     }
                     else
@@ -330,9 +334,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    var curStyle = Communication.GetEmoteStyle(user);
+                    var curStyle = _communication.GetEmoteStyle(user);
                     var newStyle = curStyle == EmoteStyle.Novel ? EmoteStyle.Regular : EmoteStyle.Novel;
-                    Communication.SetEmoteStyle(user, newStyle);
+                    _communication.SetEmoteStyle(user, newStyle);
                     SendMessageToPC(user, $"Toggled emote style to {newStyle}.");
                 });
         }

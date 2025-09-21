@@ -19,7 +19,6 @@ using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
-using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -33,8 +32,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly IAbilityService _abilityService;
         private readonly IItemService _itemService;
         private readonly ISkillService _skillService;
+        private readonly BeastMastery _beastMastery;
 
-        public PerksViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IPerkService perkService, IAbilityService abilityService, IItemService itemService, ISkillService skillService) : base(guiService)
+        public PerksViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IPerkService perkService, IAbilityService abilityService, IItemService itemService, ISkillService skillService, BeastMastery beastMastery) : base(guiService)
         {
             _logger = logger;
             _db = db;
@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _abilityService = abilityService;
             _itemService = itemService;
             _skillService = skillService;
+            _beastMastery = beastMastery;
         }
         
         private const int ItemsPerPage = 30;
@@ -265,7 +266,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var dbBeast = _db.Get<Beast>(dbPlayer.ActiveBeastId);
                 AvailableSP = $"Available SP: {dbBeast.UnallocatedSP}";
-                TotalSP = $"Total SP: {dbBeast.Level} / {BeastMastery.MaxLevel}";
+                TotalSP = $"Total SP: {dbBeast.Level} / {_beastMastery.MaxLevel}";
             }
 
             var dateRefundAvailable = dbPlayer.DatePerkRefundAvailable ?? now;

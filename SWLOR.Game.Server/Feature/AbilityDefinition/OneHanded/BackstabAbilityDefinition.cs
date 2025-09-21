@@ -13,12 +13,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         private readonly IItemService _itemService;
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
 
-        public BackstabAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService)
+        public BackstabAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -74,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 dmg /= 2;
             }
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+            _combatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.OneHanded);
@@ -90,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.Backstab));
-            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
+            _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
         private void Backstab1(AbilityBuilder builder)

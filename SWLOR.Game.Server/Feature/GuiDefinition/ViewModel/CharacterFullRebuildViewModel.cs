@@ -20,7 +20,6 @@ using ClassType = SWLOR.NWN.API.NWScript.Enum.ClassType;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
 using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
-using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -28,14 +27,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
+        private readonly IStatService _statService;
+        private readonly ISkillService _skillService;
+        private readonly IPerkService _perkService;
+        private readonly IAbilityService _abilityService;
 
-        public CharacterFullRebuildViewModel(IGuiService guiService, ILogger logger, IDatabaseService db) : base(guiService)
+        public CharacterFullRebuildViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IStatService statService, ISkillService skillService, IPerkService perkService, IAbilityService abilityService) : base(guiService)
         {
             _logger = logger;
             _db = db;
+            _statService = statService;
+            _skillService = skillService;
+            _perkService = perkService;
+            _abilityService = abilityService;
         }
         [ScriptHandler(ScriptName.OnCharacterRebuild)]
-        public static void LoadCharacterMigrationWindow()
+        public void LoadCharacterMigrationWindow()
         {
             var player = GetLastUsedBy();
 
@@ -46,11 +53,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(player)), player);
-            var statService = ServiceContainer.GetService<IStatService>();
-            statService.RestoreFP(player, statService.GetMaxFP(player));
-            statService.RestoreStamina(player, statService.GetMaxStamina(player));
-            var guiService = ServiceContainer.GetService<IGuiService>();
-            guiService.TogglePlayerWindow(player, GuiWindowType.CharacterMigration, null, OBJECT_SELF);
+            _statService.RestoreFP(player, _statService.GetMaxFP(player));
+            _statService.RestoreStamina(player, _statService.GetMaxStamina(player));
+            _guiService.TogglePlayerWindow(player, GuiWindowType.CharacterMigration, null, OBJECT_SELF);
         }
 
         [ScriptHandler(ScriptName.OnExitRebuild)]
@@ -418,7 +423,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal($"WARNING: Your perks and skill points will be refunded. Your stats will be reinitialized to 10 (before racial bonuses are applied). You will be required to distribute all of these points before leaving this area. Partial XP towards the next skill rank will be LOST. Are you sure you'd like to proceed?", () =>
             {
-                if (ServiceContainer.GetService<IAbilityService>().IsAnyAbilityToggled(Player))
+                if (_abilityService.IsAnyAbilityToggled(Player))
                 {
                     FloatingTextStringOnCreature(ColorToken.Red("Please toggle all abilities OFF and try again."), Player, false);
                     return;

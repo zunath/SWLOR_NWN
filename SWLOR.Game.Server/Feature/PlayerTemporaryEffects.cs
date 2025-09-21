@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
@@ -11,9 +12,17 @@ namespace SWLOR.Game.Server.Feature
 {
     public class PlayerTemporaryEffects
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IStatService _statService;
+
+        public PlayerTemporaryEffects(IDatabaseService db, IStatService statService)
+        {
+            _db = db;
+            _statService = statService;
+        }
+
         [ScriptHandler<OnModuleEnter>]
-        public static void ApplyTemporaryEffects()
+        public void ApplyTemporaryEffects()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
@@ -26,13 +35,13 @@ namespace SWLOR.Game.Server.Feature
             ReapplySpeed(player);
         }
 
-        private static void ApplyCutsceneGhostToPlayer(uint player)
+        private void ApplyCutsceneGhostToPlayer(uint player)
         {
             var effect = SupernaturalEffect(EffectCutsceneGhost());
             ApplyEffectToObject(DurationType.Permanent, effect, player);
         }
 
-        private static void ApplyHeight(uint player)
+        private void ApplyHeight(uint player)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
@@ -40,7 +49,7 @@ namespace SWLOR.Game.Server.Feature
             SetObjectVisualTransform(player, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
         }
 
-        private static void RemoveImmobility(uint player)
+        private void RemoveImmobility(uint player)
         {
             for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
             {
@@ -51,12 +60,12 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        private static void ReapplyBAB(uint player)
+        private void ReapplyBAB(uint player)
         {
-            Stat.ApplyAttacksPerRound(player, GetItemInSlot(InventorySlot.RightHand, player));
+            _statService.ApplyAttacksPerRound(player, GetItemInSlot(InventorySlot.RightHand, player));
         }
 
-        private static void ReapplySpeed(uint player)
+        private void ReapplySpeed(uint player)
         {
             CreaturePlugin.SetMovementRate(player, MovementRate.PC);
         }

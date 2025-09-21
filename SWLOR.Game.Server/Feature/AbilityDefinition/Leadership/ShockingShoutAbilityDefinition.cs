@@ -11,6 +11,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
     public class ShockingShoutAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly CombatPoint _combatPoint;
+        private readonly ICombatService _combatService;
+        private readonly IAbilityService _abilityService;
+
+        public ShockingShoutAbilityDefinition(CombatPoint combatPoint, ICombatService combatService, IAbilityService abilityService)
+        {
+            _combatPoint = combatPoint;
+            _combatService = combatService;
+            _abilityService = abilityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -51,8 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                         {
                             count++;
 
-                            var combatService = ServiceContainer.GetService<ICombatService>();
-                            var dc = combatService.CalculateSavingThrowDC(activator, 14, 0, 0);
+                            var dc = _combatService.CalculateSavingThrowDC(activator, 14, 0, 0);
                             const float BaseDuration = 2f;
                             var bonusDuration = GetAbilityModifier(AbilityType.Social, activator) * 0.5f;
                             var duration = BaseDuration + bonusDuration;
@@ -61,12 +70,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                             if (checkResult == SavingThrowResultType.Failed)
                             {
                                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), nearest, duration);
-                                var abilityService = ServiceContainer.GetService<IAbilityService>();
-                                abilityService.ApplyTemporaryImmunity(target, duration, ImmunityType.Stun);
+                                _abilityService.ApplyTemporaryImmunity(target, duration, ImmunityType.Stun);
                                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), nearest);
                             }
 
-                            CombatPoint.AddCombatPoint(activator, nearest, SkillType.Leadership, 3);
+                            _combatPoint.AddCombatPoint(activator, nearest, SkillType.Leadership, 3);
                             Enmity.ModifyEnmity(activator, target, 650);
                         }
 

@@ -22,7 +22,9 @@ namespace SWLOR.Game.Server.Service.QuestService
 
     public class QuestDetail
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IQuestService _questService;
+        private readonly IGuiService _guiService;
         public string QuestId { get; set; }
         public string Name { get; set; }
         public bool IsRepeatable { get; set; }
@@ -38,6 +40,13 @@ namespace SWLOR.Game.Server.Service.QuestService
         public List<AbandonQuestDelegate> OnAbandonActions { get; } = new();
         public List<AdvanceQuestDelegate> OnAdvanceActions { get; } = new();
         public List<CompleteQuestDelegate> OnCompleteActions { get; } = new();
+
+        public QuestDetail(IDatabaseService db, IQuestService questService, IGuiService guiService)
+        {
+            _db = db;
+            _questService = questService;
+            _guiService = guiService;
+        }
 
         /// <summary>
         /// Adds a quest state to this quest.
@@ -241,7 +250,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             // By this point, it's assumed the player will accept the quest.
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
-            var quest = ServiceContainer.GetService<IQuestService>().GetQuestById(QuestId);
+            var quest = _questService.GetQuestById(QuestId);
             var playerQuest = dbPlayer.Quests.ContainsKey(QuestId) ? dbPlayer.Quests[QuestId] : new PlayerQuest();
 
             // Retrieve the first quest state for this quest.
@@ -280,7 +289,7 @@ namespace SWLOR.Game.Server.Service.QuestService
                 action.Invoke(player, questSource);
             }
 
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new QuestAcquiredRefreshEvent(QuestId));
+            _guiService.PublishRefreshEvent(player, new QuestAcquiredRefreshEvent(QuestId));
         }
 
         /// <summary>
@@ -295,7 +304,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             // Retrieve the player's current quest state.
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
-            var quest = ServiceContainer.GetService<IQuestService>().GetQuestById(QuestId);
+            var quest = _questService.GetQuestById(QuestId);
             var playerQuest = dbPlayer.Quests.ContainsKey(QuestId) ? dbPlayer.Quests[QuestId] : new PlayerQuest();
 
             // Can't find a state? Notify the player they haven't accepted the quest.
@@ -366,7 +375,7 @@ namespace SWLOR.Game.Server.Service.QuestService
                     action.Invoke(player, questSource, playerQuest.CurrentState);
                 }
 
-                ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new QuestProgressedRefreshEvent(QuestId));
+                _guiService.PublishRefreshEvent(player, new QuestProgressedRefreshEvent(QuestId));
             }
 
         }
@@ -428,7 +437,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             RemoveJournalQuestEntry(QuestId, player, false);
 
             EventsPlugin.SignalEvent("SWLOR_COMPLETE_QUEST", player);
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new QuestCompletedRefreshEvent(QuestId));
+            _guiService.PublishRefreshEvent(player, new QuestCompletedRefreshEvent(QuestId));
         }
     }
 }

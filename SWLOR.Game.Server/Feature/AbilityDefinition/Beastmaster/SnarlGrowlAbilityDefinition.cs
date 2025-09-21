@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
@@ -11,7 +12,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
     public class SnarlGrowlAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
+        private readonly BeastMastery _beastMastery;
 
+        public SnarlGrowlAbilityDefinition(CombatPoint combatPoint, IEnmityService enmityService, BeastMastery beastMastery)
+        {
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
+            _beastMastery = beastMastery;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -29,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             }
             
             var beast = GetAssociate(AssociateType.Henchman, activator);
-            if (!BeastMastery.IsPlayerBeast(beast))
+            if (!_beastMastery.IsPlayerBeast(beast))
             {
                 return "You do not have an active beast.";
             }
@@ -57,18 +67,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var beast = GetAssociate(AssociateType.Henchman, activator);
-                    var masterEnmity = Enmity.GetEnmityTowardsAllEnemies(activator);
+                    var masterEnmity = _enmityService.GetEnmityTowardsAllEnemies(activator);
 
                     foreach (var (enemy, amount) in masterEnmity)
                     {
                         var halfAmount = amount / 2;
-                        Enmity.ModifyEnmity(activator, enemy, -halfAmount);
-                        Enmity.ModifyEnmity(beast, enemy, halfAmount);
+                        _enmityService.ModifyEnmity(activator, enemy, -halfAmount);
+                        _enmityService.ModifyEnmity(beast, enemy, halfAmount);
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Red), activator);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Yellow), beast);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
 
@@ -87,18 +97,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasImpactAction((activator, _, _, targetLocation) =>
                 {
                     var beast = GetAssociate(AssociateType.Henchman, activator);
-                    var beastEnmity = Enmity.GetEnmityTowardsAllEnemies(beast);
+                    var beastEnmity = _enmityService.GetEnmityTowardsAllEnemies(beast);
 
                     foreach (var (enemy, amount) in beastEnmity)
                     {
                         var halfAmount = amount / 2;
-                        Enmity.ModifyEnmity(activator, enemy, halfAmount);
-                        Enmity.ModifyEnmity(beast, enemy, -halfAmount);
+                        _enmityService.ModifyEnmity(activator, enemy, halfAmount);
+                        _enmityService.ModifyEnmity(beast, enemy, -halfAmount);
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Red), beast);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Yellow), activator);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
     }

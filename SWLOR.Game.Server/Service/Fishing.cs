@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Service
         private readonly IItemCacheService _itemCache;
         private readonly IRandomService _random;
         private readonly ISkillService _skillService;
+        private readonly IActivityService _activityService;
+        private readonly IMessagingService _messagingService;
         
         // Cached data
         private IEnumCache<FishType, FishAttribute> _fishCache;
@@ -44,13 +46,17 @@ namespace SWLOR.Game.Server.Service
             IGenericCacheService cacheService,
             IItemCacheService itemCache,
             IRandomService random,
-            ISkillService skillService)
+            ISkillService skillService,
+            IActivityService activityService,
+            IMessagingService messagingService)
         {
             _db = db;
             _cacheService = cacheService;
             _itemCache = itemCache;
             _random = random;
             _skillService = skillService;
+            _activityService = activityService;
+            _messagingService = messagingService;
         }
 
         public const string ActiveBaitVariable = "ACTIVE_BAIT";
@@ -70,13 +76,12 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, retrieve and organize all fishing data for quick look-ups.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheData()
+        public void CacheData()
         {
-            var fishing = ServiceContainer.GetService<Fishing>();
-            fishing.LoadFish();
-            fishing.LoadRods();
-            fishing.LoadBaits();
-            fishing.LoadFishingLocations();
+            LoadFish();
+            LoadRods();
+            LoadBaits();
+            LoadFishingLocations();
         }
 
         private void LoadFish()
@@ -245,10 +250,9 @@ namespace SWLOR.Game.Server.Service
         /// Runs when a player interacts with a fishing point.
         /// </summary>
         [ScriptHandler(ScriptName.OnFishPoint)]
-        public static void ClickFishingPoint()
+        public void ClickFishingPoint()
         {
-            var fishing = ServiceContainer.GetService<Fishing>();
-            fishing.ClickFishingPointInternal();
+            ClickFishingPointInternal();
         }
 
         private void ClickFishingPointInternal()
@@ -288,7 +292,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (Activity.IsBusy(player))
+            if (_activityService.IsBusy(player))
             {
                 SendMessageToPC(player, "You are busy.");
                 return;
@@ -318,7 +322,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(fishingPoint) || GetIsDead(fishingPoint))
             {
                 // Clear any existing busy state if the fishing point is exhausted
-                Activity.ClearBusy(player);
+                _activityService.ClearBusy(player);
                 SendMessageToPC(player, "This fishing point has been exhausted.");
                 return;
             }
@@ -334,8 +338,8 @@ namespace SWLOR.Game.Server.Service
             var fishingDelay = 6 + _random.Next(3);
             PlayerPlugin.StartGuiTimingBar(player, fishingDelay, "finish_fishing");
 
-            Activity.SetBusy(player, ActivityStatusType.Fishing);
-            Messaging.SendMessageNearbyToPlayers(player, $"{GetName(player)} casts a line into the water.");
+            _activityService.SetBusy(player, ActivityStatusType.Fishing);
+            _messagingService.SendMessageNearbyToPlayers(player, $"{GetName(player)} casts a line into the water.");
 
             BiowarePosition.TurnToFaceObject(fishingPoint, player);
             CheckPosition(player, position, attemptId);
@@ -345,10 +349,9 @@ namespace SWLOR.Game.Server.Service
         /// Runs when the fishing process completes.
         /// </summary>
         [ScriptHandler(ScriptName.OnFinishFishing)]
-        public static void FinishFishing()
+        public void FinishFishing()
         {
-            var fishing = ServiceContainer.GetService<Fishing>();
-            fishing.FinishFishingInternal();
+            FinishFishingInternal();
         }
 
         private void FinishFishingInternal()
@@ -378,7 +381,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(fishingPoint) || GetIsDead(fishingPoint))
             {
                 // Clear any existing busy state if the fishing point is exhausted
-                Activity.ClearBusy(player);
+                _activityService.ClearBusy(player);
                 SendMessageToPC(player, "This fishing point has been exhausted.");
                 return;
             }
@@ -475,7 +478,7 @@ namespace SWLOR.Game.Server.Service
                 SetPlotFlag(fishingPoint, false);
                 ApplyEffectToObject(DurationType.Instant, EffectDeath(), fishingPoint);
 
-                Messaging.SendMessageNearbyToPlayers(fishingPoint, "The fishing point has been exhausted.");
+                _messagingService.SendMessageNearbyToPlayers(fishingPoint, "The fishing point has been exhausted.");
             }
             else
             {

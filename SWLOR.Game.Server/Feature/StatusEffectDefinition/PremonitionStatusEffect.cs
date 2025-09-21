@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
@@ -10,6 +11,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public class PremonitionStatusEffect: IStatusEffectListDefinition
     {
         private readonly StatusEffectBuilder _builder = new();
+        private readonly CombatPoint _combatPoint;
+        private readonly IEnmityService _enmityService;
+
+        public PremonitionStatusEffect(CombatPoint combatPoint, IEnmityService enmityService)
+        {
+            _combatPoint = combatPoint;
+            _enmityService = enmityService;
+        }
 
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
@@ -33,8 +42,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 ApplyEffectToObject(DurationType.Temporary, effect, member, 6.1f);
             }
 
-            Enmity.ModifyEnmityOnAll(source, 50 * amount);
-            CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force);
+            _enmityService.ModifyEnmityOnAll(source, 50 * amount);
+            _combatPoint.AddCombatPointToAllTagged(source, SkillType.Force);
         }
 
         private void Premonition1()

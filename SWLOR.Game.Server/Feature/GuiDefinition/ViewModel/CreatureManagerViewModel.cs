@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
@@ -19,10 +20,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class CreatureManagerViewModel: GuiViewModelBase<CreatureManagerViewModel, GuiPayloadBase>
     {
         private readonly IDatabaseService _db;
+        private readonly ITargetingService _targetingService;
 
-        public CreatureManagerViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        public CreatureManagerViewModel(IGuiService guiService, IDatabaseService db, ITargetingService targetingService) : base(guiService)
         {
             _db = db;
+            _targetingService = targetingService;
         }
         
         private readonly List<string> _creatureIds = new();        
@@ -75,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickAddNew() => () =>
         {
-            Targeting.EnterTargetingMode(Player, ObjectType.Creature, "Please click on a creature to save.",
+            _targetingService.EnterTargetingMode(Player, ObjectType.Creature, "Please click on a creature to save.",
              creature =>
              {
                  if (!GetIsObjectValid(creature) || GetIsDM(creature) || GetIsPC(creature))

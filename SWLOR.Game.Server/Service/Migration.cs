@@ -14,21 +14,28 @@ using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 using Exception = System.Exception;
 using SWLOR.Shared.Events.Events.Infrastructure;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Migration
+    public class Migration
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
         private static int _currentMigrationVersion;
         private static int _newMigrationVersion;
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostDatabase = new();
         private static readonly Dictionary<int, IServerMigration> _serverMigrationsPostCache = new();
         private static readonly Dictionary<int, IPlayerMigration> _playerMigrations = new();
 
+        public Migration(ILogger logger, IDatabaseService db)
+        {
+            _logger = logger;
+            _db = db;
+        }
+
         [ScriptHandler<OnServerLoaded>]
-        public static void AfterDatabaseLoaded()
+        public void AfterDatabaseLoaded()
         {
             var config = GetServerConfiguration();
             _currentMigrationVersion = config.MigrationVersion;
@@ -40,13 +47,13 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler<OnModuleCacheAfter>]
-        public static void AfterCacheLoaded()
+        public void AfterCacheLoaded()
         {
             RunServerMigrationsPostCache();
             UpdateMigrationVersion();
         }
 
-        private static void UpdateMigrationVersion()
+        private void UpdateMigrationVersion()
         {
             if (_newMigrationVersion > _currentMigrationVersion)
             {
@@ -56,12 +63,12 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static ServerConfiguration GetServerConfiguration()
+        private ServerConfiguration GetServerConfiguration()
         {
             return _db.Get<ServerConfiguration>("SWLOR_CONFIG") ?? new ServerConfiguration();
         }
 
-        private static IEnumerable<IServerMigration> GetMigrations(MigrationExecutionType executionType)
+        private IEnumerable<IServerMigration> GetMigrations(MigrationExecutionType executionType)
         {
             var serverConfig = GetServerConfiguration();
             var migrationVersion = serverConfig.MigrationVersion;
@@ -85,7 +92,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void RunMigrations(MigrationExecutionType executionType)
+        private void RunMigrations(MigrationExecutionType executionType)
         {
             var sw = new Stopwatch();
             var migrations = GetMigrations(executionType);
@@ -115,12 +122,12 @@ namespace SWLOR.Game.Server.Service
                 _newMigrationVersion = newVersion;
         }
 
-        private static void RunServerMigrationsPostDatabase()
+        private void RunServerMigrationsPostDatabase()
         {
             RunMigrations(MigrationExecutionType.PostDatabaseLoad);
         }
 
-        public static void RunServerMigrationsPostCache()
+        public void RunServerMigrationsPostCache()
         {
             RunMigrations(MigrationExecutionType.PostCacheLoad);
         }
@@ -129,7 +136,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player logs into the server and after initialization has run, run the migration process on their character.
         /// </summary>
         [ScriptHandler<OnCharacterInitAfter>]
-        public static void RunPlayerMigrations()
+        public void RunPlayerMigrations()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player))
@@ -169,7 +176,7 @@ namespace SWLOR.Game.Server.Service
             _db.Set(dbPlayer);
         }
 
-        private static void LoadServerMigrations()
+        private void LoadServerMigrations()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
@@ -186,7 +193,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void LoadPlayerMigrations()
+        private void LoadPlayerMigrations()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
@@ -204,7 +211,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves the latest migration version for players.
         /// </summary>
         /// <returns>The latest migration version for players.</returns>
-        public static int GetLatestPlayerVersion()
+        public int GetLatestPlayerVersion()
         {
             return _playerMigrations.Max(m => m.Key);
         }

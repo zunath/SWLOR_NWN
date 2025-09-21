@@ -1,6 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Service.FishingService
+namespace SWLOR.Shared.Core.Enums
 {
     public enum FishType
     {

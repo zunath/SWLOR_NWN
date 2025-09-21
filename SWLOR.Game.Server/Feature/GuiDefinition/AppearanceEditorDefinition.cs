@@ -4,6 +4,7 @@ using System;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;

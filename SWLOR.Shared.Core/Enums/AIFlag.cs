@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service.AIService
+namespace SWLOR.Shared.Core.Enums
 {
     [Flags]
     public enum AIFlag

@@ -9,6 +9,7 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 

@@ -1,8 +1,9 @@
-using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Service;
-
-public interface IAnimationPlayerService
+namespace SWLOR.Shared.Core.Contracts
 {
-    void Play(uint oObject, AnimationEvent animationEvent);
+    public interface IAnimationPlayerService
+    {
+        void Play(uint oObject, AnimationEvent animationEvent);
+    }
 }

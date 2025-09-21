@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {

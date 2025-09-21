@@ -1,6 +1,7 @@
-﻿namespace SWLOR.Shared.Caching.Contracts;
-
-public interface IModuleCacheService
+﻿namespace SWLOR.Shared.Caching.Contracts
 {
-    void OnEventsHooked();
+    public interface IModuleCacheService
+    {
+        void OnEventsHooked();
+    }
 }

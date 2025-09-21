@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Abstractions.Enums
+namespace SWLOR.Shared.Core.Enums
 {
     public enum ChatCommandUserType
     {

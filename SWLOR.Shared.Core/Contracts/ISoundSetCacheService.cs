@@ -1,6 +1,7 @@
-namespace SWLOR.Shared.Core.Contracts;
-
-public interface ISoundSetCacheService
+namespace SWLOR.Shared.Core.Contracts
 {
-    Dictionary<int, string> GetSoundSets();
+    public interface ISoundSetCacheService
+    {
+        Dictionary<int, string> GetSoundSets();
+    }
 }

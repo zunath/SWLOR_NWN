@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {

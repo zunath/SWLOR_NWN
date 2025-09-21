@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Service.SpawnService
 {

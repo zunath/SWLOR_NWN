@@ -1,6 +1,7 @@
-namespace SWLOR.Shared.Abstractions.Contracts;
-
-public interface IServerBootstrapper
+namespace SWLOR.Shared.Abstractions.Contracts
 {
-    void Bootstrap();
+    public interface IServerBootstrapper
+    {
+        void Bootstrap();
+    }
 }

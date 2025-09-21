@@ -1,4 +1,5 @@
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 
 namespace SWLOR.Game.Server.Service.PerkService

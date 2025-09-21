@@ -1,4 +1,6 @@
-namespace SWLOR.Game.Server.Service.FishingService
+using SWLOR.Shared.Core.Enums;
+
+namespace SWLOR.Shared.Core.Models
 {
     public class FishDetail
     {

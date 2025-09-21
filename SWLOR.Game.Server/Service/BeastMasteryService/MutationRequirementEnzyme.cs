@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;

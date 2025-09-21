@@ -1,9 +1,8 @@
 using System.Numerics;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Shared.Core.Contracts
 {

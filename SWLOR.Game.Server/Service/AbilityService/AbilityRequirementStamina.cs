@@ -1,6 +1,6 @@
 using SWLOR.Shared.Core.Contracts;
 
-namespace SWLOR.Game.Server.Service.AbilityServicex
+namespace SWLOR.Game.Server.Service.AbilityService
 {
     /// <summary>
     /// Adds a stamina requirement to activate a perk.

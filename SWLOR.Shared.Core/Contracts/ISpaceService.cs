@@ -1,5 +1,3 @@
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Models;

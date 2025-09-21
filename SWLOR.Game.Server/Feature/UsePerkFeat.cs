@@ -1,7 +1,5 @@
 using System;
 using System.Numerics;
-
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;

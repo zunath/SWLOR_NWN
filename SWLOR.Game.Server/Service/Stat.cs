@@ -2,7 +2,6 @@ using System;
 using NWN.Native.API;
 
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
-using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -10,6 +9,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;

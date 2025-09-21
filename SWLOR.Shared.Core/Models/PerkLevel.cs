@@ -1,6 +1,7 @@
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 
-namespace SWLOR.Game.Server.Service.PerkService
+namespace SWLOR.Shared.Core.Models
 {
     public class PerkLevel
     {

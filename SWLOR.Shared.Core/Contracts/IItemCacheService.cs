@@ -1,7 +1,8 @@
-namespace SWLOR.Shared.Core.Contracts;
-
-public interface IItemCacheService
+namespace SWLOR.Shared.Core.Contracts
 {
-    void CacheItemNamesByResref();
-    string GetItemNameByResref(string resref);
+    public interface IItemCacheService
+    {
+        void CacheItemNamesByResref();
+        string GetItemNameByResref(string resref);
+    }
 }

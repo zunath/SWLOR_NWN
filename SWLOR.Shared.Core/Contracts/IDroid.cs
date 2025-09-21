@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Shared.Core.Contracts
 {

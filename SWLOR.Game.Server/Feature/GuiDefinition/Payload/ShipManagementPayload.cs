@@ -1,5 +1,5 @@
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.Engine;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload

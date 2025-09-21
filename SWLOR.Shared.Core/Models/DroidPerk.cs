@@ -1,6 +1,6 @@
 using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Service.DroidService
+namespace SWLOR.Shared.Core.Models
 {
     public class DroidPerk
     {

@@ -1,6 +1,7 @@
 
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.UI.Contracts;

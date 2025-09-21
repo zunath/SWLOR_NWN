@@ -1,8 +1,8 @@
 using NWN.Native.API;
-using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 

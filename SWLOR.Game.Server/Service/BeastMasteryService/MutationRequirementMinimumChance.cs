@@ -1,3 +1,4 @@
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 
 namespace SWLOR.Game.Server.Service.BeastMasteryService

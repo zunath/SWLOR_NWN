@@ -1,8 +1,9 @@
-namespace SWLOR.Shared.Abstractions.Contracts;
-
-public interface IMainLoopProcessor
+namespace SWLOR.Shared.Abstractions.Contracts
 {
-    event Action OnScriptContextBegin;
-    event Action OnScriptContextEnd;
-    void ProcessMainLoop(ulong frame);
+    public interface IMainLoopProcessor
+    {
+        event Action OnScriptContextBegin;
+        event Action OnScriptContextEnd;
+        void ProcessMainLoop(ulong frame);
+    }
 }

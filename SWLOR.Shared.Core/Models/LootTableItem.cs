@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service.LootService
+namespace SWLOR.Shared.Core.Models
 {
     public class LootTableItem
     {

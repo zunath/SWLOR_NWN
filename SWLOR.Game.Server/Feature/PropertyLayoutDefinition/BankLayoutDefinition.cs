@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 

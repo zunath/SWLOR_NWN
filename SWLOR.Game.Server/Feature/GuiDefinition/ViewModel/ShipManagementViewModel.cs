@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.Engine;
@@ -13,6 +12,7 @@ using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;

@@ -1,6 +1,7 @@
-namespace SWLOR.Shared.Abstractions.Contracts;
-
-public interface INativeInteropManager
+namespace SWLOR.Shared.Abstractions.Contracts
 {
-    void RegisterHandlers();
+    public interface INativeInteropManager
+    {
+        void RegisterHandlers();
+    }
 }

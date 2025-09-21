@@ -1,6 +1,6 @@
-using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Shared.Core.Contracts
 {

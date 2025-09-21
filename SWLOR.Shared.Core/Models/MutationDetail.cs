@@ -1,6 +1,7 @@
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Service.BeastMasteryService
+namespace SWLOR.Shared.Core.Models
 {
     public class MutationDetail
     {

@@ -1,5 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Service.AnimationService
 {

@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service.PerkService
+namespace SWLOR.Shared.Core.Enums
 {
     public enum PerkCategoryType
     {

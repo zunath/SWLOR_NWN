@@ -1,6 +1,6 @@
 using SWLOR.NWN.API.Engine;
 
-namespace SWLOR.Game.Server.Service.SpaceService
+namespace SWLOR.Shared.Core.Models
 {
     public class ShipDockPoint
     {

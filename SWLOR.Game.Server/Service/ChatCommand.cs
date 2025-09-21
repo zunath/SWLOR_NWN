@@ -14,6 +14,8 @@ using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Models;
+using ChatCommandDetail = SWLOR.Game.Server.Service.ChatCommandService.ChatCommandDetail;
 
 namespace SWLOR.Game.Server.Service
 {

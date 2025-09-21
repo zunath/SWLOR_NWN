@@ -1,7 +1,7 @@
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Service.AbilityServicex
+namespace SWLOR.Game.Server.Service.AbilityService
 {
     /// <summary>
     /// Adds an FP requirement to activate a perk.

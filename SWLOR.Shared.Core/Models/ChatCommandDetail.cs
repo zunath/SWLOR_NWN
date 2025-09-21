@@ -1,6 +1,6 @@
-using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Shared.Abstractions.Models
+namespace SWLOR.Shared.Core.Models
 {
     public class ChatCommandDetail
     {

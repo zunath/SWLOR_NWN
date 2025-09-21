@@ -1,3 +1,4 @@
+using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Model;
 

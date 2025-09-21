@@ -1,7 +1,5 @@
 using NWN.Native.API;
 using NWNX.NET;
-
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;

@@ -1,6 +1,6 @@
 using SWLOR.Shared.Core.Data.Entity;
 
-namespace SWLOR.Game.Server.Service.BeastMasteryService
+namespace SWLOR.Shared.Core.Contracts
 {
     public interface IMutationRequirement
     {

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {

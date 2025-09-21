@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.FishingLocationDefinition
 {

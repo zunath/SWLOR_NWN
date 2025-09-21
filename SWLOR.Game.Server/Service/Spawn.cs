@@ -12,6 +12,7 @@ using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Caching.Contracts;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;

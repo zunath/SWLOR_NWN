@@ -1,5 +1,5 @@
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Shared.Core.Contracts
 {

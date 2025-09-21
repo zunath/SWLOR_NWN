@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
 

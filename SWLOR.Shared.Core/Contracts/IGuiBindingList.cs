@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Shared.Core.Contracts
 {

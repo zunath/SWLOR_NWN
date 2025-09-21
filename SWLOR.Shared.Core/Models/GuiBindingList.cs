@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using SWLOR.Shared.Core.Contracts;
 
-namespace SWLOR.Shared.UI.Model
+namespace SWLOR.Shared.Core.Models
 {
     public class GuiBindingList<T> : BindingList<T>, IGuiBindingList
     {

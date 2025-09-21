@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.LootService;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.LootTableDefinition
 {

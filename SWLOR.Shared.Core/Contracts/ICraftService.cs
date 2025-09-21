@@ -1,8 +1,6 @@
-using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.UI.Component;
-using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Shared.Core.Contracts
 {

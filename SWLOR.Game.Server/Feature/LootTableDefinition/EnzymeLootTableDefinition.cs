@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.LootService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.LootTableDefinition
 {

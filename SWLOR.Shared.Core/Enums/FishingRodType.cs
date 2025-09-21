@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service.FishingService
+namespace SWLOR.Shared.Core.Enums
 {
     public enum FishingRodType
     {

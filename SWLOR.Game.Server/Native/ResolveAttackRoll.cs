@@ -12,7 +12,7 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
-using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
+using AttackType = SWLOR.Shared.Core.Enums.AttackType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum._itemService.BaseItem;
 using FeatType = SWLOR.NWN.API.NWScript.Enum.FeatType;
 using ImmunityType = NWN.Native.API.ImmunityType;

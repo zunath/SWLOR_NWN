@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service.DroidService
+namespace SWLOR.Shared.Core.Enums
 {
     public enum DroidPersonalityType
     {

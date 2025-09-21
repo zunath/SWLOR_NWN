@@ -22,7 +22,13 @@ namespace SWLOR.Game.Server.Feature
         private readonly IMigrationService _migrationService;
         private readonly IRace _raceService;
 
-        public PlayerInitialization(ILogger logger, IDatabaseService db, IStatService statService, ISkillService skillService, IMigrationService migrationService, IRace raceService)
+        public PlayerInitialization(
+            ILogger logger, 
+            IDatabaseService db, 
+            IStatService statService, 
+            ISkillService skillService, 
+            IMigrationService migrationService, 
+            IRace raceService)
         {
             _logger = logger;
             _db = db;

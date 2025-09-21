@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -17,7 +18,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         private readonly IAbilityService _abilityService;
         private readonly IEnmityService _enmityService;
 
-        public ClipAbilityDefinition(ICombatService combatService, IStatService statService, IAbilityService abilityService, IEnmityService enmityService)
+        public ClipAbilityDefinition(
+            ICombatService combatService, 
+            IStatService statService, 
+            IAbilityService abilityService, 
+            IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;

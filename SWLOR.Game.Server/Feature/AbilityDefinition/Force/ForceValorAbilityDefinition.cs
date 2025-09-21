@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static void ForceValor1(IAbilityBuilder builder)
+        private void ForceValor1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceValor1, PerkType.ForceValor)
                 .Name("Force Valor I")
@@ -46,19 +47,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 {
                     var willpowerBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 30f;
 
-                    var statusEffectService = App.Resolve<IStatusEffectService>();
-                    var combatPointService = App.Resolve<ICombatPointService>();
-                    var enmityService = App.Resolve<IEnmityService>();
-
-                    statusEffectService.Apply(activator, target, StatusEffectType.ForceValor1, 60f * 15f + willpowerBonus);
+                    _statusEffectService.Apply(activator, target, StatusEffectType.ForceValor1, 60f * 15f + willpowerBonus);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
 
-                    combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-                    enmityService.ModifyEnmityOnAll(activator, 250 * level);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 250 * level);
                 });
         }
 
-        private static void ForceValor2(IAbilityBuilder builder)
+        private void ForceValor2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceValor2, PerkType.ForceValor)
                 .Name("Force Valor II")
@@ -73,15 +70,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 {
                     var willpowerBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 30f;
 
-                    var statusEffectService = App.Resolve<IStatusEffectService>();
-                    var combatPointService = App.Resolve<ICombatPointService>();
-                    var enmityService = App.Resolve<IEnmityService>();
-
-                    statusEffectService.Apply(activator, target, StatusEffectType.ForceValor2, 60f * 15f + willpowerBonus);
+                    _statusEffectService.Apply(activator, target, StatusEffectType.ForceValor2, 60f * 15f + willpowerBonus);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
 
-                    combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-                    enmityService.ModifyEnmityOnAll(activator, 250 * level);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 250 * level);
                 });
         }
     }

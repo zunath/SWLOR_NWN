@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -13,21 +14,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class SoothePetAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
+        private readonly IAbilityBuilder _builder;
         private readonly ICombatPointService _combatPointService;
-        private readonly BeastMastery _beastMastery;
+        private readonly IBeastMasteryService _beastMastery;
         private readonly IEnmityService _enmityService;
         private readonly IStatusEffectService _statusEffectService;
 
-        public SoothePetAbilityDefinition(ICombatPointService combatPointService, BeastMastery beastMastery, IEnmityService enmityService, IStatusEffectService statusEffectService)
+        public SoothePetAbilityDefinition(
+            ICombatPointService combatPointService, 
+            IBeastMasteryService beastMastery, 
+            IEnmityService enmityService, 
+            IStatusEffectService statusEffectService,
+            IAbilityBuilder builder)
         {
             _combatPointService = combatPointService;
             _beastMastery = beastMastery;
             _enmityService = enmityService;
             _statusEffectService = statusEffectService;
+            _builder = builder;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
             SoothePet();
 

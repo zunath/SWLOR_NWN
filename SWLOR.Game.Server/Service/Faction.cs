@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Service
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
-            var factionDetail = Faction.GetFactionDetail(faction);
+            var factionDetail = GetFactionDetail(faction);
 
             if (!dbPlayer.Factions.ContainsKey(faction))
             {

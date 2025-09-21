@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -18,13 +19,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly ICombatPointService _combatPointService;
+        private readonly IEnmityService _enmityService;
 
-        public ThrowLightsaberAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService)
+        public ThrowLightsaberAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
             _combatPointService = combatPointService;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
@@ -36,18 +39,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var distance = GetDistanceBetween(activator, target);
 
-            var itemService = App.Resolve<IItemService>();
             var validWeapon = GetIsObjectValid(weapon) &&
-                                 (itemService.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  itemService.VibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  itemService.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  itemService.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  itemService.ThrowingWeaponBaseItemTypes.Contains(GetBaseItemType(weapon)));
+                                 (_itemService.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  _itemService.VibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  _itemService.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  _itemService.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  _itemService.ThrowingWeaponBaseItemTypes.Contains(GetBaseItemType(weapon)));
 
             if (distance > 15)
                 return "You must be within 15 meters of your target.";
@@ -56,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             else return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
             const float Range = 15.0f;
@@ -87,21 +89,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     break;
             }
 
-            var combatService = App.Resolve<ICombatService>();
-            var statService = App.Resolve<IStatService>();
-            var combatPointService = App.Resolve<ICombatPointService>();
-            var enmityService = App.Resolve<IEnmityService>();
-
-            dmg += combatService.GetAbilityDamageBonus(activator, SkillType.Force);
-            var attack = statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
-            combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Force);
+            var attack = _statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
 
             // apply to target
             DelayCommand(delay, () =>
             {
-                var defense = statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                 var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-                var damage = combatService.CalculateDamage(
+                var damage = _combatService.CalculateDamage(
                     attack,
                     dmg,
                     attackerStat,
@@ -109,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     defenderStat,
                     0);
                 ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
-                enmityService.ModifyEnmity(activator, target, damage + 200 * level);
+                _enmityService.ModifyEnmity(activator, target, damage + 200 * level);
             });
 
             // apply to next nearest creature in the spellcylinder
@@ -122,9 +119,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     var nearbyCopy = nearby;
                     DelayCommand(delay, () =>
                     {
-                        var defense = statService.GetDefense(nearbyCopy, CombatDamageType.Physical, AbilityType.Vitality);
+                        var defense = _statService.GetDefense(nearbyCopy, CombatDamageType.Physical, AbilityType.Vitality);
                         var defenderStat = GetAbilityModifier(AbilityType.Willpower, nearbyCopy);
-                        var damage = combatService.CalculateDamage(
+                        var damage = _combatService.CalculateDamage(
                             attack,
                             dmg,
                             attackerStat,
@@ -132,8 +129,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                             defenderStat,
                             0);
                         ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), nearbyCopy);
-                        combatPointService.AddCombatPoint(activator, nearbyCopy, SkillType.Force, 3);
-                        enmityService.ModifyEnmity(activator, nearbyCopy, damage + 200 * level);
+                        _combatPointService.AddCombatPoint(activator, nearbyCopy, SkillType.Force, 3);
+                        _enmityService.ModifyEnmity(activator, nearbyCopy, damage + 200 * level);
                     });
 
                     count++;
@@ -143,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         }
 
-        private static void ThrowLightsaber1(IAbilityBuilder builder)
+        private void ThrowLightsaber1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ThrowLightsaber1, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber I")
@@ -161,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction(ImpactAction);
         }
-        private static void ThrowLightsaber2(IAbilityBuilder builder)
+        private void ThrowLightsaber2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ThrowLightsaber2, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber II")
@@ -179,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction(ImpactAction);
         }
-        private static void ThrowLightsaber3(IAbilityBuilder builder)
+        private void ThrowLightsaber3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ThrowLightsaber3, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber III")

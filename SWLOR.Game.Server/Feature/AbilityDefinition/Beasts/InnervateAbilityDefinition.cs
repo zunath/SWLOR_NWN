@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Service;
 
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -18,7 +19,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
-        public InnervateAbilityDefinition(IRandomService random, ICombatPointService combatPointService, IEnmityService enmityService)
+        public InnervateAbilityDefinition(
+            IRandomService random, 
+            ICombatPointService combatPointService, 
+            IEnmityService enmityService)
         {
             _random = random;
             _combatPointService = combatPointService;

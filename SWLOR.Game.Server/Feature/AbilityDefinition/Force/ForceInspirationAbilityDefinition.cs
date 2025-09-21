@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         }
 
-        private static void ForceInspiration1(IAbilityBuilder builder)
+        private void ForceInspiration1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceInspiration1, PerkType.ForceInspiration)
                 .Name("Force Inspiration I")
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     Impact(activator, target, 1);
                 });
         }
-        private static void ForceInspiration2(IAbilityBuilder builder)
+        private void ForceInspiration2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceInspiration2, PerkType.ForceInspiration)
                 .Name("Force Inspiration II")
@@ -73,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     Impact(activator, target, 2);
                 });
         }
-        private static void ForceInspiration3(IAbilityBuilder builder)
+        private void ForceInspiration3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceInspiration3, PerkType.ForceInspiration)
                 .Name("Force Inspiration III")

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static void BattleInsight1(IAbilityBuilder builder)
+        private void BattleInsight1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.BattleInsight1, PerkType.BattleInsight)
                 .Name("Battle Insight I")
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
-        private static void BattleInsight2(IAbilityBuilder builder)
+        private void BattleInsight2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.BattleInsight2, PerkType.BattleInsight)
                 .Name("Battle Insight II")

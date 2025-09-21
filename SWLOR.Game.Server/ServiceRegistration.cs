@@ -177,6 +177,46 @@ namespace SWLOR.Game.Server
         
         // Fishing Location Builder Service
         services.AddSingleton<IFishingLocationBuilder, SWLOR.Game.Server.Service.FishingService.FishingLocationBuilder>();
+        
+        // Communication Service
+        services.AddSingleton<ICommunication, SWLOR.Game.Server.Service.Communication>();
+        
+        // Weather Service
+        services.AddSingleton<IWeather, SWLOR.Game.Server.Service.Weather>();
+        
+        // Ship Module Definition Services
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.AdvancedThrustersModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.WeaponsComputerModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.CapacitorBoosterModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.DamageAmplifierModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.TurboLaserModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.EvasionBoosterModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.HullBoosterModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.ShieldBoosterModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.ReinforcedPlatingModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.ShipArmorModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.TargetingArrayModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.CombatLaserModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.ShipConfigurationModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.TargetingSystemModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.RedundantShieldsModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.AssaultConcussionMissileModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.RepairFieldGeneratorModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.StormCannonModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.ShieldRepairerModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.CapitalPowerDiverterModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.StripMinerModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.CapitalEwarModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.MissileLauncherModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.ProtonBombModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.HypermatterInjectorModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.HullRepairerModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.LaserCannonBatteryModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.QuadLaserCannonModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.MiningLaserModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.BeamCannonModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.IonCannonModuleDefinition>();
+        services.AddSingleton<IShipModuleListDefinition, SWLOR.Game.Server.Feature.ShipModuleDefinition.BulwarkShieldGeneratorModuleDefinition>();
             services.AddSingleton<SWLOR.Game.Server.Feature.PlayerInitialization>();
             services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.GuildMasterDialog>();
             services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.PlaceCityHallDialog>();

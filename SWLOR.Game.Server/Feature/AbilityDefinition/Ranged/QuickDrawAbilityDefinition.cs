@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -27,9 +28,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             _combatPointService = combatPointService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             QuickDraw1(builder);
             QuickDraw2(builder);
             QuickDraw3(builder);
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private static void QuickDraw1(AbilityBuilder builder)
+        private void QuickDraw1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.QuickDraw1, PerkType.QuickDraw)
                 .Name("Quick Draw I")
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void QuickDraw2(AbilityBuilder builder)
+        private void QuickDraw2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.QuickDraw2, PerkType.QuickDraw)
                 .Name("Quick Draw II")
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void QuickDraw3(AbilityBuilder builder)
+        private void QuickDraw3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.QuickDraw3, PerkType.QuickDraw)
                 .Name("Quick Draw III")

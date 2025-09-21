@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -28,9 +29,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             _combatPointService = combatPointService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             CripplingShot1(builder);
             CripplingShot2(builder);
             CripplingShot3(builder);
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             Enmity.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
-        private static void CripplingShot1(AbilityBuilder builder)
+        private void CripplingShot1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CripplingShot1, PerkType.CripplingShot)
                 .Name("Crippling Shot I")
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void CripplingShot2(AbilityBuilder builder)
+        private void CripplingShot2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CripplingShot2, PerkType.CripplingShot)
                 .Name("Crippling Shot II")
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void CripplingShot3(AbilityBuilder builder)
+        private void CripplingShot3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CripplingShot3, PerkType.CripplingShot)
                 .Name("Crippling Shot III")

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -11,6 +12,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class CreepingTerrorAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IStatusEffectService _statusEffectService;
+
+        public CreepingTerrorAbilityDefinition(IStatusEffectService statusEffectService)
+        {
+            _statusEffectService = statusEffectService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
@@ -21,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static void CreepingTerror1(IAbilityBuilder builder)
+        private void CreepingTerror1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CreepingTerror1, PerkType.CreepingTerror)
                 .Name("Creeping Terror I")
@@ -36,12 +43,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    var statusEffectService = App.Resolve<IStatusEffectService>();
-                    statusEffectService.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 1);
+                    _statusEffectService.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 1);
                 });
         }
 
-        private static void CreepingTerror2(IAbilityBuilder builder)
+        private void CreepingTerror2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CreepingTerror2, PerkType.CreepingTerror)
                 .Name("Creeping Terror II")
@@ -56,12 +62,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    var statusEffectService = App.Resolve<IStatusEffectService>();
-                    statusEffectService.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 2);
+                    _statusEffectService.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 2);
                 });
         }
 
-        private static void CreepingTerror3(IAbilityBuilder builder)
+        private void CreepingTerror3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.CreepingTerror3, PerkType.CreepingTerror)
                 .Name("Creeping Terror III")
@@ -76,8 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    var statusEffectService = App.Resolve<IStatusEffectService>();
-                    statusEffectService.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 3);
+                    _statusEffectService.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 3);
                 });
         }
     }

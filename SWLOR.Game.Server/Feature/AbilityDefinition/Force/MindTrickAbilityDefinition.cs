@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.NWN.API.Engine;
@@ -23,6 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             _combatService = combatService;
             _combatPointService = combatPointService;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
@@ -46,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return string.Empty;
         }
 
-        private static void ApplyMindTrick(uint activator, uint target)
+        private void ApplyMindTrick(uint activator, uint target)
         {
             var race = GetRacialType(target);
             if (activator == target ||
@@ -57,11 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 return;
             }
 
-            var combatService = App.Resolve<ICombatService>();
-            var combatPointService = App.Resolve<ICombatPointService>();
-            var enmityService = App.Resolve<IEnmityService>();
-
-            var dc = combatService.CalculateSavingThrowDC(activator, SavingThrow.Will, 12);
+            var dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Will, 12);
             const string EffectTag = "StatusEffectType.MindTrick";
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
 
@@ -72,11 +70,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 effect = TagEffect(effect, EffectTag);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6f);
             }
-            combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-            enmityService.ModifyEnmity(activator, target, 400);
+            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            _enmityService.ModifyEnmity(activator, target, 400);
         }
 
-        private static void MindTrick1(IAbilityBuilder builder)
+        private void MindTrick1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.MindTrick1, PerkType.MindTrick)
                 .Name("Mind Trick I")
@@ -94,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private static void MindTrick2(IAbilityBuilder builder)
+        private void MindTrick2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.MindTrick2, PerkType.MindTrick)
                 .Name("Mind Trick II")
@@ -121,8 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         }
                         targetCreature = GetNextObjectInShape(Shape.Sphere, Radius, GetLocation(target), true);
                     }
-                    var combatPointService = App.Resolve<ICombatPointService>();
-                    combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
                 });
         }
     }

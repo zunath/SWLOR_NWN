@@ -25,6 +25,8 @@ using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
+    
+
     public class BeastMastery : IBeastMasteryService
     {
         private readonly IDatabaseService _db;
@@ -107,9 +109,9 @@ namespace SWLOR.Game.Server.Service
         public const string BeastEggResref = "beast_egg";
         public const string EnzymeTag = "INCUBATION_ENZYME";
 
-        public const string ExtractCorpseObjectResref = "extract_corpse";
-        public const string BeastTypeVariable = "BEAST_TYPE";
-        public const string BeastLevelVariable = "BEAST_LEVEL";
+        public string ExtractCorpseObjectResref => "extract_corpse";
+        public string BeastTypeVariable => "BEAST_TYPE";
+        public string BeastLevelVariable => "BEAST_LEVEL";
 
         [ScriptHandler<OnModuleCacheBefore>]
         public void CacheData()

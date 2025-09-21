@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
@@ -12,19 +13,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class SnarlGrowlAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
+        private readonly IAbilityBuilder _builder;
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
-        private readonly BeastMastery _beastMastery;
+        private readonly IBeastMasteryService _beastMastery;
 
-        public SnarlGrowlAbilityDefinition(ICombatPointService combatPointService, IEnmityService enmityService, BeastMastery beastMastery)
+        public SnarlGrowlAbilityDefinition(
+            ICombatPointService combatPointService, 
+            IEnmityService enmityService, 
+            IBeastMasteryService beastMastery,
+            IAbilityBuilder builder)
         {
             _combatPointService = combatPointService;
             _enmityService = enmityService;
             _beastMastery = beastMastery;
+            _builder = builder;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
             Snarl();
             Growl();

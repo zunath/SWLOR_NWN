@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
@@ -30,9 +31,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             _statusEffectService = statusEffectService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             PiercingToss1(builder);
             PiercingToss2(builder);
             PiercingToss3(builder);
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private static void PiercingToss1(AbilityBuilder builder)
+        private void PiercingToss1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.PiercingToss1, PerkType.PiercingToss)
                 .Name("Piercing Toss I")
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void PiercingToss2(AbilityBuilder builder)
+        private void PiercingToss2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.PiercingToss2, PerkType.PiercingToss)
                 .Name("Piercing Toss II")
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void PiercingToss3(AbilityBuilder builder)
+        private void PiercingToss3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.PiercingToss3, PerkType.PiercingToss)
                 .Name("Piercing Toss III")

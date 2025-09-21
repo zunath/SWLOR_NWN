@@ -34,8 +34,18 @@ namespace SWLOR.Game.Server.Service
         private readonly IPerkService _perkService;
         private readonly IItemService _itemService;
         private readonly IPropertyService _propertyService;
+        private readonly ITimeService _timeService;
 
-        public Craft(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IItemCacheService itemCache, IGuiService guiService, IPerkService perkService, IItemService itemService, IPropertyService propertyService)
+        public Craft(
+            ILogger logger, 
+            IDatabaseService db, 
+            IGenericCacheService cacheService, 
+            IItemCacheService itemCache, 
+            IGuiService guiService, 
+            IPerkService perkService, 
+            IItemService itemService, 
+            IPropertyService propertyService,
+            ITimeService timeService)
         {
             _logger = logger;
             _db = db;
@@ -45,6 +55,7 @@ namespace SWLOR.Game.Server.Service
             _perkService = perkService;
             _itemService = itemService;
             _propertyService = propertyService;
+            _timeService = timeService;
         }
         public const int MaxResearchLevel = 10;
 
@@ -783,7 +794,7 @@ namespace SWLOR.Game.Server.Service
                     if (dbJob.DateCompleted > now)
                     {
                         var delta = dbJob.DateCompleted - now;
-                        var completionTime = Time.GetTimeLongIntervals(delta, false);
+                        var completionTime = _timeService.GetTimeLongIntervals(delta, false);
                         SendMessageToPC(player, $"Another player's incubation job is active. This job will complete in: {completionTime}.");
                     }
                     else

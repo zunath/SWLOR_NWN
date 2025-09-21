@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -36,41 +37,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static void Impact(uint activator, uint target, int baseAmount)
+        private void Impact(uint activator, uint target, int baseAmount)
         {
             var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
             var targetBonus = willBonus;
-            var statService = App.Resolve<IStatService>();
-            var randomService = App.Resolve<IRandomService>();
-            var combatPointService = App.Resolve<ICombatPointService>();
-            var enmityService = App.Resolve<IEnmityService>();
-
-            if (target != activator && statService.GetCurrentFP(activator) >= 16)
+            if (target != activator && _statService.GetCurrentFP(activator) >= 16)
             {
                 RemoveEffectByTag(target, BeneRegen);
 
                 var willRestore = (willBonus / 2) * 4;
                 var duration = 90f + (willBonus * 60f);
                 var effect = EffectRegenerate(willRestore, 24f);
-                statService.ReduceFP(activator, 10);
-                statService.ReduceStamina(activator, willRestore);
-                statService.RestoreFP(target, willRestore);
-                statService.RestoreStamina(target, willRestore);
+                _statService.ReduceFP(activator, 10);
+                _statService.ReduceStamina(activator, willRestore);
+                _statService.RestoreFP(target, willRestore);
+                _statService.RestoreStamina(target, willRestore);
                 targetBonus = willBonus * 4;
 
                 effect = TagEffect(effect, BeneRegen);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
             }
-            var willHeal = baseAmount + (targetBonus * 4) + randomService.D4(targetBonus);
+            var willHeal = baseAmount + (targetBonus * 4) + _random.D4(targetBonus);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(willHeal), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
 
-            enmityService.ModifyEnmityOnAll(activator, 150 + (willHeal / 4));
-            combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            _enmityService.ModifyEnmityOnAll(activator, 150 + (willHeal / 4));
+            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
-        private static void Benevolence1(IAbilityBuilder builder)
+        private void Benevolence1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Benevolence1, PerkType.Benevolence)
                 .Name("Benevolence I")
@@ -88,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private static void Benevolence2(IAbilityBuilder builder)
+        private void Benevolence2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Benevolence2, PerkType.Benevolence)
                 .Name("Benevolence II")
@@ -106,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private static void Benevolence3(IAbilityBuilder builder)
+        private void Benevolence3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Benevolence3, PerkType.Benevolence)
                 .Name("Benevolence III")

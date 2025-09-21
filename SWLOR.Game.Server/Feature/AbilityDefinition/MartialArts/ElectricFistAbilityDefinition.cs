@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
@@ -21,14 +22,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         private readonly IStatService _statService;
         private readonly ICombatPointService _combatPointService;
         private readonly IStatusEffectService _statusEffectService;
+        private readonly IEnmityService _enmityService;
 
-        public ElectricFistAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IStatusEffectService statusEffectService)
+        public ElectricFistAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IStatusEffectService statusEffectService, IEnmityService enmityService)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
             _combatPointService = combatPointService;
             _statusEffectService = statusEffectService;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
@@ -40,12 +43,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            var itemService = App.Resolve<IItemService>();
-            if (!itemService.KatarBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.KatarBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a katar ability.";
             }
@@ -53,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
 
 
@@ -81,21 +83,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     break;
             }
 
-            var combatService = App.Resolve<ICombatService>();
-            var statService = App.Resolve<IStatService>();
-            var combatPointService = App.Resolve<ICombatPointService>();
-            var statusEffectService = App.Resolve<IStatusEffectService>();
-            var enmityService = App.Resolve<IEnmityService>();
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.MartialArts);
 
-            dmg += combatService.GetAbilityDamageBonus(activator, SkillType.MartialArts);
-
-            combatPointService.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var attack = statService.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
-            var defense = statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = combatService.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -104,17 +100,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
 
-            dc = combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
+            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
-                statusEffectService.Apply(activator, target, StatusEffectType.Shock, duration);
+                _statusEffectService.Apply(activator, target, StatusEffectType.Shock, duration);
             }
 
-            enmityService.ModifyEnmity(activator, target, 100 * level + damage);
+            _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private static void ElectricFist1(IAbilityBuilder builder)
+        private void ElectricFist1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ElectricFist1, PerkType.ElectricFist)
                 .Name("Electric Fist I")
@@ -126,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void ElectricFist2(IAbilityBuilder builder)
+        private void ElectricFist2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ElectricFist2, PerkType.ElectricFist)
                 .Name("Electric Fist II")
@@ -138,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void ElectricFist3(IAbilityBuilder builder)
+        private void ElectricFist3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ElectricFist3, PerkType.ElectricFist)
                 .Name("Electric Fist III")

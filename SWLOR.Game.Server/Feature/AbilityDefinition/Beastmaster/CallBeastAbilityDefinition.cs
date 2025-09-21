@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
@@ -20,7 +21,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         private readonly IEnmityService _enmityService;
         private readonly IPerkService _perkService;
 
-        public CallBeastAbilityDefinition(IDatabaseService db, ICombatPointService combatPointService, BeastMastery beastMastery, IEnmityService enmityService, IPerkService perkService)
+        public CallBeastAbilityDefinition(
+            IDatabaseService db, 
+            ICombatPointService combatPointService, 
+            BeastMastery beastMastery, 
+            IEnmityService enmityService, 
+            IPerkService perkService)
         {
             _db = db;
             _combatPointService = combatPointService;

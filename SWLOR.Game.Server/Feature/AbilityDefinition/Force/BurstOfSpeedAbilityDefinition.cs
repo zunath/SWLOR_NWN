@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
@@ -78,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             ApplyEffectToObject(DurationType.Temporary, effect, target, 600f);
 
-            var statService = App.Resolve<IStatService>();
+            var statService = ServiceContainer.GetService<IStatService>();
             statService.ApplyPlayerMovementRate(target);
         }
 
@@ -86,11 +87,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         public static void RemoveEffect()
         {
             var target = OBJECT_SELF;
-            var statService = App.Resolve<IStatService>();
+            var statService = ServiceContainer.GetService<IStatService>();
             statService.ApplyPlayerMovementRate(target);
         }
 
-        private static void Impact(uint activator, uint target, int tier, string effectTag)
+        private void Impact(uint activator, uint target, int tier, string effectTag)
         {
             RemoveEffectByTag(target, Tier1Tag, Tier2Tag);
 
@@ -98,13 +99,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             effect = TagEffect(effect, effectTag);
             ApplyEffectToObject(DurationType.Temporary, effect, target, 600f);
 
-            var combatPointService = App.Resolve<ICombatPointService>();
-            var enmityService = App.Resolve<IEnmityService>();
-            combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-            enmityService.ModifyEnmityOnAll(activator, 250);
+            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            _enmityService.ModifyEnmityOnAll(activator, 250);
         }
 
-        private static void BurstOfSpeed1(IAbilityBuilder builder)
+        private void BurstOfSpeed1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.BurstOfSpeed1, PerkType.BurstOfSpeed)
                 .Name("Burst of Speed I")
@@ -120,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     Impact(activator, target, 1, Tier1Tag);
                 });
         }
-        private static void BurstOfSpeed2(IAbilityBuilder builder)
+        private void BurstOfSpeed2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.BurstOfSpeed2, PerkType.BurstOfSpeed)
                 .Name("Burst of Speed II")

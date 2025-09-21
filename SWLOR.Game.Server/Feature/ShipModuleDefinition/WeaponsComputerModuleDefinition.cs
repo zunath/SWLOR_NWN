@@ -8,7 +8,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class WeaponsComputerModuleDefinition : IShipModuleListDefinition
     {
-        private readonly IShipModuleBuilder _builder = new();
+        private readonly IShipModuleBuilder _builder;
+
+        public WeaponsComputerModuleDefinition(IShipModuleBuilder builder)
+        {
+            _builder = builder;
+        }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {

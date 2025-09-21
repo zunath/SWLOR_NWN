@@ -14,20 +14,21 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Weather
+    public class Weather : IWeather
     {
-        private static readonly Dictionary<uint, List<uint>> _areaWeatherPlaceables = new();
-        private static Dictionary<PlanetType, WeatherClimate> _planetClimates;
-        private static readonly Dictionary<string, PlanetType> _planetsByName = new();
+        private readonly Dictionary<uint, List<uint>> _areaWeatherPlaceables = new();
+        private Dictionary<PlanetType, WeatherClimate> _planetClimates;
+        private readonly Dictionary<string, PlanetType> _planetsByName = new();
 
         /// <summary>
         /// When the module loads, cache planet climates and other pertinent data.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void LoadData()
+        public void LoadData()
         {
             _planetClimates = WeatherPlanetDefinitions.GetPlanetClimates();
 
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="planetName">The name of the planet to look for.</param>
         /// <returns>A weather climate for the specified planet.</returns>
-        private static WeatherClimate GetClimateByPlanetName(string planetName)
+        private WeatherClimate GetClimateByPlanetName(string planetName)
         {
             if (!_planetsByName.ContainsKey(planetName))
             {
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Service
             return _planetClimates[planetType];
         }
 
-        private static WeatherClimate GetAreaClimate(uint area)
+        private WeatherClimate GetAreaClimate(uint area)
         {
             var index = GetName(area).IndexOf("-", StringComparison.Ordinal);
             if (index <= 0) return new WeatherClimate();
@@ -77,7 +78,7 @@ namespace SWLOR.Game.Server.Service
         private const string VAR_FOG_C_MOON = "VAR_WH_FOG_C_MOON";
 
 
-        public static bool AdjustWeather()
+        public bool AdjustWeather()
         {
             var oMod = GetModule();
 
@@ -141,12 +142,12 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
-        public static void SetWeather()
+        public void SetWeather()
         {
             SetWeather(OBJECT_SELF);
         }
 
-        public static void SetWeather(uint oArea)
+        public void SetWeather(uint oArea)
         {
 
             if (GetLocalInt(oArea, VAR_INITIALIZED) == 0)
@@ -240,12 +241,12 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static NWN.API.NWScript.Enum.Weather GetWeather()
+        public NWN.API.NWScript.Enum.Weather GetWeather()
         {
             return GetWeather(OBJECT_SELF);
         }
 
-        public static NWN.API.NWScript.Enum.Weather GetWeather(uint oArea)
+        public NWN.API.NWScript.Enum.Weather GetWeather(uint oArea)
         {
             if (GetIsAreaInterior(oArea) || GetIsAreaAboveGround(oArea) == false)
             {
@@ -265,7 +266,7 @@ namespace SWLOR.Game.Server.Service
             return NWScript.GetWeather(oArea);
         }
 
-        public static void OnCombatRoundEnd(uint oCreature)
+        public void OnCombatRoundEnd(uint oCreature)
         {
             var oArea = GetArea(oCreature);
             if (GetLocalInt(oArea, VAR_INITIALIZED) == 0)
@@ -276,7 +277,7 @@ namespace SWLOR.Game.Server.Service
             if (nWind > 9) _DoWindKnockdown(oCreature);
         }
 
-        public static void ApplyAcid(uint oTarget, uint oArea)
+        public void ApplyAcid(uint oTarget, uint oArea)
         {
             if (GetArea(oTarget) != oArea) return;
             if (GetIsDead(oTarget)) return;
@@ -295,7 +296,7 @@ namespace SWLOR.Game.Server.Service
             DelayCommand(6.0f, () => { ApplyAcid(oTarget, oArea); });
         }
 
-        public static void ApplyCold(uint oTarget, uint oArea)
+        public void ApplyCold(uint oTarget, uint oArea)
         {
             if (GetArea(oTarget) != oArea) return;
             if (GetIsDead(oTarget)) return;
@@ -314,7 +315,7 @@ namespace SWLOR.Game.Server.Service
             DelayCommand(6.0f, () => { ApplyCold(oTarget, oArea); });
         }
 
-        public static void ApplySandstorm(uint oTarget, uint oArea)
+        public void ApplySandstorm(uint oTarget, uint oArea)
         {
             if (GetArea(oTarget) != oArea) return;
             if (GetIsDead(oTarget)) return;
@@ -333,7 +334,7 @@ namespace SWLOR.Game.Server.Service
             DelayCommand(6.0f, () => { ApplySandstorm(oTarget, oArea); });
         }
 
-        public static void ApplySnowstorm(uint oTarget, uint oArea)
+        public void ApplySnowstorm(uint oTarget, uint oArea)
         {
             if (GetArea(oTarget) != oArea) return;
             if (GetIsDead(oTarget)) return;
@@ -352,7 +353,7 @@ namespace SWLOR.Game.Server.Service
             DelayCommand(6.0f, () => { ApplySnowstorm(oTarget, oArea); });
         }
 
-        public static void DoWeatherEffects(uint oCreature)
+        public void DoWeatherEffects(uint oCreature)
         {
             var oArea = GetArea(oCreature);
             if (GetIsAreaInterior(oArea) || GetIsAreaAboveGround(oArea) == false) return;
@@ -477,7 +478,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static int GetHeatIndex(uint oArea)
+        public int GetHeatIndex(uint oArea)
         {
             //--------------------------------------------------------------------------
             // Areas may have one of the CLIMATE_* values stored in each weather var.
@@ -498,7 +499,7 @@ namespace SWLOR.Game.Server.Service
             return nHeat;
         }
 
-        public static int GetHumidity(uint oArea)
+        public int GetHumidity(uint oArea)
         {
             //--------------------------------------------------------------------------
             // Areas may have one of the CLIMATE_* values stored in each weather var.
@@ -517,7 +518,7 @@ namespace SWLOR.Game.Server.Service
             return nHumidity;
         }
 
-        public static int GetWindStrength(uint oArea)
+        public int GetWindStrength(uint oArea)
         {
             //--------------------------------------------------------------------------
             // Areas will have one of the CLIMATE_* values stored in each weather var.
@@ -542,25 +543,25 @@ namespace SWLOR.Game.Server.Service
             return nWind;
         }
 
-        private static void _SetHeatIndex(int nHeat)
+        private void _SetHeatIndex(int nHeat)
         {
             var oMod = GetModule();
             SetLocalInt(oMod, VAR_WEATHER_HEAT, nHeat);
         }
 
-        private static void _SetHumidity(int nHumidity)
+        private void _SetHumidity(int nHumidity)
         {
             var oMod = GetModule();
             SetLocalInt(oMod, VAR_WEATHER_HUMIDITY, nHumidity);
         }
 
-        private static void _SetWindStrength(int nWind)
+        private void _SetWindStrength(int nWind)
         {
             var oMod = GetModule();
             SetLocalInt(oMod, VAR_WEATHER_WIND, nWind);
         }
 
-        private static void _DoWindKnockdown(uint oCreature)
+        private void _DoWindKnockdown(uint oCreature)
         {
             var nDC = (GetHitDice(oCreature) / 2) + 10;
             var nDiscipline = GetSkillRank(NWNSkillType.Discipline, oCreature);
@@ -579,7 +580,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void Thunderstorm(uint oArea)
+        public void Thunderstorm(uint oArea)
         {
             // 1 in 3 chance of a bolt.
             if (d3() != 1) return;
@@ -607,7 +608,7 @@ namespace SWLOR.Game.Server.Service
                          );
         }
 
-        private static void Thunderstorm(Location lLocation, int nPower)
+        private void Thunderstorm(Location lLocation, int nPower)
         {
             var fRange = IntToFloat(nPower) * 0.1f;
             // Caps on sphere of influence
@@ -645,7 +646,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler<OnAreaEnter>]
-        public static void OnAreaEnter()
+        public void OnAreaEnter()
         {
             SetWeather();
             DoWeatherEffects(GetEnteringObject());
@@ -706,7 +707,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
-        public static void OnModuleHeartbeat()
+        public void OnModuleHeartbeat()
         {
             var oMod = GetModule();
             var nHour = GetTimeHour();
@@ -726,22 +727,22 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void SetAreaHeatModifier(uint oArea, int nModifier)
+        public void SetAreaHeatModifier(uint oArea, int nModifier)
         {
             SetLocalInt(oArea, VAR_WEATHER_HEAT, nModifier);
         }
 
-        public static void SetAreaWindModifier(uint oArea, int nModifier)
+        public void SetAreaWindModifier(uint oArea, int nModifier)
         {
             SetLocalInt(oArea, VAR_WEATHER_WIND, nModifier);
         }
 
-        public static void SetAreaHumidityModifier(uint oArea, int nModifier)
+        public void SetAreaHumidityModifier(uint oArea, int nModifier)
         {
             SetLocalInt(oArea, VAR_WEATHER_HUMIDITY, nModifier);
         }
 
-        public static void SetAreaAcidRain(uint oArea, int nModifier)
+        public void SetAreaAcidRain(uint oArea, int nModifier)
         {
             SetLocalInt(oArea, VAR_WEATHER_ACID_RAIN, nModifier);
         }

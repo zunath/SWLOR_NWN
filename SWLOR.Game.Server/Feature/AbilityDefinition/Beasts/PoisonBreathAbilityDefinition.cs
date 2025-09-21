@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -20,7 +21,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         private readonly IStatusEffectService _statusEffectService;
         private readonly IEnmityService _enmityService;
 
-        public PoisonBreathAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService, IEnmityService enmityService)
+        public PoisonBreathAbilityDefinition(
+            ICombatService combatService, 
+            IStatService statService, 
+            IStatusEffectService statusEffectService, 
+            IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;

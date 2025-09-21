@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Service.SpaceService
+namespace SWLOR.Shared.Core.Contracts
 {
     public interface IShipModuleListDefinition
     {

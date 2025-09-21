@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -17,23 +18,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         private readonly IRandomService _random;
         private const string PetTreatTag = "pet_treat";
 
-        private readonly AbilityBuilder _builder = new();
+        private readonly IAbilityBuilder _builder;
         private readonly IItemService _itemService;
         private readonly ICombatPointService _combatPointService;
-        private readonly BeastMastery _beastMastery;
+        private readonly IBeastMasteryService _beastMastery;
         private readonly IEnmityService _enmityService;
 
-        public RewardAbilityDefinition(IRandomService random, IItemService itemService, ICombatPointService combatPointService, BeastMastery beastMastery, IEnmityService enmityService)
+        public RewardAbilityDefinition(
+            IRandomService random, 
+            IItemService itemService, 
+            ICombatPointService combatPointService, 
+            IBeastMasteryService beastMastery, 
+            IEnmityService enmityService,
+            IAbilityBuilder builder)
         {
             _random = random;
             _itemService = itemService;
             _combatPointService = combatPointService;
             _beastMastery = beastMastery;
             _enmityService = enmityService;
+            _builder = builder;
         }
 
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
             Reward1();
             Reward2();

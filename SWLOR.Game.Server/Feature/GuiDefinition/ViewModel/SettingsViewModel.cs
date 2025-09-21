@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Shared.Core.Constants;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
@@ -18,11 +19,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private readonly IDatabaseService _db;
         private readonly ISkillService _skillService;
+        private readonly ILanguageService _languageService;
 
-        public SettingsViewModel(IGuiService guiService, IDatabaseService db, ISkillService skillService) : base(guiService)
+        public SettingsViewModel(IGuiService guiService, IDatabaseService db, ISkillService skillService, ILanguageService languageService) : base(guiService)
         {
             _db = db;
             _skillService = skillService;
+            _languageService = languageService;
         }
         
         public const string SettingsView = "SETTINGS_VIEW";
@@ -184,9 +187,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (dbPlayer.Settings.OOCChatColor == null)
             {
                 chatColors.Add(new GuiColor(
-                    Communication.OOCChatColor.Item1,
-                    Communication.OOCChatColor.Item2,
-                    Communication.OOCChatColor.Item3));
+                    CommunicationConstants.OOCChatColor.Item1,
+                    CommunicationConstants.OOCChatColor.Item2,
+                    CommunicationConstants.OOCChatColor.Item3));
             }
             else
             {
@@ -204,9 +207,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (dbPlayer.Settings.EmoteChatColor == null)
             {
                 chatColors.Add(new GuiColor(
-                    Communication.EmoteChatColor.Item1,
-                    Communication.EmoteChatColor.Item2,
-                    Communication.EmoteChatColor.Item3));
+                    CommunicationConstants.EmoteChatColor.Item1,
+                    CommunicationConstants.EmoteChatColor.Item2,
+                    CommunicationConstants.EmoteChatColor.Item3));
             }
             else
             {
@@ -231,7 +234,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else
                 {
-                    var (red, green, blue) = Language.GetColor(type);
+                    var (red, green, blue) = _languageService.GetColor(type);
                     chatColors.Add(new GuiColor(red, green, blue));
                 }
             }
@@ -351,21 +354,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (index == 0) // OOC
                 {
                     ChatColors[index] = new GuiColor(
-                        Communication.OOCChatColor.Item1,
-                        Communication.OOCChatColor.Item2,
-                        Communication.OOCChatColor.Item3);
+                        CommunicationConstants.OOCChatColor.Item1,
+                        CommunicationConstants.OOCChatColor.Item2,
+                        CommunicationConstants.OOCChatColor.Item3);
                 }
                 else if (index == 1) // Emotes
                 {
                     ChatColors[index] = new GuiColor(
-                        Communication.EmoteChatColor.Item1,
-                        Communication.EmoteChatColor.Item2,
-                        Communication.EmoteChatColor.Item3);
+                        CommunicationConstants.EmoteChatColor.Item1,
+                        CommunicationConstants.EmoteChatColor.Item2,
+                        CommunicationConstants.EmoteChatColor.Item3);
                 }
                 else
                 {
                     var type = _languages[index - NumberOfSystemColors];
-                    var (red, green, blue) = Language.GetColor(type);
+                    var (red, green, blue) = _languageService.GetColor(type);
                     ChatColors[index] = new GuiColor(red, green, blue);
                 }
 

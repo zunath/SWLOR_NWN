@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -13,13 +14,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         private readonly ISpaceService _spaceService;
         private readonly ICombatPointService _combatPointService;
         private readonly IMessagingService _messagingService;
-        private readonly ShipModuleBuilder _builder = new();
+        private readonly IShipModuleBuilder _builder;
 
-        public HullRepairerModuleDefinition(ISpaceService spaceService, ICombatPointService combatPointService, IMessagingService messagingService)
+        public HullRepairerModuleDefinition(ISpaceService spaceService, ICombatPointService combatPointService, IMessagingService messagingService, IShipModuleBuilder builder)
         {
             _spaceService = spaceService;
             _combatPointService = combatPointService;
             _messagingService = messagingService;
+            _builder = builder;
         }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()

@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -32,9 +33,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             DoubleStrike1(builder);
             DoubleStrike2(builder);
             DoubleStrike3(builder);
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
 
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private static void DoubleStrike1(AbilityBuilder builder)
+        private void DoubleStrike1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleStrike1, PerkType.DoubleStrike)
                 .Name("Double Strike I")
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }
-        private static void DoubleStrike2(AbilityBuilder builder)
+        private void DoubleStrike2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleStrike2, PerkType.DoubleStrike)
                 .Name("Double Strike II")
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }
-        private static void DoubleStrike3(AbilityBuilder builder)
+        private void DoubleStrike3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleStrike3, PerkType.DoubleStrike)
                 .Name("Double Strike III")

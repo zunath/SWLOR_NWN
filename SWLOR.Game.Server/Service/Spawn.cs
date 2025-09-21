@@ -31,7 +31,12 @@ namespace SWLOR.Game.Server.Service
         private readonly Walkmesh _walkmesh;
         private readonly AI _ai;
 
-        public SpawnService(ILogger logger, IRandomService random, IGenericCacheService cacheService, Walkmesh walkmesh, AI ai)
+        public Spawn(
+            ILogger logger, 
+            IRandomService random, 
+            IGenericCacheService cacheService, 
+            Walkmesh walkmesh, 
+            AI ai)
         {
             _logger = logger;
             _random = random;

@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.NWN.API.Engine;
@@ -31,9 +32,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             SpinningWhirl1(builder);
             SpinningWhirl2(builder);
             SpinningWhirl3(builder);
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             AssignCommand(activator, () => ActionPlayAnimation(Animation.Whirlwind));
         }
 
-        private static void SpinningWhirl1(AbilityBuilder builder)
+        private void SpinningWhirl1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.SpinningWhirl1, PerkType.SpinningWhirl)
                 .Name("Spinning Whirl I")
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void SpinningWhirl2(AbilityBuilder builder)
+        private void SpinningWhirl2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.SpinningWhirl2, PerkType.SpinningWhirl)
                 .Name("Spinning Whirl II")
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void SpinningWhirl3(AbilityBuilder builder)
+        private void SpinningWhirl3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.SpinningWhirl3, PerkType.SpinningWhirl)
                 .Name("Spinning Whirl III")

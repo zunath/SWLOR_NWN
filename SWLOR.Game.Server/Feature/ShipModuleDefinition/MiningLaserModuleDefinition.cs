@@ -8,6 +8,7 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -19,9 +20,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         private readonly ISkillService _skillService;
         private readonly ISpaceService _spaceService;
         private readonly ILootService _lootService;
-        private readonly ShipModuleBuilder _builder = new();
+        private readonly IShipModuleBuilder _builder;
 
-        public MiningLaserModuleDefinition(IRandomService random, IDatabaseService db, IPerkService perkService, ISkillService skillService, ISpaceService spaceService, ILootService lootService)
+        public MiningLaserModuleDefinition(IRandomService random, IDatabaseService db, IPerkService perkService, ISkillService skillService, ISpaceService spaceService, ILootService lootService, IShipModuleBuilder builder)
         {
             _random = random;
             _db = db;
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _skillService = skillService;
             _spaceService = spaceService;
             _lootService = lootService;
+            _builder = builder;
         }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()

@@ -14,28 +14,31 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Constants;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
 using SkillType = SWLOR.Shared.Core.Enums.SkillType;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Communication
+    public class Communication : ICommunication
     {
         private readonly IDatabaseService _db;
         private readonly IActivityService _activityService;
         private readonly IHoloComService _holoComService;
+        private readonly ILanguageService _languageService;
         private const string DMPossessedCreature = "COMMUNICATION_DM_POSSESSED_CREATURE";
         private const int HolonetDelayMinutes = 5;
 
-        public static (byte, byte, byte) OOCChatColor { get; } = (64, 64, 64);
-        public static (byte, byte, byte) EmoteChatColor { get; } = (0, 255, 0);
+        public (byte, byte, byte) OOCChatColor => CommunicationConstants.OOCChatColor;
+        public (byte, byte, byte) EmoteChatColor => CommunicationConstants.EmoteChatColor;
 
-        public Communication(IDatabaseService db, IActivityService activityService, IHoloComService holoComService)
+        public Communication(IDatabaseService db, IActivityService activityService, IHoloComService holoComService, ILanguageService languageService)
         {
             _db = db;
             _activityService = activityService;
             _holoComService = holoComService;
+            _languageService = languageService;
         }
 
         private class CommunicationComponent
@@ -400,18 +403,18 @@ namespace SWLOR.Game.Server.Service
                     sender = _holoComService.GetHoloGramOwner(sender);
                 }
 
-                var language = Language.GetActiveLanguage(sender);
+                var language = _languageService.GetActiveLanguage(sender);
 
                 // Wookiees cannot speak any other language (but they can understand them).
                 // Swap their language if they attempt to speak in any other language.
                 var race = GetRacialType(sender);
                 if (race == RacialType.Wookiee && language != SkillType.Shyriiwook)
                 {
-                    Language.SetActiveLanguage(sender, SkillType.Shyriiwook);
+                    _languageService.SetActiveLanguage(sender, SkillType.Shyriiwook);
                     language = SkillType.Shyriiwook;
                 }
 
-                var (r, g, b) = Language.GetColor(language);
+                var (r, g, b) = _languageService.GetColor(language);
 
                 if (dbReceiver != null &&
                     dbReceiver.Settings.LanguageChatColors != null &&
@@ -424,7 +427,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (language != SkillType.Basic)
                 {
-                    var languageName = Language.GetName(language);
+                    var languageName = _languageService.GetName(language);
                     finalMessage.Append(ColorToken.Custom($"[{languageName}] ", r, g, b));
                 }
 
@@ -434,7 +437,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (component.IsTranslatable && language != SkillType.Basic)
                     {
-                        text = Language.TranslateSnippetForListener(sender, receiver, language, component.Text);
+                        text = _languageService.TranslateSnippetForListener(sender, receiver, language, component.Text);
                     }
 
                     if (component.IsOOC)

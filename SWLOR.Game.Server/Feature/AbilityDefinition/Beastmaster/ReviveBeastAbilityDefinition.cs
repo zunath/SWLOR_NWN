@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 
 
@@ -16,25 +17,31 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class ReviveBeastAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
+        private readonly IAbilityBuilder _builder;
         private readonly IDatabaseService _db;
         private readonly ICombatPointService _combatPointService;
-        private readonly BeastMastery _beastMastery;
+        private readonly IBeastMasteryService _beastMastery;
         private readonly IEnmityService _enmityService;
 
-        public ReviveBeastAbilityDefinition(IDatabaseService db, ICombatPointService combatPointService, BeastMastery beastMastery, IEnmityService enmityService)
+        public ReviveBeastAbilityDefinition(
+            IDatabaseService db, 
+            ICombatPointService combatPointService, 
+            IBeastMasteryService beastMastery, 
+            IEnmityService enmityService,
+            IAbilityBuilder builder)
         {
             _db = db;
             _combatPointService = combatPointService;
             _beastMastery = beastMastery;
             _enmityService = enmityService;
+            _builder = builder;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            ReviveBeast1(builder);
-            ReviveBeast2(builder);
-            ReviveBeast3(builder);
+            ReviveBeast1();
+            ReviveBeast2();
+            ReviveBeast3();
 
             return builder.Build();
         }

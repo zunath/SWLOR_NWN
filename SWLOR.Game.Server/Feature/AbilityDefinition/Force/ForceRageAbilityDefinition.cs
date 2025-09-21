@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static void ForceRage1(IAbilityBuilder builder)
+        private void ForceRage1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceRage1, PerkType.ForceRage)
                 .Name("Force Rage I")
@@ -47,9 +47,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 {
                     var willpowerBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 30f;
 
-                    var statusEffectService = App.Resolve<IStatusEffectService>();
-                    var combatPointService = App.Resolve<ICombatPointService>();
-                    var enmityService = App.Resolve<IEnmityService>();
+                    var statusEffectService = _statusEffectService;
+                    var combatPointService = _combatPointService;
+                    var enmityService = _enmityService;
 
                     statusEffectService.Apply(activator, target, StatusEffectType.ForceRage1, 60f * 15f + willpowerBonus);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private static void ForceRage2(IAbilityBuilder builder)
+        private void ForceRage2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceRage2, PerkType.ForceRage)
                 .Name("Force Rage II")
@@ -74,9 +74,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 {
                     var willpowerBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 30f;
 
-                    var statusEffectService = App.Resolve<IStatusEffectService>();
-                    var combatPointService = App.Resolve<ICombatPointService>();
-                    var enmityService = App.Resolve<IEnmityService>();
+                    var statusEffectService = _statusEffectService;
+                    var combatPointService = _combatPointService;
+                    var enmityService = _enmityService;
 
                     statusEffectService.Apply(activator, target, StatusEffectType.ForceRage2, 60f * 15f + willpowerBonus);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);

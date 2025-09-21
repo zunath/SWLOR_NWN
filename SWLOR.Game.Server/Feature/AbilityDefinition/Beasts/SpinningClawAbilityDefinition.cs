@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -16,7 +17,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         private readonly IStatService _statService;
         private readonly IEnmityService _enmityService;
 
-        public SpinningClawAbilityDefinition(ICombatService combatService, IStatService statService, IEnmityService enmityService)
+        public SpinningClawAbilityDefinition(
+            ICombatService combatService, 
+            IStatService statService, 
+            IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;

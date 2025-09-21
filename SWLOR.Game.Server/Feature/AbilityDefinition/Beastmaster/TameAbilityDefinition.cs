@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -16,14 +17,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
     public class TameAbilityDefinition: IAbilityListDefinition
     {
         private readonly IRandomService _random;
-        private readonly AbilityBuilder _builder = new();
+        private readonly IAbilityBuilder _builder;
         private readonly IDatabaseService _db;
         private readonly IPerkService _perkService;
         private readonly IStatService _statService;
-        private readonly BeastMastery _beastMastery;
+        private readonly IBeastMasteryService _beastMastery;
         private readonly IEnmityService _enmityService;
 
-        public TameAbilityDefinition(IRandomService random, IDatabaseService db, IPerkService perkService, IStatService statService, BeastMastery beastMastery, IEnmityService enmityService)
+        public TameAbilityDefinition(
+            IRandomService random, 
+            IDatabaseService db, 
+            IPerkService perkService, 
+            IStatService statService, 
+            IBeastMasteryService beastMastery, 
+            IEnmityService enmityService,
+            IAbilityBuilder builder)
         {
             _random = random;
             _db = db;
@@ -31,9 +39,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             _statService = statService;
             _beastMastery = beastMastery;
             _enmityService = enmityService;
+            _builder = builder;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
             Tame();
 

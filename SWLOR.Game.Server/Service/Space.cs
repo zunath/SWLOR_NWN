@@ -17,6 +17,7 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;

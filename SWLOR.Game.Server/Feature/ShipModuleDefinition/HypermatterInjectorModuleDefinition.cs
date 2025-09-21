@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -12,12 +13,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
     {
         private readonly ISpaceService _spaceService;
         private readonly ICombatPointService _combatPointService;
-        private readonly ShipModuleBuilder _builder = new();
+        private readonly IMessagingService _messagingService;
+        private readonly IShipModuleBuilder _builder;
 
-        public HypermatterInjectorModuleDefinition(ISpaceService spaceService, ICombatPointService combatPointService)
+        public HypermatterInjectorModuleDefinition(ISpaceService spaceService, ICombatPointService combatPointService, IMessagingService messagingService, IShipModuleBuilder builder)
         {
             _spaceService = spaceService;
             _combatPointService = combatPointService;
+            _messagingService = messagingService;
+            _builder = builder;
         }
 
         private const string FuelCapsuleItemResref = "ship_fuelcapsule";
@@ -90,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var recovery = capRestore + (moduleBonus + activatorShipStatus.Industrial) * 2;
                     _spaceService.RestoreCapacitor(target, targetShipStatus, recovery);
 
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {recovery} capacitor charge to {GetName(target)}'s ship.");
+                    _messagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {recovery} capacitor charge to {GetName(target)}'s ship.");
                     _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }

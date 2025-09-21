@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 

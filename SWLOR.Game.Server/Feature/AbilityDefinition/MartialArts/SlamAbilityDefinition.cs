@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -38,12 +39,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            var itemService = App.Resolve<IItemService>();
-            if (!itemService.StaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.StaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a staff ability.";
             }
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
 
             int dmg;
@@ -75,31 +75,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     break;
             }
 
-            var combatService = App.Resolve<ICombatService>();
-            var statService = App.Resolve<IStatService>();
-            var combatPointService = App.Resolve<ICombatPointService>();
-            var enmityService = App.Resolve<IEnmityService>();
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.MartialArts);
 
-            dmg += combatService.GetAbilityDamageBonus(activator, SkillType.MartialArts);
+            _enmityService.ModifyEnmityOnAll(activator, 100 * level);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
-            enmityService.ModifyEnmityOnAll(activator, 100 * level);
-            combatPointService.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
-
-            var attackerStat = combatService.GetPerkAdjustedAbilityScore(activator);
+            var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
             int attack;
 
             if (GetHasFeat(FeatType.FlurryStyle, activator))
             {
-                attack = statService.GetAttack(activator, AbilityType.Perception, SkillType.MartialArts);
+                attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.MartialArts);
             }
             else
             {
-                attack = statService.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
+                attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
             }
 
-            var defense = statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = combatService.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -108,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
 
-            dc = combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
+            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
             if (checkResult == SavingThrowResultType.Failed)
@@ -117,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             }
         }
 
-        private static void Slam1(IAbilityBuilder builder)
+        private void Slam1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Slam1, PerkType.Slam)
                 .Name("Slam I")
@@ -129,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void Slam2(IAbilityBuilder builder)
+        private void Slam2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Slam2, PerkType.Slam)
                 .Name("Slam II")
@@ -141,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void Slam3(IAbilityBuilder builder)
+        private void Slam3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Slam3, PerkType.Slam)
                 .Name("Slam III")

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 
 
@@ -21,7 +22,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         private readonly IStatusEffectService _statusEffectService;
         private readonly IEnmityService _enmityService;
 
-        public AssaultAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService, IEnmityService enmityService)
+        public AssaultAbilityDefinition(
+            ICombatService combatService, 
+            IStatService statService, 
+            IStatusEffectService statusEffectService, 
+            IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;

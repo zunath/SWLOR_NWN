@@ -55,10 +55,6 @@
 		<ProjectReference Include="..\SWLOR.Shared.UI\SWLOR.Shared.UI.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Service\StatService\" />
-	</ItemGroup>
-
 	<Target Name="NWN" AfterTargets="Build">
 		<ItemGroup>
 			<AllOutputs Include="$(OutputPath)$(MSBuildProjectName).dll" />

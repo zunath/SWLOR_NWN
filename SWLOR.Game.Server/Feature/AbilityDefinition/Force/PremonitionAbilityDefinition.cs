@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static void Premonition1(IAbilityBuilder builder)
+        private void Premonition1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Premonition1, PerkType.Premonition)
                 .Name("Premonition I")
@@ -32,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating();
         }
 
-        private static void Premonition2(IAbilityBuilder builder)
+        private void Premonition2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Premonition2, PerkType.Premonition)
                 .Name("Premonition II")

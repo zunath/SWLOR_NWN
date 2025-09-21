@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -40,15 +41,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static void Impact(uint activator, uint target, int dmg, int accDecrease, int tier, string effectTag, int dc)
+        private void Impact(uint activator, uint target, int dmg, int accDecrease, int tier, string effectTag, int dc)
         {
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-            var statService = App.Resolve<IStatService>();
-            var combatService = App.Resolve<ICombatService>();
-            var messagingService = App.Resolve<IMessagingService>();
-            var enmityService = App.Resolve<IEnmityService>();
-            var combatPointService = App.Resolve<ICombatPointService>();
+            var statService = _statService;
+            var combatService = _combatService;
+            var messagingService = _messagingService;
+            var enmityService = _enmityService;
+            var combatPointService = _combatPointService;
 
             var attack = statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
             var defense = statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
@@ -85,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 
-        private static void Disturbance1(IAbilityBuilder builder)
+        private void Disturbance1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Disturbance1, PerkType.Disturbance)
                 .Name("Disturbance I")
@@ -104,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private static void Disturbance2(IAbilityBuilder builder)
+        private void Disturbance2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Disturbance2, PerkType.Disturbance)
                 .Name("Disturbance II")
@@ -126,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private static void Disturbance3(IAbilityBuilder builder)
+        private void Disturbance3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Disturbance3, PerkType.Disturbance)
                 .Name("Disturbance III")

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static void ForceHeal1(IAbilityBuilder builder)
+        private void ForceHeal1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceHeal1, PerkType.ForceHeal)
                 .Name("Force Heal I")
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating();
         }
 
-        private static void ForceHeal2(IAbilityBuilder builder)
+        private void ForceHeal2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceHeal2, PerkType.ForceHeal)
                 .Name("Force Heal II")
@@ -49,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating();
         }
 
-        private static void ForceHeal3(IAbilityBuilder builder)
+        private void ForceHeal3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceHeal3, PerkType.ForceHeal)
                 .Name("Force Heal III")
@@ -63,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating();
         }
 
-        private static void ForceHeal4(IAbilityBuilder builder)
+        private void ForceHeal4(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceHeal4, PerkType.ForceHeal)
                 .Name("Force Heal IV")
@@ -77,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating();
         }
 
-        private static void ForceHeal5(IAbilityBuilder builder)
+        private void ForceHeal5(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceHeal5, PerkType.ForceHeal)
                 .Name("Force Heal V")

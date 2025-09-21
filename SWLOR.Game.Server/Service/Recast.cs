@@ -18,13 +18,17 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly IDatabaseService _db;
         private readonly IStatusEffectService _statusEffectService;
-        // Recast Group Descriptions
+        private readonly ITimeService _time;
         private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new();
 
-        public Recast(IDatabaseService db, IStatusEffectService statusEffectService)
+        public Recast(
+            IDatabaseService db, 
+            IStatusEffectService statusEffectService,
+            ITimeService time)
         {
             _db = db;
             _statusEffectService = statusEffectService;
+            _time = time;
         }
 
         [ScriptHandler<OnModuleCacheBefore>]
@@ -79,7 +83,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (!dbPlayer.RecastTimes.ContainsKey(recastGroup)) return (false, string.Empty);
 
-                var timeToWait = Time.GetTimeToWaitLongIntervals(now, dbPlayer.RecastTimes[recastGroup], false);
+                var timeToWait = _time.GetTimeToWaitLongIntervals(now, dbPlayer.RecastTimes[recastGroup], false);
                 return (now < dbPlayer.RecastTimes[recastGroup], timeToWait);
             }
             // NPCs and DM-possessed NPCs
@@ -93,7 +97,7 @@ namespace SWLOR.Game.Server.Service
                 else
                 {
                     var dateTime = DateTime.ParseExact(unlockDate, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-                    var timeToWait = Time.GetTimeToWaitLongIntervals(now, dateTime, false);
+                    var timeToWait = _time.GetTimeToWaitLongIntervals(now, dateTime, false);
                     return (now < dateTime, timeToWait);
                 }
             }

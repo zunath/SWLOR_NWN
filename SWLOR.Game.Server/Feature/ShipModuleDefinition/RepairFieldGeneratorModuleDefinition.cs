@@ -8,6 +8,7 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
@@ -19,15 +20,16 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         private readonly IEnmityService _enmityService;
         private readonly ICombatPointService _combatPointService;
         private readonly IMessagingService _messagingService;
-        private readonly ShipModuleBuilder _builder = new();
+        private readonly IShipModuleBuilder _builder;
 
-        public RepairFieldGeneratorModuleDefinition(IDatabaseService db, ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService, IMessagingService messagingService)
+        public RepairFieldGeneratorModuleDefinition(IDatabaseService db, ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService, IMessagingService messagingService, IShipModuleBuilder builder)
         {
             _db = db;
             _spaceService = spaceService;
             _enmityService = enmityService;
             _combatPointService = combatPointService;
             _messagingService = messagingService;
+            _builder = builder;
         }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()

@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.NWN.API.Engine;
@@ -34,9 +35,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             Skewer1(builder);
             Skewer2(builder);
             Skewer3(builder);
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private static void Skewer1(AbilityBuilder builder)
+        private void Skewer1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Skewer1, PerkType.Skewer)
                 .Name("Skewer I")
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void Skewer2(AbilityBuilder builder)
+        private void Skewer2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Skewer2, PerkType.Skewer)
                 .Name("Skewer II")
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void Skewer3(AbilityBuilder builder)
+        private void Skewer3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Skewer3, PerkType.Skewer)
                 .Name("Skewer III")

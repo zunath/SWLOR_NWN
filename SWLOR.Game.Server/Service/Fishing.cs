@@ -21,7 +21,7 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Fishing
+    public class Fishing : IFishingService
     {
         private readonly IDatabaseService _db;
         private readonly IGenericCacheService _cacheService;

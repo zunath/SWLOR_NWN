@@ -35,7 +35,15 @@ namespace SWLOR.Game.Server.Service
         private readonly IStatusEffectService _statusEffectService;
         private readonly Enmity _enmityService;
 
-        public Stat(ILogger logger, IDatabaseService db, IPerkService perkService, ISkillService skillService, IItemService itemService, IAbilityService abilityService, IStatusEffectService statusEffectService, Enmity enmityService)
+        public Stat(
+            ILogger logger, 
+            IDatabaseService db, 
+            IPerkService perkService, 
+            ISkillService skillService, 
+            IItemService itemService, 
+            IAbilityService abilityService, 
+            IStatusEffectService statusEffectService, 
+            Enmity enmityService)
         {
             _logger = logger;
             _db = db;

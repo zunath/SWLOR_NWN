@@ -7,6 +7,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -17,15 +18,18 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         private readonly ISpaceService _spaceService;
         private readonly IEnmityService _enmityService;
         private readonly ICombatPointService _combatPointService;
-        private readonly ShipModuleBuilder _builder = new();
+        private readonly IMessagingService _messagingService;
+        private readonly IShipModuleBuilder _builder;
 
-        public LaserCannonBatteryModuleDefinition(IRandomService random, ICombatService combatService, ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService)
+        public LaserCannonBatteryModuleDefinition(IRandomService random, ICombatService combatService, ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService, IMessagingService messagingService, IShipModuleBuilder builder)
         {
             _random = random;
             _combatService = combatService;
             _spaceService = spaceService;
             _enmityService = enmityService;
             _combatPointService = combatPointService;
+            _messagingService = messagingService;
+            _builder = builder;
         }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
@@ -115,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                                     var attackId = isHit ? 1 : 4;
                                     var combatLogMessage = _combatService.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
-                                    Messaging.SendMessageNearbyToPlayers(nearbyTarget, combatLogMessage, 60f);
+                                    _messagingService.SendMessageNearbyToPlayers(nearbyTarget, combatLogMessage, 60f);
 
                                     _enmityService.ModifyEnmity(activator, nearbyTarget, damage);
                                     _combatPointService.AddCombatPoint(activator, nearbyTarget, SkillType.Piloting);

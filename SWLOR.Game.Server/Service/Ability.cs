@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IRecastService _recastService;
         private readonly IStatusEffectService _statusEffectService;
         private readonly IAbilityBuilder _abilityBuilder;
+        private readonly ISpaceService _spaceService;
         
         // Cached data
         private IInterfaceCache<FeatType, AbilityDetail> _abilityCache;
@@ -44,7 +45,19 @@ namespace SWLOR.Game.Server.Service
         private readonly Dictionary<AbilityToggleType, Action<uint, bool>> _toggleActions = new();
         private readonly Dictionary<uint, PlayerAura> _playerAuras = new();
 
-        public Ability(IDatabaseService db, IGenericCacheService cacheService, IStatService statService, IPerkService perkService, IPartyService partyService, ICombatPointService combatPointService, IActivityService activityService, IMessagingService messagingService, IRecastService recastService, IStatusEffectService statusEffectService, IAbilityBuilder abilityBuilder)
+        public Ability(
+            IDatabaseService db, 
+            IGenericCacheService cacheService, 
+            IStatService statService, 
+            IPerkService perkService, 
+            IPartyService partyService, 
+            ICombatPointService combatPointService, 
+            IActivityService activityService, 
+            IMessagingService messagingService, 
+            IRecastService recastService, 
+            IStatusEffectService statusEffectService, 
+            IAbilityBuilder abilityBuilder,
+            ISpaceService spaceService)
         {
             _db = db;
             _cacheService = cacheService;
@@ -57,6 +70,7 @@ namespace SWLOR.Game.Server.Service
             _recastService = recastService;
             _statusEffectService = statusEffectService;
             _abilityBuilder = abilityBuilder;
+            _spaceService = spaceService;
         }
 
         private const int MaxNumberOfAuras = 4;
@@ -147,7 +161,7 @@ namespace SWLOR.Game.Server.Service
             var ability = GetAbilityDetail(abilityType);
 
             // Cannot use this ability in space.
-            if (Space.IsPlayerInSpaceMode(activator) &&
+            if (_spaceService.IsPlayerInSpaceMode(activator) &&
                 !ability.CanBeUsedInSpace)
             {
                 SendMessageToPC(activator, "This ability cannot be used in space.");
@@ -498,7 +512,7 @@ namespace SWLOR.Game.Server.Service
             _combatPointService.AddCombatPoint(player, target, SkillType.Leadership);
         }
 
-        private static int GetMaxNumberOfAuras(uint activator)
+        private int GetMaxNumberOfAuras(uint activator)
         {
             var social = GetAbilityScore(activator, AbilityType.Social);
             var count = 1 + (social - 10) / 5;
@@ -608,7 +622,7 @@ namespace SWLOR.Game.Server.Service
         /// Removes all auras which are currently active on a creature.
         /// </summary>
         /// <param name="activator">The creature who originally activated the auras.</param>
-        private static void RemoveAllAuras(uint activator)
+        private void RemoveAllAuras(uint activator)
         {
             if (!_playerAuras.ContainsKey(activator))
                 return;
@@ -642,7 +656,7 @@ namespace SWLOR.Game.Server.Service
             _playerAuras.Remove(activator);
         }
 
-        private static AreaOfEffect GetAuraAOE(int level)
+        private AreaOfEffect GetAuraAOE(int level)
         {
             switch (level)
             {

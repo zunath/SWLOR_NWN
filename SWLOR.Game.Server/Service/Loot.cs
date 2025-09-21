@@ -15,7 +15,7 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Loot
+    public class Loot : ILootService
     {
         private readonly ILogger _logger;
         private readonly IRandomService _random;
@@ -23,8 +23,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IStatService _statService;
         private readonly IBeastMasteryService _beastMasteryService;
         private readonly IItemService _itemService;
-        private readonly BeastMastery _beastMastery;
-        private static readonly Dictionary<string, LootTable> _lootTables = new();
+        private readonly Dictionary<string, LootTable> _lootTables = new();
 
         private const float CorpseLifespanSeconds = 360f;
         public const string CorpseBodyVariable = "CORPSE_BODY";
@@ -36,8 +35,7 @@ namespace SWLOR.Game.Server.Service
             IPerkService perkService,
             IStatService statService,
             IBeastMasteryService beastMasteryService,
-            IItemService itemService,
-            BeastMastery beastMastery)
+            IItemService itemService)
         {
             _logger = logger;
             _random = random;
@@ -45,7 +43,6 @@ namespace SWLOR.Game.Server.Service
             _statService = statService;
             _beastMasteryService = beastMasteryService;
             _itemService = itemService;
-            _beastMastery = beastMastery;
         }
 
         [ScriptHandler<OnModuleCacheBefore>]
@@ -351,8 +348,8 @@ namespace SWLOR.Game.Server.Service
             var container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
             SetLocalObject(container, CorpseBodyVariable, self);
             SetName(container, $"{GetName(self)}'s Corpse");
-            SetLocalInt(container, _beastMastery.BeastTypeVariable, GetLocalInt(self, _beastMastery.BeastTypeVariable));
-            SetLocalInt(container, _beastMastery.BeastLevelVariable, npcStats.Level);
+            SetLocalInt(container, _beastMasteryService.BeastTypeVariable, GetLocalInt(self, _beastMasteryService.BeastTypeVariable));
+            SetLocalInt(container, _beastMasteryService.BeastLevelVariable, npcStats.Level);
 
             AssignCommand(container, () =>
             {
@@ -437,8 +434,8 @@ namespace SWLOR.Game.Server.Service
             var container = OBJECT_SELF;
             var firstItem = GetFirstItemInInventory(container);
             var corpseOwner = GetLocalObject(container, CorpseBodyVariable);
-            var beastTypeId = GetLocalInt(container, _beastMastery.BeastTypeVariable);
-            var level = GetLocalInt(container, _beastMastery.BeastLevelVariable);
+            var beastTypeId = GetLocalInt(container, _beastMasteryService.BeastTypeVariable);
+            var level = GetLocalInt(container, _beastMasteryService.BeastLevelVariable);
 
             if (!GetIsObjectValid(firstItem))
             {
@@ -455,10 +452,10 @@ namespace SWLOR.Game.Server.Service
                 {
                     var beastType = (BeastType)beastTypeId;
                     var beastDetail = _beastMasteryService.GetBeastDetail(beastType);
-                    var extractCorpse = CreateObject(ObjectType.Placeable, _beastMastery.ExtractCorpseObjectResref, GetLocation(container));
+                    var extractCorpse = CreateObject(ObjectType.Placeable, _beastMasteryService.ExtractCorpseObjectResref, GetLocation(container));
                     SetLocalObject(extractCorpse, CorpseBodyVariable, corpseOwner);
-                    SetLocalInt(extractCorpse, _beastMastery.BeastTypeVariable, beastTypeId);
-                    SetLocalInt(extractCorpse, _beastMastery.BeastLevelVariable, level);
+                    SetLocalInt(extractCorpse, _beastMasteryService.BeastTypeVariable, beastTypeId);
+                    SetLocalInt(extractCorpse, _beastMasteryService.BeastLevelVariable, level);
                     
                     AssignCommand(extractCorpse, () =>
                     {

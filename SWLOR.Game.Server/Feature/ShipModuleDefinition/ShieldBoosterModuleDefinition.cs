@@ -2,12 +2,18 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class ShieldBoosterModuleDefinition: IShipModuleListDefinition
     {
-        private readonly IShipModuleBuilder _builder = new();
+        private readonly IShipModuleBuilder _builder;
+
+        public ShieldBoosterModuleDefinition(IShipModuleBuilder builder)
+        {
+            _builder = builder;
+        }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {

@@ -14,20 +14,20 @@ using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Walkmesh
+    public class Walkmesh : IWalkmeshService
     {
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
-        private static readonly Dictionary<uint, List<uint>> _noSpawnZoneTriggers = new();
+        private readonly Dictionary<uint, List<uint>> _noSpawnZoneTriggers = new();
 
         public Walkmesh(IDatabaseService db, IRandomService random)
         {
             _db = db;
             _random = random;
         }
-        private static Dictionary<string, List<Vector3>> _walkmeshesByArea = new();
+        private Dictionary<string, List<Vector3>> _walkmeshesByArea = new();
         private const int AreaBakeStep = 2;
-        private static bool _bakingRan;
+        private bool _bakingRan;
 
         /// <summary>
         /// When the module content changes, rerun the baking process.
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, find all of the "no spawn zone" triggers that have been hand placed by a builder.
         /// These indicate that walkmesh locations within the trigger are not valid and will be excluded from the list.
         /// </summary>
-        private static void StoreNoSpawnZoneTriggers()
+        private void StoreNoSpawnZoneTriggers()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Service
         // Area baking process
         // Run through and look for valid locations for later use by the spawn system.
         // Each tile is 10x10 meters. The "step" value in the config table determines how many meters we progress before checking for a valid location.
-        private static void BakeArea(uint area)
+        private void BakeArea(uint area)
         {
             var resref = GetResRef(area);
             _walkmeshesByArea[resref] = new List<Vector3>();

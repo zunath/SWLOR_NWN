@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -16,12 +17,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly ICombatPointService _combatPointService;
+        private readonly IEnmityService _enmityService;
 
-        public ThrowRockAbilityDefinition(ICombatService combatService, IStatService statService, ICombatPointService combatPointService)
+        public ThrowRockAbilityDefinition(ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
             _combatPointService = combatPointService;
+            _enmityService = enmityService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
@@ -35,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
             var willBonus = GetAbilityScore(activator, AbilityType.Willpower);
@@ -60,18 +63,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     break;
             }
 
-            var combatService = App.Resolve<ICombatService>();
-            var statService = App.Resolve<IStatService>();
-            var combatPointService = App.Resolve<ICombatPointService>();
-            var enmityService = App.Resolve<IEnmityService>();
-
-            dmg += combatService.GetAbilityDamageBonus(activator, SkillType.Force);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Force);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-            var defense = statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var attack = statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
-            var damage = combatService.CalculateDamage(
+            var attack = _statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg,
                 attackerStat,
@@ -85,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var eDMG = EffectDamage(damage, DamageType.Bludgeoning);
             var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Dust_Explosion);
 
-            enmityService.ModifyEnmity(activator, target, damage);
-            combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
+            _enmityService.ModifyEnmity(activator, target, damage);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
 
             DelayCommand(delay, () =>
             {
@@ -95,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             });
         }
 
-        private static void ThrowRock1(IAbilityBuilder builder)
+        private void ThrowRock1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ThrowRock1, PerkType.ThrowRock)
                 .Name("Throw Rock I")
@@ -112,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(ImpactAction);
         }
 
-        private static void ThrowRock2(IAbilityBuilder builder)
+        private void ThrowRock2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ThrowRock2, PerkType.ThrowRock)
                 .Name("Throw Rock II")
@@ -129,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(ImpactAction);
         }
 
-        private static void ThrowRock3(IAbilityBuilder builder)
+        private void ThrowRock3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ThrowRock3, PerkType.ThrowRock)
                 .Name("Throw Rock III")
@@ -146,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(ImpactAction);
         }
 
-        private static void ThrowRock4(IAbilityBuilder builder)
+        private void ThrowRock4(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ThrowRock4, PerkType.ThrowRock)
                 .Name("Throw Rock IV")
@@ -162,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void ThrowRock5(IAbilityBuilder builder)
+        private void ThrowRock5(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ThrowRock5, PerkType.ThrowRock)
                 .Name("Throw Rock V")

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 
 
@@ -13,6 +14,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
     public class RousingShoutAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IPerkService _perkService;
+        private readonly IAbilityService _abilityService;
+        private readonly ICombatPointService _combatPointService;
+        private readonly IEnmityService _enmityService;
+
+        public RousingShoutAbilityDefinition(IPerkService perkService, IAbilityService abilityService, ICombatPointService combatPointService, IEnmityService enmityService)
+        {
+            _perkService = perkService;
+            _abilityService = abilityService;
+            _combatPointService = combatPointService;
+            _enmityService = enmityService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
             RousingShout(builder);
@@ -20,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             return builder.Build();
         }
 
-        private static void RousingShout(IAbilityBuilder builder)
+        private void RousingShout(IAbilityBuilder builder)
         {
             builder.Create(FeatType.RousingShout, PerkType.RousingShout)
                 .Name("Rousing Shout")
@@ -49,12 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     var social = GetAbilityScore(activator, AbilityType.Social);
                     var targetMaxHP = GetMaxHitPoints(target);
                     int hp;
-                    var perkService = App.Resolve<IPerkService>();
-                    var abilityService = App.Resolve<IAbilityService>();
-                    var combatPointService = App.Resolve<ICombatPointService>();
-                    var enmityService = App.Resolve<IEnmityService>();
-
-                    var perkLevel = perkService.GetPerkLevel(activator, PerkType.RousingShout);
+                    var perkLevel = _perkService.GetPerkLevel(activator, PerkType.RousingShout);
 
                     switch (perkLevel)
                     {
@@ -71,15 +80,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-                    abilityService.ReapplyPlayerAuraAOE(target);
+                    _abilityService.ReapplyPlayerAuraAOE(target);
 
                     if (hp > 0)
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(hp), target);
                     }
 
-                    combatPointService.AddCombatPointToAllTagged(activator, SkillType.Leadership, 3);
-                    enmityService.ModifyEnmityOnAll(activator, 850);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Leadership, 3);
+                    _enmityService.ModifyEnmityOnAll(activator, 850);
                 });
         }
     }

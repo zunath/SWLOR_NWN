@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -38,15 +39,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             return builder.Build();
         }
-        private static void Impact(uint activator, uint target, int dmg, int evaDecrease, int tier, string effectTag, int dc)
+        private void Impact(uint activator, uint target, int dmg, int evaDecrease, int tier, string effectTag, int dc)
         {
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-            var statService = App.Resolve<IStatService>();
-            var combatService = App.Resolve<ICombatService>();
-            var messagingService = App.Resolve<IMessagingService>();
-            var enmityService = App.Resolve<IEnmityService>();
-            var combatPointService = App.Resolve<ICombatPointService>();
+            var statService = _statService;
+            var combatService = _combatService;
+            var messagingService = _messagingService;
+            var enmityService = _enmityService;
+            var combatPointService = _combatPointService;
 
             var attack = statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
             var defense = statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
@@ -92,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 
-        private static void ForceSpark1(IAbilityBuilder builder)
+        private void ForceSpark1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceSpark1, PerkType.ForceSpark)
                 .Name("Force Spark I")
@@ -111,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private static void ForceSpark2(IAbilityBuilder builder)
+        private void ForceSpark2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceSpark2, PerkType.ForceSpark)
                 .Name("Force Spark II")
@@ -130,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private static void ForceSpark3(IAbilityBuilder builder)
+        private void ForceSpark3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceSpark3, PerkType.ForceSpark)
                 .Name("Force Spark III")

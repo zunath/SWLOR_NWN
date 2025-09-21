@@ -1,12 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-
 using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Events.Attributes;
@@ -16,20 +13,28 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class AI
+    public class AI : IAI
     {
         private readonly IRandomService _random;
         private readonly IStatService _statService;
-        private readonly Enmity _enmity;
+        private readonly IEnmityService _enmity;
         private readonly IAbilityService _abilityService;
         private readonly IPerkService _perkService;
         private readonly IStatusEffectService _statusEffectService;
         private readonly IPartyService _partyService;
         private readonly IActivityService _activityService;
-        private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
-        private static readonly Dictionary<AIDefinitionType, IAIDefinition> _aiDefinitions = new();
+        private readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
+        private readonly Dictionary<AIDefinitionType, IAIDefinition> _aiDefinitions = new();
 
-        public AI(IRandomService random, IStatService statService, Enmity enmity, IAbilityService abilityService, IPerkService perkService, IStatusEffectService statusEffectService, IPartyService partyService, IActivityService activityService)
+        public AI(
+            IRandomService random, 
+            IStatService statService,
+            IEnmityService enmity, 
+            IAbilityService abilityService, 
+            IPerkService perkService, 
+            IStatusEffectService statusEffectService, 
+            IPartyService partyService, 
+            IActivityService activityService)
         {
             _random = random;
             _statService = statService;
@@ -93,7 +98,7 @@ namespace SWLOR.Game.Server.Service
         /// Entry point for creature conversation logic.
         /// </summary>
         [ScriptHandler<OnCreatureConversationAfter>]
-        public static void CreatureConversation()
+        public void CreatureConversation()
         {
             var conversation = GetLocalString(OBJECT_SELF, "CONVERSATION");
             if (!string.IsNullOrWhiteSpace(conversation))
@@ -125,7 +130,7 @@ namespace SWLOR.Game.Server.Service
         /// Entry point for creature death logic
         /// </summary>
         [ScriptHandler<OnCreatureDeathAfter>]
-        public static void CreatureDeath()
+        public void CreatureDeath()
         {
             RemoveFromAlliesCache();
         }
@@ -157,7 +162,7 @@ namespace SWLOR.Game.Server.Service
         /// Entry point for creature rested logic
         /// </summary>
         [ScriptHandler<OnCreatureRestedAfter>]
-        public static void CreatureRested()
+        public void CreatureRested()
         {
         }
 
@@ -165,7 +170,7 @@ namespace SWLOR.Game.Server.Service
         /// Entry point for creature spell cast at logic
         /// </summary>
         [ScriptHandler<OnCreatureSpellCastAfter>]
-        public static void CreatureSpellCastAt()
+        public void CreatureSpellCastAt()
         {
         }
 
@@ -173,7 +178,7 @@ namespace SWLOR.Game.Server.Service
         /// Entry point for creature user defined logic
         /// </summary>
         [ScriptHandler<OnCreatureUserDefinedAfter>]
-        public static void CreatureUserDefined()
+        public void CreatureUserDefined()
         {
         }
 
@@ -181,7 +186,7 @@ namespace SWLOR.Game.Server.Service
         /// Entry point for creature blocked logic
         /// </summary>
         [ScriptHandler<OnCreatureBlockedAfter>]
-        public static void CreatureBlocked()
+        public void CreatureBlocked()
         {
         }
 
@@ -238,7 +243,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature exits the aggro aura of another creature, 
         /// </summary>
         [ScriptHandler<OnCreatureAggroExit>]
-        public static void CreatureAggroExit()
+        public void CreatureAggroExit()
         {
         }
 
@@ -313,7 +318,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="effectType">The type of effect to look for.</param>
         /// <param name="creature">The creature to check</param>
         /// <returns>true if creature has the effect, false otherwise</returns>
-        private static bool GetHasEffect(uint creature, EffectTypeScript effectType, params EffectTypeScript[] otherEffectTypes)
+        private bool GetHasEffect(uint creature, EffectTypeScript effectType, params EffectTypeScript[] otherEffectTypes)
         {
             var effect = GetFirstEffect(creature);
             while (GetIsEffectValid(effect))
@@ -333,14 +338,14 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the creature spawns, add an AOE effect to the creature which will be used to process aggro ranges.
         /// </summary>
-        private static void LoadAggroEffect()
+        private void LoadAggroEffect()
         {
             var effect = SupernaturalEffect(EffectAreaOfEffect(AreaOfEffect.CustomAoe, "crea_aggro_enter", string.Empty, "crea_aggro_exit"));
             effect = TagEffect(effect, "AGGRO_AOE");
             ApplyEffectToObject(DurationType.Permanent, effect, OBJECT_SELF);
         }
 
-        private static void DoVFX()
+        private void DoVFX()
         {
             // Allow builders to put permanent effects on creatures - e.g. to make them statues, or make them glow.
             // Index of standard VFX effects here: https://nwnlexicon.com/index.php?title=Vfx_dur
@@ -363,7 +368,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature's heartbeat fires, if they have the RandomWalk or ReturnHome AI flag,
         /// and they are not currently preoccupied (combat, talking, etc.) force them to randomly walk or return home if they are too far away.
         /// </summary>
-        private static void ProcessFlags()
+        private void ProcessFlags()
         {
             var self = OBJECT_SELF;
 
@@ -405,7 +410,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature perceives another creature, if the creature is part of the same faction add or remove it from their cache.
         /// Creatures in this cache will be used for AI decisions.
         /// </summary>
-        private static void ProcessCreatureAllies()
+        private void ProcessCreatureAllies()
         {
             var self = OBJECT_SELF;
             var lastPerceived = GetLastPerceived();
@@ -438,7 +443,7 @@ namespace SWLOR.Game.Server.Service
         /// When the creature dies or is destroyed, remove it from all caches.
         /// </summary>
         [ScriptHandler(ScriptName.OnObjectDestroyed)]
-        public static void RemoveFromAlliesCache()
+        public void RemoveFromAlliesCache()
         {
             var self = OBJECT_SELF;
             if (!_creatureAllies.ContainsKey(self)) return;
@@ -461,7 +466,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to set the flags onto.</param>
         /// <param name="flags">The flags to set.</param>
-        public static void SetAIFlag(uint creature, AIFlag flags)
+        public void SetAIFlag(uint creature, AIFlag flags)
         {
             var flagValue = (int) flags;
             SetLocalInt(creature, "AI_FLAGS", flagValue);
@@ -472,7 +477,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <returns>A set of AIFlags specified on a creature.</returns>
-        public static AIFlag GetAIFlag(uint creature)
+        public AIFlag GetAIFlag(uint creature)
         {
             var flagValue = GetLocalInt(creature, "AI_FLAGS");
             return (AIFlag) flagValue;

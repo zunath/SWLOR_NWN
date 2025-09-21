@@ -8,6 +8,7 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
@@ -18,14 +19,23 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         private readonly ISpaceService _spaceService;
         private readonly IEnmityService _enmityService;
         private readonly ICombatPointService _combatPointService;
-        private readonly ShipModuleBuilder _builder = new();
+        private readonly IShipModuleBuilder _builder;
+        private readonly IMessagingService _messaging;
 
-        public BulwarkShieldGeneratorModuleDefinition(IDatabaseService db, ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService)
+        public BulwarkShieldGeneratorModuleDefinition(
+            IDatabaseService db, 
+            ISpaceService spaceService, 
+            IEnmityService enmityService, 
+            ICombatPointService combatPointService,
+            IShipModuleBuilder builder,
+            IMessagingService messaging)
         {
             _db = db;
             _spaceService = spaceService;
             _enmityService = enmityService;
             _combatPointService = combatPointService;
+            _builder = builder;
+            _messaging = messaging;
         }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
@@ -102,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
 
                     _enmityService.ModifyEnmityOnAll(activator, 100 + repairAmount);
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {recovery} shield HP to nearby ships reinforcing their shield integrity.");
+                    _messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {recovery} shield HP to nearby ships reinforcing their shield integrity.");
                     _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }

@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -28,9 +29,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             _combatPointService = combatPointService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             ExplosiveToss1(builder);
             ExplosiveToss2(builder);
             ExplosiveToss3(builder);
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             }
         }
 
-        private static void ExplosiveToss1(AbilityBuilder builder)
+        private void ExplosiveToss1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ExplosiveToss1, PerkType.ExplosiveToss)
                 .Name("Explosive Toss I")
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void ExplosiveToss2(AbilityBuilder builder)
+        private void ExplosiveToss2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ExplosiveToss2, PerkType.ExplosiveToss)
                 .Name("Explosive Toss II")
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void ExplosiveToss3(AbilityBuilder builder)
+        private void ExplosiveToss3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ExplosiveToss3, PerkType.ExplosiveToss)
                 .Name("Explosive Toss III")

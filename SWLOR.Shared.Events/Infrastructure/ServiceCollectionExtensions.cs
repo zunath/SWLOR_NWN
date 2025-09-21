@@ -1,0 +1,23 @@
+using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Shared.Events.Service;
+
+namespace SWLOR.Shared.Events.Infrastructure
+{
+    /// <summary>
+    /// Extension methods for registering Eventing-related services in the dependency injection container.
+    /// </summary>
+    public static class ServiceCollectionExtensions
+    {
+        /// <summary>
+        /// Registers all Eventing services in the service collection.
+        /// </summary>
+        /// <param name="services">The service collection to register services in</param>
+        /// <returns>The service collection for chaining</returns>
+        public static IServiceCollection AddEventingServices(this IServiceCollection services)
+        {
+            services.AddSingleton<ModuleEventHandlers>();
+            
+            return services;
+        }
+    }
+}

@@ -1,0 +1,10 @@
+using SWLOR.Shared.Events.EventAggregator;
+using SWLOR.Shared.Events.Constants;
+
+namespace SWLOR.Shared.Events.Events.Eventing
+{
+    internal class OnEventingModuleLevelUp : BaseEvent
+    {
+        public override string Script => ScriptName.OnEventingModuleLevelUp;
+    }
+}

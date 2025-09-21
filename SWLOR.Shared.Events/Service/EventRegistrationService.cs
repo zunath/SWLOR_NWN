@@ -84,27 +84,27 @@ namespace SWLOR.Shared.Events.Service
         {
             var module = GetModule();
 
-            SetEventScript(module, EventScript.Module_OnAcquireItem, ScriptName.OnModuleAcquire);
-            SetEventScript(module, EventScript.Module_OnActivateItem, ScriptName.OnModuleActivate);
-            SetEventScript(module, EventScript.Module_OnClientEnter, ScriptName.OnModuleEnter);
-            SetEventScript(module, EventScript.Module_OnClientExit, ScriptName.OnModuleExit);
-            SetEventScript(module, EventScript.Module_OnPlayerCancelCutscene, ScriptName.OnModulePlayerCancelCutscene);
-            SetEventScript(module, EventScript.Module_OnHeartbeat, ScriptName.OnModuleHeartbeat);
-            SetEventScript(module, EventScript.Module_OnModuleLoad, ScriptName.OnModuleLoad);
-            SetEventScript(module, EventScript.Module_OnPlayerChat, ScriptName.OnModuleChat);
-            SetEventScript(module, EventScript.Module_OnPlayerDying, ScriptName.OnModuleDying);
-            SetEventScript(module, EventScript.Module_OnPlayerDeath, ScriptName.OnModuleDeath);
-            SetEventScript(module, EventScript.Module_OnEquipItem, ScriptName.OnModuleEquip);
-            SetEventScript(module, EventScript.Module_OnPlayerLevelUp, ScriptName.OnModuleLevelUp);
-            SetEventScript(module, EventScript.Module_OnRespawnButtonPressed, ScriptName.OnModuleRespawn);
-            SetEventScript(module, EventScript.Module_OnPlayerRest, ScriptName.OnModuleRest);
-            SetEventScript(module, EventScript.Module_OnUnequipItem, ScriptName.OnModuleUnequip);
-            SetEventScript(module, EventScript.Module_OnLoseItem, ScriptName.OnModuleUnacquire);
-            SetEventScript(module, EventScript.Module_OnUserDefined, ScriptName.OnModuleUserDefined);
-            SetEventScript(module, EventScript.Module_OnPlayerTarget, ScriptName.OnModulePlayerTarget);
-            SetEventScript(module, EventScript.Module_OnPlayerGuiEvent, ScriptName.OnModuleGuiEvent);
-            SetEventScript(module, EventScript.Module_OnPlayerTileEvent, ScriptName.OnModuleTileEvent);
-            SetEventScript(module, EventScript.Module_OnNuiEvent, ScriptName.OnModuleNuiEvent);
+            SetEventScript(module, EventScript.Module_OnAcquireItem, ScriptName.OnEventingModuleAcquire);
+            SetEventScript(module, EventScript.Module_OnActivateItem, ScriptName.OnEventingModuleActivate);
+            SetEventScript(module, EventScript.Module_OnClientEnter, ScriptName.OnEventingModuleEnter);
+            SetEventScript(module, EventScript.Module_OnClientExit, ScriptName.OnEventingModuleExit);
+            SetEventScript(module, EventScript.Module_OnPlayerCancelCutscene, ScriptName.OnEventingModulePlayerCancelCutscene);
+            SetEventScript(module, EventScript.Module_OnHeartbeat, ScriptName.OnEventingModuleHeartbeat);
+            SetEventScript(module, EventScript.Module_OnModuleLoad, ScriptName.OnEventingModuleLoad);
+            SetEventScript(module, EventScript.Module_OnPlayerChat, ScriptName.OnEventingModuleChat);
+            SetEventScript(module, EventScript.Module_OnPlayerDying, ScriptName.OnEventingModuleDying);
+            SetEventScript(module, EventScript.Module_OnPlayerDeath, ScriptName.OnEventingModuleDeath);
+            SetEventScript(module, EventScript.Module_OnEquipItem, ScriptName.OnEventingModuleEquip);
+            SetEventScript(module, EventScript.Module_OnPlayerLevelUp, ScriptName.OnEventingModuleLevelUp);
+            SetEventScript(module, EventScript.Module_OnRespawnButtonPressed, ScriptName.OnEventingModuleRespawn);
+            SetEventScript(module, EventScript.Module_OnPlayerRest, ScriptName.OnEventingModuleRest);
+            SetEventScript(module, EventScript.Module_OnUnequipItem, ScriptName.OnEventingModuleUnequip);
+            SetEventScript(module, EventScript.Module_OnLoseItem, ScriptName.OnEventingModuleUnacquire);
+            SetEventScript(module, EventScript.Module_OnUserDefined, ScriptName.OnEventingModuleUserDefined);
+            SetEventScript(module, EventScript.Module_OnPlayerTarget, ScriptName.OnEventingModulePlayerTarget);
+            SetEventScript(module, EventScript.Module_OnPlayerGuiEvent, ScriptName.OnEventingModuleGuiEvent);
+            SetEventScript(module, EventScript.Module_OnPlayerTileEvent, ScriptName.OnEventingModuleTileEvent);
+            SetEventScript(module, EventScript.Module_OnNuiEvent, ScriptName.OnEventingModuleNuiEvent);
         }
 
         /// <summary>

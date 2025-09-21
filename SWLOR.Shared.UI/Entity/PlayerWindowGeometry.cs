@@ -8,7 +8,6 @@ namespace SWLOR.Shared.UI.Entity
     {
         public PlayerWindowGeometry()
         {
-            WindowGeometries = new Dictionary<GuiWindowType, GuiRectangle>();
         }
 
         public PlayerWindowGeometry(string playerId)
@@ -16,6 +15,6 @@ namespace SWLOR.Shared.UI.Entity
             Id = playerId;
         }
 
-        public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; }
+        public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; } = new();
     }
 }

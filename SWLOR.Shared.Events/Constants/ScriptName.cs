@@ -38,6 +38,30 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnModuleUserDefined = "mod_user_def";
         public const string OnModuleTileEvent = "mod_tile_event";
 
+        // Eventing system module events
+        internal const string OnEventingModuleLoad = "ev_mod_load";
+        internal const string OnEventingModuleEnter = "ev_mod_enter";
+        internal const string OnEventingModuleExit = "ev_mod_exit";
+        internal const string OnEventingModuleDeath = "ev_mod_death";
+        internal const string OnEventingModuleDying = "ev_mod_dying";
+        internal const string OnEventingModuleRespawn = "ev_mod_respawn";
+        internal const string OnEventingModuleAcquire = "ev_mod_acquire";
+        internal const string OnEventingModuleUnacquire = "ev_mod_unacquire";
+        internal const string OnEventingModulePreload = "ev_mod_preload";
+        internal const string OnEventingModuleGuiEvent = "ev_mod_gui_event";
+        internal const string OnEventingModuleChat = "ev_mod_chat";
+        internal const string OnEventingModuleNuiEvent = "ev_mod_nui_event";
+        internal const string OnEventingModuleEquip = "ev_mod_equip";
+        internal const string OnEventingModuleUnequip = "ev_mod_unequip";
+        internal const string OnEventingModuleRest = "ev_mod_rest";
+        internal const string OnEventingModulePlayerTarget = "ev_mod_p_target";
+        internal const string OnEventingModuleActivate = "ev_mod_activate";
+        internal const string OnEventingModulePlayerCancelCutscene = "ev_mod_abort_cs";
+        internal const string OnEventingModuleHeartbeat = "ev_mod_heartbeat";
+        internal const string OnEventingModuleLevelUp = "ev_mod_level_up";
+        internal const string OnEventingModuleUserDefined = "ev_mod_user_def";
+        internal const string OnEventingModuleTileEvent = "ev_mod_tile_evt";
+
         // Infrastructure events
         public const string OnServerLoaded = "server_loaded";
         public const string OnEventsHooked = "events_hooked";
@@ -95,6 +119,7 @@ namespace SWLOR.Shared.Events.Constants
         public const string OnPlayerHullAdjusted = "pc_hull_adjusted";
         public const string OnPlayerCapAdjusted = "pc_cap_adjusted";
         public const string OnPlayerTargetUpdated = "pc_target_upd";
+        public const string OnPlayerCacheData = "pc_cache_data";
 
         // NWNX Events - Associate events
         public const string OnAssociateAddBefore = "asso_add_bef";

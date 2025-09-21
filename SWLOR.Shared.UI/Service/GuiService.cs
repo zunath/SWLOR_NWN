@@ -8,6 +8,7 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Entity;
@@ -101,7 +102,7 @@ namespace SWLOR.Shared.UI.Service
         /// <summary>
         /// When a player enters the server, create instances of every window if they have not already been created this session.
         /// </summary>
-        [ScriptHandler<OnModuleEnter>]
+        [ScriptHandler<OnPlayerCacheData>]
         public void CreatePlayerWindows()
         {
             var player = GetEnteringObject();

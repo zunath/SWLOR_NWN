@@ -25,6 +25,7 @@ using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Events.Infrastructure;
 using SWLOR.Shared.Events.Service;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
@@ -88,6 +89,7 @@ namespace SWLOR.Game.Server
         {
             // Shared Services
             services.AddCoreServices();
+            services.AddEventingServices();
             services.AddCacheServices();
             services.AddUIServices();
 

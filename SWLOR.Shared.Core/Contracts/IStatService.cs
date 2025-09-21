@@ -3,12 +3,17 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Models;
+using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 
 namespace SWLOR.Shared.Core.Contracts
 {
     public interface IStatService
     {
+        int BaseHP => 70;
+        int BaseFP => 10;
+        int BaseSTM => 10;
+
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
         /// </summary>

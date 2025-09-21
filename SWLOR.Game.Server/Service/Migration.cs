@@ -13,10 +13,11 @@ using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 using Exception = System.Exception;
 using SWLOR.Shared.Events.Events.Infrastructure;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Migration
+    public class Migration : IMigrationService
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;

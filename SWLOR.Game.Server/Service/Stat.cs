@@ -22,7 +22,7 @@ using MovementRate = SWLOR.NWN.API.NWScript.Enum.MovementRate;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Stat : IStat
+    public class Stat : IStatService
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
@@ -52,9 +52,9 @@ namespace SWLOR.Game.Server.Service
             _statusEffectService = statusEffectService;
             _enmityService = enmityService;
         }
-        public const int BaseHP = 70;
-        public const int BaseFP = 10;
-        public const int BaseSTM = 10;
+        public int BaseHP => 70;
+        public int BaseFP => 10;
+        public int BaseSTM => 10;
 
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.

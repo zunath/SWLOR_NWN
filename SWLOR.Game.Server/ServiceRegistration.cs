@@ -58,6 +58,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IScriptExecutor, ScriptExecutor>();
             services.AddSingleton<IServerBootstrapper, ServerBootstrapper>();
             services.AddSingleton<IServerManager, ServerManager>();
+            services.AddSingleton<IEventService, EventService>();
             services.AddSingleton<IEventRegistrationService, EventRegistrationService>();
             services.AddSingleton<IScheduler, Scheduler>();
         }

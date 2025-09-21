@@ -2,13 +2,12 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Shared.Caching.Service;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class FabricationGuildQuestDefinition : IQuestListDefinition
     {
-        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
+        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
         private class RewardDetails
         {
             public int Gold { get; }
@@ -265,7 +264,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             int amount,
             int guildRank)
         {
-            var itemName = _cache.GetItemNameByResref(resref);
+            var itemName = _itemCache.GetItemNameByResref(resref);
             var rewardDetails = _rewardDetails[guildRank];
 
             builder.Create(questId, $"{amount}x {itemName}")

@@ -6,14 +6,14 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Caching.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CustomizeCharacterViewModel: GuiViewModelBase<CustomizeCharacterViewModel, CustomizeCharacterPayload>
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
+        private static readonly IPortraitCacheService _portraitCache = ServiceContainer.GetService<IPortraitCacheService>();
+        private static readonly ISoundSetCacheService _soundSetCache = ServiceContainer.GetService<ISoundSetCacheService>();
         
         private uint _target;
 
@@ -74,20 +74,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (int.TryParse(value, out var parsed))
                 {
-                    if (parsed > _cache.PortraitCount)
-                        parsed = _cache.PortraitCount;
+                    if (parsed > _portraitCache.PortraitCount)
+                        parsed = _portraitCache.PortraitCount;
                     else if (parsed < 1)
                         parsed = 1;
 
                     _activePortraitInternalId = parsed;
 
                     Set(parsed.ToString());
-                    ActivePortrait = _cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
+                    ActivePortrait = _portraitCache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
                 }
                 else
                 {
                     Set(_activePortraitInternalId.ToString());
-                    ActivePortrait = _cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
+                    ActivePortrait = _portraitCache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
                 }
             }
         }
@@ -128,13 +128,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadCurrentPortrait()
         {
             var resref = GetPortraitResRef(_target);
-            var internalId = _cache.GetPortraitInternalIdByResref(resref);
+            var internalId = _portraitCache.GetPortraitInternalIdByResref(resref);
             var portraitId = internalId == -1
-                ? _cache.GetPortraitInternalId(1)
-                : _cache.GetPortraitByInternalId(internalId);
+                ? _portraitCache.GetPortraitInternalId(1)
+                : _portraitCache.GetPortraitByInternalId(internalId);
 
-            ActivePortraitInternalId = _cache.GetPortraitInternalId(portraitId).ToString();
-            ActivePortrait = _cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
+            ActivePortraitInternalId = _portraitCache.GetPortraitInternalId(portraitId).ToString();
+            ActivePortrait = _portraitCache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
         }
 
         private void LoadSoundSets()
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var soundSetToggles = new GuiBindingList<bool>();
             _soundSetIds = new List<int>();
 
-            foreach (var (soundSet, label) in _cache.GetSoundSets())
+            foreach (var (soundSet, label) in _soundSetCache.GetSoundSets())
             {
                 soundSetNames.Add(label);
                 soundSetToggles.Add(activeSoundSetId == soundSet);
@@ -161,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _target = GetIsObjectValid(initialPayload.Target) ? initialPayload.Target : Player;
 
             CustomPortraitFile = string.Empty;
-            MaximumPortraits = _cache.PortraitCount;
+            MaximumPortraits = _portraitCache.PortraitCount;
             MaxPortraitsText = $"/ {MaximumPortraits}";
             
             LoadPortraitView();
@@ -184,21 +184,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var newId = _activePortraitInternalId - 1;
 
             if (newId < 1)
-                newId = _cache.PortraitCount;
+                newId = _portraitCache.PortraitCount;
 
             ActivePortraitInternalId = newId.ToString();
-            ActivePortrait = _cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
+            ActivePortrait = _portraitCache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
         };
 
         public Action OnNextPortraitClick() => () =>
         {
             var newId = _activePortraitInternalId + 1;
 
-            if (newId > _cache.PortraitCount)
+            if (newId > _portraitCache.PortraitCount)
                 newId = 1;
 
             ActivePortraitInternalId = newId.ToString();
-            ActivePortrait = _cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
+            ActivePortrait = _portraitCache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
         };
 
         public Action OnRevertPortraitClick() => () =>
@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var isDroid = Droid.IsDroid(_target);
             var isBeast = BeastMastery.IsPlayerBeast(_target);
-            var portraitId = _cache.GetPortraitByInternalId(_activePortraitInternalId);
+            var portraitId = _portraitCache.GetPortraitByInternalId(_activePortraitInternalId);
 
             if (isDroid || isBeast || string.IsNullOrWhiteSpace(CustomPortraitFile))
             {

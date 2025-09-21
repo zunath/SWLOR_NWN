@@ -2,13 +2,12 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.Shared.Caching.Service;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class FishingRodItemDefinition: IItemListDefinition
     {
-        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
+        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
         private readonly ItemBuilder _builder = new();
 
         public Dictionary<string, ItemDetail> BuildItems()
@@ -64,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                         DestroyObject(target);
 
-                        var baitName = _cache.GetItemNameByResref(GetResRef(target));
+                        var baitName = _itemCache.GetItemNameByResref(GetResRef(target));
                         SendMessageToPC(user, $"Loaded bait: {stackSize}x {baitName}");
                     }
                 });

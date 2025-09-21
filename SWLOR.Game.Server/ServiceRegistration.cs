@@ -67,7 +67,9 @@ namespace SWLOR.Game.Server
 
         private static void AddGameServices(IServiceCollection services)
         {
-            services.AddSingleton<ICacheService, CacheService>();
+            services.AddSingleton<IItemCacheService, ItemCacheService>();
+            services.AddSingleton<IPortraitCacheService, PortraitCacheService>();
+            services.AddSingleton<ISoundSetCacheService, SoundSetCacheService>();
         }
     }
 }

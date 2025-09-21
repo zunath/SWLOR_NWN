@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
@@ -18,7 +17,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<RPXPRefreshEvent>
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
         
         [ScriptHandler(ScriptName.OnOpenTrainingStore)]
         public static void OpenTrainingStore()
@@ -40,10 +38,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Resref = resref;
                 BasePrice = basePrice;
 
-                Name = _cache.GetItemNameByResref(resref);
+                Name = _itemCache.GetItemNameByResref(resref);
             }
         }
 
+        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
         private static readonly List<TerminalItem> _availableItems = new()
         {
             new("iIT_BOOK_244", "refund_tome", 10000),

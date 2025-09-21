@@ -3,14 +3,13 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Caching.Service;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
     public class FishingSpawnPointDefinition: ISpawnListDefinition
     {
-        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
+        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
         private readonly SpawnTableBuilder _builder = new();
 
         public Dictionary<string, SpawnTable> BuildSpawnTables()
@@ -33,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                     foreach (var resref in fishResrefList)
                     {
-                        var itemName = _cache.GetItemNameByResref(resref);
+                        var itemName = _itemCache.GetItemNameByResref(resref);
                         description += itemName + "\n";
                     }
 

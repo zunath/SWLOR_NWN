@@ -8,13 +8,12 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Caching.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class RefineryViewModel: GuiViewModelBase<RefineryViewModel, GuiPayloadBase>
     {
-        private static readonly ICacheService _cache = ServiceContainer.GetService<ICacheService>();
+        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
         private class OreDetail
         {
             public int RequiredLevel { get; }
@@ -197,11 +196,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
 
                 var resref = GetResRef(item);
-                var itemName = _cache.GetItemNameByResref(resref);
+                var itemName = _itemCache.GetItemNameByResref(resref);
                 var stackSize = GetItemStackSize(item);
                 var serialized = ObjectPlugin.Serialize(item);
                 var outputOre = _ores[resref];
-                var outputItemName = _cache.GetItemNameByResref(outputOre.RefinedItemResref);
+                var outputItemName = _itemCache.GetItemNameByResref(outputOre.RefinedItemResref);
 
                 InputItemNames.Add($"{stackSize}x {itemName}");
                 InputItemToggles.Add(false);

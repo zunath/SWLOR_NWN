@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
@@ -25,7 +23,6 @@ using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Service;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service

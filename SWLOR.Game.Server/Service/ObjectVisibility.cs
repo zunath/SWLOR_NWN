@@ -3,26 +3,32 @@ using System.Linq;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class ObjectVisibility
+    public class ObjectVisibilityService : IObjectVisibilityService
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly Dictionary<string, uint> _visibilityObjects = new();
-        private static readonly List<uint> _defaultHiddenObjects = new();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly Dictionary<string, uint> _visibilityObjects = new();
+        private readonly List<uint> _defaultHiddenObjects = new();
+
+        public ObjectVisibilityService(ILogger logger, IDatabaseService db)
+        {
+            _logger = logger;
+            _db = db;
+        }
 
         /// <summary>
         /// When the module loads, cycle through every area and every object to identify the visibility objects.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void LoadVisibilityObjects()
+        public void LoadVisibilityObjects()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
@@ -46,7 +52,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, toggle visibility on all objects
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void LoadPlayerVisibilityObjects()
+        public void LoadPlayerVisibilityObjects()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -81,7 +87,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to adjust.</param>
         /// <param name="target">The target object to adjust.</param>
         /// <param name="type">The new type of visibility to use.</param>
-        public static void AdjustVisibility(uint player, uint target, VisibilityType type)
+        public void AdjustVisibility(uint player, uint target, VisibilityType type)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (GetIsPC(target)) return;
@@ -107,7 +113,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to adjust.</param>
         /// <param name="visibilityObjectId">The visibility object Id of the object to adjust.</param>
         /// <param name="type">The new visibility type to adjust to.</param>
-        public static void AdjustVisibilityByObjectId(uint player, string visibilityObjectId, VisibilityType type)
+        public void AdjustVisibilityByObjectId(uint player, string visibilityObjectId, VisibilityType type)
         {
             if (!_visibilityObjects.ContainsKey(visibilityObjectId))
             {

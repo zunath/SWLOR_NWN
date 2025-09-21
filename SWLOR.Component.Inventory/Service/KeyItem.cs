@@ -1,83 +1,74 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Component.Inventory.UI.RefreshEvent;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Extension;
-using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.Inventory.Service
 {
-    public static class KeyItem
+    public class KeyItemService : IKeyItemService
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        // All categories/key items
-        private static readonly Dictionary<KeyItemCategoryType, KeyItemCategoryAttribute> _allCategories = new();
-        private static readonly Dictionary<KeyItemType, KeyItemAttribute> _allKeyItems = new();
-        private static readonly Dictionary<KeyItemCategoryType, List<KeyItemType>> _allKeyItemsByCategory = new();
+        private readonly IDatabaseService _db;
+        private readonly IGenericCacheService _cacheService;
+        private readonly IGuiService _guiService;
+        private readonly IObjectVisibilityService _objectVisibilityService;
+        private IEnumCache<KeyItemType, KeyItemAttribute>? _keyItemCache;
+        private IEnumCache<KeyItemCategoryType, KeyItemCategoryAttribute>? _categoryCache;
+        private Dictionary<string, KeyItemType>? _keyItemsByTypeName;
+        private Dictionary<int, KeyItemType>? _keyItemsByTypeId;
 
-        // Active categories/key items
-        private static readonly Dictionary<KeyItemType, KeyItemAttribute> _activeKeyItems = new();
-        private static readonly Dictionary<KeyItemCategoryType, KeyItemCategoryAttribute> _activeKeyItemCategories = new();
-        private static readonly Dictionary<KeyItemCategoryType, Dictionary<KeyItemType, KeyItemAttribute>> _activeKeyItemsByCategory = new();
-
-        // By key item type name or Id
-        private static readonly Dictionary<string, KeyItemType> _keyItemsByTypeName = new();
-        private static readonly Dictionary<int, KeyItemType> _keyItemsByTypeId = new();
+        public KeyItemService(
+            IDatabaseService db,
+            IGenericCacheService cacheService,
+            IGuiService guiService,
+            IObjectVisibilityService objectVisibilityService)
+        {
+            _db = db;
+            _cacheService = cacheService;
+            _guiService = guiService;
+            _objectVisibilityService = objectVisibilityService;
+        }
 
         /// <summary>
         /// When the module loads, cache all key item data.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void LoadData()
+        public void LoadData()
         {
-            // Organize categories
-            var categories = Enum.GetValues(typeof(KeyItemCategoryType)).Cast<KeyItemCategoryType>();
-            foreach (var category in categories)
+            // Build key item cache with all items and filtered caches
+            _keyItemCache = _cacheService
+                .BuildEnumCache<KeyItemType, KeyItemAttribute>()
+                .WithAllItems()
+                .WithFilteredCache("Active", x => x.IsActive)
+                .WithGroupedCache("ByCategory", x => x.Category)
+                .WithFilteredGroupedCache("ActiveByCategory", x => x.IsActive, x => x.Category)
+                .Build();
+
+            // Build category cache with all items and filtered caches
+            _categoryCache = _cacheService
+                .BuildEnumCache<KeyItemCategoryType, KeyItemCategoryAttribute>()
+                .WithAllItems()
+                .WithFilteredCache("Active", x => x.IsActive)
+                .Build();
+
+            // Build lookup dictionaries
+            _keyItemsByTypeName = new Dictionary<string, KeyItemType>();
+            _keyItemsByTypeId = new Dictionary<int, KeyItemType>();
+
+            foreach (var keyItem in _keyItemCache.AllItems.Keys)
             {
-                var categoryDetail = category.GetAttribute<KeyItemCategoryType, KeyItemCategoryAttribute>();
-                _allCategories[category] = categoryDetail;
-                _allKeyItemsByCategory[category] = new List<KeyItemType>();
-
-                if (categoryDetail.IsActive)
-                {
-                    _activeKeyItemCategories[category] = categoryDetail;
-                    _activeKeyItemsByCategory[category] = new Dictionary<KeyItemType, KeyItemAttribute>();
-                }
-            }
-
-            // Organize key items
-            var keyItems = Enum.GetValues(typeof(KeyItemType)).Cast<KeyItemType>();
-            foreach (var keyItem in keyItems)
-            {
-                var keyItemDetail = keyItem.GetAttribute<KeyItemType, KeyItemAttribute>();
-                _allKeyItems[keyItem] = keyItemDetail;
-                _allKeyItemsByCategory[keyItemDetail.Category].Add(keyItem);
-
                 var enumName = Enum.GetName(typeof(KeyItemType), keyItem);
                 if (!string.IsNullOrWhiteSpace(enumName))
                 {
                     _keyItemsByTypeName[enumName] = keyItem;
                 }
-
-                _keyItemsByTypeId[(int) keyItem] = keyItem;
-
-                if (keyItemDetail.IsActive)
-                {
-                    _activeKeyItems[keyItem] = keyItemDetail;
-                    if (_activeKeyItemsByCategory.ContainsKey(keyItemDetail.Category))
-                    {
-                        _activeKeyItemsByCategory[keyItemDetail.Category][keyItem] = keyItemDetail;
-                    }
-                }
+                _keyItemsByTypeId[(int)keyItem] = keyItem;
             }
         }
 
@@ -86,9 +77,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type of key item category to retrieve.</param>
         /// <returns>A key item category detail.</returns>
-        public static KeyItemCategoryAttribute GetKeyItemCategory(KeyItemCategoryType type)
+        public KeyItemCategoryAttribute GetKeyItemCategory(KeyItemCategoryType type)
         {
-            return _allCategories[type];
+            return _categoryCache!.AllItems[type];
         }
 
         /// <summary>
@@ -96,9 +87,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="keyItem">The type of key item to retrieve.</param>
         /// <returns>A key item detail</returns>
-        public static KeyItemAttribute GetKeyItem(KeyItemType keyItem)
+        public KeyItemAttribute GetKeyItem(KeyItemType keyItem)
         {
-            return _allKeyItems[keyItem];
+            return _keyItemCache!.AllItems[keyItem];
         }
 
         /// <summary>
@@ -107,9 +98,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="keyItemId">The Id to search for</param>
         /// <returns>A KeyItemType matching the Id.</returns>
-        public static KeyItemType GetKeyItemTypeById(int keyItemId)
+        public KeyItemType GetKeyItemTypeById(int keyItemId)
         {
-            return !_keyItemsByTypeId.ContainsKey(keyItemId) ? 
+            return !_keyItemsByTypeId!.ContainsKey(keyItemId) ? 
                 KeyItemType.Invalid : 
                 _keyItemsByTypeId[keyItemId];
         }
@@ -120,9 +111,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="name">The name to search for</param>
         /// <returns>A KeyItemType matching the name.</returns>
-        public static KeyItemType GetKeyItemTypeByName(string name)
+        public KeyItemType GetKeyItemTypeByName(string name)
         {
-            return !_keyItemsByTypeName.ContainsKey(name) ? 
+            return !_keyItemsByTypeName!.ContainsKey(name) ? 
                 KeyItemType.Invalid : 
                 _keyItemsByTypeName[name];
         }
@@ -131,9 +122,9 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves all of the active key item categories.
         /// </summary>
         /// <returns>All active key item categories</returns>
-        public static Dictionary<KeyItemCategoryType, KeyItemCategoryAttribute> GetActiveCategories()
+        public Dictionary<KeyItemCategoryType, KeyItemCategoryAttribute> GetActiveCategories()
         {
-            return _activeKeyItemCategories.ToDictionary(x => x.Key, y => y.Value);
+            return _categoryCache!.GetFilteredCache("Active")!.ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>
@@ -141,12 +132,13 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="category">The category to search by</param>
         /// <returns>A dictionary containing key item type and key item attribute data.</returns>
-        public static Dictionary<KeyItemType, KeyItemAttribute> GetActiveKeyItemsByCategory(KeyItemCategoryType category)
+        public Dictionary<KeyItemType, KeyItemAttribute> GetActiveKeyItemsByCategory(KeyItemCategoryType category)
         {
-            if(!_activeKeyItemsByCategory.ContainsKey(category))
+            var activeByCategory = _keyItemCache!.GetFilteredGroupedCache<KeyItemCategoryType>("ActiveByCategory");
+            if (activeByCategory == null || !activeByCategory.ContainsKey(category))
                 return new Dictionary<KeyItemType, KeyItemAttribute>();
 
-            return _activeKeyItemsByCategory[category].ToDictionary(s => s.Key, s => s.Value);
+            return activeByCategory[category].ToDictionary(s => s.Key, s => s.Value);
         }
 
         /// <summary>
@@ -156,7 +148,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player</param>
         /// <param name="keyItem">The key item type to give.</param>
-        public static void GiveKeyItem(uint player, KeyItemType keyItem)
+        public void GiveKeyItem(uint player, KeyItemType keyItem)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
@@ -169,10 +161,9 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.KeyItems[keyItem] = DateTime.UtcNow;
             _db.Set(dbPlayer);
 
-            var keyItemDetail = _allKeyItems[keyItem];
+            var keyItemDetail = _keyItemCache!.AllItems[keyItem];
             SendMessageToPC(player, $"You acquire the '{keyItemDetail.Name}' key item.");
-            var guiService = ServiceContainer.GetService<IGuiService>();
-            guiService.PublishRefreshEvent(player, new KeyItemReceivedRefreshEvent(keyItem));
+            _guiService.PublishRefreshEvent(player, new KeyItemReceivedRefreshEvent(keyItem));
         }
 
         /// <summary>
@@ -182,7 +173,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player</param>
         /// <param name="keyItem">The key item type to remove.</param>
-        public static void RemoveKeyItem(uint player, KeyItemType keyItem)
+        public void RemoveKeyItem(uint player, KeyItemType keyItem)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
@@ -195,7 +186,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.KeyItems.Remove(keyItem);
             _db.Set(dbPlayer);
 
-            var keyItemDetail = _allKeyItems[keyItem];
+            var keyItemDetail = _keyItemCache!.AllItems[keyItem];
             SendMessageToPC(player, $"You lost the '{keyItemDetail.Name}' key item.");
         }
 
@@ -206,7 +197,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to check.</param>
         /// <param name="keyItem">The type of key item to check for.</param>
         /// <returns>true if the player has a key item, false otherwise</returns>
-        public static bool HasKeyItem(uint player, KeyItemType keyItem)
+        public bool HasKeyItem(uint player, KeyItemType keyItem)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return false;
 
@@ -223,7 +214,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to check.</param>
         /// <param name="keyItems">Required key items.</param>
         /// <returns>true if player has all key items, false otherwise</returns>
-        public static bool HasAllKeyItems(uint player, List<KeyItemType> keyItems)
+        public bool HasAllKeyItems(uint player, List<KeyItemType> keyItems)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return false;
 
@@ -247,9 +238,8 @@ namespace SWLOR.Game.Server.Service
         /// When a placeable with a key item defined is used by a player, give it to them.
         /// </summary>
         [ScriptHandler(ScriptName.OnGetKeyItem)]
-        public static void ObtainKeyItem()
+        public void ObtainKeyItem()
         {
-
             var player = GetLastUsedBy();
 
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -271,9 +261,8 @@ namespace SWLOR.Game.Server.Service
             var visibilityGUID = GetLocalString(placeable, "VISIBILITY_OBJECT_ID");
             if (!string.IsNullOrWhiteSpace(visibilityGUID))
             {
-                ObjectVisibility.AdjustVisibility(player, placeable, VisibilityType.Hidden);
+                _objectVisibilityService.AdjustVisibility(player, placeable, VisibilityType.Hidden);
             }
         }
-
     }
 }

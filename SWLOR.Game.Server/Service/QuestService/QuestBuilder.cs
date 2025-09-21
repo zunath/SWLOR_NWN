@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Enumeration;
+using Microsoft.Extensions.DependencyInjection;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Service.QuestService
@@ -10,6 +11,12 @@ namespace SWLOR.Game.Server.Service.QuestService
         private readonly Dictionary<string, QuestDetail> _quests = new();
         private QuestDetail _activeQuest;
         private QuestStateDetail _activeState;
+        private readonly IServiceProvider _serviceProvider;
+
+        public QuestBuilder(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
 
         /// <summary>
         /// Creates a new quest with a given questId, name, and journalTag.
@@ -125,7 +132,8 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public QuestBuilder AddKeyItemReward(KeyItemType keyItemType, bool isSelectable = true)
         {
-            var reward = new KeyItemReward(keyItemType, isSelectable);
+            var keyItemService = _serviceProvider.GetRequiredService<IKeyItemService>();
+            var reward = new KeyItemReward(keyItemType, isSelectable, keyItemService);
             _activeQuest.Rewards.Add(reward);
 
             return this;
@@ -196,7 +204,8 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public QuestBuilder PrerequisiteKeyItem(KeyItemType keyItemType)
         {
-            var prereq = new RequiredKeyItemPrerequisite(keyItemType);
+            var keyItemService = _serviceProvider.GetRequiredService<IKeyItemService>();
+            var prereq = new RequiredKeyItemPrerequisite(keyItemType, keyItemService);
             _activeQuest.Prerequisites.Add(prereq);
 
             return this;

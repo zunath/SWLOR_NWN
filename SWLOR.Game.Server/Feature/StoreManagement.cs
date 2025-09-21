@@ -10,7 +10,6 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Game.Server.Feature

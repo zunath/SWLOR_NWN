@@ -10,7 +10,6 @@ using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;

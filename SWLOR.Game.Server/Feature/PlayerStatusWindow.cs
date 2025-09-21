@@ -1,17 +1,14 @@
 
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature
 {

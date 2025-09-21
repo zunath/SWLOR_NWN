@@ -1,4 +1,5 @@
 ﻿using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -32,15 +33,17 @@ namespace SWLOR.Game.Server.Service.QuestService
     public class RequiredKeyItemPrerequisite : IQuestPrerequisite
     {
         private readonly KeyItemType _keyItemType;
+        private readonly IKeyItemService _keyItemService;
 
-        public RequiredKeyItemPrerequisite(KeyItemType keyItemType)
+        public RequiredKeyItemPrerequisite(KeyItemType keyItemType, IKeyItemService keyItemService)
         {
             _keyItemType = keyItemType;
+            _keyItemService = keyItemService;
         }
 
         public bool MeetsPrerequisite(uint player)
         {
-            return KeyItem.HasKeyItem(player, _keyItemType);
+            return _keyItemService.HasKeyItem(player, _keyItemType);
         }
     }
 

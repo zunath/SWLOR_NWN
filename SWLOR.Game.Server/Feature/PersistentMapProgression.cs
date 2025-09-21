@@ -1,12 +1,11 @@
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
@@ -16,12 +15,18 @@ namespace SWLOR.Game.Server.Feature
     {
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IKeyItemService _keyItemService;
+
+        public PersistentMapProgression(IKeyItemService keyItemService)
+        {
+            _keyItemService = keyItemService;
+        }
         /// <summary>
         /// Saves a player's area map progression when exiting an area.
         /// </summary>
         [ScriptHandler<OnAreaExit>]
         [ScriptHandler<OnModuleExit>]
-        public static void SaveMapProgression()
+        public void SaveMapProgression()
         {
             var player = GetExitingObject();
 
@@ -45,7 +50,7 @@ namespace SWLOR.Game.Server.Feature
         /// Loads a player's area map progression when entering an area for the first time after a reboot.
         /// </summary>
         [ScriptHandler<OnAreaEnter>]
-        public static void LoadMapProgression()
+        public void LoadMapProgression()
         {
             var player = GetEnteringObject();
 
@@ -62,7 +67,7 @@ namespace SWLOR.Game.Server.Feature
                 try
                 {
                     var keyItemType = (KeyItemType)mapKeyItemId;
-                    if (KeyItem.HasKeyItem(player, keyItemType))
+                    if (_keyItemService.HasKeyItem(player, keyItemType))
                         return;
                 }
                 catch

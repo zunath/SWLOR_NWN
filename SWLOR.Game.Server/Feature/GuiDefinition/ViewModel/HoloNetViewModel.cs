@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
-using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.UI.Contracts;

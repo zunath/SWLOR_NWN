@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using SWLOR.Shared.Caching.Contracts;
 
 namespace SWLOR.Shared.Caching.Service

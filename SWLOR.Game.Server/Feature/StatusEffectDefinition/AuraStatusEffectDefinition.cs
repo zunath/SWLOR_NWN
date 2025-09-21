@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;

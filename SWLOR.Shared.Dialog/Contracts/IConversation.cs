@@ -1,4 +1,6 @@
-﻿namespace SWLOR.Game.Server.Service.DialogService
+﻿using SWLOR.Shared.Dialog.Model;
+
+namespace SWLOR.Shared.Dialog.Contracts
 {
     public interface IConversation
     {

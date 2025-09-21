@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.QuestService;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
 using SWLOR.Game.Server.Service.ActivityService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;

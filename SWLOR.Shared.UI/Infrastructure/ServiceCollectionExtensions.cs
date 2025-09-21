@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;

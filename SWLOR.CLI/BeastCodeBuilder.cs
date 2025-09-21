@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
 

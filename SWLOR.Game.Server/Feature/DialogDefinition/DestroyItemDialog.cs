@@ -1,5 +1,6 @@
-using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Model;
+using SWLOR.Shared.Dialog.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {

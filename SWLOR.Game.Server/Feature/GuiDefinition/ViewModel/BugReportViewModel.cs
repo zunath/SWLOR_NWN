@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
-using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Enums;

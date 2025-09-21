@@ -10,14 +10,21 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\SWLOR.Shared.Abstractions\SWLOR.Shared.Abstractions.csproj" />
+		<ProjectReference Include="..\SWLOR.Shared.Caching\SWLOR.Shared.Caching.csproj" />
 		<ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
+		<ProjectReference Include="..\SWLOR.Shared.Dialog\SWLOR.Shared.Dialog.csproj" />
 		<ProjectReference Include="..\SWLOR.Shared.Events\SWLOR.Shared.Events.csproj" />
+		<ProjectReference Include="..\SWLOR.Shared.UI\SWLOR.Shared.UI.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Folder Include="Entity\" />
 		<Folder Include="Infrastructure\" />
 		<Folder Include="Model\" />
+		<Folder Include="UI\RefreshEvent\" />
+		<Folder Include="UI\Payload\" />
+		<Folder Include="UI\ViewModel\" />
+		<Folder Include="UI\View\" />
 	</ItemGroup>
 
 </Project>

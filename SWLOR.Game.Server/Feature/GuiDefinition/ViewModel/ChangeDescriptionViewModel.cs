@@ -1,5 +1,4 @@
 ﻿using System;
-using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;

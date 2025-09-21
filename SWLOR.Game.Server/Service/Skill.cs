@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,7 +13,6 @@ using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Service;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Game.Server.Service

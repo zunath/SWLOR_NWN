@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Service.CraftService

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;

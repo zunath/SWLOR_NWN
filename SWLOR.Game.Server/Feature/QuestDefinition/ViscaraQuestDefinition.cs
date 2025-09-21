@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -15,7 +16,19 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
     public class ViscaraQuestDefinition : IQuestListDefinition
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private readonly QuestBuilder _builder = new();
+        private readonly IKeyItemService _keyItemService;
+        private readonly IObjectVisibilityService _objectVisibilityService;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly QuestBuilder _builder;
+
+        public ViscaraQuestDefinition(IKeyItemService keyItemService, IObjectVisibilityService objectVisibilityService, IServiceProvider serviceProvider)
+        {
+            _keyItemService = keyItemService;
+            _objectVisibilityService = objectVisibilityService;
+            _serviceProvider = serviceProvider;
+            _builder = new QuestBuilder(_serviceProvider);
+        }
+
         public Dictionary<string, QuestDetail> BuildQuests()
         {
             BlastTheMandalorianRangers();
@@ -75,22 +88,22 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, "FF65A192706B40A6A97474B935796B82", VisibilityType.Visible);
+                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "FF65A192706B40A6A97474B935796B82", VisibilityType.Visible);
                 })
 
                 .OnAbandonAction(player =>
                 {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, "FF65A192706B40A6A97474B935796B82", VisibilityType.Hidden);
+                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "FF65A192706B40A6A97474B935796B82", VisibilityType.Hidden);
                 })
 
                 .OnAdvanceAction((player, sourceObject, state) =>
                 {
-                    ObjectVisibility.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
+                    _objectVisibilityService.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
                 })
                 
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, "D4C44145731048F1B7DA23D974E59FCE", VisibilityType.Visible);
+                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "D4C44145731048F1B7DA23D974E59FCE", VisibilityType.Visible);
                 });
         }
 
@@ -126,16 +139,16 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Visible);
+                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Visible);
                 })
                 .OnAbandonAction(player =>
                 {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Hidden);
+                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Hidden);
                 })
 
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Hidden);
+                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Hidden);
                 });
         }
 
@@ -145,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         /// When a force crystal is touched, run the progression logic for the First Rites quest.
         /// </summary>
         [ScriptHandler(ScriptName.OnQuestForceCrystal)]
-        public static void FirstRitesForceCrystal()
+        public void FirstRitesForceCrystal()
         {
             const string InactiveQuestText = "The crystal glows quietly...";
             var player = GetLastUsedBy();
@@ -193,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             CreateItemOnObject(cluster, player);
             quest.Advance(player, crystal);
 
-            ObjectVisibility.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
+            _objectVisibilityService.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
 
             var waypoint = GetObjectByTag("FORCE_QUEST_LANDING");
             var location = GetLocation(waypoint);
@@ -218,17 +231,17 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Visible);
+                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Visible);
                 })
                 
                 .OnAbandonAction(player =>
                 {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
+                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
                 })
 
                 .OnAdvanceAction((player, sourceObject, state) =>
                 {
-                    ObjectVisibility.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
+                    _objectVisibilityService.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
                 });
         }
 
@@ -331,7 +344,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 foreach (var objId in visibilityObjectIDs)
                 {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, objId, type);
+                    _objectVisibilityService.AdjustVisibilityByObjectId(player, objId, type);
                 }
             }
 
@@ -354,22 +367,22 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 {
                     AdjustVisibility(player, VisibilityType.Hidden);
 
-                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc1);
-                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc2);
-                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc3);
-                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc4);
-                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc5);
-                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc6);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc1);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc2);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc3);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc4);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc5);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc6);
                 })
                 
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc1);
-                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc2);
-                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc3);
-                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc4);
-                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc5);
-                    KeyItem.RemoveKeyItem(player, KeyItemType.DataDisc6);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc1);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc2);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc3);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc4);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc5);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.DataDisc6);
                 });
         }
 
@@ -382,15 +395,15 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.PackageForDenamReyholm);
+                    _keyItemService.GiveKeyItem(player, KeyItemType.PackageForDenamReyholm);
                 })
                 .OnAbandonAction(player =>
                 {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.PackageForDenamReyholm);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.PackageForDenamReyholm);
                 })
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.PackageForDenamReyholm);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.PackageForDenamReyholm);
                 });
         }
 
@@ -438,12 +451,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.MandalorianFacilityKey);
+                    _keyItemService.GiveKeyItem(player, KeyItemType.MandalorianFacilityKey);
                 })
                 
                 .OnAbandonAction(player =>
                 {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.MandalorianFacilityKey);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.MandalorianFacilityKey);
                 });
         }
 
@@ -464,12 +477,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CoxxionBaseKey);
+                    _keyItemService.GiveKeyItem(player, KeyItemType.CoxxionBaseKey);
                 })
                 
                 .OnAbandonAction(player =>
                 {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.CoxxionBaseKey);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.CoxxionBaseKey);
                 });
         }
 

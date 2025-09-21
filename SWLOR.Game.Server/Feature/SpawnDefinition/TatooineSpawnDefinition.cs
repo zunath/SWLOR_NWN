@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
-using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {

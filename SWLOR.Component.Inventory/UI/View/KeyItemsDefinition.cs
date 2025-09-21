@@ -1,21 +1,23 @@
-﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
+﻿using SWLOR.Component.Inventory.UI.ViewModel;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition
+namespace SWLOR.Component.Inventory.UI.View
 {
     public class KeyItemsDefinition : IGuiWindowDefinition
     {
         private readonly IGuiService _guiService;
+        private readonly IKeyItemService _keyItemService;
         private readonly GuiWindowBuilder<KeyItemsViewModel> _builder;
 
-        public KeyItemsDefinition(IGuiService guiService)
+        public KeyItemsDefinition(IGuiService guiService, IKeyItemService keyItemService)
         {
             _guiService = guiService;
+            _keyItemService = keyItemService;
             _builder = new GuiWindowBuilder<KeyItemsViewModel>(_guiService);
         }
 
@@ -35,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindSelectedIndex(model => model.SelectedCategoryId);
 
                         comboBox.AddOption("<All Types>", 0);
-                        foreach (var (type, detail) in KeyItem.GetActiveCategories())
+                        foreach (var (type, detail) in _keyItemService.GetActiveCategories())
                         {
                             comboBox.AddOption(detail.Name, (int)type);
                         }

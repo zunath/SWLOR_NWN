@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;

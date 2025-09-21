@@ -11,7 +11,6 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 

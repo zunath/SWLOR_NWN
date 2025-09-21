@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Shared.Core.Enums;
+﻿using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Service.DroidService
 {

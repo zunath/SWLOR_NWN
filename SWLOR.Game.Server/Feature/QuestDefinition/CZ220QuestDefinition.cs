@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -11,10 +12,21 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class CZ220QuestDefinition: IQuestListDefinition
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IKeyItemService _keyItemService;
+        private readonly IObjectVisibilityService _objectVisibilityService;
+        private readonly IServiceProvider _serviceProvider;
+
+        public CZ220QuestDefinition(IKeyItemService keyItemService, IObjectVisibilityService objectVisibilityService, IServiceProvider serviceProvider)
+        {
+            _keyItemService = keyItemService;
+            _objectVisibilityService = objectVisibilityService;
+            _serviceProvider = serviceProvider;
+        }
+
         public Dictionary<string, QuestDetail> BuildQuests()
         {
-            var builder = new QuestBuilder();
+            var builder = new QuestBuilder(_serviceProvider);
             SelansRequest(builder);
             SuppliesSmithery(builder);
             SuppliesScavenging(builder);
@@ -30,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             return builder.Build();
         }
 
-        private static void SelansRequest(QuestBuilder builder)
+        private void SelansRequest(QuestBuilder builder)
         {
             builder.Create("selan_request", "Selan's Request")
 
@@ -43,9 +55,9 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.AvixTathamsWorkReceipt);
-                    KeyItem.RemoveKeyItem(player, KeyItemType.HalronLinthsWorkReceipt);
-                    KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.AvixTathamsWorkReceipt);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.HalronLinthsWorkReceipt);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt);
 
                     var cdKey = GetPCPublicCDKey(player);
                     var dbAccount = _db.Get<Account>(cdKey) ?? new Account(cdKey);
@@ -55,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private static void SuppliesSmithery(QuestBuilder builder)
+        private void SuppliesSmithery(QuestBuilder builder)
         {
             builder.Create("cz220_smithery", "CZ-220 Supplies - Smithery")
 
@@ -72,18 +84,18 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    _keyItemService.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
                 .OnAbandonAction(player =>
                 {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 });
         }
-        private static void SuppliesScavenging(QuestBuilder builder)
+        private void SuppliesScavenging(QuestBuilder builder)
         {
             builder.Create("cz220_scavenging", "CZ-220 Supplies - Scavenging")
 
@@ -100,18 +112,18 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    _keyItemService.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
                 .OnAbandonAction(player =>
                 {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 });
         }
-        private static void SuppliesFabrication(QuestBuilder builder)
+        private void SuppliesFabrication(QuestBuilder builder)
         {
             builder.Create("cz220_fabrication", "CZ-220 Supplies - Fabrication")
 
@@ -128,19 +140,19 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    _keyItemService.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
                 .OnAbandonAction(player =>
                 {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 })
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 });
         }
 
-        private static void DatapadRetrieval(QuestBuilder builder)
+        private void DatapadRetrieval(QuestBuilder builder)
         {
             builder.Create("datapad_retrieval", "Datapad Retrieval")
 
@@ -152,15 +164,15 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    ObjectVisibility.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
+                    _objectVisibilityService.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
                 })
                 .OnAbandonAction(player =>
                 {
-                    ObjectVisibility.AdjustVisibilityByObjectId(player, "3BA0FF2E61C34FB783905E8A78236A30", VisibilityType.Visible);
+                    _objectVisibilityService.AdjustVisibilityByObjectId(player, "3BA0FF2E61C34FB783905E8A78236A30", VisibilityType.Visible);
                 });
         }
 
-        private static void MynockMayhem(QuestBuilder builder)
+        private void MynockMayhem(QuestBuilder builder)
         {
             builder.Create("mynock_mayhem", "Mynock Mayhem")
 
@@ -176,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddKeyItemReward(KeyItemType.HalronLinthsWorkReceipt);
         }
 
-        private static void OreCollection(QuestBuilder builder)
+        private void OreCollection(QuestBuilder builder)
         {
             builder.Create("ore_collection", "Ore Collection")
                 .OnAcceptAction((player, sourceObject) =>
@@ -201,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddKeyItemReward(KeyItemType.AvixTathamsWorkReceipt);
         }
 
-        private static void RefineryTrainee(QuestBuilder builder)
+        private void RefineryTrainee(QuestBuilder builder)
         {
             builder.Create("refinery_trainee", "Refinery Trainee")
                 .PrerequisiteQuest("ore_collection")
@@ -216,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddXPReward(300, false)
                 .AddGoldReward(400, false);
         }
-        private static void TheMalfunctioningDroids(QuestBuilder builder)
+        private void TheMalfunctioningDroids(QuestBuilder builder)
         {
             builder.Create("malfun_droids", "The Malfunctioning Droids")
                 .PrerequisiteQuest("mynock_mayhem")
@@ -231,7 +243,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGoldReward(100, false)
                 .AddXPReward(200);
         }
-        private static void TheColicoidExperiment(QuestBuilder builder)
+        private void TheColicoidExperiment(QuestBuilder builder)
         {
             builder.Create("the_colicoid_experiment", "The Colicoid Experiment")
                 .PrerequisiteQuest("mynock_mayhem")
@@ -249,15 +261,15 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CZ220ExperimentRoomKey);
+                    _keyItemService.GiveKeyItem(player, KeyItemType.CZ220ExperimentRoomKey);
                 })
                 .OnAbandonAction(player =>
                 {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.CZ220ExperimentRoomKey);
+                    _keyItemService.RemoveKeyItem(player, KeyItemType.CZ220ExperimentRoomKey);
                 });
         }
 
-        private static void ScrapMetalMonstrosity(QuestBuilder builder)
+        private void ScrapMetalMonstrosity(QuestBuilder builder)
         {
             builder.Create("scrapmetal_monster", "Scrap Metal Monstrosity")
 

@@ -4,7 +4,6 @@ using System.Linq;
 
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;

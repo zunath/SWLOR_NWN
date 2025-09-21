@@ -5,8 +5,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {

@@ -1,23 +1,30 @@
-
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class PlaceableScripts
+    public class PlaceableScripts
     {
+        private readonly IKeyItemService _keyItemService;
+
+        public PlaceableScripts(IKeyItemService keyItemService)
+        {
+            _keyItemService = keyItemService;
+        }
         /// <summary>
         /// When a teleport placeable is used, send the user to the configured waypoint.
         /// Checks are made for required key items, if specified as local variables on the placeable.
         /// </summary>
         [ScriptHandler(ScriptName.OnPlaceableTeleport)]
-        public static void UseTeleportDevice()
+        public void UseTeleportDevice()
         {
             var user = GetLastUsedBy();
 
@@ -40,7 +47,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 var keyItem = (KeyItemType) requiredKeyItemId;
 
-                if (!KeyItem.HasKeyItem(user, keyItem))
+                if (!_keyItemService.HasKeyItem(user, keyItem))
                 {
                     SendMessageToPC(user, missingKeyItemMessage);
 
@@ -82,7 +89,7 @@ namespace SWLOR.Game.Server.Feature
         /// Applies a permanent VFX on a placeable or creature on heartbeat, then removes the heartbeat script.
         /// </summary>
         [ScriptHandler(ScriptName.OnPlaceablePermanentVfx)]
-        public static void ApplyPermanentVisualEffect()
+        public void ApplyPermanentVisualEffect()
         {
             var target = OBJECT_SELF;
 
@@ -105,7 +112,7 @@ namespace SWLOR.Game.Server.Feature
         /// Handles starting a generic conversation when a placeable is clicked or used by a player or DM.
         /// </summary>
         [ScriptHandler(ScriptName.OnPlaceableGenericConversation)]
-        public static void GenericConversation()
+        public void GenericConversation()
         {
             var placeable = OBJECT_SELF;
             var user = GetObjectType(placeable) == ObjectType.Placeable ? GetLastUsedBy() : GetClickingObject();
@@ -128,7 +135,7 @@ namespace SWLOR.Game.Server.Feature
         /// Handle sitting on an object.        
         /// </summary>
         [ScriptHandler(ScriptName.OnPlaceableSit)]
-        public static void Sit()
+        public void Sit()
         {
             var user = GetLastUsedBy();
 
@@ -147,7 +154,7 @@ namespace SWLOR.Game.Server.Feature
         /// make them spend a rebuild token and send them to the rebuild area.
         /// </summary>
         [ScriptHandler(ScriptName.OnPlaceableBuyRebuild)]
-        public static void PurchaseRebuild()
+        public void PurchaseRebuild()
         {
             var player = GetPCSpeaker();
 

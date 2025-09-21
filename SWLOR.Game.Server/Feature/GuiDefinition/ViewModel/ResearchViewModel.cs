@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -16,7 +14,6 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
-using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 

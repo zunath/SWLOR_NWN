@@ -4,7 +4,6 @@ using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -19,12 +18,12 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Service;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Game.Server.Service

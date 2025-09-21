@@ -2,7 +2,6 @@ using NWN.Native.API;
 using NWNX.NET;
 
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using System;

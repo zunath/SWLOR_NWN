@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -13,7 +11,6 @@ using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;

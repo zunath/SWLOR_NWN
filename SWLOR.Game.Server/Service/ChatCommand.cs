@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -13,7 +11,6 @@ using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Model;

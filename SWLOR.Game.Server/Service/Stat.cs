@@ -2,8 +2,6 @@ using System;
 using NWN.Native.API;
 
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;

@@ -1,22 +1,24 @@
-﻿using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
+﻿using SWLOR.Component.Inventory.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
+namespace SWLOR.Component.Inventory.UI.ViewModel
 {
     public class KeyItemsViewModel: GuiViewModelBase<KeyItemsViewModel, GuiPayloadBase>,
         IGuiRefreshable<KeyItemReceivedRefreshEvent>
     {
-        public KeyItemsViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
-
+        private readonly IKeyItemService _keyItemService;
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+
+        public KeyItemsViewModel(IGuiService guiService, IKeyItemService keyItemService) : base(guiService)
+        {
+            _keyItemService = keyItemService;
+        }
         
         public GuiBindingList<string> Names
         {
@@ -64,8 +66,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var (type, _) in dbPlayer.KeyItems)
             {
-                var detail = KeyItem.GetKeyItem(type);
-                var categoryDetail = KeyItem.GetKeyItemCategory(detail.Category);
+                var detail = _keyItemService.GetKeyItem(type);
+                var categoryDetail = _keyItemService.GetKeyItemCategory(detail.Category);
 
                 // If a key item filter is applied and this key item isn't part of this category,
                 // skip it and move to the next.

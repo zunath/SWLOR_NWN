@@ -1,13 +1,21 @@
-﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class DantooineQuestDefinition : IQuestListDefinition
     {
-        private readonly QuestBuilder _builder = new();
+        private readonly QuestBuilder _builder;
+        private readonly IKeyItemService _keyItemService;
+
+        public DantooineQuestDefinition(IKeyItemService keyItemService, IServiceProvider serviceProvider)
+        {
+            _keyItemService = keyItemService;
+            _builder = new QuestBuilder(serviceProvider);
+        }
         public Dictionary<string, QuestDetail> BuildQuests()
         {
             DanBundle();
@@ -146,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .OnCompleteAction((player, sourceObject) =>
                 {
-                    KeyItem.GiveKeyItem(player, KeyItemType.DantooineShovel);
+                    _keyItemService.GiveKeyItem(player, KeyItemType.DantooineShovel);
                 }); 
 
         }

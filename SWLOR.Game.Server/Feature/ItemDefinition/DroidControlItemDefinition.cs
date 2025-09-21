@@ -1,16 +1,13 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {

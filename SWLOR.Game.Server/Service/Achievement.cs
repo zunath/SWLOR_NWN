@@ -12,7 +12,6 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
-using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Service
 {

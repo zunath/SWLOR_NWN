@@ -1,25 +1,29 @@
-
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
-using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class MiniMaps
+    public class MiniMaps
     {
         private const string AreaMiniMapVariable = "MINI_MAP_DISABLED";
+        private readonly IKeyItemService _keyItemService;
+
+        public MiniMaps(IKeyItemService keyItemService)
+        {
+            _keyItemService = keyItemService;
+        }
 
         /// <summary>
         /// If a player enters an area with a disabled mini-map and they do not have the map key item, disable the window.
         /// If a player enters an area with the associated map key item, fully explore it for them.
         /// </summary>
         [ScriptHandler<OnAreaEnter>]
-        public static void DisableMiniMap()
+        public void DisableMiniMap()
         {
             var area = OBJECT_SELF;
             var player = GetEnteringObject();
@@ -35,7 +39,7 @@ namespace SWLOR.Game.Server.Feature
             if (keyItemId > 0)
             {
                 var keyItemType = (KeyItemType)keyItemId;
-                var hasKeyItem = KeyItem.HasKeyItem(player, keyItemType);
+                var hasKeyItem = _keyItemService.HasKeyItem(player, keyItemType);
 
                 if (hasKeyItem)
                 {
@@ -49,7 +53,7 @@ namespace SWLOR.Game.Server.Feature
         /// Ensures the mini-map is always re-enabled when leaving an area.
         /// </summary>
         [ScriptHandler<OnAreaExit>]
-        public static void EnableMiniMap()
+        public void EnableMiniMap()
         {
             var player = GetExitingObject();
             if (!GetIsPC(player)) return;
@@ -61,7 +65,7 @@ namespace SWLOR.Game.Server.Feature
         /// Skips the character sheet panel open event and shows the SWLOR character sheet instead.
         /// </summary>
         [ScriptHandler<OnModuleGuiEvent>]
-        public static void MiniMapGui()
+        public void MiniMapGui()
         {
             var player = GetLastGuiEventPlayer();
             var type = GetLastGuiEventType();

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Extension;
 

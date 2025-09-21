@@ -1,20 +1,27 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Component.World.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Model;
+using SWLOR.Shared.Dialog.Service;
 
-namespace SWLOR.Game.Server.Feature.DialogDefinition
+namespace SWLOR.Component.World.Dialog
 {
     public class TaxiTerminalDialog: DialogBase
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly ITaxiService _taxiService = ServiceContainer.GetService<ITaxiService>();
+        private readonly IKeyItemService _keyItemService;
         
         private const string MainPageId = "MAIN_PAGE";
+
+        public TaxiTerminalDialog(IKeyItemService keyItemService)
+        {
+            _keyItemService = keyItemService;
+        }
 
         public override PlayerDialog SetUp(uint player)
         {
@@ -54,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             else
             {
                 // Player must have the 'Taxi Hailing Device' key item.
-                if (!KeyItem.HasKeyItem(player, KeyItemType.TaxiHailingDevice))
+                if (!_keyItemService.HasKeyItem(player, KeyItemType.TaxiHailingDevice))
                 {
                     return;
                 }
@@ -116,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var player = GetPC();
 
-            if (KeyItem.HasKeyItem(player, KeyItemType.TaxiHailingDevice))
+            if (_keyItemService.HasKeyItem(player, KeyItemType.TaxiHailingDevice))
             {
                 return $"Your 'Taxi Hailing Device' may be used to summon a taxi to transport you throughout the region. Only destinations you have registered are available for transportation.\n\n" +
                        "Where would you like to go?";

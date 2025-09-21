@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data.Entity;

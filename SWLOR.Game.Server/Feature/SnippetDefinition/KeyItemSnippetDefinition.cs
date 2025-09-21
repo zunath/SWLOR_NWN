@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -11,7 +11,13 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
     public class KeyItemSnippetDefinition: ISnippetListDefinition
     {
         private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly IKeyItemService _keyItemService;
         private readonly SnippetBuilder _builder = new();
+
+        public KeyItemSnippetDefinition(IKeyItemService keyItemService)
+        {
+            _keyItemService = keyItemService;
+        }
 
         public Dictionary<string, SnippetDetail> BuildSnippets()
         {
@@ -45,12 +51,12 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         // Try searching by Id first.
                         if (int.TryParse(arg, out var argId))
                         {
-                            type = KeyItem.GetKeyItemTypeById(argId);
+                            type = _keyItemService.GetKeyItemTypeById(argId);
                         }
                         // Couldn't parse an integer. Look by name.
                         else
                         {
-                            type = KeyItem.GetKeyItemTypeByName(arg);
+                            type = _keyItemService.GetKeyItemTypeByName(arg);
                         }
 
                         // Type is invalid, log an error and end.
@@ -61,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         }
 
                         // Player doesn't have the specified key item.
-                        if (!KeyItem.HasKeyItem(player, type))
+                        if (!_keyItemService.HasKeyItem(player, type))
                         {
                             return false;
                         }
@@ -93,12 +99,12 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         // Try searching by Id first.
                         if (int.TryParse(arg, out var argId))
                         {
-                            type = KeyItem.GetKeyItemTypeById(argId);
+                            type = _keyItemService.GetKeyItemTypeById(argId);
                         }
                         // Couldn't parse an integer. Look by name.
                         else
                         {
-                            type = KeyItem.GetKeyItemTypeByName(arg);
+                            type = _keyItemService.GetKeyItemTypeByName(arg);
                         }
 
                         // Type is invalid, log an error and end.
@@ -108,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                             return;
                         }
 
-                        KeyItem.GiveKeyItem(player, type);
+                        _keyItemService.GiveKeyItem(player, type);
                     }
                 });
         }

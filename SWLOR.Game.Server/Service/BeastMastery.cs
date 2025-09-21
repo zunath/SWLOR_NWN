@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
@@ -18,7 +17,6 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
@@ -26,7 +24,6 @@ using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Service
 {

@@ -1,9 +1,8 @@
-using System.Collections.Generic;
 using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Service.Contracts
+namespace SWLOR.Component.World.Contracts
 {
-    public interface ITaxiService
+    internal interface ITaxiService
     {
         /// <summary>
         /// When the module loads, cache all taxi destinations.

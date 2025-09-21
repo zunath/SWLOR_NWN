@@ -17,7 +17,8 @@ namespace SWLOR.Component.World.Infrastructure
         public static IServiceCollection AddWorldServices(this IServiceCollection services)
         {
             services.AddSingleton<ITileMagicService, TileMagicService>();
-            
+            services.AddSingleton<ITaxiService, Taxi>();
+
             return services;
         }
     }

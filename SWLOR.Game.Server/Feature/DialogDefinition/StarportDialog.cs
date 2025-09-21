@@ -1,15 +1,16 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Dialog.Model;
+using SWLOR.Shared.Dialog.Service;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -17,7 +18,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
     {
         private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IKeyItemService _keyItemService;
         private const string MainPageId = "MAIN_PAGE";
+
+        public StarportDialog(IKeyItemService keyItemService)
+        {
+            _keyItemService = keyItemService;
+        }
 
         public override PlayerDialog SetUp(uint player)
         {
@@ -32,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var player = GetPC();
 
             // Must have the CZ-220 shuttle pass in order to use the ship management.
-            if (!KeyItem.HasKeyItem(player, KeyItemType.CZ220ShuttlePass) && !GetIsDM(player))
+            if (!_keyItemService.HasKeyItem(player, KeyItemType.CZ220ShuttlePass) && !GetIsDM(player))
             {
                 page.Header = "Greetings. I am still setting up here. In the meantime, you should speak to Selan Flembek. Thank you for your patience.";
                 return;

@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.DialogService
+﻿namespace SWLOR.Shared.Dialog.Model
 {
     public class DialogNavigation
     {

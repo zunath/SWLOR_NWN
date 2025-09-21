@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Shared.Core.Enums;
@@ -7,7 +8,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class MonCalaQuestDefinition : IQuestListDefinition
     {
-        private readonly QuestBuilder _builder = new();
+        private readonly QuestBuilder _builder;
+
+        public MonCalaQuestDefinition(IServiceProvider serviceProvider)
+        {
+            _builder = new QuestBuilder(serviceProvider);
+        }
 
         public Dictionary<string, QuestDetail> BuildQuests()
         {

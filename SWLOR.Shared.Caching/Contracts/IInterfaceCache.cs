@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace SWLOR.Shared.Caching.Contracts
 {
     /// <summary>

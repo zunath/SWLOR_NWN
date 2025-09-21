@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
@@ -11,6 +10,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
     public class AgricultureGuildQuestDefinition : IQuestListDefinition
     {
         private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        private readonly IServiceProvider _serviceProvider;
+
+        public AgricultureGuildQuestDefinition(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
         private class RewardDetails
         {
             public int Gold { get; }
@@ -35,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         public Dictionary<string, QuestDetail> BuildQuests()
         {
-            var builder = new QuestBuilder();
+            var builder = new QuestBuilder(_serviceProvider);
             // Tier 1 (Rank 0)
             BuildItemTask(builder, "agr_tsk_001", "mynock_mball", 1, 0);
             BuildItemTask(builder, "agr_tsk_002", "waro_potpie", 1, 0);

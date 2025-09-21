@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Service.MigrationService;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;

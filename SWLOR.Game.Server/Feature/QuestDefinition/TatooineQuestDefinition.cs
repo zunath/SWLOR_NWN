@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Shared.Core.Enums;
 
@@ -6,9 +7,16 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class TatooineQuestDefinition : IQuestListDefinition
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        public TatooineQuestDefinition(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         public Dictionary<string, QuestDetail> BuildQuests()
         {
-            var builder = new QuestBuilder();
+            var builder = new QuestBuilder(_serviceProvider);
             WorkinForTheMan(builder);
             StinkyWomprats(builder);
             TuskenRampage(builder);

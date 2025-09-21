@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SWLOR.Game.Server.Service.DialogService
+﻿namespace SWLOR.Shared.Dialog.Model
 {
     public class PlayerDialog
     {

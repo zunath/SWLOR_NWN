@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
-using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.SpawnService
 {

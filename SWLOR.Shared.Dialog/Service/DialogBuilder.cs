@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SWLOR.Shared.Dialog.Model;
 
-namespace SWLOR.Game.Server.Service.DialogService
+namespace SWLOR.Shared.Dialog.Service
 {
     public class DialogBuilder
     {

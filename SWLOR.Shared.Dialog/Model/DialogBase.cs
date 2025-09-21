@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using SWLOR.Shared.Dialog.Contracts;
 
-namespace SWLOR.Game.Server.Service.DialogService
+namespace SWLOR.Shared.Dialog.Model
 {
     public abstract class DialogBase : IConversation
     {
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service.DialogService
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dialog = Dialog.LoadPlayerDialog(playerId);
+            var dialog = Service.Dialog.LoadPlayerDialog(playerId);
             return dialog.DialogTarget;
         }
 
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Service.DialogService
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dialog = Dialog.LoadPlayerDialog(playerId);
+            var dialog = Service.Dialog.LoadPlayerDialog(playerId);
             return dialog.DataModel as T;
         }
 
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Service.DialogService
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dialog = Dialog.LoadPlayerDialog(playerId);
+            var dialog = Service.Dialog.LoadPlayerDialog(playerId);
 
             if (updateNavigationStack && dialog.EnableBackButton)
                 dialog.NavigationStack.Push(new DialogNavigation(dialog.CurrentPageName, dialog.ActiveDialogName));
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Service.DialogService
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dialog = Dialog.LoadPlayerDialog(playerId);
+            var dialog = Service.Dialog.LoadPlayerDialog(playerId);
             Stack<DialogNavigation> navigationStack = null;
 
             if (dialog.EnableBackButton && maintainNavigationStack)
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Service.DialogService
                 navigationStack = dialog.NavigationStack;
                 navigationStack.Push(new DialogNavigation(dialog.CurrentPageName, dialog.ActiveDialogName));
             }
-            Dialog.LoadConversation(GetPC(), dialog.DialogTarget, conversationName, dialog.DialogNumber);
-            dialog = Dialog.LoadPlayerDialog(playerId);
+            Service.Dialog.LoadConversation(GetPC(), dialog.DialogTarget, conversationName, dialog.DialogNumber);
+            dialog = Service.Dialog.LoadPlayerDialog(playerId);
 
             if (dialog.EnableBackButton && navigationStack != null)
                 dialog.NavigationStack = navigationStack;
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Service.DialogService
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dialog = Dialog.LoadPlayerDialog(playerId);
+            var dialog = Service.Dialog.LoadPlayerDialog(playerId);
             dialog.EnableBackButton = isOn;
             dialog.NavigationStack.Clear();
         }
@@ -113,14 +113,14 @@ namespace SWLOR.Game.Server.Service.DialogService
             {
                 var player = GetPC();
                 var playerId = GetObjectUUID(player);
-                var dialog = Dialog.LoadPlayerDialog(playerId);
+                var dialog = Service.Dialog.LoadPlayerDialog(playerId);
                 return dialog.NavigationStack;
             }
             set
             {
                 var player = GetPC();
                 var playerId = GetObjectUUID(player);
-                var dialog = Dialog.LoadPlayerDialog(playerId);
+                var dialog = Service.Dialog.LoadPlayerDialog(playerId);
                 dialog.NavigationStack = value;
             }
         }
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Service.DialogService
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dialog = Dialog.LoadPlayerDialog(playerId);
+            var dialog = Service.Dialog.LoadPlayerDialog(playerId);
             dialog.NavigationStack.Clear();
         }
 
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Service.DialogService
         /// </summary>
         protected void EndConversation()
         {
-            Dialog.EndConversation(GetPC());
+            Service.Dialog.EndConversation(GetPC());
         }
 
         public abstract PlayerDialog SetUp(uint player);

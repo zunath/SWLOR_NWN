@@ -1,14 +1,22 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Dialog.Model;
+using SWLOR.Shared.Dialog.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class LockedDoorDialog: DialogBase
     {
         private const string MainPageId = "MAIN_PAGE";
+        private readonly IKeyItemService _keyItemService;
+
+        public LockedDoorDialog(IKeyItemService keyItemService)
+        {
+            _keyItemService = keyItemService;
+        }
 
         public override PlayerDialog SetUp(uint player)
         {
@@ -43,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 page.Header = doorDialogue;
             }
 
-            if (KeyItem.HasAllKeyItems(player, keyItemIds))
+            if (_keyItemService.HasAllKeyItems(player, keyItemIds))
             {
                 page.AddResponse("Use Key", () =>
                 {

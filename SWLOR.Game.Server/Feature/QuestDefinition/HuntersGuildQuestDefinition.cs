@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -11,6 +11,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
     public class HuntersGuildQuestDefinition : IQuestListDefinition
     {
         private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        private readonly IServiceProvider _serviceProvider;
+
+        public HuntersGuildQuestDefinition(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+            _builder = new QuestBuilder(_serviceProvider);
+        }
         private class RewardDetails
         {
             public int Gold { get; set; }
@@ -33,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             { 5, new RewardDetails(960, 246)},
         };
 
-        private readonly QuestBuilder _builder = new();
+        private readonly QuestBuilder _builder;
 
         public Dictionary<string, QuestDetail> BuildQuests()
         {

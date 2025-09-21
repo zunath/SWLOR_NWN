@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;

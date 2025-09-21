@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Component.World.Contracts;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
@@ -9,9 +6,9 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.World.Service
 {
-    public class Taxi : ITaxiService
+    internal class Taxi : ITaxiService
     {
         private readonly IDatabaseService _db;
         private readonly Dictionary<TaxiDestinationType, TaxiDestinationAttribute> _allTaxiDestinations = new();

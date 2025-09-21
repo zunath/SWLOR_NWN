@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
-using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.FishingService
 {

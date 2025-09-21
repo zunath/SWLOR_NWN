@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;

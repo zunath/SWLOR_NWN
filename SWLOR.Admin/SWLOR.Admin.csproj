@@ -1,29 +1,29 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <LangVersion>11</LangVersion>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>fbf318b6-1c23-4dac-a306-cbedca9c75ca</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<LangVersion>11</LangVersion>
+		<Nullable>disable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>fbf318b6-1c23-4dac-a306-cbedca9c75ca</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<PlatformTarget>x64</PlatformTarget>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Blazorise" Version="1.8.2" />
-    <PackageReference Include="Blazorise.Bootstrap" Version="1.8.2" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.8.2" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+	<ItemGroup>
+		<PackageReference Include="Blazorise" Version="1.8.2" />
+		<PackageReference Include="Blazorise.Bootstrap" Version="1.8.2" />
+		<PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.8.2" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
 
-  </ItemGroup>
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Data\" />
+	</ItemGroup>
 
 </Project>

@@ -1,7 +1,8 @@
 using NWN.Native.API;
 using NWNX.NET;
-
+using SWLOR.Game.Server.Server;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Events.Constants;
 using System;
 using System.Runtime.InteropServices;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -14,7 +15,8 @@ namespace SWLOR.Game.Server.Native
 {
     public static unsafe class GetFortitudeSavingThrow
     {
-        private static IScriptExecutor _scriptExecutor;
+        private static IScriptExecutor _executor = ServiceContainer.GetService<IScriptExecutor>();
+
         // Hash constants for ruleset entries (computed using djb2 hash algorithm)
         private const uint LUCKOFHEROES_SAVE_BONUS_HASH = 0x390339C3; // djb2 hash of "LUCKOFHEROES_SAVE_BONUS"
 
@@ -32,8 +34,6 @@ namespace SWLOR.Game.Server.Native
         [ScriptHandler<OnModuleLoad>]
         public static void RegisterHook()
         {
-            _scriptExecutor = ServiceContainer.GetService<IScriptExecutor>();
-            
             delegate* unmanaged<void*, int, sbyte> pHook = &OnGetFortitudeSavingThrow;
             var functionPtr = NativeLibrary.GetExport(
                 NativeLibrary.GetMainProgramHandle(), "_ZN17CNWSCreatureStats18GetFortSavingThrowEi");
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Native
         [UnmanagedCallersOnly]
         private static sbyte OnGetFortitudeSavingThrow(void* thisPtr, int bExcludeEffectBonus)
         {
-            return _scriptExecutor.ExecuteInScriptContext(() =>
+            return _executor.ExecuteInScriptContext(() =>
             {
                 var stats = CNWSCreatureStats.FromPointer(thisPtr);
 

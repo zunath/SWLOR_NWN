@@ -1,6 +1,8 @@
+using Microsoft.Extensions.DependencyInjection;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -50,7 +52,7 @@ namespace SWLOR.Shared.UI.Service
 
             foreach (var type in types)
             {
-                var instance = (IGuiWindowDefinition)Activator.CreateInstance(type, this);
+                var instance = (IGuiWindowDefinition)ServiceContainer.ServiceProvider.GetRequiredService(type);
                 var constructedWindow = instance.BuildWindow();
 
                 // Safety check to ensure we don't try to build the same type of window more than once.

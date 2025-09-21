@@ -22,6 +22,7 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Events.Service;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Extensions;
 using SWLOR.Shared.UI.Service;
 using ScriptExecutionProvider = SWLOR.Game.Server.Server.ScriptExecutionProvider;
 
@@ -94,41 +95,10 @@ namespace SWLOR.Game.Server
             services.AddSingleton<ISoundSetCacheService, SoundSetCacheService>();
             services.AddSingleton<IModuleCacheService, ModuleCacheService>();
             
-            // ViewModels
-            AddViewModels(services);
+            // ViewModels and GUI Window Definitions
+            services.AddViewModels();
+            services.AddGuiWindowDefinitions();
         }
         
-        private static void AddViewModels(IServiceCollection services)
-        {
-            // Automatically discover and register all ViewModels that inherit from GuiViewModelBase
-            var viewModelTypes = typeof(ServiceRegistration).Assembly
-                .GetTypes()
-                .Where(type => type.IsClass && 
-                              !type.IsAbstract && 
-                              IsViewModelType(type))
-                .ToList();
-
-            foreach (var viewModelType in viewModelTypes)
-            {
-                services.AddTransient(viewModelType);
-            }
-        }
-
-        private static bool IsViewModelType(Type type)
-        {
-            // Check if it inherits from GuiViewModelBase<,>
-            var baseType = type.BaseType;
-            while (baseType != null)
-            {
-                if (baseType.IsGenericType && 
-                    baseType.GetGenericTypeDefinition() == typeof(GuiViewModelBase<,>))
-                {
-                    return true;
-                }
-                baseType = baseType.BaseType;
-            }
-
-            return false;
-        }
     }
 }

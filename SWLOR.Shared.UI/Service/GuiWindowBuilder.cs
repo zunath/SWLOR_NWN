@@ -1,6 +1,7 @@
 ﻿using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
@@ -153,7 +154,7 @@ namespace SWLOR.Shared.UI.Service
                 partialViews,
                 () =>
             {
-                var dataModelInstance = (T)Activator.CreateInstance(typeof(T), _guiService);
+                var dataModelInstance = ServiceContainer.GetService<T>();
                 return new GuiPlayerWindow(dataModelInstance);
             });
 

@@ -17,4 +17,8 @@
 		<ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Models\" />
+	</ItemGroup>
+
 </Project>

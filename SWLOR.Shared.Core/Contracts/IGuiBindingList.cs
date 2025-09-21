@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using SWLOR.Shared.UI.Model;
 
-namespace SWLOR.Shared.UI.Contracts
+namespace SWLOR.Shared.Core.Contracts
 {
     public interface IGuiBindingList
     {

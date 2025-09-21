@@ -24,29 +24,32 @@ namespace SWLOR.Game.Server.Service
         private readonly IItemService _itemService;
         private readonly IStatService _statService;
         private readonly BeastMastery _beastMastery;
+        private readonly Space _spaceService;
         
         /// <summary>
         /// Tracks the combat points earned by players during combat.
         /// </summary>
-        private static readonly Dictionary<uint, Dictionary<uint, Dictionary<SkillType, int>>> _creatureCombatPointTracker = new();
+        private readonly Dictionary<uint, Dictionary<uint, Dictionary<SkillType, int>>> _creatureCombatPointTracker = new();
 
         /// <summary>
         /// Tracks the combat point lists associated with a player back to a creature.
         /// </summary>
-        private static readonly Dictionary<uint, HashSet<uint>> _playerToCreatureTracker = new();
+        private readonly Dictionary<uint, HashSet<uint>> _playerToCreatureTracker = new();
 
         public CombatPoint(
             IDatabaseService db,
             ISkillService skillService,
             IItemService itemService,
             IStatService statService,
-            BeastMastery beastMastery)
+            BeastMastery beastMastery,
+            Space spaceService)
         {
             _db = db;
             _skillService = skillService;
             _itemService = itemService;
             _statService = statService;
             _beastMastery = beastMastery;
+            _spaceService = spaceService;
         }
 
         /// <summary>
@@ -98,7 +101,7 @@ namespace SWLOR.Game.Server.Service
         public void OnCreatureDeath()
         {
             // Clears the combat point cache information for an NPC and all player associated.
-            static void CleanUpCombatPoints()
+            void CleanUpCombatPoints()
             {
                 var npc = OBJECT_SELF;
 
@@ -116,7 +119,7 @@ namespace SWLOR.Game.Server.Service
 
             // When a creature is killed, XP is calculated based on the combat points earned by each player.
             // This XP is distributed into skills which received the highest usage during the battle.
-            static void DistributeSkillXP()
+            void DistributeSkillXP()
             {
                 var npc = OBJECT_SELF;
 
@@ -185,7 +188,7 @@ namespace SWLOR.Game.Server.Service
                         {
                             // Skills that are exempt from CP sharing; XP gain is calculated directly on a rank vs NPC level basis
                             // As long as the player is on the ground, we always try to give them Armor XP
-                            if (!Space.IsPlayerInSpaceMode(player)) validSkills.Add(SkillType.Armor, dbPlayer.Skills[SkillType.Armor]);
+                            if (!_spaceService.IsPlayerInSpaceMode(player)) validSkills.Add(SkillType.Armor, dbPlayer.Skills[SkillType.Armor]);
                             if (!validSkills.Any()) continue;
 
                             foreach (var (skillType, ps) in validSkills)

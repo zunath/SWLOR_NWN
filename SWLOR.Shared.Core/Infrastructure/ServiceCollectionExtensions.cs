@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Shared.Core.Infrastructure

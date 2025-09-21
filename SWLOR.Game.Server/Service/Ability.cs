@@ -14,6 +14,7 @@ using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IMessagingService _messagingService;
         private readonly IRecastService _recastService;
         private readonly IStatusEffectService _statusEffectService;
+        private readonly IAbilityBuilder _abilityBuilder;
         
         // Cached data
         private IInterfaceCache<FeatType, AbilityDetail> _abilityCache;
@@ -41,7 +43,7 @@ namespace SWLOR.Game.Server.Service
         private readonly Dictionary<AbilityToggleType, Action<uint, bool>> _toggleActions = new();
         private readonly Dictionary<uint, PlayerAura> _playerAuras = new();
 
-        public Ability(IDatabaseService db, IGenericCacheService cacheService, IStatService statService, IPerkService perkService, IPartyService partyService, ICombatPointService combatPointService, IActivityService activityService, IMessagingService messagingService, IRecastService recastService, IStatusEffectService statusEffectService)
+        public Ability(IDatabaseService db, IGenericCacheService cacheService, IStatService statService, IPerkService perkService, IPartyService partyService, ICombatPointService combatPointService, IActivityService activityService, IMessagingService messagingService, IRecastService recastService, IStatusEffectService statusEffectService, IAbilityBuilder abilityBuilder)
         {
             _db = db;
             _cacheService = cacheService;
@@ -53,6 +55,7 @@ namespace SWLOR.Game.Server.Service
             _messagingService = messagingService;
             _recastService = recastService;
             _statusEffectService = statusEffectService;
+            _abilityBuilder = abilityBuilder;
         }
 
         private const int MaxNumberOfAuras = 4;
@@ -70,7 +73,7 @@ namespace SWLOR.Game.Server.Service
         public void CacheAbilities()
         {
             _abilityCache = _cacheService.BuildInterfaceCache<IAbilityListDefinition, FeatType, AbilityDetail>()
-                .WithDataExtractor(instance => instance.BuildAbilities())
+                .WithDataExtractor(instance => instance.BuildAbilities(_abilityBuilder))
                 .Build();
 
             // Populate pre-computed cache

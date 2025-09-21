@@ -1,8 +1,6 @@
-using System.Collections.Generic;
-using SWLOR.Shared.Abstractions.Enums;
-using SWLOR.Shared.Abstractions.Models;
+using SWLOR.Game.Server.Enumeration;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Shared.Core.Contracts
 {
     public interface IPlanetService
     {

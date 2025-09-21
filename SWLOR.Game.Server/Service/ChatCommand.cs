@@ -18,6 +18,7 @@ using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
+
     public class ChatCommand : IChatCommandService
     {
         private readonly IAppSettings _appSettings;

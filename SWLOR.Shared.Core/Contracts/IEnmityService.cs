@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Shared.Core.Contracts
 {
     public interface IEnmityService
     {

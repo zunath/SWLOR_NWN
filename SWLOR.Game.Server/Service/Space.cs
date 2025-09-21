@@ -40,12 +40,13 @@ namespace SWLOR.Game.Server.Service
         private readonly IStatService _statService;
         private readonly IGuiService _guiService;
         private readonly IPropertyService _propertyService;
-        private readonly Planet _planetService;
+        private readonly IPlanetService _planetService;
         private readonly Area _areaService;
         private readonly IMessagingService _messagingService;
         private readonly IStatusEffectService _statusEffectService;
+        private readonly IEnmityService _enmityService;
 
-        public SpaceService(
+        public Space(
             ILogger logger,
             IDatabaseService db,
             IScheduler scheduler,
@@ -56,10 +57,11 @@ namespace SWLOR.Game.Server.Service
             IStatService statService,
             IGuiService guiService,
             IPropertyService propertyService,
-            Planet planetService,
+            IPlanetService planetService,
             Area areaService,
             IMessagingService messagingService,
-            IStatusEffectService statusEffectService)
+            IStatusEffectService statusEffectService,
+            IEnmityService enmityService)
         {
             _logger = logger;
             _db = db;
@@ -75,27 +77,28 @@ namespace SWLOR.Game.Server.Service
             _areaService = areaService;
             _messagingService = messagingService;
             _statusEffectService = statusEffectService;
+            _enmityService = enmityService;
         }
 
         public const int MaxRegisteredShips = 10;
 
-        private static readonly Dictionary<string, ShipDetail> _shipTypes = new();
-        private static readonly Dictionary<string, ShipModuleDetail> _shipModules = new();
-        private static readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new();
+        private readonly Dictionary<string, ShipDetail> _shipTypes = new();
+        private readonly Dictionary<string, ShipModuleDetail> _shipModules = new();
+        private readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new();
         
-        private static readonly Dictionary<uint, ShipStatus> _shipNPCs = new();
-        private static readonly Dictionary<uint, ShipStatus> _spaceObjectInstances = new();
+        private readonly Dictionary<uint, ShipStatus> _shipNPCs = new();
+        private readonly Dictionary<uint, ShipStatus> _spaceObjectInstances = new();
 
-        public static Dictionary<FeatType, ShipModuleFeat> ShipModuleFeats { get; } = ShipModuleFeat.GetAll();
+        public Dictionary<FeatType, ShipModuleFeat> ShipModuleFeats { get; } = ShipModuleFeat.GetAll();
 
-        private static readonly HashSet<string> _shipItemResrefs = new();
-        private static readonly HashSet<string> _shipModuleItemTags = new();
+        private readonly HashSet<string> _shipItemResrefs = new();
+        private readonly HashSet<string> _shipModuleItemTags = new();
 
-        private static readonly Dictionary<string, uint> _shipClones = new();
+        private readonly Dictionary<string, uint> _shipClones = new();
 
-        private static readonly Dictionary<PlanetType, Dictionary<string, ShipDockPoint>> _dockPoints = new();
+        private readonly Dictionary<PlanetType, Dictionary<string, ShipDockPoint>> _dockPoints = new();
 
-        private static readonly HashSet<uint> _playersInSpace = new();
+        private readonly HashSet<uint> _playersInSpace = new();
 
         /// <summary>
         /// When the module loads, cache all space data into memory.
@@ -898,7 +901,7 @@ namespace SWLOR.Game.Server.Service
             ClearCurrentTarget(player);
             SetCreatureAppearanceType(player, dbPlayer.OriginalAppearanceType);
             CreaturePlugin.SetMovementRate(player, MovementRate.PC);
-            Enmity.RemoveCreatureEnmity(player);
+            _enmityService.RemoveCreatureEnmity(player);
 
             // Save the ship's hot bar and unassign the active ship Id.
             dbShip.PlayerHotBars[playerId] = CreaturePlugin.SerializeQuickbar(player);
@@ -1244,7 +1247,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ApplyAutoShipRecovery(uint player, ShipStatus shipStatus)
+        private void ApplyAutoShipRecovery(uint player, ShipStatus shipStatus)
         {
             // Shield recovery
             shipStatus.ShieldCycle++;
@@ -1268,7 +1271,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Recover player ships every second.
         /// </summary>
-        private static void PlayerShipRecovery()
+        private void PlayerShipRecovery()
         {
             foreach (var player in _playersInSpace)
             {
@@ -1287,7 +1290,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void RestoreShield(uint creature, ShipStatus shipStatus, int amount)
+        public void RestoreShield(uint creature, ShipStatus shipStatus, int amount)
         {
             shipStatus.Shield += amount;
             if (shipStatus.Shield > shipStatus.MaxShield)
@@ -1296,7 +1299,7 @@ namespace SWLOR.Game.Server.Service
             ExecuteScript("pc_shld_adjusted", creature);
         }
 
-        public static void ReduceShield(uint creature, ShipStatus shipStatus, int amount)
+        public void ReduceShield(uint creature, ShipStatus shipStatus, int amount)
         {
             shipStatus.Shield -= amount;
             if (shipStatus.Shield < 0)
@@ -1305,7 +1308,7 @@ namespace SWLOR.Game.Server.Service
             ExecuteScript("pc_shld_adjusted", creature);
         }
 
-        public static void RestoreHull(uint creature, ShipStatus shipStatus, int amount)
+        public void RestoreHull(uint creature, ShipStatus shipStatus, int amount)
         {
             shipStatus.Hull += amount;
             if (shipStatus.Hull > shipStatus.MaxHull)
@@ -1314,7 +1317,7 @@ namespace SWLOR.Game.Server.Service
             ExecuteScript("pc_hull_adjusted", creature);
         }
 
-        public static void ReduceHull(uint creature, ShipStatus shipStatus, int amount)
+        public void ReduceHull(uint creature, ShipStatus shipStatus, int amount)
         {
             shipStatus.Hull -= amount;
             if (shipStatus.Hull < 0)
@@ -1328,7 +1331,7 @@ namespace SWLOR.Game.Server.Service
             ExecuteScript("pc_hull_adjusted", creature);
         }
 
-        public static void RestoreCapacitor(uint creature, ShipStatus shipStatus, int amount)
+        public void RestoreCapacitor(uint creature, ShipStatus shipStatus, int amount)
         {
             shipStatus.Capacitor += amount;
             if (shipStatus.Capacitor > shipStatus.MaxCapacitor)
@@ -1337,7 +1340,7 @@ namespace SWLOR.Game.Server.Service
             ExecuteScript("pc_cap_adjusted", creature);
         }
 
-        public static void ReduceCapacitor(uint creature, ShipStatus shipStatus, int amount)
+        public void ReduceCapacitor(uint creature, ShipStatus shipStatus, int amount)
         {
             shipStatus.Capacitor -= amount;
             if (shipStatus.Capacitor < 0)
@@ -1350,7 +1353,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature spawns, track it in the cache.
         /// </summary>
         [ScriptHandler<OnCreatureSpawnBefore>]
-        public static void CreatureSpawn()
+        public void CreatureSpawn()
         {
             var creature = OBJECT_SELF;
             var creatureTag = GetTag(creature);
@@ -1429,7 +1432,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature dies, remove it from the cache.
         /// </summary>
         [ScriptHandler<OnCreatureDeathAfter>]
-        public static void CreatureDeath()
+        public void CreatureDeath()
         {
             var creature = OBJECT_SELF;
 
@@ -1446,7 +1449,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to get the status of</param>
         /// <returns>A ship status containing current statistics about a creature's ship.</returns>
-        public static ShipStatus GetShipStatus(uint creature)
+        public ShipStatus GetShipStatus(uint creature)
         {
             if (!GetIsObjectValid(creature))
             {
@@ -1480,7 +1483,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="attacker">The creature attacking.</param>
         /// <param name="defender">The creature being targeted.</param>
-        public static int CalculateChanceToHit(uint attacker, uint defender)
+        public int CalculateChanceToHit(uint attacker, uint defender)
         {
             var attackerShipStatus = GetShipStatus(attacker);
             var defenderShipStatus = GetShipStatus(defender);
@@ -1500,7 +1503,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="attacker">The attacker to check</param>
         /// <returns>The accuracy of the ship</returns>
-        private static int GetShipAccuracy(uint attacker)
+        private int GetShipAccuracy(uint attacker)
         {
             var attackerShipStatus = GetShipStatus(attacker);
             var bonus = attackerShipStatus.Accuracy;
@@ -1528,7 +1531,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="defender">The defender to check</param>
         /// <returns>The evasion of the ship</returns>
-        private static int GetShipEvasion(uint defender)
+        private int GetShipEvasion(uint defender)
         {
             var defenderShipStatus = GetShipStatus(defender);
             var bonus = defenderShipStatus.Evasion;
@@ -1557,7 +1560,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="attacker">The attacker to check</param>
         /// <param name="attackBonus">The attack bonus to apply</param>
         /// <returns>The attack of the ship</returns>
-        public static int GetShipAttack(uint attacker, int attackBonus)
+        public int GetShipAttack(uint attacker, int attackBonus)
         {
             var stat = GetAttackStat(attacker);
             int level;
@@ -1585,7 +1588,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="defender">The defender to check</param>
         /// <param name="defenseBonus">The defense bonus to apply</param>
         /// <returns>The defense of the ship</returns>
-        public static int GetShipDefense(uint defender, int defenseBonus)
+        public int GetShipDefense(uint defender, int defenseBonus)
         {
             var stat = GetAbilityScore(defender, AbilityType.Vitality);
             int level;
@@ -1613,7 +1616,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="attacker">The attacker to check</param>
         /// <returns>The raw stat value of the attacker. This will be either WIL or PER depending on Intuitive Piloting.</returns>
-        public static int GetAttackStat(uint attacker)
+        public int GetAttackStat(uint attacker)
         {
             var wil = GetAbilityScore(attacker, AbilityType.Willpower);
             var per = GetAbilityScore(attacker, AbilityType.Perception);
@@ -1634,7 +1637,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="attacker">The attacking ship</param>
         /// <param name="target">The defending, targeted ship</param>
         /// <param name="amount">The amount of damage to apply to the target.</param>
-        public static void ApplyShipDamage(uint attacker, uint target, int amount)
+        public void ApplyShipDamage(uint attacker, uint target, int amount)
         {
             if (amount < 0) return;
 
@@ -1729,7 +1732,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="attacker">The attacking ship</param>
         /// <param name="target">The defending, targeted ship</param>
         /// <param name="amount">The amount of damage to apply to the target.</param>
-        public static void ApplyHullDamage(uint attacker, uint target, int amount)
+        public void ApplyHullDamage(uint attacker, uint target, int amount)
         {
             if (amount < 0) return;
 
@@ -1801,7 +1804,7 @@ namespace SWLOR.Game.Server.Service
         /// If this is an NPC, they will be killed and explode in spectacular fashion.
         /// </summary>
         [ScriptHandler<OnModuleDeath>]
-        public static void ApplyDeath()
+        public void ApplyDeath()
         {
             var creature = GetLastPlayerDied();
 
@@ -1860,7 +1863,7 @@ namespace SWLOR.Game.Server.Service
                 ClearCurrentTarget(creature);
                 SetCreatureAppearanceType(creature, dbPlayer.OriginalAppearanceType);
                 CreaturePlugin.SetMovementRate(creature, MovementRate.PC);
-                Enmity.RemoveCreatureEnmity(creature);
+                _enmityService.RemoveCreatureEnmity(creature);
                 
                 // Remove all module feats from the player.
                 foreach (var (feat, _) in ShipModuleFeats)
@@ -1911,7 +1914,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Every second, run through all known spaceship NPCs and process their AI.
         /// </summary>
-        private static void ProcessSpaceNPCAI()
+        private void ProcessSpaceNPCAI()
         {
             var now = DateTime.UtcNow;
 
@@ -1920,7 +1923,7 @@ namespace SWLOR.Game.Server.Service
                 ApplyAutoShipRecovery(creature, shipStatus);
 
                 // Determine target
-                var target = Enmity.GetHighestEnmityTarget(creature);
+                var target = _enmityService.GetHighestEnmityTarget(creature);
                 if (!GetIsObjectValid(target)) continue;
 
                 // Determine which modules are available.
@@ -2006,7 +2009,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature clicks on a space object, target that object.
         /// </summary>
         [ScriptHandler(ScriptName.OnSpaceTarget)]
-        public static void TargetSpaceObject()
+        public void TargetSpaceObject()
         {
             var creature = GetPlaceableLastClickedBy();
             var self = OBJECT_SELF;
@@ -2092,7 +2095,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to calculate.</param>
         /// <returns>The module bonus of an item or 0 if none are found.</returns>
-        public static int GetModuleBonus(uint item)
+        public int GetModuleBonus(uint item)
         {
             var moduleBonus = 0;
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -2111,7 +2114,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to read.</param>
         /// <returns>An object containing cumulative starship bonus information</returns>
-        public static ShipBonuses GetShipBonuses(uint item)
+        public ShipBonuses GetShipBonuses(uint item)
         {
             var bonuses = new ShipBonuses();
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -2171,7 +2174,7 @@ namespace SWLOR.Game.Server.Service
         /// exit the stealth mode and send an error message.
         /// </summary>
         [ScriptHandler<OnStealthEnterBefore>]
-        public static void PreventSpaceStealth()
+        public void PreventSpaceStealth()
         {
             var creature = OBJECT_SELF;
 

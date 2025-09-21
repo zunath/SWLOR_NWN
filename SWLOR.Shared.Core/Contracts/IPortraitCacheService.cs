@@ -1,4 +1,4 @@
-namespace SWLOR.Shared.Abstractions.Contracts;
+namespace SWLOR.Shared.Core.Contracts;
 
 public interface IPortraitCacheService
 {

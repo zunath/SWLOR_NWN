@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.UI.Contracts;

@@ -19,6 +19,8 @@ using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 
 namespace SWLOR.Game.Server.Service
 {
+    
+
     public class Combat : ICombatService
     {
         private readonly ILogger _logger;

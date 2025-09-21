@@ -1,7 +1,6 @@
 
 using SWLOR.Game.Server.Service;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;

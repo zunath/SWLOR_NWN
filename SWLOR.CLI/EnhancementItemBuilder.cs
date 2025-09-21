@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.CLI

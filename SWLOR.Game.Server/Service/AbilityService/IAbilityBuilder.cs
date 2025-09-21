@@ -7,65 +7,34 @@ using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Service.AbilityServicex
 {
-    public class AbilityBuilder : IAbilityBuilder
+    public interface IAbilityBuilder
     {
-        private readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
-        private AbilityDetail _activeAbility;
-        private readonly IStatService _statService;
-
-        public AbilityBuilder(IStatService statService)
-        {
-            _statService = statService;
-        }
-
         /// <summary>
         /// Creates a new ability.
         /// </summary>
         /// <param name="featType">The type of feat to link this ability to.</param>
         /// <param name="effectiveLevelPerkType">The type of perk used for determining effective level.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder Create(FeatType featType, PerkType effectiveLevelPerkType)
-        {
-            _activeAbility = new AbilityDetail();
-            _activeAbility.EffectiveLevelPerkType = effectiveLevelPerkType;
-            _abilities[featType] = _activeAbility;
-
-            return this;
-        }
+        IAbilityBuilder Create(FeatType featType, PerkType effectiveLevelPerkType);
 
         /// <summary>
         /// Sets the name of the active ability we're building
         /// </summary>
         /// <param name="name">The name of the ability to set.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder Name(string name)
-        {
-            _activeAbility.Name = name;
-
-            return this;
-        }
+        IAbilityBuilder Name(string name);
 
         /// <summary>
         /// Indicates this ability is casted which fires once after the end of a configured delay (or instantly if no delay is assigned).
         /// </summary>
         /// <returns>An ability builder with the configured options.</returns>
-        public IAbilityBuilder IsCastedAbility()
-        {
-            _activeAbility.ActivationType = AbilityActivationType.Casted;
-
-            return this;
-        }
+        IAbilityBuilder IsCastedAbility();
 
         /// <summary>
         /// Indicates this ability is executed on the next weapon hit.
         /// </summary>
         /// <returns>An ability builder with the configured options.</returns>
-        public IAbilityBuilder IsWeaponAbility()
-        {
-            _activeAbility.ActivationType = AbilityActivationType.Weapon;
-
-            return this;
-        }
+        IAbilityBuilder IsWeaponAbility();
 
         /// <summary>
         /// Indicates this is a concentration ability which stays active and drains resources until turned off or player runs out of required resources.
@@ -73,24 +42,13 @@ namespace SWLOR.Game.Server.Service.AbilityServicex
         /// </summary>
         /// <param name="concentrationStatusEffectType">The status effect to use for this concentration ability.</param>
         /// <returns>An ability builder with the configured options.</returns>
-        public IAbilityBuilder IsConcentrationAbility(StatusEffectType concentrationStatusEffectType)
-        {
-            _activeAbility.ActivationType = AbilityActivationType.Concentration;
-            _activeAbility.ConcentrationStatusEffectType = concentrationStatusEffectType;
-
-            return this;
-        }
+        IAbilityBuilder IsConcentrationAbility(StatusEffectType concentrationStatusEffectType);
 
         /// <summary>
         /// Indicates this ability can be used while in space.
         /// </summary>
         /// <returns>An ability builder with the configured options.</returns>
-        public IAbilityBuilder CanBeUsedInSpace()
-        {
-            _activeAbility.CanBeUsedInSpace = true;
-
-            return this;
-        }
+        IAbilityBuilder CanBeUsedInSpace();
 
         /// <summary>
         /// Assigns an animation to the caster of the ability. This will be played when the creature uses the ability.
@@ -98,23 +56,13 @@ namespace SWLOR.Game.Server.Service.AbilityServicex
         /// </summary>
         /// <param name="animation">The animation to set.</param>
         /// <returns>An ability builder with the configured options.</returns>
-        public IAbilityBuilder UsesAnimation(Animation animation)
-        {
-            _activeAbility.AnimationType = animation;
-
-            return this;
-        }
+        IAbilityBuilder UsesAnimation(Animation animation);
 
         /// <summary>
         /// The ability will not display an activation message to nearby players if this is set.
         /// </summary>
         /// <returns>An ability builder with the configured options.</returns>
-        public IAbilityBuilder HideActivationMessage()
-        {
-            _activeAbility.DisplaysActivationMessage = false;
-
-            return this;
-        }
+        IAbilityBuilder HideActivationMessage();
 
         /// <summary>
         /// Assigns a visual effect to the caster of the spell. This will display while casting.
@@ -122,12 +70,7 @@ namespace SWLOR.Game.Server.Service.AbilityServicex
         /// </summary>
         /// <param name="vfx">The visual effect to display.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder DisplaysVisualEffectWhenActivating(VisualEffect vfx = VisualEffect.Vfx_Dur_Iounstone_Yellow)
-        {
-            _activeAbility.ActivationVisualEffect = vfx;
-
-            return this;
-        }
+        IAbilityBuilder DisplaysVisualEffectWhenActivating(VisualEffect vfx = VisualEffect.Vfx_Dur_Iounstone_Yellow);
 
         /// <summary>
         /// Indicates this ability runs an action immediately after validation but before any delays or impacts.
@@ -137,12 +80,7 @@ namespace SWLOR.Game.Server.Service.AbilityServicex
         /// </summary>
         /// <param name="action">The action to fire when an ability passes validation but before the delay/impact process occurs.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder HasActivationAction(AbilityActivationAction action)
-        {
-            _activeAbility.ActivationAction = action;
-
-            return this;
-        }
+        IAbilityBuilder HasActivationAction(AbilityActivationAction action);
 
         /// <summary>
         /// Assigns an impact action on the active ability we're building.
@@ -154,12 +92,7 @@ namespace SWLOR.Game.Server.Service.AbilityServicex
         /// </summary>
         /// <param name="action">The action to fire when an ability impacts a target.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder HasImpactAction(AbilityImpactAction action)
-        {
-            _activeAbility.ImpactAction = action;
-
-            return this;
-        }
+        IAbilityBuilder HasImpactAction(AbilityImpactAction action);
 
         /// <summary>
         /// Assigns custom validation logic on the active ability we're building.
@@ -169,12 +102,7 @@ namespace SWLOR.Game.Server.Service.AbilityServicex
         /// </summary>
         /// <param name="action">The action to fire when custom validation is run.</param>
         /// <returns>An ability builder with the configured options.</returns>
-        public IAbilityBuilder HasCustomValidation(AbilityCustomValidationAction action)
-        {
-            _activeAbility.CustomValidation = action;
-
-            return this;
-        }
+        IAbilityBuilder HasCustomValidation(AbilityCustomValidationAction action);
 
         /// <summary>
         /// Assigns an activation delay on the active ability we're building.
@@ -183,12 +111,7 @@ namespace SWLOR.Game.Server.Service.AbilityServicex
         /// </summary>
         /// <param name="delayAction">An action which calculates the delay.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder HasActivationDelay(AbilityActivationDelayAction delayAction)
-        {
-            _activeAbility.ActivationDelay = delayAction;
-
-            return this;
-        }
+        IAbilityBuilder HasActivationDelay(AbilityActivationDelayAction delayAction);
 
         /// <summary>
         /// Assigns an activation delay on the active ability we're building.
@@ -197,12 +120,7 @@ namespace SWLOR.Game.Server.Service.AbilityServicex
         /// </summary>
         /// <param name="seconds">The amount of time to delay, in seconds</param>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder HasActivationDelay(float seconds)
-        {
-            _activeAbility.ActivationDelay = (activator, target, level) => seconds;
-
-            return this;
-        }
+        IAbilityBuilder HasActivationDelay(float seconds);
 
         /// <summary>
         /// Assigns a recast delay on the active ability we're building.
@@ -212,13 +130,7 @@ namespace SWLOR.Game.Server.Service.AbilityServicex
         /// <param name="recastGroup">The recast group this delay will fall under.</param>
         /// <param name="delay">An action which determines the recast delay.</param>
         /// <returns>An ability builder with the configured options.</returns>
-        public IAbilityBuilder HasRecastDelay(RecastGroup recastGroup, AbilityRecastDelayAction delay)
-        {
-            _activeAbility.RecastGroup = recastGroup;
-            _activeAbility.RecastDelay = delay;
-
-            return this;
-        }
+        IAbilityBuilder HasRecastDelay(RecastGroup recastGroup, AbilityRecastDelayAction delay);
 
         /// <summary>
         /// Assigns a recast delay on the active ability we're building.
@@ -228,103 +140,58 @@ namespace SWLOR.Game.Server.Service.AbilityServicex
         /// <param name="recastGroup">The recast group this delay will fall under.</param>
         /// <param name="seconds">The number of seconds to delay.</param>
         /// <returns>An ability builder with the configured options.</returns>
-        public IAbilityBuilder HasRecastDelay(RecastGroup recastGroup, float seconds)
-        {
-            _activeAbility.RecastGroup = recastGroup;
-            _activeAbility.RecastDelay = activator => seconds;
-
-            return this;
-        }
+        IAbilityBuilder HasRecastDelay(RecastGroup recastGroup, float seconds);
 
         /// <summary>
         /// Adds an FP requirement to use the ability at this level.
         /// </summary>
         /// <param name="requiredFP">The amount of FP needed to use this ability at this level.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder RequirementFP(int requiredFP)
-        {
-            var requirement = new AbilityRequirementFP(requiredFP, _statService);
-            _activeAbility.Requirements.Add(requirement);
-
-            return this;
-        }
+        IAbilityBuilder RequirementFP(int requiredFP);
 
         /// <summary>
         /// Updates the max range of this ability (default is 5.0, i.e. melee range).
         /// </summary>
         /// <param name="maxRange">The maximum range of the ability.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder HasMaxRange(float maxRange)
-        {
-            _activeAbility.MaxRange = maxRange;
-            return this;
-        }
+        IAbilityBuilder HasMaxRange(float maxRange);
 
         /// <summary>
         /// Adds a stamina requirement to use the ability at this level.
         /// </summary>
         /// <param name="requiredSTM">The amount of STM needed to use this ability at this level.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder RequirementStamina(int requiredSTM)
-        {
-            var requirement = new AbilityRequirementStamina(requiredSTM, _statService);
-            _activeAbility.Requirements.Add(requirement);
-
-            return this;
-        }
+        IAbilityBuilder RequirementStamina(int requiredSTM);
 
         /// <summary>
         /// Indicates this ability is unaffected by heavy armor penalties.
         /// </summary>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder UnaffectedByHeavyArmor()
-        {
-            _activeAbility.IgnoreHeavyArmorPenalty = true;
-
-            return this;
-        }
+        IAbilityBuilder UnaffectedByHeavyArmor();
 
         /// <summary>
         /// Indicates this ability is a hostile ability and should not target friendlies.
         /// </summary>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder IsHostileAbility()
-        {
-            _activeAbility.IsHostileAbility = true;
-
-            return this;
-        }
+        IAbilityBuilder IsHostileAbility();
 
         /// <summary>
         /// Indicates this ability breaks stealth and invisibility when used.
         /// </summary>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder BreaksStealth()
-        {
-            _activeAbility.BreaksStealth = true;
-
-            return this;
-        }
+        IAbilityBuilder BreaksStealth();
 
         /// <summary>
         /// Saves the ability level of the ability to be pulled when used later.
         /// </summary>
         /// <param name="level">The level of the ability</param>
         /// <returns>An ability builder with the configured options</returns>
-        public IAbilityBuilder Level(int level)
-        {
-            _activeAbility.AbilityLevel = level;
-
-            return this;
-        }
+        IAbilityBuilder Level(int level);
 
         /// <summary>
         /// Returns a built list of abilities.
         /// </summary>
         /// <returns>A list of built abilities.</returns>
-        public Dictionary<FeatType, AbilityDetail> Build()
-        {
-            return _abilities;
-        }
+        Dictionary<FeatType, AbilityDetail> Build();
     }
 }

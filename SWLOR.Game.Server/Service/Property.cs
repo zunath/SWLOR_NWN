@@ -33,6 +33,9 @@ namespace SWLOR.Game.Server.Service
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IGuiService _guiService;
+        private readonly Area _areaService;
+        private readonly PlanetService _planetService;
+        private readonly StructureChangedAction _structureChangedAction;
         private readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
         private readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();
         private readonly Dictionary<PropertyLayoutType, PropertyLayout> _activeLayouts = new();
@@ -45,7 +48,7 @@ namespace SWLOR.Game.Server.Service
         private readonly Dictionary<PropertyType, List<PropertyPermissionType>> _permissionsByPropertyType = new();
 
         private readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
-        private readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _structureChangedActions = StructureChangedAction.BuildSpawnActions();
+        private readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _structureChangedActions;
 
         private readonly Dictionary<int, int> _citizensRequired = new()
         {
@@ -58,11 +61,15 @@ namespace SWLOR.Game.Server.Service
 
         private readonly Dictionary<PropertyType, List<StructureType>> _structureTypesByPropertyType = new();
 
-        public Property(ILogger logger, IDatabaseService db, IGuiService guiService)
+        public Property(ILogger logger, IDatabaseService db, IGuiService guiService, Area areaService, PlanetService planetService, StructureChangedAction structureChangedAction)
         {
             _logger = logger;
             _db = db;
             _guiService = guiService;
+            _areaService = areaService;
+            _planetService = planetService;
+            _structureChangedAction = structureChangedAction;
+            _structureChangedActions = _structureChangedAction.BuildSpawnActions();
         }
 
         /// <summary>
@@ -326,7 +333,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>X, Y, and Z coordinates of the entrance location</returns>
         private Vector4 GetEntrancePosition(string areaResref)
         {
-            var area = Area.GetAreaByResref(areaResref);
+            var area = _areaService.GetAreaByResref(areaResref);
             
             for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
             {
@@ -1114,7 +1121,7 @@ namespace SWLOR.Game.Server.Service
                     else
                     {
                         var areaResref = parent.ParentPropertyId;
-                        var area = Area.GetAreaByResref(areaResref);
+                        var area = _areaService.GetAreaByResref(areaResref);
 
                         SpawnIntoWorld(property, area);
                     }
@@ -1123,7 +1130,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var property in areaProperties)
             {
-                var area = Area.GetAreaByResref(property.ParentPropertyId);
+                var area = _areaService.GetAreaByResref(property.ParentPropertyId);
                 SpawnIntoWorld(property, area);
             }
 
@@ -1297,7 +1304,7 @@ namespace SWLOR.Game.Server.Service
             // we need to know the location of the planet's NPC starport so the ship can be returned there.
             // If we don't capture this correctly, the ship will be lost in limbo and the players won't be 
             // able to access it.
-            var planet = Planet.GetPlanetByType(planetType);
+            var planet = _planetService.GetPlanetByType(planetType);
             var npcLandingWaypoint = GetWaypointByTag(planet.LandingWaypointTag);
             var npcLandingPosition = GetPosition(npcLandingWaypoint);
             var npcLandingOrientation = GetFacing(npcLandingWaypoint);

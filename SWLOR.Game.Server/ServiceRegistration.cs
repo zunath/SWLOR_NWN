@@ -150,13 +150,13 @@ namespace SWLOR.Game.Server
         services.AddSingleton<SWLOR.Shared.Core.Contracts.IPartyService, SWLOR.Game.Server.Service.PartyService>();
         
         // Enmity Service
-        services.AddSingleton<SWLOR.Game.Server.Service.IEnmityService, SWLOR.Game.Server.Service.EnmityService>();
+        services.AddSingleton<IEnmityService, SWLOR.Game.Server.Service.EnmityService>();
         
         // Planet Service
-        services.AddSingleton<SWLOR.Game.Server.Service.IPlanetService, SWLOR.Game.Server.Service.PlanetService>();
+        services.AddSingleton<IPlanetService, SWLOR.Game.Server.Service.PlanetService>();
         
         // ChatCommand Service
-        services.AddSingleton<SWLOR.Game.Server.Service.IChatCommandService, SWLOR.Game.Server.Service.ChatCommandService>();
+        services.AddSingleton<IChatCommandService, SWLOR.Game.Server.Service.ChatCommandService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.PlayerInitialization>();
             services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.GuildMasterDialog>();
             services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.PlaceCityHallDialog>();
@@ -301,7 +301,8 @@ namespace SWLOR.Game.Server
             services.AddSingleton<SWLOR.Shared.Core.Contracts.IObjectVisibilityService, SWLOR.Game.Server.Service.ObjectVisibilityService>();
             services.AddSingleton<SWLOR.Shared.Core.Contracts.IQuestService, SWLOR.Game.Server.Service.Quest>();
             services.AddSingleton<IItemService, SWLOR.Game.Server.Service.Item>();
-            services.AddSingleton<SWLOR.Shared.Abstractions.Contracts.ICombatService, SWLOR.Game.Server.Service.Combat>();
+            services.AddSingleton<ICombatService, SWLOR.Game.Server.Service.Combat>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityServicex.IAbilityBuilder, SWLOR.Game.Server.Service.AbilityServicex.AbilityBuilder>();
             services.AddSingleton<SWLOR.Shared.Core.Contracts.IAbilityService, SWLOR.Game.Server.Service.Ability>();
             services.AddSingleton<SWLOR.Shared.Core.Contracts.IPerkService, SWLOR.Game.Server.Service.Perk>();
             services.AddSingleton<SWLOR.Shared.Core.Contracts.ISkillService, SWLOR.Game.Server.Service.SkillService>();

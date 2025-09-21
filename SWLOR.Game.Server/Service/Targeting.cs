@@ -9,6 +9,7 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
+
     public class Targeting : ITargetingService
     {
         private readonly Dictionary<uint, Action<uint>> _playerTargetingActions = new();

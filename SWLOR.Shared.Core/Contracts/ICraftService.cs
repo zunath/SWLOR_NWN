@@ -3,6 +3,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Shared.Core.Contracts
 {

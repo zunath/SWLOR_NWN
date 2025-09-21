@@ -15,6 +15,7 @@ using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
+using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
@@ -32,8 +33,9 @@ namespace SWLOR.Game.Server.Service
         private readonly IItemService _itemService;
         private readonly IAbilityService _abilityService;
         private readonly IStatusEffectService _statusEffectService;
+        private readonly Enmity _enmityService;
 
-        public Stat(ILogger logger, IDatabaseService db, IPerkService perkService, ISkillService skillService, IItemService itemService, IAbilityService abilityService, IStatusEffectService statusEffectService)
+        public Stat(ILogger logger, IDatabaseService db, IPerkService perkService, ISkillService skillService, IItemService itemService, IAbilityService abilityService, IStatusEffectService statusEffectService, Enmity enmityService)
         {
             _logger = logger;
             _db = db;
@@ -42,6 +44,7 @@ namespace SWLOR.Game.Server.Service
             _itemService = itemService;
             _abilityService = abilityService;
             _statusEffectService = statusEffectService;
+            _enmityService = enmityService;
         }
         public const int BaseHP = 70;
         public const int BaseFP = 10;
@@ -1231,7 +1234,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            var baseItemType = weapon == null ? Base_itemService.Invalid : (BaseItem)weapon.m_nBaseItem;
+            var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
             var statType = statOverride == AbilityType.Invalid ? 
                 _itemService.GetWeaponAccuracyAbilityType(baseItemType) :
                 statOverride;
@@ -1761,7 +1764,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (_itemService.OneHandedMeleeItemTypes.Contains(offhandType))
                     critMod += _perkService.GetPerkLevel(player, PerkType.WailingBlows) * 3; // 15% for WB
-                else if(offhandType == Base_itemService.Invalid || _itemService.ShieldBaseItemTypes.Contains(offhandType))
+                else if(offhandType == BaseItem.Invalid || _itemService.ShieldBaseItemTypes.Contains(offhandType))
                     critMod += _perkService.GetPerkLevel(player, PerkType.Duelist);
             }
 
@@ -1941,7 +1944,7 @@ namespace SWLOR.Game.Server.Service
             {
                 // If out of combat - restore HP at 10% per tick.
                 if (!GetIsInCombat(self) &&
-                    !GetIsObjectValid(Enmity.GetHighestEnmityTarget(self)) &&
+                    !GetIsObjectValid(_enmityService.GetHighestEnmityTarget(self)) &&
                     GetCurrentHitPoints(self) < GetMaxHitPoints(self))
                 {
                     var hpToHeal = GetMaxHitPoints(self) * 0.1f;

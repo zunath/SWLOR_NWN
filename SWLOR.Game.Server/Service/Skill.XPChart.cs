@@ -6,9 +6,9 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static partial class Skill
+    public partial class SkillService
     {
-        private static readonly Dictionary<int, int> _skillXPRequirements = new()
+        private readonly Dictionary<int, int> _skillXPRequirements = new()
         {
             { 0, 550 },
             { 1, 825 },
@@ -112,8 +112,8 @@ namespace SWLOR.Game.Server.Service
             { 99, 280000 },
             { 100, 400000 }
         };
-        private static readonly Dictionary<int, int> _skillTotalXP = new();
-        private static readonly Dictionary<int, int> _skillDeltaXP = new()
+        private readonly Dictionary<int, int> _skillTotalXP = new();
+        private readonly Dictionary<int, int> _skillDeltaXP = new()
         {
             { 6, 1200 },
             { 5, 1050 },
@@ -128,13 +128,13 @@ namespace SWLOR.Game.Server.Service
             { -4, 76 }
         };
 
-        private static int _highestDelta;
+        private int _highestDelta;
 
         /// <summary>
         /// When the module loads, cache all XP chart data used for quick access.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheXPChartData()
+        public void CacheXPChartData()
         {
             CalculateTotalXP();
             _highestDelta = _skillDeltaXP.Keys.Max();
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Determines the total XP required for each level.
         /// </summary>
-        private static void CalculateTotalXP()
+        private void CalculateTotalXP()
         {
             var totalXP = 0;
             foreach (var (level, xp) in _skillXPRequirements)
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="level">The level to use for the search.</param>
         /// <returns>The amount of XP required to reach the next level.</returns>
-        public static int GetRequiredXP(int level)
+        public int GetRequiredXP(int level)
         {
             if(!_skillXPRequirements.ContainsKey(level))
                 throw new Exception($"Level {level} not registered in the SkillXPRequirements dictionary.");
@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="level">The level to retrieve.</param>
         /// <returns>The total amount of XP attained at this level</returns>
-        public static int GetTotalRequiredXP(int level)
+        public int GetTotalRequiredXP(int level)
         {
             if (!_skillTotalXP.ContainsKey(level))
                 throw new Exception($"Level {level} not registered in the SkillTotalXP dictionary.");
@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="totalXP">The total XP gained</param>
         /// <returns>A tuple containing the level and a remainder amount of XP</returns>
-        public static (int, int) GetLevelByTotalXP(int totalXP)
+        public (int, int) GetLevelByTotalXP(int totalXP)
         {
             var (level, requiredXP) = _skillTotalXP
                 .OrderBy(o => o.Value)
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="delta">The delta to compare.</param>
         /// <returns>The base XP amount based on the delta. Returns 0 if delta is below the lowest.</returns>
-        public static int GetDeltaXP(int delta)
+        public int GetDeltaXP(int delta)
         {
             if (delta > _highestDelta)
                 delta = _highestDelta;

@@ -13,26 +13,26 @@ namespace SWLOR.Game.Server.Service
     public partial class SkillService
     {
         // Cached data
-        private static IEnumCache<SkillCategoryType, SkillCategoryAttribute> _categoryCache;
-        private static IEnumCache<SkillType, SkillAttribute> _skillCache;
+        private IEnumCache<SkillCategoryType, SkillCategoryAttribute> _categoryCache;
+        private IEnumCache<SkillType, SkillAttribute> _skillCache;
         
         // Additional caches for complex data
-        private static readonly Dictionary<SkillCategoryType, List<SkillType>> _allSkillsByCategory = new();
-        private static readonly Dictionary<SkillCategoryType, List<SkillType>> _activeSkillsByCategory = new();
+        private readonly Dictionary<SkillCategoryType, List<SkillType>> _allSkillsByCategory = new();
+        private readonly Dictionary<SkillCategoryType, List<SkillType>> _activeSkillsByCategory = new();
         
         // Pre-computed caches for fast retrieval
-        private static readonly Dictionary<SkillType, SkillAttribute> _allSkills = new();
-        private static readonly Dictionary<SkillType, SkillAttribute> _activeSkills = new();
-        private static readonly Dictionary<SkillType, SkillAttribute> _contributingSkills = new();
-        private static readonly Dictionary<SkillType, SkillAttribute> _activeContributingSkills = new();
-        private static readonly Dictionary<SkillType, SkillAttribute> _craftingSkills = new();
-        private static readonly Dictionary<SkillType, SkillAttribute> _researchableSkills = new();
-        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _allCategories = new();
-        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _activeCategories = new();
-        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _contributingCategories = new();
-        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _activeContributingCategories = new();
-        private static readonly Dictionary<SkillCategoryType, Dictionary<SkillType, SkillAttribute>> _skillsByCategory = new();
-        private static readonly Dictionary<SkillCategoryType, Dictionary<SkillType, SkillAttribute>> _activeSkillsByCategoryDict = new();
+        private readonly Dictionary<SkillType, SkillAttribute> _allSkills = new();
+        private readonly Dictionary<SkillType, SkillAttribute> _activeSkills = new();
+        private readonly Dictionary<SkillType, SkillAttribute> _contributingSkills = new();
+        private readonly Dictionary<SkillType, SkillAttribute> _activeContributingSkills = new();
+        private readonly Dictionary<SkillType, SkillAttribute> _craftingSkills = new();
+        private readonly Dictionary<SkillType, SkillAttribute> _researchableSkills = new();
+        private readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _allCategories = new();
+        private readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _activeCategories = new();
+        private readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _contributingCategories = new();
+        private readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _activeContributingCategories = new();
+        private readonly Dictionary<SkillCategoryType, Dictionary<SkillType, SkillAttribute>> _skillsByCategory = new();
+        private readonly Dictionary<SkillCategoryType, Dictionary<SkillType, SkillAttribute>> _activeSkillsByCategoryDict = new();
 
         /// <summary>
         /// When the module loads, skills and categories are organized into dictionaries for quick look-ups later on.

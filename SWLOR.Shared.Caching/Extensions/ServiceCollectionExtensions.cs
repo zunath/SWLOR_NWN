@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Caching.Service;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Shared.Caching.Extensions
 {

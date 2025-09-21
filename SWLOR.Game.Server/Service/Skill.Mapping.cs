@@ -7,15 +7,15 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static partial class Skill
+    public partial class SkillService
     {
-        private static readonly Dictionary<BaseItem, SkillType> _itemToSkillMapping = new();
+        private readonly Dictionary<BaseItem, SkillType> _itemToSkillMapping = new();
 
         /// <summary>
         /// Handles creating all of the mapping dictionaries used by the skill system on module load.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void LoadMappings()
+        public void LoadMappings()
         {
             LoadItemToSkillMapping();
         }
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Loads the base item -> skill type mappings.
         /// </summary>
-        private static void LoadItemToSkillMapping()
+        private void LoadItemToSkillMapping()
         {
             // One-Handed Skills
             _itemToSkillMapping[BaseItem.BastardSword] = SkillType.OneHanded;
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="baseItem">The type of base item to look for.</param>
         /// <returns>A skill type associated with the given base item type.</returns>
-        public static SkillType GetSkillTypeByBaseItem(BaseItem baseItem)
+        public SkillType GetSkillTypeByBaseItem(BaseItem baseItem)
         {
             if (!_itemToSkillMapping.ContainsKey(baseItem))
                 return SkillType.Invalid;

@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Game.Server.Service.CraftService

@@ -6,14 +6,20 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DistributeRPXPViewModel: GuiViewModelBase<DistributeRPXPViewModel, RPXPPayload>,
         IGuiRefreshable<RPXPRefreshEvent>
     {
+        public DistributeRPXPViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         private SkillType _skillType;
@@ -122,14 +128,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     Skill.GiveSkillXP(Player, _skillType, amount, true, false);
 
-                    Gui.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP);
-                    Gui.PublishRefreshEvent(Player, new RPXPRefreshEvent());
+                    _guiService.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP);
+                    _guiService.PublishRefreshEvent(Player, new RPXPRefreshEvent());
                 });
         };
 
         public Action OnClickCancel() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP);
         };
 
         private void UpdateMaxDistributableInfo()

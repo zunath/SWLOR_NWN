@@ -3,12 +3,19 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CurrenciesViewModel: GuiViewModelBase<CurrenciesViewModel, GuiPayloadBase>,
         IGuiRefreshable<CurrencyRefreshEvent>
     {
+        public CurrenciesViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
 
         public GuiBindingList<string> CurrencyNames

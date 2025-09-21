@@ -18,13 +18,17 @@ using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     public class DMChatCommand: IChatCommandListDefinition
     {
+        private readonly IGuiService _guiService = ServiceContainer.GetService<IGuiService>();
         private readonly ChatCommandBuilder _builder = new();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
 
@@ -585,7 +589,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                         _db.Set(dbPlayer);
                         SendMessageToPC(target, $"A DM has awarded you with {amount} roleplay XP.");
-                        Gui.PublishRefreshEvent(target, new RPXPRefreshEvent());
+                        _guiService.PublishRefreshEvent(target, new RPXPRefreshEvent());
                     }
                     else if (BeastMastery.IsPlayerBeast(target))
                     {
@@ -908,7 +912,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.AreaNotes);
+                    _guiService.TogglePlayerWindow(user, GuiWindowType.AreaNotes);
                 });
         }
 
@@ -920,7 +924,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.CreatureManager);
+                    _guiService.TogglePlayerWindow(user, GuiWindowType.CreatureManager);
                 });
         }
         private void Broadcast()
@@ -1046,7 +1050,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             {
                                 var playerId = GetObjectUUID(target);
                                 var dbPlayer = _db.Get<Player>(playerId);
-                                level = dbPlayer.Skills[Service.SkillService.SkillType.Piloting].Rank;
+                                level = dbPlayer.Skills[SkillType.Piloting].Rank;
                             }
                             var targetName = GetName(target);
                             var targetStatus = Space.GetShipStatus(target);

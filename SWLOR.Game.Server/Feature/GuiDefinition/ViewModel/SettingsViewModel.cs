@@ -4,15 +4,22 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class SettingsViewModel: GuiViewModelBase<SettingsViewModel, GuiPayloadBase>
     {
+        public SettingsViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         public const string SettingsView = "SETTINGS_VIEW";
@@ -281,7 +288,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _db.Set(dbPlayer);
 
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.Settings);
 
             // Post-save actions
             UpdateHolonetSetting();
@@ -291,12 +298,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnCancel() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.Settings);
         };
 
         public Action OnClickChangeDescription() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.ChangeDescription);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.ChangeDescription);
         };
 
         private void UpdateHolonetSetting()

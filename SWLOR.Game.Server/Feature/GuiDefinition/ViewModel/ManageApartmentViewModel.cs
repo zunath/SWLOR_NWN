@@ -6,15 +6,22 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageApartmentViewModel: GuiViewModelBase<ManageApartmentViewModel, ManageApartmentPayload>
     {
+        public ManageApartmentViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         public const int MaxNameLength = 50;
@@ -480,8 +487,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     apartment.IsQueuedForDeletion = true;
                     _db.Set(apartment);
                     
-                    if(Gui.IsWindowOpen(Player, GuiWindowType.ManageApartment))
-                        Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);
+                    if(_guiService.IsWindowOpen(Player, GuiWindowType.ManageApartment))
+                        _guiService.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);
 
                     FloatingTextStringOnCreature("Your apartment's lease has been successfully revoked.", Player, false);
                 });
@@ -496,7 +503,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var apartment = GetApartment();
             var payload = new PropertyPermissionPayload(PropertyType.Apartment, apartment.Id, string.Empty, false);
 
-            Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
         };
 
         public Action OnEnterApartment() => () =>
@@ -508,12 +515,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var apartment = GetApartment();
             Property.EnterProperty(Player, apartment.Id);
 
-            Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);
         };
 
         public Action OnBuyApartment() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.RentApartment, null, TetherObject);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.RentApartment, null, TetherObject);
         };
     }
 }

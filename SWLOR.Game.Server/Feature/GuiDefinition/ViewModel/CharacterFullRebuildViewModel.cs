@@ -5,14 +5,17 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 using Ability = SWLOR.Game.Server.Service.Ability;
 using ClassType = SWLOR.NWN.API.NWScript.Enum.ClassType;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
@@ -24,6 +27,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CharacterFullRebuildViewModel: GuiViewModelBase<CharacterFullRebuildViewModel, GuiPayloadBase>
     {
+        public CharacterFullRebuildViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         [ScriptHandler(ScriptName.OnCharacterRebuild)]
@@ -40,7 +47,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(player)), player);
             Stat.RestoreFP(player, Stat.GetMaxFP(player));
             Stat.RestoreStamina(player, Stat.GetMaxStamina(player));
-            Gui.TogglePlayerWindow(player, GuiWindowType.CharacterMigration, null, OBJECT_SELF);
+            var guiService = ServiceContainer.GetService<IGuiService>();
+            guiService.TogglePlayerWindow(player, GuiWindowType.CharacterMigration, null, OBJECT_SELF);
         }
 
         [ScriptHandler(ScriptName.OnExitRebuild)]
@@ -682,12 +690,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (CharacterType == 0)
                 {
                     CreaturePlugin.SetClassByPosition(Player, 0, ClassType.Standard);
-                    dbPlayer.CharacterType = Enumeration.CharacterType.Standard;
+                    dbPlayer.CharacterType = Shared.Core.Enums.CharacterType.Standard;
                 }
                 else
                 {
                     CreaturePlugin.SetClassByPosition(Player, 0, ClassType.ForceSensitive);
-                    dbPlayer.CharacterType = Enumeration.CharacterType.ForceSensitive;
+                    dbPlayer.CharacterType = Shared.Core.Enums.CharacterType.ForceSensitive;
                 }
 
                 for (var index = 0; index < _skills.Count; index++)
@@ -700,7 +708,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 dbPlayer.RebuildComplete = true;
 
-                Gui.TogglePlayerWindow(Player, GuiWindowType.CharacterMigration, null, TetherObject);
+                _guiService.TogglePlayerWindow(Player, GuiWindowType.CharacterMigration, null, TetherObject);
                 FloatingTextStringOnCreature(ColorToken.Green("Character rebuild complete!"), Player, false);
 
                 _db.Set(dbPlayer);

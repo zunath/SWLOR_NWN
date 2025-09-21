@@ -3,11 +3,14 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     public class AdminChatCommand: IChatCommandListDefinition
     {
+        private readonly IGuiService _guiService = ServiceContainer.GetService<IGuiService>();
         private readonly ChatCommandBuilder _builder = new ();
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -25,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.ManageStaff);
+                    _guiService.TogglePlayerWindow(user, GuiWindowType.ManageStaff);
                 });
         }
 
@@ -36,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.ManageBans);
+                    _guiService.TogglePlayerWindow(user, GuiWindowType.ManageBans);
                 });
         }
 

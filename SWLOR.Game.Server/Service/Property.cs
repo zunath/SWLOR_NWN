@@ -16,6 +16,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -24,6 +26,8 @@ using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
@@ -1644,7 +1648,8 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastUsedBy();
             var terminal = OBJECT_SELF;
             
-            Gui.TogglePlayerWindow(player, GuiWindowType.ManageApartment, null, terminal);
+            var guiService = ServiceContainer.GetService<IGuiService>();
+            guiService.TogglePlayerWindow(player, GuiWindowType.ManageApartment, null, terminal);
         }
 
         /// <summary>
@@ -1846,9 +1851,10 @@ namespace SWLOR.Game.Server.Service
 
             var player = OBJECT_SELF;
 
-            if (Gui.IsWindowOpen(player, GuiWindowType.ManageStructures))
+            var guiService = ServiceContainer.GetService<IGuiService>();
+            if (guiService.IsWindowOpen(player, GuiWindowType.ManageStructures))
             {
-                Gui.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
+                guiService.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
                 return;
             }
 
@@ -1891,7 +1897,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
             
-            Gui.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
+            guiService.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
         }
 
         /// <summary>
@@ -2210,7 +2216,8 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                Gui.TogglePlayerWindow(player, GuiWindowType.ManageCitizenship, null, terminal);
+                var guiService = ServiceContainer.GetService<IGuiService>();
+                guiService.TogglePlayerWindow(player, GuiWindowType.ManageCitizenship, null, terminal);
             }
         }
 
@@ -2240,7 +2247,8 @@ namespace SWLOR.Game.Server.Service
                                        permission.Permissions[PropertyPermissionType.ManageUpgrades] ||
                                        permission.Permissions[PropertyPermissionType.ManageUpkeep]))
             {
-                Gui.TogglePlayerWindow(player, GuiWindowType.ManageCity, null, terminal);
+                var guiService = ServiceContainer.GetService<IGuiService>();
+                guiService.TogglePlayerWindow(player, GuiWindowType.ManageCity, null, terminal);
             }
             else
             {

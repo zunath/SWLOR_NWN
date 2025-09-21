@@ -8,11 +8,19 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DroidAssemblyViewModel : GuiViewModelBase<DroidAssemblyViewModel, GuiPayloadBase>
     {
+        public DroidAssemblyViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private const string BlankTexture = "Blank";
 
         private string _cpuItem;

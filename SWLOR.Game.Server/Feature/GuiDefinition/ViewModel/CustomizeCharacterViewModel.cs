@@ -6,11 +6,19 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CustomizeCharacterViewModel: GuiViewModelBase<CustomizeCharacterViewModel, CustomizeCharacterPayload>
     {
+        public CustomizeCharacterViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly IPortraitCacheService _portraitCache = ServiceContainer.GetService<IPortraitCacheService>();
         private static readonly ISoundSetCacheService _soundSetCache = ServiceContainer.GetService<ISoundSetCacheService>();
@@ -240,7 +248,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _db.Set(dbBeast);
             }
 
-            Gui.PublishRefreshEvent(Player, new ChangePortraitRefreshEvent());
+            _guiService.PublishRefreshEvent(Player, new ChangePortraitRefreshEvent());
         };
 
         public Action OnSoundSetClick() => () =>

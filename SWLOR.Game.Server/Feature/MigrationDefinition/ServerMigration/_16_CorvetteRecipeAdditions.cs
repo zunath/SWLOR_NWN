@@ -1,5 +1,6 @@
 ﻿using System;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
@@ -21,9 +22,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
             foreach (var player in dbPlayers)
             {
-                if (player.UnlockedRecipes.ContainsKey(Service.CraftService.RecipeType.CorvetteNeutThranta))
+                if (player.UnlockedRecipes.ContainsKey(RecipeType.CorvetteNeutThranta))
                 {
-                    player.UnlockedRecipes[Service.CraftService.RecipeType.CorvetteJehaveyFrigate] = DateTime.UtcNow;
+                    player.UnlockedRecipes[RecipeType.CorvetteJehaveyFrigate] = DateTime.UtcNow;
                 }
                 _db.Set(player);
             }

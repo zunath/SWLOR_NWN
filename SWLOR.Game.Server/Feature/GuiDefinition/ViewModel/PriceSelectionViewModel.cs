@@ -3,11 +3,17 @@ using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class PriceSelectionViewModel: GuiViewModelBase<PriceSelectionViewModel, PriceSelectionPayload>
     {
+        public PriceSelectionViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private string _targetRecordId;
         private GuiWindowType _targetWindowType;
 
@@ -59,16 +65,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSave() => () =>
         {
-            var window = Gui.GetPlayerWindow(Player, _targetWindowType);
+            var window = _guiService.GetPlayerWindow(Player, _targetWindowType);
             var vm = (IGuiAcceptsPriceChange)window.ViewModel;
             vm.ChangePrice(_targetRecordId, Convert.ToInt32(Price));
 
-            Gui.TogglePlayerWindow(Player, GuiWindowType.PriceSelection);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.PriceSelection);
         };
 
         public Action OnClickCancel() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.PriceSelection);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.PriceSelection);
         };
 
     }

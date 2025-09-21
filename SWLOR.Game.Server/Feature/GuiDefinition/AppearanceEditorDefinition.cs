@@ -1,19 +1,29 @@
 ﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using System.Linq.Expressions;
 using System;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class AppearanceEditorDefinition : IGuiWindowDefinition
     {
-        private readonly GuiWindowBuilder<AppearanceEditorViewModel> _builder = new();
+        private readonly IGuiService _guiService;
+        private readonly GuiWindowBuilder<AppearanceEditorViewModel> _builder;
 
         private const float MainColorChannelButtonSize = 72f;
         private const float PartColorChannelButtonSize = 16f;
+
+        public AppearanceEditorDefinition(IGuiService guiService)
+        {
+            _guiService = guiService;
+            _builder = new GuiWindowBuilder<AppearanceEditorViewModel>(_guiService);
+        }
 
         public GuiConstructedWindow BuildWindow()
         {

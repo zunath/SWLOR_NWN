@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
 {

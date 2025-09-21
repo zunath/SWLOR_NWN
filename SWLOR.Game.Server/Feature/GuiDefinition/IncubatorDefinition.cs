@@ -1,12 +1,22 @@
 ﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class IncubatorDefinition : IGuiWindowDefinition
     {
-        private readonly GuiWindowBuilder<IncubatorViewModel> _builder = new();
+        private readonly IGuiService _guiService;
+        private readonly GuiWindowBuilder<IncubatorViewModel> _builder;
+
+        public IncubatorDefinition(IGuiService guiService)
+        {
+            _guiService = guiService;
+            _builder = new GuiWindowBuilder<IncubatorViewModel>(_guiService);
+        }
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.Incubator)

@@ -7,6 +7,9 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -84,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.DebugEnmity);
+                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.DebugEnmity);
                 });
         }
 

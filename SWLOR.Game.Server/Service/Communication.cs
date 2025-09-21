@@ -16,7 +16,7 @@ using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Game.Server.Entity.Player;
-using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
+using SkillType = SWLOR.Shared.Core.Enums.SkillType;
 
 namespace SWLOR.Game.Server.Service
 {

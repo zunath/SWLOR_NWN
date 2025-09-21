@@ -4,6 +4,7 @@
 @using System.Reflection
 @using SWLOR.Shared.Abstractions.Contracts
 @using SWLOR.Shared.Core.Data
+@using SWLOR.Shared.Core.Enums
 @inject IDatabaseService _db
 
 <h3>Players (@_totalRecords)</h3>
@@ -167,10 +168,10 @@
         _pageInput = string.Empty;
     }
 
-    private string GetCharacterTypeDisplay(SWLOR.Game.Server.Enumeration.CharacterType type)
+    private string GetCharacterTypeDisplay(CharacterType type)
     {
         var field = type.GetType().GetField(type.ToString());
-        var attribute = field?.GetCustomAttribute<SWLOR.Game.Server.Enumeration.CharacterTypeAttribute>();
+        var attribute = field?.GetCustomAttribute<CharacterTypeAttribute>();
         return attribute?.Name ?? type.ToString();
     }
 }

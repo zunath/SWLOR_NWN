@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
@@ -14,8 +13,15 @@ using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -24,6 +30,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<PerkResetAcquiredRefreshEvent>
     {
+        public PerksViewModel(IGuiService guiService) : base(guiService)
+        {
+            _filteredPerks = new List<PerkType>();
+            PerkButtonIcons = new GuiBindingList<string>();
+            PerkButtonColors = new GuiBindingList<GuiColor>();
+            PerkButtonTexts = new GuiBindingList<string>();
+            PerkDetailSelected = new GuiBindingList<bool>();
+            SelectedRequirements = new GuiBindingList<string>();
+        }
+
         private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
@@ -193,16 +209,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             get => Get<bool>();
             set => Set(value);
-        }
-
-        public PerksViewModel()
-        {
-            _filteredPerks = new List<PerkType>();
-            PerkButtonIcons = new GuiBindingList<string>();
-            PerkButtonColors = new GuiBindingList<GuiColor>();
-            PerkButtonTexts = new GuiBindingList<string>();
-            PerkDetailSelected = new GuiBindingList<bool>();
-            SelectedRequirements = new GuiBindingList<string>();
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
@@ -701,7 +707,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     FloatingTextStringOnCreature(ColorToken.Green($"You purchase '{detail.Name}' rank {newRank}."), Player, false);
 
                     EventsPlugin.SignalEvent("SWLOR_BUY_PERK", Player);
-                    Gui.PublishRefreshEvent(Player, new PerkAcquiredRefreshEvent(selectedPerk));
+                    _guiService.PublishRefreshEvent(Player, new PerkAcquiredRefreshEvent(selectedPerk));
 
                     ExportSingleCharacter(Player);
 
@@ -803,7 +809,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _db.Set(dbPlayer);
                     Currency.TakeCurrency(Player, CurrencyType.PerkRefundToken, 1);
 
-                    Gui.PublishRefreshEvent(Player, new PerkRefundedRefreshEvent(selectedPerk));
+                    _guiService.PublishRefreshEvent(Player, new PerkRefundedRefreshEvent(selectedPerk));
 
                     // Remove all feats granted by all levels of this perk.
                     var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats);

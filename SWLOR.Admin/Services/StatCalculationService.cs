@@ -1,5 +1,5 @@
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Admin.Services
 {

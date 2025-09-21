@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NWN.Core;
 using SWLOR.Component.Combat.Contracts;
@@ -15,6 +17,8 @@ using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Events.Service;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 using ScriptExecutionProvider = SWLOR.Game.Server.Server.ScriptExecutionProvider;
 
 namespace SWLOR.Game.Server
@@ -77,6 +81,48 @@ namespace SWLOR.Game.Server
             services.AddSingleton<ITaxiService, Taxi>();
             services.AddSingleton<IAttackOfOpportunityService, AttackOfOpportunityService>();
             services.AddSingleton<IClientVersionCheck, ClientVersionCheck>();
+            services.AddSingleton<IGuiService, GuiService>();
+            
+            // Cache Services
+            services.AddSingleton<IItemCacheService, ItemCacheService>();
+            services.AddSingleton<IPortraitCacheService, PortraitCacheService>();
+            services.AddSingleton<ISoundSetCacheService, SoundSetCacheService>();
+            
+            // ViewModels
+            AddViewModels(services);
+        }
+        
+        private static void AddViewModels(IServiceCollection services)
+        {
+            // Automatically discover and register all ViewModels that inherit from GuiViewModelBase
+            var viewModelTypes = typeof(ServiceRegistration).Assembly
+                .GetTypes()
+                .Where(type => type.IsClass && 
+                              !type.IsAbstract && 
+                              IsViewModelType(type))
+                .ToList();
+
+            foreach (var viewModelType in viewModelTypes)
+            {
+                services.AddTransient(viewModelType);
+            }
+        }
+
+        private static bool IsViewModelType(Type type)
+        {
+            // Check if it inherits from GuiViewModelBase<,>
+            var baseType = type.BaseType;
+            while (baseType != null)
+            {
+                if (baseType.IsGenericType && 
+                    baseType.GetGenericTypeDefinition() == typeof(GuiViewModelBase<,>))
+                {
+                    return true;
+                }
+                baseType = baseType.BaseType;
+            }
+
+            return false;
         }
     }
 }

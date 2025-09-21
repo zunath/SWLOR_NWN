@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -18,10 +16,15 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 using ResearchJob = SWLOR.Game.Server.Entity.ResearchJob;
 
 namespace SWLOR.Game.Server.Service
@@ -364,7 +367,8 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastUsedBy();
             var skillType = (SkillType)GetLocalInt(OBJECT_SELF, "CRAFTING_SKILL_TYPE_ID");
             var payload = new RecipesPayload(RecipesUIMode.Crafting, skillType);
-            Gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
+            var guiService = ServiceContainer.GetService<IGuiService>();
+            guiService.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
         }
 
         /// <summary>
@@ -726,7 +730,8 @@ namespace SWLOR.Game.Server.Service
         public static void UseRefinery()
         {
             var player = GetLastUsedBy();
-            Gui.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
+            var guiService = ServiceContainer.GetService<IGuiService>();
+            guiService.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
         }
 
         [ScriptHandler(ScriptName.OnResearchTerminal)]
@@ -759,7 +764,8 @@ namespace SWLOR.Game.Server.Service
             if (dbJob == null)
             {
                 var payload = new RecipesPayload(RecipesUIMode.Research, SkillType.Invalid);
-                Gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, terminal);
+                var guiService = ServiceContainer.GetService<IGuiService>();
+                guiService.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, terminal);
             }
             else
             {
@@ -780,7 +786,8 @@ namespace SWLOR.Game.Server.Service
                 else
                 {
                     var payload = new ResearchPayload(propertyId, OBJECT_INVALID, RecipeType.Invalid);
-                    Gui.TogglePlayerWindow(player, GuiWindowType.Research, payload, terminal);
+                    var guiService = ServiceContainer.GetService<IGuiService>();
+                    guiService.TogglePlayerWindow(player, GuiWindowType.Research, payload, terminal);
                 }
             }
         }

@@ -6,17 +6,24 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class PropertyItemStorageViewModel: GuiViewModelBase<PropertyItemStorageViewModel, GuiPayloadBase>
     {
+        public PropertyItemStorageViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         private const int MaxNumberOfCategories = 20;
@@ -414,7 +421,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var payload = new PropertyPermissionPayload(PropertyType.Category, categoryId, string.Empty, true);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
         };
 
         public Action OnSaveName() => () =>
@@ -576,7 +583,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbItem = category.Items[itemId];
             var item = ObjectPlugin.Deserialize(dbItem.Data);
             var payload = new ExamineItemPayload(GetName(item), GetDescription(item), Item.BuildItemPropertyString(item));
-            Gui.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
             DestroyObject(item);
         };
 

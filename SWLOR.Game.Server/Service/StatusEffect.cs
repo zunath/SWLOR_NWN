@@ -8,6 +8,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -299,7 +301,8 @@ namespace SWLOR.Game.Server.Service
             if(sendApplicationMessage)
                 Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.", 20f);
 
-            Gui.PublishRefreshEvent(target, new StatusEffectReceivedRefreshEvent());
+            var guiService = ServiceContainer.GetService<IGuiService>();
+            guiService.PublishRefreshEvent(target, new StatusEffectReceivedRefreshEvent());
         }
 
         /// <summary>
@@ -438,7 +441,8 @@ namespace SWLOR.Game.Server.Service
             if(showMessage)
                 Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)}'s {statusEffectDetail.Name} effect has worn off.");
 
-            Gui.PublishRefreshEvent(creature, new StatusEffectRemovedRefreshEvent());
+            var guiService = ServiceContainer.GetService<IGuiService>();
+            guiService.PublishRefreshEvent(creature, new StatusEffectRemovedRefreshEvent());
         }
 
         /// <summary>

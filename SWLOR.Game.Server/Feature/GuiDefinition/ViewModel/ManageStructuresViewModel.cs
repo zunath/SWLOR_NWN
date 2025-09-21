@@ -7,17 +7,24 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageStructuresViewModel: GuiViewModelBase<ManageStructuresViewModel, GuiPayloadBase>
     {
+        public ManageStructuresViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         private const int StructuresPerPage = 20;
@@ -240,7 +247,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Safety check to ensure we've got a property Id.
             if (string.IsNullOrWhiteSpace(propertyId))
             {
-                Gui.TogglePlayerWindow(Player, GuiWindowType.ManageStructures);
+                _guiService.TogglePlayerWindow(Player, GuiWindowType.ManageStructures);
                 return;
             }
             
@@ -357,19 +364,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (property.PropertyType == PropertyType.Apartment)
             {
                 var payload = new ManageApartmentPayload(propertyId);
-                Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment, payload);
+                _guiService.TogglePlayerWindow(Player, GuiWindowType.ManageApartment, payload);
             }
             // Cities use the same permissions menu as all other buildings,
             // but the city Id is located on themselves instead of the parent building's parent.
             else if (property.PropertyType == PropertyType.City)
             {
                 var payload = new PropertyPermissionPayload(property.PropertyType, propertyId, propertyId, false);
-                Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
+                _guiService.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
             }
             else if (property.PropertyType == PropertyType.Starship)
             {
                 var payload = new PropertyPermissionPayload(property.PropertyType, propertyId, string.Empty, false);
-                Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
+                _guiService.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
             }
             // Buildings look at their parent's parent to determine the city Id.
             else
@@ -377,13 +384,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var parentBuilding = _db.Get<WorldProperty>(property.ParentPropertyId);
                 var cityId = parentBuilding.ParentPropertyId;
                 var payload = new PropertyPermissionPayload(property.PropertyType, propertyId, cityId, false);
-                Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
+                _guiService.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
             }
         };
 
         public Action OnOpenStorage() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.PropertyItemStorage);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.PropertyItemStorage);
         };
 
         public Action OnRetrieveStructure() => () =>

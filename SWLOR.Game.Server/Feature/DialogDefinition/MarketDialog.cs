@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -41,13 +43,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.AddResponse("Buy", () =>
             {
-                Gui.TogglePlayerWindow(player, GuiWindowType.MarketBuying, new MarketPayload(regionType), terminal);
+                ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.MarketBuying, new MarketPayload(regionType), terminal);
                 EndConversation();
             });
 
             page.AddResponse("Sell", () =>
             {
-                Gui.TogglePlayerWindow(player, GuiWindowType.MarketListing, new MarketPayload(regionType), terminal);
+                ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.MarketListing, new MarketPayload(regionType), terminal);
                 EndConversation();
             });
         }

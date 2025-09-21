@@ -1,13 +1,23 @@
 ﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     internal class StablesDefinition : IGuiWindowDefinition
     {
-        private readonly GuiWindowBuilder<StablesViewModel> _builder = new();
+        private readonly IGuiService _guiService;
+        private readonly GuiWindowBuilder<StablesViewModel> _builder;
+
+        public StablesDefinition(IGuiService guiService)
+        {
+            _guiService = guiService;
+            _builder = new GuiWindowBuilder<StablesViewModel>(_guiService);
+        }
 
         public GuiConstructedWindow BuildWindow()
         {

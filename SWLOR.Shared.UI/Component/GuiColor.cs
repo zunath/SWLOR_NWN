@@ -1,0 +1,51 @@
+﻿using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript.Nui;
+
+namespace SWLOR.Shared.UI.Component
+{
+    public class GuiColor
+    {
+        /// <summary>
+        /// The amount of red to use. 0-255
+        /// </summary>
+        public byte R { get; set; }
+
+        /// <summary>
+        /// The amount of green to use. 0-255
+        /// </summary>
+        public byte G { get; set; }
+
+        /// <summary>
+        /// The amount of blue to use. 0-255
+        /// </summary>
+        public byte B { get; set; }
+
+        /// <summary>
+        /// The amount of alpha (transparency) to use. 0-255
+        /// </summary>
+        public byte Alpha { get; set; }
+
+        public GuiColor(byte red, byte green, byte blue, byte alpha = 255)
+        {
+            R = red;
+            G = green;
+            B = blue;
+            Alpha = alpha;
+        }
+
+        public Json ToJson()
+        {
+            return Nui.Color(R, G, B, Alpha);
+        }
+
+        public static GuiColor Green => new(0, 255, 0);
+        public static GuiColor Red => new(255, 0, 0);
+        public static GuiColor Cyan => new(0, 255, 255);
+        public static GuiColor White => new(255, 255, 255);
+        public static GuiColor Grey => new(169, 169, 169);
+
+        public static GuiColor HPColor = new(139, 0, 0);
+        public static GuiColor FPColor = new(0, 138, 250);
+        public static GuiColor STMColor = new(0, 139, 0);
+    }
+}

@@ -5,11 +5,18 @@ using Discord.Webhook;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class HoloNetViewModel : GuiViewModelBase<HoloNetViewModel, GuiPayloadBase>
     {
+        public HoloNetViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         public string HoloNetText
         {
             get => Get<string>();
@@ -79,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 });
 
                 SendMessageToPC(Player, "HoloNet message broadcasted!");
-                Gui.TogglePlayerWindow(Player, GuiWindowType.HoloNet);
+                _guiService.TogglePlayerWindow(Player, GuiWindowType.HoloNet);
 
                 for (var onlinePlayer = GetFirstPC(); GetIsObjectValid(onlinePlayer); onlinePlayer = GetNextPC())
                 {
@@ -90,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickCancel() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.HoloNet);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.HoloNet);
         };
     }
 }

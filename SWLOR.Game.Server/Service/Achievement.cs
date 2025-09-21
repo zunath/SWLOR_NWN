@@ -7,22 +7,27 @@ using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Achievement
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static Gui.IdReservation _idReservation;
+        private static readonly IGuiService _guiService = ServiceContainer.GetService<IGuiService>();
+        private static IdReservation _idReservation;
         private static readonly Dictionary<AchievementType, AchievementAttribute> _activeAchievements = new();
 
         [ScriptHandler<OnModuleLoad>]
         public static void ReserveGuiIds()
         {
-            _idReservation = Gui.ReserveIds(nameof(Achievement), 6);
+            _idReservation = _guiService.ReserveIds(nameof(Achievement), 6);
         }
 
         /// <summary>
@@ -80,10 +85,10 @@ namespace SWLOR.Game.Server.Service
             const int WindowY = 4;
             const int WindowWidth = 26;
 
-            var centerWindowX = Gui.CenterStringInWindow(name, WindowX, WindowWidth);
-            PostString(player, "Achievement Unlocked", centerWindowX + 2, WindowY+1, ScreenAnchor.TopRight, 10.0f, Gui.ColorWhite, Gui.ColorYellow, _idReservation.StartId,Gui.TextName);
-            PostString(player, " " + name, centerWindowX + 4, WindowY+3, ScreenAnchor.TopRight, 10.0f, Gui.ColorWhite, Gui.ColorYellow, _idReservation.StartId + 1, Gui.TextName);
-            Gui.DrawWindow(player, _idReservation.StartId + 2, ScreenAnchor.TopRight, WindowX, WindowY, WindowWidth, 4);
+            var centerWindowX = _guiService.CenterStringInWindow(name, WindowX, WindowWidth);
+            PostString(player, "Achievement Unlocked", centerWindowX + 2, WindowY+1, ScreenAnchor.TopRight, 10.0f, GuiStandardColor.ColorWhite, GuiStandardColor.ColorYellow, _idReservation.StartId, GuiTextTexture.TextName);
+            PostString(player, " " + name, centerWindowX + 4, WindowY+3, ScreenAnchor.TopRight, 10.0f, GuiStandardColor.ColorWhite, GuiStandardColor.ColorYellow, _idReservation.StartId + 1, GuiTextTexture.TextName);
+            _guiService.DrawWindow(player, _idReservation.StartId + 2, ScreenAnchor.TopRight, WindowX, WindowY, WindowWidth, 4);
         }
 
         /// <summary>

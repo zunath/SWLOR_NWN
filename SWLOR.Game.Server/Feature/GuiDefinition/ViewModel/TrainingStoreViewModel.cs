@@ -10,19 +10,27 @@ using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class TrainingStoreViewModel: GuiViewModelBase<TrainingStoreViewModel, GuiPayloadBase>,
         IGuiRefreshable<RPXPRefreshEvent>
     {
+        public TrainingStoreViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         [ScriptHandler(ScriptName.OnOpenTrainingStore)]
-        public static void OpenTrainingStore()
+        public void OpenTrainingStore()
         {
             var player = GetPCSpeaker();
-            Gui.TogglePlayerWindow(player, GuiWindowType.TrainingStore, null, OBJECT_SELF);
+            var guiService = ServiceContainer.GetService<IGuiService>();
+            guiService.TogglePlayerWindow(player, GuiWindowType.TrainingStore, null, OBJECT_SELF);
         }
 
         private class TerminalItem
@@ -136,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _db.Set(dbPlayer);
 
                 CreateItemOnObject(Resrefs[index], Player);
-                Gui.PublishRefreshEvent(Player, new RPXPRefreshEvent());
+                _guiService.PublishRefreshEvent(Player, new RPXPRefreshEvent());
             });
         };
     }

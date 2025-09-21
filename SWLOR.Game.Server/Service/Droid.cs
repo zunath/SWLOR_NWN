@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -16,11 +15,14 @@ using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -222,7 +224,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            Gui.TogglePlayerWindow(player, GuiWindowType.DroidAssembly, null, OBJECT_SELF);
+            ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.DroidAssembly, null, OBJECT_SELF);
         }
 
         /// <summary>
@@ -580,9 +582,9 @@ namespace SWLOR.Game.Server.Service
         public static void SpawnDroid(uint player, uint controller)
         {
             // Close AI programming if open.
-            if (Gui.IsWindowOpen(player, GuiWindowType.DroidAI))
+            if (ServiceContainer.GetService<IGuiService>().IsWindowOpen(player, GuiWindowType.DroidAI))
             {
-                Gui.CloseWindow(player, GuiWindowType.DroidAI, player);
+                ServiceContainer.GetService<IGuiService>().CloseWindow(player, GuiWindowType.DroidAI, player);
             }
 
             var details = LoadDroidItemPropertyDetails(controller);
@@ -872,8 +874,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void CloseAppearanceEditor(uint player)
         {
-            if(Gui.IsWindowOpen(player, GuiWindowType.AppearanceEditor))
-                Gui.CloseWindow(player, GuiWindowType.AppearanceEditor, player);
+            if(ServiceContainer.GetService<IGuiService>().IsWindowOpen(player, GuiWindowType.AppearanceEditor))
+                ServiceContainer.GetService<IGuiService>().CloseWindow(player, GuiWindowType.AppearanceEditor, player);
         }
 
         /// <summary>

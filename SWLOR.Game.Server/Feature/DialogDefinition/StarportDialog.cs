@@ -8,6 +8,8 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -83,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         : GetLocation(GetWaypointByTag(landingWaypointTag));
 
                     var payload = new ShipManagementPayload(planetType, spaceLocation, landingLocation);
-                    Gui.TogglePlayerWindow(player, GuiWindowType.ShipManagement, payload, OBJECT_SELF);
+                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.ShipManagement, payload, OBJECT_SELF);
                 });
 
             }

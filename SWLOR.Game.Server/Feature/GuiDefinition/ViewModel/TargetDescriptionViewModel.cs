@@ -2,11 +2,17 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class TargetDescriptionViewModel : GuiViewModelBase<TargetDescriptionViewModel, TargetDescriptionPayload>
     {
+        public TargetDescriptionViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private uint _target;
 
         public string Description
@@ -30,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickSave() => () =>
         {
             SetDescription(_target, Description);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.TargetDescription);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.TargetDescription);
         };
     }
 }

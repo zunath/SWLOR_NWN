@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData
 {

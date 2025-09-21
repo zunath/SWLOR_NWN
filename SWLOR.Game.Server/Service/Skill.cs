@@ -5,14 +5,16 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
@@ -235,7 +237,8 @@ namespace SWLOR.Game.Server.Service
             _db.Set(dbPlayer);
 
             modifiedSkills.Add(skill);
-            Gui.PublishRefreshEvent(player, new SkillXPRefreshEvent(modifiedSkills));
+            var guiService = ServiceContainer.GetService<IGuiService>();
+            guiService.PublishRefreshEvent(player, new SkillXPRefreshEvent(modifiedSkills));
 
             // Send out an event signifying that a player has received a skill rank increase.
             if(receivedRankUp)

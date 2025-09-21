@@ -13,8 +13,12 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -22,6 +26,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
         IGuiRefreshable<PerkRefundedRefreshEvent>
     {
+        public IncubatorViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         public const string PartialElement = "PARTIAL_VIEW";
@@ -1021,7 +1029,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _hydrolaseItem = string.Empty;
                 _isomeraseItem = string.Empty;
                 _lyaseItem = string.Empty;
-                Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
+                _guiService.CloseWindow(Player, GuiWindowType.Incubator, Player);
                 FloatingTextStringOnCreature($"Incubation job started!", Player, false);
             }
             else
@@ -1070,7 +1078,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
 
                 _db.Delete<IncubationJob>(dbJob.Id);
-                Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
+                _guiService.CloseWindow(Player, GuiWindowType.Incubator, Player);
                 _logger.Write<IncubationLogGroup>($"Player '{GetName(Player)}' ({GetObjectUUID(Player)}) canceled incubation job '{dbJob.Id}' on incubator property Id '{dbJob.ParentPropertyId}'.");
                 FloatingTextStringOnCreature($"Incubation job cancelled!", Player, false);
 
@@ -1084,7 +1092,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var job = GetJob();
                 BeastMastery.CreateBeastEgg(job, Player);
-                Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
+                _guiService.CloseWindow(Player, GuiWindowType.Incubator, Player);
 
                 SwitchViews();
             }, SwitchViews);

@@ -42,6 +42,13 @@
     <ProjectReference Include="..\SWLOR.Shared.Caching\SWLOR.Shared.Caching.csproj" />
     <ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
     <ProjectReference Include="..\SWLOR.Shared.Events\SWLOR.Shared.Events.csproj" />
+    <ProjectReference Include="..\SWLOR.Shared.UI\SWLOR.Shared.UI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Entity\" />
+    <Folder Include="Service\KeyItemService\" />
+    <Folder Include="Service\TaxiService\" />
   </ItemGroup>
 
   <Target Name="NWN" AfterTargets="Build">

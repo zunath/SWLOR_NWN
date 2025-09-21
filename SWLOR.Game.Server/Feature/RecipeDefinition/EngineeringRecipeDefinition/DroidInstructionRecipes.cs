@@ -1,7 +1,8 @@
 ﻿using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
 using System.Collections.Generic;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
 {

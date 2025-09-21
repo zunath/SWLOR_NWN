@@ -1,0 +1,5 @@
+---
+description: Don't use magic strings and magic numbers
+globs:
+alwaysApply: true
+---

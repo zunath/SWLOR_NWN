@@ -5,17 +5,25 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageCityViewModel : GuiViewModelBase<ManageCityViewModel, GuiPayloadBase>, IGuiAcceptsPriceChange
     {
+        public ManageCityViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
@@ -384,13 +392,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action Deposit() => () =>
         {
             var payload = new PriceSelectionPayload(GuiWindowType.ManageCity, "DEPOSIT", 0, string.Empty, "Deposit:");
-            Gui.TogglePlayerWindow(Player, GuiWindowType.PriceSelection, payload, TetherObject);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.PriceSelection, payload, TetherObject);
         };
 
         public Action Withdraw() => () =>
         {
             var payload = new PriceSelectionPayload(GuiWindowType.ManageCity, "WITHDRAW", 0, string.Empty, "Withdraw:");
-            Gui.TogglePlayerWindow(Player, GuiWindowType.PriceSelection, payload, TetherObject);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.PriceSelection, payload, TetherObject);
         };
 
         private bool ValidateUpgrade(PropertyUpgradeType upgradeType, int price)

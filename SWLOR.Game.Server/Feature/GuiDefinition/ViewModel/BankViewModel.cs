@@ -12,11 +12,17 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal class BankViewModel: GuiViewModelBase<BankViewModel, GuiPayloadBase>
     {
+        public BankViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         /// <summary>
@@ -33,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            Gui.TogglePlayerWindow(player, GuiWindowType.Bank, null, OBJECT_SELF);
+            var guiService = ServiceContainer.GetService<IGuiService>();
+            guiService.TogglePlayerWindow(player, GuiWindowType.Bank, null, OBJECT_SELF);
         }
 
         private readonly List<string> _itemIds = new();

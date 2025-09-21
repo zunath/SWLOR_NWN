@@ -1,14 +1,24 @@
 ﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class CharacterSheetDefinition : IGuiWindowDefinition
     {
-        private readonly GuiWindowBuilder<CharacterSheetViewModel> _builder = new();
+        private readonly IGuiService _guiService;
+        private readonly GuiWindowBuilder<CharacterSheetViewModel> _builder;
         private const float IncreaseButtonSize = 14f;
+
+        public CharacterSheetDefinition(IGuiService guiService)
+        {
+            _guiService = guiService;
+            _builder = new GuiWindowBuilder<CharacterSheetViewModel>(_guiService);
+        }
 
         public GuiConstructedWindow BuildWindow()
         {

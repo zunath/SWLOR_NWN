@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {

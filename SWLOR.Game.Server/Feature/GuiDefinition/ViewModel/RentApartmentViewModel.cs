@@ -5,15 +5,22 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class RentApartmentViewModel: GuiViewModelBase<RentApartmentViewModel, GuiPayloadBase>
     {
+        public RentApartmentViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         public string Instructions
@@ -171,11 +178,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var property = Property.CreateApartment(Player, layoutType);
                     Property.EnterProperty(Player, property.Id);
 
-                    Gui.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
+                    _guiService.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
 
-                    if (Gui.IsWindowOpen(Player, GuiWindowType.ManageApartment))
+                    if (_guiService.IsWindowOpen(Player, GuiWindowType.ManageApartment))
                     {
-                        Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);
+                        _guiService.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);
                     }
                 });
         };
@@ -185,7 +192,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var layoutType = _layoutTypes[SelectedLayout];
 
             Property.PreviewProperty(Player, layoutType);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
         };
     }
 }

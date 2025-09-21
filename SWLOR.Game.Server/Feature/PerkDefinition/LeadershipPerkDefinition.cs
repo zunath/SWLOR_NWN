@@ -6,10 +6,11 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {

@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -14,11 +13,19 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class MarketBuyViewModel: GuiViewModelBase<MarketBuyViewModel, MarketPayload>
     {
+        public MarketBuyViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
@@ -282,7 +289,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var item = ObjectPlugin.Deserialize(dbItem.Data);
             var payload = new ExamineItemPayload(GetName(item), GetDescription(item), Item.BuildItemPropertyString(item));
-            Gui.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
             DestroyObject(item);
         };
 

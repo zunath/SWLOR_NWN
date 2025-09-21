@@ -1,10 +1,16 @@
 ﻿using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ExamineItemViewModel: GuiViewModelBase<ExamineItemViewModel, ExamineItemPayload>
     {
+        public ExamineItemViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         public string WindowTitle
         {
             get => Get<string>();

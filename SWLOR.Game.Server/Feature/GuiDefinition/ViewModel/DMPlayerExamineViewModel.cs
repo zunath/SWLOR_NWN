@@ -12,17 +12,24 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DMPlayerExamineViewModel: GuiViewModelBase<DMPlayerExamineViewModel, DMPlayerExaminePayload>
     {
+        public DMPlayerExamineViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         private const int MaxNotes = 50;
 
         [ScriptHandler<OnExamineObjectBefore>]
-        public static void ExaminePlayer()
+        public void ExaminePlayer()
         {
             var dm = OBJECT_SELF;
             var target = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
@@ -36,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var payload = new DMPlayerExaminePayload(target);
 
             SetGuiPanelDisabled(dm, GuiPanel.ExamineCreature, true);
-            Gui.TogglePlayerWindow(dm, GuiWindowType.DMPlayerExamine, payload);
+            _guiService.TogglePlayerWindow(dm, GuiWindowType.DMPlayerExamine, payload);
             DelayCommand(1f, () => SetGuiPanelDisabled(dm, GuiPanel.ExamineCreature, false));
         }
 

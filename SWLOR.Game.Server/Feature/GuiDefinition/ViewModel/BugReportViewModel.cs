@@ -9,11 +9,18 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class BugReportViewModel: GuiViewModelBase<BugReportViewModel, GuiPayloadBase>
     {
+        public BugReportViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         public const int MaxBugReportLength = 1000;
         private readonly IAppSettings _appSettings = ServiceContainer.GetService<IAppSettings>();
 
@@ -133,12 +140,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetLocalString(Player, "BUG_REPORT_LAST_SUBMISSION", nextReportAllowed.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
             SendMessageToPC(Player, "Bug report submitted! Thank you for your report.");
             SendMessageToPC(Player, "Submitted Bug Report: " + BugReportText);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.BugReport);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.BugReport);
         };
 
         public Action OnClickCancel() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.BugReport);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.BugReport);
         };
     }
 }

@@ -11,6 +11,8 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -169,7 +171,8 @@ namespace SWLOR.Game.Server.Service
 
             var keyItemDetail = _allKeyItems[keyItem];
             SendMessageToPC(player, $"You acquire the '{keyItemDetail.Name}' key item.");
-            Gui.PublishRefreshEvent(player, new KeyItemReceivedRefreshEvent(keyItem));
+            var guiService = ServiceContainer.GetService<IGuiService>();
+            guiService.PublishRefreshEvent(player, new KeyItemReceivedRefreshEvent(keyItem));
         }
 
         /// <summary>

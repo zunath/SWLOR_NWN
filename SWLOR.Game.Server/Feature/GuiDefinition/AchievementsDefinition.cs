@@ -1,12 +1,22 @@
 ﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class AchievementsDefinition: IGuiWindowDefinition
     {
-        private readonly GuiWindowBuilder<AchievementsViewModel> _builder = new();
+        private readonly IGuiService _guiService;
+        private readonly GuiWindowBuilder<AchievementsViewModel> _builder;
+
+        public AchievementsDefinition(IGuiService guiService)
+        {
+            _guiService = guiService;
+            _builder = new GuiWindowBuilder<AchievementsViewModel>(_guiService);
+        }
 
         public GuiConstructedWindow BuildWindow()
         {

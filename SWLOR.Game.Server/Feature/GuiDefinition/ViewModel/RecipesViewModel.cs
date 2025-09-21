@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -17,6 +21,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
         IGuiRefreshable<PerkRefundedRefreshEvent>
     {
+        public RecipesViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
         private int _currentRecipeIndex;
         private readonly List<RecipeType> _recipeTypes = new();
@@ -513,7 +521,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (_mode == RecipesUIMode.Crafting)
             {
-                if (Gui.IsWindowOpen(Player, GuiWindowType.Craft))
+                if (_guiService.IsWindowOpen(Player, GuiWindowType.Craft))
                     return;
 
                 var blueprint = Craft.GetBlueprintDetails(_selectedBlueprintItem);
@@ -524,7 +532,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     ? blueprint.Recipe
                     : _recipeTypes[_currentRecipeIndex];
                 var payload = new CraftPayload(recipe, _selectedBlueprintItem);
-                Gui.TogglePlayerWindow(Player, GuiWindowType.Craft, payload, TetherObject);
+                _guiService.TogglePlayerWindow(Player, GuiWindowType.Craft, payload, TetherObject);
             }
             else if (_mode == RecipesUIMode.Research)
             {
@@ -544,7 +552,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var propertyId = Property.GetPropertyId(TetherObject);
                 var payload = new ResearchPayload(propertyId, OBJECT_INVALID, recipeType);
-                Gui.TogglePlayerWindow(Player, GuiWindowType.Research, payload, TetherObject);
+                _guiService.TogglePlayerWindow(Player, GuiWindowType.Research, payload, TetherObject);
             }
         };
 
@@ -628,12 +636,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!ValidateBlueprint(item))
                         return;
                     
-                    Gui.CloseWindow(Player, GuiWindowType.Recipes, Player);
+                    _guiService.CloseWindow(Player, GuiWindowType.Recipes, Player);
 
                     var blueprint = Craft.GetBlueprintDetails(item);
                     var propertyId = Property.GetPropertyId(TetherObject);
                     var payload = new ResearchPayload(propertyId, item, blueprint.Recipe);
-                    Gui.TogglePlayerWindow(Player, GuiWindowType.Research, payload, TetherObject);
+                    _guiService.TogglePlayerWindow(Player, GuiWindowType.Research, payload, TetherObject);
                 });
             }
         };

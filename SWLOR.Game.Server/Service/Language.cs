@@ -11,7 +11,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
-using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
+using SkillType = SWLOR.Shared.Core.Enums.SkillType;
 
 namespace SWLOR.Game.Server.Service
 {

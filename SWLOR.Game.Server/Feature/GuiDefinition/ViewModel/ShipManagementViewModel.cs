@@ -13,14 +13,21 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 using PlayerShip = SWLOR.Game.Server.Entity.PlayerShip;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ShipManagementViewModel : GuiViewModelBase<ShipManagementViewModel, ShipManagementPayload>
     {
+        public ShipManagementViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         private const string _blank = "Blank";
@@ -1841,7 +1848,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ActionJumpToLocation(location);
             });
 
-            Gui.TogglePlayerWindow(Player, GuiWindowType.ShipManagement);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.ShipManagement);
         };
 
         public Action OnClickPermissions() => () =>
@@ -1850,7 +1857,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbShip = _db.Get<PlayerShip>(shipId);
             
             var payload = new PropertyPermissionPayload(PropertyType.Starship, dbShip.PropertyId, string.Empty, false);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
         };
 
         private void LoadShips(List<PlayerShip> ships)

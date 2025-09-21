@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.CraftService

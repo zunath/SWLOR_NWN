@@ -3,6 +3,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -17,7 +19,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var player = GetLastUsedBy();
             var terminal = OBJECT_SELF;
-            Gui.TogglePlayerWindow(player, GuiWindowType.HoloNet, null, terminal);
+            ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.HoloNet, null, terminal);
         }
     }
 }

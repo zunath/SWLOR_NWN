@@ -5,6 +5,8 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -38,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     var payload = new RenameItemPayload(target);
-                    Gui.TogglePlayerWindow(user, GuiWindowType.RenameItem, payload);
+                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.RenameItem, payload);
                 });
 
             return builder.Build();

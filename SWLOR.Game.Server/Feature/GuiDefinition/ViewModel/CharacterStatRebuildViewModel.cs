@@ -11,15 +11,22 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CharacterStatRebuildViewModel: GuiViewModelBase<CharacterStatRebuildViewModel, GuiPayloadBase>
     {
+        public CharacterStatRebuildViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         [ScriptHandler(ScriptName.OnBuyStatRebuild)]
-        public static void LoadCharacterStatRebuild()
+        public void LoadCharacterStatRebuild()
         {
             var terminal = OBJECT_SELF;
             var player = GetPCSpeaker();
@@ -43,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            Gui.TogglePlayerWindow(player, GuiWindowType.StatRebuild, null, terminal);
+            _guiService.TogglePlayerWindow(player, GuiWindowType.StatRebuild, null, terminal);
         }
 
         private const int MaxAbilityIncreases = 15;
@@ -293,7 +300,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (Currency.GetCurrency(Player, CurrencyType.StatRefundToken) <= 0)
                 {
-                    Gui.CloseWindow(Player, GuiWindowType.StatRebuild, Player);
+                    _guiService.CloseWindow(Player, GuiWindowType.StatRebuild, Player);
                     FloatingTextStringOnCreature(ColorToken.Red("Insufficient stat refund tokens!"), Player, false);
                     return;
                 }
@@ -337,8 +344,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 FloatingTextStringOnCreature(ColorToken.Green("Character stat rebuild complete!"), Player, false);
 
                 _db.Set(dbPlayer);
-                Gui.CloseWindow(Player, GuiWindowType.StatRebuild, Player);
-                Gui.CloseWindow(Player, GuiWindowType.CharacterSheet, Player);
+                _guiService.CloseWindow(Player, GuiWindowType.StatRebuild, Player);
+                _guiService.CloseWindow(Player, GuiWindowType.CharacterSheet, Player);
 
                 Currency.TakeCurrency(Player, CurrencyType.StatRefundToken, 1);
 

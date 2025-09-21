@@ -8,12 +8,15 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Entity;
+using SWLOR.Shared.UI.Service;
 using HoloCom = SWLOR.Game.Server.Service.HoloCom;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -119,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.Skills);
+                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.Skills);
                 });
         }
 
@@ -165,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.Recipes);
+                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.Recipes);
                 });
         }
 
@@ -176,7 +179,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.Perks);
+                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.Perks);
                 });
 
         }
@@ -373,7 +376,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     var payload = new AppearanceEditorPayload(user);
-                    Gui.TogglePlayerWindow(player, GuiWindowType.AppearanceEditor, payload, OBJECT_INVALID, uiTarget);
+                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.AppearanceEditor, payload, OBJECT_INVALID, uiTarget);
                 });
         }
 
@@ -502,7 +505,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     var payload = new TargetDescriptionPayload(target);
-                    Gui.TogglePlayerWindow(user, GuiWindowType.TargetDescription, payload);
+                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.TargetDescription, payload);
                 });
         }
 
@@ -517,14 +520,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     foreach (GuiWindowType type in Enum.GetValues(typeof(GuiWindowType)))
                     {
                         if (type == GuiWindowType.Invalid) continue;
-                        if (Gui.IsWindowOpen(user, type))
+                        if (ServiceContainer.GetService<IGuiService>().IsWindowOpen(user, type))
                         {
-                            Gui.TogglePlayerWindow(user, type);
+                            ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, type);
                         }
                     }
 
                     var playerId = GetObjectUUID(user);
-                    var dbPlayer = _db.Get<Player>(playerId);
+                    var dbPlayer = _db.Get<PlayerWindowGeometry>(playerId) ?? new PlayerWindowGeometry(playerId);
                     
                     // Clear all stored window geometries
                     dbPlayer.WindowGeometries.Clear();
@@ -540,8 +543,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         
                         try
                         {
-                            var playerWindow = Gui.GetPlayerWindow(user, type);
-                            var template = Gui.GetWindowTemplate(type);
+                            var playerWindow = ServiceContainer.GetService<IGuiService>().GetPlayerWindow(user, type);
+                            var template = ServiceContainer.GetService<IGuiService>().GetWindowTemplate(type);
                             playerWindow.ViewModel.Geometry = template.InitialGeometry;
                         }
                         catch

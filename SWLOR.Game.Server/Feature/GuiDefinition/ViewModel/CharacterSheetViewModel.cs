@@ -9,12 +9,17 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model.Payload;
+using SWLOR.Shared.UI.Model.RefreshEvent;
+using SWLOR.Shared.UI.Service;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -28,6 +33,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<StatusEffectRemovedRefreshEvent>,
         IGuiRefreshable<BeastGainXPRefreshEvent>
     {
+        public CharacterSheetViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         private const int MaxUpgrades = 10;
@@ -274,29 +283,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSkills() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Skills);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.Skills);
         };
 
         public Action OnClickPerks() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Perks);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.Perks);
         };
 
         public Action OnClickChangePortrait() => () =>
         {
             var payload = new CustomizeCharacterPayload(_target);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.CustomizeCharacter, payload);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.CustomizeCharacter, payload);
         };
 
         public Action OnClickQuests() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Quests);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.Quests);
         };
 
         public Action OnClickRecipes() => () =>
         {
             var payload = new RecipesPayload(RecipesUIMode.Recipes, SkillType.Invalid);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Recipes, payload);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.Recipes, payload);
         };
 
         public Action OnClickHoloCom() => () =>
@@ -312,22 +321,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickKeyItems() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.KeyItems);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.KeyItems);
         };
 
         public Action OnClickCurrencies() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Currencies);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.Currencies);
         };
 
         public Action OnClickAchievements() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Achievements);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.Achievements);
         };
 
         public Action OnClickNotes() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Notes);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.Notes);
         };
 
         public Action OnClickOpenTrash() => () =>
@@ -341,12 +350,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickAppearance() => () =>
         {
             var payload = new AppearanceEditorPayload(Player);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.AppearanceEditor, payload);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.AppearanceEditor, payload);
         };
 
         public Action OnClickSettings() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.Settings);
         };
 
         private void UpgradeAttribute(AbilityType ability, string abilityName)

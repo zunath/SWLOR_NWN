@@ -10,11 +10,18 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class MarketListingViewModel: GuiViewModelBase<MarketListingViewModel, MarketPayload>, IGuiAcceptsPriceChange
     {
+        public MarketListingViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         private MarketRegionType _regionType;
@@ -319,9 +326,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ClosePriceWindow()
         {
-            if (Gui.IsWindowOpen(Player, GuiWindowType.PriceSelection))
+            if (_guiService.IsWindowOpen(Player, GuiWindowType.PriceSelection))
             {
-                Gui.TogglePlayerWindow(Player, GuiWindowType.PriceSelection);
+                _guiService.TogglePlayerWindow(Player, GuiWindowType.PriceSelection);
             }
         }
 
@@ -336,7 +343,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var currentPrice = _itemPrices[index];
             var itemName = ItemNames[index];
             var payload = new PriceSelectionPayload(GuiWindowType.MarketListing, recordId, currentPrice, itemName, "Price For:");
-            Gui.TogglePlayerWindow(Player, GuiWindowType.PriceSelection, payload);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.PriceSelection, payload);
         };
 
         public void ChangePrice(string recordId, int price)

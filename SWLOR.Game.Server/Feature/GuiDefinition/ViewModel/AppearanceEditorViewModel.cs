@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -19,7 +18,13 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Model.RefreshEvent;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -27,6 +32,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         GuiViewModelBase<AppearanceEditorViewModel, AppearanceEditorPayload>,
         IGuiRefreshable<EquipItemRefreshEvent>
     {
+        public AppearanceEditorViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         public enum ColorTarget
@@ -93,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         [ScriptHandler<OnDMPossessBefore>]
         [ScriptHandler<OnDMPossessFullPowerBefore>]
-        public static void CloseAppearanceWindowOnPossessionBefore()
+        public void CloseAppearanceWindowOnPossessionBefore()
         {
             var dm = OBJECT_SELF;
             var isUnpossess = StringToObject(EventsPlugin.GetEventData("TARGET")) == OBJECT_INVALID;
@@ -102,12 +111,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var uiTarget = GetMaster(dm);
 
-                Gui.CloseWindow(dm, GuiWindowType.AppearanceEditor, uiTarget);
+                _guiService.CloseWindow(dm, GuiWindowType.AppearanceEditor, uiTarget);
             }
             else
             {
-                if (Gui.IsWindowOpen(dm, GuiWindowType.AppearanceEditor))
-                    Gui.TogglePlayerWindow(dm, GuiWindowType.AppearanceEditor);
+                if (_guiService.IsWindowOpen(dm, GuiWindowType.AppearanceEditor))
+                    _guiService.TogglePlayerWindow(dm, GuiWindowType.AppearanceEditor);
             }
         }
 
@@ -1028,7 +1037,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (!_racialAppearances.ContainsKey(appearanceType))
             {
-                Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
+                _guiService.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
                 return;
             }
 
@@ -1314,7 +1323,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var appearanceType = GetAppearanceType(_target);
             if (!_racialAppearances.ContainsKey(appearanceType))
             {
-                Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
+                _guiService.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
                 return;
             }
 
@@ -1337,7 +1346,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var appearanceType = GetAppearanceType(_target);
             if (!_racialAppearances.ContainsKey(appearanceType))
             {
-                Gui.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
+                _guiService.TogglePlayerWindow(_target, GuiWindowType.AppearanceEditor);
                 return;
             }
 
@@ -1773,7 +1782,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickOutfits() => () =>
         {
-            Gui.TogglePlayerWindow(_target, GuiWindowType.Outfits);
+            _guiService.TogglePlayerWindow(_target, GuiWindowType.Outfits);
         };
 
         public Action OnCloseWindow() => () =>

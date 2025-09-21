@@ -1,6 +1,6 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {

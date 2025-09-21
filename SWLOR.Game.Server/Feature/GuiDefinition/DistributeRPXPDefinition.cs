@@ -1,11 +1,21 @@
 ﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class DistributeRPXPDefinition : IGuiWindowDefinition
     {
-        private readonly GuiWindowBuilder<DistributeRPXPViewModel> _builder = new();
+        private readonly IGuiService _guiService;
+        private readonly GuiWindowBuilder<DistributeRPXPViewModel> _builder;
+
+        public DistributeRPXPDefinition(IGuiService guiService)
+        {
+            _guiService = guiService;
+            _builder = new GuiWindowBuilder<DistributeRPXPViewModel>(_guiService);
+        }
 
         public GuiConstructedWindow BuildWindow()
         {

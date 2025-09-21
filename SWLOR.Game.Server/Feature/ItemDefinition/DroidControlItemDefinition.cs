@@ -6,9 +6,11 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -133,14 +135,14 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     {
                         var droid = Droid.GetDroid(user);
                         var payload = new AppearanceEditorPayload(droid);
-                        Gui.TogglePlayerWindow(user, GuiWindowType.AppearanceEditor, payload);
+                        ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.AppearanceEditor, payload);
                     }
                     // Reprogramming
                     else if (itemPropertyIndex == 2)
                     {
                         SetItemCursedFlag(item, true);
                         var payload = new DroidAIPayload(item);
-                        Gui.TogglePlayerWindow(user, GuiWindowType.DroidAI, payload);
+                        ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.DroidAI, payload);
                     }
                 });
         }

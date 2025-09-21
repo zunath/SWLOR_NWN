@@ -8,12 +8,15 @@ using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Abstractions.Enums;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     public class SystemChatCommand: IChatCommandListDefinition
     {
         private readonly IAppSettings _appSettings = ServiceContainer.GetService<IAppSettings>();
+        private readonly IGuiService _guiService = ServiceContainer.GetService<IGuiService>();
         private readonly ChatCommandBuilder _builder = new();
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -50,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.BugReport);
+                    _guiService.TogglePlayerWindow(user, GuiWindowType.BugReport);
                 });
         }
 
@@ -127,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    Gui.TogglePlayerWindow(user, GuiWindowType.Emotes);
+                    _guiService.TogglePlayerWindow(user, GuiWindowType.Emotes);
                 });
         }
     }

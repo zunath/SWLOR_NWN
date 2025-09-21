@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {

@@ -1,6 +1,7 @@
 ﻿@page "/account"
 @using SWLOR.Shared.Abstractions.Contracts
 @using SWLOR.Shared.Core.Data
+@using SWLOR.Shared.Core.Data.Entity
 @attribute [Authorize(Policy = "DiscordAdmin")]
 @inject IDatabaseService _db
 

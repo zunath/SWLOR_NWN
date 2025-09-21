@@ -6,9 +6,12 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -16,6 +19,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<RPXPRefreshEvent>
     {
+        public SkillsViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         private readonly List<SkillType> _viewableSkills = new();
@@ -284,7 +291,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SkillName = name
             };
 
-            Gui.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP, payload);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP, payload);
         };
 
         public void Refresh(SkillXPRefreshEvent payload)

@@ -4,18 +4,25 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DebugEnmityViewModel: GuiViewModelBase<DebugEnmityViewModel, GuiPayloadBase>,
         IGuiRefreshable<EnmityChangedRefreshEvent>
     {
+        public DebugEnmityViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         [ScriptHandler(ScriptName.OnEnmityChanged)]
-        public static void OnEnmityChanged()
+        public void OnEnmityChanged()
         {
             foreach (var member in Party.GetAllPartyMembers(OBJECT_SELF))
             {
-                Gui.PublishRefreshEvent(member, new EnmityChangedRefreshEvent());
+                _guiService.PublishRefreshEvent(member, new EnmityChangedRefreshEvent());
             }
         }
 

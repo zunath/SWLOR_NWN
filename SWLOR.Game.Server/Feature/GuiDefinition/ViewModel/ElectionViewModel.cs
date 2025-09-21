@@ -5,15 +5,23 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.UI.Component;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ElectionViewModel: GuiViewModelBase<ElectionViewModel, GuiPayloadBase>
     {
+        public ElectionViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         private readonly List<string> _candidatePlayerIds = new();
@@ -198,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                             _db.Set(dbElection);
                             SendMessageToPC(Player, "You have withdrawn from the race.");
-                            Gui.TogglePlayerWindow(Player, GuiWindowType.Election);
+                            _guiService.TogglePlayerWindow(Player, GuiWindowType.Election);
                         });
                 }
                 else
@@ -215,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                             _db.Set(dbElection);
                             SendMessageToPC(Player, "You have entered the race!");
-                            Gui.TogglePlayerWindow(Player, GuiWindowType.Election);
+                            _guiService.TogglePlayerWindow(Player, GuiWindowType.Election);
                         });
                 }
             }
@@ -230,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
 
                     SendMessageToPC(Player, "You have abstained from voting for this election.");
-                    Gui.TogglePlayerWindow(Player, GuiWindowType.Election);
+                    _guiService.TogglePlayerWindow(Player, GuiWindowType.Election);
                 }
                 // An actual player was selected.
                 else
@@ -245,7 +253,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     };
 
                     SendMessageToPC(Player, $"Your vote for {dbCandidate.Name} has been cast.");
-                    Gui.TogglePlayerWindow(Player, GuiWindowType.Election);
+                    _guiService.TogglePlayerWindow(Player, GuiWindowType.Election);
                 }
 
                 _db.Set(dbElection);

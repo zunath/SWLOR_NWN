@@ -2,12 +2,22 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class SkillsDefinition: IGuiWindowDefinition
     {
-        private readonly GuiWindowBuilder<SkillsViewModel> _builder = new();
+        private readonly IGuiService _guiService;
+        private readonly GuiWindowBuilder<SkillsViewModel> _builder;
+
+        public SkillsDefinition(IGuiService guiService)
+        {
+            _guiService = guiService;
+            _builder = new GuiWindowBuilder<SkillsViewModel>(_guiService);
+        }
 
         public GuiConstructedWindow BuildWindow()
         {

@@ -9,6 +9,8 @@ using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -22,9 +24,9 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) 
                 return;
 
-            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
-            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
-            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
         [ScriptHandler<OnItemUnequipBefore>]
@@ -34,9 +36,9 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)) 
                 return;
 
-            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
-            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
-            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
         [ScriptHandler<OnPlayerDamaged>]
@@ -46,7 +48,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
 
         [ScriptHandler<OnPlayerFPAdjusted>]
@@ -56,7 +58,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
         }
 
         [ScriptHandler<OnPlayerStaminaAdjusted>]
@@ -66,14 +68,14 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
         [ScriptHandler<OnHealAfter>]
         public static void PlayerHealed()
         {
             var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
-            Gui.PublishRefreshEvent(target, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(target, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
 
         [ScriptHandler<OnPlayerShieldAdjusted>]
@@ -83,7 +85,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Shield));
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Shield));
         }
 
         [ScriptHandler<OnPlayerHullAdjusted>]
@@ -93,7 +95,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Hull));
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Hull));
         }
 
         [ScriptHandler<OnPlayerCapAdjusted>]
@@ -103,7 +105,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Capacitor));
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Capacitor));
         }
 
         [ScriptHandler<OnPlayerTargetUpdated>]
@@ -113,7 +115,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            Gui.PublishRefreshEvent(player, new TargetStatusRefreshEvent());
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new TargetStatusRefreshEvent());
         }
 
         [ScriptHandler<OnModuleEnter>]
@@ -125,8 +127,8 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            if(!Gui.IsWindowOpen(player, GuiWindowType.PlayerStatus))
-                Gui.TogglePlayerWindow(player, GuiWindowType.PlayerStatus);
+            if(!ServiceContainer.GetService<IGuiService>().IsWindowOpen(player, GuiWindowType.PlayerStatus))
+                ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.PlayerStatus);
         }
     }
 }

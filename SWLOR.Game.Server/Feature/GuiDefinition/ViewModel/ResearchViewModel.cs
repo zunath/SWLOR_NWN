@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
@@ -12,14 +13,22 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal class ResearchViewModel: GuiViewModelBase<ResearchViewModel, ResearchPayload>
     {
+        public ResearchViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
         private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
@@ -358,7 +367,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     AssignCommand(Player, () => TakeGoldFromCreature(researchJob.CreditCost, Player, true));
                     DestroyObject(_blueprintItem);
-                    Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
+                    _guiService.TogglePlayerWindow(Player, GuiWindowType.Research);
                 }, () =>
                 {
                     ChangePartialView(PartialView, StartStageView);
@@ -379,7 +388,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
 
                     _db.Delete<ResearchJob>(dbJob.Id);
-                    Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
+                    _guiService.TogglePlayerWindow(Player, GuiWindowType.Research);
                     FloatingTextStringOnCreature("Research job cancelled!", Player, false);
                 },
                 () =>
@@ -540,7 +549,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             Craft.SetBlueprintDetails(item, blueprintDetails);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.Research);
 
             _db.Delete<ResearchJob>(dbJob.Id);
         };

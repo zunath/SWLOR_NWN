@@ -5,9 +5,9 @@ using NWN.Native.API;
 
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -422,7 +422,7 @@ namespace SWLOR.Game.Server.Service
             var mgtMod = GetAbilityModifier(AbilityType.Might, attacker);
 
             if (Item.StaffBaseItemTypes.Contains(weaponType))
-                return mgtMod * Perk.GetPerkLevel(attacker, PerkService.PerkType.CrushingStyle);
+                return mgtMod * Perk.GetPerkLevel(attacker, PerkType.CrushingStyle);
             else if (Item.LightsaberBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleLightsaber))
                 return mgtMod / 2;
             else if (Item.SaberstaffBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleSaberstaff))

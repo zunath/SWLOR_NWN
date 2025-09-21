@@ -3,11 +3,17 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class EmotesViewModel: GuiViewModelBase<EmotesViewModel, GuiPayloadBase>
     {
+        public EmotesViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
 
         public GuiBindingList<string> EmoteNames
         {

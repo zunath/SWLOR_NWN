@@ -8,6 +8,8 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -56,7 +58,8 @@ namespace SWLOR.Game.Server.Feature
                 _db.Set(dbPlayer);
                 SendMessageToPC(target, $"A DM has awarded you with {amount} roleplay XP.");
                 SendMessageToPC(dm, $"You award {GetName(target)} with {amount} roleplay XP.");
-                Gui.PublishRefreshEvent(target, new RPXPRefreshEvent());
+                var guiService = ServiceContainer.GetService<IGuiService>();
+                guiService.PublishRefreshEvent(target, new RPXPRefreshEvent());
             }
             else
             {

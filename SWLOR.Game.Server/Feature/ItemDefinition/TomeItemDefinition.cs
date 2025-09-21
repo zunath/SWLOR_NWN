@@ -4,6 +4,8 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -55,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     Currency.GiveCurrency(user, CurrencyType.PerkRefundToken, 1);
                     SendMessageToPC(user, $"You gain a perk refund token. (Total: {Currency.GetCurrency(user, CurrencyType.PerkRefundToken)})");
                     DestroyObject(item);
-                    Gui.PublishRefreshEvent(user, new PerkResetAcquiredRefreshEvent());
+                    ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(user, new PerkResetAcquiredRefreshEvent());
                 });
         }
 

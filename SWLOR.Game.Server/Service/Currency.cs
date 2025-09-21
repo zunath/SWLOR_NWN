@@ -9,6 +9,8 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -87,7 +89,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.Currencies[type] += amount;
 
             _db.Set(dbPlayer);
-            Gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new CurrencyRefreshEvent());
         }
 
         /// <summary>
@@ -112,7 +114,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.Currencies[type] -= amount;
 
             _db.Set(dbPlayer);
-            Gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new CurrencyRefreshEvent());
         }
     }
 }

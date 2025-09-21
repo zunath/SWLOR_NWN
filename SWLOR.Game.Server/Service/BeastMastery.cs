@@ -20,12 +20,16 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -242,7 +246,7 @@ namespace SWLOR.Game.Server.Service
             _db.Set(dbBeast);
             ApplyStats(beast);
 
-            Gui.PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
+            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
         }
 
         public static int GetRequiredXP(int level, int xpPenalty)
@@ -584,7 +588,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
             
-            Gui.TogglePlayerWindow(player, GuiWindowType.Stables, null, OBJECT_SELF);
+            ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.Stables, null, OBJECT_SELF);
         }
 
         private static readonly Dictionary<int, int> _beastXPRequirements = new()
@@ -763,7 +767,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var payload = new IncubatorPayload(incubatorPropertyId, incubatorJob?.Id ?? string.Empty);
-            Gui.TogglePlayerWindow(player, GuiWindowType.Incubator, payload, player);
+            ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.Incubator, payload, player);
         }
 
         private static BeastType DetermineMutation(BeastType beastType, IncubationJob job)

@@ -7,11 +7,17 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class RenameTargetViewModel : GuiViewModelBase<RenameTargetViewModel, RenameItemPayload>
     {
+        public RenameTargetViewModel(IGuiService guiService) : base(guiService)
+        {
+        }
+
         private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
@@ -149,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 FloatingTextStringOnCreature($"Target renamed to '{NewName}'.", Player);
             }
 
-            Gui.TogglePlayerWindow(Player, GuiWindowType.RenameItem);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.RenameItem);
 
         };
 
@@ -161,12 +167,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetName(_target, GetLocalString(_target, RenamedItemOriginalName));
 
             FloatingTextStringOnCreature("Target reset to original name.", Player);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.RenameItem);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.RenameItem);
         };
 
         public Action OnClickCancel() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.RenameItem);
+            _guiService.TogglePlayerWindow(Player, GuiWindowType.RenameItem);
         };
     }
 }

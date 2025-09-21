@@ -1,11 +1,21 @@
 ﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.UI.Model;
+using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class ManageBansDefinition: IGuiWindowDefinition
     {
-        private readonly GuiWindowBuilder<ManageBansViewModel> _builder = new();
+        private readonly IGuiService _guiService;
+        private readonly GuiWindowBuilder<ManageBansViewModel> _builder;
+
+        public ManageBansDefinition(IGuiService guiService)
+        {
+            _guiService = guiService;
+            _builder = new GuiWindowBuilder<ManageBansViewModel>(_guiService);
+        }
 
         public GuiConstructedWindow BuildWindow()
         {

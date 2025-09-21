@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {

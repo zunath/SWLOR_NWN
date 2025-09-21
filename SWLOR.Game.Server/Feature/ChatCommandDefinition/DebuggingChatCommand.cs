@@ -5,7 +5,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition

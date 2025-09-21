@@ -1,9 +1,7 @@
 using SWLOR.Game.Server.Service.AIService;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Service;
 using System;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;

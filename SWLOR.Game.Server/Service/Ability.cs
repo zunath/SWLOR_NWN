@@ -15,7 +15,6 @@ using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
-using SWLOR.Game.Server.Service.AbilityServicex;
 
 namespace SWLOR.Game.Server.Service
 {

@@ -1,4 +1,3 @@
-using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Enums;
 
 namespace SWLOR.Shared.Abstractions.Models

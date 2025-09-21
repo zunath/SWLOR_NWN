@@ -1,5 +1,3 @@
-using SWLOR.NWN.API.NWScript.Enum;
-
 namespace SWLOR.Shared.Core.Contracts
 {
     public interface IHoloComService

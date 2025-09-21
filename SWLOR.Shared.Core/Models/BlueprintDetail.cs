@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Core.Enums;
 

@@ -1,5 +1,3 @@
-using SWLOR.Shared.Core.Enums;
-
 namespace SWLOR.Shared.Core.Contracts
 {
     public interface ISpawnService

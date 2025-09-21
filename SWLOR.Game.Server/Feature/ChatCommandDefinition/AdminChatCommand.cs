@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition

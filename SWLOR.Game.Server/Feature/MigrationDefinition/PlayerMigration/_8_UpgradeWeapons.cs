@@ -1,4 +1,3 @@
-using SWLOR.Game.Server.Service;
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -7,7 +6,6 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {

@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Service.AbilityService

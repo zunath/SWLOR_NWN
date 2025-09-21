@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Shared.Core.Contracts

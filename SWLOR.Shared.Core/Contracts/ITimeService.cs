@@ -1,5 +1,3 @@
-using System;
-
 namespace SWLOR.Shared.Core.Contracts
 {
     public interface ITimeService

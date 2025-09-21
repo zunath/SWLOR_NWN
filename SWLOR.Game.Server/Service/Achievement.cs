@@ -9,7 +9,6 @@ using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Extension;
-using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 

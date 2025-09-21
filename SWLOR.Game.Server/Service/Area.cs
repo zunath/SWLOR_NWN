@@ -7,10 +7,8 @@ using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Events.Area;
-using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {

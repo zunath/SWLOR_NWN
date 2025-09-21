@@ -3,8 +3,6 @@ using System.Linq;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Infrastructure;
-using SWLOR.Shared.Core.Contracts;
 using AuthorizationLevel = SWLOR.Shared.Core.Enums.AuthorizationLevel;
 
 namespace SWLOR.Game.Server.Service

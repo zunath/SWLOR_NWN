@@ -4,9 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Service.SpawnService
 {

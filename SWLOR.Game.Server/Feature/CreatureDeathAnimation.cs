@@ -1,7 +1,6 @@
 
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AnimationService;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Creature;
 

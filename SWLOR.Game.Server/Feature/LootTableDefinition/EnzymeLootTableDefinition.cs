@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.LootService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Contracts;
-using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.LootTableDefinition
 {

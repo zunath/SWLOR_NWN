@@ -2,7 +2,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.Shared.Abstractions.Models;
 using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Shared.Core.Contracts

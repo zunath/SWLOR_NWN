@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.TaxiService;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -11,17 +10,22 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Taxi
+    public class Taxi : ITaxiService
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly Dictionary<TaxiDestinationType, TaxiDestinationAttribute> _allTaxiDestinations = new Dictionary<TaxiDestinationType, TaxiDestinationAttribute>();
-        private static readonly Dictionary<int, Dictionary<TaxiDestinationType, TaxiDestinationAttribute>> _taxiDestinationsByRegionId = new Dictionary<int, Dictionary<TaxiDestinationType, TaxiDestinationAttribute>>();
+        private readonly IDatabaseService _db;
+        private readonly Dictionary<TaxiDestinationType, TaxiDestinationAttribute> _allTaxiDestinations = new();
+        private readonly Dictionary<int, Dictionary<TaxiDestinationType, TaxiDestinationAttribute>> _taxiDestinationsByRegionId = new();
+
+        public Taxi(IDatabaseService db)
+        {
+            _db = db;
+        }
 
         /// <summary>
         /// When the module loads, cache all taxi destinations.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void LoadTaxiDestinations()
+        public void LoadTaxiDestinations()
         {
             var taxiDestinationTypes = Enum.GetValues(typeof(TaxiDestinationType)).Cast<TaxiDestinationType>();
             foreach (var destination in taxiDestinationTypes)
@@ -42,7 +46,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to register the destination to.</param>
         /// <param name="type">The destination type to register</param>
-        public static void RegisterTaxiDestination(uint player, TaxiDestinationType type)
+        public void RegisterTaxiDestination(uint player, TaxiDestinationType type)
         {
             if (!GetIsPC(player) || GetIsDM(player))
             {
@@ -74,7 +78,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="regionId">The region Id to search by.</param>
         /// <returns>A dictionary of taxi destination types and attributes.</returns>
-        public static Dictionary<TaxiDestinationType, TaxiDestinationAttribute> GetDestinationsByRegionId(int regionId)
+        public Dictionary<TaxiDestinationType, TaxiDestinationAttribute> GetDestinationsByRegionId(int regionId)
         {
             return _taxiDestinationsByRegionId[regionId].ToDictionary(x => x.Key, y => y.Value);
         }

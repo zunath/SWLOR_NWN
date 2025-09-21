@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.FishingService;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.FishingLocationDefinition
 {
     public class SpecialFishingLocationDefinition: IFishingLocationDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private readonly FishingLocationBuilder _builder = new();
 
         public Dictionary<FishingLocationType, FishingLocationDetail> Build()
@@ -32,12 +34,12 @@ namespace SWLOR.Game.Server.Feature.FishingLocationDefinition
             var locations = Enum.GetValues<FishingLocationType>().ToList();
             locations.Remove(FishingLocationType.Invalid);
 
-            var locationIndex = Random.Next(locations.Count);
+            var locationIndex = _random.Next(locations.Count);
             var location = locations[locationIndex];
 
             var baits = Enum.GetValues<FishingBaitType>().ToList();
             baits.Remove(FishingBaitType.Invalid);
-            var baitIndex = Random.Next(baits.Count);
+            var baitIndex = _random.Next(baits.Count);
             var bait = baits[baitIndex];
 
             _builder

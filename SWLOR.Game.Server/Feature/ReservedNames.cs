@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class ReservedNames
     {
-        private static readonly HashSet<string> _names = new HashSet<string>
+        private static readonly HashSet<string> _names = new()
         {
             "squall",
             "leonhart",

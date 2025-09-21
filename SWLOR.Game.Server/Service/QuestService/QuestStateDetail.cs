@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 {
     public class QuestStateDetail
     {
-        private Dictionary<int, IQuestObjective> Objectives { get; } = new Dictionary<int, IQuestObjective>();
+        private Dictionary<int, IQuestObjective> Objectives { get; } = new();
         public string JournalText { get; set; }
         public QuestStateDetail()
         {

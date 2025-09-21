@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.LootService
 {
     public class LootTable : List<LootTableItem>
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         public bool IsRare { get; set; }
 
         /// <summary>
@@ -33,7 +35,7 @@ namespace SWLOR.Game.Server.Service.LootService
                 weights[x] = weight;
             }
 
-            var randomIndex = Random.GetRandomWeightedIndex(weights);
+            var randomIndex = _random.GetRandomWeightedIndex(weights);
             return this.ElementAt(randomIndex);
         }
 

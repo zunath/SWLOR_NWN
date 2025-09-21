@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Service.CraftService
 {
     public class RecipeBuilder
     {
-        private readonly Dictionary<RecipeType, RecipeDetail> _recipes = new Dictionary<RecipeType, RecipeDetail>();
+        private readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
         private RecipeDetail _activeRecipe;
         private RecipeType _activeType;
 

@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Service
     public static class BeastMastery
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private static readonly Dictionary<BeastType, BeastDetail> _beasts = new();
         private static readonly Dictionary<BeastRoleType, BeastRoleAttribute> _beastRoles = new();
         private static List<BeastFoodType> _beastFoods = new();
@@ -392,9 +393,9 @@ namespace SWLOR.Game.Server.Service
         public static (BeastFoodType, BeastFoodType) GetLikedAndHatedFood()
         {
             var availableFoods = _beastFoods.ToList();
-            var likedFood = availableFoods[Random.Next(availableFoods.Count)];
+            var likedFood = availableFoods[_random.Next(availableFoods.Count)];
             availableFoods.Remove(likedFood);
-            var hatedFood = availableFoods[Random.Next(availableFoods.Count)];
+            var hatedFood = availableFoods[_random.Next(availableFoods.Count)];
 
             return (likedFood, hatedFood);
         }
@@ -769,7 +770,7 @@ namespace SWLOR.Game.Server.Service
         {
             var beast = GetBeastDetail(beastType);
 
-            if (Random.Next(1000) <= job.MutationChance)
+            if (_random.Next(1000) <= job.MutationChance)
             {
                 var possibleMutations = new List<MutationDetail>();
 
@@ -794,7 +795,7 @@ namespace SWLOR.Game.Server.Service
                 if (possibleMutations.Count > 0)
                 {
                     var weights = possibleMutations.Select(x => x.Weight);
-                    var index = Random.GetRandomWeightedIndex(weights.ToArray());
+                    var index = _random.GetRandomWeightedIndex(weights.ToArray());
 
                     return possibleMutations.ElementAt(index).Type;
                 }

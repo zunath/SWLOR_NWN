@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class CoxxionTerminalDialog: DialogBase
     {
-        private static readonly List<uint> _areaDoors = new List<uint>();
+        private static readonly List<uint> _areaDoors = new();
 
         private const string MainPageId = "MAIN_PAGE";
 

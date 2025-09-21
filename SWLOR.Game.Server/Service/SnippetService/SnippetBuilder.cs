@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Service.SnippetService
 {
     public class SnippetBuilder
     {
-        private readonly Dictionary<string, SnippetDetail> _snippets = new Dictionary<string, SnippetDetail>();
+        private readonly Dictionary<string, SnippetDetail> _snippets = new();
         private SnippetDetail _activeSnippet;
 
         /// <summary>

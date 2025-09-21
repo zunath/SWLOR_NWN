@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         // Recast Group Descriptions
-        private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new Dictionary<RecastGroup, string>();
+        private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new();
 
         [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheRecastGroups()

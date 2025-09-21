@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        private readonly List<string> _questIds = new List<string>();
+        private readonly List<string> _questIds = new();
         private int SelectedQuestIndex { get; set; }
 
         public GuiBindingList<string> QuestNames

@@ -27,14 +27,14 @@ namespace SWLOR.Game.Server.Service.QuestService
         public int GuildRank { get; set; } = -1;
         public bool AllowRewardSelection { get; set; }
 
-        public List<IQuestReward> Rewards { get; } = new List<IQuestReward>();
-        public List<IQuestPrerequisite> Prerequisites { get; } = new List<IQuestPrerequisite>();
+        public List<IQuestReward> Rewards { get; } = new();
+        public List<IQuestPrerequisite> Prerequisites { get; } = new();
 
-        public Dictionary<int, QuestStateDetail> States { get; } = new Dictionary<int, QuestStateDetail>();
-        public List<AcceptQuestDelegate> OnAcceptActions { get; } = new List<AcceptQuestDelegate>();
-        public List<AbandonQuestDelegate> OnAbandonActions { get; } = new List<AbandonQuestDelegate>();
-        public List<AdvanceQuestDelegate> OnAdvanceActions { get; } = new List<AdvanceQuestDelegate>();
-        public List<CompleteQuestDelegate> OnCompleteActions { get; } = new List<CompleteQuestDelegate>();
+        public Dictionary<int, QuestStateDetail> States { get; } = new();
+        public List<AcceptQuestDelegate> OnAcceptActions { get; } = new();
+        public List<AbandonQuestDelegate> OnAbandonActions { get; } = new();
+        public List<AdvanceQuestDelegate> OnAdvanceActions { get; } = new();
+        public List<CompleteQuestDelegate> OnCompleteActions { get; } = new();
 
         /// <summary>
         /// Adds a quest state to this quest.

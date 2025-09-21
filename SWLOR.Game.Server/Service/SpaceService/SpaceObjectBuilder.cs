@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
     public class SpaceObjectBuilder
     {
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new Dictionary<string, SpaceObjectDetail>();
+        private readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new();
         private SpaceObjectDetail _activeSpaceObject;
         private string _creatureTag;
 

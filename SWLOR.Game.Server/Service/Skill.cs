@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Service
     public static partial class Skill
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.
         /// </summary>
@@ -208,7 +209,7 @@ namespace SWLOR.Game.Server.Service
                         break;
                     }
 
-                    var index = Random.Next(skillsPossibleToDecay.Count);
+                    var index = _random.Next(skillsPossibleToDecay.Count);
                     var decaySkill = skillsPossibleToDecay[index];
                     dbPlayer.Skills[decaySkill].XP = 0;
                     dbPlayer.Skills[decaySkill].Rank--;

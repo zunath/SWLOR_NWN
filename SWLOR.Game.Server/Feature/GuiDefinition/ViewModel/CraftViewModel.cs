@@ -19,7 +19,6 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
-using Random = SWLOR.Game.Server.Service.Random;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -30,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         public const string ViewName = "CraftView";
         public const string SetUpPartialName = "SetUpPartial";
         public const string CraftPartialName = "CraftPartial";
@@ -1471,7 +1471,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Concat(_itemPropertiesEnhancement8);
             foreach (var ip in allProperties)
             {
-                if (Random.D100(1) <= propertyTransferChance)
+                if (_random.D100(1) <= propertyTransferChance)
                 {
                     ApplyProperty(item, ip);
                     SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
@@ -1594,56 +1594,56 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             const int ChanceToLoseItem = 65;
 
             // Process enhancements
-            if (!string.IsNullOrWhiteSpace(_enhancement1) && Random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement1) && _random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement1);
                 ObjectPlugin.AcquireItem(Player, item);
             }
             _enhancement1 = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(_enhancement2) && Random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement2) && _random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement2);
                 ObjectPlugin.AcquireItem(Player, item);
             }
             _enhancement2 = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(_enhancement3) && Random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement3) && _random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement3);
                 ObjectPlugin.AcquireItem(Player, item);
             }
             _enhancement3 = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(_enhancement4) && Random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement4) && _random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement4);
                 ObjectPlugin.AcquireItem(Player, item);
             }
             _enhancement4 = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(_enhancement5) && Random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement5) && _random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement5);
                 ObjectPlugin.AcquireItem(Player, item);
             }
             _enhancement5 = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(_enhancement6) && Random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement6) && _random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement6);
                 ObjectPlugin.AcquireItem(Player, item);
             }
             _enhancement6 = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(_enhancement7) && Random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement7) && _random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement7);
                 ObjectPlugin.AcquireItem(Player, item);
             }
             _enhancement7 = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(_enhancement8) && Random.D100(1) > ChanceToLoseItem)
+            if (!string.IsNullOrWhiteSpace(_enhancement8) && _random.D100(1) > ChanceToLoseItem)
             {
                 var item = ObjectPlugin.Deserialize(_enhancement8);
                 ObjectPlugin.AcquireItem(Player, item);
@@ -1653,7 +1653,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Process components
             foreach (var serialized in _components)
             {
-                if (Random.D100(1) > ChanceToLoseItem)
+                if (_random.D100(1) > ChanceToLoseItem)
                 {
                     var item = ObjectPlugin.Deserialize(serialized);
                     ObjectPlugin.AcquireItem(Player, item);
@@ -1718,7 +1718,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _cp -= cpCost;
 
-            if (Random.D100(1) <= chance)
+            if (_random.D100(1) <= chance)
             {
                 successAction();
 

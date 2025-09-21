@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.LanguageService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
@@ -17,8 +18,9 @@ namespace SWLOR.Game.Server.Service
     public static class Language
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static Dictionary<SkillType, ITranslator> _translators = new Dictionary<SkillType, ITranslator>();
-        private static readonly TranslatorGeneric _genericTranslator = new TranslatorGeneric();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private static Dictionary<SkillType, ITranslator> _translators = new();
+        private static readonly TranslatorGeneric _genericTranslator = new();
 
         /// <summary>
         /// When the module loads, create translators for every language and store them into cache.
@@ -70,9 +72,9 @@ namespace SWLOR.Game.Server.Service
                     var split = snippet.Split(' ');
                     for (var i = 0; i < split.Length; ++i)
                     {
-                        if (Random.Next(100) <= garbledChance)
+                        if (_random.Next(100) <= garbledChance)
                         {
-                            split[i] = new string(split[i].ToCharArray().OrderBy(s => (Random.Next(2) % 2) == 0).ToArray());
+                            split[i] = new string(split[i].ToCharArray().OrderBy(s => (_random.Next(2) % 2) == 0).ToArray());
                         }
                     }
 
@@ -137,7 +139,7 @@ namespace SWLOR.Game.Server.Service
                 // If this assumption changes, the below logic needs to change too.
                 for (var i = 0; i < originalSplit.Length; ++i)
                 {
-                    if (Random.Next(100) <= englishChance)
+                    if (_random.Next(100) <= englishChance)
                     {
                         endResult.Append(originalSplit[i]);
                     }
@@ -276,25 +278,25 @@ namespace SWLOR.Game.Server.Service
                 {
                     var languages = new List<LanguageCommand>
                     {
-                        new LanguageCommand("Basic", SkillType.Basic, new [] { "basic" }),
-                        new LanguageCommand("Bothese", SkillType.Bothese, new[] {"bothese"}),
-                        new LanguageCommand("Catharese", SkillType.Catharese, new []{"catharese"}),
-                        new LanguageCommand("Cheunh", SkillType.Cheunh, new []{"cheunh"}),
-                        new LanguageCommand("Dosh", SkillType.Dosh, new []{"dosh"}),
-                        new LanguageCommand("Droidspeak", SkillType.Droidspeak, new []{"droidspeak"}),
-                        new LanguageCommand("Huttese", SkillType.Huttese, new []{"huttese"}),
-                        new LanguageCommand("KelDor", SkillType.KelDor, new []{"keldor"}),
-                        new LanguageCommand("Mando'a", SkillType.Mandoa, new []{"mandoa"}),
-                        new LanguageCommand("Mirialan", SkillType.Mirialan, new []{"mirialan"}),
-                        new LanguageCommand("Mon Calamarian", SkillType.MonCalamarian, new []{"moncalamarian", "moncal"}),
-                        new LanguageCommand("Nautila", SkillType.Nautila, new []{ "nautilan" }),
-                        new LanguageCommand("Rodese", SkillType.Rodese, new []{"rodese", "rodian"}),
-                        new LanguageCommand("Shyriiwook", SkillType.Shyriiwook, new []{"shyriiwook", "wookieespeak"}),
-                        new LanguageCommand("Togruti", SkillType.Togruti, new []{"togruti"}),
-                        new LanguageCommand("Twi'leki", SkillType.Twileki, new []{"twileki", "ryl"}),
-                        new LanguageCommand("Ugnaught", SkillType.Ugnaught, new []{"ugnaught"}),
-                        new LanguageCommand("Zabraki", SkillType.Zabraki, new []{"zabraki", "zabrak"}),
-                        new LanguageCommand("Ewokese", SkillType.Ewokese, new []{"ewokese", "yubnub"}),
+                        new("Basic", SkillType.Basic, new [] { "basic" }),
+                        new("Bothese", SkillType.Bothese, new[] {"bothese"}),
+                        new("Catharese", SkillType.Catharese, new []{"catharese"}),
+                        new("Cheunh", SkillType.Cheunh, new []{"cheunh"}),
+                        new("Dosh", SkillType.Dosh, new []{"dosh"}),
+                        new("Droidspeak", SkillType.Droidspeak, new []{"droidspeak"}),
+                        new("Huttese", SkillType.Huttese, new []{"huttese"}),
+                        new("KelDor", SkillType.KelDor, new []{"keldor"}),
+                        new("Mando'a", SkillType.Mandoa, new []{"mandoa"}),
+                        new("Mirialan", SkillType.Mirialan, new []{"mirialan"}),
+                        new("Mon Calamarian", SkillType.MonCalamarian, new []{"moncalamarian", "moncal"}),
+                        new("Nautila", SkillType.Nautila, new []{ "nautilan" }),
+                        new("Rodese", SkillType.Rodese, new []{"rodese", "rodian"}),
+                        new("Shyriiwook", SkillType.Shyriiwook, new []{"shyriiwook", "wookieespeak"}),
+                        new("Togruti", SkillType.Togruti, new []{"togruti"}),
+                        new("Twi'leki", SkillType.Twileki, new []{"twileki", "ryl"}),
+                        new("Ugnaught", SkillType.Ugnaught, new []{"ugnaught"}),
+                        new("Zabraki", SkillType.Zabraki, new []{"zabraki", "zabrak"}),
+                        new("Ewokese", SkillType.Ewokese, new []{"ewokese", "yubnub"}),
                     };
 
                     _languages = languages;

@@ -9,8 +9,8 @@ namespace SWLOR.Shared.Core.Async
         private double Time { get; set; }
         private double DeltaTime { get; set; }
 
-        private readonly Stopwatch _stopwatch = new Stopwatch();
-        private readonly List<ScheduledItem> _scheduledItems = new List<ScheduledItem>(1024);
+        private readonly Stopwatch _stopwatch = new();
+        private readonly List<ScheduledItem> _scheduledItems = new(1024);
         private readonly IComparer<ScheduledItem> _comparer = new ScheduledItem.SortedByExecutionTime();
 
         public IDisposable Schedule(Action task, TimeSpan delay)

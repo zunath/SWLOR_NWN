@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
     public class ViscaraQuestDefinition : IQuestListDefinition
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private readonly QuestBuilder _builder = new QuestBuilder();
+        private readonly QuestBuilder _builder = new();
         public Dictionary<string, QuestDetail> BuildQuests()
         {
             BlastTheMandalorianRangers();

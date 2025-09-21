@@ -9,14 +9,15 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class HarvesterItemDefinition: IItemListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly ItemBuilder _builder = new();
@@ -108,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     if (resourceCount <= 0)
                     {
-                        resourceCount = Random.D4(1);
+                        resourceCount = _random.D4(1);
                     }
 
                     resourceCount--;

@@ -8,6 +8,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Entity;
+using SWLOR.Shared.Core.Service;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
@@ -15,6 +16,7 @@ namespace SWLOR.Game.Server.Service
     public static class Walkmesh
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private static readonly Dictionary<uint, List<uint>> _noSpawnZoneTriggers = new();
         private static Dictionary<string, List<Vector3>> _walkmeshesByArea = new();
         private const int AreaBakeStep = 2;
@@ -151,7 +153,7 @@ namespace SWLOR.Game.Server.Service
             if (count <= 0) 
                 return Location(area, Vector3.Zero, 0.0f);
 
-            var index = Random.Next(count);
+            var index = _random.Next(count);
             var position = _walkmeshesByArea[resref][index];
             return Location(area, position, 0.0f);
         }

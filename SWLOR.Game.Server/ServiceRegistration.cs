@@ -6,6 +6,7 @@ using SWLOR.NWN.API;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Service;
 using SWLOR.Shared.Core.Async;
+using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
@@ -67,9 +68,9 @@ namespace SWLOR.Game.Server
 
         private static void AddGameServices(IServiceCollection services)
         {
-            services.AddSingleton<IItemCacheService, ItemCacheService>();
-            services.AddSingleton<IPortraitCacheService, PortraitCacheService>();
-            services.AddSingleton<ISoundSetCacheService, SoundSetCacheService>();
+            services.AddSingleton<IRandomService, RandomService>();
+            services.AddSingleton<ITileMagicService, TileMagicService>();
+            services.AddSingleton<ITaxiService, Taxi>();
         }
     }
 }

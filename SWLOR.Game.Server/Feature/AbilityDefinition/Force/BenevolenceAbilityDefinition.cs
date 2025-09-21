@@ -5,12 +5,13 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class BenevolenceAbilityDefinition : IAbilityListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private readonly AbilityBuilder _builder = new();
         private const string BeneRegen = "FORCE_BENEVOLENCE";
 
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 effect = TagEffect(effect, BeneRegen);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
             }
-            var willHeal = baseAmount + (targetBonus * 4) + Random.D4(targetBonus);
+            var willHeal = baseAmount + (targetBonus * 4) + _random.D4(targetBonus);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(willHeal), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);

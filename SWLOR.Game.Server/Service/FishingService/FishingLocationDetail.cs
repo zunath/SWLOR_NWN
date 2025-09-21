@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.FishingService
 {
     public class FishingLocationDetail
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         public Dictionary<Tuple<FishingRodType, FishingBaitType>, List<FishDetail>> FishMap { get; } = new();
         private FishType _defaultFish;
 
@@ -49,7 +51,7 @@ namespace SWLOR.Game.Server.Service.FishingService
 
             var weights = availableFish
                 .Select(s => s.Frequency).ToArray();
-            var selectedIndex = Random.GetRandomWeightedIndex(weights);
+            var selectedIndex = _random.GetRandomWeightedIndex(weights);
             var selectedFish = availableFish[selectedIndex];
 
             return (selectedFish.Type, false);

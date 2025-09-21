@@ -11,12 +11,12 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Service;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class TameAbilityDefinition: IAbilityListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private readonly AbilityBuilder _builder = new();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
 
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     if (chance > 95)
                         chance = 95;
 
-                    if (Random.D100(1) > chance)
+                    if (_random.D100(1) > chance)
                     {
                         SendMessageToPC(activator, ColorToken.Red($"Failed to tame {GetName(target)}..."));
                         Enmity.ModifyEnmity(activator, target, 600);
@@ -122,26 +122,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         FavoriteFood = likedFood,
                         HatedFood = hatedFood,
 
-                        AttackPurity = Random.Next(0, 10),
-                        AccuracyPurity = Random.Next(0, 10),
-                        EvasionPurity = Random.Next(0, 10),
-                        LearningPurity = Random.Next(0, 10),
+                        AttackPurity = _random.Next(0, 10),
+                        AccuracyPurity = _random.Next(0, 10),
+                        EvasionPurity = _random.Next(0, 10),
+                        LearningPurity = _random.Next(0, 10),
 
                         DefensePurities = new Dictionary<CombatDamageType, int>
                         {
-                            { CombatDamageType.Physical, Random.Next(0, 10) },
-                            { CombatDamageType.Force, Random.Next(0, 10) },
-                            { CombatDamageType.Fire, Random.Next(0, 10) },
-                            { CombatDamageType.Ice, Random.Next(0, 10) },
-                            { CombatDamageType.Poison, Random.Next(0, 10) },
-                            { CombatDamageType.Electrical, Random.Next(0, 10) },
+                            { CombatDamageType.Physical, _random.Next(0, 10) },
+                            { CombatDamageType.Force, _random.Next(0, 10) },
+                            { CombatDamageType.Fire, _random.Next(0, 10) },
+                            { CombatDamageType.Ice, _random.Next(0, 10) },
+                            { CombatDamageType.Poison, _random.Next(0, 10) },
+                            { CombatDamageType.Electrical, _random.Next(0, 10) },
                         },
 
                         SavingThrowPurities = new Dictionary<SavingThrow, int>
                         {
-                            { SavingThrow.Fortitude, Random.Next(0, 10)},
-                            { SavingThrow.Will, Random.Next(0, 10)},
-                            { SavingThrow.Reflex, Random.Next(0, 10)},
+                            { SavingThrow.Fortitude, _random.Next(0, 10)},
+                            { SavingThrow.Will, _random.Next(0, 10)},
+                            { SavingThrow.Reflex, _random.Next(0, 10)},
                         }
                     };
 

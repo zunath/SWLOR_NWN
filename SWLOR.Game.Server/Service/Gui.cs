@@ -539,7 +539,7 @@ namespace SWLOR.Game.Server.Service
 
         private static int ReservedIdCount;
 
-        private static readonly Dictionary<string, IdReservation> _systemReservedIdCount = new Dictionary<string, IdReservation>();
+        private static readonly Dictionary<string, IdReservation> _systemReservedIdCount = new();
 
         /// <summary>
         /// Reserves the specified number of Ids for a given system.

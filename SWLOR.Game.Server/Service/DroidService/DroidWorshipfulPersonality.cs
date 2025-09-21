@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.DroidService
 {
     public class DroidWorshipfulPersonality: IDroidPersonality
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private readonly List<string> _greetingPhrases = new()
         {
             "A pleasure and honor to see you!",
@@ -37,17 +39,17 @@ namespace SWLOR.Game.Server.Service.DroidService
 
         public string GreetingPhrase()
         {
-            return _greetingPhrases[Random.Next(_greetingPhrases.Count)];
+            return _greetingPhrases[_random.Next(_greetingPhrases.Count)];
         }
 
         public string DeathPhrase()
         {
-            return _deathPhrases[Random.Next(_deathPhrases.Count)];
+            return _deathPhrases[_random.Next(_deathPhrases.Count)];
         }
 
         public string DismissedPhrase()
         {
-            return _dismissedPhrases[Random.Next(_dismissedPhrases.Count)];
+            return _dismissedPhrases[_random.Next(_dismissedPhrases.Count)];
         }
     }
 }

@@ -8,12 +8,13 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class MedKitAbilityDefinition: FirstAidBaseAbilityDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -55,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private void Impact(uint activator, uint target, int baseAmount)
         {
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
-            var amount = baseAmount + willpowerMod * 20 + Random.D10(1);
+            var amount = baseAmount + willpowerMod * 20 + _random.D10(1);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);

@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
 {
     public class StructureRecipes: IRecipeListDefinition
     {
-        private readonly RecipeBuilder _builder = new RecipeBuilder();
+        private readonly RecipeBuilder _builder = new();
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {
             StructureComponents();

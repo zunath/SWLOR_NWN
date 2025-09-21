@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -17,9 +16,9 @@ namespace SWLOR.Game.Server.Service
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private const int NumberOfDialogs = 255;
         private const int NumberOfResponsesPerPage = 12;
-        private static Dictionary<string, PlayerDialog> PlayerDialogs { get; } = new Dictionary<string, PlayerDialog>();
-        private static Dictionary<int, bool> DialogFilesInUse { get; } = new Dictionary<int, bool>();
-        private static readonly Dictionary<string, IConversation> _conversations = new Dictionary<string, IConversation>();
+        private static Dictionary<string, PlayerDialog> PlayerDialogs { get; } = new();
+        private static Dictionary<int, bool> DialogFilesInUse { get; } = new();
+        private static readonly Dictionary<string, IConversation> _conversations = new();
 
         /// <summary>
         /// When the module is loaded, the assembly will be searched for conversations.

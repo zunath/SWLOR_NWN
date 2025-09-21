@@ -1,14 +1,16 @@
-﻿namespace SWLOR.Game.Server.Service
+﻿using SWLOR.Game.Server.Service;
+
+namespace SWLOR.Shared.Core.Service
 {
-    public static class Random
+    public class RandomService : IRandomService
     {
-        private static readonly System.Random _random = new();
+        private readonly Random _random = new();
 
         /// <summary>
         /// Retrieves the next random integer value.
         /// </summary>
         /// <returns>The next random integer value.</returns>
-        public static int Next()
+        public int Next()
         {
             return _random.Next();
         }
@@ -18,7 +20,7 @@
         /// </summary>
         /// <param name="max">The max value to randomly get.</param>
         /// <returns>The next random integer value.</returns>
-        public static int Next(int max)
+        public int Next(int max)
         {
             return _random.Next(max);
         }
@@ -29,7 +31,7 @@
         /// <param name="min">The minimum value</param>
         /// <param name="max">The maximum value</param>
         /// <returns>The next random integer value</returns>
-        public static int Next(int min, int max)
+        public int Next(int min, int max)
         {
             return _random.Next(min, max);
         }
@@ -38,7 +40,7 @@
         /// Retrieves the next random float value
         /// </summary>
         /// <returns>The next random float value</returns>
-        public static float NextFloat()
+        public float NextFloat()
         {
             return (float)_random.NextDouble();
         }
@@ -49,7 +51,7 @@
         /// <param name="min">The minimum value</param>
         /// <param name="max">The maximum value</param>
         /// <returns>The next random float value</returns>
-        public static float NextFloat(float min, float max)
+        public float NextFloat(float min, float max)
         {
             return (float)(_random.NextDouble() * (max - min) + min);
         }
@@ -59,7 +61,7 @@
         /// </summary>
         /// <param name="weights">The array of weights to randomly select from</param>
         /// <returns>The index of the selected value</returns>
-        public static int GetRandomWeightedIndex(int[] weights)
+        public int GetRandomWeightedIndex(int[] weights)
         {
             if (weights == null || weights.Length == 0)
                 return -1;
@@ -109,7 +111,7 @@
         /// <param name="min">The minimum number on each die. Minimum is 1</param>
         /// <param name="max">The maximum number on each die. Minimum is 1</param>
         /// <returns>A random value selected based on the configured parameters</returns>
-        private static int RollDice(int numberOfDice, int min, int max)
+        private int RollDice(int numberOfDice, int min, int max)
         {
             if (numberOfDice < 1) numberOfDice = 1;
             if (min < 1) min = 1;
@@ -132,7 +134,7 @@
         /// <param name="numberOfDice">The number of dice to roll</param>
         /// <param name="minimum">The minimum value.</param>
         /// <returns>A random value selected base on the parameters.</returns>
-        public static int D2(int numberOfDice, int minimum = 1)
+        public int D2(int numberOfDice, int minimum = 1)
         {
             return RollDice(numberOfDice, minimum, 2);
         }
@@ -143,7 +145,7 @@
         /// <param name="numberOfDice">The number of dice to roll</param>
         /// <param name="minimum">The minimum value.</param>
         /// <returns>A random value selected base on the parameters.</returns>
-        public static int D3(int numberOfDice, int minimum = 1)
+        public int D3(int numberOfDice, int minimum = 1)
         {
             return RollDice(numberOfDice, minimum, 3);
         }
@@ -154,7 +156,7 @@
         /// <param name="numberOfDice">The number of dice to roll</param>
         /// <param name="minimum">The minimum value.</param>
         /// <returns>A random value selected base on the parameters.</returns>
-        public static int D4(int numberOfDice, int minimum = 1)
+        public int D4(int numberOfDice, int minimum = 1)
         {
             return RollDice(numberOfDice, minimum, 4);
         }
@@ -165,7 +167,7 @@
         /// <param name="numberOfDice">The number of dice to roll</param>
         /// <param name="minimum">The minimum value.</param>
         /// <returns>A random value selected base on the parameters.</returns>
-        public static int D6(int numberOfDice, int minimum = 1)
+        public int D6(int numberOfDice, int minimum = 1)
         {
             return RollDice(numberOfDice, minimum, 6);
         }
@@ -176,7 +178,7 @@
         /// <param name="numberOfDice">The number of dice to roll</param>
         /// <param name="minimum">The minimum value.</param>
         /// <returns>A random value selected base on the parameters.</returns>
-        public static int D8(int numberOfDice, int minimum = 1)
+        public int D8(int numberOfDice, int minimum = 1)
         {
             return RollDice(numberOfDice, minimum, 8);
         }
@@ -187,7 +189,7 @@
         /// <param name="numberOfDice">The number of dice to roll</param>
         /// <param name="minimum">The minimum value.</param>
         /// <returns>A random value selected base on the parameters.</returns>
-        public static int D10(int numberOfDice, int minimum = 1)
+        public int D10(int numberOfDice, int minimum = 1)
         {
             return RollDice(numberOfDice, minimum, 10);
         }
@@ -198,7 +200,7 @@
         /// <param name="numberOfDice">The number of dice to roll</param>
         /// <param name="minimum">The minimum value.</param>
         /// <returns>A random value selected base on the parameters.</returns>
-        public static int D12(int numberOfDice, int minimum = 1)
+        public int D12(int numberOfDice, int minimum = 1)
         {
             return RollDice(numberOfDice, minimum, 12);
         }
@@ -209,7 +211,7 @@
         /// <param name="numberOfDice">The number of dice to roll</param>
         /// <param name="minimum">The minimum value.</param>
         /// <returns>A random value selected base on the parameters.</returns>
-        public static int D20(int numberOfDice, int minimum = 1)
+        public int D20(int numberOfDice, int minimum = 1)
         {
             return RollDice(numberOfDice, minimum, 20);
         }
@@ -220,7 +222,7 @@
         /// <param name="numberOfDice">The number of dice to roll</param>
         /// <param name="minimum">The minimum value.</param>
         /// <returns>A random value selected base on the parameters.</returns>
-        public static int D100(int numberOfDice, int minimum = 1)
+        public int D100(int numberOfDice, int minimum = 1)
         {
             return RollDice(numberOfDice, minimum, 100);
         }

@@ -14,7 +14,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         
         private class ResearchJobDetails
         {
@@ -435,19 +436,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     };
                 }
                 
-                var index = Random.GetRandomWeightedIndex(weights);
+                var index = _random.GetRandomWeightedIndex(weights);
 
                 if (index == 0) // 0 = Licensed Runs
                 {
-                    blueprintDetails.LicensedRuns += Random.D3(1);
+                    blueprintDetails.LicensedRuns += _random.D3(1);
                 }
                 else if (index == 1) // 1 = Credit Reduction
                 {
-                    blueprintDetails.CreditReduction += Random.D10(1);
+                    blueprintDetails.CreditReduction += _random.D10(1);
                 }
                 else if (index == 2) // 2 = Time Reduction
                 {
-                    blueprintDetails.TimeReduction += Random.D10(1);
+                    blueprintDetails.TimeReduction += _random.D10(1);
                 }
             }
 
@@ -481,52 +482,52 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 case 1:
                     blueprintDetails.ItemBonuses++;
-                    if(Random.Next(1000) <= 1)
+                    if(_random.Next(1000) <= 1)
                         AddGuaranteedBonus(1);
                     break;
                 case 2:
                     blueprintDetails.LicensedRuns++;
-                    if (Random.Next(1000) <= 2)
+                    if (_random.Next(1000) <= 2)
                         AddGuaranteedBonus(1);
                     break;
                 case 3:
                     AddBlueprintBonus();
-                    if (Random.Next(1000) <= 3)
+                    if (_random.Next(1000) <= 3)
                         AddGuaranteedBonus(1);
                     break;
                 case 4:
                     blueprintDetails.LicensedRuns++;
-                    if (Random.Next(1000) <= 10)
+                    if (_random.Next(1000) <= 10)
                         AddGuaranteedBonus(1);
                     break;
                 case 5:
                     AddBlueprintBonus();
-                    if (Random.Next(1000) <= 15)
+                    if (_random.Next(1000) <= 15)
                         AddGuaranteedBonus(1);
                     break;
                 case 6:
                     blueprintDetails.ItemBonuses++;
-                    if (Random.Next(1000) <= 20)
+                    if (_random.Next(1000) <= 20)
                         AddGuaranteedBonus(1);
                     break;
                 case 7:
                     AddGuaranteedBonus(3);
-                    if (Random.Next(1000) <= 50)
+                    if (_random.Next(1000) <= 50)
                         AddGuaranteedBonus(1);
                     break;
                 case 8:
                     AddBlueprintBonus();
-                    if (Random.Next(1000) <= 80)
+                    if (_random.Next(1000) <= 80)
                         AddGuaranteedBonus(1);
                     break;
                 case 9:
                     blueprintDetails.ItemBonuses++;
-                    if (Random.Next(1000) <= 100)
+                    if (_random.Next(1000) <= 100)
                         AddGuaranteedBonus(2);
                     break;
                 case 10:
                     blueprintDetails.EnhancementSlots++;
-                    if (Random.Next(1000) <= 120)
+                    if (_random.Next(1000) <= 120)
                         AddGuaranteedBonus(3);
                     break;
             }
@@ -534,7 +535,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (isNewBlueprint)
             {
                 var scientificNetworking = Perk.GetPerkLevel(Player, PerkType.ScientificNetworking);
-                blueprintDetails.LicensedRuns = Random.D3(1) + scientificNetworking;
+                blueprintDetails.LicensedRuns = _random.D3(1) + scientificNetworking;
                 blueprintDetails.Recipe = dbJob.Recipe;
             }
 

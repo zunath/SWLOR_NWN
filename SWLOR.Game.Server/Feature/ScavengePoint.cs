@@ -8,7 +8,6 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
-using Random = SWLOR.Game.Server.Service.Random;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature
@@ -16,6 +15,7 @@ namespace SWLOR.Game.Server.Feature
     public static class ScavengePoint
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         /// <summary>
         /// 
         /// </summary>
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature
             var attempts = 1;
 
             // Chance for a second attempt based on the hard look perk level and the user's Perception modifier.
-            if (Random.D100(1) <= (hardLookLevel * 10 + GetAbilityModifier(AbilityType.Perception, user) * 5))
+            if (_random.D100(1) <= (hardLookLevel * 10 + GetAbilityModifier(AbilityType.Perception, user) * 5))
             {
                 attempts++;
             }
@@ -80,14 +80,14 @@ namespace SWLOR.Game.Server.Feature
 
             for (var attempt = 1; attempt <= attempts; attempt++)
             {
-                var roll = Random.D20(1);
+                var roll = _random.D20(1);
 
                 if (roll + GetAbilityModifier(AbilityType.Perception, user) >= dc)
                 {
                     FloatingTextStringOnCreature(ColorToken.SkillCheck($"Search *success*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs. DC: {dc})"), user, false);
 
                     var item = lootTable.GetRandomItem(treasureHunterLevel);
-                    var quantity = Random.Next(item.MaxQuantity) + 1;
+                    var quantity = _random.Next(item.MaxQuantity) + 1;
 
                     if (item.Resref == "nw_it_gold001")
                     {
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature
                     xp = deltaXP / 4;
                 }
 
-                dc += Random.D3(1);
+                dc += _random.D3(1);
                 Skill.GiveSkillXP(user, SkillType.Gathering, xp, false, false);
             }
 

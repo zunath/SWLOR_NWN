@@ -3,12 +3,13 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
     public class FishingSpawnPointDefinition: ISpawnListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
         private readonly SpawnTableBuilder _builder = new();
 
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create(tableId)
                 .AddSpawn(ObjectType.Placeable, "fish_point")
-                .RespawnDelay(90 + Random.Next(30))
+                .RespawnDelay(90 + _random.Next(30))
                 .SpawnAction(spawn =>
                 {
                     var fishResrefList = Fishing.GetFishAvailableAtLocation(location);

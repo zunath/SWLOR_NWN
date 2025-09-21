@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class DamageStatusEffectDefinition: IStatusEffectListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private readonly StatusEffectBuilder _builder = new();
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
@@ -74,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         level = 1;
 
                     var agility = GetAbilityModifier(AbilityType.Agility, source);
-                    var amount = Random.Next(3, 7) + agility * level;
+                    var amount = _random.Next(3, 7) + agility * level;
                     var damage = EffectDamage(amount, DamageType.Acid);
                     var decreasedAC = EffectACDecrease(2);
 
@@ -113,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         level = 1;
 
                     var might = GetAbilityModifier(AbilityType.Might, source);
-                    var amount = Random.Next(2, 4) + might * 2 * level;
+                    var amount = _random.Next(2, 4) + might * 2 * level;
                     var damage = EffectDamage(amount, DamageType.Fire);
 
                     ApplyEffectToObject(DurationType.Instant, damage, target);

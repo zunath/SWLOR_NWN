@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 {
     public class StatusEffectBuilder
     {
-        private readonly Dictionary<StatusEffectType, StatusEffectDetail> _statusEffects = new Dictionary<StatusEffectType, StatusEffectDetail>();
+        private readonly Dictionary<StatusEffectType, StatusEffectDetail> _statusEffects = new();
         private StatusEffectDetail _activeStatusEffect;
 
         /// <summary>

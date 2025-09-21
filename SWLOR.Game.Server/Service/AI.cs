@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Creature;
@@ -14,6 +15,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class AI
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
         private static readonly Dictionary<AIDefinitionType, IAIDefinition> _aiDefinitions = new();
 
@@ -371,7 +373,7 @@ namespace SWLOR.Game.Server.Service
             }
             // Randomly walk flag
             else if(aiFlags.HasFlag(AIFlag.RandomWalk) &&
-                Random.D100(1) <= 40)
+                _random.D100(1) <= 40)
             {
                 AssignCommand(self, ActionRandomWalk);
             }

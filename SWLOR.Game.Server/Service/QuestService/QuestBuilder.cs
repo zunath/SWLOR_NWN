@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 {
     public class QuestBuilder
     {
-        private readonly Dictionary<string, QuestDetail> _quests = new Dictionary<string, QuestDetail>();
+        private readonly Dictionary<string, QuestDetail> _quests = new();
         private QuestDetail _activeQuest;
         private QuestStateDetail _activeState;
 

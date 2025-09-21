@@ -8,12 +8,13 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Core.Bioware;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class DNAExtractorItemDefinition: IItemListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private readonly ItemBuilder _builder = new();
 
         public Dictionary<string, ItemDetail> BuildItems()
@@ -132,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     foreach (var possibleStat in possibleStats)
                     {
-                        if (Random.D100(1) <= statChance)
+                        if (_random.D100(1) <= statChance)
                         {
                             const int Maximum = 200;
                             var minimum = 1;
@@ -144,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                                     minimum = 150;
                             }
 
-                            var amount = Random.Next(minimum, Maximum + deltaBonus) + 1;
+                            var amount = _random.Next(minimum, Maximum + deltaBonus) + 1;
                             var ip = ItemPropertyCustom(ItemPropertyType.Incubation, (int)possibleStat, amount);
                             itemProperties.Add(ip);
                         }

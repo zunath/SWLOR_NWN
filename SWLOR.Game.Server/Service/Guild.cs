@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Service
     public static class Guild
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private static readonly Dictionary<GuildType, GuildAttribute> _activeGuilds = new();
         private static readonly Dictionary<int, int> _rankProgression = new()
         {
@@ -152,7 +153,7 @@ namespace SWLOR.Game.Server.Service
                     else
                     {
                         tasks = potentialTasks
-                            .OrderBy(o => Random.Next())
+                            .OrderBy(o => _random.Next())
                             .Take(10)
                             .ToList();
                     }

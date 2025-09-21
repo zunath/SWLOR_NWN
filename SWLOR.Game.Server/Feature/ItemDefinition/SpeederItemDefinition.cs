@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class SpeederItemDefinition: IItemListDefinition
     {
-        private readonly ItemBuilder _builder = new ItemBuilder();
+        private readonly ItemBuilder _builder = new();
 
         public Dictionary<string, ItemDetail> BuildItems()
         {

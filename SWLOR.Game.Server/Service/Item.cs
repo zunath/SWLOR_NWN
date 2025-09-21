@@ -534,7 +534,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of weapon base item types.
         /// </summary>
-        public static List<BaseItem> WeaponBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> WeaponBaseItemTypes { get; } = new()
         {
             BaseItem.BastardSword,
             BaseItem.Longsword,
@@ -576,7 +576,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of armor base item types.
         /// </summary>
-        public static List<BaseItem> ArmorBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> ArmorBaseItemTypes { get; } = new()
         {
             BaseItem.Armor,
             BaseItem.Helmet,
@@ -595,7 +595,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of shield base item types.
         /// </summary>
-        public static List<BaseItem> ShieldBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> ShieldBaseItemTypes { get; } = new()
         {
             BaseItem.LargeShield,
             BaseItem.SmallShield,
@@ -605,7 +605,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Vibroblade base item types.
         /// </summary>
-        public static List<BaseItem> VibrobladeBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> VibrobladeBaseItemTypes { get; } = new()
         {
             BaseItem.BastardSword,
             BaseItem.Longsword,
@@ -617,7 +617,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Finesse Vibroblade base item types.
         /// </summary>
-        public static List<BaseItem> FinesseVibrobladeBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> FinesseVibrobladeBaseItemTypes { get; } = new()
         {
             BaseItem.Dagger,
             BaseItem.Rapier,
@@ -631,7 +631,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Lightsaber base item types.
         /// </summary>
-        public static List<BaseItem> LightsaberBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> LightsaberBaseItemTypes { get; } = new()
         {
             BaseItem.Lightsaber,
             BaseItem.Electroblade
@@ -640,7 +640,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Heavy Vibroblade base item types.
         /// </summary>
-        public static List<BaseItem> HeavyVibrobladeBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> HeavyVibrobladeBaseItemTypes { get; } = new()
         {
             BaseItem.GreatAxe,
             BaseItem.GreatSword,
@@ -650,7 +650,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Polearm base item types.
         /// </summary>
-        public static List<BaseItem> PolearmBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> PolearmBaseItemTypes { get; } = new()
         {
             BaseItem.Halberd,
             BaseItem.Scythe,
@@ -661,7 +661,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Twin Blade base item types.
         /// </summary>
-        public static List<BaseItem> TwinBladeBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> TwinBladeBaseItemTypes { get; } = new()
         {
             BaseItem.DoubleAxe,
             BaseItem.TwoBladedSword
@@ -670,7 +670,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Saberstaff base item types.
         /// </summary>
-        public static List<BaseItem> SaberstaffBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> SaberstaffBaseItemTypes { get; } = new()
         {
             BaseItem.Saberstaff,
             BaseItem.TwinElectroBlade
@@ -679,7 +679,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Katar base item types.
         /// </summary>
-        public static List<BaseItem> KatarBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> KatarBaseItemTypes { get; } = new()
         {
             BaseItem.Katar
         };
@@ -687,7 +687,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Staff base item types.
         /// </summary>
-        public static List<BaseItem> StaffBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> StaffBaseItemTypes { get; } = new()
         {
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
@@ -698,7 +698,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Pistol base item types.
         /// </summary>
-        public static List<BaseItem> PistolBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> PistolBaseItemTypes { get; } = new()
         {
             BaseItem.Pistol
         };
@@ -706,7 +706,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Throwing Weapon base item types.
         /// </summary>
-        public static List<BaseItem> ThrowingWeaponBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> ThrowingWeaponBaseItemTypes { get; } = new()
         {
             BaseItem.ThrowingAxe,
             BaseItem.Shuriken,
@@ -716,7 +716,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Rifle base item types.
         /// </summary>
-        public static List<BaseItem> RifleBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> RifleBaseItemTypes { get; } = new()
         {
             BaseItem.Longbow,
             BaseItem.Rifle,
@@ -727,7 +727,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves the list of One-Handed weapon types.
         /// These are the weapons which are held in one hand and not necessarily associated with the One-Handed skill.
         /// </summary>
-        public static List<BaseItem> OneHandedMeleeItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> OneHandedMeleeItemTypes { get; } = new()
         {
             BaseItem.BastardSword,
             BaseItem.Longsword,
@@ -751,7 +751,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves the list of Two-Handed melee weapon types.
         /// These are the weapons which are held in two hand and not necessarily associated with the Two-Handed skill.
         /// </summary>
-        public static List<BaseItem> TwoHandedMeleeItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> TwoHandedMeleeItemTypes { get; } = new()
         {
             BaseItem.GreatAxe,
             BaseItem.GreatSword,
@@ -769,7 +769,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Creature base item types.
         /// </summary>
-        public static List<BaseItem> CreatureBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> CreatureBaseItemTypes { get; } = new()
         {
             BaseItem.CreatureBludgeonWeapon,
             BaseItem.CreatureSlashWeapon,
@@ -781,7 +781,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves the list of Droid base item types.
         /// These are items which require the Use Limitation Race: Droid item property in order to be equipped by a Droid.
         /// </summary>
-        public static List<BaseItem> DroidBaseItemTypes { get; } = new List<BaseItem>()
+        public static List<BaseItem> DroidBaseItemTypes { get; } = new()
         {
             BaseItem.Armor,
             BaseItem.Helmet,

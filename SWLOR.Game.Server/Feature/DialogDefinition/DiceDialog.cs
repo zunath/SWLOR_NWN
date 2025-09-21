@@ -1,17 +1,17 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
-using static SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class DiceDialog : DialogBase
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         
         private enum DiceGroup
         {
@@ -176,25 +176,25 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             switch (sides)
             {
                 case 2:
-                    value = D2(number);
+                    value = _random.D2(number);
                     break;
                 case 4:
-                    value = D4(number);
+                    value = _random.D4(number);
                     break;
                 case 6:
-                    value = D6(number);
+                    value = _random.D6(number);
                     break;
                 case 8:
-                    value = D8(number);
+                    value = _random.D8(number);
                     break;
                 case 10:
-                    value = D10(number);
+                    value = _random.D10(number);
                     break;
                 case 20:
-                    value = D20(number);
+                    value = _random.D20(number);
                     break;
                 case 100:
-                    value = D100(number);
+                    value = _random.D100(number);
                     break;
                 default:
                     value = 0;

@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class MartialArtsPerkDefinition : IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new PerkBuilder();
+        private readonly PerkBuilder _builder = new();
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {

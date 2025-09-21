@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
     public class KeyItemDefinition: IItemListDefinition
     {
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private readonly ItemBuilder _builder = new ItemBuilder();
+        private readonly ItemBuilder _builder = new();
         public Dictionary<string, ItemDetail> BuildItems()
         {
             KeyItem();

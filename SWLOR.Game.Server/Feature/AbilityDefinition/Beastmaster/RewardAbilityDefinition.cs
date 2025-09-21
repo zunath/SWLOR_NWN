@@ -5,13 +5,14 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Service;
 using AssociateType = SWLOR.NWN.API.NWScript.Enum.Associate.AssociateType;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class RewardAbilityDefinition : IAbilityListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private const string PetTreatTag = "pet_treat";
 
         private readonly AbilityBuilder _builder = new();
@@ -79,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             var willBonus = GetAbilityModifier(AbilityType.Social, activator);
             var beast = GetAssociate(AssociateType.Henchman, activator);
             var maxHP = GetMaxHitPoints(beast);
-            var amount = baseHealingAmount + willBonus * 10 + (maxHP / 5) + Random.D10(1);
+            var amount = baseHealingAmount + willBonus * 10 + (maxHP / 5) + _random.D10(1);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), beast);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), beast);

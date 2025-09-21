@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
     public class AccountSnippetDefinition: ISnippetListDefinition
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private readonly SnippetBuilder _builder = new SnippetBuilder();
+        private readonly SnippetBuilder _builder = new();
         
         public Dictionary<string, SnippetDetail> BuildSnippets()
         {

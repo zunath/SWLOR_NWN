@@ -19,13 +19,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _screenWidth;
         private int _screenScale;
 
-        private static readonly GuiColor _hpColor = new GuiColor(139, 0, 0);
-        private static readonly GuiColor _stmColor = new GuiColor(0, 104, 0);
-        private static readonly GuiColor _fpColor = new GuiColor(3, 87, 152);
+        private static readonly GuiColor _hpColor = new(139, 0, 0);
+        private static readonly GuiColor _stmColor = new(0, 104, 0);
+        private static readonly GuiColor _fpColor = new(3, 87, 152);
 
-        private static readonly GuiColor _shieldColor = new GuiColor(3, 87, 152);
-        private static readonly GuiColor _hullColor = new GuiColor(139, 0, 0);
-        private static readonly GuiColor _capacitorColor = new GuiColor(166, 111, 0);
+        private static readonly GuiColor _shieldColor = new(3, 87, 152);
+        private static readonly GuiColor _hullColor = new(139, 0, 0);
+        private static readonly GuiColor _capacitorColor = new(166, 111, 0);
 
         public GuiColor Bar1Color
         {

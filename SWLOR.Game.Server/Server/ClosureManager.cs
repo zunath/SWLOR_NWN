@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Server
         public delegate void RunScriptEvent(string scriptName, uint objectSelf, out int scriptHandleResult);
 
         // Native Management
-        private readonly Dictionary<ulong, Action> _closures = new Dictionary<ulong, Action>();
+        private readonly Dictionary<ulong, Action> _closures = new();
         private ulong _nextEventId;
 
         private const uint ObjectInvalid = 0x7F000000;

@@ -7,12 +7,13 @@ using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class MiningLaserModuleDefinition: IShipModuleListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly ShipModuleBuilder _builder = new();
 
@@ -73,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
                     if (remainingUnits <= 0)
                     {
-                        remainingUnits = Random.D4(1) + 2;
+                        remainingUnits = _random.D4(1) + 2;
                         SetLocalInt(target, "ASTEROID_REMAINING_UNITS", remainingUnits);
                     }
 

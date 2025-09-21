@@ -5,12 +5,13 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class MissileLauncherModuleDefinition : IShipModuleListDefinition    
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 return;
 
             var chanceToHit = Space.CalculateChanceToHit(activator, target);
-            var roll = Random.D100(1);
+            var roll = _random.D100(1);
             var isHit = hitOverride ?? roll <= chanceToHit;
 
             var attackerStat = Space.GetAttackStat(activator);
@@ -115,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
 
                     var chanceToHit = Space.CalculateChanceToHit(activator, target);
-                    var roll = Random.D100(1);
+                    var roll = _random.D100(1);
                     var isHit = roll <= chanceToHit;
 
                     var attackBonus = moduleBonus * 2 + activatorShipStatus.ExplosiveDamage;

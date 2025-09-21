@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        private static readonly Dictionary<string, OreDetail> _ores = new Dictionary<string, OreDetail>
+        private static readonly Dictionary<string, OreDetail> _ores = new()
         {
             {"raw_veldite", new OreDetail(1, "ref_veldite", 25)},
             {"ore_tilarium", new OreDetail(1, "ref_tilarium", 25)},

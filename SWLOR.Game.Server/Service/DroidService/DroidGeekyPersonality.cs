@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.DroidService
 {
     public class DroidGeekyPersonality: IDroidPersonality
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private readonly List<string> _greetingPhrases = new()
         {
             "Approaching entity: this unit's databank shows you as welcome.",
@@ -34,17 +36,17 @@ namespace SWLOR.Game.Server.Service.DroidService
 
         public string GreetingPhrase()
         {
-            return _greetingPhrases[Random.Next(_greetingPhrases.Count)];
+            return _greetingPhrases[_random.Next(_greetingPhrases.Count)];
         }
 
         public string DeathPhrase()
         {
-            return _deathPhrases[Random.Next(_deathPhrases.Count)];
+            return _deathPhrases[_random.Next(_deathPhrases.Count)];
         }
 
         public string DismissedPhrase()
         {
-            return _dismissedPhrases[Random.Next(_dismissedPhrases.Count)];
+            return _dismissedPhrases[_random.Next(_dismissedPhrases.Count)];
         }
     }
 }

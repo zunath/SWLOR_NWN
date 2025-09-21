@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private static readonly List<CombatDamageType> _allValidDamageTypes = new();
 
         /// <summary>
@@ -216,7 +217,7 @@ namespace SWLOR.Game.Server.Service
                 critical,
                 deltaCap);
 
-            return (int)Random.NextFloat(minDamage, maxDamage);
+            return (int)_random.NextFloat(minDamage, maxDamage);
         }
 
         /// <summary>

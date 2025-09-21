@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     public class DMChatCommand: IChatCommandListDefinition
     {
-        private readonly ChatCommandBuilder _builder = new ChatCommandBuilder();
+        private readonly ChatCommandBuilder _builder = new();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()

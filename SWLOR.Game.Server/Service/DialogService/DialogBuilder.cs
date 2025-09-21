@@ -6,10 +6,10 @@ namespace SWLOR.Game.Server.Service.DialogService
     public class DialogBuilder
     {
         private string _defaultPageName;
-        private readonly Dictionary<string, DialogPage> _pages = new Dictionary<string, DialogPage>();
-        private readonly List<Action> _initializationActions = new List<Action>();
-        private readonly List<Action<string, string>> _backActions = new List<Action<string, string>>();
-        private readonly List<Action> _endActions = new List<Action>();
+        private readonly Dictionary<string, DialogPage> _pages = new();
+        private readonly List<Action> _initializationActions = new();
+        private readonly List<Action<string, string>> _backActions = new();
+        private readonly List<Action> _endActions = new();
         private object _dataModel;
 
         public DialogBuilder AddInitializationAction(Action initializationAction)

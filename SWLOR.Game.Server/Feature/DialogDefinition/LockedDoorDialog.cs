@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.KeyItemService;

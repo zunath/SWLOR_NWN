@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Game.Server;
+using SWLOR.Game.Server.Service;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.CLI
 {
     internal class EnhancementItemBuilder
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private const string InputData = "./InputFiles/enhancement_list.tsv";
         private const string Template = "./Templates/enhancement_template.json";
         private const string OutputFolder = "./OutputEnhancements/";
@@ -111,7 +114,7 @@ namespace SWLOR.CLI
                 var progressPenalty = parsed[5].Trim();
                 var propertyName = parsed[6].Trim();
                 var bonus = parsed[7].Trim();
-                var iconId = _iconIds[Random.Next(_iconIds.Length - 1)];
+                var iconId = _iconIds[_random.Next(_iconIds.Length - 1)];
                 var itemPropertyId = _categoryNameToId[category];
                 var subTypeId = _subTypeToId[propertyName];
                 var tier = _levelToTier[Convert.ToInt32(level)];

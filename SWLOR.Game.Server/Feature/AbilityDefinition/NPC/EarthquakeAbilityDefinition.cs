@@ -7,12 +7,13 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
     public class EarthquakeAbilityDefinition : IAbilityListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private readonly AbilityBuilder _builder = new();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     {
                         if (GetIsEnemy(nearest, activator))
                         {
-                            var duration = 8f + Random.NextFloat(1f, 5f);
+                            var duration = 8f + _random.NextFloat(1f, 5f);
 
                             ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), nearest, duration);
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Chunk_Stone_Small), nearest);

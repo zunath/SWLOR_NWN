@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class DestroyItemDefinition: IItemListDefinition
     {
-        private readonly ItemBuilder _builder = new ItemBuilder();
+        private readonly ItemBuilder _builder = new();
 
         public Dictionary<string, ItemDetail> BuildItems()
         {

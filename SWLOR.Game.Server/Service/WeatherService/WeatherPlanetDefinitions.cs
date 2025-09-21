@@ -9,12 +9,12 @@ namespace SWLOR.Game.Server.Service.WeatherService
         {
             return new Dictionary<PlanetType, WeatherClimate>
             {
-                [PlanetType.Viscara] = new WeatherClimate
+                [PlanetType.Viscara] = new()
                 {
                     HeatModifier = -2,
                     HumidityModifier = +2
                 },
-                [PlanetType.Tatooine] = new WeatherClimate
+                [PlanetType.Tatooine] = new()
                 {
                     HeatModifier = +5,
                     HumidityModifier = -8,
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Service.WeatherService
                     WarmWindyText = "The hot wind wears at your face like a sandblaster.  A sand storm seems likely.",
                     WindyText = "A scouring wind sweeps across the desert, a sand storm cannot be far away.",
                 },
-                [PlanetType.MonCala] = new WeatherClimate
+                [PlanetType.MonCala] = new()
                 {
                     WindModifier = +1,
                     HeatModifier = +1,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Service.WeatherService
                     WarmWindyText = "The wind is picking up, a warm front rolling over.  There could be a storm soon.",
                     WindyText = "A strong wind sweeps in.  The sea is choppy, waves crashing onto the beach.",
                 },
-                [PlanetType.Hutlar] = new WeatherClimate
+                [PlanetType.Hutlar] = new()
                 {
                     HeatModifier = -8,
                     HumidityModifier = -8,
@@ -64,18 +64,18 @@ namespace SWLOR.Game.Server.Service.WeatherService
                     MildText = "It is cold, the sky is clear, and there is a gentle breeze.",
                     WarmCloudyText = "It is cold."
                 },
-                [PlanetType.Korriban] = new WeatherClimate
+                [PlanetType.Korriban] = new()
                 {
                     HeatModifier = +3,
                     HumidityModifier = -5
                 },
-                [PlanetType.Dathomir] = new WeatherClimate
+                [PlanetType.Dathomir] = new()
                 {
                     HeatModifier = -1,
                     HumidityModifier = +1
                 },
-                [PlanetType.Dantooine] = new WeatherClimate
-                 {
+                [PlanetType.Dantooine] = new()
+                {
                      HeatModifier = -1,
                      HumidityModifier = +1
                  },

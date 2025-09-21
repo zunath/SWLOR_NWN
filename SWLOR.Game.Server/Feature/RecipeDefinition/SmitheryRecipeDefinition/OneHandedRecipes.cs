@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 {
     public class OneHandedRecipes : IRecipeListDefinition
     {
-        private readonly RecipeBuilder _builder = new RecipeBuilder();
+        private readonly RecipeBuilder _builder = new();
 
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {

@@ -6,12 +6,13 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class KoltoRecoveryAbilityDefinition: FirstAidBaseAbilityDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             KoltoRecovery1();
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
             foreach (var member in party)
             {
-                var amount = baseAmount + willpowerMod * 5 + Random.D10(1);
+                var amount = baseAmount + willpowerMod * 5 + _random.D10(1);
 
                 ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), member);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), member);

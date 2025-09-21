@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class ShieldingStatusEffectDefinition: IStatusEffectListDefinition
     {
-        private readonly StatusEffectBuilder _builder = new StatusEffectBuilder();
+        private readonly StatusEffectBuilder _builder = new();
 
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {

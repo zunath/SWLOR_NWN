@@ -3,13 +3,14 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public abstract class FirstAidBaseAbilityDefinition: IAbilityListDefinition
     {
-        protected readonly AbilityBuilder Builder = new AbilityBuilder();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        protected readonly AbilityBuilder Builder = new();
         private const string MedicalSuppliesItemTag = "med_supplies";
         private const string StimPackItemTag = "stim_pack";
 
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 return;
 
             var chanceToNotConsume = 10 * Perk.GetPerkLevel(activator, PerkType.FrugalMedic);
-            if (Random.D100(1) <= chanceToNotConsume)
+            if (_random.D100(1) <= chanceToNotConsume)
                 return;
 
             var item = GetItemPossessedBy(activator, resref);

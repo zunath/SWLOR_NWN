@@ -19,9 +19,9 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Weather
     {
-        private static readonly Dictionary<uint, List<uint>> _areaWeatherPlaceables = new Dictionary<uint, List<uint>>();
+        private static readonly Dictionary<uint, List<uint>> _areaWeatherPlaceables = new();
         private static Dictionary<PlanetType, WeatherClimate> _planetClimates;
-        private static readonly Dictionary<string, PlanetType> _planetsByName = new Dictionary<string, PlanetType>();
+        private static readonly Dictionary<string, PlanetType> _planetsByName = new();
 
         /// <summary>
         /// When the module loads, cache planet climates and other pertinent data.

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Game.Server;
+using SWLOR.Game.Server.Service;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.CLI
 {
     internal class DroidItemBuilder
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private const string InputData = "./InputFiles/droid_item_list.tsv";
         private const string CPUTemplate = "./Templates/droid_cpu_template.json";
         private const string PartTemplate = "./Templates/droid_part_template.json";
@@ -112,7 +115,7 @@ namespace SWLOR.CLI
                 var twoHanded = string.IsNullOrWhiteSpace(parsed[15]) ? 0 : Convert.ToInt32(parsed[15].Trim());
                 var martialArts = string.IsNullOrWhiteSpace(parsed[16]) ? 0 : Convert.ToInt32(parsed[16].Trim());
                 var ranged = string.IsNullOrWhiteSpace(parsed[17]) ? 0 : Convert.ToInt32(parsed[17].Trim());
-                var iconId = _iconIds[Random.Next(_iconIds.Length - 1)];
+                var iconId = _iconIds[_random.Next(_iconIds.Length - 1)];
 
                 var (skill1Id, skill1Value, skill2Id, skill2Value) = GetSkillLevels(oneHanded, twoHanded, martialArts, ranged);
 

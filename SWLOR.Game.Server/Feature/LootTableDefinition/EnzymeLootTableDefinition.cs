@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.LootService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Core.Bioware;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.LootTableDefinition
 {
     public class EnzymeLootTableDefinition: ILootTableDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private readonly LootTableBuilder _builder = new();
 
         private static readonly int[] _primaryWeights =
@@ -48,25 +50,25 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             switch (index)
             {
                 case 0: // 0.1% to 1.0%  (1-10)
-                    return Random.Next(1, 10);
+                    return _random.Next(1, 10);
                 case 1: // 1.1% to 2.0%  (11-20)
-                    return Random.Next(11, 20);
+                    return _random.Next(11, 20);
                 case 2: // 2.1% to 3.0%  (21-30)
-                    return Random.Next(21, 30);
+                    return _random.Next(21, 30);
                 case 3: // 3.1% to 4.0%  (31-40)
-                    return Random.Next(31, 40);
+                    return _random.Next(31, 40);
                 case 4: // 4.1% to 5.0%  (41-50)
-                    return Random.Next(41, 50);
+                    return _random.Next(41, 50);
                 case 5: // 5.1% to 6.0%  (51-60)
-                    return Random.Next(51, 60);
+                    return _random.Next(51, 60);
                 case 6: // 6.1% to 7.0%  (61-70)
-                    return Random.Next(61, 70);
+                    return _random.Next(61, 70);
                 case 7: // 7.1% to 8.0%  (71-80)
-                    return Random.Next(71, 80);
+                    return _random.Next(71, 80);
                 case 8: // 8.1% to 9.0%  (81-90)
-                    return Random.Next(81, 90);
+                    return _random.Next(81, 90);
                 case 9: // 9.1% to 10.0% (91-100)
-                    return Random.Next(91, 100);
+                    return _random.Next(91, 100);
                 default:
                     return 0;
             }
@@ -161,10 +163,10 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             IList<IncubationStatType> primaryStats, 
             IList<IncubationStatType> secondaryStats)
         {
-            var primaryIndex = Random.GetRandomWeightedIndex(_primaryWeights);
-            var secondaryIndex = Random.GetRandomWeightedIndex(_secondaryWeights);
-            var primaryCount = Random.Next(0, 3);
-            var secondaryCount = 1 + Random.Next(0, 3);
+            var primaryIndex = _random.GetRandomWeightedIndex(_primaryWeights);
+            var secondaryIndex = _random.GetRandomWeightedIndex(_secondaryWeights);
+            var primaryCount = _random.Next(0, 3);
+            var secondaryCount = 1 + _random.Next(0, 3);
 
             for (var propCount = 1; propCount <= primaryCount; propCount++)
             {
@@ -172,7 +174,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                     break;
 
                 var primaryAmount = GetRandomValueBetweenRange(primaryIndex);
-                var index = Random.Next(primaryStats.Count);
+                var index = _random.Next(primaryStats.Count);
                 var subType = primaryStats[index];
                 var ip = ItemPropertyCustom(ItemPropertyType.Incubation, (int)subType, primaryAmount);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
@@ -186,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                     break;
 
                 var secondaryAmount = GetRandomValueBetweenRange(secondaryIndex);
-                var index = Random.Next(secondaryStats.Count);
+                var index = _random.Next(secondaryStats.Count);
                 var subType = secondaryStats[index];
                 var ip = ItemPropertyCustom(ItemPropertyType.Incubation, (int)subType, secondaryAmount);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);

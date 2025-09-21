@@ -1133,22 +1133,22 @@ namespace SWLOR.Game.Server.Service
         {
             return new List<WorldPropertyCategory>
             {
-                new WorldPropertyCategory
+                new()
                 {
                     ParentPropertyId = parentPropertyId,
                     Name = "Weapons"
                 },
-                new WorldPropertyCategory
+                new()
                 {
                     ParentPropertyId = parentPropertyId,
                     Name = "Armor"
                 },
-                new WorldPropertyCategory
+                new()
                 {
                     ParentPropertyId = parentPropertyId,
                     Name = "Crafting"
                 },
-                new WorldPropertyCategory
+                new()
                 {
                     ParentPropertyId = parentPropertyId,
                     Name = "Miscellaneous"

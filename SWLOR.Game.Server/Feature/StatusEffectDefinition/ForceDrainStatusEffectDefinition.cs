@@ -4,12 +4,13 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class ForceDrainStatusEffectDefinition : IStatusEffectListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
             var builder = new StatusEffectBuilder();
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .GrantAction((source, target, length, effectData) =>
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
-                    var willDMG = willBonus + Random.D2(willBonus / 3);
+                    var willDMG = willBonus + _random.D2(willBonus / 3);
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 200);
 
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .TickAction((source, target, effectData) =>
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
-                    var willDMG = willBonus + Random.D2(willBonus / 3);
+                    var willDMG = willBonus + _random.D2(willBonus / 3);
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 75);
 
@@ -56,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .GrantAction((source, target, length, effectData) =>
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
-                    var willDMG = 10 + willBonus + Random.D3(willBonus / 3);
+                    var willDMG = 10 + willBonus + _random.D3(willBonus / 3);
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 250);
 
@@ -65,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .TickAction((source, target, effectData) =>
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
-                    var willDMG = 10 + willBonus + Random.D3(willBonus / 3);
+                    var willDMG = 10 + willBonus + _random.D3(willBonus / 3);
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 100);
 
@@ -82,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .GrantAction((source, target, length, effectData) =>
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
-                    var willDMG = 15 + willBonus + Random.D4(willBonus / 3);
+                    var willDMG = 15 + willBonus + _random.D4(willBonus / 3);
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 250);
 
@@ -91,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .TickAction((source, target, effectData) =>
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
-                    var willDMG = 15 + willBonus + Random.D4(willBonus / 3);
+                    var willDMG = 15 + willBonus + _random.D4(willBonus / 3);
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 125);
 
@@ -108,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .GrantAction((source, target, length, effectData) =>
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
-                    var willDMG = 20 + willBonus + Random.D6(willBonus / 3);
+                    var willDMG = 20 + willBonus + _random.D6(willBonus / 3);
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 300);
 
@@ -117,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .TickAction((source, target, effectData) =>
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
-                    var willDMG = 20 + willBonus + Random.D6(willBonus / 3);
+                    var willDMG = 20 + willBonus + _random.D6(willBonus / 3);
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 150);
 
@@ -133,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .GrantAction((source, target, length, effectData) =>
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
-                    var willDMG = 25 + willBonus + Random.D8(willBonus / 3);
+                    var willDMG = 25 + willBonus + _random.D8(willBonus / 3);
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 350);
 
@@ -142,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .TickAction((source, target, effectData) =>
                 {
                     var willBonus = GetAbilityScore(source, AbilityType.Willpower);
-                    var willDMG = 25 + willBonus + Random.D8(willBonus / 3);
+                    var willDMG = 25 + willBonus + _random.D8(willBonus / 3);
                     ProcessForceDrainTick(VisualEffect.Vfx_Beam_Drain, willDMG, willDMG, target, source);
                     Enmity.ModifyEnmityOnAll(source, 175);
 

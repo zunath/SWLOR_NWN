@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Snippet
     {
-        private static readonly Dictionary<string, SnippetDetail> _appearsWhenCommands = new Dictionary<string, SnippetDetail>();
-        private static readonly Dictionary<string, SnippetDetail> _actionsTakenCommands = new Dictionary<string, SnippetDetail>();
+        private static readonly Dictionary<string, SnippetDetail> _appearsWhenCommands = new();
+        private static readonly Dictionary<string, SnippetDetail> _actionsTakenCommands = new();
 
         /// <summary>
         /// When the module loads, all available conversation snippets are loaded into the cache.

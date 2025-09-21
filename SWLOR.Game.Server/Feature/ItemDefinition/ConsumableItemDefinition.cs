@@ -13,12 +13,13 @@ using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Contracts;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class ConsumableItemDefinition: IItemListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly ItemBuilder _builder = new();
         public Dictionary<string, ItemDetail> BuildItems()
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 {
                     var ability = AbilityType.Invalid;
                     
-                    switch (Random.Next(5) + 1)
+                    switch (_random.Next(5) + 1)
                     {
                         case 1:
                             ability = AbilityType.Social;

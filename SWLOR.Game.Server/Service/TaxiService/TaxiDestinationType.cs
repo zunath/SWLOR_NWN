@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Service.TaxiService
         // Dantooine
 
         [TaxiDestination(2, "Dantooine Starport", "TAXI_DANTOOINE_STARPORT", 150)]
-    DantooineStarport = 11,
+        DantooineStarport = 11,
         [TaxiDestination(2, "Dantooine Republic Garrison", "TAXI_DANTOOINE_GARRISON", 150)]
         DantooineGarrison = 12,
         [TaxiDestination(2, "Dantooine Monster Gym", "TAXI_DANTOOINE_GYM", 150)]

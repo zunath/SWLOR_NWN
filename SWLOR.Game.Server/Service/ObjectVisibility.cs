@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly Dictionary<string, uint> _visibilityObjects = new Dictionary<string, uint>();
-        private static readonly List<uint> _defaultHiddenObjects = new List<uint>();
+        private static readonly Dictionary<string, uint> _visibilityObjects = new();
+        private static readonly List<uint> _defaultHiddenObjects = new();
 
         /// <summary>
         /// When the module loads, cycle through every area and every object to identify the visibility objects.

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
     public class ShipBuilder
     {
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private readonly Dictionary<string, ShipDetail> _ships = new Dictionary<string, ShipDetail>();
+        private readonly Dictionary<string, ShipDetail> _ships = new();
         private ShipDetail _activeShip;
 
         /// <summary>

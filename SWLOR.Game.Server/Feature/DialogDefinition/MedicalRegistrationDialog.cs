@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Shared.Abstractions.Contracts;
 

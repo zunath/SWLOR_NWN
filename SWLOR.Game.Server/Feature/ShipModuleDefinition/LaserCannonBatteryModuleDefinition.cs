@@ -5,12 +5,13 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class LaserCannonBatteryModuleDefinition : IShipModuleListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private readonly ShipModuleBuilder _builder = new();
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
@@ -74,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             while (GetIsObjectValid(nearbyTarget))
                             {
                                 if (nearbyTarget != activator && 
-                                    Random.D4(1) != 1 && 
+                                    _random.D4(1) != 1 && 
                                     GetIsEnemy(nearbyTarget, activator) && 
                                     Space.GetShipStatus(nearbyTarget) != null)
                                 {
@@ -90,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                         nearbyDefenderStat,
                                         0);
                                     var chanceToHit = Space.CalculateChanceToHit(activator, nearbyTarget);
-                                    var roll = Random.D100(1);
+                                    var roll = _random.D100(1);
                                     var isHit = roll <= chanceToHit;
                                     ApplyEffectToObject(DurationType.Instant, missile, nearbyTarget);
                                     if (isHit)

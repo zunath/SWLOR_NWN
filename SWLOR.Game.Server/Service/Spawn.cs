@@ -11,6 +11,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
@@ -23,6 +24,7 @@ namespace SWLOR.Game.Server.Service
     public static class Spawn
     {
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         public const int DespawnMinutes = 20;
         public const int DefaultRespawnMinutes = 5;
 
@@ -356,7 +358,7 @@ namespace SWLOR.Game.Server.Service
             var now = DateTime.UtcNow;
             
             // Add random variance of ±25% to stagger despawn times
-            var variancePercent = Random.Next(-25, 26); // -25% to +25%
+            var variancePercent = _random.Next(-25, 26); // -25% to +25%
             var variance = (int)(despawnMinutes * (variancePercent / 100.0f));
             var actualDespawnMinutes = despawnMinutes + variance;
             
@@ -719,7 +721,7 @@ namespace SWLOR.Game.Server.Service
                     new Vector3(detail.X, detail.Y, detail.Z);
                 ObjectPlugin.AddToArea(deserialized, detail.Area, position);
 
-                var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
+                var facing = detail.UseRandomSpawnLocation ? _random.Next(360) : detail.Facing;
                 AssignCommand(deserialized, () => SetFacing(facing));
                 SetLocalString(deserialized, "SPAWN_ID", spawnId.ToString());
                 AI.SetAIFlag(deserialized, AIFlag.ReturnHome);
@@ -746,7 +748,7 @@ namespace SWLOR.Game.Server.Service
                     GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)) :
                     new Vector3(detail.X, detail.Y, detail.Z);
 
-                var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
+                var facing = detail.UseRandomSpawnLocation ? _random.Next(360) : detail.Facing;
                 var location = Location(detail.Area, position, facing);
 
                 var spawn = CreateObject(spawnObject.Type, spawnObject.Resref, location);

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Creature;
@@ -18,6 +19,7 @@ namespace SWLOR.Game.Server.Service
     public class Loot
     {
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private static readonly Dictionary<string, LootTable> _lootTables = new();
 
         private const float CorpseLifespanSeconds = 360f;
@@ -137,10 +139,10 @@ namespace SWLOR.Game.Server.Service
             }
             for (int x = 1; x <= attempts; x++)
             {
-                if (Random.D100(1) > chance) continue;
+                if (_random.D100(1) > chance) continue;
 
                 var item = table.GetRandomItem(rareBonusChance);
-                var quantity = Random.Next(item.MaxQuantity) + 1;
+                var quantity = _random.Next(item.MaxQuantity) + 1;
 
                 // CreditFinder perk - Increase the quantity of gold found.
                 if (item.Resref == "nw_it_gold001")

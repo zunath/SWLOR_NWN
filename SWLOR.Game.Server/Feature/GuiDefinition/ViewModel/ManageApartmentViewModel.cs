@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private int SelectedApartmentIndex { get; set; }
 
-        private readonly List<string> _propertyIds = new List<string>();
+        private readonly List<string> _propertyIds = new();
 
         public string Instruction
         {

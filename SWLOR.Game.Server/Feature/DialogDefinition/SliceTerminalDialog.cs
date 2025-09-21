@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.NWN.API.NWNX.Enum;

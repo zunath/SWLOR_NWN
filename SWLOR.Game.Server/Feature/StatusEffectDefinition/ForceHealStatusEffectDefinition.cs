@@ -4,12 +4,13 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class ForceHealStatusEffectDefinition : IStatusEffectListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
             var builder = new StatusEffectBuilder();
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (wilBonus < 0)
                 wilBonus = 0;
 
-            amount += wilBonus + (wilBonus * amount / 15 ) + Random.D10(wilBonus / 5);
+            amount += wilBonus + (wilBonus * amount / 15 ) + _random.D10(wilBonus / 5);
 
             ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
                 ? EffectDamage(amount)

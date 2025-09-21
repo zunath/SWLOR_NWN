@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service
     public static class Faction
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly Dictionary<FactionType, FactionAttribute> _factions = new Dictionary<FactionType, FactionAttribute>();
+        private static readonly Dictionary<FactionType, FactionAttribute> _factions = new();
         public const int MinimumFaction = -5000;
         public const int MaximumFaction = 5000;
 

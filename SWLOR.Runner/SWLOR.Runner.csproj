@@ -26,6 +26,7 @@
     <ProjectReference Include="..\SWLOR.Component.Combat\SWLOR.Component.Combat.csproj" />
     <ProjectReference Include="..\SWLOR.Component.Communication\SWLOR.Component.Communication.csproj" />
     <ProjectReference Include="..\SWLOR.Component.Crafting\SWLOR.Component.Crafting.csproj" />
+    <ProjectReference Include="..\SWLOR.Component.Dialog\SWLOR.Component.Dialog.csproj" />
     <ProjectReference Include="..\SWLOR.Component.Language\SWLOR.Component.Language.csproj" />
     <ProjectReference Include="..\SWLOR.Component.Market\SWLOR.Component.Market.csproj" />
     <ProjectReference Include="..\SWLOR.Component.Player\SWLOR.Component.Player.csproj" />

@@ -36,8 +36,8 @@ namespace SWLOR.Game.Server.Service
             public int LeftFootId { get; set; } = 1;
         }
 
-        private static readonly Dictionary<RacialType, RacialAppearance> _defaultRaceAppearancesMale = new Dictionary<RacialType, RacialAppearance>();
-        private static readonly Dictionary<RacialType, RacialAppearance> _defaultRaceAppearancesFemale = new Dictionary<RacialType, RacialAppearance>();
+        private static readonly Dictionary<RacialType, RacialAppearance> _defaultRaceAppearancesMale = new();
+        private static readonly Dictionary<RacialType, RacialAppearance> _defaultRaceAppearancesFemale = new();
 
         /// <summary>
         /// When the module loads, cache all default race appearances.

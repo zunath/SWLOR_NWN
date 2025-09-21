@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<FishingRodType, FishingRodAttribute> _rods = new();
         private static readonly Dictionary<FishingBaitType, FishingBaitAttribute> _baits = new();
         private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
 
         private static readonly Dictionary<string, FishingRodType> _rodsByResref = new();
         private static readonly Dictionary<string, FishingBaitType> _baitsByResref = new();
@@ -214,7 +215,7 @@ namespace SWLOR.Game.Server.Service
             if (GetLocalBool(fishingPoint, FishingPointInitializedVariable))
                 return;
 
-            var attempts = 5 + Random.Next(10);
+            var attempts = 5 + _random.Next(10);
             SetLocalInt(fishingPoint, FishingPointRemainingAttemptsVariable, attempts);
 
             SetLocalBool(fishingPoint, FishingPointInitializedVariable, true);
@@ -304,7 +305,7 @@ namespace SWLOR.Game.Server.Service
             SetLocalString(player, FishingAttemptVariable, attemptId);
             SetLocalObject(player, FishingPointVariable, fishingPoint);
 
-            var fishingDelay = 6 + Random.Next(3);
+            var fishingDelay = 6 + _random.Next(3);
             PlayerPlugin.StartGuiTimingBar(player, fishingDelay, "finish_fishing");
 
             Activity.SetBusy(player, ActivityStatusType.Fishing);
@@ -393,7 +394,7 @@ namespace SWLOR.Game.Server.Service
             // Default fish was picked - 80% to not get a bite.
             if (isDefaultFish)
             {
-                if (Random.D100(1) <= 80)
+                if (_random.D100(1) <= 80)
                 {
                     SendMessageToPC(player, "Not even a nibble...");
                     return;
@@ -421,7 +422,7 @@ namespace SWLOR.Game.Server.Service
             else if (chance < 0)
                 chance = 0;
 
-            if (Random.D100(1) > chance)
+            if (_random.D100(1) > chance)
             {
                 SendMessageToPC(player, ColorToken.Red("You failed to reel the fish in..."));
             }

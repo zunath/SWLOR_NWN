@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.CraftService
 {
     internal class BlueprintBonuses
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private readonly Dictionary<RecipeEnhancementType, Dictionary<bool, Dictionary<int, List<BlueprintBonus>>>> _bonusesByEnhancementType = new();
 
         public BlueprintBonuses()
@@ -52,7 +54,7 @@ namespace SWLOR.Game.Server.Service.CraftService
 
             var set = _bonusesByEnhancementType[enhancementType][isCraftingItem][tier];
             var weights = set.Select(x => x.Weight).ToArray();
-            var index = Random.GetRandomWeightedIndex(weights);
+            var index = _random.GetRandomWeightedIndex(weights);
 
             return set[index];
         }

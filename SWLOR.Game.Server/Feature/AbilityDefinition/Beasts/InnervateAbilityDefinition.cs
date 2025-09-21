@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class InnervateAbilityDefinition : IAbilityListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private readonly AbilityBuilder _builder = new();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 
             var beastmasterWillBonus = GetAbilityModifier(AbilityType.Willpower, beastmaster) * 4;
             var beastWillBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 4;
-            var amount = baseAmount + beastWillBonus + beastmasterWillBonus + Random.D10(1);
+            var amount = baseAmount + beastWillBonus + beastmasterWillBonus + _random.D10(1);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);

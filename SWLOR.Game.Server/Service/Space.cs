@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly IScheduler _scheduler = ServiceContainer.GetService<IScheduler>();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
 
         public const int MaxRegisteredShips = 10;
 
@@ -1779,7 +1780,7 @@ namespace SWLOR.Game.Server.Service
                 // Give a chance to drop each installed module.
                 foreach (var (_, shipModule) in dbPlayerShip.Status.HighPowerModules)
                 {
-                    if (Random.D100(1) <= ChanceToDropModule)
+                    if (_random.D100(1) <= ChanceToDropModule)
                     {
                         var deserialized = ObjectPlugin.Deserialize(shipModule.SerializedItem);
                         CopyObject(deserialized, deathLocation);
@@ -1793,7 +1794,7 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var (_, shipModule) in dbPlayerShip.Status.LowPowerModules)
                 {
-                    if (Random.D100(1) <= ChanceToDropModule)
+                    if (_random.D100(1) <= ChanceToDropModule)
                     {
                         var deserialized = ObjectPlugin.Deserialize(shipModule.SerializedItem);
                         CopyObject(deserialized, deathLocation);

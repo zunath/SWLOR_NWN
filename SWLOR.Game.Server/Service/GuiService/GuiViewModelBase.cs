@@ -23,12 +23,12 @@ namespace SWLOR.Game.Server.Service.GuiService
             public bool SkipNotify { get; set; }
         }
 
-        private static readonly GuiPropertyConverter _converter = new GuiPropertyConverter();
+        private static readonly GuiPropertyConverter _converter = new();
 
         protected uint Player { get; private set; }
         protected int WindowToken { get; private set; }
 
-        private readonly Dictionary<string, PropertyDetail> _propertyValues = new Dictionary<string, PropertyDetail>();
+        private readonly Dictionary<string, PropertyDetail> _propertyValues = new();
 
         protected abstract void Initialize(TPayload initialPayload);
 

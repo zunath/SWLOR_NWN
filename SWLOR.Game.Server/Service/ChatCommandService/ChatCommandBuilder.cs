@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
 {
     public class ChatCommandBuilder
     {
-        private readonly Dictionary<string, ChatCommandDetail> _chatCommands = new Dictionary<string, ChatCommandDetail>();
+        private readonly Dictionary<string, ChatCommandDetail> _chatCommands = new();
         private ChatCommandDetail _currentDetail;
 
         /// <summary>

@@ -1,13 +1,36 @@
-﻿using System.Numerics;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.NWN.API.NWScript.Enum;
+﻿using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Events.Attributes;
+using SWLOR.Shared.Events.Events.Module;
+using System;
+using System.Numerics;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class TileMagic
+    public class TileMagicService : ITileMagicService
     {
+        private readonly ILogger _logger;
+
+        public TileMagicService(ILogger logger)
+        {
+            _logger = logger;
+        }
+
+        /// When the module loads, load the tile magic configured on every area.
+        [ScriptHandler<OnModuleLoad>]
+        public void ApplyAreaConfiguration()
+        {
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            {
+                ApplyTileMagic(area);
+            }
+        }
+
         /// <summary>
         /// Spawns tilemagic across an area. Will only draw across the specified number of columns and rows.
         /// </summary>
@@ -16,7 +39,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="columns">The number of columns to draw</param>
         /// <param name="rows">The number of rows to draw</param>
         /// <param name="zOffset">The Z-Offset to draw at.</param>
-        public static void ChangeAreaGroundTiles(uint area, TileMagicType tileType, int columns, int rows, float zOffset = -0.4f)
+        private void ChangeAreaGroundTiles(uint area, TileMagicType tileType, int columns, int rows, float zOffset = -0.4f)
         {
             var x = 5.0f;
             var z = zOffset;
@@ -44,7 +67,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="area">The area to draw in</param>
         /// <param name="tileType">The type of tile to draw.</param>
         /// <param name="zOffset">The Z-Offset to draw at</param>
-        public static void ChangeAreaGroundTiles(uint area, TileMagicType tileType, float zOffset = -0.4f)
+        private void ChangeAreaGroundTiles(uint area, TileMagicType tileType, float zOffset = -0.4f)
         {
             ChangeAreaGroundTiles(area, tileType, GetAreaSize(Dimension.Width, area), GetAreaSize(Dimension.Height, area), zOffset);
         }
@@ -53,7 +76,7 @@ namespace SWLOR.Game.Server.Service
         /// Removes all tiles created by tile magic from a given area.
         /// </summary>
         /// <param name="area">The area to reset.</param>
-        public static void ResetAreaGroundTiles(uint area)
+        private void ResetAreaGroundTiles(uint area)
         {
             for (var placeable = GetFirstObjectInArea(area); GetIsObjectValid(placeable); placeable = GetNextObjectInArea(area))
             {
@@ -64,5 +87,26 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Applies tile magic to a specific area, if configured.
+        /// </summary>
+        /// <param name="area">The area to apply to</param>
+        private void ApplyTileMagic(uint area)
+        {
+            var zPosition = GetLocalFloat(area, "TILE_MAGIC_Z");
+            var tileTypeId = GetLocalInt(area, "TILE_MAGIC_TYPE");
+
+            if (tileTypeId <= 0) return;
+
+            try
+            {
+                var tile = (TileMagicType)tileTypeId;
+                ChangeAreaGroundTiles(area, tile, zPosition);
+            }
+            catch (Exception ex)
+            {
+                _logger.Write<ErrorLogGroup>($"Area {GetName(area)} has an invalid tile magic type. Please fix the local variable. Exception: {ex.ToMessageAndCompleteStacktrace()}");
+            }
+        }
     }
 }

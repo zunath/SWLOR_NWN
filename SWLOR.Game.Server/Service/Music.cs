@@ -14,8 +14,8 @@ namespace SWLOR.Game.Server.Service
     public class Music
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly Dictionary<int, Song> _songs = new Dictionary<int,Song>();
-        private static readonly Dictionary<int, Song> _playerBattleSongs = new Dictionary<int, Song>();
+        private static readonly Dictionary<int, Song> _songs = new();
+        private static readonly Dictionary<int, Song> _playerBattleSongs = new();
 
         public class Song
         {

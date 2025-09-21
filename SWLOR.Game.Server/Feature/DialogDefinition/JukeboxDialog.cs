@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition

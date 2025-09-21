@@ -5,8 +5,8 @@ namespace SWLOR.Shared.Core.Async
 {
     public sealed class MainThreadSynchronizationContext : SynchronizationContext, IAwaitable
     {
-        private readonly List<QueuedTask> _queuedTasks = new List<QueuedTask>();
-        private readonly List<QueuedTask> _currentWork = new List<QueuedTask>();
+        private readonly List<QueuedTask> _queuedTasks = new();
+        private readonly List<QueuedTask> _currentWork = new();
 
         public void Update()
         {

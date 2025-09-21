@@ -7,14 +7,15 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class OneHandedPerkDefinition : IPerkListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private readonly PerkBuilder _builder = new();
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
@@ -331,7 +332,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
             if (Item.ShieldBaseItemTypes.Contains(itemType))
             {
-                if (Random.D100(1) <= 10)
+                if (_random.D100(1) <= 10)
                 {
                     if (Perk.GetPerkLevel(defender, PerkType.Alacrity) > 0)
                     {

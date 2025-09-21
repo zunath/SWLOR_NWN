@@ -6,8 +6,8 @@ namespace SWLOR.Game.Server.Service.ItemService
 {
     public class ItemBuilder
     {
-        private readonly Dictionary<string, ItemDetail> _items = new Dictionary<string, ItemDetail>();
-        private readonly List<ItemDetail> _activeItems = new List<ItemDetail>();
+        private readonly Dictionary<string, ItemDetail> _items = new();
+        private readonly List<ItemDetail> _activeItems = new();
 
         /// <summary>
         /// Creates a new item.

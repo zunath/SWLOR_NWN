@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;

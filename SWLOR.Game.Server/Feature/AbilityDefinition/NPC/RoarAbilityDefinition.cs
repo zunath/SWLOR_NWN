@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
     public class RoarAbilityDefinition: IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new AbilityBuilder();
+        private readonly AbilityBuilder _builder = new();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {

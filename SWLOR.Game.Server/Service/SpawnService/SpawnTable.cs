@@ -4,11 +4,13 @@ using System.Linq;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service.SpawnService
 {
     public class SpawnTable
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         public string Name { get; set; }
         public int RespawnDelayMinutes { get; set; }
         public int ResourceDespawnMinutes { get; set; }
@@ -51,7 +53,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
             if (filteredList.Count <= 0) return null;
 
             var weights = filteredList.Select(s => s.Weight).ToArray();
-            var index = Random.GetRandomWeightedIndex(weights);
+            var index = _random.GetRandomWeightedIndex(weights);
             
             // If GetRandomWeightedIndex returns -1 (no valid weights), return null
             if (index == -1 || index >= filteredList.Count)

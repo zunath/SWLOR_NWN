@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const string _blank = "Blank";
 
         private int SelectedShipIndex { get; set; }
-        private List<string> _shipIds { get; set; } = new List<string>();
+        private List<string> _shipIds { get; set; } = new();
         private Location _spaceLocation;
         private Location _landingLocation;
         private PlanetType _planetType;

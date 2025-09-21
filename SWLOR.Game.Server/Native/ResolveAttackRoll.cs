@@ -19,7 +19,6 @@ using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using FeatType = SWLOR.NWN.API.NWScript.Enum.FeatType;
 using ImmunityType = NWN.Native.API.ImmunityType;
 using ObjectType = NWN.Native.API.ObjectType;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -27,6 +26,7 @@ namespace SWLOR.Game.Server.Native
     {
         private static readonly IScriptExecutor _scriptExecutor = ServiceContainer.GetService<IScriptExecutor>();
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         // Attack result constants
         private const int AttackResultAutomaticHit = 7;
         private const int AttackResultRegularHit = 1;
@@ -295,7 +295,7 @@ namespace SWLOR.Game.Server.Native
                 //---------------------------------------------------------------------------------------------
                 //---------------------------------------------------------------------------------------------
                 //---------------------------------------------------------------------------------------------
-                var attackRoll = Random.Next(1, 100);
+                var attackRoll = _random.Next(1, 100);
                 var hitRate = Combat.CalculateHitRate(attackerAccuracy + accuracyModifiers, defenderEvasion, percentageModifier);
                 var isHit = attackRoll <= hitRate;
 
@@ -311,7 +311,7 @@ namespace SWLOR.Game.Server.Native
                 if (isHit)
                 {
                     var criticalStat = attackerStats.GetDEXStat();
-                    var criticalRoll = Random.Next(1, 100);
+                    var criticalRoll = _random.Next(1, 100);
                     var criticalBonus = CalculateCriticalHitBonus(attacker, weapon);
                     var criticalRate = Combat.CalculateCriticalRate(criticalStat, defender.m_pStats.GetSTRStat(), criticalBonus);
 
@@ -585,7 +585,7 @@ namespace SWLOR.Game.Server.Native
 
             defender.m_ScriptVars.SetInt(new CExoString("RESOLVE_ATTACK_ROLL_DEFLECT_BLASTER"), 1);
 
-            var deflectRoll = Random.Next(1, 100);
+            var deflectRoll = _random.Next(1, 100);
             var deflectChance = 0;
 
             if (saberBlock) deflectChance += SaberDeflectChance;

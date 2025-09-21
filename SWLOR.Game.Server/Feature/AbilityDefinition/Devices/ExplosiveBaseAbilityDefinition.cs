@@ -6,12 +6,13 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public abstract class ExplosiveBaseAbilityDefinition: IAbilityListDefinition
     {
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
         private const string ExplosiveItemResref = "explosives";
 
         public abstract Dictionary<FeatType, AbilityDetail> BuildAbilities();
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 return;
 
             var chanceToNotConsume = 10 * Perk.GetPerkLevel(activator, PerkType.DemolitionExpert);
-            if (Random.D100(1) <= chanceToNotConsume)
+            if (_random.D100(1) <= chanceToNotConsume)
                 return;
 
             var item = GetItemPossessedBy(activator, ExplosiveItemResref);

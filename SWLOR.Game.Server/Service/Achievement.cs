@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static Gui.IdReservation _idReservation;
-        private static readonly Dictionary<AchievementType, AchievementAttribute> _activeAchievements = new Dictionary<AchievementType, AchievementAttribute>();
+        private static readonly Dictionary<AchievementType, AchievementAttribute> _activeAchievements = new();
 
         [ScriptHandler<OnModuleLoad>]
         public static void ReserveGuiIds()

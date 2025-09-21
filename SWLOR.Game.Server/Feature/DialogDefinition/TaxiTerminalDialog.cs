@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.KeyItemService;
@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
     public class TaxiTerminalDialog: DialogBase
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly ITaxiService _taxiService = ServiceContainer.GetService<ITaxiService>();
         
         private const string MainPageId = "MAIN_PAGE";
 
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             var player = GetPC();
             var regionId = GetLocalInt(OBJECT_SELF, "TAXI_REGION_ID");
-            var destinations = Taxi.GetDestinationsByRegionId(regionId);
+            var destinations = _taxiService.GetDestinationsByRegionId(regionId);
             var destinationId = GetLocalInt(OBJECT_SELF, "TAXI_DESTINATION_ID");
             var destinationType = (TaxiDestinationType) destinationId;
 
@@ -66,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 {
                     page.AddResponse(ColorToken.Green("[REGISTER LOCATION]"), () =>
                     {
-                        Taxi.RegisterTaxiDestination(player, destinationType);
+                        _taxiService.RegisterTaxiDestination(player, destinationType);
                     });
                 }
 

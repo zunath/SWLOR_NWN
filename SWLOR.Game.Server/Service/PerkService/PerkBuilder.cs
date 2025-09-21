@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Service.PerkService
 {
     public class PerkBuilder
     {
-        private readonly Dictionary<PerkType, PerkDetail> _perks = new Dictionary<PerkType, PerkDetail>();
+        private readonly Dictionary<PerkType, PerkDetail> _perks = new();
         private PerkDetail _activePerk;
         private PerkLevel _activeLevel;
 

@@ -18,18 +18,18 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         // All categories/key items
-        private static readonly Dictionary<KeyItemCategoryType, KeyItemCategoryAttribute> _allCategories = new Dictionary<KeyItemCategoryType, KeyItemCategoryAttribute>();
-        private static readonly Dictionary<KeyItemType, KeyItemAttribute> _allKeyItems = new Dictionary<KeyItemType, KeyItemAttribute>();
-        private static readonly Dictionary<KeyItemCategoryType, List<KeyItemType>> _allKeyItemsByCategory = new Dictionary<KeyItemCategoryType, List<KeyItemType>>();
+        private static readonly Dictionary<KeyItemCategoryType, KeyItemCategoryAttribute> _allCategories = new();
+        private static readonly Dictionary<KeyItemType, KeyItemAttribute> _allKeyItems = new();
+        private static readonly Dictionary<KeyItemCategoryType, List<KeyItemType>> _allKeyItemsByCategory = new();
 
         // Active categories/key items
-        private static readonly Dictionary<KeyItemType, KeyItemAttribute> _activeKeyItems = new Dictionary<KeyItemType, KeyItemAttribute>();
-        private static readonly Dictionary<KeyItemCategoryType, KeyItemCategoryAttribute> _activeKeyItemCategories = new Dictionary<KeyItemCategoryType, KeyItemCategoryAttribute>();
-        private static readonly Dictionary<KeyItemCategoryType, Dictionary<KeyItemType, KeyItemAttribute>> _activeKeyItemsByCategory = new Dictionary<KeyItemCategoryType, Dictionary<KeyItemType, KeyItemAttribute>>();
+        private static readonly Dictionary<KeyItemType, KeyItemAttribute> _activeKeyItems = new();
+        private static readonly Dictionary<KeyItemCategoryType, KeyItemCategoryAttribute> _activeKeyItemCategories = new();
+        private static readonly Dictionary<KeyItemCategoryType, Dictionary<KeyItemType, KeyItemAttribute>> _activeKeyItemsByCategory = new();
 
         // By key item type name or Id
-        private static readonly Dictionary<string, KeyItemType> _keyItemsByTypeName = new Dictionary<string, KeyItemType>();
-        private static readonly Dictionary<int, KeyItemType> _keyItemsByTypeId = new Dictionary<int, KeyItemType>();
+        private static readonly Dictionary<string, KeyItemType> _keyItemsByTypeName = new();
+        private static readonly Dictionary<int, KeyItemType> _keyItemsByTypeId = new();
 
         /// <summary>
         /// When the module loads, cache all key item data.

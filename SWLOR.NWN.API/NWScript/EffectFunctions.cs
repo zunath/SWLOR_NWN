@@ -1111,7 +1111,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="vTranslate">The translation vector (default: new Vector3())</param>
         /// <param name="vRotate">The rotation vector (default: new Vector3())</param>
         /// <returns>The Visual Effect</returns>
-        public static Effect EffectVisualEffect(VisualEffect visualEffectID, bool nMissEffect = false, float fScale = 1.0f, Vector3 vTranslate = new Vector3(), Vector3 vRotate = new Vector3())
+        public static Effect EffectVisualEffect(VisualEffect visualEffectID, bool nMissEffect = false, float fScale = 1.0f, Vector3 vTranslate = new(), Vector3 vRotate = new())
         {
             return global::NWN.Core.NWScript.EffectVisualEffect((int)visualEffectID, nMissEffect ? 1 : 0, fScale, vTranslate, vRotate);
         }

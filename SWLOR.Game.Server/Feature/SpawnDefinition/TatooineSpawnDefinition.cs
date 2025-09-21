@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SpawnService;
 using SWLOR.NWN.API.NWScript.Enum;
-using Random = SWLOR.Game.Server.Service.Random;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
     public class TatooineSpawnDefinition: ISpawnListDefinition
     {
-        private readonly SpawnTableBuilder _builder = new SpawnTableBuilder();
+        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly SpawnTableBuilder _builder = new();
 
         public Dictionary<string, SpawnTable> BuildSpawnTables()
         {
@@ -163,17 +165,17 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "vtattbountyhunt")
                 .RandomlyWalks()
                 .WithFrequency(16)
-                .RespawnDelay(60 + Random.D100(1))
+                .RespawnDelay(60 + _random.D100(1))
 
                 .AddSpawn(ObjectType.Creature, "vdatthrancor")
                 .RandomlyWalks()
                 .WithFrequency(3)
-                .RespawnDelay(60 + Random.D100(1))
+                .RespawnDelay(60 + _random.D100(1))
 
                 .AddSpawn(ObjectType.Creature, "vtattkrayt")
                 .RandomlyWalks()
                 .WithFrequency(1)
-                .RespawnDelay(60 + Random.D100(1));
+                .RespawnDelay(60 + _random.D100(1));
         }
     }
 }

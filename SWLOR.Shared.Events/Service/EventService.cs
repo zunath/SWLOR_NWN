@@ -11,7 +11,7 @@ namespace SWLOR.Shared.Events.Service
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly Dictionary<string, List<Action<object>>> _namedEventHandlers = new();
-        private readonly object _lock = new object();
+        private readonly object _lock = new();
 
         public EventService(IEventAggregator eventAggregator)
         {

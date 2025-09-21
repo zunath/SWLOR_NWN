@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
 {
     public class AbilityBuilder
     {
-        private readonly Dictionary<FeatType, AbilityDetail> _abilities = new Dictionary<FeatType, AbilityDetail>();
+        private readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
         private AbilityDetail _activeAbility;
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         private int SelectedUserIndex { get; set; }
-        private readonly List<string> _userIds = new List<string>();
+        private readonly List<string> _userIds = new();
 
         public string StatusText
         {

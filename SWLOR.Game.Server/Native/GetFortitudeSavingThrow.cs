@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Native
 {
     public static unsafe class GetFortitudeSavingThrow
     {
-        private static readonly IScriptExecutor _scriptExecutor = ServiceContainer.GetService<IScriptExecutor>();
+        private static IScriptExecutor _scriptExecutor;
         // Hash constants for ruleset entries (computed using djb2 hash algorithm)
         private const uint LUCKOFHEROES_SAVE_BONUS_HASH = 0x390339C3; // djb2 hash of "LUCKOFHEROES_SAVE_BONUS"
 
@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.Native
         [ScriptHandler<OnModuleLoad>]
         public static void RegisterHook()
         {
+            _scriptExecutor = ServiceContainer.GetService<IScriptExecutor>();
+            
             delegate* unmanaged<void*, int, sbyte> pHook = &OnGetFortitudeSavingThrow;
             var functionPtr = NativeLibrary.GetExport(
                 NativeLibrary.GetMainProgramHandle(), "_ZN17CNWSCreatureStats18GetFortSavingThrowEi");

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;

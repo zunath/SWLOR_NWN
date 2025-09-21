@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -18,10 +19,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class CharacterStatRebuildViewModel: GuiViewModelBase<CharacterStatRebuildViewModel, GuiPayloadBase>
     {
         private readonly IDatabaseService _db;
+        private readonly IRecastService _recastService;
 
-        public CharacterStatRebuildViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        public CharacterStatRebuildViewModel(IGuiService guiService, IDatabaseService db, IRecastService recastService) : base(guiService)
         {
             _db = db;
+            _recastService = recastService;
         }
         
         [ScriptHandler(ScriptName.OnBuyStatRebuild)]
@@ -42,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var (isOnDelay, timeToWait) = Recast.IsOnRecastDelay(player, RecastGroup.StatRebuild);
+            var (isOnDelay, timeToWait) = _recastService.IsOnRecastDelay(player, RecastGroup.StatRebuild);
             if (isOnDelay)
             {
                 FloatingTextStringOnCreature(ColorToken.Red($"Another stat rebuild can be performed in {timeToWait}."), player, false);
@@ -304,7 +307,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                var (isOnDelay, timeToWait) = Recast.IsOnRecastDelay(Player, RecastGroup.StatRebuild);
+                var (isOnDelay, timeToWait) = _recastService.IsOnRecastDelay(Player, RecastGroup.StatRebuild);
                 if (isOnDelay)
                 {
                     FloatingTextStringOnCreature(ColorToken.Red($"Another stat rebuild can be performed in {timeToWait}."), Player, false);
@@ -349,7 +352,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Currency.TakeCurrency(Player, CurrencyType.StatRefundToken, 1);
 
                 const int DelaySeconds = CooldownDays * 86400;
-                Recast.ApplyRecastDelay(Player, RecastGroup.StatRebuild, DelaySeconds, true);
+                _recastService.ApplyRecastDelay(Player, RecastGroup.StatRebuild, DelaySeconds, true);
             });
         };
     }

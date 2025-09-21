@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NWNX.NET;
 using SWLOR.Shared.Abstractions.Contracts;

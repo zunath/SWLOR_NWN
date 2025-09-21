@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Shared.Core.Models;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Delegates;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -17,7 +19,7 @@ using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class PerkService : IPerkService
+    public class Perk : IPerkService
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
@@ -40,7 +42,7 @@ namespace SWLOR.Game.Server.Service
         private readonly Dictionary<PerkType, Dictionary<int, int>> _perkLevelTiers = new();
         private readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
 
-        public PerkService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IBeastMasteryService beastMasteryService)
+        public Perk(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IBeastMasteryService beastMasteryService)
         {
             _logger = logger;
             _db = db;
@@ -81,7 +83,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Caches perk information into various dictionaries for quicker look-ups later.
         /// </summary>
-        private static void CachePerks()
+        private void CachePerks()
         {
             Console.WriteLine("PerkService.CachePerks() called - starting perk cache initialization...");
             
@@ -187,7 +189,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Populates pre-computed caches for fast retrieval without LINQ.
         /// </summary>
-        private static void PopulatePreComputedCaches()
+        private void PopulatePreComputedCaches()
         {
             // Initialize group dictionaries
             foreach (PerkGroupType groupType in Enum.GetValues<PerkGroupType>())
@@ -246,7 +248,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Caches character type information.
         /// </summary>
-        private static void CacheCharacterTypes()
+        private void CacheCharacterTypes()
         {
             _characterTypeCache = _cacheService.BuildEnumCache<CharacterType, CharacterTypeAttribute>()
                 .WithAllItems()
@@ -259,7 +261,7 @@ namespace SWLOR.Game.Server.Service
         /// Handles organizing triggers so future activation is quicker.
         /// </summary>
         /// <param name="perk">The perk to cache triggers for.</param>
-        private static void CacheTriggers(PerkDetail perk)
+        private void CacheTriggers(PerkDetail perk)
         {
             // Equipped Triggers: Fires when an item is equipped.
             if (perk.EquippedTriggers.Count > 0)
@@ -519,7 +521,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static int GetPlayerPerkLevel(uint player, PerkType perkType)
+        private int GetPlayerPerkLevel(uint player, PerkType perkType)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
@@ -559,7 +561,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="dbPlayer">The database entity</param>
         /// <param name="perkType">The type of perk</param>
         /// <returns>The effective level for a given player and perk</returns>
-        private static int GetPlayerEffectivePerkLevel(uint player, Player dbPlayer, PerkType perkType)
+        private int GetPlayerEffectivePerkLevel(uint player, Player dbPlayer, PerkType perkType)
         {
             var playerPerkLevel = dbPlayer.Perks.ContainsKey(perkType) ? dbPlayer.Perks[perkType] : 0;
 
@@ -567,7 +569,7 @@ namespace SWLOR.Game.Server.Service
             if (playerPerkLevel <= 0) return 0;
 
             // Retrieve perk levels at or below player's perk level and then order them from highest level to lowest.
-            var perk = _perkService.GetPerkDetails(perkType);
+            var perk = GetPerkDetails(perkType);
             var perkLevels = perk.PerkLevels
                 .Where(x => x.Key <= playerPerkLevel)
                 .OrderByDescending(o => o.Key);
@@ -626,7 +628,7 @@ namespace SWLOR.Game.Server.Service
             if (beastPerkLevel <= 0) return 0;
 
             // Retrieve perk levels at or below player's perk level and then order them from highest level to lowest.
-            var perk = _perkService.GetPerkDetails(perkType);
+            var perk = GetPerkDetails(perkType);
             var perkLevels = perk.PerkLevels
                 .Where(x => x.Key <= beastPerkLevel)
                 .OrderByDescending(o => o.Key);
@@ -696,7 +698,7 @@ namespace SWLOR.Game.Server.Service
                 if (!dbPlayer.Perks.ContainsKey(perkType))
                     continue;
 
-                var perkDetail = _perkService.GetPerkDetails(perkType);
+                var perkDetail = GetPerkDetails(perkType);
                 var effectiveLevel = GetPlayerEffectivePerkLevel(player, perkType);
                 var currentLevel = dbPlayer.Perks[perkType];
 

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Service.LanguageService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Shared.Core.Models;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
@@ -14,19 +16,21 @@ using SkillType = SWLOR.Shared.Core.Enums.SkillType;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class LanguageService : ILanguageService
+    public class Language : ILanguageService
     {
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
         private readonly ISkillService _skillService;
+        private readonly IStatusEffectService _statusEffectService;
         private Dictionary<SkillType, ITranslator> _translators = new();
         private readonly TranslatorGeneric _genericTranslator = new();
 
-        public LanguageService(IDatabaseService db, IRandomService random, ISkillService skillService)
+        public Language(IDatabaseService db, IRandomService random, ISkillService skillService, IStatusEffectService statusEffectService)
         {
             _db = db;
             _random = random;
             _skillService = skillService;
+            _statusEffectService = statusEffectService;
         }
 
         /// <summary>
@@ -106,13 +110,13 @@ namespace SWLOR.Game.Server.Service
             // Check for the Comprehend Speech concentration ability.
             var grantSenseXP = false;
             var statusEffectBonus = 0;
-            if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech1))
+            if (_statusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech1))
                 statusEffectBonus = 5;
-            else if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech2))
+            else if (_statusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech2))
                 statusEffectBonus = 10;
-            else if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech3))
+            else if (_statusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech3))
                 statusEffectBonus = 15;
-            else if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech4))
+            else if (_statusEffectService.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech4))
                 statusEffectBonus = 20;
 
             if (statusEffectBonus > 0)
@@ -275,15 +279,15 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private IEnumerable<LanguageCommand> _languages;
+        private IEnumerable<SWLOR.Shared.Core.Models.LanguageCommand> _languages;
 
-        public IEnumerable<LanguageCommand> Languages
+        public IEnumerable<SWLOR.Shared.Core.Models.LanguageCommand> Languages
         {
             get
             {
                 if (_languages == null)
                 {
-                    var languages = new List<LanguageCommand>
+                    var languages = new List<SWLOR.Shared.Core.Models.LanguageCommand>
                     {
                         new("Basic", SkillType.Basic, new [] { "basic" }),
                         new("Bothese", SkillType.Bothese, new[] {"bothese"}),

@@ -1,9 +1,10 @@
-﻿using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using System.Collections.Generic;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -17,14 +18,16 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         private readonly ISpaceService _spaceService;
         private readonly IEnmityService _enmityService;
         private readonly ICombatPointService _combatPointService;
+        private readonly IMessagingService _messagingService;
         private readonly ShipModuleBuilder _builder = new();
 
-        public RepairFieldGeneratorModuleDefinition(IDatabaseService db, ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService)
+        public RepairFieldGeneratorModuleDefinition(IDatabaseService db, ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService, IMessagingService messagingService)
         {
             _db = db;
             _spaceService = spaceService;
             _enmityService = enmityService;
             _combatPointService = combatPointService;
+            _messagingService = messagingService;
         }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
@@ -97,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
 
                     _enmityService.ModifyEnmityOnAll(activator, 100 + repairAmount);
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {recovery} armor HP to nearby ships.");
+                    _messagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {recovery} armor HP to nearby ships.");
                     _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }

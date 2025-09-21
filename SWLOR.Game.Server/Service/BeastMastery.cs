@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,10 +12,10 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -27,7 +25,7 @@ using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class BeastMastery
+    public class BeastMastery : IBeastMasteryService
     {
         private readonly IDatabaseService _db;
         private readonly IRandomService _random;
@@ -39,6 +37,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IStatService _statService;
         private readonly IPropertyService _propertyService;
         private readonly IActivityService _activityService;
+        private readonly ITimeService _timeService;
 
         public BeastMastery(
             IDatabaseService db,
@@ -50,7 +49,8 @@ namespace SWLOR.Game.Server.Service
             IItemService itemService,
             IStatService statService,
             IPropertyService propertyService,
-            IActivityService activityService)
+            IActivityService activityService,
+            ITimeService timeService)
         {
             _db = db;
             _random = random;
@@ -62,20 +62,21 @@ namespace SWLOR.Game.Server.Service
             _statService = statService;
             _propertyService = propertyService;
             _activityService = activityService;
+            _timeService = timeService;
         }
         
         // Cached data
-        private static IInterfaceCache<BeastType, BeastDetail> _beastCache;
-        private static IEnumCache<BeastRoleType, BeastRoleAttribute> _beastRoleCache;
+        private IInterfaceCache<BeastType, BeastDetail> _beastCache;
+        private IEnumCache<BeastRoleType, BeastRoleAttribute> _beastRoleCache;
         
         // Additional caches for complex data
-        private static List<BeastFoodType> _beastFoods = new();
-        private static readonly Dictionary<int, float> _incubationPercentages = new();
+        private List<BeastFoodType> _beastFoods = new();
+        private readonly Dictionary<int, float> _incubationPercentages = new();
 
         private const string BeastResref = "pc_beast";
         public const string BeastClawResref = "beast_claw";
         public const int MaxLevel = 50;
-        private static int _highestDelta;
+        private int _highestDelta;
 
         public BeastMastery(
             IDatabaseService db,
@@ -374,7 +375,7 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
-        private static void ApplyStats(uint beast)
+        private void ApplyStats(uint beast)
         {
             var beastId = GetBeastId(beast);
             var dbBeast = _db.Get<Beast>(beastId);
@@ -472,7 +473,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler(ScriptName.OnSpaceEnter)]
         [ScriptHandler<OnAssociateRemoveBefore>]
-        public static void RemoveAssociate()
+        public void RemoveAssociate()
         {
             var player = OBJECT_SELF;
             var beast = GetAssociate(AssociateType.Henchman, player);
@@ -507,7 +508,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnBeastBlocked)]
-        public static void BeastOnBlocked()
+        public void BeastOnBlocked()
         {
             ExecuteScript("x0_ch_hen_block", OBJECT_SELF);
         }
@@ -525,19 +526,19 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnBeastConversation)]
-        public static void BeastOnConversation()
+        public void BeastOnConversation()
         {
             ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
         [ScriptHandler(ScriptName.OnBeastDamaged)]
-        public static void BeastOnDamaged()
+        public void BeastOnDamaged()
         {
             ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
         }
 
         [ScriptHandler(ScriptName.OnBeastDeath)]
-        public static void BeastOnDeath()
+        public void BeastOnDeath()
         {
             var beast = OBJECT_SELF;
             ExecuteScript("x2_hen_death", beast);
@@ -553,7 +554,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnBeastDisturbed)]
-        public static void BeastOnDisturbed()
+        public void BeastOnDisturbed()
         {
             ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
         }
@@ -566,14 +567,14 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnBeastPerception)]
-        public static void BeastOnPerception()
+        public void BeastOnPerception()
         {
             ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
 
         }
 
         [ScriptHandler(ScriptName.OnBeastAttacked)]
-        public static void BeastOnPhysicalAttacked()
+        public void BeastOnPhysicalAttacked()
         {
             ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
 
@@ -604,14 +605,14 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnBeastSpellCast)]
-        public static void BeastOnSpellCastAt()
+        public void BeastOnSpellCastAt()
         {
             ExecuteScript("x2_hen_spell", OBJECT_SELF);
 
         }
 
         [ScriptHandler(ScriptName.OnBeastUserDefined)]
-        public static void BeastOnUserDefined()
+        public void BeastOnUserDefined()
         {
             ExecuteScript("x0_ch_hen_usrdef", OBJECT_SELF);
         }
@@ -630,7 +631,7 @@ namespace SWLOR.Game.Server.Service
             _guiService.TogglePlayerWindow(player, GuiWindowType.Stables, null, OBJECT_SELF);
         }
 
-        private static readonly Dictionary<int, int> _beastXPRequirements = new()
+        private readonly Dictionary<int, int> _beastXPRequirements = new()
         {
             { 0,   2200 },
             { 1,   3300 },
@@ -735,7 +736,7 @@ namespace SWLOR.Game.Server.Service
             { 100, 1600000 }
         };
 
-        private static readonly Dictionary<int, int> _deltaXP = new()
+        private readonly Dictionary<int, int> _deltaXP = new()
         {
             { 6, 1200 },
             { 5, 1050 },
@@ -755,7 +756,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="itemPropertyId">The incubation stat Id</param>
         /// <returns>The percentage associated or 0.0 if not found.</returns>
-        public static float GetIncubationPercentageById(int itemPropertyId)
+        public float GetIncubationPercentageById(int itemPropertyId)
         {
             return !_incubationPercentages.ContainsKey(itemPropertyId) 
                 ? 0f 
@@ -794,7 +795,7 @@ namespace SWLOR.Game.Server.Service
                 if (incubatorJob.DateCompleted > now)
                 {
                     var delta = incubatorJob.DateCompleted - now;
-                    var completionTime = Time.GetTimeLongIntervals(delta, false);
+                    var completionTime = _timeService.GetTimeLongIntervals(delta, false);
                     SendMessageToPC(player, $"Another player's incubation job is active. This job will complete in: {completionTime}.");
                 }
                 else
@@ -809,7 +810,7 @@ namespace SWLOR.Game.Server.Service
             _guiService.TogglePlayerWindow(player, GuiWindowType.Incubator, payload, player);
         }
 
-        private static BeastType DetermineMutation(BeastType beastType, IncubationJob job)
+        private BeastType DetermineMutation(BeastType beastType, IncubationJob job)
         {
             var beast = GetBeastDetail(beastType);
 
@@ -847,7 +848,7 @@ namespace SWLOR.Game.Server.Service
             return BeastType.Invalid;
         }
 
-        public static void CreateBeastEgg(IncubationJob job, uint player)
+        public void CreateBeastEgg(IncubationJob job, uint player)
         {
             var egg = CreateItemOnObject(BeastEggResref, player);
 
@@ -891,7 +892,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to check</param>
         /// <returns>true if used in incubation, false otherwise</returns>
-        public static bool IsIncubationCraftingItem(uint item)
+        public bool IsIncubationCraftingItem(uint item)
         {
             var tag = GetTag(item);
             var resref = GetResRef(item);
@@ -904,7 +905,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to check</param>
         /// <returns>true if beast egg, false otherwise</returns>
-        public static bool IsBeastEgg(uint item)
+        public bool IsBeastEgg(uint item)
         {
             return GetResRef(item) == BeastEggResref;
         }
@@ -913,7 +914,7 @@ namespace SWLOR.Game.Server.Service
         /// When a property is removed, also remove any associated incubation jobs.
         /// </summary>
         [ScriptHandler(ScriptName.OnSwlorDeleteProperty)]
-        public static void OnRemoveProperty()
+        public void OnRemoveProperty()
         {
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
             var dbQuery = new DBQuery<IncubationJob>()
@@ -930,7 +931,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player clicks a "DNA Extract" object, they get a message stating to use the extractor item on it.
         /// </summary>
         [ScriptHandler(ScriptName.OnDNAExtractUsed)]
-        public static void UseExtractDNAObject()
+        public void UseExtractDNAObject()
         {
             var player = GetLastUsedBy();
             SendMessageToPC(player, ColorToken.Red("Use a DNA Extractor on this corpse to retrieve its DNA."));

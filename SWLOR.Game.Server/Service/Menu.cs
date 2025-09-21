@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Service

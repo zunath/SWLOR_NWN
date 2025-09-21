@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;

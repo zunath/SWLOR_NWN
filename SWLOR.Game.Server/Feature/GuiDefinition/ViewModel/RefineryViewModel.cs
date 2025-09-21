@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.UI.Component;
@@ -19,12 +20,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly IItemCacheService _itemCache;
         private readonly IPerkService _perkService;
         private readonly ISkillService _skillService;
+        private readonly ITargetingService _targetingService;
 
-        public RefineryViewModel(IGuiService guiService, IItemCacheService itemCache, IPerkService perkService, ISkillService skillService) : base(guiService)
+        public RefineryViewModel(IGuiService guiService, IItemCacheService itemCache, IPerkService perkService, ISkillService skillService, ITargetingService targetingService) : base(guiService)
         {
             _itemCache = itemCache;
             _perkService = perkService;
             _skillService = skillService;
+            _targetingService = targetingService;
         }
         private class OreDetail
         {
@@ -202,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return true;
             }
 
-            Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please select a resource to refine.", (item) =>
+            _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please select a resource to refine.", (item) =>
             {
                 if (!ValidateItem(item))
                     return;

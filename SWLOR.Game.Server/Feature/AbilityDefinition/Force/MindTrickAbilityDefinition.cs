@@ -1,25 +1,28 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class MindTrickAbilityDefinition : IAbilityListDefinition
     {
         private readonly ICombatService _combatService;
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
-        public MindTrickAbilityDefinition(ICombatService combatService, CombatPoint combatPoint, IEnmityService enmityService)
+        public MindTrickAbilityDefinition(ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService)
         {
             _combatService = combatService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -66,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 effect = TagEffect(effect, EffectTag);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6f);
             }
-            _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
             Enmity.ModifyEnmity(activator, target, 400);
         }
 
@@ -115,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         }
                         targetCreature = GetNextObjectInShape(Shape.Sphere, Radius, GetLocation(target), true);
                     }
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
                 });
         }
     }

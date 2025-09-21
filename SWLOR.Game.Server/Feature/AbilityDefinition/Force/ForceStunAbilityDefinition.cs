@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -13,12 +16,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private const float AOESize = RadiusSize.Medium;
         private readonly ICombatService _combatService;
         private readonly IAbilityService _abilityService;
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
 
-        public ForceStunAbilityDefinition(ICombatService combatService, CombatPoint combatPoint)
+        public ForceStunAbilityDefinition(ICombatService combatService, ICombatPointService combatPointService)
         {
             _combatService = combatService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -55,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6.1f);
             }
 
-            _combatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
+            _combatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
 
             Enmity.ModifyEnmity(source, target, 850);
         }

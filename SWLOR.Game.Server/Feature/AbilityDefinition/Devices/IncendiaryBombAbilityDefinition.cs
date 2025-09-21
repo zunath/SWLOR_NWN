@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 
@@ -16,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
 
-        public IncendiaryBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, CombatPoint combatPoint, IEnmityService enmityService) 
+        public IncendiaryBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService) 
             : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
         {
             _combatService = combatService;
@@ -130,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         20f);
 
                     _enmityService.ModifyEnmityOnAll(activator, 250);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -159,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         40f);
 
                     _enmityService.ModifyEnmityOnAll(activator, 350);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -188,14 +191,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         60f);
 
                     _enmityService.ModifyEnmityOnAll(activator, 450);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
-                });
-        }
-    }
-}
-
-                    _enmityService.ModifyEnmityOnAll(activator, 450);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
     }

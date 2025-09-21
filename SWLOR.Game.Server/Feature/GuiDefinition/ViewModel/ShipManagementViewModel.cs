@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
@@ -27,12 +27,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly IDatabaseService _db;
         private readonly IItemService _itemService;
         private readonly IPropertyService _propertyService;
+        private readonly ITargetingService _targetingService;
 
-        public ShipManagementViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService, IPropertyService propertyService) : base(guiService)
+        public ShipManagementViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService, IPropertyService propertyService, ITargetingService targetingService) : base(guiService)
         {
             _db = db;
             _itemService = itemService;
             _propertyService = propertyService;
+            _targetingService = targetingService;
         }
         
         private const string _blank = "Blank";
@@ -1300,7 +1302,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickRegisterShip() => () =>
         {
-            Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship deed within your inventory.",
+            _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship deed within your inventory.",
                 item =>
             {
                 if (GetItemPossessor(item) != Player)
@@ -1532,7 +1534,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Put player into targeting mode to select a module.
             if (module == null)
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship high-powered module within your inventory.",
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship high-powered module within your inventory.",
                     item => 
                 {
                     dbShip = _db.Get<PlayerShip>(shipId);
@@ -1602,7 +1604,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Put player into targeting mode to select a module.
             if (module == null)
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a low-powered ship module within your inventory",
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a low-powered ship module within your inventory",
                     item =>
                 {
                     dbShip = _db.Get<PlayerShip>(shipId);
@@ -1673,7 +1675,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Put player into targeting mode to select a module.
             if (module == null)
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship configuration module within your inventory",
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Please click on a ship configuration module within your inventory",
                     item =>
                     {
                         dbShip = _db.Get<PlayerShip>(shipId);

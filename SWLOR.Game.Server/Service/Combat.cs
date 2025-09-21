@@ -19,7 +19,7 @@ using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class CombatService : ICombatService
+    public class Combat : ICombatService
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IStatService _statService;
         private readonly List<CombatDamageType> _allValidDamageTypes = new();
 
-        public CombatService(ILogger logger, IDatabaseService db, IRandomService random, IItemService itemService, IAbilityService abilityService, IPerkService perkService, IStatService statService)
+        public Combat(ILogger logger, IDatabaseService db, IRandomService random, IItemService itemService, IAbilityService abilityService, IPerkService perkService, IStatService statService)
         {
             _logger = logger;
             _db = db;

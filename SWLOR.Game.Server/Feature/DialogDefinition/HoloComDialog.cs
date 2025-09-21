@@ -8,7 +8,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class HoloComDialog: DialogBase
     {
+        private readonly IHoloComService _holoComService;
         private const string MainPageId = "MAIN_PAGE";
+
+        public HoloComDialog(IHoloComService holoComService)
+        {
+            _holoComService = holoComService;
+        }
         
         public override PlayerDialog SetUp(uint player)
         {
@@ -29,23 +35,23 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 return;
             }
 
-            if (ServiceContainer.GetService<IHoloComService>().IsInCall(player))
+            if (_holoComService.IsInCall(player))
             {
-                var activeCallTarget = HoloCom.GetTargetForActiveCall(player);
+                var activeCallTarget = _holoComService.GetTargetForActiveCall(player);
                 page.AddResponse($"End current call with {GetName(activeCallTarget)}", () =>
                 {
-                    HoloCom.SetIsInCall(player, activeCallTarget, false);
+                    _holoComService.SetIsInCall(player, activeCallTarget, false);
                     EndConversation();
                 });
             }
 
-            if (HoloCom.IsCallReceiver(player) && !HoloCom.IsInCall(player))
+            if (_holoComService.IsCallReceiver(player) && !_holoComService.IsInCall(player))
             {
-                var callSender = HoloCom.GetCallSender(player);
+                var callSender = _holoComService.GetCallSender(player);
                 var callerName = GetName(callSender);
                 page.AddResponse($"Answer incoming call from {callerName}", () =>
                 {
-                    HoloCom.SetIsInCall(player, callSender, true);
+                    _holoComService.SetIsInCall(player, callSender, true);
                     EndConversation();
                 });
                 page.AddResponse($"Decline incoming call from {callerName}", () =>
@@ -54,16 +60,16 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     SendMessageToPC(callSender, "Your HoloCom call was declined.");
                     
                     // Clean up call attempt state
-                    HoloCom.CleanupCallAttempt(callSender, player);
+                    _holoComService.CleanupCallAttempt(callSender, player);
                     
                     EndConversation();
                 });
             }
 
             // Add cancel call option for outgoing calls
-            if (HoloCom.IsCallSender(player) && !HoloCom.IsInCall(player))
+            if (_holoComService.IsCallSender(player) && !_holoComService.IsInCall(player))
             {
-                var callReceiver = HoloCom.GetCallReceiver(player);
+                var callReceiver = _holoComService.GetCallReceiver(player);
                 if (GetIsObjectValid(callReceiver))
                 {
                     var receiverName = GetName(callReceiver);
@@ -73,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         SendMessageToPC(callReceiver, "Your HoloCom stops buzzing.");
                         
                         // Clean up call attempt state
-                        HoloCom.CleanupCallAttempt(player, callReceiver);
+                        _holoComService.CleanupCallAttempt(player, callReceiver);
                         
                         SendMessageToPC(player, "You cancel your HoloCom call.");
                         EndConversation();
@@ -85,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     page.AddResponse("Cancel outgoing call", () =>
                     {
                         // Clean up call attempt state
-                        HoloCom.CleanupCallAttempt(player, callReceiver);
+                        _holoComService.CleanupCallAttempt(player, callReceiver);
                         
                         SendMessageToPC(player, "You cancel your HoloCom call.");
                         EndConversation();
@@ -93,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 }
             }
 
-            if (HoloCom.IsCallReceiver(player) || HoloCom.IsInCall(player) || HoloCom.IsCallSender(player)) 
+            if (_holoComService.IsCallReceiver(player) || _holoComService.IsInCall(player) || _holoComService.IsCallSender(player)) 
                 return;
 
             for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
@@ -102,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     continue;
 
                 var message = $"Call {GetName(pc)}";
-                if (HoloCom.IsInCall(pc))
+                if (_holoComService.IsInCall(pc))
                 {
                     message += ColorToken.Red(" (LINE BUSY)");
                 }
@@ -110,9 +116,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var receiver = pc;
                 page.AddResponse(message, () =>
                 {
-                    if (!HoloCom.IsInCall(receiver) && !Space.IsPlayerInSpaceMode(player) && !Space.IsPlayerInSpaceMode(receiver))
+                    if (!_holoComService.IsInCall(receiver) && !Space.IsPlayerInSpaceMode(player) && !Space.IsPlayerInSpaceMode(receiver))
                     {
-                        HoloCom.SetIsCallSender(player);
+                        _holoComService.SetIsCallSender(player);
                         DelayCommand(1.0f, () =>
                         {
                             CallPlayer(player, receiver);
@@ -130,27 +136,27 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 // Clean up any remaining call attempt state
                 if (GetIsObjectValid(sender))
                 {
-                    HoloCom.CleanupCallAttempt(sender, receiver);
+                    _holoComService.CleanupCallAttempt(sender, receiver);
                     SendMessageToPC(sender, "Your HoloCom call went unanswered.");
                 }
                 return;
             }
 
-            if (HoloCom.IsInCall(sender) || HoloCom.IsInCall(receiver)) return;
+            if (_holoComService.IsInCall(sender) || _holoComService.IsInCall(receiver)) return;
 
-            if (!HoloCom.IsCallSender(sender)) return;
+            if (!_holoComService.IsCallSender(sender)) return;
 
             var receiverName = GetName(receiver);
-            SendMessageToPC(sender, "You wait for " + receiverName + " to answer their HoloCom.");
+            SendMessageToPC(sender, "You wait for " + receiverName + " to answer their _holoComService.");
 
-            HoloCom.SetIsCallSender(sender);
-            HoloCom.SetIsCallSender(receiver, false);
-            HoloCom.SetCallSender(sender, sender);
-            HoloCom.SetCallSender(receiver, sender);
-            HoloCom.SetIsCallReceiver(sender, false);
-            HoloCom.SetIsCallReceiver(receiver);
-            HoloCom.SetCallReceiver(sender, receiver);
-            HoloCom.SetCallReceiver(receiver, receiver);
+            _holoComService.SetIsCallSender(sender);
+            _holoComService.SetIsCallSender(receiver, false);
+            _holoComService.SetCallSender(sender, sender);
+            _holoComService.SetCallSender(receiver, sender);
+            _holoComService.SetIsCallReceiver(sender, false);
+            _holoComService.SetIsCallReceiver(receiver);
+            _holoComService.SetCallReceiver(sender, receiver);
+            _holoComService.SetCallReceiver(receiver, receiver);
 
             var message = "Your HoloCom buzzes as you are receiving a call.";
             if (Random(10) == 1)
@@ -158,14 +164,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 message += " " + ColorToken.Green("Maybe you should answer it.");
             }
             SendMessageToPC(receiver, message);
-            if (HoloCom.GetCallAttempt(sender) % 5 == 0)
+            if (_holoComService.GetCallAttempt(sender) % 5 == 0)
             {
                 FloatingTextStringOnCreature(message, receiver);
             }
 
-            if (HoloCom.GetCallAttempt(sender) <= 15)
+            if (_holoComService.GetCallAttempt(sender) <= 15)
             {
-                HoloCom.SetCallAttempt(sender, HoloCom.GetCallAttempt(sender) + 1);
+                _holoComService.SetCallAttempt(sender, _holoComService.GetCallAttempt(sender) + 1);
                 DelayCommand(5.0f, () => { CallPlayer(sender, receiver); });
             }
             else
@@ -174,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 SendMessageToPC(receiver, "Your HoloCom stops buzzing.");
 
                 // the following call cleans everything up even if a call isn't currently connected.
-                HoloCom.SetIsInCall(sender, receiver, false);
+                _holoComService.SetIsInCall(sender, receiver, false);
             }
         }
     }

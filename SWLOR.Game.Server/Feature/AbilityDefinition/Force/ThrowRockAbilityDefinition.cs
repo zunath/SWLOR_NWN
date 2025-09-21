@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -12,13 +16,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     {
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
 
-        public ThrowRockAbilityDefinition(ICombatService combatService, IStatService statService, CombatPoint combatPoint)
+        public ThrowRockAbilityDefinition(ICombatService combatService, IStatService statService, ICombatPointService combatPointService)
         {
             _combatService = combatService;
             _statService = statService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -79,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Dust_Explosion);
 
             Enmity.ModifyEnmity(activator, target, damage);
-            _combatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
 
             DelayCommand(delay, () =>
             {

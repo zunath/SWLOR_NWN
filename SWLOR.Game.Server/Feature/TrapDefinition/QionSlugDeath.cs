@@ -1,6 +1,7 @@
 
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Creature;
 
@@ -8,11 +9,17 @@ namespace SWLOR.Game.Server.Feature.TrapDefinition
 {
     public class SpawnLarvaeOnSlugDeath
     {
+        private readonly IMessagingService _messagingService;
+
+        public SpawnLarvaeOnSlugDeath(IMessagingService messagingService)
+        {
+            _messagingService = messagingService;
+        }
         /// <summary>
         /// When this creature dies, he'll spawn more creatures - for example, a large worm exploding into swarms of small bugs.
         /// </summary>
         [ScriptHandler<OnCreatureDeathBefore>]
-        public static void CreatureDeath()
+        public void CreatureDeath()
         {
             if (GetTag(OBJECT_SELF) != "qion_hive_slug")
                 return;
@@ -31,12 +38,12 @@ namespace SWLOR.Game.Server.Feature.TrapDefinition
         /// It has to be ChatChannel.DMTalk - it won't work if it's ChatChannel.PlayerTalk.
         /// </summary>
         [ScriptHandler<OnCreatureSpawnAfter>]
-        public static void MessageOnDeath()
+        public void MessageOnDeath()
         {
             if (GetTag(OBJECT_SELF) != "qion_hive_larvae")
                 return;
                 
-            Messaging.SendMessageNearbyToPlayers(OBJECT_SELF, "A ravenous larvae that had been clinging onto the Qion Hive Slug dislodges itself upon its host's demise; and with it, clouds of buzzing flesh flies.", 30f);
+            _messagingService.SendMessageNearbyToPlayers(OBJECT_SELF, "A ravenous larvae that had been clinging onto the Qion Hive Slug dislodges itself upon its host's demise; and with it, clouds of buzzing flesh flies.", 30f);
         }
     }
 }

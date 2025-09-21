@@ -1,24 +1,28 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceRageAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
+        private readonly IStatusEffectService _statusEffectService;
 
-        public ForceRageAbilityDefinition(CombatPoint combatPoint, IEnmityService enmityService)
+        public ForceRageAbilityDefinition(ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService)
         {
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _enmityService = enmityService;
+            _statusEffectService = statusEffectService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -44,10 +48,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 {
                     var willpowerBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 30f;
 
-                    StatusEffect.Apply(activator, target, StatusEffectType.ForceRage1, 60f * 15f + willpowerBonus);
+                    _statusEffectService.Apply(activator, target, StatusEffectType.ForceRage1, 60f * 15f + willpowerBonus);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
 
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
                     _enmityService.ModifyEnmityOnAll(activator, 250 * level);
                 });
         }
@@ -67,10 +71,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 {
                     var willpowerBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 30f;
 
-                    StatusEffect.Apply(activator, target, StatusEffectType.ForceRage2, 60f * 15f + willpowerBonus);
+                    _statusEffectService.Apply(activator, target, StatusEffectType.ForceRage2, 60f * 15f + willpowerBonus);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
 
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
                     _enmityService.ModifyEnmityOnAll(activator, 250 * level);
                 });
         }

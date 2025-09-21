@@ -1,24 +1,26 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class SnarlGrowlAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
         private readonly BeastMastery _beastMastery;
 
-        public SnarlGrowlAbilityDefinition(CombatPoint combatPoint, IEnmityService enmityService, BeastMastery beastMastery)
+        public SnarlGrowlAbilityDefinition(ICombatPointService combatPointService, IEnmityService enmityService, BeastMastery beastMastery)
         {
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _enmityService = enmityService;
             _beastMastery = beastMastery;
         }
@@ -78,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Red), activator);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Yellow), beast);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
 
@@ -108,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Red), beast);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Crt_Yellow), activator);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
     }

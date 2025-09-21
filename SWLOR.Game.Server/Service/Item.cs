@@ -5,15 +5,15 @@ using System.Numerics;
 using System.Text;
 
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.ActivityService;
-using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Caching.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -24,30 +24,32 @@ using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class ItemService : IItemService
+    public class Item : IItemService
     {
         private readonly ILogger _logger;
         private readonly IGenericCacheService _cacheService;
         private readonly IPerkService _perkService;
         private readonly IActivityService _activityService;
+        private readonly IRecastService _recastService;
         
         // Cached data
-        private IInterfaceCache<string, ItemDetail> _itemCache;
+        private IInterfaceCache<string, SWLOR.Shared.Core.Models.ItemDetail> _itemCache;
         
         // Pre-computed cache for fast retrieval
-        private readonly Dictionary<string, ItemDetail> _allItems = new();
+        private readonly Dictionary<string, SWLOR.Shared.Core.Models.ItemDetail> _allItems = new();
         
         // Additional caches for complex data
         private readonly Dictionary<int, int[]> _2daCache = new();
         private readonly Dictionary<BaseItem, AbilityType> _itemToDamageAbilityMapping = new();
         private readonly Dictionary<BaseItem, AbilityType> _itemToAccuracyAbilityMapping = new();
 
-        public ItemService(ILogger logger, IGenericCacheService cacheService, IPerkService perkService, IActivityService activityService)
+        public Item(ILogger logger, IGenericCacheService cacheService, IPerkService perkService, IActivityService activityService, IRecastService recastService)
         {
             _logger = logger;
             _cacheService = cacheService;
             _perkService = perkService;
             _activityService = activityService;
+            _recastService = recastService;
         }
 
         /// <summary>
@@ -62,7 +64,7 @@ namespace SWLOR.Game.Server.Service
         }
         public void Load2DACache()
         {
-            _itemCache = _cacheService.BuildInterfaceCache<IItemListDefinition, string, ItemDetail>()
+            _itemCache = _cacheService.BuildInterfaceCache<IItemListDefinition, string, SWLOR.Shared.Core.Models.ItemDetail>()
                 .WithDataExtractor(instance => instance.BuildItems())
                 .Build();
 
@@ -326,7 +328,7 @@ namespace SWLOR.Game.Server.Service
             // Check recast cooldown
             if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
             {
-                var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(user, (RecastGroup)itemDetail.RecastGroup);
+                var (isOnRecast, timeToWait) = _recastService.IsOnRecastDelay(user, (RecastGroup)itemDetail.RecastGroup);
                 if (isOnRecast)
                 {
                     SendMessageToPC(user, $"This item can be used in {timeToWait}.");
@@ -429,7 +431,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (itemDetail.RecastGroup != null && itemDetail.RecastCooldown != null)
                     {
-                        Recast.ApplyRecastDelay(user, (RecastGroup)itemDetail.RecastGroup, (float)itemDetail.RecastCooldown, true);
+                        _recastService.ApplyRecastDelay(user, (RecastGroup)itemDetail.RecastGroup, (float)itemDetail.RecastCooldown, true);
                     }
 
                     // Reduce item charge if specified.

@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
@@ -13,11 +17,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly IStatusEffectService _statusEffectService;
 
-        public DiseasedTouchAbilityDefinition(ICombatService combatService, IStatService statService)
+        public DiseasedTouchAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService)
         {
             _combatService = combatService;
             _statService = statService;
+            _statusEffectService = statusEffectService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -61,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
-                StatusEffect.Apply(activator, target, StatusEffectType.Disease, 30f, level);
+                _statusEffectService.Apply(activator, target, StatusEffectType.Disease, 30f, level);
             }
 
             Enmity.ModifyEnmity(activator, target, 250 + damage);

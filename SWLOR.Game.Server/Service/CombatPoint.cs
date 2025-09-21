@@ -17,7 +17,7 @@ using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class CombatPoint
+    public class CombatPoint : ICombatPointService
     {
         private readonly IDatabaseService _db;
         private readonly ISkillService _skillService;
@@ -221,27 +221,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Removes all combat points for a player as well as all other cache references.
-        /// </summary>
-        /// <param name="player">The player whose cache data we're removing</param>
-        private void ClearPlayerCombatPoints(uint player)
-        {
-            if (!_playerToCreatureTracker.ContainsKey(player)) return;
-
-            // Loop over all npcIds the player has linked to them.
-            var npcIds = _playerToCreatureTracker[player];
-            foreach (var npcId in npcIds)
-            {
-                if (!_creatureCombatPointTracker.ContainsKey(npcId)) continue;
-
-                if (!_creatureCombatPointTracker[npcId].ContainsKey(player)) continue;
-                _creatureCombatPointTracker[npcId].Remove(player);
-            }
-
-            _playerToCreatureTracker.Remove(player);
-        }
-
-        /// <summary>
         /// Adds a combat point for a player to an NPC on a skill.
         /// </summary>
         /// <param name="player">The player receiving the point</param>
@@ -282,16 +261,20 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Updates the level of the last creature associated with an added combat point.
-        /// Also refreshes the expiration time by 2 minutes.
+        /// Adds a combat point for a player to all NPCs s/he is currently tagged on.
         /// </summary>
-        /// <param name="player">The player to update.</param>
-        /// <param name="level">The new level to assign.</param>
-        private void UpdateLastCreatureLevel(uint player, int level)
+        /// <param name="player">The player to receiving the point.</param>
+        /// <param name="skill">The skill to associate with the point.</param>
+        /// <param name="amount">The number of points to add.</param>
+        public void AddCombatPointToAllTagged(uint player, SkillType skill, int amount = 1)
         {
-            var expiration = DateTime.UtcNow.AddMinutes(2);
-            SetLocalInt(player, "COMBAT_POINT_LAST_NPC_LEVEL", level);
-            SetLocalString(player, "COMBAT_POINT_LAST_NPC_EXPIRATION", expiration.ToString("yyyy-MM-dd HH:mm:ss"));
+            if (!_playerToCreatureTracker.ContainsKey(player))
+                return;
+
+            foreach (var creature in _playerToCreatureTracker[player])
+            {
+                AddCombatPoint(player, creature, skill, amount);
+            }
         }
 
         /// <summary>
@@ -344,20 +327,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Adds a combat point for a player to all NPCs s/he is currently tagged on.
+        /// Updates the level of the last creature associated with an added combat point.
+        /// Also refreshes the expiration time by 2 minutes.
         /// </summary>
-        /// <param name="player">The player to receiving the point.</param>
-        /// <param name="skill">The skill to associate with the point.</param>
-        /// <param name="amount">The number of points to add.</param>
-        public void AddCombatPointToAllTagged(uint player, SkillType skill, int amount = 1)
+        /// <param name="player">The player to update.</param>
+        /// <param name="level">The new level to assign.</param>
+        private void UpdateLastCreatureLevel(uint player, int level)
         {
-            if (!_playerToCreatureTracker.ContainsKey(player))
-                return;
-
-            foreach (var creature in _playerToCreatureTracker[player])
-            {
-                AddCombatPoint(player, creature, skill, amount);
-            }
+            var expiration = DateTime.UtcNow.AddMinutes(2);
+            SetLocalInt(player, "COMBAT_POINT_LAST_NPC_LEVEL", level);
+            SetLocalString(player, "COMBAT_POINT_LAST_NPC_EXPIRATION", expiration.ToString("yyyy-MM-dd HH:mm:ss"));
         }
 
         /// <summary>
@@ -365,7 +344,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player whose reference we're attaching.</param>
         /// <param name="creature">The creature we're referencing</param>
-        public void AddPlayerToNPCReferenceToCache(uint player, uint creature)
+        private void AddPlayerToNPCReferenceToCache(uint player, uint creature)
         {
             if (!_playerToCreatureTracker.ContainsKey(player))
             {
@@ -391,6 +370,27 @@ namespace SWLOR.Game.Server.Service
             {
                 _playerToCreatureTracker[player].Remove(npc);
             }
+        }
+
+        /// <summary>
+        /// Removes all combat points for a player as well as all other cache references.
+        /// </summary>
+        /// <param name="player">The player whose cache data we're removing</param>
+        private void ClearPlayerCombatPoints(uint player)
+        {
+            if (!_playerToCreatureTracker.ContainsKey(player)) return;
+
+            // Loop over all npcIds the player has linked to them.
+            var npcIds = _playerToCreatureTracker[player];
+            foreach (var npcId in npcIds)
+            {
+                if (!_creatureCombatPointTracker.ContainsKey(npcId)) continue;
+
+                if (!_creatureCombatPointTracker[npcId].ContainsKey(player)) continue;
+                _creatureCombatPointTracker[npcId].Remove(player);
+            }
+
+            _playerToCreatureTracker.Remove(player);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Shared.Core.Models;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -24,7 +25,7 @@ using ResearchJob = SWLOR.Shared.Core.Data.Entity.ResearchJob;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class CraftService : ICraftService
+    public class Craft : ICraftService
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IItemService _itemService;
         private readonly IPropertyService _propertyService;
 
-        public CraftService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IItemCacheService itemCache, IGuiService guiService, IPerkService perkService, IItemService itemService, IPropertyService propertyService)
+        public Craft(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IItemCacheService itemCache, IGuiService guiService, IPerkService perkService, IItemService itemService, IPropertyService propertyService)
         {
             _logger = logger;
             _db = db;

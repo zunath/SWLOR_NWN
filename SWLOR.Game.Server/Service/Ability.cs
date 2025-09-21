@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Shared.Core.Models;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -18,16 +17,18 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class AbilityService : IAbilityService
+    public class Ability : IAbilityService
     {
         private readonly IDatabaseService _db;
         private readonly IGenericCacheService _cacheService;
         private readonly IStatService _statService;
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly IPerkService _perkService;
         private readonly IPartyService _partyService;
         private readonly IActivityService _activityService;
         private readonly IMessagingService _messagingService;
+        private readonly IRecastService _recastService;
+        private readonly IStatusEffectService _statusEffectService;
         
         // Cached data
         private IInterfaceCache<FeatType, AbilityDetail> _abilityCache;
@@ -40,16 +41,18 @@ namespace SWLOR.Game.Server.Service
         private readonly Dictionary<AbilityToggleType, Action<uint, bool>> _toggleActions = new();
         private readonly Dictionary<uint, PlayerAura> _playerAuras = new();
 
-        public AbilityService(IDatabaseService db, IGenericCacheService cacheService, IStatService statService, IPerkService perkService, IPartyService partyService, CombatPoint combatPoint, IActivityService activityService, IMessagingService messagingService)
+        public Ability(IDatabaseService db, IGenericCacheService cacheService, IStatService statService, IPerkService perkService, IPartyService partyService, ICombatPointService combatPointService, IActivityService activityService, IMessagingService messagingService, IRecastService recastService, IStatusEffectService statusEffectService)
         {
             _db = db;
             _cacheService = cacheService;
             _statService = statService;
             _perkService = perkService;
             _partyService = partyService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _activityService = activityService;
             _messagingService = messagingService;
+            _recastService = recastService;
+            _statusEffectService = statusEffectService;
         }
 
         private const int MaxNumberOfAuras = 4;
@@ -216,7 +219,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Check if ability is on a recast timer still.
-            var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(activator, ability.RecastGroup);
+            var (isOnRecast, timeToWait) = _recastService.IsOnRecastDelay(activator, ability.RecastGroup);
             if (isOnRecast)
             {
                 SendMessageToPC(activator, $"This ability can be used in {timeToWait}.");
@@ -331,7 +334,7 @@ namespace SWLOR.Game.Server.Service
         public void StartConcentrationAbility(uint creature, uint target, FeatType feat, StatusEffectType statusEffectType)
         {
             _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(target, feat, statusEffectType);
-            StatusEffect.Apply(creature, target, statusEffectType, 0.0f, null, feat);
+            _statusEffectService.Apply(creature, target, statusEffectType, 0.0f, null, feat);
 
             _messagingService.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
             SetLocalBool(creature, "CONCENTRATION_FIRST_USE", true);
@@ -363,7 +366,7 @@ namespace SWLOR.Game.Server.Service
             if (_activeConcentrationAbilities.ContainsKey(creature))
             {
                 var activeConcentrationEffect = _activeConcentrationAbilities[creature];
-                StatusEffect.Remove(creature, activeConcentrationEffect.StatusEffectType);
+                _statusEffectService.Remove(creature, activeConcentrationEffect.StatusEffectType);
                 _activeConcentrationAbilities.Remove(creature);
 
                 SendMessageToPC(creature, "You stop concentrating.");
@@ -488,7 +491,7 @@ namespace SWLOR.Game.Server.Service
             if (aura.Auras.Count <= 0)
                 return;
 
-            _combatPoint.AddCombatPoint(player, target, SkillType.Leadership);
+            _combatPointService.AddCombatPoint(player, target, SkillType.Leadership);
         }
 
         private static int GetMaxNumberOfAuras(uint activator)
@@ -514,21 +517,21 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var maxAuras = GetMaxNumberOfAuras(activator);
-            var detail = StatusEffect.GetDetail(type);
+            var detail = _statusEffectService.GetDetail(type);
 
             while (aura.Auras.Count >= maxAuras)
             {
                 var removeType = aura.Auras[0].Type;
                 if (aura.Auras[0].TargetsSelf)
                 {
-                    StatusEffect.Remove(activator, removeType, false);
+                    _statusEffectService.Remove(activator, removeType, false);
                 }
 
                 if (aura.Auras[0].TargetsParty)
                 {
                     foreach (var member in aura.PartyMembersInRange)
                     {
-                        StatusEffect.Remove(member, removeType, false);
+                        _statusEffectService.Remove(member, removeType, false);
                     }
                 }
 
@@ -536,7 +539,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var npc in aura.CreaturesInRange)
                     {
-                        StatusEffect.Remove(npc, removeType, false);
+                        _statusEffectService.Remove(npc, removeType, false);
                     }
                 }
 
@@ -547,7 +550,7 @@ namespace SWLOR.Game.Server.Service
 
             if (targetsSelf)
             {
-                StatusEffect.Apply(activator, activator, type, 0f, activator);
+                _statusEffectService.Apply(activator, activator, type, 0f, activator);
             }
 
             SendMessageToPC(activator, ColorToken.Green($"Aura '{detail.Name}' activated."));
@@ -565,20 +568,20 @@ namespace SWLOR.Game.Server.Service
             var existing = aura.Auras.FirstOrDefault(x => x.Type == type);
             if (existing != null)
             {
-                var statusEffect = StatusEffect.GetDetail(type);
+                var statusEffect = _statusEffectService.GetDetail(type);
 
                 SendMessageToPC(activator, ColorToken.Red($"Aura '{statusEffect.Name}' deactivated."));
 
                 if (existing.TargetsSelf)
                 {
-                    StatusEffect.Remove(activator, type, false);
+                    _statusEffectService.Remove(activator, type, false);
                 }
 
                 if (existing.TargetsParty)
                 {
                     foreach (var member in aura.PartyMembersInRange)
                     {
-                        StatusEffect.Remove(member, type, false);
+                        _statusEffectService.Remove(member, type, false);
                     }
                 }
 
@@ -586,7 +589,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var npc in aura.CreaturesInRange)
                     {
-                        StatusEffect.Remove(npc, type, false);
+                        _statusEffectService.Remove(npc, type, false);
                     }
                 }
 
@@ -612,14 +615,14 @@ namespace SWLOR.Game.Server.Service
             {
                 if (aura.TargetsSelf)
                 {
-                    StatusEffect.Remove(activator, aura.Type);
+                    _statusEffectService.Remove(activator, aura.Type);
                 }
 
                 if (aura.TargetsParty)
                 {
                     foreach (var member in auraDetails.PartyMembersInRange)
                     {
-                        StatusEffect.Remove(member, aura.Type, false);
+                        _statusEffectService.Remove(member, aura.Type, false);
                     }
                 }
 
@@ -627,7 +630,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var npc in auraDetails.CreaturesInRange)
                     {
-                        StatusEffect.Remove(npc, aura.Type, false);
+                        _statusEffectService.Remove(npc, aura.Type, false);
                     }
                 }
             }
@@ -739,7 +742,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (detail.TargetsParty)
                     {
-                        StatusEffect.Apply(self, entering, detail.Type, 0f, self);
+                        _statusEffectService.Apply(self, entering, detail.Type, 0f, self);
                     }
                 }
             }
@@ -756,7 +759,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (detail.TargetsEnemies)
                     {
-                        StatusEffect.Apply(self, entering, detail.Type, 0f, self);
+                        _statusEffectService.Apply(self, entering, detail.Type, 0f, self);
                     }
                 }
             }
@@ -785,7 +788,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (detail.TargetsParty)
                     {
-                        StatusEffect.Remove(exiting, detail.Type, false);
+                        _statusEffectService.Remove(exiting, detail.Type, false);
                     }
                 }
             }
@@ -801,7 +804,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (detail.TargetsEnemies)
                     {
-                        StatusEffect.Remove(exiting, detail.Type, false);
+                        _statusEffectService.Remove(exiting, detail.Type, false);
                     }
                 }
             }

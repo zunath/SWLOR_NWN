@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.DroidService
+namespace SWLOR.Game.Server.Service.DroidService
 {
     public interface IDroidPersonality
     {

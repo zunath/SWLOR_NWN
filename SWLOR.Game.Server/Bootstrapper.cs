@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
@@ -8,17 +9,17 @@ namespace SWLOR.Game.Server
     {
         public static void Bootstrap()
         {
-            InitializeDependencyInjection();
+            var serviceProvider = InitializeDependencyInjection();
 
             // Bootstrap the server
-            var serverManager = ServiceContainer.GetService<IServerManager>();
+            var serverManager = serviceProvider.GetRequiredService<IServerManager>();
             serverManager.Bootstrap();
         }
 
         /// <summary>
         /// Initializes the dependency injection container with all game services.
         /// </summary>
-        private static void InitializeDependencyInjection()
+        private static IServiceProvider InitializeDependencyInjection()
         {
             var services = new ServiceCollection();
             
@@ -30,6 +31,8 @@ namespace SWLOR.Game.Server
             
             // Initialize the static service container
             ServiceContainer.Initialize(serviceProvider);
+            
+            return serviceProvider;
         }
     }
 }

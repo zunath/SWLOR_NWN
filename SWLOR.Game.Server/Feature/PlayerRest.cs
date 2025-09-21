@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
@@ -73,12 +74,12 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            StatusEffect.Apply(player, player, StatusEffectType.Rest, 0f);
+            ServiceContainer.GetService<IStatusEffectService>().Apply(player, player, StatusEffectType.Rest, 0f);
 
             var henchman = GetAssociate(AssociateType.Henchman, player);
             if (GetIsObjectValid(henchman))
             {
-                StatusEffect.Apply(henchman, henchman, StatusEffectType.Rest, 0f);
+                ServiceContainer.GetService<IStatusEffectService>().Apply(henchman, henchman, StatusEffectType.Rest, 0f);
             }
 
             ExecuteScript(ScriptName.OnRestStarted, player);

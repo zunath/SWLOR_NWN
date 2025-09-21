@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -28,14 +28,16 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private readonly IGuiService _guiService;
         private readonly Communication _communication;
         private readonly IHoloComService _holoComService;
+        private readonly IRecastService _recastService;
 
-        public CharacterChatCommand(IDatabaseService db, IAbilityService abilityService, IGuiService guiService, Communication communication, IHoloComService holoComService)
+        public CharacterChatCommand(IDatabaseService db, IAbilityService abilityService, IGuiService guiService, Communication communication, IHoloComService holoComService, IRecastService recastService)
         {
             _db = db;
             _abilityService = abilityService;
             _guiService = guiService;
             _communication = communication;
             _holoComService = holoComService;
+            _recastService = recastService;
         }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
@@ -85,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var daysOldMessage = daysOld == 1 ? "day old" : "days old";
                     var statRebuild = "Now";
 
-                    var (isOnDelay, timeToWait) = Recast.IsOnRecastDelay(user, RecastGroup.StatRebuild);
+                    var (isOnDelay, timeToWait) = _recastService.IsOnRecastDelay(user, RecastGroup.StatRebuild);
                     if (isOnDelay)
                     {
                         statRebuild = timeToWait;

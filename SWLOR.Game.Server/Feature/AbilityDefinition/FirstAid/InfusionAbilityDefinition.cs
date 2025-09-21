@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
@@ -12,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private const string Tier1Tag = "ABILITY_INFUSION_1";
         private const string Tier2Tag = "ABILITY_INFUSION_2";
 
-        public InfusionAbilityDefinition(IRandomService random, IPerkService perkService, CombatPoint combatPoint, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPoint, enmityService, abilityService)
+        public InfusionAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPoint, enmityService, abilityService)
         {
         }
 
@@ -60,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
             TakeStimPack(activator);
             _enmityService.ModifyEnmityOnAll(activator, 5 * amount);
-            _combatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
         }
 
         private void Infusion1()

@@ -7,13 +7,20 @@ using SWLOR.Shared.Events.Events.Creature;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class CreatureDeathAnimation
+    public class CreatureDeathAnimation
     {
+        private readonly IAnimationPlayerService _animationPlayerService;
+
+        public CreatureDeathAnimation(IAnimationPlayerService animationPlayerService)
+        {
+            _animationPlayerService = animationPlayerService;
+        }
+
         [ScriptHandler<OnCreatureDeathAfter>]
-        public static void OnDeath()
+        public void OnDeath()
         {
             var creature = OBJECT_SELF;
-            ServiceContainer.GetService<IAnimationPlayerService>().Play(creature, AnimationEvent.CreatureOnDeath);
+            _animationPlayerService.Play(creature, AnimationEvent.CreatureOnDeath);
         }
     }
 }

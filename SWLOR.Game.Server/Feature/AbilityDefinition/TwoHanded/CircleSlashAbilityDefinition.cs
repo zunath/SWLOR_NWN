@@ -1,13 +1,16 @@
-﻿//using Random = SWLOR.Game.Server.Service.Random;
+//using Random = SWLOR.Game.Server.Service.Random;
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
@@ -17,16 +20,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         private readonly IAbilityService _abilityService;
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
-        public CircleSlashAbilityDefinition(IItemService itemService, IAbilityService abilityService, ICombatService combatService, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
+        public CircleSlashAbilityDefinition(IItemService itemService, IAbilityService abilityService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
         {
             _itemService = itemService;
             _abilityService = abilityService;
             _combatService = combatService;
             _statService = statService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _enmityService = enmityService;
         }
 
@@ -103,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     DelayCommand(0.1f, () =>
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), dTarget));
 
-                    _combatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
+                    _combatPointService.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
                     _enmityService.ModifyEnmity(activator, creature, 100 * level + damage);
                     count++;
                 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Contracts;
 

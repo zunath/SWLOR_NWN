@@ -7,14 +7,14 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class LightsaberAudio
+    public class LightsaberAudio
     {
         /// <summary>
         /// When a lightsaber or saberstaff is equipped, play an audio sound of the saber turning on and then apply
         /// an effect which plays the saber humming sound effect.
         /// </summary>
         [ScriptHandler<OnModuleEquip>]
-        public static void EquipLightsaber()
+        public void EquipLightsaber()
         {
             var player = GetPCItemLastEquippedBy();
             var item = GetPCItemLastEquipped();
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature
         /// play an audio sound of the saber turning off.
         /// </summary>
         [ScriptHandler<OnModuleUnequip>]
-        public static void UnequipLightsaber()
+        public void UnequipLightsaber()
         {
             var player = GetPCItemLastUnequippedBy();
             var item = GetPCItemLastUnequipped();

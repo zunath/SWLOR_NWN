@@ -23,7 +23,7 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class SpawnService : ISpawnService
+    public class Spawn : ISpawnService
     {
         private readonly ILogger _logger;
         private readonly IRandomService _random;

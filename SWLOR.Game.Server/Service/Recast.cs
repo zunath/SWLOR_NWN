@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
@@ -15,15 +14,17 @@ using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Recast
+    public class Recast : IRecastService
     {
         private readonly IDatabaseService _db;
+        private readonly IStatusEffectService _statusEffectService;
         // Recast Group Descriptions
         private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new();
 
-        public Recast(IDatabaseService db)
+        public Recast(IDatabaseService db, IStatusEffectService statusEffectService)
         {
             _db = db;
+            _statusEffectService = statusEffectService;
         }
 
         [ScriptHandler<OnModuleCacheBefore>]
@@ -125,7 +126,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (!ignoreRecastReduction)
                 {
-                    var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(activator, StatusEffectType.Food);
+                    var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(activator, StatusEffectType.Food);
                     var recastReduction = dbPlayer.AbilityRecastReduction;
                     if (foodEffect != null)
                     {

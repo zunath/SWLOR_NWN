@@ -1,13 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -18,18 +18,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         protected readonly IPerkService _perkService;
         protected readonly IStatService _statService;
         protected readonly ICombatService _combatService;
-        protected readonly CombatPoint _combatPoint;
+        protected readonly ICombatPointService _combatPointService;
         protected readonly IEnmityService _enmityService;
+        protected readonly IStatusEffectService _statusEffectService;
 
-        protected ExplosiveBaseAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, CombatPoint combatPoint, IEnmityService enmityService)
+        protected ExplosiveBaseAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService)
         {
             _random = random;
             _itemService = itemService;
             _perkService = perkService;
             _statService = statService;
             _combatService = combatService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _enmityService = enmityService;
+            _statusEffectService = statusEffectService;
         }
         private const string ExplosiveItemResref = "explosives";
 

@@ -1,20 +1,23 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class ConcussionGrenadeAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
         private readonly AbilityBuilder _builder = new();
-        private readonly CombatPoint _combatPointService;
+        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
-        public ConcussionGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, CombatPoint combatPointService, IEnmityService enmityService) 
+        public ConcussionGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, ICombatPointService combatPointService, IEnmityService enmityService) 
             : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService)
         {
             _combatPointService = combatPointService;

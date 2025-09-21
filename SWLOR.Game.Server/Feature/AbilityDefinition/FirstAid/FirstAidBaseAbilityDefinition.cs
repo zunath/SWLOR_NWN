@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
@@ -14,17 +15,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private readonly IRandomService _random;
         protected readonly AbilityBuilder Builder = new();
         private readonly IPerkService _perkService;
-        protected readonly CombatPoint _combatPoint;
+        protected readonly ICombatPointService _combatPointService;
         protected readonly IEnmityService _enmityService;
         protected readonly IAbilityService _abilityService;
+        protected readonly IStatusEffectService _statusEffectService;
 
-        protected FirstAidBaseAbilityDefinition(IRandomService random, IPerkService perkService, CombatPoint combatPoint, IEnmityService enmityService, IAbilityService abilityService)
+        protected FirstAidBaseAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService, IStatusEffectService statusEffectService)
         {
             _random = random;
             _perkService = perkService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _enmityService = enmityService;
             _abilityService = abilityService;
+            _statusEffectService = statusEffectService;
         }
         private const string MedicalSuppliesItemTag = "med_supplies";
         private const string StimPackItemTag = "stim_pack";

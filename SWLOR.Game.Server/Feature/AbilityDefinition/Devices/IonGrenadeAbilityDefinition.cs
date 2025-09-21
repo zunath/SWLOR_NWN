@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -14,13 +17,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly IAbilityService _abilityService;
+        private readonly ICombatPointService _combatPointService;
 
-        public IonGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, IAbilityService abilityService, CombatPoint combatPoint, IEnmityService enmityService) 
-            : base(random, itemService, perkService, statService, combatService, combatPoint, enmityService)
+        public IonGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService, IAbilityService abilityService, ICombatPointService combatPointService, IEnmityService enmityService) 
+            : base(random, itemService, perkService, statService, combatService, combatPointService, enmityService)
         {
             _combatService = combatService;
             _statService = statService;
             _abilityService = abilityService;
+            _combatPointService = combatPointService;
         }
 
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -75,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 });
             });
 
-            CombatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
             EnmityService.ModifyEnmity(activator, target, 350);
         }
 

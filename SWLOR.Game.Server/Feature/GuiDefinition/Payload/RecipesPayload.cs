@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Model;
 

@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
@@ -11,12 +12,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
     {
         private readonly ISpaceService _spaceService;
         private readonly ICombatPointService _combatPointService;
+        private readonly IMessagingService _messagingService;
         private readonly ShipModuleBuilder _builder = new();
 
-        public HullRepairerModuleDefinition(ISpaceService spaceService, ICombatPointService combatPointService)
+        public HullRepairerModuleDefinition(ISpaceService spaceService, ICombatPointService combatPointService, IMessagingService messagingService)
         {
             _spaceService = spaceService;
             _combatPointService = combatPointService;
+            _messagingService = messagingService;
         }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
@@ -72,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var recovery = baseRecovery + (moduleBonus + activatorShipStatus.Industrial) * 2;
                     _spaceService.RestoreHull(target, targetShipStatus, recovery);
 
-                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {recovery} hull HP to {GetName(target)}'s ship.");
+                    _messagingService.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {recovery} hull HP to {GetName(target)}'s ship.");
                     _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
 

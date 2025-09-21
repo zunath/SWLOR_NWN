@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using System.Linq.Expressions;
 using System;
 using SWLOR.NWN.API.NWScript.Enum.Item;

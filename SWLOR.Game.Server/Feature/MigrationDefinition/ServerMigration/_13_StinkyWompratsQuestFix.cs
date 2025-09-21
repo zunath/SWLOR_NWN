@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;

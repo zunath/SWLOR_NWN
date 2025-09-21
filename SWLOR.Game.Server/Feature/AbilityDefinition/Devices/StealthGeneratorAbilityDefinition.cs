@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Player;
@@ -14,12 +16,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public class StealthGeneratorAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
-        public StealthGeneratorAbilityDefinition(CombatPoint combatPoint, IEnmityService enmityService)
+        public StealthGeneratorAbilityDefinition(ICombatPointService combatPointService, IEnmityService enmityService)
         {
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _enmityService = enmityService;
         }
 
@@ -55,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     ApplyEffectToObject(DurationType.Temporary, EffectInvisibility(InvisibilityType.Normal), activator, 30f);
 
                     _enmityService.ModifyEnmityOnAll(activator, 450);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -75,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     ApplyEffectToObject(DurationType.Temporary, EffectInvisibility(InvisibilityType.Normal), activator, 60f);
 
                     _enmityService.ModifyEnmityOnAll(activator, 750);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 
@@ -95,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     ApplyEffectToObject(DurationType.Temporary, EffectInvisibility(InvisibilityType.Normal), activator, 120f);
 
                     _enmityService.ModifyEnmityOnAll(activator, 950);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Devices, 3);
                 });
         }
 

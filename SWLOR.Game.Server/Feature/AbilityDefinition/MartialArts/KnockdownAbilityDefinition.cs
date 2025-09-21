@@ -1,21 +1,25 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
     public class KnockdownAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly ICombatService _combatService;
         private readonly IAbilityService _abilityService;
 
-        public KnockdownAbilityDefinition(CombatPoint combatPoint, ICombatService combatService, IAbilityService abilityService)
+        public KnockdownAbilityDefinition(ICombatPointService combatPointService, ICombatService combatService, IAbilityService abilityService)
         {
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _combatService = combatService;
             _abilityService = abilityService;
         }
@@ -46,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                         _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
                     }
 
-                    _combatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
+                    _combatPointService.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
                     Enmity.ModifyEnmity(activator, target, 670);
                 });
         }

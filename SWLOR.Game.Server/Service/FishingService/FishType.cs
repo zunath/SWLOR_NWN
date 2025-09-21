@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.FishingService

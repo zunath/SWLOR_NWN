@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -14,14 +16,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private readonly IItemService _itemService;
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
 
-        public ThrowLightsaberAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, CombatPoint combatPoint)
+        public ThrowLightsaberAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -86,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Force);
             var attack = _statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
-            _combatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
 
             // apply to target
             DelayCommand(delay, () =>
@@ -124,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                             defenderStat,
                             0);
                         ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), nearbyCopy);
-                        _combatPoint.AddCombatPoint(activator, nearbyCopy, SkillType.Force, 3);
+                        _combatPointService.AddCombatPoint(activator, nearbyCopy, SkillType.Force, 3);
                         Enmity.ModifyEnmity(activator, nearbyCopy, damage + 200 * level);
                     });
 

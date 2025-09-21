@@ -4,12 +4,13 @@ using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IStatusEffectService _statusEffectService;
         private readonly AI _aiService;
         private readonly IActivityService _activityService;
+        private readonly IRecastService _recastService;
 
         public const string DroidResref = "pc_droid";
         public const string DroidControlItemResref = "droid_control";
@@ -55,7 +57,8 @@ namespace SWLOR.Game.Server.Service
             IStatService statService,
             IStatusEffectService statusEffectService,
             AI aiService,
-            IActivityService activityService)
+            IActivityService activityService,
+            IRecastService recastService)
         {
             _perkService = perkService;
             _guiService = guiService;
@@ -65,6 +68,7 @@ namespace SWLOR.Game.Server.Service
             _statusEffectService = statusEffectService;
             _aiService = aiService;
             _activityService = activityService;
+            _recastService = recastService;
         }
 
         /// <summary>
@@ -890,7 +894,7 @@ namespace SWLOR.Game.Server.Service
             DestroyObject(droid, 0.1f);
             ClearTemporaryData(player, droid);
 
-            Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
+            _recastService.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
             CloseAppearanceEditor(player);
         }
 
@@ -1073,7 +1077,7 @@ namespace SWLOR.Game.Server.Service
 
             SpeakString(personality.DeathPhrase());
             ClearTemporaryData(player, droid);
-            Recast.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
+            _recastService.ApplyRecastDelay(player, RecastGroup.DroidController, RecastDelaySeconds, true);
             CloseAppearanceEditor(player);
         }
 

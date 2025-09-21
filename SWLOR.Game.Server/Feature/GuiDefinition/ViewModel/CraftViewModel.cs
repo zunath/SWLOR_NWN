@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -1891,29 +1892,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickVeneration() => () =>
         {
-            HandleAction("Veneration", 100, 8, 10, () =>
-            {
-                _venerationStepsRemaining = 4;
-            });
-        };
-
-        public Action OnClickWasteNot() => () =>
-        {
-            HandleAction("Waste Not", 100, 4, 0, () =>
-            {
-                _wasteNotStepsRemaining = 4;
-            });
-        };
-
-        public void Refresh(SkillXPRefreshEvent payload)
-        {
-            var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Player>(playerId);
-            RefreshYourSkill(dbPlayer);
-        }
-    }
-}
-
             HandleAction("Veneration", 100, 8, 10, () =>
             {
                 _venerationStepsRemaining = 4;

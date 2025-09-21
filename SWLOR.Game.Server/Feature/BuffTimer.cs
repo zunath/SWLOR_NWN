@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using System;
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
@@ -27,8 +28,8 @@ namespace SWLOR.Game.Server.Feature
             var buffInt = GetLastGuiEventInteger();
             if (buffInt == (int)EffectIconType.Invalid) return;
 
-            var buffType = StatusEffect.GetEffectTypeFromIcon((EffectIconType)buffInt);
-            var statusTypes = StatusEffect.GetStatusEffectTypesFromIcon((EffectIconType)buffInt);
+            var buffType = ServiceContainer.GetService<IStatusEffectService>().GetEffectTypeFromIcon((EffectIconType)buffInt);
+            var statusTypes = ServiceContainer.GetService<IStatusEffectService>().GetStatusEffectTypesFromIcon((EffectIconType)buffInt);
             var effectName = "Unknown Effect";
 
             if (buffType == EffectTypeScript.Invalideffect && statusTypes.Count == 0) return;
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.Feature
                 if (GetEffectType(eff) != effectType) continue;
                 if (GetEffectType(eff) == EffectTypeScript.AbilityIncrease)
                 {
-                    var abilityType = StatusEffect.GetAbilityTypeBuffed(effectIcon);
+                    var abilityType = ServiceContainer.GetService<IStatusEffectService>().GetAbilityTypeBuffed(effectIcon);
                     if (abilityType != (AbilityType)GetEffectInteger(eff, 0)) continue;
                 };
                 var duration = TimeSpan.FromSeconds(GetEffectDurationRemaining(eff)).ToString(@"mm\:ss");
@@ -68,9 +69,9 @@ namespace SWLOR.Game.Server.Feature
 
         public static void SendStatusInfo(uint player, string statusName, params StatusEffectType[] statusTypes)
         {
-            if (!StatusEffect.HasStatusEffect(player, statusTypes)) return;
+            if (!ServiceContainer.GetService<IStatusEffectService>().HasStatusEffect(player, statusTypes)) return;
 
-            var duration = StatusEffect.GetEffectDuration(player, statusTypes);
+            var duration = ServiceContainer.GetService<IStatusEffectService>().GetEffectDuration(player, statusTypes);
 
             SendMessageToPC(player, "Status Effects:");
 

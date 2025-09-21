@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.Numerics;
-using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -491,7 +491,7 @@ namespace SWLOR.Game.Server.Service
 
         private void ClearFishingAttempt(uint player)
         {
-            Activity.ClearBusy(player);
+            _activityService.ClearBusy(player);
             DeleteLocalFloat(player, FishingPositionVariableX);
             DeleteLocalFloat(player, FishingPositionVariableY);
             DeleteLocalFloat(player, FishingPositionVariableZ);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Contracts;

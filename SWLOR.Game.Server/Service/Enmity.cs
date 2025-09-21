@@ -14,7 +14,7 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class EnmityService : IEnmityService
+    public class Enmity : IEnmityService
     {
         private readonly IPartyService _partyService;
         
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service
         // Creature -> EnemyList mapping
         private readonly Dictionary<uint, List<uint>> _creatureToEnemies = new();
 
-        public EnmityService(IPartyService partyService)
+        public Enmity(IPartyService partyService)
         {
             _partyService = partyService;
         }
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="enemy">The enemy to use for retrieval</param>
         /// <returns>A dictionary containing an enemy's enmity table.</returns>
-        public static Dictionary<uint, int> GetEnmityTable(uint enemy)
+        public Dictionary<uint, int> GetEnmityTable(uint enemy)
         {
             if(!_enemyEnmityTables.ContainsKey(enemy))
                 return new Dictionary<uint, int>();
@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.Service
         /// Clears an enemy's enmity tables and removes associated creatures from cache.
         /// </summary>
         /// <param name="enemy">The enemy whose tables we're clearing</param>
-        private static void ClearEnmityTables(uint enemy)
+        private void ClearEnmityTables(uint enemy)
         {
             // Enemy isn't registered as having an enmity table.
             if (!_enemyEnmityTables.ContainsKey(enemy)) return;
@@ -310,7 +310,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to check</param>
         /// <returns>true if creature has enmity on any other creature, false otherwise</returns>
-        public static bool HasEnmity(uint creature)
+        public bool HasEnmity(uint creature)
         {
             return _creatureToEnemies.ContainsKey(creature)
                    && _creatureToEnemies[creature].Count > 0;
@@ -347,7 +347,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature whose tables will be retrieved</param>
         /// <returns>A dictionary of enmity values for a given creature.</returns>
-        public static Dictionary<uint, int> GetEnmityTowardsAllEnemies(uint creature)
+        public Dictionary<uint, int> GetEnmityTowardsAllEnemies(uint creature)
         {
             var enemyList = _creatureToEnemies.ContainsKey(creature) 
                 ? _creatureToEnemies[creature] 

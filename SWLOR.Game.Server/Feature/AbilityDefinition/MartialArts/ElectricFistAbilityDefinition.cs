@@ -1,14 +1,17 @@
-﻿//using Random = SWLOR.Game.Server.Service.Random;
+//using Random = SWLOR.Game.Server.Service.Random;
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
@@ -17,14 +20,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         private readonly IItemService _itemService;
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
+        private readonly IStatusEffectService _statusEffectService;
 
-        public ElectricFistAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, CombatPoint combatPoint)
+        public ElectricFistAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IStatusEffectService statusEffectService)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
+            _statusEffectService = statusEffectService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -79,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
             dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.MartialArts);
 
-            _combatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
@@ -98,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
-                StatusEffect.Apply(activator, target, StatusEffectType.Shock, duration);
+                _statusEffectService.Apply(activator, target, StatusEffectType.Shock, duration);
             }
 
             Enmity.ModifyEnmity(activator, target, 100 * level + damage);

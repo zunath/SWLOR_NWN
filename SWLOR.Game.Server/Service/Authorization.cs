@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;

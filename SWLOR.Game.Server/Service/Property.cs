@@ -5,6 +5,7 @@ using System.Numerics;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -15,7 +16,6 @@ using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Core.Extension;
-using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Dialog.Service;
@@ -28,26 +28,26 @@ using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Property
+    public class Property : IPropertyService
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
         private readonly IGuiService _guiService;
-        private static readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
-        private static readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();
-        private static readonly Dictionary<PropertyLayoutType, PropertyLayout> _activeLayouts = new();
-        private static readonly Dictionary<PropertyType, List<PropertyLayoutType>> _layoutsByPropertyType = new();
-        private static readonly Dictionary<PropertyLayoutType, Vector4> _entrancesByLayout = new();
-        private static readonly Dictionary<PropertyPermissionType, PropertyPermissionAttribute> _activePermissions = new();
+        private readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
+        private readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();
+        private readonly Dictionary<PropertyLayoutType, PropertyLayout> _activeLayouts = new();
+        private readonly Dictionary<PropertyType, List<PropertyLayoutType>> _layoutsByPropertyType = new();
+        private readonly Dictionary<PropertyLayoutType, Vector4> _entrancesByLayout = new();
+        private readonly Dictionary<PropertyPermissionType, PropertyPermissionAttribute> _activePermissions = new();
 
-        private static readonly Dictionary<string, uint> _instanceTemplates = new();
-        private static readonly Dictionary<string, PropertyInstance> _propertyInstances = new();
-        private static readonly Dictionary<PropertyType, List<PropertyPermissionType>> _permissionsByPropertyType = new();
+        private readonly Dictionary<string, uint> _instanceTemplates = new();
+        private readonly Dictionary<string, PropertyInstance> _propertyInstances = new();
+        private readonly Dictionary<PropertyType, List<PropertyPermissionType>> _permissionsByPropertyType = new();
 
-        private static readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
-        private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _structureChangedActions = StructureChangedAction.BuildSpawnActions();
+        private readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
+        private readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _structureChangedActions = StructureChangedAction.BuildSpawnActions();
 
-        private static readonly Dictionary<int, int> _citizensRequired = new()
+        private readonly Dictionary<int, int> _citizensRequired = new()
         {
             { 1, 5 }, // Level 1 requires a minimum of 5 citizens
             { 2, 10 }, // Level 2 requires a minimum of 10 citizens
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Service
             { 5, 25 }  // Level 5 requires a minimum of 25 citizens
         };
 
-        private static readonly Dictionary<PropertyType, List<StructureType>> _structureTypesByPropertyType = new();
+        private readonly Dictionary<PropertyType, List<StructureType>> _structureTypesByPropertyType = new();
 
         public Property(ILogger logger, IDatabaseService db, IGuiService guiService)
         {
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Service
             LoadProperties();
         }
 
-        private static void CachePropertyTypes()
+        private void CachePropertyTypes()
         {
             var propertyTypes = Enum.GetValues(typeof(PropertyType)).Cast<PropertyType>();
             foreach (var type in propertyTypes)
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void CachePropertyLayoutTypes()
+        private void CachePropertyLayoutTypes()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_activeLayouts.Count} property layouts.");
         }
 
-        private static void CachePermissions()
+        private void CachePermissions()
         {
             var permissionTypes = Enum.GetValues(typeof(PropertyPermissionType)).Cast<PropertyPermissionType>();
             foreach (var type in permissionTypes)
@@ -269,7 +269,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, read all structure types and store them into the cache.
         /// </summary>
-        private static void CacheStructures()
+        private void CacheStructures()
         {
             var structureTypes = Enum.GetValues(typeof(StructureType)).Cast<StructureType>();
             foreach (var structure in structureTypes)
@@ -286,7 +286,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, iterate over all areas and cache any that are instance templates.
         /// </summary>
-        private static void CacheInstanceTemplates()
+        private void CacheInstanceTemplates()
         {
             var templateResrefs = _activeLayouts
                 .Select(x => x.Value.AreaInstanceResref)
@@ -303,7 +303,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, link structures back to their property types.
         /// </summary>
-        private static void CacheStructuresByPropertyType()
+        private void CacheStructuresByPropertyType()
         {
             foreach (var (structureType, detail) in _activeStructures)
             {
@@ -324,7 +324,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="areaResref">The resref of the area to look for</param>
         /// <returns>X, Y, and Z coordinates of the entrance location</returns>
-        private static Vector4 GetEntrancePosition(string areaResref)
+        private Vector4 GetEntrancePosition(string areaResref)
         {
             var area = Area.GetAreaByResref(areaResref);
             
@@ -384,7 +384,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, remove all data marked for deletion and any properties with expired leases.
         /// </summary>
-        private static void CleanUpData()
+        private void CleanUpData()
         {
             var now = DateTime.UtcNow;
 
@@ -466,7 +466,7 @@ namespace SWLOR.Game.Server.Service
         /// 2.) Processing elections. Moves the election process between stages and calculates votes at the end of the process.
         ///     If a new mayor is elected, the previous mayor's permissions are removed and given to the new one.
         /// </summary>
-        private static void ProcessCities()
+        private void ProcessCities()
         {
             var cityQuery = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.City)
@@ -499,7 +499,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ProcessCityCitizenRequirement(DateTime now, WorldProperty city)
+        private void ProcessCityCitizenRequirement(DateTime now, WorldProperty city)
         {
             var citizenQuery = new DBQuery<Player>()
                 .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
@@ -545,7 +545,7 @@ namespace SWLOR.Game.Server.Service
             _db.Set(city);
         }
 
-        private static void ProcessCityElections(DateTime now, WorldProperty city)
+        private void ProcessCityElections(DateTime now, WorldProperty city)
         {
             var incumbentMayorId = city.OwnerPlayerId;
 
@@ -716,7 +716,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ProcessCityLevel(WorldProperty city)
+        private void ProcessCityLevel(WorldProperty city)
         {
             _logger.Write<PropertyLogGroup>( $"Processing city level for '{city.CustomName}' ({city.Id})...");
 
@@ -780,7 +780,7 @@ namespace SWLOR.Game.Server.Service
             _logger.Write<PropertyLogGroup>( $"Finished processing city level for '{city.CustomName}' ({city.Id})");
         }
 
-        private static void ProcessUpkeep(DateTime now, WorldProperty city)
+        private void ProcessUpkeep(DateTime now, WorldProperty city)
         {
             _logger.Write<PropertyLogGroup>( $"Processing city '{city.CustomName}' ({city.Id}) upkeep...");
             
@@ -839,7 +839,7 @@ namespace SWLOR.Game.Server.Service
             _logger.Write<PropertyLogGroup>( $"Finished processing city upkeep for '{city.CustomName}' ({city.Id})");
         }
 
-        private static void ProcessCitizenshipFees(WorldProperty city)
+        private void ProcessCitizenshipFees(WorldProperty city)
         {
             _logger.Write<PropertyLogGroup>( $"Processing citizenship fees for '{city.CustomName}' ({city.Id})");
 
@@ -962,7 +962,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, update the permissions list on all properties to reflect any changes.
         /// </summary>
-        private static void RefreshPermissions()
+        private void RefreshPermissions()
         {
             foreach (var (type, permissions) in _permissionsByPropertyType)
             {
@@ -999,7 +999,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="propertyOwnerId">The Id of the property owner.</param>
         /// <param name="dbPermission">The permission to modify.</param>
         /// <param name="masterList">The master list of permissions.</param>
-        private static bool RefreshPermissions(string propertyOwnerId, WorldPropertyPermission dbPermission, List<PropertyPermissionType> masterList)
+        private bool RefreshPermissions(string propertyOwnerId, WorldPropertyPermission dbPermission, List<PropertyPermissionType> masterList)
         {
             var hasChanges = false;
             // Remove any permissions that have been removed from the master list.
@@ -1050,7 +1050,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, load all properties.
         /// </summary>
-        private static void LoadProperties()
+        private void LoadProperties()
         {
             var instanceTypes = _propertyTypes
                 .Where(x => x.Value.SpawnType == PropertySpawnType.Instance)
@@ -1137,7 +1137,7 @@ namespace SWLOR.Game.Server.Service
         /// Creates a list of default item categories for use in freshly made properties.
         /// </summary>
         /// <returns>A list of categories</returns>
-        private static List<WorldPropertyCategory> CreateDefaultCategories(string parentPropertyId)
+        private List<WorldPropertyCategory> CreateDefaultCategories(string parentPropertyId)
         {
             return new List<WorldPropertyCategory>
             {
@@ -1164,7 +1164,7 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
-        private static WorldProperty CreateProperty(
+        private WorldProperty CreateProperty(
             uint creatorPlayer,
             string ownerPlayerId, 
             string propertyName,
@@ -1652,7 +1652,6 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastUsedBy();
             var terminal = OBJECT_SELF;
             
-            _guiService
             _guiService.TogglePlayerWindow(player, GuiWindowType.ManageApartment, null, terminal);
         }
 
@@ -1855,7 +1854,6 @@ namespace SWLOR.Game.Server.Service
 
             var player = OBJECT_SELF;
 
-            _guiService
             if (_guiService.IsWindowOpen(player, GuiWindowType.ManageStructures))
             {
                 _guiService.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
@@ -2085,7 +2083,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="property">The property to spawn into the world.</param>
         /// <param name="area">The area to spawn the property into. Leave OBJECT_INVALID if spawning an instance.</param>
-        private static void SpawnIntoWorld(WorldProperty property, uint area)
+        private void SpawnIntoWorld(WorldProperty property, uint area)
         {
             var propertyDetail = _propertyTypes[property.PropertyType];
 
@@ -2220,7 +2218,6 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                _guiService
                 _guiService.TogglePlayerWindow(player, GuiWindowType.ManageCitizenship, null, terminal);
             }
         }
@@ -2251,7 +2248,6 @@ namespace SWLOR.Game.Server.Service
                                        permission.Permissions[PropertyPermissionType.ManageUpgrades] ||
                                        permission.Permissions[PropertyPermissionType.ManageUpkeep]))
             {
-                _guiService
                 _guiService.TogglePlayerWindow(player, GuiWindowType.ManageCity, null, terminal);
             }
             else

@@ -1,4 +1,4 @@
-﻿using SWLOR.NWN.API.NWNX;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition

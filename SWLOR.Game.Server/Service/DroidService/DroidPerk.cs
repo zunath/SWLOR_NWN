@@ -1,4 +1,4 @@
-﻿using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Service.DroidService
 {

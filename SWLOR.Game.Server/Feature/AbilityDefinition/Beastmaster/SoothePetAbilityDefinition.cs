@@ -1,27 +1,30 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class SoothePetAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly BeastMastery _beastMastery;
         private readonly IEnmityService _enmityService;
+        private readonly IStatusEffectService _statusEffectService;
 
-        public SoothePetAbilityDefinition(CombatPoint combatPoint, BeastMastery beastMastery, IEnmityService enmityService)
+        public SoothePetAbilityDefinition(ICombatPointService combatPointService, BeastMastery beastMastery, IEnmityService enmityService, IStatusEffectService statusEffectService)
         {
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _beastMastery = beastMastery;
             _enmityService = enmityService;
+            _statusEffectService = statusEffectService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -66,11 +69,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 {
                     var beast = GetAssociate(AssociateType.Henchman, activator);
 
-                    StatusEffect.Remove(beast, StatusEffectType.Bleed);
-                    StatusEffect.Remove(beast, StatusEffectType.Poison);
-                    StatusEffect.Remove(beast, StatusEffectType.Shock);
-                    StatusEffect.Remove(beast, StatusEffectType.Burn);
-                    StatusEffect.Remove(beast, StatusEffectType.Disease);
+                    _statusEffectService.Remove(beast, StatusEffectType.Bleed);
+                    _statusEffectService.Remove(beast, StatusEffectType.Poison);
+                    _statusEffectService.Remove(beast, StatusEffectType.Shock);
+                    _statusEffectService.Remove(beast, StatusEffectType.Burn);
+                    _statusEffectService.Remove(beast, StatusEffectType.Disease);
 
                     RemoveEffect(beast, 
                         EffectTypeScript.Disease, 
@@ -83,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), beast);
                     _enmityService.ModifyEnmityOnAll(activator, 500);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);
                 });
         }
     }

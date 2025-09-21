@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance
+namespace SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance
 {
     public class BothanRacialAppearanceDefinition: RacialAppearanceBaseDefinition
     {

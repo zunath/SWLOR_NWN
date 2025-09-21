@@ -1,9 +1,9 @@
-﻿using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class MessagingService : IMessagingService
+    public class Messaging : IMessagingService
     {
         /// <summary>
         /// Sends a message to all nearby players within a certain distance.

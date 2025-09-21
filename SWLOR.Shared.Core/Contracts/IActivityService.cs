@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Shared.Core.Contracts
 {

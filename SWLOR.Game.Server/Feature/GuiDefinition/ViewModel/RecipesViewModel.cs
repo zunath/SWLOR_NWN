@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.UI.Component;
@@ -24,13 +25,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly ISkillService _skillService;
         private readonly IPerkService _perkService;
         private readonly IPropertyService _propertyService;
+        private readonly ITargetingService _targetingService;
 
-        public RecipesViewModel(IGuiService guiService, IItemCacheService itemCache, ISkillService skillService, IPerkService perkService, IPropertyService propertyService) : base(guiService)
+        public RecipesViewModel(IGuiService guiService, IItemCacheService itemCache, ISkillService skillService, IPerkService perkService, IPropertyService propertyService, ITargetingService targetingService) : base(guiService)
         {
             _itemCache = itemCache;
             _skillService = skillService;
             _perkService = perkService;
             _propertyService = propertyService;
+            _targetingService = targetingService;
         }
         private int _currentRecipeIndex;
         private readonly List<RecipeType> _recipeTypes = new();
@@ -620,7 +623,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (_mode == RecipesUIMode.Crafting)
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select the blueprint item you wish to create.", item =>
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select the blueprint item you wish to create.", item =>
                 {
                     if (!ValidateBlueprint(item))
                         return;
@@ -637,7 +640,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else if (_mode == RecipesUIMode.Research)
             {
-                Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select the blueprint you wish to research.", item =>
+                _targetingService.EnterTargetingMode(Player, ObjectType.Item, "Select the blueprint you wish to research.", item =>
                 {
                     if (!ValidateBlueprint(item))
                         return;

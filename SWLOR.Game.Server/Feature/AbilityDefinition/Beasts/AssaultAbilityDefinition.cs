@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
@@ -13,11 +17,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly IStatusEffectService _statusEffectService;
 
-        public AssaultAbilityDefinition(ICombatService combatService, IStatService statService)
+        public AssaultAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService)
         {
             _combatService = combatService;
             _statService = statService;
+            _statusEffectService = statusEffectService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -57,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Medium), target);
             });
 
-            StatusEffect.Apply(activator, activator, StatusEffectType.Assault, 30f);
+            _statusEffectService.Apply(activator, activator, StatusEffectType.Assault, 30f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Magblue), activator);
 
             Enmity.ModifyEnmity(activator, target, 350 + damage);

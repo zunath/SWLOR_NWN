@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -12,18 +15,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
+        private readonly IMessagingService _messagingService;
         private const string Tier1Tag = "ABILITY_FORCE_SPARK_1";
         private const string Tier2Tag = "ABILITY_FORCE_SPARK_2";
         private const string Tier3Tag = "ABILITY_FORCE_SPARK_3";
 
-        public ForceSparkAbilityDefinition(ICombatService combatService, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
+        public ForceSparkAbilityDefinition(ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService, IMessagingService messagingService)
         {
             _combatService = combatService;
             _statService = statService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _enmityService = enmityService;
+            _messagingService = messagingService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -62,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 {
                     var breach = TagEffect(EffectACDecrease(evaDecrease), effectTag);
                     ApplyEffectToObject(DurationType.Temporary, breach, target, 60f);
-                    Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of evasion down.");
+                    _messagingService.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of evasion down.");
                 }
             }
 
@@ -79,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             else { _statService.ReduceFP(activator, 2 + tier); }
 
             _enmityService.ModifyEnmity(activator, target, 150 + damage);
-            _combatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 
         private void ForceSpark1()

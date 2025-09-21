@@ -1,13 +1,16 @@
-﻿//using Random = SWLOR.Game.Server.Service.Random;
+//using Random = SWLOR.Game.Server.Service.Random;
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
@@ -16,14 +19,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         private readonly IItemService _itemService;
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
 
-        public CripplingShotAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, CombatPoint combatPoint)
+        public CripplingShotAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -75,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
             dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
-            _combatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.Ranged, 3);
 
             var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
             var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Ranged);

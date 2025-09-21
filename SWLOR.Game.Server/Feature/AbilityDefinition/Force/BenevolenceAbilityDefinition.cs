@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -15,15 +17,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private readonly IRandomService _random;
         private readonly AbilityBuilder _builder = new();
         private readonly IStatService _statService;
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
         private const string BeneRegen = "FORCE_BENEVOLENCE";
 
-        public BenevolenceAbilityDefinition(IRandomService random, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
+        public BenevolenceAbilityDefinition(IRandomService random, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
         {
             _random = random;
             _statService = statService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _enmityService = enmityService;
         }
 
@@ -62,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
 
             _enmityService.ModifyEnmityOnAll(activator, 150 + (willHeal / 4));
-            _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
         private void Benevolence1()

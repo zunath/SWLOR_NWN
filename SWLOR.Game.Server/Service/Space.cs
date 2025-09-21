@@ -28,7 +28,7 @@ using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class SpaceService
+    public class Space : ISpaceService
     {
         private readonly ILogger _logger;
         private readonly IDatabaseService _db;
@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Service
         private readonly Planet _planetService;
         private readonly Area _areaService;
         private readonly IMessagingService _messagingService;
+        private readonly IStatusEffectService _statusEffectService;
 
         public SpaceService(
             ILogger logger,
@@ -57,7 +58,8 @@ namespace SWLOR.Game.Server.Service
             IPropertyService propertyService,
             Planet planetService,
             Area areaService,
-            IMessagingService messagingService)
+            IMessagingService messagingService,
+            IStatusEffectService statusEffectService)
         {
             _logger = logger;
             _db = db;
@@ -72,6 +74,7 @@ namespace SWLOR.Game.Server.Service
             _planetService = planetService;
             _areaService = areaService;
             _messagingService = messagingService;
+            _statusEffectService = statusEffectService;
         }
 
         public const int MaxRegisteredShips = 10;
@@ -686,7 +689,7 @@ namespace SWLOR.Game.Server.Service
         {
             // Ground effects must be removed when entering space mode.
             // Otherwise players could buff on the ground, then get those same bonuses while in space.
-            StatusEffect.RemoveAll(player);
+            _statusEffectService.RemoveAll(player);
             for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
             {
                 RemoveEffect(player, effect);

@@ -1,7 +1,7 @@
-﻿using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Contracts;
 
-namespace SWLOR.Game.Server.Service.AbilityService
+namespace SWLOR.Game.Server.Service.AbilityServicex
 {
     /// <summary>
     /// Adds an FP requirement to activate a perk.
@@ -10,11 +10,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
     {
         public int RequiredFP { get; }
         private readonly IStatService _statService;
+        private readonly IStatusEffectService _statusEffectService;
 
-        public AbilityRequirementFP(int requiredFP, IStatService statService)
+        public AbilityRequirementFP(int requiredFP, IStatService statService, IStatusEffectService statusEffectService)
         {
             RequiredFP = requiredFP;
             _statService = statService;
+            _statusEffectService = statusEffectService;
         }
 
         public string CheckRequirements(uint player)
@@ -33,7 +35,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             if (GetIsDM(player)) return;
 
             // Force Attunement reduces FP costs to zero.
-            if (StatusEffect.HasStatusEffect(player, StatusEffectType.ForceAttunement)) return;
+            if (_statusEffectService.HasStatusEffect(player, StatusEffectType.ForceAttunement)) return;
 
             _statService.ReduceFP(player, RequiredFP);
         }

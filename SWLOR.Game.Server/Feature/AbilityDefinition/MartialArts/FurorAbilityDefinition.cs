@@ -1,22 +1,24 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
     public class FurorAbilityDefinition: IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
-        public FurorAbilityDefinition(CombatPoint combatPoint, IEnmityService enmityService)
+        public FurorAbilityDefinition(ICombatPointService combatPointService, IEnmityService enmityService)
         {
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _enmityService = enmityService;
         }
 
@@ -41,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), activator);
 
                     _enmityService.ModifyEnmityOnAll(activator, 450);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
                 });
         }
     }

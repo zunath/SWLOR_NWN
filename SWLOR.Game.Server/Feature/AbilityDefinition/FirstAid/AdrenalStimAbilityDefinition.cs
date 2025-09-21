@@ -1,16 +1,19 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class AdrenalStimAbilityDefinition : FirstAidBaseAbilityDefinition
     {
-        public AdrenalStimAbilityDefinition(IRandomService random, IPerkService perkService, CombatPoint combatPoint, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPoint, enmityService, abilityService)
+        public AdrenalStimAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService, IStatusEffectService statusEffectService) : base(random, perkService, combatPoint, enmityService, abilityService, statusEffectService)
         {
         }
 
@@ -56,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
-                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim1, 30f);
+                    _statusEffectService.Apply(activator, activator, StatusEffectType.AdrenalStim1, 30f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 2), activator, 30f);
                 });
         }
@@ -94,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
-                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim2, 30f);
+                    _statusEffectService.Apply(activator, activator, StatusEffectType.AdrenalStim2, 30f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 4), activator, 30f);
                 });
         }
@@ -132,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasImpactAction((activator, target, _, _) =>
                 {
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), target);
-                    StatusEffect.Apply(activator, activator, StatusEffectType.AdrenalStim3, 48f);
+                    _statusEffectService.Apply(activator, activator, StatusEffectType.AdrenalStim3, 48f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 6), activator, 48f);
                 });
         }

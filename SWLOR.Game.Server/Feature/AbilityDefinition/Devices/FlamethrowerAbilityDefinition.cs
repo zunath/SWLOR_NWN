@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
@@ -15,15 +17,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
+        private readonly IStatusEffectService _statusEffectService;
 
-        public FlamethrowerAbilityDefinition(ICombatService combatService, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
+        public FlamethrowerAbilityDefinition(ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService)
         {
             _combatService = combatService;
             _statService = statService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _enmityService = enmityService;
+            _statusEffectService = statusEffectService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -67,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
                     var eDMG = EffectDamage(damage, DamageType.Fire);
                     _enmityService.ModifyEnmity(activator, target, 280);
-                    _combatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
+                    _combatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
                     
                     // Copying the target is needed because the variable gets adjusted outside the scope of the internal lambda.
                     var targetCopy = target;
@@ -80,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {
-                            StatusEffect.Apply(activator, targetCopy, StatusEffectType.Burn, 30f);
+                            _statusEffectService.Apply(activator, targetCopy, StatusEffectType.Burn, 30f);
                         }
                     });
                 }

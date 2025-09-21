@@ -1,12 +1,15 @@
-﻿//using Random = SWLOR.Game.Server.Service.Random;
+//using Random = SWLOR.Game.Server.Service.Random;
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
@@ -15,15 +18,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         private readonly IItemService _itemService;
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
-        public CrossCutAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
+        public CrossCutAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _enmityService = enmityService;
         }
 
@@ -108,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
             });
 
-            _combatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
             _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 

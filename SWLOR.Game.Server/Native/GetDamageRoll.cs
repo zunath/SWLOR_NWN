@@ -27,12 +27,12 @@ namespace SWLOR.Game.Server.Native
 {
     public static unsafe class GetDamageRoll
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IScriptExecutor _scriptExecutor = ServiceContainer.GetService<IScriptExecutor>();
-        private static readonly IItemService _itemService = ServiceContainer.GetService<IItemService>();
-        private static readonly ICombatService _combatService = ServiceContainer.GetService<ICombatService>();
-        private static readonly IStatService _statService = ServiceContainer.GetService<IStatService>();
-        private static readonly IAbilityService _abilityService = ServiceContainer.GetService<IAbilityService>();
+        private static ILogger _logger;
+        private static IScriptExecutor _scriptExecutor;
+        private static IItemService _itemService;
+        private static ICombatService _combatService;
+        private static IStatService _statService;
+        private static IAbilityService _abilityService;
 
         private const int PowerAttackDamageBonus = 3;
         private const int ImprovedPowerAttackDamageBonus = 6;
@@ -49,7 +49,19 @@ namespace SWLOR.Game.Server.Native
         private const int MaxValidDamageType = 6;
         private const int MinValidDamageType = 1;
 
-        private static readonly Dictionary<BaseItem, (FeatType Feat, int Damage)> _weaponSpecializationLookup = CreateWeaponSpecializationLookup();
+        private static Dictionary<BaseItem, (FeatType Feat, int Damage)> _weaponSpecializationLookup;
+
+        [ScriptHandler<OnModuleLoad>]
+        public static void InitializeServices()
+        {
+            _logger = ServiceContainer.GetService<ILogger>();
+            _scriptExecutor = ServiceContainer.GetService<IScriptExecutor>();
+            _itemService = ServiceContainer.GetService<IItemService>();
+            _combatService = ServiceContainer.GetService<ICombatService>();
+            _statService = ServiceContainer.GetService<IStatService>();
+            _abilityService = ServiceContainer.GetService<IAbilityService>();
+            _weaponSpecializationLookup = CreateWeaponSpecializationLookup();
+        }
 
         private static Dictionary<BaseItem, (FeatType Feat, int Damage)> CreateWeaponSpecializationLookup()
         {
@@ -91,6 +103,8 @@ namespace SWLOR.Game.Server.Native
         [ScriptHandler<OnModuleLoad>]
         public static void RegisterHook()
         {
+            InitializeServices();
+            
             delegate* unmanaged<void*, void*, int, int, int, int, int, int> pHook = &OnGetDamageRoll;
             var functionPtr = NativeLibrary.GetExport(
                 NativeLibrary.GetMainProgramHandle(), "_ZN17CNWSCreatureStats13GetDamageRollEP10CNWSObjectiiiii");

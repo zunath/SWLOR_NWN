@@ -11,13 +11,22 @@ namespace SWLOR.Game.Server.Server
 {
     public unsafe class NativeInteropManager : INativeInteropManager
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IMainLoopProcessor _mainLoopProcessor = ServiceContainer.GetService<IMainLoopProcessor>();
-        private static readonly IScriptExecutor _scriptExecutor = ServiceContainer.GetService<IScriptExecutor>();
-        private static readonly IClosureManager _closureManager = ServiceContainer.GetService<IClosureManager>();
+        private readonly ILogger _logger;
+        private readonly IMainLoopProcessor _mainLoopProcessor;
+        private readonly IScriptExecutor _scriptExecutor;
+        private readonly IClosureManager _closureManager;
+
+        public NativeInteropManager(ILogger logger, IMainLoopProcessor mainLoopProcessor, IScriptExecutor scriptExecutor, IClosureManager closureManager)
+        {
+            _logger = logger;
+            _mainLoopProcessor = mainLoopProcessor;
+            _scriptExecutor = scriptExecutor;
+            _closureManager = closureManager;
+        }
 
         public void RegisterHandlers()
         {
+            
             NWNXAPI.RegisterMainLoopHandler(&OnMainLoop);
             NWNXAPI.RegisterRunScriptHandler(&OnRunScript);
             NWNXAPI.RegisterClosureHandler(&OnClosure);
@@ -29,11 +38,13 @@ namespace SWLOR.Game.Server.Server
         {
             try
             {
-                _mainLoopProcessor.ProcessMainLoop(frame);
+                var instance = ServiceContainer.GetService<INativeInteropManager>() as NativeInteropManager;
+                instance?._mainLoopProcessor.ProcessMainLoop(frame);
             }
             catch (Exception e)
             {
-                _logger.Write<ErrorLogGroup>($"MainLoop exception: {e}", true);
+                var logger = ServiceContainer.GetService<ILogger>();
+                logger?.Write<ErrorLogGroup>($"MainLoop exception: {e}", true);
             }
         }
 
@@ -42,12 +53,14 @@ namespace SWLOR.Game.Server.Server
         {
             try
             {
+                var instance = ServiceContainer.GetService<INativeInteropManager>() as NativeInteropManager;
                 var scriptName = scriptPtr.ReadNullTerminatedString();
-                return _scriptExecutor.ProcessRunScript(scriptName, oidSelf);
+                return instance?._scriptExecutor.ProcessRunScript(scriptName, oidSelf) ?? -1;
             }
             catch (Exception e)
             {
-                _logger.Write<ErrorLogGroup>($"RunScript exception: {e}", true);
+                var logger = ServiceContainer.GetService<ILogger>();
+                logger?.Write<ErrorLogGroup>($"RunScript exception: {e}", true);
                 return -1;
             }
         }
@@ -57,12 +70,14 @@ namespace SWLOR.Game.Server.Server
         {
             try
             {
+                var instance = ServiceContainer.GetService<INativeInteropManager>() as NativeInteropManager;
                 var signal = signalPtr.ReadNullTerminatedString();
-                ProcessSignal(signal);
+                instance?.ProcessSignal(signal);
             }
             catch (Exception e)
             {
-                _logger.Write<ErrorLogGroup>($"Signal processing exception: {e}", true);
+                var logger = ServiceContainer.GetService<ILogger>();
+                logger?.Write<ErrorLogGroup>($"Signal processing exception: {e}", true);
             }
         }
 
@@ -71,16 +86,18 @@ namespace SWLOR.Game.Server.Server
         {
             try
             {
-                _closureManager.OnClosure(eid, oidSelf);
+                var instance = ServiceContainer.GetService<INativeInteropManager>() as NativeInteropManager;
+                instance?._closureManager.OnClosure(eid, oidSelf);
             }
             catch (Exception e)
             {
-                _logger.Write<ErrorLogGroup>($"Closure exception: {e}", true);
+                var logger = ServiceContainer.GetService<ILogger>();
+                logger?.Write<ErrorLogGroup>($"Closure exception: {e}", true);
             }
         }
 
 
-        private static void ProcessSignal(string signal)
+        private void ProcessSignal(string signal)
         {
             switch (signal)
             {
@@ -91,7 +108,7 @@ namespace SWLOR.Game.Server.Server
             }
         }
 
-        private static void RunPreModuleLoadEvents()
+        private void RunPreModuleLoadEvents()
         {
             ExecuteScript(ScriptName.OnServerLoaded, GetModule());
             ExecuteScript(ScriptName.OnModuleCacheBefore, GetModule());

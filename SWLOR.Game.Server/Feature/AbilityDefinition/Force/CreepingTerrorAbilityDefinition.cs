@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -35,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 1);
+                    ServiceContainer.GetService<IStatusEffectService>().Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 1);
                 });
         }
 
@@ -54,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 2);
+                    ServiceContainer.GetService<IStatusEffectService>().Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 2);
                 });
         }
 
@@ -73,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 3);
+                    ServiceContainer.GetService<IStatusEffectService>().Apply(activator, target, StatusEffectType.CreepingTerror, 24f, 3);
                 });
         }
     }

@@ -1,12 +1,10 @@
-using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Shared.Core.Contracts
 {
     public interface ISkillService
     {
-        int APCap { get; }
-        void GiveSkillXP(uint player, SkillType skill, int xp, bool ignoreBonuses = false, bool applyHenchmanPenalty = true);
-        void AddMissingSkills();
-        int GetMaxDistributableXP(uint player, SkillType skillType);
+        int GetSkillLevel(uint creature, SkillType skill);
+        void GiveSkillXP(uint creature, SkillType skill, int xp);
     }
 }

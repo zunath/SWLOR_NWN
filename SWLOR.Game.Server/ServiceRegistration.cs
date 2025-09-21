@@ -18,6 +18,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Extensions;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Configuration;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Infrastructure;
@@ -114,6 +115,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<SWLOR.Component.World.Dialog.TaxiTerminalDialog>();
             services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.QuestRewardSelectionDialog>();
             services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.XPTomeDialog>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.HoloComDialog>();
 
             // Quest Definition Services
             services.AddSingleton<SWLOR.Game.Server.Service.QuestService.IQuestListDefinition, SWLOR.Game.Server.Feature.QuestDefinition.DantooineQuestDefinition>();
@@ -142,9 +144,10 @@ namespace SWLOR.Game.Server
         services.AddSingleton<SWLOR.Game.Server.Feature.StoreManagement>();
         services.AddSingleton<SWLOR.Game.Server.Feature.HoloNetTerminal>();
         services.AddSingleton<SWLOR.Game.Server.Feature.PlayerStatusWindow>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.CreatureDeathAnimation>();
         
         // Party Service
-        services.AddSingleton<SWLOR.Game.Server.Service.IPartyService, SWLOR.Game.Server.Service.PartyService>();
+        services.AddSingleton<SWLOR.Shared.Core.Contracts.IPartyService, SWLOR.Game.Server.Service.PartyService>();
         
         // Enmity Service
         services.AddSingleton<SWLOR.Game.Server.Service.IEnmityService, SWLOR.Game.Server.Service.EnmityService>();
@@ -296,25 +299,36 @@ namespace SWLOR.Game.Server
             
             // Core Services
             services.AddSingleton<SWLOR.Shared.Core.Contracts.IObjectVisibilityService, SWLOR.Game.Server.Service.ObjectVisibilityService>();
-            services.AddSingleton<SWLOR.Shared.Core.Contracts.IQuestService, SWLOR.Game.Server.Service.QuestService>();
-            services.AddSingleton<SWLOR.Shared.Core.Contracts.IItemService, SWLOR.Game.Server.Service.ItemService>();
-            services.AddSingleton<SWLOR.Shared.Core.Contracts.ICombatService, SWLOR.Game.Server.Service.CombatService>();
-            services.AddSingleton<SWLOR.Shared.Core.Contracts.IAbilityService, SWLOR.Game.Server.Service.AbilityService>();
-            services.AddSingleton<SWLOR.Shared.Core.Contracts.IPerkService, SWLOR.Game.Server.Service.PerkService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IQuestService, SWLOR.Game.Server.Service.Quest>();
+            services.AddSingleton<IItemService, SWLOR.Game.Server.Service.Item>();
+            services.AddSingleton<SWLOR.Shared.Abstractions.Contracts.ICombatService, SWLOR.Game.Server.Service.Combat>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IAbilityService, SWLOR.Game.Server.Service.Ability>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IPerkService, SWLOR.Game.Server.Service.Perk>();
             services.AddSingleton<SWLOR.Shared.Core.Contracts.ISkillService, SWLOR.Game.Server.Service.SkillService>();
-            services.AddSingleton<SWLOR.Shared.Core.Contracts.IStatService, SWLOR.Game.Server.Service.StatService>();
-            services.AddSingleton<SWLOR.Shared.Core.Contracts.ICraftService, SWLOR.Game.Server.Service.CraftService>();
-            services.AddSingleton<SWLOR.Shared.Core.Contracts.IStatusEffectService, SWLOR.Game.Server.Service.StatusEffectService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IStatService, SWLOR.Game.Server.Service.Stat>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ICraftService, SWLOR.Game.Server.Service.Craft>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IStatusEffectService, SWLOR.Game.Server.Service.StatusEffect>();
             services.AddSingleton<SWLOR.Shared.Core.Contracts.ISpawnService, SWLOR.Game.Server.Service.SpawnService>();
             services.AddSingleton<SWLOR.Shared.Core.Contracts.IFactionService, SWLOR.Game.Server.Service.FactionService>();
             services.AddSingleton<SWLOR.Shared.Core.Contracts.IGuildService, SWLOR.Game.Server.Service.GuildService>();
             services.AddSingleton<SWLOR.Shared.Core.Contracts.ICurrencyService, SWLOR.Game.Server.Service.CurrencyService>();
-            services.AddSingleton<SWLOR.Shared.Core.Contracts.ILanguageService, SWLOR.Game.Server.Service.LanguageService>();
-            services.AddSingleton<SWLOR.Shared.Core.Contracts.IActivityService, SWLOR.Game.Server.Service.ActivityService>();
-            services.AddSingleton<SWLOR.Shared.Core.Contracts.IMessagingService, SWLOR.Game.Server.Service.MessagingService>();
-            services.AddSingleton<SWLOR.Shared.Core.Contracts.ITimeService, SWLOR.Game.Server.Service.TimeService>();
-            services.AddSingleton<SWLOR.Shared.Core.Contracts.ITargetingService, SWLOR.Game.Server.Service.TargetingService>();
-            services.AddSingleton<SWLOR.Shared.Core.Contracts.IHoloComService, SWLOR.Game.Server.Service.HoloComService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ILanguageService, SWLOR.Game.Server.Service.Language>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IActivityService, SWLOR.Game.Server.Service.Activity>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IMessagingService, SWLOR.Game.Server.Service.Messaging>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IRecastService, SWLOR.Game.Server.Service.Recast>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.LightsaberAudio>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ITimeService, SWLOR.Game.Server.Service.Time>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IPropertyService, SWLOR.Game.Server.Service.PropertyService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ISpaceService, SWLOR.Game.Server.Service.Space>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IBeastMasteryService, SWLOR.Game.Server.Service.BeastMasteryService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IPlayerMarketService, SWLOR.Game.Server.Service.PlayerMarketService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ITargetingService, SWLOR.Game.Server.Service.Targeting>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ICombatPointService, SWLOR.Game.Server.Service.CombatPoint>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ILootService, SWLOR.Game.Server.Service.LootService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IEnmityService, SWLOR.Game.Server.Service.Enmity>();
+            services.AddSingleton<SWLOR.Shared.Caching.Contracts.IGenericCacheService, SWLOR.Game.Server.Service.GenericCacheService>();
+            services.AddSingleton<SWLOR.Shared.UI.Contracts.IGuiService, SWLOR.Game.Server.Service.GuiService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IHoloComService, SWLOR.Game.Server.Service.HoloCom>();
             services.AddSingleton<SWLOR.Shared.Core.Contracts.IAnimationPlayerService, SWLOR.Game.Server.Service.AnimationPlayerService>();
             
         // Static service conversions

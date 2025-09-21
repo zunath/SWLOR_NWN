@@ -1,23 +1,27 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
     public class ShockingShoutAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly ICombatService _combatService;
         private readonly IAbilityService _abilityService;
 
-        public ShockingShoutAbilityDefinition(CombatPoint combatPoint, ICombatService combatService, IAbilityService abilityService)
+        public ShockingShoutAbilityDefinition(ICombatPointService combatPointService, ICombatService combatService, IAbilityService abilityService)
         {
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _combatService = combatService;
             _abilityService = abilityService;
         }
@@ -74,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), nearest);
                             }
 
-                            _combatPoint.AddCombatPoint(activator, nearest, SkillType.Leadership, 3);
+                            _combatPointService.AddCombatPoint(activator, nearest, SkillType.Leadership, 3);
                             Enmity.ModifyEnmity(activator, target, 650);
                         }
 

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -9,6 +9,7 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private readonly ISkillService _skillService;
         private readonly BeastMastery _beastMastery;
 
-        public MedKitAbilityDefinition(IRandomService random, IDatabaseService db, IStatService statService, ISkillService skillService, CombatPoint combatPoint, IEnmityService enmityService, BeastMastery beastMastery, IAbilityService abilityService, IPerkService perkService) : base(random, perkService, combatPoint, enmityService, abilityService)
+        public MedKitAbilityDefinition(IRandomService random, IDatabaseService db, IStatService statService, ISkillService skillService, ICombatPointService combatPointService, IEnmityService enmityService, BeastMastery beastMastery, IAbilityService abilityService, IPerkService perkService) : base(random, perkService, combatPoint, enmityService, abilityService)
         {
             _random = random;
             _db = db;
@@ -75,20 +76,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             TakeMedicalSupplies(activator);
 
             _enmityService.ModifyEnmityOnAll(activator, 150 + amount);
-            _combatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
-            if (_combatPoint.GetTaggedCreatureCount(activator) == 0)
+            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+            if (_combatPointService.GetTaggedCreatureCount(activator) == 0)
             {
                 // Scale XP to the thing we just fought -- only give XP if we're not in combat.
                 // Retrieve the level of our recent enemy from the CombatPoint service, and use the Skill service 
                 // delta function to get base XP based on relative level.
                 // If Add_combatPoint... returns 0, but GetRecentEnemyLevel returns > -1, then we are out of combat but recently were in combat.
-                var enemyLevel = _combatPoint.GetRecentEnemyLevel(activator);
+                var enemyLevel = _combatPointService.GetRecentEnemyLevel(activator);
                 var playerId = GetObjectUUID(activator);
                 var dbPlayer = _db.Get<Player>(playerId);
                 var firstAidLevel = dbPlayer.Skills[SkillType.FirstAid].Rank;
                 var nXP = enemyLevel != -1 ? _skillService.GetDeltaXP(enemyLevel - firstAidLevel) : 0;
                 _skillService.GiveSkillXP(activator, SkillType.FirstAid, nXP);
-                _combatPoint.ClearRecentEnemyLevel(activator);
+                _combatPointService.ClearRecentEnemyLevel(activator);
             }
         }
 

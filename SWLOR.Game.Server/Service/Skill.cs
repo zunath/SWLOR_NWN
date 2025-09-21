@@ -5,6 +5,8 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
@@ -79,7 +81,7 @@ namespace SWLOR.Game.Server.Service
                     bonusPercentage += social * 0.025f;
 
                 // Food bonus
-                var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
+                var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
                 if (foodEffect != null)
                 {
                     bonusPercentage += foodEffect.XPBonusPercent * 0.01f;
@@ -89,9 +91,9 @@ namespace SWLOR.Game.Server.Service
                 bonusPercentage += dbPlayer.DMXPBonus * 0.01f;
 
                 // Dedication bonus
-                if (StatusEffect.HasStatusEffect(player, StatusEffectType.Dedication))
+                if (_statusEffectService.HasStatusEffect(player, StatusEffectType.Dedication))
                 {
-                    var source = StatusEffect.GetEffectData<uint>(player, StatusEffectType.Dedication);
+                    var source = _statusEffectService.GetEffectData<uint>(player, StatusEffectType.Dedication);
 
                     if (GetIsObjectValid(source))
                     {

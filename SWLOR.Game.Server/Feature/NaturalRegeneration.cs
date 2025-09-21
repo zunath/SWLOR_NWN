@@ -8,6 +8,7 @@ using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature
 {

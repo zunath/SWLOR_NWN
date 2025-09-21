@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class TimeService : ITimeService
+    public class Time : ITimeService
     {
         /// <summary>
         /// Returns time in the following manner:

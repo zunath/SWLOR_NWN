@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
+namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
 {
     public class SpearAppearanceDefinition : WeaponAppearanceBaseDefinition
     {

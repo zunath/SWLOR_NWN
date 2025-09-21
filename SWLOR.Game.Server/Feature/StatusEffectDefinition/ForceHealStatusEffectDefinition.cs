@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -7,19 +7,20 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class ForceHealStatusEffectDefinition : IStatusEffectListDefinition
     {
         private readonly IRandomService _random;
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
-        public ForceHealStatusEffectDefinition(IRandomService random, CombatPoint combatPoint, IEnmityService enmityService)
+        public ForceHealStatusEffectDefinition(IRandomService random, ICombatPointService combatPointService, IEnmityService enmityService)
         {
             _random = random;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _enmityService = enmityService;
         }
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
@@ -49,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_S), target);
 
             _enmityService.ModifyEnmityOnAll(source, 30 + amount);
-            _combatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);
+            _combatPointService.AddCombatPointToAllTagged(source, SkillType.Force, 3);
         }
 
         private void ForceHeal1(StatusEffectBuilder builder)

@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.UI.Model;
 

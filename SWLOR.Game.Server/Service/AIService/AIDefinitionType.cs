@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.AIService
+namespace SWLOR.Game.Server.Service.AIService
 {
     public enum AIDefinitionType
     {

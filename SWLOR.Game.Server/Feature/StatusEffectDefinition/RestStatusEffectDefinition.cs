@@ -7,6 +7,8 @@ using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Player;
@@ -20,12 +22,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private readonly IAbilityService _abilityService;
         private readonly IStatService _statService;
         private readonly IActivityService _activityService;
+        private readonly IStatusEffectService _statusEffectService;
 
-        public RestStatusEffectDefinition(IAbilityService abilityService, IStatService statService, IActivityService activityService)
+        public RestStatusEffectDefinition(IAbilityService abilityService, IStatService statService, IActivityService activityService, IStatusEffectService statusEffectService)
         {
             _abilityService = abilityService;
             _statService = statService;
             _activityService = activityService;
+            _statusEffectService = statusEffectService;
         }
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
@@ -42,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public static void RemoveRestOnDamage()
         {
             var player = OBJECT_SELF;
-            StatusEffect.Remove(player, StatusEffectType.Rest);
+            _statusEffectService.Remove(player, StatusEffectType.Rest);
         }
 
         /// <summary>
@@ -54,14 +58,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
             
-            StatusEffect.Remove(player, StatusEffectType.Rest);
+            _statusEffectService.Remove(player, StatusEffectType.Rest);
         }
 
         [ScriptHandler<OnModuleEnter>]
         public static void RemoveRestOnLogin()
         {
             var player = GetEnteringObject();
-            StatusEffect.Remove(player, StatusEffectType.Rest);
+            _statusEffectService.Remove(player, StatusEffectType.Rest);
         }
 
         private void Rest(StatusEffectBuilder builder)
@@ -83,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     Math.Abs(position.Y - originalPosition.Y) > 0.1f ||
                     Math.Abs(position.Z - originalPosition.Z) > 0.1f)
                 {
-                    StatusEffect.Remove(target, StatusEffectType.Rest);
+                    _statusEffectService.Remove(target, StatusEffectType.Rest);
                 }
 
                 DelayCommand(0.5f, () => CheckMovement(target));
@@ -131,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     if (fpAmount < 1)
                         fpAmount = 1;
 
-                    var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(target, StatusEffectType.Food);
+                    var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(target, StatusEffectType.Food);
 
                     if (foodEffect != null)
                     {

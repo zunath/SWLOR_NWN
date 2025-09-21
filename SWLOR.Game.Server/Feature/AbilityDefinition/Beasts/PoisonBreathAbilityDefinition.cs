@@ -1,11 +1,15 @@
-﻿using SWLOR.Game.Server.Service.AbilityService;
+
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
+
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.NWN.API.Engine;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
@@ -14,11 +18,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
         private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly IStatusEffectService _statusEffectService;
 
-        public PoisonBreathAbilityDefinition(ICombatService combatService, IStatService statService)
+        public PoisonBreathAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService)
         {
             _combatService = combatService;
             _statService = statService;
+            _statusEffectService = statusEffectService;
         }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -77,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {
-                            StatusEffect.Apply(activator, targetCopy, StatusEffectType.Poison, 30f);
+                            _statusEffectService.Apply(activator, targetCopy, StatusEffectType.Poison, 30f);
                         }
                     });
                 }

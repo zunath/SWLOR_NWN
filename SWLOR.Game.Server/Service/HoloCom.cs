@@ -8,7 +8,7 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class HoloComService : IHoloComService
+    public class HoloCom : IHoloComService
     {
         // Local variable name constants
         private const string HolocomCallConnected = "HOLOCOM_CALL_CONNECTED";

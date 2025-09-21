@@ -1,4 +1,4 @@
-﻿using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Data.Entity;
 
 namespace SWLOR.Game.Server.Service.BeastMasteryService
 {

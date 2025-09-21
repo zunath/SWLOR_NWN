@@ -1,12 +1,12 @@
 
-using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class ActivityService : IActivityService
+    public class Activity : IActivityService
     {
         /// <summary>
         /// Marks a target as being busy with a particular type of action.

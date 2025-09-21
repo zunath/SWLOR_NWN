@@ -1,0 +1,19 @@
+using System.Collections.Generic;
+using SWLOR.Shared.Core.Enums;
+
+namespace SWLOR.Shared.Core.Models
+{
+    public class LanguageCommand
+    {
+        public string ProperName { get; }
+        public IEnumerable<string> ChatNames { get; }
+        public SkillType Skill { get; }
+
+        public LanguageCommand(string properName, SkillType skill, IEnumerable<string> chatNames)
+        {
+            ProperName = properName;
+            Skill = skill;
+            ChatNames = chatNames;
+        }
+    }
+}

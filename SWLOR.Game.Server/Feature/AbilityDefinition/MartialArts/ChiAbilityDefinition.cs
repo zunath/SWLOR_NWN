@@ -1,22 +1,24 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
     public class ChiAbilityDefinition: IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
-        public ChiAbilityDefinition(CombatPoint combatPoint, IEnmityService enmityService)
+        public ChiAbilityDefinition(ICombatPointService combatPointService, IEnmityService enmityService)
         {
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _enmityService = enmityService;
         }
 
@@ -38,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), activator);
 
             _enmityService.ModifyEnmityOnAll(activator, 300 + recovery + 10);
-            _combatPoint.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
+            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
         }
 
         private void Chi1()

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Models;
 using Dialog = SWLOR.Shared.Dialog.Service.Dialog;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition

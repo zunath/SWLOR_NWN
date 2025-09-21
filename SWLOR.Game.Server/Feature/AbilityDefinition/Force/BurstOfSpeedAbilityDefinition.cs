@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
+
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -17,13 +19,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private const string Tier1Tag = "EFFECT_BURST_OF_SPEED_1";
         private const string Tier2Tag = "EFFECT_BURST_OF_SPEED_2";
         private readonly IStatService _statService;
-        private readonly CombatPoint _combatPoint;
+        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
-        public BurstOfSpeedAbilityDefinition(IStatService statService, CombatPoint combatPoint, IEnmityService enmityService)
+        public BurstOfSpeedAbilityDefinition(IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
         {
             _statService = statService;
-            _combatPoint = combatPoint;
+            _combatPointService = combatPointService;
             _enmityService = enmityService;
         }
 
@@ -97,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             effect = TagEffect(effect, effectTag);
             ApplyEffectToObject(DurationType.Temporary, effect, target, 600f);
 
-            _combatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
             _enmityService.ModifyEnmityOnAll(activator, 250);
         }
 

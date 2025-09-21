@@ -1,18 +1,20 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class ShieldingAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        public ShieldingAbilityDefinition(IRandomService random, IPerkService perkService, CombatPoint combatPoint, IEnmityService enmityService, IAbilityService abilityService) : base(random, perkService, combatPoint, enmityService, abilityService)
+        public ShieldingAbilityDefinition(IRandomService random, IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService, IAbilityService abilityService, IStatusEffectService statusEffectService) : base(random, perkService, combatPoint, enmityService, abilityService, statusEffectService)
         {
         }
 
@@ -47,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             const float BaseLength = 900f;
             var length = BaseLength + willpowerMod * 30f;
             
-            StatusEffect.Apply(activator, target, statusEffectType, length);
+            _statusEffectService.Apply(activator, target, statusEffectType, length);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Spell_Mantle_Use), target);
 
             TakeStimPack(activator);
@@ -71,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     Impact(activator, target, StatusEffectType.Shielding1);
 
                     _enmityService.ModifyEnmityOnAll(activator, 150);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
 
@@ -93,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     Impact(activator, target, StatusEffectType.Shielding2);
 
                     _enmityService.ModifyEnmityOnAll(activator, 300);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
 
@@ -115,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     Impact(activator, target, StatusEffectType.Shielding3);
 
                     _enmityService.ModifyEnmityOnAll(activator, 450);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
 
@@ -137,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     Impact(activator, target, StatusEffectType.Shielding4);
 
                     _enmityService.ModifyEnmityOnAll(activator, 600);
-                    _combatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
         }
     }

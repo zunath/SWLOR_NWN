@@ -1,0 +1,5 @@
+---
+description: The event system NEVER requires a .nss script file to be created. You do not need to create this file even if it doesn't exist.
+globs:
+alwaysApply: true
+---

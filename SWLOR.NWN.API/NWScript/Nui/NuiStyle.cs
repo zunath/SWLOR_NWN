@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Shared.Core.Beamdog
+﻿namespace SWLOR.NWN.API.NWScript.Nui
 {
     public static class NuiStyle
     {

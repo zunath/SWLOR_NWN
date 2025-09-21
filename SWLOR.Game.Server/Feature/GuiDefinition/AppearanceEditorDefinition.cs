@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 using System.Linq.Expressions;
 using System;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.Shared.Core.Beamdog;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {

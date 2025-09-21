@@ -1,6 +1,7 @@
 ﻿using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Shared.Core.Beamdog
+namespace SWLOR.NWN.API.NWScript.Nui
 {
     public static class Nui
     {
@@ -137,7 +138,7 @@ namespace SWLOR.Shared.Core.Beamdog
         {
             var ret = NuiElement("group", JsonNull(), JsonNull());
             ret = JsonObjectSet(ret, "children", JsonArrayInsert(JsonArray(), jChild));
-            ret = JsonObjectSet(ret, "border", JsonBool(bBorder));
+            ret = JsonObjectSet(ret, "border", JsonBool(bBorder ? 1 : 0));
             ret = JsonObjectSet(ret, "scrollbars", JsonInt((int)nScroll));
             return ret;
         }
@@ -300,7 +301,7 @@ namespace SWLOR.Shared.Core.Beamdog
         public static Json Text(Json jValue, bool showBorder = true, NuiScrollbars scrollbars = NuiScrollbars.Auto)
         {
             var ret = NuiElement("text", JsonNull(), jValue);
-            ret = JsonObjectSet(ret, "border", JsonBool(showBorder));
+            ret = JsonObjectSet(ret, "border", JsonBool(showBorder ? 1 : 0));
             ret = JsonObjectSet(ret, "scrollbars", JsonInt((int)scrollbars));
 
             return ret;
@@ -447,8 +448,8 @@ namespace SWLOR.Shared.Core.Beamdog
         {
             var ret = NuiElement("textedit", jPlaceholder, jValue);
             ret = JsonObjectSet(ret, "max", JsonInt(nMaxLength));
-            ret = JsonObjectSet(ret, "multiline", JsonBool(bMultiline));
-            ret = JsonObjectSet(ret, "wordwrap", JsonBool(bWordWrap));
+            ret = JsonObjectSet(ret, "multiline", JsonBool(bMultiline ? 1 : 0));
+            ret = JsonObjectSet(ret, "wordwrap", JsonBool(bWordWrap ? 1 : 0));
             return ret;
         }
 
@@ -477,7 +478,7 @@ namespace SWLOR.Shared.Core.Beamdog
             ret = JsonObjectSet(ret, "row_template", jTemplate);
             ret = JsonObjectSet(ret, "row_count", jRowCount);
             ret = JsonObjectSet(ret, "row_height", JsonFloat(fRowHeight));
-            ret = JsonObjectSet(ret, "border", JsonBool(showBorder));
+            ret = JsonObjectSet(ret, "border", JsonBool(showBorder ? 1 : 0));
             ret = JsonObjectSet(ret, "scrollbars", JsonInt((int)scrollbars));
 
             return ret;
@@ -494,7 +495,7 @@ namespace SWLOR.Shared.Core.Beamdog
             var ret = JsonArray();
             ret = JsonArrayInsert(ret, jElem);
             ret = JsonArrayInsert(ret, JsonFloat(fWidth));
-            ret = JsonArrayInsert(ret, JsonBool(bVariable));
+            ret = JsonArrayInsert(ret, JsonBool(bVariable ? 1 : 0));
             return ret;
         }
 
@@ -633,7 +634,7 @@ namespace SWLOR.Shared.Core.Beamdog
             NuiDrawListItemOrderType nOrder = NuiDrawListItemOrderType.After,
             NuiDrawListItemRenderType nRender = NuiDrawListItemRenderType.Always)
         {
-            var ret = NuiDrawListItem(NuiDrawListItemType.Curve, jEnabled, jColor, JsonBool(false), jLineThickness, nOrder, nRender);
+            var ret = NuiDrawListItem(NuiDrawListItemType.Curve, jEnabled, jColor, JsonBool(0), jLineThickness, nOrder, nRender);
             ret = JsonObjectSet(ret, "a", jA);
             ret = JsonObjectSet(ret, "b", jB);
             ret = JsonObjectSet(ret, "ctrl0", jCtrl0);

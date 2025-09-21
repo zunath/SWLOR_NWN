@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Feature
     public static class PlayerStatusWindow
     {
 
-        [ScriptHandler(ScriptName.OnSWLORItemEquipValidBefore)]
+        [ScriptHandler<OnSWLORItemEquipValidBefore>]
         public static void PlayerEquipItem()
         {
             var player = OBJECT_SELF;
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
-        [ScriptHandler(ScriptName.OnItemUnequipBefore)]
+        [ScriptHandler<OnItemUnequipBefore>]
         public static void PlayerUnequipItem()
         {
             var player = OBJECT_SELF;
@@ -67,7 +68,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
-        [ScriptHandler(ScriptName.OnHealAfter)]
+        [ScriptHandler<OnHealAfter>]
         public static void PlayerHealed()
         {
             var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));

@@ -11,6 +11,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         
         private const int MaxNotes = 50;
 
-        [ScriptHandler(ScriptName.OnExamineObjectBefore)]
+        [ScriptHandler<OnExamineObjectBefore>]
         public static void ExaminePlayer()
         {
             var dm = OBJECT_SELF;

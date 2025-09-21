@@ -2,6 +2,7 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Marks players as bartering. This is used to ensure the PCs are not exported during this process.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBartenderStartBefore)]
+        [ScriptHandler<OnBartenderStartBefore>]
         public static void SetBarteringFlag()
         {
             var player1 = OBJECT_SELF;
@@ -47,7 +48,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Removes the bartering flag from PCs involved in a trade. This will ensure their files are exported on the next save occurrence.
         /// </summary>
-        [ScriptHandler(ScriptName.OnBartenderEndBefore)]
+        [ScriptHandler<OnBartenderEndBefore>]
         public static void RemoveBarteringFlag()
         {
             var player1 = OBJECT_SELF;

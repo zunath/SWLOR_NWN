@@ -13,6 +13,7 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 
 namespace SWLOR.Game.Server.Feature
@@ -83,7 +84,7 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is equipped, if it has any custom status, apply them now.
         /// This should be run in the "after" event because any restrictions should be checked first.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSWLORItemEquipValidBefore)]
+        [ScriptHandler<OnSWLORItemEquipValidBefore>]
         public static void ApplyStats()
         {
             var creature = OBJECT_SELF;
@@ -116,7 +117,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When an item is unequipped, if it has any custom stats, remove them now.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemUnequipBefore)]
+        [ScriptHandler<OnItemUnequipBefore>]
         public static void RemoveStats()
         {
             var creature = OBJECT_SELF;

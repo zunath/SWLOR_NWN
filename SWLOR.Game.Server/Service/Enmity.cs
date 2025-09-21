@@ -6,6 +6,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
@@ -91,7 +92,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a DM limbos creatures, ensure their enmity is wiped.
         /// </summary>
-        [ScriptHandler(ScriptName.OnDMLimboBefore)]
+        [ScriptHandler<OnDMLimboBefore>]
         public static void CreatureLimbo()
         {
             var count = Convert.ToInt32(EventsPlugin.GetEventData("NUM_TARGETS"));

@@ -19,6 +19,7 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
@@ -308,7 +309,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a droid equips an item, it is removed from its inventory and added to its equipped items.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSWLORItemEquipValidBefore)]
+        [ScriptHandler<OnSWLORItemEquipValidBefore>]
         public static void OnEquipItem()
         {
             var droid = OBJECT_SELF;
@@ -347,7 +348,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a droid unequips an item, it is removed from its equipped items and added to its inventory.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemUnequipBefore)]
+        [ScriptHandler<OnItemUnequipBefore>]
         public static void OnUnequipItem()
         {
             var droid = OBJECT_SELF;
@@ -879,7 +880,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters space or forcefully removes a droid from the party, the droid gets despawned.
         /// </summary>
         [ScriptHandler(ScriptName.OnSpaceEnter)]
-        [ScriptHandler(ScriptName.OnAssociateRemoveBefore)]
+        [ScriptHandler<OnAssociateRemoveBefore>]
         public static void RemoveAssociate()
         {
             var player = OBJECT_SELF;

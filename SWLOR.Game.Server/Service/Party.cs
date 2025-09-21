@@ -5,6 +5,7 @@ using System.Linq;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a member of a party accepts an invitation, add them to the caches.
         /// </summary>
-        [ScriptHandler(ScriptName.OnPartyAcceptInvitationBefore)]
+        [ScriptHandler<OnPartyAcceptInvitationBefore>]
         public static void JoinParty()
         {
             var creature = OBJECT_SELF;
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an associate (droid, pet, henchman, etc.) joins a party, add them to the caches.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAssociateAddBefore)]
+        [ScriptHandler<OnAssociateAddBefore>]
         public static void AssociateJoinParty()
         {
             var owner = OBJECT_SELF;
@@ -69,7 +70,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an associate (droid, pet, henchman, etc.) is removed from the party or leaves, remove them from the caches.
         /// </summary>
-        [ScriptHandler(ScriptName.OnAssociateRemoveBefore)]
+        [ScriptHandler<OnAssociateRemoveBefore>]
         public static void AssociateLeaveParty()
         {
             var associate = StringToObject(EventsPlugin.GetEventData("ASSOCIATE_OBJECT_ID"));
@@ -79,7 +80,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a member of a party leaves, update the caches.
         /// </summary>
-        [ScriptHandler(ScriptName.OnPartyLeaveBefore)]
+        [ScriptHandler<OnPartyLeaveBefore>]
         public static void LeaveParty()
         {
             var creature = StringToObject(EventsPlugin.GetEventData("LEAVING"));
@@ -89,7 +90,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the leader of a party changes, update the caches.
         /// </summary>
-        [ScriptHandler(ScriptName.OnPartyTransferLeadershipBefore)]
+        [ScriptHandler<OnPartyTransferLeadershipBefore>]
         public static void TransferLeadership()
         {
             var creature = StringToObject(EventsPlugin.GetEventData("NEW_LEADER"));

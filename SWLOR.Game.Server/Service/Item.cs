@@ -18,6 +18,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
@@ -249,7 +250,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an item is used, if its tag is in the item cache, run it through the action item process.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemUseBefore)]
+        [ScriptHandler<OnItemUseBefore>]
         public static void UseItem()
         {
             var user = OBJECT_SELF;

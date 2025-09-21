@@ -15,6 +15,7 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 using Item = SWLOR.Game.Server.Service.Item;
 
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Feature
         /// If it is, requirements to use the feat will be checked and then the ability will activate.
         /// If there are errors at any point in this process, the creature will be notified and the execution will end.
         /// </summary>
-        [ScriptHandler(ScriptName.OnFeatUseBefore)]
+        [ScriptHandler<OnFeatUseBefore>]
         public static void UseFeat()
         {
             var activator = OBJECT_SELF;
@@ -434,7 +435,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Whenever a player equips an item, clear any queued abilities.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSWLORItemEquipValidBefore)]
+        [ScriptHandler<OnSWLORItemEquipValidBefore>]
         public static void ClearTemporaryQueuedVariablesOnEquip()
         {
             ClearQueuedAbility(OBJECT_SELF);

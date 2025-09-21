@@ -12,6 +12,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Feature
@@ -24,7 +25,7 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is equipped, check the custom rules to see if the item can be equipped by the player.
         /// If not able to be used, an error message will be sent and item will not be equipped.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemEquipValidateBefore)]
+        [ScriptHandler<OnItemEquipValidateBefore>]
         public static void ValidateItemEquip()
         {
             var creature = OBJECT_SELF;
@@ -252,7 +253,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When an item is equipped, if any of a player's perks has an Equipped Trigger, run those actions now.
         /// </summary>
-        [ScriptHandler(ScriptName.OnSWLORItemEquipValidBefore)]
+        [ScriptHandler<OnSWLORItemEquipValidBefore>]
         public static void ApplyEquipTriggers()
         {
             var player = OBJECT_SELF;
@@ -300,7 +301,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When an item is unequipped, if any of a player's perks has an Unequipped Trigger, run those actions now.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemUnequipBefore)]
+        [ScriptHandler<OnItemUnequipBefore>]
         public static void ApplyUnequipTriggers()
         {
             var player = OBJECT_SELF;

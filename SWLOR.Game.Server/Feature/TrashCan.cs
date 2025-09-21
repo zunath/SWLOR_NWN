@@ -3,6 +3,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a player attempts to drop an item, prevent them from doing so and send a message to use the trash can.
         /// DMs are exempt from this rule.
         /// </summary>
-        [ScriptHandler(ScriptName.OnInputDropItemBefore)]
+        [ScriptHandler<OnInputDropItemBefore>]
         public static void PreventItemDrops()
         {
             var player = OBJECT_SELF;

@@ -2,6 +2,7 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Feature
         /// Before an item is used, if the item has a script specified, it will be run instantly.
         /// This will bypass the "Use Item" animation items normally have.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemUseBefore)]
+        [ScriptHandler<OnItemUseBefore>]
         public static void OnUseItem()
         {
             var creature = OBJECT_SELF;

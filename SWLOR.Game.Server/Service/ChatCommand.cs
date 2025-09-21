@@ -13,6 +13,7 @@ using SWLOR.Shared.Abstractions.Enums;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
@@ -49,7 +50,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles validating and processing chat commands sent by players and DMs.
         /// </summary>
-        [ScriptHandler(ScriptName.OnNWNXChat)]
+        [ScriptHandler<OnNWNXChat>]
         public static void HandleChatMessage()
         {
             var sender = OBJECT_SELF;

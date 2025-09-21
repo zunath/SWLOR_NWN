@@ -8,6 +8,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 using Player = SWLOR.Game.Server.Entity.Player;
 
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Adds a map pin to the PC entity and saves it to the DB.
         /// </summary>
-        [ScriptHandler(ScriptName.OnMapPinAddPinBefore)]
+        [ScriptHandler<OnMapPinAddPinBefore>]
         public static void AddMapPin()
         {
             var player = OBJECT_SELF;
@@ -67,7 +68,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Removes a map pin from the PC entity and saves it to the DB.
         /// </summary>
-        [ScriptHandler(ScriptName.OnMapPinDestroyPinBefore)]
+        [ScriptHandler<OnMapPinDestroyPinBefore>]
         public static void DeleteMapPin()
         {
             var player = OBJECT_SELF;
@@ -99,7 +100,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Updates an existing map pin and saves the changes to the DB.
         /// </summary>
-        [ScriptHandler(ScriptName.OnMapPinChangePinBefore)]
+        [ScriptHandler<OnMapPinChangePinBefore>]
         public static void ChangeMapPin()
         {
             var player = OBJECT_SELF;

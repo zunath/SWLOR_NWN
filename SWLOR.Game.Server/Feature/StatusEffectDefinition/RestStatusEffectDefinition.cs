@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         /// <summary>
         /// When a player attacks, remove the rest effect
         /// </summary>
-        [ScriptHandler(ScriptName.OnInputAttackObjectBefore)]
+        [ScriptHandler<OnInputAttackObjectBefore>]
         public static void RemoveRestOnAttack()
         {
             var player = OBJECT_SELF;

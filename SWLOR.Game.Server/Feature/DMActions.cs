@@ -7,6 +7,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Feature
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
-        [ScriptHandler(ScriptName.OnDMSpawnObjectAfter)]
+        [ScriptHandler<OnDMSpawnObjectAfter>]
         public static void OnDMSpawnObject()
         {
             var obj = StringToObject(EventsPlugin.GetEventData("OBJECT"));
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        [ScriptHandler(ScriptName.OnDMGiveXPBefore)]
+        [ScriptHandler<OnDMGiveXPBefore>]
         public static void GrantRPXPViaDMCommand()
         {
             var dm = OBJECT_SELF;
@@ -62,7 +63,7 @@ namespace SWLOR.Game.Server.Feature
                 SendMessageToPC(dm, "Only players may be targeted with this command.");
             }
         }
-        [ScriptHandler(ScriptName.OnDMGiveLevelBefore)]
+        [ScriptHandler<OnDMGiveLevelBefore>]
         public static void DisableGiveLevel()
         {
             var dm = OBJECT_SELF;

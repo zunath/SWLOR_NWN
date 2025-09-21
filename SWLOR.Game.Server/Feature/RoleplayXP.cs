@@ -8,6 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using Player = SWLOR.Game.Server.Entity.Player;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 
@@ -73,7 +74,7 @@ namespace SWLOR.Game.Server.Feature
         /// Adds RP points to a player's RP progression.
         /// If messages are sent too quickly, the message will be treated as spam and RP point will not be granted.
         /// </summary>
-        [ScriptHandler(ScriptName.OnNWNXChat)]
+        [ScriptHandler<OnNWNXChat>]
         public static void ProcessRPMessage()
         {
             var channel = ChatPlugin.GetChannel();

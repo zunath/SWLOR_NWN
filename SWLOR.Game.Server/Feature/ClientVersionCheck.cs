@@ -4,6 +4,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Feature
         /// All of the NUI window features require version 8193.33 or higher but we restrict to 8193.34 or higher
         /// due to fixes applied in .34.
         /// </summary>
-        [ScriptHandler(ScriptName.OnClientConnectBefore)]
+        [ScriptHandler<OnClientConnectBefore>]
         public static void CheckVersion()
         {
             const int RequiredMajorVersion = 8193;

@@ -12,6 +12,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -50,8 +51,8 @@ namespace SWLOR.Game.Server.Service
         /// Whenever a DM possesses a creature, track the NPC on their object so that messages can be
         /// sent to them during the possession.
         /// </summary>
-        [ScriptHandler(ScriptName.OnDMPossessBefore)]
-        [ScriptHandler(ScriptName.OnDMPossessFullPowerBefore)]
+        [ScriptHandler<OnDMPossessBefore>]
+        [ScriptHandler<OnDMPossessFullPowerBefore>]
         public static void OnDMPossess()
         {
             var dm = OBJECT_SELF;
@@ -118,7 +119,7 @@ namespace SWLOR.Game.Server.Service
             ExecuteScript("dmfi_onplychat", OBJECT_SELF);
         }
 
-        [ScriptHandler(ScriptName.OnNWNXChat)]
+        [ScriptHandler<OnNWNXChat>]
         public static void ProcessChatMessage()
         {
             var channel = ChatPlugin.GetChannel();

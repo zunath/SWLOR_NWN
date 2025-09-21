@@ -10,6 +10,7 @@ using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -125,7 +126,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Destroys items sold to NPC stores immediately.
         /// </summary>
-        [ScriptHandler(ScriptName.OnStoreSellAfter)]
+        [ScriptHandler<OnStoreSellAfter>]
         public static void DestroySoldItem()
         {
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
@@ -140,7 +141,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Prevents items from being sold from a henchman's inventory.
         /// </summary>
-        [ScriptHandler(ScriptName.OnStoreSellBefore)]
+        [ScriptHandler<OnStoreSellBefore>]
         public static void PreventSalesFromHenchmenInventory()
         {
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));

@@ -24,6 +24,7 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
@@ -427,7 +428,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters space or forcefully removes a beast from the party, the beast gets despawned.
         /// </summary>
         [ScriptHandler(ScriptName.OnSpaceEnter)]
-        [ScriptHandler(ScriptName.OnAssociateRemoveBefore)]
+        [ScriptHandler<OnAssociateRemoveBefore>]
         public static void RemoveAssociate()
         {
             var player = OBJECT_SELF;

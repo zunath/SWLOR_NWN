@@ -23,6 +23,7 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Area;
 using Vector3 = System.Numerics.Vector3;
@@ -394,7 +395,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles swapping a player's target to the object they attempted to attack using NWN's combat system.
         /// </summary>
-        [ScriptHandler(ScriptName.OnInputAttackObjectBefore)]
+        [ScriptHandler<OnInputAttackObjectBefore>]
         public static void SelectTarget()
         {
             var player = OBJECT_SELF;
@@ -1005,7 +1006,7 @@ namespace SWLOR.Game.Server.Service
         /// When a ship module item is examined,
         /// append the configured description to the item's description and add prerequisite perk item properties.
         /// </summary>
-        [ScriptHandler(ScriptName.OnExamineObjectBefore)]
+        [ScriptHandler<OnExamineObjectBefore>]
         public static void ExamineShipModuleItem()
         {
             var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
@@ -1038,7 +1039,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a ship item is examined, add the prerequisite perk item properties.
         /// </summary>
-        [ScriptHandler(ScriptName.OnExamineObjectBefore)]
+        [ScriptHandler<OnExamineObjectBefore>]
         public static void ExamineShipItem()
         {
             var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
@@ -1061,7 +1062,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a ship module's feat is used, execute the currently equipped module's custom code.
         /// </summary>
-        [ScriptHandler(ScriptName.OnFeatUseBefore)]
+        [ScriptHandler<OnFeatUseBefore>]
         public static void HandleShipModuleFeats()
         {
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
@@ -2124,7 +2125,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player attempts to stealth while in space mode,
         /// exit the stealth mode and send an error message.
         /// </summary>
-        [ScriptHandler(ScriptName.OnStealthEnterBefore)]
+        [ScriptHandler<OnStealthEnterBefore>]
         public static void PreventSpaceStealth()
         {
             var creature = OBJECT_SELF;

@@ -13,6 +13,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
@@ -685,7 +686,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a DM spawns a creature, attach all required scripts to it.
         /// </summary>
-        [ScriptHandler(ScriptName.OnDMSpawnObjectAfter)]
+        [ScriptHandler<OnDMSpawnObjectAfter>]
         public static void DMSpawnCreature()
         {
             var objectType = (InternalObjectType)Convert.ToInt32(EventsPlugin.GetEventData("OBJECT_TYPE"));

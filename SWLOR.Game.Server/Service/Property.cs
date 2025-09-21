@@ -21,6 +21,7 @@ using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -1836,7 +1837,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the property menu feat is used, open the GUI window.
         /// </summary>
-        [ScriptHandler(ScriptName.OnFeatUseBefore)]
+        [ScriptHandler<OnFeatUseBefore>]
         public static void PropertyMenu()
         {
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
@@ -1919,7 +1920,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Before an item is used, if it is a structure item, place it at the specified location.
         /// </summary>
-        [ScriptHandler(ScriptName.OnItemUseBefore)]
+        [ScriptHandler<OnItemUseBefore>]
         public static void PlaceStructure()
         {
             var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));

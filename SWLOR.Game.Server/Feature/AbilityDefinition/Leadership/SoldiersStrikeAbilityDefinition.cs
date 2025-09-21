@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -13,26 +14,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
     public class SoldiersStrikeAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
-        private readonly IPerkService _perkService;
         private readonly IAbilityService _abilityService;
 
-        public SoldiersStrikeAbilityDefinition(IPerkService perkService, IAbilityService abilityService)
+        public SoldiersStrikeAbilityDefinition(IAbilityService abilityService)
         {
-            _perkService = perkService;
             _abilityService = abilityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            SoldiersStrike();
+            SoldiersStrike(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void SoldiersStrike()
+        private void SoldiersStrike(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.SoldiersStrike, PerkType.SoldiersStrike)
+            builder.Create(FeatType.SoldiersStrike, PerkType.SoldiersStrike)
                 .Name("Soldier's Strike")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.SoldiersStrike, 60f)
@@ -42,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return AbilityService.ToggleAura(activator, StatusEffectType.SoldiersStrike);
+                    return _abilityService.ToggleAura(activator, StatusEffectType.SoldiersStrike);
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {

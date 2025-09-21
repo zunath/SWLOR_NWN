@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -13,27 +12,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class ClipAbilityDefinition: IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly IAbilityService _abilityService;
+        private readonly IEnmityService _enmityService;
 
-        public ClipAbilityDefinition(ICombatService combatService, IStatService statService, IAbilityService abilityService)
+        public ClipAbilityDefinition(ICombatService combatService, IStatService statService, IAbilityService abilityService, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
             _abilityService = abilityService;
+            _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Clip1();
-            Clip2();
-            Clip3();
-            Clip4();
-            Clip5();
+            Clip1(builder);
+            Clip2(builder);
+            Clip3(builder);
+            Clip4(builder);
+            Clip5(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void ImpactAction(uint activator, uint target, int dmg, int dc)
@@ -71,12 +71,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
             }
 
-            Enmity.ModifyEnmity(activator, target, 250 + damage);
+            _enmityService.ModifyEnmity(activator, target, 250 + damage);
         }
 
-        private void Clip1()
+        private void Clip1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Clip1, PerkType.Clip)
+            builder.Create(FeatType.Clip1, PerkType.Clip)
                 .Name("Clip I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Clip, 60f)
@@ -88,9 +88,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 10, 8);
                 });
         }
-        private void Clip2()
+        private void Clip2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Clip2, PerkType.Clip)
+            builder.Create(FeatType.Clip2, PerkType.Clip)
                 .Name("Clip II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Clip, 60f)
@@ -102,9 +102,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 12, 10);
                 });
         }
-        private void Clip3()
+        private void Clip3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Clip3, PerkType.Clip)
+            builder.Create(FeatType.Clip3, PerkType.Clip)
                 .Name("Clip III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Clip, 60f)
@@ -116,9 +116,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 14, 12);
                 });
         }
-        private void Clip4()
+        private void Clip4(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Clip4, PerkType.Clip)
+            builder.Create(FeatType.Clip4, PerkType.Clip)
                 .Name("Clip IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.Clip, 60f)
@@ -130,9 +130,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 16, 14);
                 });
         }
-        private void Clip5()
+        private void Clip5(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Clip5, PerkType.Clip)
+            builder.Create(FeatType.Clip5, PerkType.Clip)
                 .Name("Clip V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.Clip, 60f)

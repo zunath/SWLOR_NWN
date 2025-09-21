@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service.SpaceService
+namespace SWLOR.Shared.Core.Enums
 {
     public enum ShipModuleType
     {

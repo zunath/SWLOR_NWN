@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class KorribanQuestlineDefinition : IQuestListDefinition
     {
-        private readonly QuestBuilder _builder;
+        private readonly IQuestBuilder _builder;
 
         public KorribanQuestlineDefinition(IServiceProvider serviceProvider, IQuestService questService)
         {

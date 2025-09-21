@@ -13,7 +13,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceRageAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
         private readonly IStatusEffectService _statusEffectService;
@@ -25,17 +24,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _statusEffectService = statusEffectService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            ForceRage1();
-            ForceRage2();
+            ForceRage1(builder);
+            ForceRage2(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void ForceRage1()
+        private static void ForceRage1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceRage1, PerkType.ForceRage)
+            builder.Create(FeatType.ForceRage1, PerkType.ForceRage)
                 .Name("Force Rage I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceRage, 30f)
@@ -48,17 +47,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 {
                     var willpowerBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 30f;
 
-                    _statusEffectService.Apply(activator, target, StatusEffectType.ForceRage1, 60f * 15f + willpowerBonus);
+                    var statusEffectService = App.Resolve<IStatusEffectService>();
+                    var combatPointService = App.Resolve<ICombatPointService>();
+                    var enmityService = App.Resolve<IEnmityService>();
+
+                    statusEffectService.Apply(activator, target, StatusEffectType.ForceRage1, 60f * 15f + willpowerBonus);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
 
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-                    _enmityService.ModifyEnmityOnAll(activator, 250 * level);
+                    combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    enmityService.ModifyEnmityOnAll(activator, 250 * level);
                 });
         }
 
-        private void ForceRage2()
+        private static void ForceRage2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceRage2, PerkType.ForceRage)
+            builder.Create(FeatType.ForceRage2, PerkType.ForceRage)
                 .Name("Force Rage II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceRage, 30f)
@@ -71,11 +74,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 {
                     var willpowerBonus = GetAbilityModifier(AbilityType.Willpower, activator) * 30f;
 
-                    _statusEffectService.Apply(activator, target, StatusEffectType.ForceRage2, 60f * 15f + willpowerBonus);
+                    var statusEffectService = App.Resolve<IStatusEffectService>();
+                    var combatPointService = App.Resolve<ICombatPointService>();
+                    var enmityService = App.Resolve<IEnmityService>();
+
+                    statusEffectService.Apply(activator, target, StatusEffectType.ForceRage2, 60f * 15f + willpowerBonus);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
 
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-                    _enmityService.ModifyEnmityOnAll(activator, 250 * level);
+                    combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    enmityService.ModifyEnmityOnAll(activator, 250 * level);
                 });
         }
     }

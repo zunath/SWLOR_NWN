@@ -23,10 +23,10 @@ namespace SWLOR.Game.Server.Feature
         private readonly IDatabaseService _db;
         private readonly IItemService _itemService;
         private readonly IPerkService _perkService;
-        private readonly IDroidService _droidService;
+        private readonly IDroid _droidService;
         private readonly IGuiService _guiService;
 
-        public EquipmentRestrictions(IDatabaseService db, IItemService itemService, IPerkService perkService, IDroidService droidService, IGuiService guiService)
+        public EquipmentRestrictions(IDatabaseService db, IItemService itemService, IPerkService perkService, IDroid droidService, IGuiService guiService)
         {
             _db = db;
             _itemService = itemService;

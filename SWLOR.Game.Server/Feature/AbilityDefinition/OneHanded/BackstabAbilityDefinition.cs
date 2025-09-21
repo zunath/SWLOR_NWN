@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.NWN.API.Engine;
@@ -7,6 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
@@ -28,9 +30,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             Backstab1(builder);
             Backstab2(builder);
             Backstab3(builder);
@@ -100,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private void Backstab1(AbilityBuilder builder)
+        private void Backstab1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Backstab1, PerkType.Backstab)
                 .Name("Backstab I")
@@ -115,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void Backstab2(AbilityBuilder builder)
+        private void Backstab2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Backstab2, PerkType.Backstab)
                 .Name("Backstab II")
@@ -130,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void Backstab3(AbilityBuilder builder)
+        private void Backstab3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.Backstab3, PerkType.Backstab)
                 .Name("Backstab III")

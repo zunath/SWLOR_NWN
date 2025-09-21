@@ -16,9 +16,9 @@ using SWLOR.Game.Server.Server;
 using SWLOR.NWN.API;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Extensions;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Configuration;
-using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Infrastructure;
@@ -157,6 +157,26 @@ namespace SWLOR.Game.Server
         
         // ChatCommand Service
         services.AddSingleton<IChatCommandService, SWLOR.Game.Server.Service.ChatCommandService>();
+        
+        // Race Service
+        services.AddSingleton<IRace, SWLOR.Game.Server.Service.Race>();
+        
+        // Droid Personality Services
+        services.AddSingleton<SWLOR.Game.Server.Service.DroidService.DroidGeekyPersonality>();
+        services.AddSingleton<SWLOR.Game.Server.Service.DroidService.DroidPrissyPersonality>();
+        services.AddSingleton<SWLOR.Game.Server.Service.DroidService.DroidSarcasticPersonality>();
+        services.AddSingleton<SWLOR.Game.Server.Service.DroidService.DroidSlangPersonality>();
+        services.AddSingleton<SWLOR.Game.Server.Service.DroidService.DroidBlandPersonality>();
+        services.AddSingleton<SWLOR.Game.Server.Service.DroidService.DroidWorshipfulPersonality>();
+        
+        // Quest Builder Service
+        services.AddSingleton<IQuestBuilder, SWLOR.Game.Server.Service.QuestService.QuestBuilder>();
+        
+        // Ship Module Builder Service
+        services.AddSingleton<IShipModuleBuilder, SWLOR.Game.Server.Service.SpaceService.ShipModuleBuilder>();
+        
+        // Fishing Location Builder Service
+        services.AddSingleton<IFishingLocationBuilder, SWLOR.Game.Server.Service.FishingService.FishingLocationBuilder>();
             services.AddSingleton<SWLOR.Game.Server.Feature.PlayerInitialization>();
             services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.GuildMasterDialog>();
             services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.PlaceCityHallDialog>();
@@ -168,7 +188,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<SWLOR.Game.Server.Service.PlayerMarket>();
             services.AddSingleton<SWLOR.Game.Server.Service.Loot>();
             services.AddSingleton<SWLOR.Game.Server.Service.Fishing>();
-            services.AddSingleton<SWLOR.Game.Server.Service.Droid>();
+            services.AddSingleton<IDroid, SWLOR.Game.Server.Service.Droid>();
             services.AddSingleton<SWLOR.Game.Server.Service.Death>();
 
             // Other Services

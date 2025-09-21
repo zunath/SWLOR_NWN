@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -27,9 +26,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             ForceBurst1(builder);
             ForceBurst2(builder);
             ForceBurst3(builder);
@@ -59,17 +57,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     break;
             }
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Force);
+            var combatService = App.Resolve<ICombatService>();
+            var statService = App.Resolve<IStatService>();
+            var combatPointService = App.Resolve<ICombatPointService>();
+            var enmityService = App.Resolve<IEnmityService>();
+
+            dmg += combatService.GetAbilityDamageBonus(activator, SkillType.Force);
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);
             while (GetIsObjectValid(creature))
             {
                 if (GetDistanceBetween(target, creature) <= 4f && GetIsReactionTypeHostile(creature, activator))
                 {
                     var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-                    var defense = _statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+                    var defense = statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
                     var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-                    var attack = _statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
-                    var damage = _combatService.CalculateDamage(
+                    var attack = statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+                    var damage = combatService.CalculateDamage(
                         attack,
                         dmg,
                         attackerStat,
@@ -103,14 +106,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Wind), target);
                     });
 
-                    _combatPointService.AddCombatPoint(activator, creature, SkillType.Force, 3);
-                    _enmityService.ModifyEnmity(activator, creature, 250 * level + damage);
+                    combatPointService.AddCombatPoint(activator, creature, SkillType.Force, 3);
+                    enmityService.ModifyEnmity(activator, creature, 250 * level + damage);
                 }
                 creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Medium, GetLocation(target), true , ObjectType.Creature);
             }
         }
 
-        private static void ForceBurst1(AbilityBuilder builder)
+        private static void ForceBurst1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceBurst1, PerkType.ForceBurst)
                 .Name("Force Burst I")
@@ -127,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(ImpactAction);
         }
 
-        private static void ForceBurst2(AbilityBuilder builder)
+        private static void ForceBurst2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceBurst2, PerkType.ForceBurst)
                 .Name("Force Burst II")
@@ -144,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(ImpactAction);
         }
 
-        private static void ForceBurst3(AbilityBuilder builder)
+        private static void ForceBurst3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceBurst3, PerkType.ForceBurst)
                 .Name("Force Burst III")
@@ -161,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(ImpactAction);
         }
 
-        private static void ForceBurst4(AbilityBuilder builder)
+        private static void ForceBurst4(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceBurst4, PerkType.ForceBurst)
                 .Name("Force Burst IV")

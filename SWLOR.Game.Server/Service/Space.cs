@@ -16,7 +16,6 @@ using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
@@ -41,7 +40,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IGuiService _guiService;
         private readonly IPropertyService _propertyService;
         private readonly IPlanetService _planetService;
-        private readonly Area _areaService;
+        private readonly IAreaService _areaService;
         private readonly IMessagingService _messagingService;
         private readonly IStatusEffectService _statusEffectService;
         private readonly IEnmityService _enmityService;
@@ -58,7 +57,7 @@ namespace SWLOR.Game.Server.Service
             IGuiService guiService,
             IPropertyService propertyService,
             IPlanetService planetService,
-            Area areaService,
+            IAreaService areaService,
             IMessagingService messagingService,
             IStatusEffectService statusEffectService,
             IEnmityService enmityService)

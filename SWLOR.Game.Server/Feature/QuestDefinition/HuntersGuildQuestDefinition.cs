@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private readonly IItemCacheService _itemCache;
         private readonly IQuestService _questService;
         private readonly IServiceProvider _serviceProvider;
-        private readonly QuestBuilder _builder;
+        private readonly IQuestBuilder _builder;
 
         public HuntersGuildQuestDefinition(IItemCacheService itemCache, IQuestService questService, IServiceProvider serviceProvider)
         {
@@ -45,8 +45,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             { 4, new RewardDetails(874, 195)},
             { 5, new RewardDetails(960, 246)},
         };
-
-        private readonly QuestBuilder _builder;
 
         public Dictionary<string, QuestDetail> BuildQuests()
         {

@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Core.Service;
 
@@ -13,18 +15,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
     public class StrongStyleLightsaberAbilityDefinition : IAbilityListDefinition
     {
         private readonly IAbilityService _abilityService;
-        private readonly AbilityBuilder _builder = new();
 
         public StrongStyleLightsaberAbilityDefinition(IAbilityService abilityService)
         {
             _abilityService = abilityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            StrongStyleLightsaber();
+            StrongStyleLightsaber(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void DoToggle(uint activator, AbilityToggleType type)
@@ -42,9 +43,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             }
         }
 
-        private void StrongStyleLightsaber()
+        private void StrongStyleLightsaber(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.StrongStyleLightsaber, PerkType.StrongStyleLightsaber)
+            builder.Create(FeatType.StrongStyleLightsaber, PerkType.StrongStyleLightsaber)
                 .Name("Strong Style (Lightsaber)")
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()

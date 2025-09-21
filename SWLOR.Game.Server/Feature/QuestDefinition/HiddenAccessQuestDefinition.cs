@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class HiddenAccessQuestDefinition : IQuestListDefinition
     {
-        private readonly QuestBuilder _builder;
+        private readonly IQuestBuilder _builder;
         private readonly IObjectVisibilityService _objectVisibilityService;
         private readonly IQuestService _questService;
 

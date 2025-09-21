@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,7 +15,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
 {
     public class DashAbilityDefinition: IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly IAbilityService _abilityService;
 
         public DashAbilityDefinition(IAbilityService abilityService)
@@ -22,11 +22,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
             _abilityService = abilityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Dash();
+            Dash(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         [ScriptHandler(ScriptName.OnSpaceEnter)]
@@ -36,9 +36,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
             _abilityService.ToggleAbility(player, AbilityToggleType.Dash, false);
         }
 
-        private void Dash()
+        private void Dash(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Dash, PerkType.Dash)
+            builder.Create(FeatType.Dash, PerkType.Dash)
                 .Name("Dash")
                 .HideActivationMessage()
                 .UnaffectedByHeavyArmor()

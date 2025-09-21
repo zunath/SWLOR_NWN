@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class DantooineQuestDefinition : IQuestListDefinition
     {
-        private readonly QuestBuilder _builder;
+        private readonly IQuestBuilder _builder;
         private readonly IKeyItemService _keyItemService;
 
         public DantooineQuestDefinition(IKeyItemService keyItemService, IServiceProvider serviceProvider, IQuestService questService)

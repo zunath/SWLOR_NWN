@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.NWN.API.Engine;
@@ -31,9 +32,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             SaberStrike1(builder);
             SaberStrike2(builder);
             SaberStrike3(builder);
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            dc = combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
+            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
@@ -116,14 +116,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 ApplyEffectToObject(DurationType.Temporary, eBreach, target, breachTime);
             }
             
-            combatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.RiotBlade));
 
-            enmityService.ModifyEnmity(activator, target, 100 * level + damage);
+            _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private static void SaberStrike1(AbilityBuilder builder)
+        private void SaberStrike1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.SaberStrike1, PerkType.SaberStrike)
                 .Name("Saber Strike I")
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void SaberStrike2(AbilityBuilder builder)
+        private void SaberStrike2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.SaberStrike2, PerkType.SaberStrike)
                 .Name("Saber Strike II")
@@ -149,21 +149,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void SaberStrike3(AbilityBuilder builder)
-        {
-            builder.Create(FeatType.SaberStrike3, PerkType.SaberStrike)
-                .Name("Saber Strike III")
-                .Level(3)
-                .HasRecastDelay(RecastGroup.SaberStrike, 60f)
-                .RequirementStamina(8)
-                .IsWeaponAbility()
-                .UnaffectedByHeavyArmor()
-                .BreaksStealth()
-                .HasCustomValidation(Validation)
-                .HasImpactAction(ImpactAction);
-        }
-
-        private static void SaberStrike3(AbilityBuilder builder)
+        private void SaberStrike3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.SaberStrike3, PerkType.SaberStrike)
                 .Name("Saber Strike III")

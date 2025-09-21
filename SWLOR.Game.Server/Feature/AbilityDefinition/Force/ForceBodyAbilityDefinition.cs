@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
@@ -12,19 +11,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceBodyAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            ForceBody1();
-            ForceBody2();
+            ForceBody1(builder);
+            ForceBody2(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void ForceBody1()
+        private static void ForceBody1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceBody1, PerkType.ForceBody)
+            builder.Create(FeatType.ForceBody1, PerkType.ForceBody)
                 .Name("Force Body I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceRestore, 60f * 3f)
@@ -33,13 +31,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ServiceContainer.GetService<IStatusEffectService>().Apply(activator, activator, StatusEffectType.ForceBody1, 60f);
+                    var statusEffectService = App.Resolve<IStatusEffectService>();
+                    statusEffectService.Apply(activator, activator, StatusEffectType.ForceBody1, 60f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 2), activator, 60f);
                 });
         }
-        private void ForceBody2()
+        private static void ForceBody2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceBody2, PerkType.ForceBody)
+            builder.Create(FeatType.ForceBody2, PerkType.ForceBody)
                 .Name("Force Body II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceRestore, 60f * 3f)
@@ -48,7 +47,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ServiceContainer.GetService<IStatusEffectService>().Apply(activator, activator, StatusEffectType.ForceBody2, 60f);
+                    var statusEffectService = App.Resolve<IStatusEffectService>();
+                    statusEffectService.Apply(activator, activator, StatusEffectType.ForceBody2, 60f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 4), activator, 60f);
                 });
         }

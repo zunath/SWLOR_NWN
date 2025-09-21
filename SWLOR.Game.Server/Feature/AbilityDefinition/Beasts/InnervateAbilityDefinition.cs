@@ -1,7 +1,7 @@
 using SWLOR.Game.Server.Service;
 
 using System.Collections.Generic;
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -15,7 +15,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
     public class InnervateAbilityDefinition : IAbilityListDefinition
     {
         private readonly IRandomService _random;
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
@@ -26,15 +25,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Innervate1();
-            Innervate2();
-            Innervate3();
-            Innervate4();
-            Innervate5();
+            Innervate1(builder);
+            Innervate2(builder);
+            Innervate3(builder);
+            Innervate4(builder);
+            Innervate5(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void Impact(uint activator, uint target, int baseAmount)
@@ -52,9 +51,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             _combatPointService.AddCombatPointToAllTagged(beastmaster, SkillType.BeastMastery, 3);
         }
 
-        private void Innervate1()
+        private void Innervate1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Innervate1, PerkType.Innervate)
+            builder.Create(FeatType.Innervate1, PerkType.Innervate)
                 .Name("Innervate I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Innervate, 30f)
@@ -70,9 +69,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void Innervate2()
+        private void Innervate2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Innervate2, PerkType.Innervate)
+            builder.Create(FeatType.Innervate2, PerkType.Innervate)
                 .Name("Innervate II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Innervate, 30f)
@@ -88,9 +87,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void Innervate3()
+        private void Innervate3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Innervate3, PerkType.Innervate)
+            builder.Create(FeatType.Innervate3, PerkType.Innervate)
                 .Name("Innervate III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Innervate, 30f)
@@ -106,9 +105,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void Innervate4()
+        private void Innervate4(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Innervate4, PerkType.Innervate)
+            builder.Create(FeatType.Innervate4, PerkType.Innervate)
                 .Name("Innervate IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.Innervate, 30f)
@@ -124,9 +123,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void Innervate5()
+        private void Innervate5(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Innervate5, PerkType.Innervate)
+            builder.Create(FeatType.Innervate5, PerkType.Innervate)
                 .Name("Innervate V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.Innervate, 30f)

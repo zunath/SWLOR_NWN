@@ -12,6 +12,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
@@ -24,21 +25,29 @@ using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Droid
+    
+
+    public class Droid : IDroid
     {
-        private static readonly Dictionary<int, Dictionary<PerkType, int>> _defaultPerksByTier = new();
-        private static readonly Dictionary<int, int> _levelsByTier = new();
-        private static readonly Dictionary<DroidPersonalityType, IDroidPersonality> _droidPersonalities = new();
+        private readonly Dictionary<int, Dictionary<PerkType, int>> _defaultPerksByTier = new();
+        private readonly Dictionary<int, int> _levelsByTier = new();
+        private readonly Dictionary<DroidPersonalityType, IDroidPersonality> _droidPersonalities = new();
 
         private readonly IPerkService _perkService;
         private readonly IGuiService _guiService;
         private readonly IItemService _itemService;
-        private readonly Race _raceService;
+        private readonly IRace _raceService;
         private readonly IStatService _statService;
         private readonly IStatusEffectService _statusEffectService;
         private readonly AI _aiService;
         private readonly IActivityService _activityService;
         private readonly IRecastService _recastService;
+        private readonly DroidGeekyPersonality _geekyPersonality;
+        private readonly DroidPrissyPersonality _prissyPersonality;
+        private readonly DroidSarcasticPersonality _sarcasticPersonality;
+        private readonly DroidSlangPersonality _slangPersonality;
+        private readonly DroidBlandPersonality _blandPersonality;
+        private readonly DroidWorshipfulPersonality _worshipfulPersonality;
 
         public const string DroidResref = "pc_droid";
         public const string DroidControlItemResref = "droid_control";
@@ -53,12 +62,18 @@ namespace SWLOR.Game.Server.Service
             IPerkService perkService,
             IGuiService guiService,
             IItemService itemService,
-            Race raceService,
+            IRace raceService,
             IStatService statService,
             IStatusEffectService statusEffectService,
             AI aiService,
             IActivityService activityService,
-            IRecastService recastService)
+            IRecastService recastService,
+            DroidGeekyPersonality geekyPersonality,
+            DroidPrissyPersonality prissyPersonality,
+            DroidSarcasticPersonality sarcasticPersonality,
+            DroidSlangPersonality slangPersonality,
+            DroidBlandPersonality blandPersonality,
+            DroidWorshipfulPersonality worshipfulPersonality)
         {
             _perkService = perkService;
             _guiService = guiService;
@@ -69,6 +84,12 @@ namespace SWLOR.Game.Server.Service
             _aiService = aiService;
             _activityService = activityService;
             _recastService = recastService;
+            _geekyPersonality = geekyPersonality;
+            _prissyPersonality = prissyPersonality;
+            _sarcasticPersonality = sarcasticPersonality;
+            _slangPersonality = slangPersonality;
+            _blandPersonality = blandPersonality;
+            _worshipfulPersonality = worshipfulPersonality;
         }
 
         /// <summary>
@@ -93,12 +114,12 @@ namespace SWLOR.Game.Server.Service
 
         private void CachePersonalities()
         {
-            _droidPersonalities[DroidPersonalityType.Geeky] = new DroidGeekyPersonality();
-            _droidPersonalities[DroidPersonalityType.Prissy] = new DroidPrissyPersonality();
-            _droidPersonalities[DroidPersonalityType.Sarcastic] = new DroidSarcasticPersonality();
-            _droidPersonalities[DroidPersonalityType.Slang] = new DroidSlangPersonality();
-            _droidPersonalities[DroidPersonalityType.Bland] = new DroidBlandPersonality();
-            _droidPersonalities[DroidPersonalityType.Worshipful] = new DroidWorshipfulPersonality();
+            _droidPersonalities[DroidPersonalityType.Geeky] = _geekyPersonality;
+            _droidPersonalities[DroidPersonalityType.Prissy] = _prissyPersonality;
+            _droidPersonalities[DroidPersonalityType.Sarcastic] = _sarcasticPersonality;
+            _droidPersonalities[DroidPersonalityType.Slang] = _slangPersonality;
+            _droidPersonalities[DroidPersonalityType.Bland] = _blandPersonality;
+            _droidPersonalities[DroidPersonalityType.Worshipful] = _worshipfulPersonality;
         }
 
         private void CacheDefaultTierPerks()
@@ -1023,14 +1044,15 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="controller">The controller item to write to.</param>
         /// <param name="constructedDroid">The constructed droid data to save.</param>
-        public void SaveConstructedDroid(uint controller, ConstructedDroid constructedDroid)
+        public void SaveConstructedDroid(uint controller, object constructedDroid)
         {
-            var serialized = JsonConvert.SerializeObject(constructedDroid);
+            var droid = (ConstructedDroid)constructedDroid;
+            var serialized = JsonConvert.SerializeObject(droid);
             SetLocalString(controller, ConstructedDroidVariable, serialized);
         }
         
         [ScriptHandler(ScriptName.OnDroidBlocked)]
-        public static void DroidOnBlocked()
+        public void DroidOnBlocked()
         {
             ExecuteScript("x0_ch_hen_block", OBJECT_SELF);
         }
@@ -1052,20 +1074,20 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnDroidConversation)]
-        public static void DroidOnConversation()
+        public void DroidOnConversation()
         {
             ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
         [ScriptHandler(ScriptName.OnDroidDamaged)]
-        public static void DroidOnDamaged()
+        public void DroidOnDamaged()
         {
             ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
 
         }
 
         [ScriptHandler(ScriptName.OnDroidDeath)]
-        public static void DroidOnDeath()
+        public void DroidOnDeath()
         {
             var droid = OBJECT_SELF;
             var player = GetMaster(droid);
@@ -1082,7 +1104,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnDroidDisturbed)]
-        public static void DroidOnDisturbed()
+        public void DroidOnDisturbed()
         {
             ExecuteScript("x0_ch_hen_distrb", OBJECT_SELF);
         }
@@ -1100,14 +1122,14 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnDroidPerception)]
-        public static void DroidOnPerception()
+        public void DroidOnPerception()
         {
             ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
 
         }
 
         [ScriptHandler(ScriptName.OnDroidAttacked)]
-        public static void DroidOnPhysicalAttacked()
+        public void DroidOnPhysicalAttacked()
         {
             ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
 
@@ -1147,14 +1169,14 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnDroidSpellCast)]
-        public static void DroidOnSpellCastAt()
+        public void DroidOnSpellCastAt()
         {
             ExecuteScript("x2_hen_spell", OBJECT_SELF);
 
         }
 
         [ScriptHandler(ScriptName.OnDroidUserDefined)]
-        public static void DroidOnUserDefined()
+        public void DroidOnUserDefined()
         {
             ExecuteScript("x0_ch_hen_usrdef", OBJECT_SELF);
 

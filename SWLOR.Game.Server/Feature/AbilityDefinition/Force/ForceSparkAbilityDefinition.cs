@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -12,7 +12,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceSparkAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly ICombatPointService _combatPointService;
@@ -31,22 +30,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _messagingService = messagingService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            ForceSpark1();
-            ForceSpark2();
-            ForceSpark3();
+            ForceSpark1(builder);
+            ForceSpark2(builder);
+            ForceSpark3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
-        private void Impact(uint activator, uint target, int dmg, int evaDecrease, int tier, string effectTag, int dc)
+        private static void Impact(uint activator, uint target, int dmg, int evaDecrease, int tier, string effectTag, int dc)
         {
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-            var attack = _statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
-            var defense = _statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+            var statService = App.Resolve<IStatService>();
+            var combatService = App.Resolve<ICombatService>();
+            var messagingService = App.Resolve<IMessagingService>();
+            var enmityService = App.Resolve<IEnmityService>();
+            var combatPointService = App.Resolve<ICombatPointService>();
+
+            var attack = statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            var defense = statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             dmg += (attackerStat * ((tier - 1) / 2)) + attackerStat;
-            var damage = _combatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            var damage = combatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
 
             if (HasMorePowerfulEffect(target, tier,
@@ -60,14 +65,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 RemoveEffectByTag(target, Tier1Tag, Tier2Tag, Tier3Tag);
 
-                dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Willpower);
+                dc = combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Willpower);
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
                 if (checkResult == SavingThrowResultType.Failed)
                 {
                     var breach = TagEffect(EffectACDecrease(evaDecrease), effectTag);
                     ApplyEffectToObject(DurationType.Temporary, breach, target, 60f);
-                    _messagingService.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of evasion down.");
+                    messagingService.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of evasion down.");
                 }
             }
 
@@ -75,21 +80,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Red), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Beam_Silent_Lightning, false, 2f), target);
 
-            if (_statService.GetCurrentFP(activator) < 2 + (tier))
+            if (statService.GetCurrentFP(activator) < 2 + (tier))
             {
-                var darkBargain = 7 * ((2 + tier - _statService.GetCurrentFP(activator)));
-                _statService.ReduceFP(activator, _statService.GetCurrentFP(activator));
+                var darkBargain = 7 * ((2 + tier - statService.GetCurrentFP(activator)));
+                statService.ReduceFP(activator, statService.GetCurrentFP(activator));
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(darkBargain), activator);
             }
-            else { _statService.ReduceFP(activator, 2 + tier); }
+            else { statService.ReduceFP(activator, 2 + tier); }
 
-            _enmityService.ModifyEnmity(activator, target, 150 + damage);
-            _combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
+            enmityService.ModifyEnmity(activator, target, 150 + damage);
+            combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 
-        private void ForceSpark1()
+        private static void ForceSpark1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceSpark1, PerkType.ForceSpark)
+            builder.Create(FeatType.ForceSpark1, PerkType.ForceSpark)
                 .Name("Force Spark I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceSpark, 6f)
@@ -106,9 +111,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private void ForceSpark2()
+        private static void ForceSpark2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceSpark2, PerkType.ForceSpark)
+            builder.Create(FeatType.ForceSpark2, PerkType.ForceSpark)
                 .Name("Force Spark II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceSpark, 6f)
@@ -125,9 +130,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private void ForceSpark3()
+        private static void ForceSpark3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceSpark3, PerkType.ForceSpark)
+            builder.Create(FeatType.ForceSpark3, PerkType.ForceSpark)
                 .Name("Force Spark III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ForceSpark, 6f)

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.NWN.API.Engine;
@@ -14,27 +14,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class IceBreathAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly IStatusEffectService _statusEffectService;
+        private readonly IEnmityService _enmityService;
 
-        public IceBreathAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService)
+        public IceBreathAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
             _statusEffectService = statusEffectService;
+            _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            IceBreath1();
-            IceBreath2();
-            IceBreath3();
-            IceBreath4();
-            IceBreath5();
+            IceBreath1(builder);
+            IceBreath2(builder);
+            IceBreath3(builder);
+            IceBreath4(builder);
+            IceBreath5(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void Impact(uint activator, Location targetLocation, int dmg, int dc, int level)
@@ -70,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         0);
 
                     var eDMG = EffectDamage(damage, DamageType.Cold);
-                    Enmity.ModifyEnmity(activator, target, 220);
+                    _enmityService.ModifyEnmity(activator, target, 220);
 
                     // Copying the target is needed because the variable gets adjusted outside the scope of the internal lambda.
                     var targetCopy = target;
@@ -94,9 +95,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             }
         }
 
-        private void IceBreath1()
+        private void IceBreath1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.IceBreath1, PerkType.IceBreath)
+            builder.Create(FeatType.IceBreath1, PerkType.IceBreath)
                 .Name("Ice Breath I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.IceBreath, 60f)
@@ -109,9 +110,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 8, -1, level);
                 });
         }
-        private void IceBreath2()
+        private void IceBreath2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.IceBreath2, PerkType.IceBreath)
+            builder.Create(FeatType.IceBreath2, PerkType.IceBreath)
                 .Name("Ice Breath II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.IceBreath, 60f)
@@ -124,9 +125,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 12, -1, level);
                 });
         }
-        private void IceBreath3()
+        private void IceBreath3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.IceBreath3, PerkType.IceBreath)
+            builder.Create(FeatType.IceBreath3, PerkType.IceBreath)
                 .Name("Ice Breath III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.IceBreath, 60f)
@@ -139,9 +140,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 16, 8, level);
                 });
         }
-        private void IceBreath4()
+        private void IceBreath4(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.IceBreath4, PerkType.IceBreath)
+            builder.Create(FeatType.IceBreath4, PerkType.IceBreath)
                 .Name("Ice Breath IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.IceBreath, 60f)
@@ -154,9 +155,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 20, 12, level);
                 });
         }
-        private void IceBreath5()
+        private void IceBreath5(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.IceBreath5, PerkType.IceBreath)
+            builder.Create(FeatType.IceBreath5, PerkType.IceBreath)
                 .Name("Ice Breath V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.IceBreath, 60f)

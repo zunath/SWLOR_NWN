@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             return builder.Build();
         }
 
-        private static void WorkinForTheMan(QuestBuilder builder)
+        private static void WorkinForTheMan(IQuestBuilder builder)
         {
             builder.Create("workin_for_man", "Workin' for the Man")
 
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddXPReward(1750);
         }
 
-        private static void StinkyWomprats(QuestBuilder builder)
+        private static void StinkyWomprats(IQuestBuilder builder)
         {
             builder.Create("stinky_womprats", "Stinky Womprats")
 
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddXPReward(1750);
         }
 
-        private static void TuskenRampage(QuestBuilder builder)
+        private static void TuskenRampage(IQuestBuilder builder)
         {
             builder.Create("tusken_rampage", "Tusken Rampage")
 

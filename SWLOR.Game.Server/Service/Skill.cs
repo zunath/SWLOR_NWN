@@ -24,14 +24,22 @@ namespace SWLOR.Game.Server.Service
         private readonly IPerkService _perkService;
         private readonly IGuiService _guiService;
         private readonly IGenericCacheService _cacheService;
+        private readonly IStatusEffectService _statusEffectService;
 
-        public SkillService(IDatabaseService db, IRandomService random, IPerkService perkService, IGuiService guiService, IGenericCacheService cacheService)
+        public SkillService(
+            IDatabaseService db, 
+            IRandomService random, 
+            IPerkService perkService, 
+            IGuiService guiService, 
+            IGenericCacheService cacheService,
+            IStatusEffectService statusEffectService)
         {
             _db = db;
             _random = random;
             _perkService = perkService;
             _guiService = guiService;
             _cacheService = cacheService;
+            _statusEffectService = statusEffectService;
         }
         /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.

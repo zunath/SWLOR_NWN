@@ -1,34 +1,35 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
     public class ChiAbilityDefinition: IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
-        private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
+        private readonly ICombatPointService _combatPointService;
 
-        public ChiAbilityDefinition(ICombatPointService combatPointService, IEnmityService enmityService)
+        public ChiAbilityDefinition(IEnmityService enmityService, ICombatPointService combatPointService)
         {
-            _combatPointService = combatPointService;
             _enmityService = enmityService;
+            _combatPointService = combatPointService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Chi1();
-            Chi2();
-            Chi3();
+            Chi1(builder);
+            Chi2(builder);
+            Chi3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void ImpactAction(uint activator, int baseRecovery)
@@ -43,9 +44,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             _combatPointService.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
         }
 
-        private void Chi1()
+        private void Chi1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Chi1, PerkType.Chi)
+            builder.Create(FeatType.Chi1, PerkType.Chi)
                 .Name("Chi I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Chi, 180f)
@@ -58,9 +59,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 });
         }
 
-        private void Chi2()
+        private void Chi2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Chi2, PerkType.Chi)
+            builder.Create(FeatType.Chi2, PerkType.Chi)
                 .Name("Chi II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Chi, 180f)
@@ -73,9 +74,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 });
         }
 
-        private void Chi3()
+        private void Chi3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Chi3, PerkType.Chi)
+            builder.Create(FeatType.Chi3, PerkType.Chi)
                 .Name("Chi III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Chi, 180f)

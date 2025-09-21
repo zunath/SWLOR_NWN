@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
@@ -11,19 +10,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class PremonitionAbilityDefinition: IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Premonition1();
-            Premonition2();
+            Premonition1(builder);
+            Premonition2(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Premonition1()
+        private static void Premonition1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Premonition1, PerkType.Premonition)
+            builder.Create(FeatType.Premonition1, PerkType.Premonition)
                 .Name("Premonition I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Premonition, 60f)
@@ -34,9 +32,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating();
         }
 
-        private void Premonition2()
+        private static void Premonition2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Premonition2, PerkType.Premonition)
+            builder.Create(FeatType.Premonition2, PerkType.Premonition)
                 .Name("Premonition II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Premonition, 60f)

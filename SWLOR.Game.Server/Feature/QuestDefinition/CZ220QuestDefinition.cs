@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             return builder.Build();
         }
 
-        private void SelansRequest(QuestBuilder builder)
+        private void SelansRequest(IQuestBuilder builder)
         {
             builder.Create("selan_request", "Selan's Request")
 
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private void SuppliesSmithery(QuestBuilder builder)
+        private void SuppliesSmithery(IQuestBuilder builder)
         {
             builder.Create("cz220_smithery", "CZ-220 Supplies - Smithery")
 
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                     _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 });
         }
-        private void SuppliesScavenging(QuestBuilder builder)
+        private void SuppliesScavenging(IQuestBuilder builder)
         {
             builder.Create("cz220_scavenging", "CZ-220 Supplies - Scavenging")
 
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                     _keyItemService.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
                 });
         }
-        private void SuppliesFabrication(QuestBuilder builder)
+        private void SuppliesFabrication(IQuestBuilder builder)
         {
             builder.Create("cz220_fabrication", "CZ-220 Supplies - Fabrication")
 
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private void DatapadRetrieval(QuestBuilder builder)
+        private void DatapadRetrieval(IQuestBuilder builder)
         {
             builder.Create("datapad_retrieval", "Datapad Retrieval")
 
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private void MynockMayhem(QuestBuilder builder)
+        private void MynockMayhem(IQuestBuilder builder)
         {
             builder.Create("mynock_mayhem", "Mynock Mayhem")
 
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddKeyItemReward(KeyItemType.HalronLinthsWorkReceipt);
         }
 
-        private void OreCollection(QuestBuilder builder)
+        private void OreCollection(IQuestBuilder builder)
         {
             builder.Create("ore_collection", "Ore Collection")
                 .OnAcceptAction((player, sourceObject) =>
@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddKeyItemReward(KeyItemType.AvixTathamsWorkReceipt);
         }
 
-        private void RefineryTrainee(QuestBuilder builder)
+        private void RefineryTrainee(IQuestBuilder builder)
         {
             builder.Create("refinery_trainee", "Refinery Trainee")
                 .PrerequisiteQuest("ore_collection")
@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddXPReward(300, false)
                 .AddGoldReward(400, false);
         }
-        private void TheMalfunctioningDroids(QuestBuilder builder)
+        private void TheMalfunctioningDroids(IQuestBuilder builder)
         {
             builder.Create("malfun_droids", "The Malfunctioning Droids")
                 .PrerequisiteQuest("mynock_mayhem")
@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddGoldReward(100, false)
                 .AddXPReward(200);
         }
-        private void TheColicoidExperiment(QuestBuilder builder)
+        private void TheColicoidExperiment(IQuestBuilder builder)
         {
             builder.Create("the_colicoid_experiment", "The Colicoid Experiment")
                 .PrerequisiteQuest("mynock_mayhem")
@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private void ScrapMetalMonstrosity(QuestBuilder builder)
+        private void ScrapMetalMonstrosity(IQuestBuilder builder)
         {
             builder.Create("scrapmetal_monster", "Scrap Metal Monstrosity")
 

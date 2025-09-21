@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
@@ -11,16 +10,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class BattleInsightAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             BattleInsight1(builder);
             BattleInsight2(builder);
 
             return builder.Build();
         }
 
-        private static void BattleInsight1(AbilityBuilder builder)
+        private static void BattleInsight1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.BattleInsight1, PerkType.BattleInsight)
                 .Name("Battle Insight I")
@@ -31,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
-        private static void BattleInsight2(AbilityBuilder builder)
+        private static void BattleInsight2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.BattleInsight2, PerkType.BattleInsight)
                 .Name("Battle Insight II")

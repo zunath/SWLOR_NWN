@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -13,7 +14,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
     public class ChargeAbilityDefinition: IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly IAbilityService _abilityService;
 
         public ChargeAbilityDefinition(IAbilityService abilityService)
@@ -21,16 +21,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             _abilityService = abilityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Charge();
+            Charge(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Charge()
+        private void Charge(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Charge, PerkType.Charge)
+            builder.Create(FeatType.Charge, PerkType.Charge)
                 .Name("Charge")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Charge, 60f)
@@ -40,11 +40,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return AbilityService.ToggleAura(activator, StatusEffectType.Charge);
+                    return _abilityService.ToggleAura(activator, StatusEffectType.Charge);
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    AbilityService.ApplyAura(activator, StatusEffectType.Charge, true, true, false);
+                    _abilityService.ApplyAura(activator, StatusEffectType.Charge, true, true, false);
                 });
         }
     }

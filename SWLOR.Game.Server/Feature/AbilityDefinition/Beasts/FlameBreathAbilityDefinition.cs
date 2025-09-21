@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.NWN.API.Engine;
@@ -15,27 +15,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class FlameBreathAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly IStatusEffectService _statusEffectService;
+        private readonly IEnmityService _enmityService;
 
-        public FlameBreathAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService)
+        public FlameBreathAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
             _statusEffectService = statusEffectService;
+            _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            FlameBreath1();
-            FlameBreath2();
-            FlameBreath3();
-            FlameBreath4();
-            FlameBreath5();
+            FlameBreath1(builder);
+            FlameBreath2(builder);
+            FlameBreath3(builder);
+            FlameBreath4(builder);
+            FlameBreath5(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void Impact(uint activator, Location targetLocation, int dmg, int dc, int level)
@@ -72,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         0);
 
                     var eDMG = EffectDamage(damage, DamageType.Fire);
-                    Enmity.ModifyEnmity(activator, target, 220);
+                    _enmityService.ModifyEnmity(activator, target, 220);
 
                     // Copying the target is needed because the variable gets adjusted outside the scope of the internal lambda.
                     var targetCopy = target;
@@ -97,9 +98,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             }
         }
 
-        private void FlameBreath1()
+        private void FlameBreath1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.FlameBreath1, PerkType.FlameBreath)
+            builder.Create(FeatType.FlameBreath1, PerkType.FlameBreath)
                 .Name("Flame Breath I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.FlameBreath, 60f)
@@ -112,9 +113,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 8, -1, level);
                 });
         }
-        private void FlameBreath2()
+        private void FlameBreath2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.FlameBreath2, PerkType.FlameBreath)
+            builder.Create(FeatType.FlameBreath2, PerkType.FlameBreath)
                 .Name("Flame Breath II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.FlameBreath, 60f)
@@ -127,9 +128,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 12, -1, level);
                 });
         }
-        private void FlameBreath3()
+        private void FlameBreath3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.FlameBreath3, PerkType.FlameBreath)
+            builder.Create(FeatType.FlameBreath3, PerkType.FlameBreath)
                 .Name("Flame Breath III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.FlameBreath, 60f)
@@ -142,9 +143,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 16, 8, level);
                 });
         }
-        private void FlameBreath4()
+        private void FlameBreath4(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.FlameBreath4, PerkType.FlameBreath)
+            builder.Create(FeatType.FlameBreath4, PerkType.FlameBreath)
                 .Name("Flame Breath IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.FlameBreath, 60f)
@@ -157,9 +158,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 20, 12, level);
                 });
         }
-        private void FlameBreath5()
+        private void FlameBreath5(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.FlameBreath5, PerkType.FlameBreath)
+            builder.Create(FeatType.FlameBreath5, PerkType.FlameBreath)
                 .Name("Flame Breath V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.FlameBreath, 60f)

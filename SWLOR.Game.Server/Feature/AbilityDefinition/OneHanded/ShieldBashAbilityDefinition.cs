@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.NWN.API.Engine;
@@ -9,6 +10,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
@@ -32,9 +34,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             ShieldBash1(builder);
             ShieldBash2(builder);
             ShieldBash3(builder);
@@ -106,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             _enmityService.ModifyEnmity(activator, target, 400 * level + damage);
         }
 
-        private void ShieldBash1(AbilityBuilder builder)
+        private void ShieldBash1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ShieldBash1, PerkType.ShieldBash)
                 .Name("Shield Bash I")
@@ -120,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void ShieldBash2(AbilityBuilder builder)
+        private void ShieldBash2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ShieldBash2, PerkType.ShieldBash)
                 .Name("Shield Bash II")
@@ -134,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void ShieldBash3(AbilityBuilder builder)
+        private void ShieldBash3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ShieldBash3, PerkType.ShieldBash)
                 .Name("Shield Bash III")

@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.NWN.API.Engine;
@@ -9,6 +10,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
@@ -30,9 +32,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             RiotBlade1(builder);
             RiotBlade2(builder);
             RiotBlade3(builder);
@@ -90,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private void RiotBlade1(AbilityBuilder builder)
+        private void RiotBlade1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.RiotBlade1, PerkType.RiotBlade)
                 .Name("Riot Blade I")
@@ -105,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void RiotBlade2(AbilityBuilder builder)
+        private void RiotBlade2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.RiotBlade2, PerkType.RiotBlade)
                 .Name("Riot Blade II")
@@ -120,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void RiotBlade3(AbilityBuilder builder)
+        private void RiotBlade3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.RiotBlade3, PerkType.RiotBlade)
                 .Name("Riot Blade III")

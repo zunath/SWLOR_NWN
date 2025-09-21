@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private readonly IObjectVisibilityService _objectVisibilityService;
         private readonly IQuestService _questService;
         private readonly IServiceProvider _serviceProvider;
-        private readonly QuestBuilder _builder;
+        private readonly IQuestBuilder _builder;
 
         public ViscaraQuestDefinition(IDatabaseService db, IKeyItemService keyItemService, IObjectVisibilityService objectVisibilityService, IQuestService questService, IServiceProvider serviceProvider)
         {

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
@@ -11,9 +10,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceInspirationAbilityDefinition: IAbilityListDefinition
     {
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             ForceInspiration1(builder);
             ForceInspiration2(builder);
             ForceInspiration3(builder);
@@ -21,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private void Impact(uint activator, uint target, int baseAmount) 
+        private static void Impact(uint activator, uint target, int baseAmount) 
         {
             var willpowerMod = GetAbilityScore(activator, AbilityType.Willpower);
             const float BaseLength = 900f;
@@ -45,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         }
 
-        private void ForceInspiration1(AbilityBuilder builder)
+        private static void ForceInspiration1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceInspiration1, PerkType.ForceInspiration)
                 .Name("Force Inspiration I")
@@ -60,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     Impact(activator, target, 1);
                 });
         }
-        private void ForceInspiration2(AbilityBuilder builder)
+        private static void ForceInspiration2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceInspiration2, PerkType.ForceInspiration)
                 .Name("Force Inspiration II")
@@ -75,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     Impact(activator, target, 2);
                 });
         }
-        private void ForceInspiration3(AbilityBuilder builder)
+        private static void ForceInspiration3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceInspiration3, PerkType.ForceInspiration)
                 .Name("Force Inspiration III")

@@ -16,14 +16,14 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
     public class DroidControlItemDefinition: IItemListDefinition
     {
         private readonly IDatabaseService _db;
-        private readonly IDroidService _droidService;
+        private readonly IDroid _droidService;
         private readonly ISpaceService _spaceService;
         private readonly IRecastService _recastService;
         private readonly IPerkService _perkService;
         private readonly IGuiService _guiService;
         private readonly ItemBuilder _builder = new();
 
-        public DroidControlItemDefinition(IDatabaseService db, IDroidService droidService, ISpaceService spaceService, IRecastService recastService, IPerkService perkService, IGuiService guiService)
+        public DroidControlItemDefinition(IDatabaseService db, IDroid droidService, ISpaceService spaceService, IRecastService recastService, IPerkService perkService, IGuiService guiService)
         {
             _db = db;
             _droidService = droidService;

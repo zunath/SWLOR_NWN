@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.NWN.API.Engine;
@@ -8,26 +9,32 @@ using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class AngerAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
+        private readonly IEnmityService _enmityService;
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public AngerAbilityDefinition(IEnmityService enmityService)
         {
-            Anger1();
-            Anger2();
-            Anger3();
-            Anger4();
-            Anger5();
-
-            return _builder.Build();
+            _enmityService = enmityService;
         }
 
-        private string Validation(uint target)
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
+        {
+            Anger1(builder);
+            Anger2(builder);
+            Anger3(builder);
+            Anger4(builder);
+            Anger5(builder);
+
+            return builder.Build();
+        }
+
+        private static string Validation(uint target)
         {
             if (GetIsPC(target))
             {
@@ -42,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             if (!LineOfSightObject(activator, target))
                 return;
 
-            Enmity.ModifyEnmity(activator, target, baseEnmity);
+            _enmityService.ModifyEnmity(activator, target, baseEnmity);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), target);
         }
 
@@ -67,9 +74,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             }
         }
 
-        private void Anger1()
+        private void Anger1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Anger1, PerkType.Anger)
+            builder.Create(FeatType.Anger1, PerkType.Anger)
                 .Name("Anger I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Anger, 30f)
@@ -85,9 +92,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactSingle(activator, target, 200 + enmityBonus);
                 });
         }
-        private void Anger2()
+        private void Anger2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Anger2, PerkType.Anger)
+            builder.Create(FeatType.Anger2, PerkType.Anger)
                 .Name("Anger II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Anger, 30f)
@@ -103,9 +110,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactSingle(activator, target, 250 + enmityBonus);
                 });
         }
-        private void Anger3()
+        private void Anger3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Anger3, PerkType.Anger)
+            builder.Create(FeatType.Anger3, PerkType.Anger)
                 .Name("Anger III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Anger, 30f)
@@ -122,9 +129,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void Anger4()
+        private void Anger4(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Anger4, PerkType.Anger)
+            builder.Create(FeatType.Anger4, PerkType.Anger)
                 .Name("Anger IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.AOEAnger, 40f)
@@ -139,9 +146,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAOE(activator, location, 300);
                 });
         }
-        private void Anger5()
+        private void Anger5(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Anger5, PerkType.Anger)
+            builder.Create(FeatType.Anger5, PerkType.Anger)
                 .Name("Anger V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.AOEAnger, 40f)

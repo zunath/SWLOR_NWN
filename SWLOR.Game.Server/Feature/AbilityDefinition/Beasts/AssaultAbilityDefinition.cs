@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -8,33 +9,35 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class AssaultAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly IStatusEffectService _statusEffectService;
+        private readonly IEnmityService _enmityService;
 
-        public AssaultAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService)
+        public AssaultAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
             _statusEffectService = statusEffectService;
+            _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Assault1();
-            Assault2();
-            Assault3();
-            Assault4();
-            Assault5();
+            Assault1(builder);
+            Assault2(builder);
+            Assault3(builder);
+            Assault4(builder);
+            Assault5(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void ImpactAction(uint activator, uint target, int dmg)
@@ -66,12 +69,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             _statusEffectService.Apply(activator, activator, StatusEffectType.Assault, 30f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Magblue), activator);
 
-            Enmity.ModifyEnmity(activator, target, 350 + damage);
+            _enmityService.ModifyEnmity(activator, target, 350 + damage);
         }
 
-        private void Assault1()
+        private void Assault1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Assault1, PerkType.Assault)
+            builder.Create(FeatType.Assault1, PerkType.Assault)
                 .Name("Assault I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Assault, 60f)
@@ -83,9 +86,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 10);
                 });
         }
-        private void Assault2()
+        private void Assault2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Assault2, PerkType.Assault)
+            builder.Create(FeatType.Assault2, PerkType.Assault)
                 .Name("Assault II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Assault, 60f)
@@ -97,9 +100,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 14);
                 });
         }
-        private void Assault3()
+        private void Assault3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Assault3, PerkType.Assault)
+            builder.Create(FeatType.Assault3, PerkType.Assault)
                 .Name("Assault III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Assault, 60f)
@@ -111,9 +114,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 16);
                 });
         }
-        private void Assault4()
+        private void Assault4(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Assault4, PerkType.Assault)
+            builder.Create(FeatType.Assault4, PerkType.Assault)
                 .Name("Assault IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.Assault, 60f)
@@ -125,9 +128,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 22);
                 });
         }
-        private void Assault5()
+        private void Assault5(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Assault5, PerkType.Assault)
+            builder.Create(FeatType.Assault5, PerkType.Assault)
                 .Name("Assault V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.Assault, 60f)

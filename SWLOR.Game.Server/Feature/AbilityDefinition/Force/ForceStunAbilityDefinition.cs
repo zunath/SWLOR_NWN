@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -24,9 +23,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _combatPointService = combatPointService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             ForceStun1(builder);
             ForceStun2(builder);
             ForceStun3(builder);
@@ -34,9 +32,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private void Impact(uint source, uint target)
+        private static void Impact(uint source, uint target)
         {
-            var dc = _combatService.CalculateSavingThrowDC(source, SavingThrow.Will, 12);
+            var combatService = App.Resolve<ICombatService>();
+            var abilityService = App.Resolve<IAbilityService>();
+            var combatPointService = App.Resolve<ICombatPointService>();
+            var enmityService = App.Resolve<IEnmityService>();
+
+            var dc = combatService.CalculateSavingThrowDC(source, SavingThrow.Will, 12);
             const string EffectTag = "StatusEffectType.ForceStun";
             var checkResult = WillSave(target, dc, SavingThrowType.None, source);
             const float Duration = 6.1f;
@@ -48,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 effect = TagEffect(effect, EffectTag);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6.1f);
 
-                _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Dazed);
+                abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Dazed);
             }
             else if(checkResult == SavingThrowResultType.Success)
             {
@@ -58,12 +61,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 ApplyEffectToObject(DurationType.Temporary, effect, target, 6.1f);
             }
 
-            _combatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
+            combatPointService.AddCombatPoint(source, target, SkillType.Force, 3);
 
-            Enmity.ModifyEnmity(source, target, 850);
+            enmityService.ModifyEnmity(source, target, 850);
         }
         
-        private void ForceStun1(AbilityBuilder builder)
+        private static void ForceStun1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceStun1, PerkType.ForceStun)
                 .Name("Force Stun I")
@@ -80,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private void ForceStun2(AbilityBuilder builder)
+        private static void ForceStun2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceStun2, PerkType.ForceStun)
                 .Name("Force Stun II")
@@ -110,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private void ForceStun3(AbilityBuilder builder)
+        private static void ForceStun3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceStun3, PerkType.ForceStun)
                 .Name("Force Stun III")

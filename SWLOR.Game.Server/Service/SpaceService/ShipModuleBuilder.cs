@@ -1,13 +1,16 @@
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Models;
+using SWLOR.Shared.Core.Delegates;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
-    public class ShipModuleBuilder
+    public class ShipModuleBuilder : IShipModuleBuilder
     {
         private readonly ILogger _logger;
         private readonly Dictionary<string, ShipModuleDetail> _shipModules = new();
@@ -23,7 +26,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="itemTag">The tag of the item associated with this ship module.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder Create(string itemTag)
+        public IShipModuleBuilder Create(string itemTag)
         {
             _activeShipModule = new ShipModuleDetail();
             _shipModules[itemTag] = _activeShipModule;
@@ -36,7 +39,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="name">The name to set.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder Name(string name)
+        public IShipModuleBuilder Name(string name)
         {
             _activeShipModule.Name = name;
 
@@ -49,7 +52,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="shortName">The short name to set.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder ShortName(string shortName)
+        public IShipModuleBuilder ShortName(string shortName)
         {
             _activeShipModule.ShortName = shortName;
 
@@ -62,7 +65,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="texture">The name of the texture</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder Texture(string texture)
+        public IShipModuleBuilder Texture(string texture)
         {
             _activeShipModule.Texture = texture;
 
@@ -74,7 +77,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="type">The type of module to associate with the AI.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder Type(ShipModuleType type)
+        public IShipModuleBuilder Type(ShipModuleType type)
         {
             _activeShipModule.Type = type;
 
@@ -87,7 +90,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="description">The description to set.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder Description(string description)
+        public IShipModuleBuilder Description(string description)
         {
             _activeShipModule.Description = description;
 
@@ -99,7 +102,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="powerType">The power type to set.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder PowerType(ShipModulePowerType powerType)
+        public IShipModuleBuilder PowerType(ShipModulePowerType powerType)
         {
             _activeShipModule.PowerType = powerType;
 
@@ -111,7 +114,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="action">The action to take.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder Recast(ShipModuleCalculateRecastDelegate action)
+        public IShipModuleBuilder Recast(ShipModuleCalculateRecastDelegate action)
         {
             _activeShipModule.CalculateRecastAction = action;
 
@@ -123,7 +126,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="seconds">The number of seconds to apply to the recast when used.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder Recast(float seconds)
+        public IShipModuleBuilder Recast(float seconds)
         {
             _activeShipModule.CalculateRecastAction = (activator, shipStatus, moduleBonus) => seconds;
 
@@ -135,7 +138,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="action">The action to take.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder Capacitor(ShipModuleCalculateCapacitorDelegate action)
+        public IShipModuleBuilder Capacitor(ShipModuleCalculateCapacitorDelegate action)
         {
             _activeShipModule.CalculateCapacitorAction = action;
 
@@ -147,7 +150,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="capacitor">The amount of capacitor to drain from the ship when this module is used.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder Capacitor(int capacitor)
+        public IShipModuleBuilder Capacitor(int capacitor)
         {
             _activeShipModule.CalculateCapacitorAction = (activator, shipStatus, moduleBonus) => capacitor;
 
@@ -159,7 +162,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="action">The action to take.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder EquippedAction(ShipModuleEquippedDelegate action)
+        public IShipModuleBuilder EquippedAction(ShipModuleEquippedDelegate action)
         {
             _activeShipModule.ModuleEquippedAction = action;
 
@@ -171,7 +174,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="action">The action to take.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder UnequippedAction(ShipModuleUnequippedDelegate action)
+        public IShipModuleBuilder UnequippedAction(ShipModuleUnequippedDelegate action)
         {
             _activeShipModule.ModuleUnequippedAction = action;
 
@@ -183,7 +186,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="action">The action to take.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder ActivatedAction(ShipModuleActivatedDelegate action)
+        public IShipModuleBuilder ActivatedAction(ShipModuleActivatedDelegate action)
         {
             _activeShipModule.ModuleActivatedAction = action;
 
@@ -195,7 +198,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="action">The action to take.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder ValidationAction(ShipModuleValidationDelegate action)
+        public IShipModuleBuilder ValidationAction(ShipModuleValidationDelegate action)
         {
             _activeShipModule.ModuleValidationAction = action;
 
@@ -207,7 +210,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// Only applicable when dealing with an active ship module.
         /// </summary>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder CanTargetSelf()
+        public IShipModuleBuilder CanTargetSelf()
         {
             _activeShipModule.CanTargetSelf = true;
 
@@ -219,7 +222,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="type">The type of object to allow.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder ValidTargetType(ObjectType type)
+        public IShipModuleBuilder ValidTargetType(ObjectType type)
         {
             _activeShipModule.ValidTargetTypes.Add(type);
 
@@ -231,7 +234,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// Capital ships cannot equip non-capital modules. Non-capital ships cannot equip capital modules.
         /// </summary>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder CapitalClassModule()
+        public IShipModuleBuilder CapitalClassModule()
         {
             _activeShipModule.CapitalClassModule = true;
 
@@ -244,7 +247,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <param name="perkType">The type of perk to require.</param>
         /// <param name="requiredLevel">The required level of the perk.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder RequirePerk(PerkType perkType, int requiredLevel)
+        public IShipModuleBuilder RequirePerk(PerkType perkType, int requiredLevel)
         {
             if (requiredLevel < 0)
             {
@@ -267,7 +270,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="action">The action to run when max distance is calculated.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder MaxDistance(ShipModuleCalculateMaxDistanceDelegate action)
+        public IShipModuleBuilder MaxDistance(ShipModuleCalculateMaxDistanceDelegate action)
         {
             _activeShipModule.ModuleMaxDistanceAction = action;
 
@@ -279,7 +282,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="distance">The maximum distance in meters the module can be used.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder MaxDistance(float distance)
+        public IShipModuleBuilder MaxDistance(float distance)
         {
             _activeShipModule.ModuleMaxDistanceAction = (activator, status, target, shipStatus, bonus) => distance;
 

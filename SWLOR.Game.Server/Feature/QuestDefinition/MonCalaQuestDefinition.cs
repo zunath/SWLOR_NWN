@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class MonCalaQuestDefinition : IQuestListDefinition
     {
-        private readonly QuestBuilder _builder;
+        private readonly IQuestBuilder _builder;
         private readonly Achievement _achievement;
 
         public MonCalaQuestDefinition(IServiceProvider serviceProvider, IQuestService questService, Achievement achievement)

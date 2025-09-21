@@ -1,38 +1,28 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
     public class RousingShoutAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
-        private readonly IPerkService _perkService;
-        private readonly ICombatPointService _combatPointService;
-        private readonly IEnmityService _enmityService;
-
-        public RousingShoutAbilityDefinition(IPerkService perkService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            _perkService = perkService;
-            _combatPointService = combatPointService;
-            _enmityService = enmityService;
+            RousingShout(builder);
+
+            return builder.Build();
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        private static void RousingShout(IAbilityBuilder builder)
         {
-            RousingShout();
-
-            return _builder.Build();
-        }
-
-        private void RousingShout()
-        {
-            _builder.Create(FeatType.RousingShout, PerkType.RousingShout)
+            builder.Create(FeatType.RousingShout, PerkType.RousingShout)
                 .Name("Rousing Shout")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.RousingShout, 300f)
@@ -59,7 +49,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     var social = GetAbilityScore(activator, AbilityType.Social);
                     var targetMaxHP = GetMaxHitPoints(target);
                     int hp;
-                    var perkLevel = _perkService.GetPerkLevel(activator, PerkType.RousingShout);
+                    var perkService = App.Resolve<IPerkService>();
+                    var abilityService = App.Resolve<IAbilityService>();
+                    var combatPointService = App.Resolve<ICombatPointService>();
+                    var enmityService = App.Resolve<IEnmityService>();
+
+                    var perkLevel = perkService.GetPerkLevel(activator, PerkType.RousingShout);
 
                     switch (perkLevel)
                     {
@@ -76,15 +71,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-                    _abilityService.ReapplyPlayerAuraAOE(target);
+                    abilityService.ReapplyPlayerAuraAOE(target);
 
                     if (hp > 0)
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(hp), target);
                     }
 
-                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Leadership, 3);
-                    _enmityService.ModifyEnmityOnAll(activator, 850);
+                    combatPointService.AddCombatPointToAllTagged(activator, SkillType.Leadership, 3);
+                    enmityService.ModifyEnmityOnAll(activator, 850);
                 });
         }
     }

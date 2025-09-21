@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.NWN.API.NWScript.Enum;
@@ -29,13 +30,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            ReviveBeast1();
-            ReviveBeast2();
-            ReviveBeast3();
+            ReviveBeast1(builder);
+            ReviveBeast2(builder);
+            ReviveBeast3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private string Validation(uint activator)

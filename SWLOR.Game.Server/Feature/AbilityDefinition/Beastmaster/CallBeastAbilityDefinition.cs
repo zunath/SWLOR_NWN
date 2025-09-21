@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -13,30 +14,31 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class CallBeastAbilityDefinition: IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly IDatabaseService _db;
         private readonly ICombatPointService _combatPointService;
         private readonly BeastMastery _beastMastery;
         private readonly IEnmityService _enmityService;
+        private readonly IPerkService _perkService;
 
-        public CallBeastAbilityDefinition(IDatabaseService db, ICombatPointService combatPointService, BeastMastery beastMastery, IEnmityService enmityService)
+        public CallBeastAbilityDefinition(IDatabaseService db, ICombatPointService combatPointService, BeastMastery beastMastery, IEnmityService enmityService, IPerkService perkService)
         {
             _db = db;
             _combatPointService = combatPointService;
             _beastMastery = beastMastery;
             _enmityService = enmityService;
+            _perkService = perkService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            CallBeast();
+            CallBeast(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void CallBeast()
+        private void CallBeast(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.CallBeast, PerkType.Tame) // Intentionally tied to Tame
+            builder.Create(FeatType.CallBeast, PerkType.Tame) // Intentionally tied to Tame
                 .Name("Call Beast")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.CallBeast, 60f * 10f)
@@ -46,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation((activator, target, level, location) =>
                 {
-                    if (GetIsInCombat(activator) || Enmity.HasEnmity(activator))
+                    if (GetIsInCombat(activator) || _enmityService.HasEnmity(activator))
                     {
                         return "You are in combat and cannot call your beast.";
                     }

@@ -1,21 +1,24 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Service.AbilityServicex
+namespace SWLOR.Game.Server.Service.AbilityService
 {
     public class AbilityBuilder : IAbilityBuilder
     {
         private readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
         private AbilityDetail _activeAbility;
         private readonly IStatService _statService;
+        private readonly IStatusEffectService _statusEffectService;
 
-        public AbilityBuilder(IStatService statService)
+        public AbilityBuilder(IStatService statService, IStatusEffectService statusEffectService)
         {
             _statService = statService;
+            _statusEffectService = statusEffectService;
         }
 
         /// <summary>
@@ -243,7 +246,7 @@ namespace SWLOR.Game.Server.Service.AbilityServicex
         /// <returns>An ability builder with the configured options</returns>
         public IAbilityBuilder RequirementFP(int requiredFP)
         {
-            var requirement = new AbilityRequirementFP(requiredFP, _statService);
+            var requirement = new AbilityRequirementFP(requiredFP, _statService, _statusEffectService);
             _activeAbility.Requirements.Add(requirement);
 
             return this;

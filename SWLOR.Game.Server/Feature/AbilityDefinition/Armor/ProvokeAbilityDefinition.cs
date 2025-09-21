@@ -1,28 +1,35 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
 {
     public class ProvokeAbilityDefinition: IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
+        private readonly IEnmityService _enmityService;
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public ProvokeAbilityDefinition(IEnmityService enmityService)
         {
-            Provoke();
-            Provoke2();
-
-            return _builder.Build();
+            _enmityService = enmityService;
         }
 
-        private string Validation(uint target)
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
+        {
+            Provoke(builder);
+            Provoke2(builder);
+
+            return builder.Build();
+        }
+
+        private static string Validation(uint target)
         {
             if (GetIsPC(target))
             {
@@ -37,13 +44,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
             if (!LineOfSightObject(activator, target))
                 return;
 
-            Enmity.ModifyEnmity(activator, target, enmity);
+            _enmityService.ModifyEnmity(activator, target, enmity);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_Odd), target);
         }
 
-        private void Provoke()
+        private void Provoke(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Provoke1, PerkType.Provoke)
+            builder.Create(FeatType.Provoke1, PerkType.Provoke)
                 .Name("Provoke")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Provoke, 10f)
@@ -60,9 +67,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Armor
                 });
         }
 
-        private void Provoke2()
+        private void Provoke2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Provoke2, PerkType.Provoke)
+            builder.Create(FeatType.Provoke2, PerkType.Provoke)
                 .Name("Provoke II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Provoke2, 20f)

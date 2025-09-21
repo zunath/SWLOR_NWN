@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -13,17 +12,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class BolsterArmorAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
+        private readonly IStatusEffectService _statusEffectService;
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public BolsterArmorAbilityDefinition(IStatusEffectService statusEffectService)
         {
-            BolsterArmor1();
-            BolsterArmor2();
-            BolsterArmor3();
-            BolsterArmor4();
-            BolsterArmor5();
+            _statusEffectService = statusEffectService;
+        }
 
-            return _builder.Build();
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
+        {
+            BolsterArmor1(builder);
+            BolsterArmor2(builder);
+            BolsterArmor3(builder);
+            BolsterArmor4(builder);
+            BolsterArmor5(builder);
+
+            return builder.Build();
         }
 
         private void Impact(uint activator, StatusEffectType statusEffect)
@@ -34,13 +38,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             var totalStat = beastmasterStat + beastStat;
 
             var duration = 5 * 60f + totalStat * 10;
-            ServiceContainer.GetService<IStatusEffectService>().Apply(activator, activator, statusEffect, duration);
+            _statusEffectService.Apply(activator, activator, statusEffect, duration);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), activator);
         }
 
-        private void BolsterArmor1()
+        private void BolsterArmor1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.BolsterArmor1, PerkType.BolsterArmor)
+            builder.Create(FeatType.BolsterArmor1, PerkType.BolsterArmor)
                 .Name("Bolster Armor I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.BolsterArmor, 60f)
@@ -53,9 +57,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, StatusEffectType.BolsterArmor1);
                 });
         }
-        private void BolsterArmor2()
+        private void BolsterArmor2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.BolsterArmor2, PerkType.BolsterArmor)
+            builder.Create(FeatType.BolsterArmor2, PerkType.BolsterArmor)
                 .Name("Bolster Armor II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.BolsterArmor, 60f)
@@ -68,9 +72,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, StatusEffectType.BolsterArmor2);
                 });
         }
-        private void BolsterArmor3()
+        private void BolsterArmor3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.BolsterArmor3, PerkType.BolsterArmor)
+            builder.Create(FeatType.BolsterArmor3, PerkType.BolsterArmor)
                 .Name("Bolster Armor III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.BolsterArmor, 60f)
@@ -83,9 +87,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, StatusEffectType.BolsterArmor3);
                 });
         }
-        private void BolsterArmor4()
+        private void BolsterArmor4(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.BolsterArmor4, PerkType.BolsterArmor)
+            builder.Create(FeatType.BolsterArmor4, PerkType.BolsterArmor)
                 .Name("Bolster Armor IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.BolsterArmor, 60f)
@@ -98,9 +102,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, StatusEffectType.BolsterArmor4);
                 });
         }
-        private void BolsterArmor5()
+        private void BolsterArmor5(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.BolsterArmor5, PerkType.BolsterArmor)
+            builder.Create(FeatType.BolsterArmor5, PerkType.BolsterArmor)
                 .Name("Bolster Armor V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.BolsterArmor, 60f)

@@ -1,39 +1,42 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
     public class KnockdownAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
-        private readonly ICombatPointService _combatPointService;
         private readonly ICombatService _combatService;
         private readonly IAbilityService _abilityService;
+        private readonly ICombatPointService _combatPointService;
+        private readonly IEnmityService _enmityService;
 
-        public KnockdownAbilityDefinition(ICombatPointService combatPointService, ICombatService combatService, IAbilityService abilityService)
+        public KnockdownAbilityDefinition(ICombatService combatService, IAbilityService abilityService, ICombatPointService combatPointService, IEnmityService enmityService)
         {
-            _combatPointService = combatPointService;
             _combatService = combatService;
             _abilityService = abilityService;
+            _combatPointService = combatPointService;
+            _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Knockdown();
+            Knockdown(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Knockdown()
+        private void Knockdown(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Knockdown, PerkType.Knockdown)
+            builder.Create(FeatType.Knockdown, PerkType.Knockdown)
                 .Name("Knockdown")
                 .HasRecastDelay(RecastGroup.Knockdown, 60f)
                 .IsWeaponAbility()
@@ -51,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     }
 
                     _combatPointService.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
-                    Enmity.ModifyEnmity(activator, target, 670);
+                    _enmityService.ModifyEnmity(activator, target, 670);
                 });
         }
     }

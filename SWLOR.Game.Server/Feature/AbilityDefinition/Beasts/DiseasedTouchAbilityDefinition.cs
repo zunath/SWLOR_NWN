@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -14,27 +13,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class DiseasedTouchAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly IStatusEffectService _statusEffectService;
+        private readonly IEnmityService _enmityService;
 
-        public DiseasedTouchAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService)
+        public DiseasedTouchAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
             _statusEffectService = statusEffectService;
+            _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            DiseasedTouch1();
-            DiseasedTouch2();
-            DiseasedTouch3();
-            DiseasedTouch4();
-            DiseasedTouch5();
+            DiseasedTouch1(builder);
+            DiseasedTouch2(builder);
+            DiseasedTouch3(builder);
+            DiseasedTouch4(builder);
+            DiseasedTouch5(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void ImpactAction(uint activator, uint target, int dmg, int dc, int level)
@@ -70,12 +70,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 _statusEffectService.Apply(activator, target, StatusEffectType.Disease, 30f, level);
             }
 
-            Enmity.ModifyEnmity(activator, target, 250 + damage);
+            _enmityService.ModifyEnmity(activator, target, 250 + damage);
         }
 
-        private void DiseasedTouch1()
+        private void DiseasedTouch1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.DiseasedTouch1, PerkType.DiseasedTouch)
+            builder.Create(FeatType.DiseasedTouch1, PerkType.DiseasedTouch)
                 .Name("Diseased Touch I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.DiseasedTouch, 60f)
@@ -87,9 +87,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 8, 8, level);
                 });
         }
-        private void DiseasedTouch2()
+        private void DiseasedTouch2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.DiseasedTouch2, PerkType.DiseasedTouch)
+            builder.Create(FeatType.DiseasedTouch2, PerkType.DiseasedTouch)
                 .Name("Diseased Touch II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.DiseasedTouch, 60f)
@@ -101,9 +101,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 11, 10, level);
                 });
         }
-        private void DiseasedTouch3()
+        private void DiseasedTouch3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.DiseasedTouch3, PerkType.DiseasedTouch)
+            builder.Create(FeatType.DiseasedTouch3, PerkType.DiseasedTouch)
                 .Name("Diseased Touch III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.DiseasedTouch, 60f)
@@ -115,9 +115,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 14, 12, level);
                 });
         }
-        private void DiseasedTouch4()
+        private void DiseasedTouch4(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.DiseasedTouch4, PerkType.DiseasedTouch)
+            builder.Create(FeatType.DiseasedTouch4, PerkType.DiseasedTouch)
                 .Name("Diseased Touch IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.DiseasedTouch, 60f)
@@ -129,9 +129,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 17, 14, level);
                 });
         }
-        private void DiseasedTouch5()
+        private void DiseasedTouch5(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.DiseasedTouch5, PerkType.DiseasedTouch)
+            builder.Create(FeatType.DiseasedTouch5, PerkType.DiseasedTouch)
                 .Name("Diseased Touch V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.DiseasedTouch, 60f)

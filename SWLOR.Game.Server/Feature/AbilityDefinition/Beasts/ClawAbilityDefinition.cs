@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -14,27 +13,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class ClawAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly IStatusEffectService _statusEffectService;
+        private readonly IEnmityService _enmityService;
 
-        public ClawAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService)
+        public ClawAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
             _statusEffectService = statusEffectService;
+            _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Claw1();
-            Claw2();
-            Claw3();
-            Claw4();
-            Claw5();
+            Claw1(builder);
+            Claw2(builder);
+            Claw3(builder);
+            Claw4(builder);
+            Claw5(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void ImpactAction(uint activator, uint target, int dmg, int dc, int level)
@@ -70,12 +70,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 _statusEffectService.Apply(activator, target, StatusEffectType.Bleed, 30f, level);
             }
 
-            Enmity.ModifyEnmity(activator, target, 250 + damage);
+            _enmityService.ModifyEnmity(activator, target, 250 + damage);
         }
 
-        private void Claw1()
+        private void Claw1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Claw1, PerkType.Claw)
+            builder.Create(FeatType.Claw1, PerkType.Claw)
                 .Name("Claw I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Claw, 60f)
@@ -87,9 +87,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 8, 8, level);
                 });
         }
-        private void Claw2()
+        private void Claw2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Claw2, PerkType.Claw)
+            builder.Create(FeatType.Claw2, PerkType.Claw)
                 .Name("Claw II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Claw, 60f)
@@ -101,9 +101,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 11, 10, level);
                 });
         }
-        private void Claw3()
+        private void Claw3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Claw3, PerkType.Claw)
+            builder.Create(FeatType.Claw3, PerkType.Claw)
                 .Name("Claw III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Claw, 60f)
@@ -115,9 +115,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 14, 12, level);
                 });
         }
-        private void Claw4()
+        private void Claw4(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Claw4, PerkType.Claw)
+            builder.Create(FeatType.Claw4, PerkType.Claw)
                 .Name("Claw IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.Claw, 60f)
@@ -129,9 +129,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 17, 14, level);
                 });
         }
-        private void Claw5()
+        private void Claw5(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Claw5, PerkType.Claw)
+            builder.Create(FeatType.Claw5, PerkType.Claw)
                 .Name("Claw V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.Claw, 60f)

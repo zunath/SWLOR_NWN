@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
@@ -12,19 +11,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceMindAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            ForceMind1();
-            ForceMind2();
+            ForceMind1(builder);
+            ForceMind2(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void ForceMind1()
+        private static void ForceMind1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceMind1, PerkType.ForceMind)
+            builder.Create(FeatType.ForceMind1, PerkType.ForceMind)
                 .Name("Force Mind I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceRestore, 60f * 3f)
@@ -33,13 +31,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ServiceContainer.GetService<IStatusEffectService>().Apply(activator, activator, StatusEffectType.ForceMind1, 60f);
+                    var statusEffectService = App.Resolve<IStatusEffectService>();
+                    statusEffectService.Apply(activator, activator, StatusEffectType.ForceMind1, 60f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 2), activator, 60f);
                 });
         }
-        private void ForceMind2()
+        private static void ForceMind2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceMind2, PerkType.ForceMind)
+            builder.Create(FeatType.ForceMind2, PerkType.ForceMind)
                 .Name("Force Mind II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceRestore, 60f * 3f)
@@ -48,7 +47,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    ServiceContainer.GetService<IStatusEffectService>().Apply(activator, activator, StatusEffectType.ForceMind2, 60f);
+                    var statusEffectService = App.Resolve<IStatusEffectService>();
+                    statusEffectService.Apply(activator, activator, StatusEffectType.ForceMind2, 60f);
                     ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 4), activator, 60f);
                 });
         }

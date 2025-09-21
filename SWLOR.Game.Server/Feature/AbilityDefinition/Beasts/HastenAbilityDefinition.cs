@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
@@ -14,7 +13,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
     {
         public const string HastenEffectTag = "BEAST_HASTEN";
 
-        private readonly AbilityBuilder _builder = new();
         private readonly IEnmityService _enmityService;
 
         public HastenAbilityDefinition(IEnmityService enmityService)
@@ -22,13 +20,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Hasten1();
-            Hasten2();
-            Hasten3();
+            Hasten1(builder);
+            Hasten2(builder);
+            Hasten3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void Impact(uint activator, int numAttacks, bool applyToBeastmaster)
@@ -56,9 +54,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             _enmityService.ModifyEnmityOnAll(activator, 300 * numAttacks);
         }
 
-        private void Hasten1()
+        private void Hasten1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Hasten1, PerkType.Hasten)
+            builder.Create(FeatType.Hasten1, PerkType.Hasten)
                 .Name("Hasten I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Hasten, 120f)
@@ -72,9 +70,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void Hasten2()
+        private void Hasten2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Hasten2, PerkType.Hasten)
+            builder.Create(FeatType.Hasten2, PerkType.Hasten)
                 .Name("Hasten II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Hasten, 120f)
@@ -88,9 +86,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void Hasten3()
+        private void Hasten3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Hasten3, PerkType.Hasten)
+            builder.Create(FeatType.Hasten3, PerkType.Hasten)
                 .Name("Hasten III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Hasten, 120f)

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Contracts;
@@ -11,9 +10,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceDrainAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             ForceDrain1(builder);
             ForceDrain2(builder);
             ForceDrain3(builder);
@@ -23,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static void ForceDrain1(AbilityBuilder builder)
+        private static void ForceDrain1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceDrain1, PerkType.ForceDrain)
                 .Name("Force Drain I")
@@ -38,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating();
         }
 
-        private static void ForceDrain2(AbilityBuilder builder)
+        private static void ForceDrain2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceDrain2, PerkType.ForceDrain)
                 .Name("Force Drain II")
@@ -53,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating();
         }
 
-        private static void ForceDrain3(AbilityBuilder builder)
+        private static void ForceDrain3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceDrain3, PerkType.ForceDrain)
                 .Name("Force Drain III")
@@ -68,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating();
         }
 
-        private static void ForceDrain4(AbilityBuilder builder)
+        private static void ForceDrain4(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceDrain4, PerkType.ForceDrain)
                 .Name("Force Drain IV")
@@ -83,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating();
         }
 
-        private static void ForceDrain5(AbilityBuilder builder)
+        private static void ForceDrain5(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceDrain5, PerkType.ForceDrain)
                 .Name("Force Drain V")

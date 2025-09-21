@@ -1,7 +1,7 @@
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -14,25 +14,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class BiteAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly IEnmityService _enmityService;
 
-        public BiteAbilityDefinition(ICombatService combatService, IStatService statService)
+        public BiteAbilityDefinition(ICombatService combatService, IStatService statService, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
+            _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Bite1();
-            Bite2();
-            Bite3();
-            Bite4();
-            Bite5();
+            Bite1(builder);
+            Bite2(builder);
+            Bite3(builder);
+            Bite4(builder);
+            Bite5(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void ImpactAction(uint activator, uint target, int dmg)
@@ -61,12 +62,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), target);
             });
 
-            Enmity.ModifyEnmity(activator, target, 250 + damage);
+            _enmityService.ModifyEnmity(activator, target, 250 + damage);
         }
 
-        private void Bite1()
+        private void Bite1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Bite1, PerkType.Bite)
+            builder.Create(FeatType.Bite1, PerkType.Bite)
                 .Name("Bite I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Bite, 30f)
@@ -79,9 +80,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void Bite2()
+        private void Bite2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Bite2, PerkType.Bite)
+            builder.Create(FeatType.Bite2, PerkType.Bite)
                 .Name("Bite II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Bite, 30f)
@@ -94,9 +95,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void Bite3()
+        private void Bite3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Bite3, PerkType.Bite)
+            builder.Create(FeatType.Bite3, PerkType.Bite)
                 .Name("Bite III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Bite, 30f)
@@ -109,9 +110,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void Bite4()
+        private void Bite4(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Bite4, PerkType.Bite)
+            builder.Create(FeatType.Bite4, PerkType.Bite)
                 .Name("Bite IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.Bite, 30f)
@@ -124,9 +125,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void Bite5()
+        private void Bite5(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Bite5, PerkType.Bite)
+            builder.Create(FeatType.Bite5, PerkType.Bite)
                 .Name("Bite V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.Bite, 30f)

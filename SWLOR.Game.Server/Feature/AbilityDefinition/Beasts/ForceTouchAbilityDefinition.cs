@@ -1,7 +1,7 @@
 
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -14,25 +14,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class ForceTouchAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly IEnmityService _enmityService;
 
-        public ForceTouchAbilityDefinition(ICombatService combatService, IStatService statService)
+        public ForceTouchAbilityDefinition(ICombatService combatService, IStatService statService, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
+            _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            ForceTouch1();
-            ForceTouch2();
-            ForceTouch3();
-            ForceTouch4();
-            ForceTouch5();
+            ForceTouch1(builder);
+            ForceTouch2(builder);
+            ForceTouch3(builder);
+            ForceTouch4(builder);
+            ForceTouch5(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void ImpactAction(uint activator, uint target, int dmg)
@@ -61,12 +62,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Mind), target);
             });
 
-            Enmity.ModifyEnmity(activator, target, 250 + damage);
+            _enmityService.ModifyEnmity(activator, target, 250 + damage);
         }
 
-        private void ForceTouch1()
+        private void ForceTouch1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceTouch1, PerkType.ForceTouch)
+            builder.Create(FeatType.ForceTouch1, PerkType.ForceTouch)
                 .Name("Force Touch I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ForceTouch, 30f)
@@ -79,9 +80,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void ForceTouch2()
+        private void ForceTouch2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceTouch2, PerkType.ForceTouch)
+            builder.Create(FeatType.ForceTouch2, PerkType.ForceTouch)
                 .Name("Force Touch II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ForceTouch, 30f)
@@ -94,9 +95,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void ForceTouch3()
+        private void ForceTouch3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceTouch3, PerkType.ForceTouch)
+            builder.Create(FeatType.ForceTouch3, PerkType.ForceTouch)
                 .Name("Force Touch III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ForceTouch, 30f)
@@ -109,9 +110,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void ForceTouch4()
+        private void ForceTouch4(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceTouch4, PerkType.ForceTouch)
+            builder.Create(FeatType.ForceTouch4, PerkType.ForceTouch)
                 .Name("Force Touch IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.ForceTouch, 30f)
@@ -124,9 +125,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                 });
         }
 
-        private void ForceTouch5()
+        private void ForceTouch5(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ForceTouch5, PerkType.ForceTouch)
+            builder.Create(FeatType.ForceTouch5, PerkType.ForceTouch)
                 .Name("Force Touch V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.ForceTouch, 30f)

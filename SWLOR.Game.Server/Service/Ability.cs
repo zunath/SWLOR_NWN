@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.NWN.API.Engine;

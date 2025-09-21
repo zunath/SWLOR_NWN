@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service.FishingService
 {
-    public class FishingLocationBuilder
+    public class FishingLocationBuilder : IFishingLocationBuilder
     {
         private readonly Dictionary<FishingLocationType, FishingLocationDetail> _locations = new();
         private FishingLocationDetail _activeDetail;
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// </summary>
         /// <param name="type">The fishing location type.</param>
         /// <returns>A configured FishingLocationBuilder</returns>
-        public FishingLocationBuilder Create(FishingLocationType type)
+        public IFishingLocationBuilder Create(FishingLocationType type)
         {
             if (_locations.ContainsKey(type))
                 _activeDetail = _locations[type];
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// </summary>
         /// <param name="defaultFish">The type of fish to use</param>
         /// <returns>A configured FishingLocationBuilder</returns>
-        public FishingLocationBuilder DefaultFish(FishType defaultFish)
+        public IFishingLocationBuilder DefaultFish(FishType defaultFish)
         {
             _activeDetail.SetDefaultFish(defaultFish);
 
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// <param name="rodType">The type of rod to use</param>
         /// <param name="baitType">The type of bait to use</param>
         /// <returns>A configured FishingLocationBuilder</returns>
-        public FishingLocationBuilder AddFish(
+        public IFishingLocationBuilder AddFish(
             FishType fishType, 
             FishingRodType rodType, 
             FishingBaitType baitType)
@@ -69,7 +70,7 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// </summary>
         /// <param name="frequency">The weighted frequency this fish will appear.</param>
         /// <returns>A configured FishingLocationBuilder</returns>
-        public FishingLocationBuilder Frequency(int frequency)
+        public IFishingLocationBuilder Frequency(int frequency)
         {
             _activeFishDetail.Frequency = frequency;
 
@@ -80,7 +81,7 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// Indicates this fish will only appear during daytime.
         /// </summary>
         /// <returns>A configured FishingLocationBuilder</returns>
-        public FishingLocationBuilder DaytimeOnly()
+        public IFishingLocationBuilder DaytimeOnly()
         {
             _activeFishDetail.TimeOfDay = FishTimeOfDayType.Daytime;
 
@@ -91,7 +92,7 @@ namespace SWLOR.Game.Server.Service.FishingService
         /// Indicates this fish will only appear during nighttime.
         /// </summary>
         /// <returns>A configured FishingLocationBuilder</returns>
-        public FishingLocationBuilder NighttimeOnly()
+        public IFishingLocationBuilder NighttimeOnly()
         {
             _activeFishDetail.TimeOfDay = FishTimeOfDayType.Nighttime;
 

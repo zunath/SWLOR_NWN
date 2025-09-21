@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.NWN.API.Engine;
@@ -15,27 +15,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class PoisonBreathAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly IStatusEffectService _statusEffectService;
+        private readonly IEnmityService _enmityService;
 
-        public PoisonBreathAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService)
+        public PoisonBreathAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
             _statusEffectService = statusEffectService;
+            _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            PoisonBreath1();
-            PoisonBreath2();
-            PoisonBreath3();
-            PoisonBreath4();
-            PoisonBreath5();
+            PoisonBreath1(builder);
+            PoisonBreath2(builder);
+            PoisonBreath3(builder);
+            PoisonBreath4(builder);
+            PoisonBreath5(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void Impact(uint activator, Location targetLocation, int dmg, int dc)
@@ -67,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         0);
 
                     var eDMG = EffectDamage(damage, DamageType.Acid);
-                    Enmity.ModifyEnmity(activator, target, 220);
+                    _enmityService.ModifyEnmity(activator, target, 220);
 
                     // Copying the target is needed because the variable gets adjusted outside the scope of the internal lambda.
                     var targetCopy = target;
@@ -92,9 +93,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             }
         }
 
-        private void PoisonBreath1()
+        private void PoisonBreath1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.PoisonBreath1, PerkType.PoisonBreath)
+            builder.Create(FeatType.PoisonBreath1, PerkType.PoisonBreath)
                 .Name("Poison Breath I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.PoisonBreath, 60f)
@@ -107,9 +108,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 8, -1);
                 });
         }
-        private void PoisonBreath2()
+        private void PoisonBreath2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.PoisonBreath2, PerkType.PoisonBreath)
+            builder.Create(FeatType.PoisonBreath2, PerkType.PoisonBreath)
                 .Name("Poison Breath II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.PoisonBreath, 60f)
@@ -122,9 +123,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 12, -1);
                 });
         }
-        private void PoisonBreath3()
+        private void PoisonBreath3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.PoisonBreath3, PerkType.PoisonBreath)
+            builder.Create(FeatType.PoisonBreath3, PerkType.PoisonBreath)
                 .Name("Poison Breath III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.PoisonBreath, 60f)
@@ -137,9 +138,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 16, 8);
                 });
         }
-        private void PoisonBreath4()
+        private void PoisonBreath4(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.PoisonBreath4, PerkType.PoisonBreath)
+            builder.Create(FeatType.PoisonBreath4, PerkType.PoisonBreath)
                 .Name("Poison Breath IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.PoisonBreath, 60f)
@@ -152,9 +153,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 20, 12);
                 });
         }
-        private void PoisonBreath5()
+        private void PoisonBreath5(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.PoisonBreath5, PerkType.PoisonBreath)
+            builder.Create(FeatType.PoisonBreath5, PerkType.PoisonBreath)
                 .Name("Poison Breath V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.PoisonBreath, 60f)

@@ -14,12 +14,12 @@ using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Area
+    public class Area : IAreaService
     {
         private readonly IDatabaseService _db;
         private readonly Property _property;
-        private static Dictionary<string, uint> AreasByResref { get; } = new();
-        private static Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
+        private Dictionary<string, uint> AreasByResref { get; } = new();
+        private Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
 
         public Area(IDatabaseService db, Property property)
         {

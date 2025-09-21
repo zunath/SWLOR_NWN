@@ -12,7 +12,6 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
-using Race = SWLOR.Game.Server.Service.Race;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -23,9 +22,9 @@ namespace SWLOR.Game.Server.Feature
         private readonly IStatService _statService;
         private readonly ISkillService _skillService;
         private readonly IMigrationService _migrationService;
-        private readonly IRaceService _raceService;
+        private readonly IRace _raceService;
 
-        public PlayerInitialization(ILogger logger, IDatabaseService db, IStatService statService, ISkillService skillService, IMigrationService migrationService, IRaceService raceService)
+        public PlayerInitialization(ILogger logger, IDatabaseService db, IStatService statService, ISkillService skillService, IMigrationService migrationService, IRace raceService)
         {
             _logger = logger;
             _db = db;

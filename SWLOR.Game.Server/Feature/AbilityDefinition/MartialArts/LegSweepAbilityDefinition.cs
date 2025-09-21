@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -31,9 +30,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             LegSweep1(builder);
             LegSweep2(builder);
             LegSweep3(builder);
@@ -41,11 +39,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             return builder.Build();
         }
 
-        private string Validation(uint activator, uint target, int level, Location targetLocation)
+        private static string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!_itemService.StaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            var itemService = App.Resolve<IItemService>();
+            if (!itemService.StaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a staff ability.";
             }
@@ -53,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 return string.Empty;
         }
 
-        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
 
             int dmg;
@@ -77,25 +76,31 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     break;
             }
 
-            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.MartialArts);
+            var combatService = App.Resolve<ICombatService>();
+            var statService = App.Resolve<IStatService>();
+            var abilityService = App.Resolve<IAbilityService>();
+            var combatPointService = App.Resolve<ICombatPointService>();
+            var enmityService = App.Resolve<IEnmityService>();
 
-            _enmityService.ModifyEnmityOnAll(activator, 250 * level);
-            _combatPointService.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
+            dmg += combatService.GetAbilityDamageBonus(activator, SkillType.MartialArts);
 
-            var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
+            enmityService.ModifyEnmityOnAll(activator, 250 * level);
+            combatPointService.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
+
+            var attackerStat = combatService.GetPerkAdjustedAbilityScore(activator);
             int attack;
 
             if(GetHasFeat(FeatType.FlurryStyle, activator))
             {
-                attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.MartialArts);
+                attack = statService.GetAttack(activator, AbilityType.Perception, SkillType.MartialArts);
             } 
             else
             {
-                attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
+                attack = statService.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
             }
-            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = _combatService.CalculateDamage(
+            var damage = combatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -104,16 +109,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
 
-            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
+            dc = combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
-                _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
+                abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
             }
         }
 
-        private void LegSweep1(AbilityBuilder builder)
+        private static void LegSweep1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.LegSweep1, PerkType.LegSweep)
                 .Name("Leg Sweep I")
@@ -125,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void LegSweep2(AbilityBuilder builder)
+        private static void LegSweep2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.LegSweep2, PerkType.LegSweep)
                 .Name("Leg Sweep II")
@@ -137,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private void LegSweep3(AbilityBuilder builder)
+        private static void LegSweep3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.LegSweep3, PerkType.LegSweep)
                 .Name("Leg Sweep III")

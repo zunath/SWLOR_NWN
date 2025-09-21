@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature.FishingLocationDefinition
 {
     public class DantooineFishingLocationDefinition : IFishingLocationDefinition
     {
-        private readonly FishingLocationBuilder _builder = new();
+        private readonly IFishingLocationBuilder _builder = new();
 
         public Dictionary<FishingLocationType, FishingLocationDetail> Build()
         {

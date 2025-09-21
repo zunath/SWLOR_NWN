@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
@@ -245,7 +246,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         }
 
         private void BuildItemTask(
-            QuestBuilder builder,
+            IQuestBuilder builder,
             string questId,
             string resref,
             int amount,

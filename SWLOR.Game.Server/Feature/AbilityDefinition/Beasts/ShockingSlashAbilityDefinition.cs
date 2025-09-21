@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.NWN.API.Engine;
@@ -16,27 +16,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class ShockingSlashAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
         private readonly IStatusEffectService _statusEffectService;
+        private readonly IEnmityService _enmityService;
 
-        public ShockingSlashAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService)
+        public ShockingSlashAbilityDefinition(ICombatService combatService, IStatService statService, IStatusEffectService statusEffectService, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
             _statusEffectService = statusEffectService;
+            _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            ShockingSlash1();
-            ShockingSlash2();
-            ShockingSlash3();
-            ShockingSlash4();
-            ShockingSlash5();
+            ShockingSlash1(builder);
+            ShockingSlash2(builder);
+            ShockingSlash3(builder);
+            ShockingSlash4(builder);
+            ShockingSlash5(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void Impact(uint activator, Location targetLocation, int dmg, int dc, int level)
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             var beastStat = GetAbilityScore(activator, AbilityType.Might) / 2;
             var totalStat = beastStat + beastmasterStat;
 
-            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
             var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Electricity);
 
             var target = GetFirstObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
@@ -62,9 +63,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             {
                 if (target != activator)
                 {
-                    var defense = StatService.GetDefense(target, CombatDamageType.Electrical, AbilityType.Vitality);
+                    var defense = _statService.GetDefense(target, CombatDamageType.Electrical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = CombatService.CalculateDamage(
+                    var damage = _combatService.CalculateDamage(
                         attack,
                         dmg,
                         totalStat,
@@ -73,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         0);
 
                     var eDMG = EffectDamage(damage, DamageType.Electrical);
-                    Enmity.ModifyEnmity(activator, target, 220);
+                    _enmityService.ModifyEnmity(activator, target, 220);
 
                     // Copying the target is needed because the variable gets adjusted outside the scope of the internal lambda.
                     var targetCopy = target;
@@ -85,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                             ApplyEffectToObject(DurationType.Instant, eVFX, targetCopy);
                         });
 
-                        dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
+                        dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {
@@ -98,9 +99,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             }
         }
 
-        private void ShockingSlash1()
+        private void ShockingSlash1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ShockingSlash1, PerkType.ShockingSlash)
+            builder.Create(FeatType.ShockingSlash1, PerkType.ShockingSlash)
                 .Name("Shocking Slash I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ShockingSlash, 60f)
@@ -113,9 +114,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 8, -1, level);
                 });
         }
-        private void ShockingSlash2()
+        private void ShockingSlash2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ShockingSlash2, PerkType.ShockingSlash)
+            builder.Create(FeatType.ShockingSlash2, PerkType.ShockingSlash)
                 .Name("Shocking Slash II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.ShockingSlash, 60f)
@@ -128,9 +129,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 12, -1, level);
                 });
         }
-        private void ShockingSlash3()
+        private void ShockingSlash3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ShockingSlash3, PerkType.ShockingSlash)
+            builder.Create(FeatType.ShockingSlash3, PerkType.ShockingSlash)
                 .Name("Shocking Slash III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.ShockingSlash, 60f)
@@ -143,9 +144,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 16, 8, level);
                 });
         }
-        private void ShockingSlash4()
+        private void ShockingSlash4(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ShockingSlash4, PerkType.ShockingSlash)
+            builder.Create(FeatType.ShockingSlash4, PerkType.ShockingSlash)
                 .Name("Shocking Slash IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.ShockingSlash, 60f)
@@ -158,9 +159,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     Impact(activator, targetLocation, 20, 12, level);
                 });
         }
-        private void ShockingSlash5()
+        private void ShockingSlash5(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.ShockingSlash5, PerkType.ShockingSlash)
+            builder.Create(FeatType.ShockingSlash5, PerkType.ShockingSlash)
                 .Name("Shocking Slash V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.ShockingSlash, 60f)

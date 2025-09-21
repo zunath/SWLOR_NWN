@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
@@ -13,25 +12,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class SpinningClawAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
         private readonly ICombatService _combatService;
         private readonly IStatService _statService;
+        private readonly IEnmityService _enmityService;
 
-        public SpinningClawAbilityDefinition(ICombatService combatService, IStatService statService)
+        public SpinningClawAbilityDefinition(ICombatService combatService, IStatService statService, IEnmityService enmityService)
         {
             _combatService = combatService;
             _statService = statService;
+            _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            SpinningClaw1();
-            SpinningClaw2();
-            SpinningClaw3();
-            SpinningClaw4();
-            SpinningClaw5();
+            SpinningClaw1(builder);
+            SpinningClaw2(builder);
+            SpinningClaw3(builder);
+            SpinningClaw4(builder);
+            SpinningClaw5(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
         private void ImpactAction(uint activator, uint target, int dmg)
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                         });
                     });
 
-                    Enmity.ModifyEnmity(activator, creature, 250 + damage);
+                    _enmityService.ModifyEnmity(activator, creature, 250 + damage);
                     count++;
                 }
 
@@ -79,9 +79,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             }
         }
 
-        private void SpinningClaw1()
+        private void SpinningClaw1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.SpinningClaw1, PerkType.SpinningClaw)
+            builder.Create(FeatType.SpinningClaw1, PerkType.SpinningClaw)
                 .Name("Spinning Claw I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.SpinningClaw, 2 * 60f)
@@ -93,9 +93,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 8);
                 });
         }
-        private void SpinningClaw2()
+        private void SpinningClaw2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.SpinningClaw2, PerkType.SpinningClaw)
+            builder.Create(FeatType.SpinningClaw2, PerkType.SpinningClaw)
                 .Name("Spinning Claw II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.SpinningClaw, 2 * 60f)
@@ -107,9 +107,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 12);
                 });
         }
-        private void SpinningClaw3()
+        private void SpinningClaw3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.SpinningClaw3, PerkType.SpinningClaw)
+            builder.Create(FeatType.SpinningClaw3, PerkType.SpinningClaw)
                 .Name("Spinning Claw III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.SpinningClaw, 2 * 60f)
@@ -121,9 +121,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 15);
                 });
         }
-        private void SpinningClaw4()
+        private void SpinningClaw4(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.SpinningClaw4, PerkType.SpinningClaw)
+            builder.Create(FeatType.SpinningClaw4, PerkType.SpinningClaw)
                 .Name("Spinning Claw IV")
                 .Level(4)
                 .HasRecastDelay(RecastGroup.SpinningClaw, 2 * 60f)
@@ -135,9 +135,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                     ImpactAction(activator, target, 18);
                 });
         }
-        private void SpinningClaw5()
+        private void SpinningClaw5(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.SpinningClaw5, PerkType.SpinningClaw)
+            builder.Create(FeatType.SpinningClaw5, PerkType.SpinningClaw)
                 .Name("Spinning Claw V")
                 .Level(5)
                 .HasRecastDelay(RecastGroup.SpinningClaw, 2 * 60f)

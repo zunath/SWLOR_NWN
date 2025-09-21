@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -8,6 +9,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
@@ -20,18 +22,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
 
-        public PoisonStabAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        private readonly IStatusEffectService _statusEffectService;
+
+        public PoisonStabAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService)
         {
             _itemService = itemService;
             _combatService = combatService;
             _statService = statService;
             _combatPointService = combatPointService;
             _enmityService = enmityService;
+            _statusEffectService = statusEffectService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             PoisonStab1(builder);
             PoisonStab2(builder);
             PoisonStab3(builder);
@@ -39,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
@@ -52,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 return "A finesse vibroblade must be equipped in your right hand to use this ability.";
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
 
 
@@ -104,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private static void PoisonStab1(AbilityBuilder builder)
+        private void PoisonStab1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.PoisonStab1, PerkType.PoisonStab)
                 .Name("Poison Stab I")
@@ -116,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void PoisonStab2(AbilityBuilder builder)
+        private void PoisonStab2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.PoisonStab2, PerkType.PoisonStab)
                 .Name("Poison Stab II")
@@ -128,7 +132,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void PoisonStab3(AbilityBuilder builder)
+        private void PoisonStab3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.PoisonStab3, PerkType.PoisonStab)
                 .Name("Poison Stab III")

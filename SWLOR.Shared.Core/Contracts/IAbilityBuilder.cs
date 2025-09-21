@@ -5,7 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Models;
 
-namespace SWLOR.Game.Server.Service.AbilityServicex
+namespace SWLOR.Game.Server.Service.AbilityService
 {
     public interface IAbilityBuilder
     {

@@ -7,7 +7,7 @@ using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {
-    public class QuestBuilder
+    public class QuestBuilder : IQuestBuilder
     {
         private readonly Dictionary<string, QuestDetail> _quests = new();
         private QuestDetail _activeQuest;
@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         private readonly IServiceProvider _serviceProvider;
         private readonly IQuestService _questService;
 
-        public QuestBuilder(IServiceProvider serviceProvider, IQuestService questService)
+        public IQuestBuilder(IServiceProvider serviceProvider, IQuestService questService)
         {
             _serviceProvider = serviceProvider;
             _questService = questService;
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="questId">The quest Id to assign this quest.</param>
         /// <param name="name">The name of the quest.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder Create(string questId, string name)
+        public IQuestBuilder Create(string questId, string name)
         {
             if (string.IsNullOrWhiteSpace(questId))
                 throw new ArgumentException($"{nameof(questId)} cannot be null or whitespace.");
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// Marks the quest as repeatable.
         /// </summary>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder IsRepeatable()
+        public IQuestBuilder IsRepeatable()
         {
             _activeQuest.IsRepeatable = true;
 
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// Marks the quest as a guild task.
         /// </summary>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder IsGuildTask(GuildType guild, int rank)
+        public IQuestBuilder IsGuildTask(GuildType guild, int rank)
         {
             _activeQuest.GuildType = guild;
             _activeQuest.GuildRank = rank;
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// Marks that the quest allows the player to select a reward when completed.
         /// </summary>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder HasRewardSelection()
+        public IQuestBuilder HasRewardSelection()
         {
             _activeQuest.AllowRewardSelection = true;
 
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="isSelectable">If true, player will have the option to select the item as a reward. If false, they will receive it no matter what.
         /// If IsRepeatable() has not been called, this argument is ignored and all items are given to the player.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder AddItemReward(string itemResref, int quantity, bool isSelectable = true)
+        public IQuestBuilder AddItemReward(string itemResref, int quantity, bool isSelectable = true)
         {
             var reward = new ItemReward(itemResref, quantity, isSelectable);
             _activeQuest.Rewards.Add(reward);
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="isSelectable">If true, player will have the option to select the gold as a reward. If false, they will receive it no matter what.
         /// If IsRepeatable() has not been called, this argument is ignored and all gold is given to the player.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder AddGoldReward(int amount, bool isSelectable = true)
+        public IQuestBuilder AddGoldReward(int amount, bool isSelectable = true)
         {
             var reward = new GoldReward(amount, isSelectable, _activeQuest.GuildType != GuildType.Invalid, _questService);
             _activeQuest.Rewards.Add(reward);
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="isSelectable">If true, player will have the option to select XP as a reward. If false, they will receive it no matter what.
         /// If IsRepeatable() has not been called, this argument is ignored and all XP is given to the player</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder AddXPReward(int amount, bool isSelectable = true)
+        public IQuestBuilder AddXPReward(int amount, bool isSelectable = true)
         {
             var reward = new XPReward(amount, isSelectable);
             _activeQuest.Rewards.Add(reward);
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="keyItemType">The type of key item to award.</param>
         /// <param name="isSelectable">If true, player will have the option to select the key item as a reward. If false, they will receive it no matter what. If IsRepeatable() has not been called, this argument is ignored and all gold is given to the player.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder AddKeyItemReward(KeyItemType keyItemType, bool isSelectable = true)
+        public IQuestBuilder AddKeyItemReward(KeyItemType keyItemType, bool isSelectable = true)
         {
             var keyItemService = _serviceProvider.GetRequiredService<IKeyItemService>();
             var reward = new KeyItemReward(keyItemType, isSelectable, keyItemService);
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="amount">The amount of GP to award</param>
         /// <param name="isSelectable">If true, player will have the option to select the GP as a reward. If false, they will receive it no matter what. If IsRepeatable() has not been called, this argument is ignored and all GP is given to the player.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder AddGPReward(GuildType guild, int amount, bool isSelectable = true)
+        public IQuestBuilder AddGPReward(GuildType guild, int amount, bool isSelectable = true)
         {
             var reward = new GPReward(guild, amount, isSelectable);
             _activeQuest.Rewards.Add(reward);
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="amount">Amount of standing to give</param>
         /// <param name="isSelectable">If true, player will have the option to select the Standing as a reward. If false, they will receive it no matter what. If IsRepeatable() has not been called, this argument is ignored and all Standing is given to the player.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder AddFactionStandingReward(FactionType faction, int amount, bool isSelectable = true)
+        public IQuestBuilder AddFactionStandingReward(FactionType faction, int amount, bool isSelectable = true)
         {
             var reward = new FactionStandingReward(faction, amount, isSelectable);
             _activeQuest.Rewards.Add(reward);
@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="amount">Amount of points to give</param>
         /// <param name="isSelectable">If true, player will have the option to select the Points as a reward. If false, they will receive it no matter what. If IsRepeatable() has not been called, this argument is ignored and all Standing is given to the player.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder AddFactionPointsReward(FactionType faction, int amount, bool isSelectable = true)
+        public IQuestBuilder AddFactionPointsReward(FactionType faction, int amount, bool isSelectable = true)
         {
             var reward = new FactionPointsReward(faction, amount, isSelectable);
             _activeQuest.Rewards.Add(reward);
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="prerequisiteQuestId">The unique Id of the prerequisite quest. If this Id has not been registered, an exception will be thrown.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder PrerequisiteQuest(string prerequisiteQuestId)
+        public IQuestBuilder PrerequisiteQuest(string prerequisiteQuestId)
         {
             var prereq = new RequiredQuestPrerequisite(prerequisiteQuestId);
             _activeQuest.Prerequisites.Add(prereq);
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="keyItemType">The type of key item to require.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder PrerequisiteKeyItem(KeyItemType keyItemType)
+        public IQuestBuilder PrerequisiteKeyItem(KeyItemType keyItemType)
         {
             var keyItemService = _serviceProvider.GetRequiredService<IKeyItemService>();
             var prereq = new RequiredKeyItemPrerequisite(keyItemType, keyItemService);
@@ -219,9 +219,9 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="action">The action to run when a player accepts a quest.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder OnAcceptAction(AcceptQuestDelegate action)
+        public IQuestBuilder OnAcceptAction(object action)
         {
-            _activeQuest.OnAcceptActions.Add(action);
+            _activeQuest.OnAcceptActions.Add((AcceptQuestDelegate)action);
 
             return this;
         }
@@ -231,9 +231,9 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="action">The action to run when a player abandons a quest.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder OnAbandonAction(AbandonQuestDelegate action)
+        public IQuestBuilder OnAbandonAction(object action)
         {
-            _activeQuest.OnAbandonActions.Add(action);
+            _activeQuest.OnAbandonActions.Add((AbandonQuestDelegate)action);
 
             return this;
         }
@@ -243,9 +243,9 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="action">The action to run when a player advances to a new quest state.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder OnAdvanceAction(AdvanceQuestDelegate action)
+        public IQuestBuilder OnAdvanceAction(object action)
         {
-            _activeQuest.OnAdvanceActions.Add(action);
+            _activeQuest.OnAdvanceActions.Add((AdvanceQuestDelegate)action);
 
             return this;
         }
@@ -255,9 +255,9 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="action">The action to run when a player completes the quest.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder OnCompleteAction(CompleteQuestDelegate action)
+        public IQuestBuilder OnCompleteAction(object action)
         {
-            _activeQuest.OnCompleteActions.Add(action);
+            _activeQuest.OnCompleteActions.Add((CompleteQuestDelegate)action);
 
             return this;
         }
@@ -266,7 +266,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// Adds a new quest state to the quest.
         /// </summary>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder AddState()
+        public IQuestBuilder AddState()
         {
             _activeState = new QuestStateDetail();
             var index = _activeQuest.States.Count + 1;
@@ -280,7 +280,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="journalText">The journal text to set.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder SetStateJournalText(string journalText)
+        public IQuestBuilder SetStateJournalText(string journalText)
         {
             _activeState.JournalText = journalText;
             return this;
@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="group">The NPC group Id</param>
         /// <param name="amount">The number of NPCs in this group required to kill to complete the objective.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder AddKillObjective(NPCGroupType group, int amount)
+        public IQuestBuilder AddKillObjective(NPCGroupType group, int amount)
         {
             var killObjective = new KillTargetObjective(group, amount);
             _activeState.AddObjective(killObjective);
@@ -306,7 +306,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="resref">The resref of the required item.</param>
         /// <param name="amount">The number of items needed to complete the objective.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public QuestBuilder AddCollectItemObjective(string resref, int amount)
+        public IQuestBuilder AddCollectItemObjective(string resref, int amount)
         {
             var collectItemObjective = new CollectItemObjective(resref, amount);
             _activeState.AddObjective(collectItemObjective);

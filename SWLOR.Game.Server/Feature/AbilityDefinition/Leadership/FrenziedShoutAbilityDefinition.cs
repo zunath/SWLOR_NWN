@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
@@ -11,18 +12,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
     public class FrenziedShoutAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
+        private readonly IAbilityService _abilityService;
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public FrenziedShoutAbilityDefinition(IAbilityService abilityService)
         {
-            FrenziedShout();
-
-            return _builder.Build();
+            _abilityService = abilityService;
         }
 
-        private void FrenziedShout()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.FrenziedShout, PerkType.FrenziedShout)
+            FrenziedShout(builder);
+
+            return builder.Build();
+        }
+
+        private void FrenziedShout(IAbilityBuilder builder)
+        {
+            builder.Create(FeatType.FrenziedShout, PerkType.FrenziedShout)
                 .Name("Frenzied Shout")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.FrenziedShout, 120f)
@@ -32,11 +38,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return AbilityService.ToggleAura(activator, StatusEffectType.FrenziedShout);
+                    return _abilityService.ToggleAura(activator, StatusEffectType.FrenziedShout);
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    AbilityService.ApplyAura(activator, StatusEffectType.FrenziedShout, false, false, true);
+                    _abilityService.ApplyAura(activator, StatusEffectType.FrenziedShout, false, false, true);
                 });
         }
     }

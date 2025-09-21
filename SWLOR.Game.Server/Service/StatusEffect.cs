@@ -18,20 +18,15 @@ using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
+
     public class StatusEffect : IStatusEffectService
     {
-        private readonly ILogger _logger;
-        private readonly IDatabaseService _db;
-        private readonly IGenericCacheService _cacheService;
         private readonly IGuiService _guiService;
         private readonly IAbilityService _abilityService;
         private readonly IMessagingService _messagingService;
 
-        public StatusEffect(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IGuiService guiService, IAbilityService abilityService, IMessagingService messagingService)
+        public StatusEffect(IGuiService guiService, IAbilityService abilityService, IMessagingService messagingService)
         {
-            _logger = logger;
-            _db = db;
-            _cacheService = cacheService;
             _guiService = guiService;
             _abilityService = abilityService;
             _messagingService = messagingService;

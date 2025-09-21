@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -15,7 +14,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public class BenevolenceAbilityDefinition : IAbilityListDefinition
     {
         private readonly IRandomService _random;
-        private readonly AbilityBuilder _builder = new();
         private readonly IStatService _statService;
         private readonly ICombatPointService _combatPointService;
         private readonly IEnmityService _enmityService;
@@ -29,47 +27,52 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            Benevolence1();
-            Benevolence2();
-            Benevolence3();
+            Benevolence1(builder);
+            Benevolence2(builder);
+            Benevolence3(builder);
 
-            return _builder.Build();
+            return builder.Build();
         }
 
-        private void Impact(uint activator, uint target, int baseAmount)
+        private static void Impact(uint activator, uint target, int baseAmount)
         {
             var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
             var targetBonus = willBonus;
-            if (target != activator && _statService.GetCurrentFP(activator) >= 16)
+            var statService = App.Resolve<IStatService>();
+            var randomService = App.Resolve<IRandomService>();
+            var combatPointService = App.Resolve<ICombatPointService>();
+            var enmityService = App.Resolve<IEnmityService>();
+
+            if (target != activator && statService.GetCurrentFP(activator) >= 16)
             {
                 RemoveEffectByTag(target, BeneRegen);
 
                 var willRestore = (willBonus / 2) * 4;
                 var duration = 90f + (willBonus * 60f);
                 var effect = EffectRegenerate(willRestore, 24f);
-                _statService.ReduceFP(activator, 10);
-                _statService.ReduceStamina(activator, willRestore);
-                _statService.RestoreFP(target, willRestore);
-                _statService.RestoreStamina(target, willRestore);
+                statService.ReduceFP(activator, 10);
+                statService.ReduceStamina(activator, willRestore);
+                statService.RestoreFP(target, willRestore);
+                statService.RestoreStamina(target, willRestore);
                 targetBonus = willBonus * 4;
 
                 effect = TagEffect(effect, BeneRegen);
                 ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
             }
-            var willHeal = baseAmount + (targetBonus * 4) + _random.D4(targetBonus);
+            var willHeal = baseAmount + (targetBonus * 4) + randomService.D4(targetBonus);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(willHeal), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
 
-            _enmityService.ModifyEnmityOnAll(activator, 150 + (willHeal / 4));
-            _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            enmityService.ModifyEnmityOnAll(activator, 150 + (willHeal / 4));
+            combatPointService.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
-        private void Benevolence1()
+        private static void Benevolence1(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Benevolence1, PerkType.Benevolence)
+            builder.Create(FeatType.Benevolence1, PerkType.Benevolence)
                 .Name("Benevolence I")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Benevolence, 8f)
@@ -85,9 +88,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private void Benevolence2()
+        private static void Benevolence2(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Benevolence2, PerkType.Benevolence)
+            builder.Create(FeatType.Benevolence2, PerkType.Benevolence)
                 .Name("Benevolence II")
                 .Level(2)
                 .HasRecastDelay(RecastGroup.Benevolence, 8f)
@@ -103,9 +106,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 });
         }
 
-        private void Benevolence3()
+        private static void Benevolence3(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Benevolence3, PerkType.Benevolence)
+            builder.Create(FeatType.Benevolence3, PerkType.Benevolence)
                 .Name("Benevolence III")
                 .Level(3)
                 .HasRecastDelay(RecastGroup.Benevolence, 8f)

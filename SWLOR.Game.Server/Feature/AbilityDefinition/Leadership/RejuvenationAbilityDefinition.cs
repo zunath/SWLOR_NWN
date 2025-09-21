@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -13,18 +14,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
     public class RejuvenationAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
+        private readonly IAbilityService _abilityService;
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public RejuvenationAbilityDefinition(IAbilityService abilityService)
         {
-            Rejuvenation();
-
-            return _builder.Build();
+            _abilityService = abilityService;
         }
 
-        private void Rejuvenation()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            _builder.Create(FeatType.Rejuvenation, PerkType.Rejuvenation)
+            Rejuvenation(builder);
+
+            return builder.Build();
+        }
+
+        private void Rejuvenation(IAbilityBuilder builder)
+        {
+            builder.Create(FeatType.Rejuvenation, PerkType.Rejuvenation)
                 .Name("Rejuvenation")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.Rejuvenation, 180f)
@@ -34,11 +40,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return AbilityService.ToggleAura(activator, StatusEffectType.Rejuvenation);
+                    return _abilityService.ToggleAura(activator, StatusEffectType.Rejuvenation);
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    AbilityService.ApplyAura(activator, StatusEffectType.Rejuvenation, false, true, false);
+                    _abilityService.ApplyAura(activator, StatusEffectType.Rejuvenation, false, true, false);
                 });
         }
     }

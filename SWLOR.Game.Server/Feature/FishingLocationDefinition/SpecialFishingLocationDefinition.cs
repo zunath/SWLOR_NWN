@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.FishingLocationDefinition
     public class SpecialFishingLocationDefinition: IFishingLocationDefinition
     {
         private readonly IRandomService _random;
-        private readonly FishingLocationBuilder _builder = new();
+        private readonly IFishingLocationBuilder _builder = new();
 
         public SpecialFishingLocationDefinition(IRandomService random)
         {

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.NWN.API.NWScript.Enum;
@@ -8,34 +9,23 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Models;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
     public class ShockingShoutAbilityDefinition : IAbilityListDefinition
     {
-        private readonly AbilityBuilder _builder = new();
-        private readonly ICombatPointService _combatPointService;
-        private readonly ICombatService _combatService;
-        private readonly IAbilityService _abilityService;
-
-        public ShockingShoutAbilityDefinition(ICombatPointService combatPointService, ICombatService combatService, IAbilityService abilityService)
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            _combatPointService = combatPointService;
-            _combatService = combatService;
-            _abilityService = abilityService;
+            ShockingShout(builder);
+
+            return builder.Build();
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        private static void ShockingShout(IAbilityBuilder builder)
         {
-            ShockingShout();
-
-            return _builder.Build();
-        }
-
-        private void ShockingShout()
-        {
-            _builder.Create(FeatType.ShockingShout, PerkType.ShockingShout)
+            builder.Create(FeatType.ShockingShout, PerkType.ShockingShout)
                 .Name("Shocking Shout")
                 .Level(1)
                 .HasRecastDelay(RecastGroup.ShockingShout, 180f)
@@ -65,7 +55,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                         {
                             count++;
 
-                            var dc = _combatService.CalculateSavingThrowDC(activator, 14, 0, 0);
+                            var combatService = App.Resolve<ICombatService>();
+                            var abilityService = App.Resolve<IAbilityService>();
+                            var combatPointService = App.Resolve<ICombatPointService>();
+                            var enmityService = App.Resolve<IEnmityService>();
+
+                            var dc = combatService.CalculateSavingThrowDC(activator, 14, 0, 0);
                             const float BaseDuration = 2f;
                             var bonusDuration = GetAbilityModifier(AbilityType.Social, activator) * 0.5f;
                             var duration = BaseDuration + bonusDuration;
@@ -74,12 +69,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                             if (checkResult == SavingThrowResultType.Failed)
                             {
                                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), nearest, duration);
-                                _abilityService.ApplyTemporaryImmunity(target, duration, ImmunityType.Stun);
+                                abilityService.ApplyTemporaryImmunity(target, duration, ImmunityType.Stun);
                                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), nearest);
                             }
 
-                            _combatPointService.AddCombatPoint(activator, nearest, SkillType.Leadership, 3);
-                            Enmity.ModifyEnmity(activator, target, 650);
+                            combatPointService.AddCombatPoint(activator, nearest, SkillType.Leadership, 3);
+                            enmityService.ModifyEnmity(activator, target, 650);
                         }
 
                         if (count > MaxTargets)

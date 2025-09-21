@@ -31,11 +31,11 @@ namespace SWLOR.Game.Server.Service
         private readonly IActivityService _activityService;
         
         // Cached data
-        private IInterfaceCache<string, SWLOR.Shared.Core.Models.QuestDetail> _questCache;
+        private IInterfaceCache<string, QuestDetail> _questCache;
         
         // Additional caches for complex data
         private readonly Dictionary<NPCGroupType, List<string>> _npcsWithKillQuests = new();
-        private readonly Dictionary<GuildType, Dictionary<int, List<SWLOR.Shared.Core.Models.QuestDetail>>> _questsByGuildType = new();
+        private readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _questsByGuildType = new();
 
         public Quest(
             IDatabaseService db,
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public void RegisterQuests()
         {
-            _questCache = _cacheService.BuildInterfaceCache<IQuestListDefinition, string, SWLOR.Shared.Core.Models.QuestDetail>()
+            _questCache = _cacheService.BuildInterfaceCache<IQuestListDefinition, string, QuestDetail>()
                 .WithDataExtractor(instance => instance.BuildQuests())
                 .Build();
 
@@ -97,10 +97,10 @@ namespace SWLOR.Game.Server.Service
                     questDetail.GuildRank >= 0)
                 {
                     if(!_questsByGuildType.ContainsKey(questDetail.GuildType))
-                        _questsByGuildType[questDetail.GuildType] = new Dictionary<int, List<SWLOR.Shared.Core.Models.QuestDetail>>();
+                        _questsByGuildType[questDetail.GuildType] = new Dictionary<int, List<QuestDetail>>();
 
                     if(!_questsByGuildType[questDetail.GuildType].ContainsKey(questDetail.GuildRank))
-                        _questsByGuildType[questDetail.GuildType][questDetail.GuildRank] = new List<SWLOR.Shared.Core.Models.QuestDetail>();
+                        _questsByGuildType[questDetail.GuildType][questDetail.GuildRank] = new List<QuestDetail>();
 
                     _questsByGuildType[questDetail.GuildType][questDetail.GuildRank].Add(questDetail);
                 }
@@ -116,10 +116,10 @@ namespace SWLOR.Game.Server.Service
         /// <param name="guild">The guild to search for</param>
         /// <param name="rank">The rank to search for</param>
         /// <returns>A list of quests associated with the guild.</returns>
-        public List<SWLOR.Shared.Core.Models.QuestDetail> GetQuestsByGuild(GuildType guild, int rank)
+        public List<QuestDetail> GetQuestsByGuild(GuildType guild, int rank)
         {
             if(!_questsByGuildType.ContainsKey(guild))
-                return new List<SWLOR.Shared.Core.Models.QuestDetail>();
+                return new List<QuestDetail>();
 
             return _questsByGuildType[guild][rank].ToList();
         }
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="questId">The quest Id to search for.</param>
         /// <returns>The quest detail matching this Id.</returns>
-        public SWLOR.Shared.Core.Models.QuestDetail GetQuestById(string questId)
+        public QuestDetail GetQuestById(string questId)
         {
             return _questCache?.AllItems[questId] ?? throw new KeyNotFoundException($"Quest {questId} not found in cache");
         }

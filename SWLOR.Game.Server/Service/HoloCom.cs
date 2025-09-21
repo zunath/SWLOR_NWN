@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler<OnModuleExit>]
-        public static void OnModuleLeave()
+        public void OnModuleLeave()
         {
             var player = GetExitingObject();
 
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler<OnModuleChat>]
-        public static void OnModuleChat()
+        public void OnModuleChat()
         {
             var sender = GetPCChatSpeaker();
             var talkVolume = GetPCChatVolume();
@@ -88,12 +88,12 @@ namespace SWLOR.Game.Server.Service
             AssignCommand(receiver, () => ActionSpeakString(text, talkVolume));
         }
 
-        public static bool IsInCall(uint player)
+        public bool IsInCall(uint player)
         {
             if (GetLocalBool(player, HolocomCallConnected) == true) return true;
             else return false;
         }
-        public static void SetIsInCall(uint sender, uint receiver, bool value = true)
+        public void SetIsInCall(uint sender, uint receiver, bool value = true)
         {
             if (value) // START CALL
             {
@@ -211,60 +211,60 @@ namespace SWLOR.Game.Server.Service
                 DeleteLocalObject(receiver, HolocomCallSenderObject);
             }
         }
-        public static uint GetHoloGram(uint player)
+        public uint GetHoloGram(uint player)
         {
             return GetLocalObject(player, HolocomHologram);
         }
-        public static uint GetHoloGramOwner(uint hologram)
+        public uint GetHoloGramOwner(uint hologram)
         {
             return GetLocalObject(hologram, HologramOwner);
         }
-        public static uint GetTargetForActiveCall(uint player)
+        public uint GetTargetForActiveCall(uint player)
         {
             return GetLocalObject(player, HolocomCallConnectedWith);
         }
-        public static bool IsCallSender(uint player)
+        public bool IsCallSender(uint player)
         {
             if (GetLocalBool(player, HolocomCallSender) == true) return true;
             else return false;
         }
-        public static void SetIsCallSender(uint player, bool value = true)
+        public void SetIsCallSender(uint player, bool value = true)
         {
             if (value) SetLocalBool(player, HolocomCallSender, true);
             else SetLocalBool(player, HolocomCallSender, false);
         }
-        public static uint GetCallSender(uint player)
+        public uint GetCallSender(uint player)
         {
             return GetLocalObject(player, HolocomCallSenderObject);
         }
-        public static void SetCallSender(uint player, uint sender)
+        public void SetCallSender(uint player, uint sender)
         {
             SetLocalObject(player, HolocomCallSenderObject, sender);
         }
 
-        public static bool IsCallReceiver(uint player)
+        public bool IsCallReceiver(uint player)
         {
             if (GetLocalBool(player, HolocomCallReceiver) == true) return true;
             else return false;
         }
-        public static void SetIsCallReceiver(uint player, bool value = true)
+        public void SetIsCallReceiver(uint player, bool value = true)
         {
             if (value) SetLocalBool(player, HolocomCallReceiver, true);
             else SetLocalBool(player, HolocomCallReceiver, false);
         }
-        public static uint GetCallReceiver(uint player)
+        public uint GetCallReceiver(uint player)
         {
             return GetLocalObject(player, HolocomCallReceiverObject);
         }
-        public static void SetCallReceiver(uint player, uint receiver)
+        public void SetCallReceiver(uint player, uint receiver)
         {
             SetLocalObject(player, HolocomCallReceiverObject, receiver);
         }
-        public static int GetCallAttempt(uint player)
+        public int GetCallAttempt(uint player)
         {
             return GetLocalInt(player, HolocomCallAttempt);
         }
-        public static void SetCallAttempt(uint player, int value = 0)
+        public void SetCallAttempt(uint player, int value = 0)
         {
             SetLocalInt(player, HolocomCallAttempt, value);
         }
@@ -274,7 +274,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="sender">The player who initiated the call</param>
         /// <param name="receiver">The player who was being called</param>
-        public static void CleanupCallAttempt(uint sender, uint receiver)
+        public void CleanupCallAttempt(uint sender, uint receiver)
         {
             if (GetIsObjectValid(receiver))
             {
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Service
         /// Comprehensive cleanup of all HoloCom state for a player
         /// </summary>
         /// <param name="player">The player to clean up</param>
-        public static void CleanupAllHoloComState(uint player)
+        public void CleanupAllHoloComState(uint player)
         {
             // Clean up call sender state
             if (IsCallSender(player))

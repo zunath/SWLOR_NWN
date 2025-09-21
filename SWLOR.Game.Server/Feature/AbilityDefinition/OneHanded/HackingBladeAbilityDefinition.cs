@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         private readonly IEnmityService _enmityService;
         private readonly IStatusEffectService _statusEffectService;
 
-        public HackingBladeAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        public HackingBladeAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService, IStatusEffectService statusEffectService)
         {
             _itemService = itemService;
             _combatService = combatService;
@@ -30,9 +31,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             _statusEffectService = statusEffectService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             HackingBlade1(builder);
             HackingBlade2(builder);
             HackingBlade3(builder);
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 return "A vibroblade must be equipped in your right hand to use this ability.";
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
 
 
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
-            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
             _combatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            dc = CombatService.CalculateSavingThrowDC(activator, dc, 0, 0);
+            dc = _combatService.CalculateSavingThrowDC(activator, dc, 0, 0);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
             if (checkResult == SavingThrowResultType.Failed)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private static void HackingBlade1(AbilityBuilder builder)
+        private void HackingBlade1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.HackingBlade1, PerkType.HackingBlade)
                 .Name("Hacking Blade I")
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void HackingBlade2(AbilityBuilder builder)
+        private void HackingBlade2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.HackingBlade2, PerkType.HackingBlade)
                 .Name("Hacking Blade II")
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void HackingBlade3(AbilityBuilder builder)
+        private void HackingBlade3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.HackingBlade3, PerkType.HackingBlade)
                 .Name("Hacking Blade III")

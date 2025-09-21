@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityServicex;
 
 
 using SWLOR.NWN.API.Engine;
@@ -31,9 +32,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             ForceLeap1(builder);
             ForceLeap2(builder);
             ForceLeap3(builder);
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
 
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             _enmityService.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
-        private static void ForceLeap1(AbilityBuilder builder)
+        private void ForceLeap1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceLeap1, PerkType.ForceLeap)
                 .Name("Force Leap I")
@@ -151,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void ForceLeap2(AbilityBuilder builder)
+        private void ForceLeap2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceLeap2, PerkType.ForceLeap)
                 .Name("Force Leap II")
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void ForceLeap3(AbilityBuilder builder)
+        private void ForceLeap3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForceLeap3, PerkType.ForceLeap)
                 .Name("Force Leap III")

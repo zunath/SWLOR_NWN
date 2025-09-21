@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-
-
+using SWLOR.Game.Server.Service.AbilityServicex;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
@@ -27,9 +26,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             _enmityService = enmityService;
         }
 
-        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities(IAbilityBuilder builder)
         {
-            var builder = new AbilityBuilder();
             ForcePush1(builder);
             ForcePush2(builder);
             ForcePush3(builder);
@@ -38,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
         
-        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             const float BaseDuration = 2f;
             int dc;
@@ -61,7 +59,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
 
             var willpowerBonus = 0.5f * GetAbilityModifier(AbilityType.Willpower, activator);
-            dc = _combatService.CalculateSavingThrowDC(activator, dc, 0, 0);
+            var combatService = App.Resolve<ICombatService>();
+            var abilityService = App.Resolve<IAbilityService>();
+            var combatPointService = App.Resolve<ICombatPointService>();
+            var enmityService = App.Resolve<IEnmityService>();
+
+            dc = combatService.CalculateSavingThrowDC(activator, dc, 0, 0);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             var duration = BaseDuration + willpowerBonus;
 
@@ -69,19 +72,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, duration);
 
-                _abilityService.ApplyTemporaryImmunity(target, duration, ImmunityType.Knockdown);
+                abilityService.ApplyTemporaryImmunity(target, duration, ImmunityType.Knockdown);
             }
             else if (checkResult == SavingThrowResultType.Success)
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, duration);
             }
 
-            _enmityService.ModifyEnmityOnAll(activator, level * 150);
+            enmityService.ModifyEnmityOnAll(activator, level * 150);
 
-            _combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
+            combatPointService.AddCombatPoint(activator, target, SkillType.Force, 3);
         }
 
-        private void ForcePush1(AbilityBuilder builder)
+        private static void ForcePush1(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForcePush1, PerkType.ForcePush)
                 .Name("Force Push I")
@@ -96,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(ImpactAction);
         }
 
-        private void ForcePush2(AbilityBuilder builder)
+        private static void ForcePush2(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForcePush2, PerkType.ForcePush)
                 .Name("Force Push II")
@@ -111,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(ImpactAction);
         }
 
-        private void ForcePush3(AbilityBuilder builder)
+        private static void ForcePush3(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForcePush3, PerkType.ForcePush)
                 .Name("Force Push III")
@@ -126,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(ImpactAction);
         }
 
-        private void ForcePush4(AbilityBuilder builder)
+        private static void ForcePush4(IAbilityBuilder builder)
         {
             builder.Create(FeatType.ForcePush4, PerkType.ForcePush)
                 .Name("Force Push IV")

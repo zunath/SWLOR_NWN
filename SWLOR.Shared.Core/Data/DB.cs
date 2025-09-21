@@ -228,7 +228,8 @@ namespace SWLOR.Shared.Core.Data
             }
             _searchClientsByType[type].ReplaceDocument(indexKey, indexData);
             _multiplexer.GetDatabase().JsonSet($"{keyPrefix}:{entity.Id}", data);
-            _cachedEntities[entity.Id] = entity;
+            var cacheKey = $"{type.Name}:{entity.Id}";
+            _cachedEntities[cacheKey] = entity;
         }
 
         /// <summary>
@@ -240,10 +241,13 @@ namespace SWLOR.Shared.Core.Data
         public T Get<T>(string id)
             where T: EntityBase
         {
-            var keyPrefix = _keyPrefixByType[typeof(T)];
-            if (_cachedEntities.ContainsKey(id))
+            var type = typeof(T);
+            var keyPrefix = _keyPrefixByType[type];
+            var cacheKey = $"{type.Name}:{id}";
+            
+            if (_cachedEntities.ContainsKey(cacheKey))
             {
-                return (T)_cachedEntities[id];
+                return (T)_cachedEntities[cacheKey];
             }
             else
             {
@@ -253,7 +257,7 @@ namespace SWLOR.Shared.Core.Data
                     return default;
 
                 var entity = JsonConvert.DeserializeObject<T>(data);
-                _cachedEntities[id] = entity;
+                _cachedEntities[cacheKey] = entity;
 
                 return entity;
             }
@@ -286,8 +290,11 @@ namespace SWLOR.Shared.Core.Data
         public bool Exists<T>(string id)
             where T : EntityBase
         {
-            var keyPrefix = _keyPrefixByType[typeof(T)];
-            if (_cachedEntities.ContainsKey(id))
+            var type = typeof(T);
+            var keyPrefix = _keyPrefixByType[type];
+            var cacheKey = $"{type.Name}:{id}";
+            
+            if (_cachedEntities.ContainsKey(cacheKey))
                 return true;
             else
                 return _multiplexer.GetDatabase().KeyExists($"{keyPrefix}:{id}");
@@ -301,11 +308,14 @@ namespace SWLOR.Shared.Core.Data
         public void Delete<T>(string id)
             where T: EntityBase
         {
-            var keyPrefix = _keyPrefixByType[typeof(T)];
+            var type = typeof(T);
+            var keyPrefix = _keyPrefixByType[type];
             var indexKey = $"Index:{keyPrefix}:{id}";
-            _searchClientsByType[typeof(T)].DeleteDocument(indexKey);
+            var cacheKey = $"{type.Name}:{id}";
+            
+            _searchClientsByType[type].DeleteDocument(indexKey);
             _multiplexer.GetDatabase().JsonDelete($"{keyPrefix}:{id}");
-            _cachedEntities.Remove(id);
+            _cachedEntities.Remove(cacheKey);
         }
 
         /// <summary>

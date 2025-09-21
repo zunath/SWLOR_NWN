@@ -20,11 +20,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
         IGuiRefreshable<PerkRefundedRefreshEvent>
     {
-        public RecipesViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IItemCacheService _itemCache;
+        private readonly ISkillService _skillService;
+        private readonly IPerkService _perkService;
+        private readonly IPropertyService _propertyService;
 
-        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        public RecipesViewModel(IGuiService guiService, IItemCacheService itemCache, ISkillService skillService, IPerkService perkService, IPropertyService propertyService) : base(guiService)
+        {
+            _itemCache = itemCache;
+            _skillService = skillService;
+            _perkService = perkService;
+            _propertyService = propertyService;
+        }
         private int _currentRecipeIndex;
         private readonly List<RecipeType> _recipeTypes = new();
         private const int RecordsPerPage = 20;
@@ -272,8 +279,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             skills.Add(new GuiComboEntry("<All Skills>", 0));
 
             var set = _mode == RecipesUIMode.Research 
-                ? Skill.GetActiveResearchableCraftingSkills() 
-                : Skill.GetActiveCraftingSkills();
+                ? _skillService.GetActiveResearchableCraftingSkills() 
+                : _skillService.GetActiveCraftingSkills();
 
             foreach (var (type, detail) in set)
             {
@@ -549,7 +556,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                var propertyId = Property.GetPropertyId(TetherObject);
+                var propertyId = _propertyService.GetPropertyId(TetherObject);
                 var payload = new ResearchPayload(propertyId, OBJECT_INVALID, recipeType);
                 _guiService.TogglePlayerWindow(Player, GuiWindowType.Research, payload, TetherObject);
             }
@@ -588,7 +595,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else if (_mode == RecipesUIMode.Research)
             {
-                var researchLevel = Perk.GetPerkLevel(Player, PerkType.Research);
+                var researchLevel = _perkService.GetPerkLevel(Player, PerkType.Research);
                 var requiredLevel = recipe.Level / 10 + 1;
                 if (requiredLevel > 5)
                     requiredLevel = 5;
@@ -638,7 +645,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _guiService.CloseWindow(Player, GuiWindowType.Recipes, Player);
 
                     var blueprint = Craft.GetBlueprintDetails(item);
-                    var propertyId = Property.GetPropertyId(TetherObject);
+                    var propertyId = _propertyService.GetPropertyId(TetherObject);
                     var payload = new ResearchPayload(propertyId, item, blueprint.Recipe);
                     _guiService.TogglePlayerWindow(Player, GuiWindowType.Research, payload, TetherObject);
                 });

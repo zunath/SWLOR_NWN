@@ -4,11 +4,26 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
     public class LegSweepAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+        private readonly IAbilityService _abilityService;
+
+        public LegSweepAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, IAbilityService abilityService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+            _abilityService = abilityService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -19,11 +34,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!Item.StaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.StaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a staff ability.";
             }
@@ -55,25 +70,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.MartialArts);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.MartialArts);
 
             Enmity.ModifyEnmityOnAll(activator, 250 * level);
             CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
-            var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
+            var attackerStat = CombatService.GetPerkAdjustedAbilityScore(activator);
             int attack;
 
             if(GetHasFeat(FeatType.FlurryStyle, activator))
             {
-                attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.MartialArts);
+                attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.MartialArts);
             } 
             else
             {
-                attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
+                attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.MartialArts);
             }
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = StatService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(
+            var damage = CombatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -82,12 +97,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
 
-            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
-                Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
+                AbilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
             }
         }
 

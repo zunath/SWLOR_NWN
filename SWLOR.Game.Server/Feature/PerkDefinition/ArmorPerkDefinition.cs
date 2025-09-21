@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -10,6 +11,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
     public class ArmorPerkDefinition : IPerkListDefinition
     {
         private readonly PerkBuilder _builder = new();
+        private readonly IPerkService _perkService;
+
+        public ArmorPerkDefinition(IPerkService perkService)
+        {
+            _perkService = perkService;
+        }
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
@@ -57,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             if (!GetIsObjectValid(item))
                 return;
 
-            var perkLevel = Perk.GetPerkLevel(player, perkType);
+            var perkLevel = _perkService.GetPerkLevel(player, perkType);
 
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {

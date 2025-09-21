@@ -12,6 +12,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public class FlamethrowerAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public FlamethrowerAbilityDefinition(ICombatService combatService, IStatService statService)
+        {
+            _combatService = combatService;
+            _statService = statService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -34,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             });
 
             var attackerStat = GetAbilityScore( activator, AbilityType.Perception);
-            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
             var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Flame_S);
 
             var target = GetFirstObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
@@ -42,9 +50,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             {
                 if (target != activator)
                 {
-                    var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = Combat.CalculateDamage(
+                    var damage = _combatService.CalculateDamage(
                         attack,
                         dmg,
                         attackerStat,
@@ -63,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                         ApplyEffectToObject(DurationType.Instant, eDMG, targetCopy);
                         ApplyEffectToObject(DurationType.Instant, eVFX, targetCopy);
 
-                        dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
+                        dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {

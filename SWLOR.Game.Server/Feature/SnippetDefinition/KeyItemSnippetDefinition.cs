@@ -10,12 +10,13 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
     public class KeyItemSnippetDefinition: ISnippetListDefinition
     {
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger;
         private readonly IKeyItemService _keyItemService;
         private readonly SnippetBuilder _builder = new();
 
-        public KeyItemSnippetDefinition(IKeyItemService keyItemService)
+        public KeyItemSnippetDefinition(ILogger logger, IKeyItemService keyItemService)
         {
+            _logger = logger;
             _keyItemService = keyItemService;
         }
 

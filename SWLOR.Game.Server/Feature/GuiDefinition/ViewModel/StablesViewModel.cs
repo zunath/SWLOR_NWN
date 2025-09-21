@@ -8,6 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;
@@ -22,11 +23,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal class StablesViewModel : GuiViewModelBase<StablesViewModel, GuiPayloadBase>
     {
-        public StablesViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
+        private readonly IStatService _statService;
+        private readonly IPerkService _perkService;
+        private readonly IBeastMasteryService _beastMasteryService;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public StablesViewModel(IGuiService guiService, IDatabaseService db, IStatService statService, IPerkService perkService, IBeastMasteryService beastMasteryService) : base(guiService)
+        {
+            _db = db;
+            _statService = statService;
+            _perkService = perkService;
+            _beastMasteryService = beastMasteryService;
+        }
         
         public const string BeastDetailsPartial = "BEAST_DETAILS_PARTIAL";
         public const string PartialViewStats = "PARTIAL_VIEW_STATS";
@@ -357,7 +365,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
-            var perkLevel = Perk.GetPerkLevel(Player, PerkType.Stabling) + 1;
+            var perkLevel = _perkService.GetPerkLevel(Player, PerkType.Stabling) + 1;
             var dbQuery = new DBQuery<Beast>()
                 .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
             var dbBeasts = _db.Search(dbQuery)
@@ -455,8 +463,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var beastId = _beastIds[_selectedBeastIndex];
             var dbBeast = _db.Get<Beast>(beastId);
             var dbPlayer = _db.Get<Player>(playerId);
-            var beastDetails = BeastMastery.GetBeastDetail(dbBeast.Type);
-            var roleDetails = BeastMastery.GetBeastRoleDetail(beastDetails.Role);
+            var beastMasteryService = _beastMasteryService;
+            var beastDetails = beastMasteryService.GetBeastDetail(dbBeast.Type);
+            var roleDetails = beastMasteryService.GetBeastRoleDetail(beastDetails.Role);
             var level = beastDetails.Levels[dbBeast.Level];
 
             if (dbPlayer.ActiveBeastId == beastId)
@@ -470,22 +479,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Details Page
             Name = dbBeast.Name;
-            XPTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
+            XPTooltip = $"XP: {dbBeast.XP} / {beastMasteryService.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
 
             var hp = level.HP + 1 * ((level.Stats[AbilityType.Vitality] - 10) / 2);
-            var fp = Stat.GetMaxFP(level.FP, (level.Stats[AbilityType.Willpower] - 10) / 2, 0);
+            var fp = _statService.GetMaxFP(level.FP, (level.Stats[AbilityType.Willpower] - 10) / 2, 0);
             if (fp < 0)
                 fp = 0;
 
-            var stm= Stat.GetMaxStamina(level.STM, (level.Stats[AbilityType.Agility]-10) / 2, 0);
+            var stm= _statService.GetMaxStamina(level.STM, (level.Stats[AbilityType.Agility]-10) / 2, 0);
             if (stm < 0)
                 stm = 0;
 
             HP = $"{hp}";
             FP = $"{fp}";
             STM = $"{stm}";
-            SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
-            Level = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
+            SP = $"{dbBeast.Level} / {beastMasteryService.MaxLevel} ({dbBeast.UnallocatedSP})";
+            Level = $"{dbBeast.Level} / {beastMasteryService.MaxLevel}";
             Might = $"{level.Stats[AbilityType.Might]}";
             Perception = $"{level.Stats[AbilityType.Perception]}";
             Vitality = $"{level.Stats[AbilityType.Vitality]}";
@@ -496,15 +505,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             MainHand = "-";
             OffHand = "-";
 
-            var attack = Stat.GetAttack(dbBeast.Level, level.Stats[beastDetails.DamageStat], (int)(level.MaxAttackBonus * (dbBeast.AttackPurity * 0.01f)));
-            var accuracy = Stat.GetAccuracy(dbBeast.Level, level.Stats[beastDetails.AccuracyStat], (int)(level.MaxAccuracyBonus * (dbBeast.AccuracyPurity * 0.01f)));
-            var evasion = Stat.GetEvasion(dbBeast.Level, level.Stats[AbilityType.Agility], (int)(level.MaxEvasionBonus * (dbBeast.EvasionPurity * 0.01f)));
+            var attack = _statService.GetAttack(dbBeast.Level, level.Stats[beastDetails.DamageStat], (int)(level.MaxAttackBonus * (dbBeast.AttackPurity * 0.01f)));
+            var accuracy = _statService.GetAccuracy(dbBeast.Level, level.Stats[beastDetails.AccuracyStat], (int)(level.MaxAccuracyBonus * (dbBeast.AccuracyPurity * 0.01f)));
+            var evasion = _statService.GetEvasion(dbBeast.Level, level.Stats[AbilityType.Agility], (int)(level.MaxEvasionBonus * (dbBeast.EvasionPurity * 0.01f)));
             Attack = $"{attack}";
             Accuracy = $"{accuracy}";
             Evasion = $"{evasion}";
 
-            var physicalDefense = Stat.CalculateDefense(level.Stats[AbilityType.Vitality], dbBeast.Level, (int)(level.MaxDefenseBonuses[CombatDamageType.Physical] * (dbBeast.DefensePurities[CombatDamageType.Physical] * 0.01f)));
-            var forceDefense = Stat.CalculateDefense(level.Stats[AbilityType.Willpower], dbBeast.Level, (int)(level.MaxDefenseBonuses[CombatDamageType.Force] * (dbBeast.DefensePurities[CombatDamageType.Force] * 0.01f)));
+            var physicalDefense = _statService.CalculateDefense(level.Stats[AbilityType.Vitality], dbBeast.Level, (int)(level.MaxDefenseBonuses[CombatDamageType.Physical] * (dbBeast.DefensePurities[CombatDamageType.Physical] * 0.01f)));
+            var forceDefense = _statService.CalculateDefense(level.Stats[AbilityType.Willpower], dbBeast.Level, (int)(level.MaxDefenseBonuses[CombatDamageType.Force] * (dbBeast.DefensePurities[CombatDamageType.Force] * 0.01f)));
             var fireDefense = $"{(int)(level.MaxDefenseBonuses[CombatDamageType.Fire] * (dbBeast.DefensePurities[CombatDamageType.Fire] * 0.01f))}";
             var poisonDefense = $"{(int)(level.MaxDefenseBonuses[CombatDamageType.Poison] * (dbBeast.DefensePurities[CombatDamageType.Poison] * 0.01f))}";
             var electricalDefense = $"{(int)(level.MaxDefenseBonuses[CombatDamageType.Electrical] * (dbBeast.DefensePurities[CombatDamageType.Electrical] * 0.01f))}";
@@ -526,7 +535,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var (type, perkLevel) in dbBeast.Perks)
             {
-                var perkDetail = Perk.GetPerkDetails(type);
+                var perkDetail = _perkService.GetPerkDetails(type);
                 perkNames.Add($"{perkDetail.Name} {perkLevel}");
             }
 
@@ -584,7 +593,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var beast = GetAssociate(AssociateType.Henchman, Player);
-            if (BeastMastery.IsPlayerBeast(beast))
+            var beastMasteryService = _beastMasteryService;
+            if (beastMasteryService.IsPlayerBeast(beast))
             {
                 Instructions = "Dismiss your active beast first.";
                 return;
@@ -593,7 +603,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbQuery = new DBQuery<Beast>()
                 .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
             var beastCount = _db.SearchCount(dbQuery);
-            var perkLevel = Perk.GetPerkLevel(Player, PerkType.Stabling) + 1;
+            var perkLevel = _perkService.GetPerkLevel(Player, PerkType.Stabling) + 1;
             if (perkLevel < beastCount)
             {
                 Instructions = "Stabling perk level too low. Purchase the perk and try again.";
@@ -629,9 +639,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void CreateDNAItem(Beast dbBeast)
         {
             const int PurityMaxId = 1000;
-            var beastDetail = BeastMastery.GetBeastDetail(dbBeast.Type);
-            var dna = CreateItemOnObject(BeastMastery.DNAResref, Player);
-            var percentage = (float)dbBeast.Level / (float)BeastMastery.MaxLevel;
+            var beastMasteryService = _beastMasteryService;
+            var beastDetail = beastMasteryService.GetBeastDetail(dbBeast.Type);
+            var dna = CreateItemOnObject(beastMasteryService.DNAResref, Player);
+            var percentage = (float)dbBeast.Level / (float)beastMasteryService.MaxLevel;
 
             var attackPurity = (int)(dbBeast.AttackPurity * percentage) * 10;
             var accuracyPurity = (int)(dbBeast.AccuracyPurity * percentage) * 10;
@@ -692,7 +703,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var playerId = GetObjectUUID(Player);
                     var dbPlayer = _db.Get<Player>(playerId);
                     var beast = GetAssociate(AssociateType.Henchman, Player);
-                    if (BeastMastery.IsPlayerBeast(beast) && BeastMastery.GetBeastId(beast) == beastId)
+                    var beastMasteryService = _beastMasteryService;
+                    if (beastMasteryService.IsPlayerBeast(beast) && beastMasteryService.GetBeastId(beast) == beastId)
                     {
                         DestroyObject(beast);
                     }
@@ -784,7 +796,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             BeastNames[_selectedBeastIndex] = dbBeast.Name;
 
             var beast = GetAssociate(AssociateType.Henchman, Player);
-            if (BeastMastery.IsPlayerBeast(beast) && BeastMastery.GetBeastId(beast) == beastId)
+            var beastMasteryService = _beastMasteryService;
+            if (beastMasteryService.IsPlayerBeast(beast) && beastMasteryService.GetBeastId(beast) == beastId)
             {
                 SetName(beast, dbBeast.Name);
             }

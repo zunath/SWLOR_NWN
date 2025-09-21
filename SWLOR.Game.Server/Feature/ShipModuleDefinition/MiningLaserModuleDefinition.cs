@@ -12,9 +12,23 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class MiningLaserModuleDefinition: IShipModuleListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IRandomService _random;
+        private readonly IDatabaseService _db;
+        private readonly IPerkService _perkService;
+        private readonly ISkillService _skillService;
+        private readonly ISpaceService _spaceService;
+        private readonly ILootService _lootService;
         private readonly ShipModuleBuilder _builder = new();
+
+        public MiningLaserModuleDefinition(IRandomService random, IDatabaseService db, IPerkService perkService, ISkillService skillService, ISpaceService spaceService, ILootService lootService)
+        {
+            _random = random;
+            _db = db;
+            _perkService = perkService;
+            _skillService = skillService;
+            _spaceService = spaceService;
+            _lootService = lootService;
+        }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -87,9 +101,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     DelayCommand(recast + 0.1f, () =>
                     {
                         // Perk & module bonuses. These increase the overall yield of each asteroid.
-                        var industrialBonus = Space.GetShipStatus(activator).Industrial;
+                        var industrialBonus = _spaceService.GetShipStatus(activator).Industrial;
 
-                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 4) + (int)(moduleBonus)/6f;
+                        var amountToMine = 1 + _perkService.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 4) + (int)(moduleBonus)/6f;
 
                         // Refresh remaining units (could have changed since the start)
                         remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
@@ -119,10 +133,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             SetLocalInt(target, "ASTEROID_REMAINING_UNITS", remainingUnits);
                         }
 
-                        Loot.SpawnLoot(target, activator, "LOOT_TABLE_");
+                        _lootService.SpawnLoot(target, activator, "LOOT_TABLE_");
 
                         var lootTableId = GetLocalString(target, "ASTEROID_LOOT_TABLE_ID");
-                        var lootTable = Loot.GetLootTableByName(lootTableId);
+                        var lootTable = _lootService.GetLootTableByName(lootTableId);
 
                         // Spawn the units.
                         for (var count = 1; count <= amountToMine; count++)
@@ -138,9 +152,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var rank = dbPlayer.Skills[SkillType.Piloting].Rank;
                             var asteroidLevel = GetLocalInt(target, "ASTEROID_TIER") * 10;
                             var delta = asteroidLevel - rank;
-                            var xp = Skill.GetDeltaXP(delta);
+                            var xp = _skillService.GetDeltaXP(delta);
 
-                            Skill.GiveSkillXP(activator, SkillType.Piloting, xp);
+                            _skillService.GiveSkillXP(activator, SkillType.Piloting, xp);
                         }
                     });
                     SetLocalBool(target, Mined, false);

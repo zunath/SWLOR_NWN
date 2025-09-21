@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition.StatusEffectData;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -17,10 +17,18 @@ using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static partial class Skill
+    public partial class SkillService : ISkillService
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IDatabaseService _db;
+        private readonly IRandomService _random;
+        private readonly IPerkService _perkService;
+
+        public SkillService(IDatabaseService db, IRandomService random, IPerkService perkService)
+        {
+            _db = db;
+            _random = random;
+            _perkService = perkService;
+        }
         /// <summary>
         /// This is the maximum number of skill points a single character can have at any time.
         /// </summary>
@@ -29,7 +37,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// This is the maximum number of AP a single character can earn in total. This must be evenly divisible into SkillCap.
         /// </summary>
-        public static int APCap { get; } = SkillCap / 10;
+        public int APCap { get; } = SkillCap / 10;
 
         /// <summary>
         /// Gives XP towards a specific skill to a player.
@@ -39,7 +47,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="xp">The amount of XP to give.</param>
         /// <param name="ignoreBonuses">If true, bonuses from food and other sources will NOT be applied.</param>
         /// <param name="applyHenchmanPenalty">If true, a penalty will apply if the player has a henchman active (droid, pet, etc.)</param>
-        public static void GiveSkillXP(
+        public void GiveSkillXP(
             uint player, 
             SkillType skill, 
             int xp, 
@@ -83,7 +91,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (GetIsObjectValid(source))
                     {
-                        var effectiveLevel = Perk.GetPerkLevel(source, PerkType.Dedication);
+                        var effectiveLevel = _perkService.GetPerkLevel(source, PerkType.Dedication);
                         social = GetAbilityScore(source, AbilityType.Social);
                         bonusPercentage += (10 + effectiveLevel * social) * 0.01f;
                     }
@@ -275,7 +283,7 @@ namespace SWLOR.Game.Server.Service
         /// If a player is missing any skills in their DB record, they will be added here.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void AddMissingSkills()
+        public void AddMissingSkills()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -300,7 +308,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to check</param>
         /// <param name="skillType">The skill type to check</param>
         /// <returns>The maximum amount of XP that can be safely distributed</returns>
-        public static int GetMaxDistributableXP(uint player, SkillType skillType)
+        public int GetMaxDistributableXP(uint player, SkillType skillType)
         {
             if (skillType == SkillType.Invalid || !GetIsPC(player) || GetIsDM(player)) 
                 return 0;

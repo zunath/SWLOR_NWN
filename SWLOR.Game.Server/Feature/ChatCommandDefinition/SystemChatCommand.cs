@@ -14,9 +14,15 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     public class SystemChatCommand: IChatCommandListDefinition
     {
-        private readonly IAppSettings _appSettings = ServiceContainer.GetService<IAppSettings>();
-        private readonly IGuiService _guiService = ServiceContainer.GetService<IGuiService>();
+        private readonly IAppSettings _appSettings;
+        private readonly IGuiService _guiService;
         private readonly ChatCommandBuilder _builder = new();
+
+        public SystemChatCommand(IAppSettings appSettings, IGuiService guiService)
+        {
+            _appSettings = appSettings;
+            _guiService = guiService;
+        }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {

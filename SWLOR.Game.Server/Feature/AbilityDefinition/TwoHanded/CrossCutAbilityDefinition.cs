@@ -5,12 +5,24 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class CrossCutAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public CrossCutAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -21,11 +33,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!Item.TwinBladeBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.TwinBladeBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a twin-blade ability.";
             }
@@ -33,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
 
 
@@ -62,13 +74,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack, 
                 dmg, 
                 attackerStat, 
@@ -77,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
+            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
@@ -96,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private static void CrossCut1(AbilityBuilder builder)
+        private void CrossCut1(AbilityBuilder builder)
         {
             builder.Create(FeatType.CrossCut1, PerkType.CrossCut)
                 .Name("Cross Cut I")
@@ -115,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }
-        private static void CrossCut2(AbilityBuilder builder)
+        private void CrossCut2(AbilityBuilder builder)
         {
             builder.Create(FeatType.CrossCut2, PerkType.CrossCut)
                 .Name("Cross Cut II")
@@ -134,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }
-        private static void CrossCut3(AbilityBuilder builder)
+        private void CrossCut3(AbilityBuilder builder)
         {
             builder.Create(FeatType.CrossCut3, PerkType.CrossCut)
                 .Name("Cross Cut III")

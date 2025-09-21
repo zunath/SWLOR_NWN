@@ -7,6 +7,8 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -14,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     {
         private const string Tier1Tag = "EFFECT_BURST_OF_SPEED_1";
         private const string Tier2Tag = "EFFECT_BURST_OF_SPEED_2";
+        private static IStatService StatService => ServiceContainer.GetService<IStatService>();
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -67,14 +70,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             ApplyEffectToObject(DurationType.Temporary, effect, target, 600f);
 
-            Stat.ApplyPlayerMovementRate(target);
+            StatService.ApplyPlayerMovementRate(target);
         }
 
         [ScriptHandler(ScriptName.OnBurstOfSpeedRemoved)]
         public static void RemoveEffect()
         {
             var target = OBJECT_SELF;
-            Stat.ApplyPlayerMovementRate(target);
+            StatService.ApplyPlayerMovementRate(target);
         }
 
         private static void Impact(uint activator, uint target, int tier, string effectTag)

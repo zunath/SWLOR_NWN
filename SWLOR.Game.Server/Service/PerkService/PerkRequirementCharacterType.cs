@@ -28,6 +28,13 @@ namespace SWLOR.Game.Server.Service.PerkService
             return string.Empty;
         }
 
-        public string RequirementText => $"Character Type: {Perk.GetCharacterType(_requiredCharacterType).Name}";
+        public string RequirementText
+        {
+            get
+            {
+                var perkService = ServiceContainer.GetService<IPerkService>();
+                return $"Character Type: {perkService.GetCharacterType(_requiredCharacterType).Name}";
+            }
+        }
     }
 }

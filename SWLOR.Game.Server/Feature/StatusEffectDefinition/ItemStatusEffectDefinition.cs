@@ -2,11 +2,18 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class ItemStatusEffectDefinition: IStatusEffectListDefinition
     {
+        private readonly IStatService _statService;
+
+        public ItemStatusEffectDefinition(IStatService statService)
+        {
+            _statService = statService;
+        }
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
             var builder = new StatusEffectBuilder();
@@ -24,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     .EffectIcon(EffectIconType.Regenerate)
                     .TickAction((source, target, effectData) =>
                     {
-                        Stat.RestoreFP(target, amount);
+                        _statService.RestoreFP(target, amount);
                     });
             }
 

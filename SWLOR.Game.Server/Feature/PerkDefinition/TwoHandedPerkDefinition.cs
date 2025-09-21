@@ -2,13 +2,24 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class TwoHandedPerkDefinition : IPerkListDefinition
     {
+        private readonly IStatService _statService;
+        private readonly IAbilityService _abilityService;
         private readonly PerkBuilder _builder = new();
+
+        public TwoHandedPerkDefinition(IStatService statService, IAbilityService abilityService)
+        {
+            _statService = statService;
+            _abilityService = abilityService;
+        }
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             PowerAttack();
@@ -177,23 +188,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
+                    _statService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
@@ -342,23 +353,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
+                    _statService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
@@ -507,23 +518,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
+                    _statService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
@@ -680,23 +691,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
+                    _statService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
@@ -787,11 +798,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Strong Style (Saberstaff)")
                 .TriggerRefund((player) =>
                 {
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff, false);
+                    _abilityService.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff, false);
                 })
                 .TriggerPurchase((player) =>
                 {
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff, false);
+                    _abilityService.ToggleAbility(player, AbilityToggleType.StrongStyleSaberstaff, false);
                 })
 
                 .AddPerkLevel()

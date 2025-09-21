@@ -1,6 +1,7 @@
 using System;
 using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -12,8 +13,16 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class DiceDialog : DialogBase
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IDatabaseService _db;
+        private readonly IRandomService _random;
+        private readonly ISkillService _skillService;
+
+        public DiceDialog(IDatabaseService db, IRandomService random, ISkillService skillService)
+        {
+            _db = db;
+            _random = random;
+            _skillService = skillService;
+        }
         
         private enum DiceGroup
         {
@@ -65,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             if (model.Skill == SkillType.Invalid)
                 header += "None\n";
             else
-                header += Skill.GetSkillDetails(model.Skill).Name + "\n";
+                header += _skillService.GetSkillDetails(model.Skill).Name + "\n";
 
             header += ColorToken.Green("Group: ");
 
@@ -153,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var model = GetDataModel<Model>();
             page.Header = BuildHeader();
 
-            foreach (var (skill, detail) in Skill.GetAllActiveSkills())
+            foreach (var (skill, detail) in _skillService.GetAllActiveSkills())
             {
                 page.AddResponse(detail.Name, () =>
                 {
@@ -214,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 // Skills
                  if (model.Skill != SkillType.Invalid)
                 {
-                    var skillDetail = Skill.GetSkillDetails(model.Skill);
+                    var skillDetail = _skillService.GetSkillDetails(model.Skill);
                     var totalSkill = dbPlayer.Skills[model.Skill].Rank;
                     var modifier = totalSkill / 2;
                     message = ColorToken.SkillCheck($"Dice Roll [{skillDetail.Name}]: ") + dieRoll + "+" + modifier + ": " + (value + modifier);

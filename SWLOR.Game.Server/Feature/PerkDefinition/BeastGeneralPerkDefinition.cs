@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -10,6 +11,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
     public class BeastGeneralPerkDefinition : IPerkListDefinition
     {
         private readonly PerkBuilder _builder = new();
+        private readonly IStatService _statService;
+
+        public BeastGeneralPerkDefinition(IStatService statService)
+        {
+            _statService = statService;
+        }
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
@@ -143,7 +150,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (!BeastMastery.IsPlayerBeast(beast))
                         return;
 
-                    Stat.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
+                    _statService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
                 })
                 .TriggerRefund((player) =>
                 {
@@ -151,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (!BeastMastery.IsPlayerBeast(beast))
                         return;
 
-                    Stat.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
+                    _statService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
                 })
 
                 .AddPerkLevel()

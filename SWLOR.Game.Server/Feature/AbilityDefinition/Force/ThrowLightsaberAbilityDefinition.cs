@@ -11,6 +11,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ThrowLightsaberAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public ThrowLightsaberAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -27,11 +38,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var distance = GetDistanceBetween(activator, target);
 
             var validWeapon = GetIsObjectValid(weapon) &&
-                                 (Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  Item.VibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  Item.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  Item.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
-                                  Item.ThrowingWeaponBaseItemTypes.Contains(GetBaseItemType(weapon)));
+                                 (_itemService.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  _itemService.VibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  _itemService.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  _itemService.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  _itemService.ThrowingWeaponBaseItemTypes.Contains(GetBaseItemType(weapon)));
 
             if (distance > 15)
                 return "You must be within 15 meters of your target.";
@@ -71,16 +82,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
-            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Force);
+            var attack = _statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
 
             // apply to target
             DelayCommand(delay, () =>
             {
-                var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                 var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-                var damage = Combat.CalculateDamage(
+                var damage = _combatService.CalculateDamage(
                     attack,
                     dmg,
                     attackerStat,
@@ -101,9 +112,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     var nearbyCopy = nearby;
                     DelayCommand(delay, () =>
                     {
-                        var defense = Stat.GetDefense(nearbyCopy, CombatDamageType.Physical, AbilityType.Vitality);
+                        var defense = _statService.GetDefense(nearbyCopy, CombatDamageType.Physical, AbilityType.Vitality);
                         var defenderStat = GetAbilityModifier(AbilityType.Willpower, nearbyCopy);
-                        var damage = Combat.CalculateDamage(
+                        var damage = _combatService.CalculateDamage(
                             attack,
                             dmg,
                             attackerStat,

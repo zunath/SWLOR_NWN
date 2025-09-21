@@ -11,11 +11,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
     {
         private readonly QuestBuilder _builder;
         private readonly IObjectVisibilityService _objectVisibilityService;
+        private readonly IQuestService _questService;
 
-        public HutlarQuestDefinition(IObjectVisibilityService objectVisibilityService, IServiceProvider serviceProvider)
+        public HutlarQuestDefinition(IObjectVisibilityService objectVisibilityService, IQuestService questService, IServiceProvider serviceProvider)
         {
             _objectVisibilityService = objectVisibilityService;
-            _builder = new QuestBuilder(serviceProvider);
+            _questService = questService;
+            _builder = new QuestBuilder(serviceProvider, questService);
         }
 
         public Dictionary<string, QuestDetail> BuildQuests()

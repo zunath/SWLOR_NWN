@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -15,7 +15,7 @@ using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
-using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
+using BaseItem = SWLOR.NWN.API.NWScript.Enum._itemService.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
@@ -23,10 +23,24 @@ using MovementRate = SWLOR.NWN.API.NWScript.Enum.MovementRate;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Stat
+    public class StatService : IStatService
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly IPerkService _perkService;
+        private readonly ISkillService _skillService;
+        private readonly IItemService _itemService;
+        private readonly IAbilityService _abilityService;
+
+        public StatService(ILogger logger, IDatabaseService db, IPerkService perkService, ISkillService skillService, IItemService itemService, IAbilityService abilityService)
+        {
+            _logger = logger;
+            _db = db;
+            _perkService = perkService;
+            _skillService = skillService;
+            _itemService = itemService;
+            _abilityService = abilityService;
+        }
         public const int BaseHP = 70;
         public const int BaseFP = 10;
         public const int BaseSTM = 10;
@@ -35,7 +49,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, reapply HP and temporary stats.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void ApplyPlayerStats()
+        public void ApplyPlayerStats()
         {
             ApplyTemporaryPlayerStats();
         }
@@ -43,7 +57,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the server, apply any temporary stats which do not persist.
         /// </summary>
-        private static void ApplyTemporaryPlayerStats()
+        private void ApplyTemporaryPlayerStats()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -61,7 +75,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature object</param>
         /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
         /// <returns>The max amount of FP</returns>
-        public static int GetMaxFP(uint creature, Player dbPlayer = null)
+        public int GetMaxFP(uint creature, Player dbPlayer = null)
         {
             var modifier = GetAbilityModifier(AbilityType.Willpower, creature);
             var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
@@ -94,7 +108,7 @@ namespace SWLOR.Game.Server.Service
             return GetMaxFP(baseFP, modifier, foodBonus);
         }
 
-        public static int GetMaxFP(int baseFP, int modifier, int bonus)
+        public int GetMaxFP(int baseFP, int modifier, int bonus)
         {
             return baseFP + modifier * 10 + bonus;
         }
@@ -105,7 +119,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to retrieve FP from.</param>
         /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
         /// <returns>The current amount of FP.</returns>
-        public static int GetCurrentFP(uint creature, Player dbPlayer = null)
+        public int GetCurrentFP(uint creature, Player dbPlayer = null)
         {
             // Players
             if (GetIsPC(creature) && !GetIsDM(creature))
@@ -132,7 +146,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature object</param>
         /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
         /// <returns>The max amount of STM</returns>
-        public static int GetMaxStamina(uint creature, Player dbPlayer = null)
+        public int GetMaxStamina(uint creature, Player dbPlayer = null)
         {
             var modifier = GetAbilityModifier(AbilityType.Agility, creature);
             var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(creature, StatusEffectType.Food);
@@ -166,7 +180,7 @@ namespace SWLOR.Game.Server.Service
             return GetMaxStamina(baseStamina, modifier, foodBonus);
         }
 
-        public static int GetMaxStamina(int baseFP, int modifier, int bonus)
+        public int GetMaxStamina(int baseFP, int modifier, int bonus)
         {
             return baseFP + modifier * 5 + bonus;
         }
@@ -177,7 +191,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to retrieve STM from.</param>
         /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
         /// <returns>The current amount of STM.</returns>
-        public static int GetCurrentStamina(uint creature, Player dbPlayer = null)
+        public int GetCurrentStamina(uint creature, Player dbPlayer = null)
         {
             // Players
             if (GetIsPC(creature) && !GetIsDM(creature))
@@ -203,7 +217,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to modify.</param>
         /// <param name="amount">The amount of FP to restore.</param>
         /// <param name="dbPlayer">The player entity to modify. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
-        public static void RestoreFP(uint creature, int amount, Player dbPlayer = null)
+        public void RestoreFP(uint creature, int amount, Player dbPlayer = null)
         {
             if (amount <= 0) return;
 
@@ -247,7 +261,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature whose FP will be reduced.</param>
         /// <param name="reduceBy">The amount of FP to reduce by.</param>
         /// <param name="dbPlayer">The player entity to modify. If this is not set, a DB call will be made. Leave null for NPCs.</param>
-        public static void ReduceFP(uint creature, int reduceBy, Player dbPlayer = null)
+        public void ReduceFP(uint creature, int reduceBy, Player dbPlayer = null)
         {
             if (reduceBy <= 0) return;
 
@@ -285,7 +299,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to modify.</param>
         /// <param name="amount">The amount of Stamina to restore.</param>
         /// <param name="dbPlayer">The player entity to modify. If this is not set, a DB call will be made. Leave null for NPCs.</param>
-        public static void RestoreStamina(uint creature, int amount, Player dbPlayer = null)
+        public void RestoreStamina(uint creature, int amount, Player dbPlayer = null)
         {
             if (amount <= 0) return;
 
@@ -329,7 +343,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to modify.</param>
         /// <param name="reduceBy">The amount of Stamina to reduce by.</param>
         /// <param name="dbPlayer">The entity to modify</param>
-        public static void ReduceStamina(uint creature, int reduceBy, Player dbPlayer = null)
+        public void ReduceStamina(uint creature, int reduceBy, Player dbPlayer = null)
         {
             if (reduceBy <= 0) return;
 
@@ -366,7 +380,7 @@ namespace SWLOR.Game.Server.Service
         /// adjust any food HP if necessary.
         /// </summary>
         [ScriptHandler(ScriptName.OnAssociateStateEffect)]
-        public static void ReapplyFoodHP()
+        public void ReapplyFoodHP()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player))
@@ -394,7 +408,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="entity">The entity to modify</param>
         /// <param name="player">The player to adjust</param>
         /// <param name="adjustBy">The amount to adjust by.</param>
-        public static void AdjustPlayerMaxHP(Player entity, uint player, int adjustBy)
+        public void AdjustPlayerMaxHP(Player entity, uint player, int adjustBy)
         {
             const int MaxHPPerLevel = 254;
             entity.MaxHP += adjustBy;
@@ -447,7 +461,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustPlayerMaxFP(Player entity, int adjustBy, uint player)
+        public void AdjustPlayerMaxFP(Player entity, int adjustBy, uint player)
         {
             // Note: It's possible for Max FP to drop to a negative number. This is expected to ensure calculations stay in sync.
             // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
@@ -468,7 +482,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustPlayerMaxSTM(Player entity, int adjustBy, uint player)
+        public void AdjustPlayerMaxSTM(Player entity, int adjustBy, uint player)
         {
             // Note: It's possible for Max STM to drop to a negative number. This is expected to ensure calculations stay in sync.
             // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
@@ -483,7 +497,7 @@ namespace SWLOR.Game.Server.Service
                 entity.Stamina = 0;
         }
         
-        public static void ApplyPlayerMovementRate(uint player)
+        public void ApplyPlayerMovementRate(uint player)
         {
             if (GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player))
             {
@@ -491,9 +505,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             var movementRate = 1.0f;
-            if (Ability.IsAbilityToggled(player, AbilityToggleType.Dash))
+            if (_abilityService.IsAbilityToggled(player, AbilityToggleType.Dash))
             {
-                var level = Perk.GetPerkLevel(player, PerkType.Dash);
+                var level = _perkService.GetPerkLevel(player, PerkType.Dash);
                 switch (level)
                 {
                     case 1:
@@ -533,7 +547,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="entity">The player entity</param>
         /// <param name="player">The player object</param>
         /// <param name="ability">The ability score to apply to.</param>
-        public static void ApplyPlayerStat(Player entity, uint player, AbilityType ability)
+        public void ApplyPlayerStat(Player entity, uint player, AbilityType ability)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (ability == AbilityType.Invalid) return;
@@ -548,7 +562,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="entity">The player entity</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustPlayerRecastReduction(Player entity, int adjustBy)
+        public void AdjustPlayerRecastReduction(Player entity, int adjustBy)
         {
             entity.AbilityRecastReduction += adjustBy;
         }
@@ -559,7 +573,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustHPRegen(Player entity, int adjustBy)
+        public void AdjustHPRegen(Player entity, int adjustBy)
         {
             // Note: It's possible for HP Regen to drop to a negative number. This is expected to ensure calculations stay in sync.
             // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
@@ -572,7 +586,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustFPRegen(Player entity, int adjustBy)
+        public void AdjustFPRegen(Player entity, int adjustBy)
         {
             // Note: It's possible for FP Regen to drop to a negative number. This is expected to ensure calculations stay in sync.
             // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
@@ -585,7 +599,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustSTMRegen(Player entity, int adjustBy)
+        public void AdjustSTMRegen(Player entity, int adjustBy)
         {
             // Note: It's possible for STM Regen to drop to a negative number. This is expected to ensure calculations stay in sync.
             // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
@@ -599,7 +613,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="entity">The entity to modify</param>
         /// <param name="type">The type of damage</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustDefense(Player entity, CombatDamageType type, int adjustBy)
+        public void AdjustDefense(Player entity, CombatDamageType type, int adjustBy)
         {
             entity.Defenses[type] += adjustBy;
         }
@@ -610,7 +624,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustEvasion(Player entity, int adjustBy)
+        public void AdjustEvasion(Player entity, int adjustBy)
         {
             entity.Evasion += adjustBy;
         }
@@ -621,7 +635,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustAttack(Player entity, int adjustBy)
+        public void AdjustAttack(Player entity, int adjustBy)
         {
             entity.Attack += adjustBy;
         }
@@ -632,7 +646,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustForceAttack(Player entity, int adjustBy)
+        public void AdjustForceAttack(Player entity, int adjustBy)
         {
             entity.ForceAttack += adjustBy;
         }
@@ -644,7 +658,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="entity">The entity to modify</param>
         /// <param name="skillType">The skill type to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustControl(Player entity, SkillType skillType, int adjustBy)
+        public void AdjustControl(Player entity, SkillType skillType, int adjustBy)
         {
             if (!entity.Control.ContainsKey(skillType))
                 entity.Control[skillType] = 0;
@@ -659,7 +673,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="entity">The entity to modify</param>
         /// <param name="skillType">The skill type to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustCraftsmanship(Player entity, SkillType skillType, int adjustBy)
+        public void AdjustCraftsmanship(Player entity, SkillType skillType, int adjustBy)
         {
             if (!entity.Craftsmanship.ContainsKey(skillType))
                 entity.Craftsmanship[skillType] = 0;
@@ -674,7 +688,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="entity">The entity to modify</param>
         /// <param name="skillType">The skill type to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustCPBonus(Player entity, SkillType skillType, int adjustBy)
+        public void AdjustCPBonus(Player entity, SkillType skillType, int adjustBy)
         {
             if (!entity.CPBonus.ContainsKey(skillType))
                 entity.CPBonus[skillType] = 0;
@@ -734,7 +748,7 @@ namespace SWLOR.Game.Server.Service
                     if (GetIsObjectValid(source))
                     {
                         var sourceSOC = GetAbilityScore(source, AbilityType.Social);
-                        var perkLevel = Perk.GetPerkLevel(source, PerkType.FrenziedShout);
+                        var perkLevel = _perkService.GetPerkLevel(source, PerkType.FrenziedShout);
                         switch (perkLevel)
                         {
                             case 1:
@@ -797,7 +811,7 @@ namespace SWLOR.Game.Server.Service
                 var source = StatusEffect.GetEffectData<uint>(creature, StatusEffectType.SoldiersStrike);
                 if (GetIsObjectValid(source))
                 {
-                    var perkLevel = Perk.GetPerkLevel(source, PerkType.SoldiersStrike);
+                    var perkLevel = _perkService.GetPerkLevel(source, PerkType.SoldiersStrike);
                     var sourceSOC = GetAbilityScore(source, AbilityType.Social);
 
                     switch (perkLevel)
@@ -845,7 +859,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="skillType">The type of skill to use.</param>
         /// <param name="attackBonusOverride">Overrides the attack bonus granted by equipment. Usually only used by Space combat.</param>
         /// <returns>The total Attack value of a creature.</returns>
-        public static int GetAttack(uint creature, AbilityType abilityType, SkillType skillType, int attackBonusOverride = 0)
+        public int GetAttack(uint creature, AbilityType abilityType, SkillType skillType, int attackBonusOverride = 0)
         {
             if (attackBonusOverride < 0)
                 attackBonusOverride = 0;
@@ -894,13 +908,13 @@ namespace SWLOR.Game.Server.Service
             return GetAttack(skillLevel, stat, attackBonus);
         }
 
-        public static int GetAttackNative(CNWSCreature creature, BaseItem itemType)
+        public int GetAttackNative(CNWSCreature creature, BaseItem itemType)
         {
             var attackBonus = 0;
             var skillLevel = 0;
-            var statType = Item.GetWeaponDamageAbilityType(itemType);
+            var statType = _itemService.GetWeaponDamageAbilityType(itemType);
             var stat = GetStatValueNative(creature, statType);
-            var skillType = Skill.GetSkillTypeByBaseItem(itemType);
+            var skillType = _skillService.GetSkillTypeByBaseItem(itemType);
 
             if (creature.m_bPlayerCharacter == 1)
             {
@@ -946,7 +960,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="stat">The raw stat points</param>
         /// <param name="bonus">The amount of bonus attack or force attack</param>
         /// <returns></returns>
-        public static int GetAttack(int level, int stat, int bonus)
+        public int GetAttack(int level, int stat, int bonus)
         {
             return 8 + (2 * level) + stat + bonus;
         }
@@ -961,7 +975,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="abilityType"></param>
         /// <param name="defenseBonusOverride">Overrides the defense bonus granted by equipment. Usually only used for Space combat.</param>
         /// <returns>The defense value toward a given damage type.</returns>
-        public static int GetDefense(uint creature, CombatDamageType type, AbilityType abilityType, int defenseBonusOverride = 0)
+        public int GetDefense(uint creature, CombatDamageType type, AbilityType abilityType, int defenseBonusOverride = 0)
         {
             if (defenseBonusOverride < 0)
                 defenseBonusOverride = 0;
@@ -1017,7 +1031,7 @@ namespace SWLOR.Game.Server.Service
             return CalculateDefense(defenderStat, skillLevel, defenseBonus);
         }
 
-        public static int CalculateDefense(int defenderStat, int skillLevel, int defenseBonus)
+        public int CalculateDefense(int defenderStat, int skillLevel, int defenseBonus)
         {
             return (int)(8 + (defenderStat * 1.5f) + skillLevel + defenseBonus);
         }
@@ -1028,7 +1042,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to check</param>
         /// <param name="statType">The type of stat to check</param>
         /// <returns>The stat value of a creature based on the ability type</returns>
-        public static int GetStatValueNative(CNWSCreature creature, AbilityType statType)
+        public int GetStatValueNative(CNWSCreature creature, AbilityType statType)
         {
             var stat = 0;
             switch (statType)
@@ -1070,7 +1084,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="type">The type of damage to retrieve.</param>
         /// <param name="abilityType"></param>
         /// <returns>The defense value toward a given damage type.</returns>
-        public static int GetDefenseNative(CNWSCreature creature, CombatDamageType type, AbilityType abilityType)
+        public int GetDefenseNative(CNWSCreature creature, CombatDamageType type, AbilityType abilityType)
         {
             var defenseBonus = 0;
             var defenderStat = GetStatValueNative(creature, abilityType);
@@ -1128,7 +1142,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="statOverride">The stat override used to calculate accuracy. This stat will be used instead of whatever stat is defined for the weapon type.</param>
         /// <param name="skillOverride">The skill override used to calculate accuracy. This skill will be used instead of whatever skill is defined for the weapon type.</param>
         /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
-        public static int GetAccuracy(uint creature, uint weapon, AbilityType statOverride, SkillType skillOverride)
+        public int GetAccuracy(uint creature, uint weapon, AbilityType statOverride, SkillType skillOverride)
         {
             var accuracyBonus = 0;
 
@@ -1152,10 +1166,10 @@ namespace SWLOR.Game.Server.Service
 
             var baseItemType = GetBaseItemType(weapon);
             var statType = statOverride == AbilityType.Invalid ? 
-                Item.GetWeaponAccuracyAbilityType(baseItemType) :
+                _itemService.GetWeaponAccuracyAbilityType(baseItemType) :
                 statOverride;
             var stat = statType == AbilityType.Invalid ? 0 : GetAbilityScore(creature, statType);
-            var skillType = skillOverride == SkillType.Invalid ? Skill.GetSkillTypeByBaseItem(baseItemType) : skillOverride;
+            var skillType = skillOverride == SkillType.Invalid ? _skillService.GetSkillTypeByBaseItem(baseItemType) : skillOverride;
             var skillLevel = 0;
 
 
@@ -1193,7 +1207,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="weapon">The weapon being used.</param>
         /// <param name="statOverride">The stat override used to calculate accuracy. This stat will be used instead of whatever stat is defined for the weapon type.</param>
         /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
-        public static int GetAccuracyNative(CNWSCreature creature, CNWSItem weapon, AbilityType statOverride)
+        public int GetAccuracyNative(CNWSCreature creature, CNWSItem weapon, AbilityType statOverride)
         {
             var accuracyBonus = 0;
 
@@ -1215,11 +1229,11 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            var baseItemType = weapon == null ? BaseItem.Invalid : (BaseItem)weapon.m_nBaseItem;
+            var baseItemType = weapon == null ? Base_itemService.Invalid : (BaseItem)weapon.m_nBaseItem;
             var statType = statOverride == AbilityType.Invalid ? 
-                Item.GetWeaponAccuracyAbilityType(baseItemType) :
+                _itemService.GetWeaponAccuracyAbilityType(baseItemType) :
                 statOverride;
-            var skillType = Skill.GetSkillTypeByBaseItem(baseItemType);
+            var skillType = _skillService.GetSkillTypeByBaseItem(baseItemType);
             var stat = GetStatValueNative(creature, statType);
             var skillLevel = 0;
 
@@ -1253,7 +1267,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="stat">The raw accuracy stat amount</param>
         /// <param name="bonus">The amount of bonus accuracy.</param>
         /// <returns>The calculated accuracy result.</returns>
-        public static int GetAccuracy(int level, int stat, int bonus)
+        public int GetAccuracy(int level, int stat, int bonus)
         {
             return stat * 3 + level + bonus;
         }
@@ -1325,7 +1339,7 @@ namespace SWLOR.Game.Server.Service
                 if (GetIsObjectValid(source))
                 {
                     var sourceSOC = GetAbilityScore(source, AbilityType.Social);
-                    var perkLevel = Perk.GetPerkLevel(source, PerkType.SoldiersSpeed);
+                    var perkLevel = _perkService.GetPerkLevel(source, PerkType.SoldiersSpeed);
 
                     switch (perkLevel)
                     {
@@ -1377,7 +1391,7 @@ namespace SWLOR.Game.Server.Service
                 if (GetIsObjectValid(source))
                 {
                     var sourceSOC = GetAbilityScore(source, AbilityType.Social);
-                    var perkLevel = Perk.GetPerkLevel(source, PerkType.SoldiersPrecision);
+                    var perkLevel = _perkService.GetPerkLevel(source, PerkType.SoldiersPrecision);
 
                     switch (perkLevel)
                     {
@@ -1400,7 +1414,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to retrieve from.</param>
         /// <param name="skillOverride">The skill override to use instead of Armor for the purposes of calculating evasion.</param>
         /// <returns>The evasion rating of a creature.</returns>
-        public static int GetEvasion(uint creature, SkillType skillOverride)
+        public int GetEvasion(uint creature, SkillType skillOverride)
         {
             var stat = GetAbilityScore(creature, AbilityType.Agility);
             int skillLevel;
@@ -1441,7 +1455,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <returns>The evasion rating of a creature.</returns>
-        public static int GetEvasionNative(CNWSCreature creature)
+        public int GetEvasionNative(CNWSCreature creature)
         {
             var stat = GetStatValueNative(creature, AbilityType.Agility);
             var skillLevel = 0;
@@ -1493,7 +1507,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="stat">The raw agility stat</param>
         /// <param name="bonus">The amount of bonus evasion</param>
         /// <returns></returns>
-        public static int GetEvasion(int level, int stat, int bonus)
+        public int GetEvasion(int level, int stat, int bonus)
         {
             return stat * 3 + level + bonus;
         }
@@ -1503,7 +1517,7 @@ namespace SWLOR.Game.Server.Service
         /// If no skin is equipped or the item properties do not exist, an empty NPCStats object will be returned.
         /// </summary>
         /// <returns>An NPCStats object.</returns>
-        public static NPCStats GetNPCStats(uint npc)
+        public NPCStats GetNPCStats(uint npc)
         {
             var npcStats = new NPCStats();
 
@@ -1613,7 +1627,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The player to apply attacks to</param>
         /// <param name="rightHandWeapon">The weapon equipped to the right hand.</param>
         /// <param name="offHandItem">The off hand item equipped to the left hand.</param>
-        public static void ApplyAttacksPerRound(uint creature, uint rightHandWeapon, uint offHandItem = OBJECT_INVALID)
+        public void ApplyAttacksPerRound(uint creature, uint rightHandWeapon, uint offHandItem = OBJECT_INVALID)
         {
             static int GetBABForAttacks(int attacks)
             {
@@ -1644,17 +1658,17 @@ namespace SWLOR.Game.Server.Service
 
             static int GetRapidShotBonus(uint pc)
             {
-                return Perk.GetPerkLevel(pc, PerkType.RapidShot);
+                return _perkService.GetPerkLevel(pc, PerkType.RapidShot);
             }
 
             static int GetFlurryBonus(uint pc)
             {
-                return Perk.GetPerkLevel(pc, PerkType.FlurryStyle);
+                return _perkService.GetPerkLevel(pc, PerkType.FlurryStyle);
             }
 
             static int GetShieldBonus(uint pc)
             {
-                return Perk.GetPerkLevel(pc, PerkType.ShieldMaster);
+                return _perkService.GetPerkLevel(pc, PerkType.ShieldMaster);
             }
 
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
@@ -1666,74 +1680,74 @@ namespace SWLOR.Game.Server.Service
             var perkType = PerkType.Invalid;
 
             // Martial Arts
-            if (Item.KatarBaseItemTypes.Contains(itemType))
+            if (_itemService.KatarBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.KatarMastery;
             }
-            else if (Item.StaffBaseItemTypes.Contains(itemType))
+            else if (_itemService.StaffBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.StaffMastery;
                 numberOfAttacks += GetFlurryBonus(creature);
             }
             // Ranged (Pistol & Rifle only. Throwing is intentionally excluded from Rapid Shot because they get Doublehand)
-            else if (Item.PistolBaseItemTypes.Contains(itemType))
+            else if (_itemService.PistolBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.PistolMastery;
                 numberOfAttacks += GetRapidShotBonus(creature);
             }
-            else if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+            else if (_itemService.ThrowingWeaponBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.ThrowingWeaponMastery;
             }
-            else if (Item.RifleBaseItemTypes.Contains(itemType))
+            else if (_itemService.RifleBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.RifleMastery;
             }
             // One-Handed
-            else if (Item.VibrobladeBaseItemTypes.Contains(itemType))
+            else if (_itemService.VibrobladeBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.VibrobladeMastery;
             }
-            else if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
+            else if (_itemService.FinesseVibrobladeBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.FinesseVibrobladeMastery;
             }
-            else if (Item.LightsaberBaseItemTypes.Contains(itemType))
+            else if (_itemService.LightsaberBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.LightsaberMastery;
             }
             // Two-Handed
-            else if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
+            else if (_itemService.HeavyVibrobladeBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.HeavyVibrobladeMastery;
             }
-            else if (Item.PolearmBaseItemTypes.Contains(itemType))
+            else if (_itemService.PolearmBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.PolearmMastery;
             }
-            else if (Item.TwinBladeBaseItemTypes.Contains(itemType))
+            else if (_itemService.TwinBladeBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.TwinBladeMastery;
             }
-            else if (Item.SaberstaffBaseItemTypes.Contains(itemType))
+            else if (_itemService.SaberstaffBaseItemTypes.Contains(itemType))
             {
                 perkType = PerkType.SaberstaffMastery;
             }
 
-            if (Item.ShieldBaseItemTypes.Contains(offHandType)) 
+            if (_itemService.ShieldBaseItemTypes.Contains(offHandType)) 
                 numberOfAttacks += GetShieldBonus(creature);
 
-            var effectiveMasteryLevel = Perk.GetPerkLevel(creature, perkType);
+            var effectiveMasteryLevel = _perkService.GetPerkLevel(creature, perkType);
             numberOfAttacks += effectiveMasteryLevel;
 
             // Beast Speed (1-3)
-            numberOfAttacks += Perk.GetPerkLevel(creature, PerkType.BeastSpeed);
+            numberOfAttacks += _perkService.GetPerkLevel(creature, PerkType.BeastSpeed);
 
             var bab = GetBABForAttacks(numberOfAttacks);
             CreaturePlugin.SetBaseAttackBonus(creature, bab);
         }
 
-        public static void ApplyCritModifier(uint player, uint rightHandWeapon)
+        public void ApplyCritModifier(uint player, uint rightHandWeapon)
         {
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
@@ -1741,20 +1755,20 @@ namespace SWLOR.Game.Server.Service
             var critMod = 0;
             var itemType = GetBaseItemType(rightHandWeapon);
             var offhandType = GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand, player));
-            if (Item.OneHandedMeleeItemTypes.Contains(itemType) || Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+            if (_itemService.OneHandedMeleeItemTypes.Contains(itemType) || _itemService.ThrowingWeaponBaseItemTypes.Contains(itemType))
             {
-                if (Item.OneHandedMeleeItemTypes.Contains(offhandType))
-                    critMod += Perk.GetPerkLevel(player, PerkType.WailingBlows) * 3; // 15% for WB
-                else if(offhandType == BaseItem.Invalid || Item.ShieldBaseItemTypes.Contains(offhandType))
-                    critMod += Perk.GetPerkLevel(player, PerkType.Duelist);
+                if (_itemService.OneHandedMeleeItemTypes.Contains(offhandType))
+                    critMod += _perkService.GetPerkLevel(player, PerkType.WailingBlows) * 3; // 15% for WB
+                else if(offhandType == Base_itemService.Invalid || _itemService.ShieldBaseItemTypes.Contains(offhandType))
+                    critMod += _perkService.GetPerkLevel(player, PerkType.Duelist);
             }
 
-            if(Item.ThrowingWeaponBaseItemTypes.Contains(itemType) || Item.PistolBaseItemTypes.Contains(itemType))
+            if(_itemService.ThrowingWeaponBaseItemTypes.Contains(itemType) || _itemService.PistolBaseItemTypes.Contains(itemType))
             {
-                critMod += Perk.GetPerkLevel(player, PerkType.DirtyBlow) * 2; // 10% for DB
+                critMod += _perkService.GetPerkLevel(player, PerkType.DirtyBlow) * 2; // 10% for DB
             }
 
-            critMod += Perk.GetPerkLevel(player, PerkType.InnerStrength);
+            critMod += _perkService.GetPerkLevel(player, PerkType.InnerStrength);
 
             CreaturePlugin.SetCriticalRangeModifier(player, -critMod, 0, true);
         }
@@ -1764,7 +1778,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type of ability to retrieve.</param>
         /// <returns>A three-character shortened version of the ability name.</returns>
-        public static string GetAbilityNameShort(AbilityType type)
+        public string GetAbilityNameShort(AbilityType type)
         {
             switch (type)
             {
@@ -1793,9 +1807,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="craftingSkillType">The skill to check</param>
         /// <returns>The total control for a player</returns>
         /// <exception cref="ArgumentException">Thrown if a non-crafting skill is passed in.</exception>
-        public static int CalculateControl(uint player, SkillType craftingSkillType)
+        public int CalculateControl(uint player, SkillType craftingSkillType)
         {
-            var skillDetail = Skill.GetSkillDetails(craftingSkillType);
+            var skillDetail = _skillService.GetSkillDetails(craftingSkillType);
             if (!skillDetail.IsShownInCraftMenu)
                 throw new ArgumentException($"Unable to calculate Control because {craftingSkillType} is not a crafting skill.");
 
@@ -1823,9 +1837,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="craftingSkillType">The skill to check</param>
         /// <returns>The total Craftsmanship for a player</returns>
         /// <exception cref="ArgumentException">Thrown if a non-crafting skill is passed in.</exception>
-        public static int CalculateCraftsmanship(uint player, SkillType craftingSkillType)
+        public int CalculateCraftsmanship(uint player, SkillType craftingSkillType)
         {
-            var skillDetail = Skill.GetSkillDetails(craftingSkillType);
+            var skillDetail = _skillService.GetSkillDetails(craftingSkillType);
             if (!skillDetail.IsShownInCraftMenu)
                 throw new ArgumentException($"Unable to calculate Craftsmanship because {craftingSkillType} is not a crafting skill.");
 
@@ -1855,7 +1869,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="type">The type of saving throw.</param>
         /// <param name="offHandItem">The off hand item equipped to the left hand.</param>
         /// <returns>The base saving throw value</returns>
-        public static int CalculateBaseSavingThrow(uint player, SavingThrow type, uint offHandItem = OBJECT_INVALID)
+        public int CalculateBaseSavingThrow(uint player, SavingThrow type, uint offHandItem = OBJECT_INVALID)
         {
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return 0;
@@ -1863,9 +1877,9 @@ namespace SWLOR.Game.Server.Service
             var offHandType = GetBaseItemType(offHandItem);
             var amount = 0;
 
-            if (Item.ShieldBaseItemTypes.Contains(offHandType))
+            if (_itemService.ShieldBaseItemTypes.Contains(offHandType))
             {
-                amount += Perk.GetPerkLevel(player, PerkType.ShieldResistance);
+                amount += _perkService.GetPerkLevel(player, PerkType.ShieldResistance);
             }
 
             return amount;
@@ -1875,7 +1889,7 @@ namespace SWLOR.Game.Server.Service
         /// Stores an NPC's STM and FP as local variables.
         /// Also load their HP per their skin, if specified.
         /// </summary>
-        public static void LoadNPCStats()
+        public void LoadNPCStats()
         {
             var self = OBJECT_SELF;
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, self);
@@ -1905,7 +1919,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Restores an NPC's STM and FP.
         /// </summary>
-        public static void RestoreNPCStats(bool outOfCombatRegen)
+        public void RestoreNPCStats(bool outOfCombatRegen)
         {
             var self = OBJECT_SELF;
             var maxFP = GetMaxFP(self);

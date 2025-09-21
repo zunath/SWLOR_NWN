@@ -7,13 +7,18 @@ using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
     public abstract class PlayerMigrationBase: IPlayerMigration
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        protected static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        protected static ILogger Logger => ServiceContainer.GetService<ILogger>();
+        protected static IDatabaseService Database => ServiceContainer.GetService<IDatabaseService>();
+        protected static IStatService StatService => ServiceContainer.GetService<IStatService>();
+        protected static ISkillService SkillService => ServiceContainer.GetService<ISkillService>();
+        protected static ICombatService CombatService => ServiceContainer.GetService<ICombatService>();
+        protected static IPerkService PerkService => ServiceContainer.GetService<IPerkService>();
         public abstract int Version { get; }
         public abstract void Migrate(uint player);
 
@@ -42,25 +47,25 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             DelayCommand(1f, () =>
             {
                 var playerId = GetObjectUUID(player);
-                var dbPlayer = _db.Get<Player>(playerId);
+                var dbPlayer = Database.Get<Player>(playerId);
 
                 // HP
-                dbPlayer.MaxHP = Stat.BaseHP;
+                dbPlayer.MaxHP = StatService.BaseHP;
                 dbPlayer.HP = GetMaxHitPoints(player);
                 dbPlayer.HPRegen = 0;
 
                 // FP
-                dbPlayer.MaxFP = Stat.BaseFP;
-                dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);
+                dbPlayer.MaxFP = StatService.BaseFP;
+                dbPlayer.FP = StatService.GetMaxFP(player, dbPlayer);
                 dbPlayer.FPRegen = 0;
 
                 // STM
-                dbPlayer.MaxStamina = Stat.BaseSTM;
-                dbPlayer.Stamina = Stat.GetMaxStamina(player, dbPlayer);
+                dbPlayer.MaxStamina = StatService.BaseSTM;
+                dbPlayer.Stamina = StatService.GetMaxStamina(player, dbPlayer);
                 dbPlayer.STMRegen = 0;
 
                 // Crafting
-                foreach (var (type, _) in Skill.GetActiveCraftingSkills())
+                foreach (var (type, _) in SkillService.GetActiveCraftingSkills())
                 {
                     dbPlayer.Craftsmanship[type] = 0;
                     dbPlayer.Control[type] = 0;
@@ -72,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 dbPlayer.ForceAttack = 0;
 
                 // Defenses
-                foreach (var defense in Combat.GetAllDamageTypes())
+                foreach (var defense in _combatService.GetAllDamageTypes())
                 {
                     dbPlayer.Defenses[defense] = 0;
                 }
@@ -80,12 +85,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 // Evasion
                 dbPlayer.Evasion = 0;
 
-                _db.Set(dbPlayer);
-                Stat.AdjustPlayerMaxHP(dbPlayer, player, 0);
+                Database.Set(dbPlayer);
+                StatService.AdjustPlayerMaxHP(dbPlayer, player, 0);
                 SetCurrentHitPoints(player, GetMaxHitPoints(player));
 
                 // Attacks
-                Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
+                StatService.ApplyAttacksPerRound(player, OBJECT_INVALID);
             });
         }
 
@@ -98,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                 return;
 
             var perkLevel = dbPlayer.Perks[perkType];
-            var perkDetail = Perk.GetPerkDetails(perkType);
+            var perkDetail = _perkService.GetPerkDetails(perkType);
             var refundAmount = perkDetail.PerkLevels
                 .Where(x => x.Key <= perkLevel)
                 .Sum(x => x.Value.Price);

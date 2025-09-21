@@ -5,7 +5,7 @@ using System.Text;
 using SWLOR.Game.Server.Service.LanguageService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
@@ -14,18 +14,26 @@ using SkillType = SWLOR.Shared.Core.Enums.SkillType;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Language
+    public class LanguageService : ILanguageService
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
-        private static Dictionary<SkillType, ITranslator> _translators = new();
-        private static readonly TranslatorGeneric _genericTranslator = new();
+        private readonly IDatabaseService _db;
+        private readonly IRandomService _random;
+        private readonly ISkillService _skillService;
+        private Dictionary<SkillType, ITranslator> _translators = new();
+        private readonly TranslatorGeneric _genericTranslator = new();
+
+        public LanguageService(IDatabaseService db, IRandomService random, ISkillService skillService)
+        {
+            _db = db;
+            _random = random;
+            _skillService = skillService;
+        }
 
         /// <summary>
         /// When the module loads, create translators for every language and store them into cache.
         /// </summary>
         [ScriptHandler<OnModuleLoad>]
-        public static void LoadTranslators()
+        public void LoadTranslators()
         {
             _translators = new Dictionary<SkillType, ITranslator>
             {
@@ -50,10 +58,10 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
-        public static string TranslateSnippetForListener(uint speaker, uint listener, SkillType language, string snippet)
+        public string TranslateSnippetForListener(uint speaker, uint listener, SkillType language, string snippet)
         {
             var translator = _translators.ContainsKey(language) ? _translators[language] : _genericTranslator;
-            var languageSkill = Skill.GetSkillDetails(language);
+            var languageSkill = _skillService.GetSkillDetails(language);
 
             if (GetIsPC(speaker))
             {
@@ -171,11 +179,11 @@ namespace SWLOR.Game.Server.Service
                     amount += socialModifier * 10;
                 }
 
-                Skill.GiveSkillXP(listener, language, amount, false, false);
+                _skillService.GiveSkillXP(listener, language, amount, false, false);
 
                 // Grant Force XP if player is concentrating Comprehend Speech.
                 if (grantSenseXP)
-                    Skill.GiveSkillXP(listener, SkillType.Force, amount * 10, false, false);
+                    _skillService.GiveSkillXP(listener, SkillType.Force, amount * 10, false, false);
 
                 SetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_LOW", (int)(now & 0xFFFFFFFF));
                 SetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_HIGH", (int)((now >> 32) & 0xFFFFFFFF));
@@ -184,7 +192,7 @@ namespace SWLOR.Game.Server.Service
             return textAsForeignLanguage;
         }
 
-        public static (byte, byte, byte) GetColor(SkillType language)
+        public (byte, byte, byte) GetColor(SkillType language)
         {
             byte r = 0;
             byte g = 0;
@@ -216,7 +224,7 @@ namespace SWLOR.Game.Server.Service
             return (r, g, b);
         }
 
-        public static string GetName(SkillType language)
+        public string GetName(SkillType language)
         {
             switch (language)
             {
@@ -243,7 +251,7 @@ namespace SWLOR.Game.Server.Service
             return "Basic";
         }
 
-        public static SkillType GetActiveLanguage(uint obj)
+        public SkillType GetActiveLanguage(uint obj)
         {
             var ret = GetLocalInt(obj, "ACTIVE_LANGUAGE");
 
@@ -255,7 +263,7 @@ namespace SWLOR.Game.Server.Service
             return (SkillType)ret;
         }
 
-        public static void SetActiveLanguage(uint obj, SkillType language)
+        public void SetActiveLanguage(uint obj, SkillType language)
         {
             if (language == SkillType.Basic)
             {
@@ -267,9 +275,9 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static IEnumerable<LanguageCommand> _languages;
+        private IEnumerable<LanguageCommand> _languages;
 
-        public static IEnumerable<LanguageCommand> Languages
+        public IEnumerable<LanguageCommand> Languages
         {
             get
             {

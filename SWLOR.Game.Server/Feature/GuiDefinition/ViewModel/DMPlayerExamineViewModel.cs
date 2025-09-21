@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
@@ -19,11 +20,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DMPlayerExamineViewModel: GuiViewModelBase<DMPlayerExamineViewModel, DMPlayerExaminePayload>
     {
-        public DMPlayerExamineViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
+        private readonly ISkillService _skillService;
+        private readonly IPerkService _perkService;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public DMPlayerExamineViewModel(IGuiService guiService, IDatabaseService db, ISkillService skillService, IPerkService perkService) : base(guiService)
+        {
+            _db = db;
+            _skillService = skillService;
+            _perkService = perkService;
+        }
         
         private const int MaxNotes = 50;
 
@@ -212,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var skillNames = new GuiBindingList<string>();
             var skillLevels = new GuiBindingList<int>();
-            foreach (var (type, detail) in Skill.GetAllActiveSkills())
+            foreach (var (type, detail) in _skillService.GetAllActiveSkills())
             {
                 skillNames.Add(detail.Name);
                 skillLevels.Add(dbPlayer.Skills[type].Rank);
@@ -233,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var perkLevels = new GuiBindingList<int>();
             foreach (var (type, level) in dbPlayer.Perks)
             {
-                var detail = Perk.GetPerkDetails(type);
+                var detail = _perkService.GetPerkDetails(type);
                 perkNames.Add(detail.Name);
                 perkLevels.Add(level);
             }

@@ -22,11 +22,11 @@ namespace SWLOR.Game.Server.Service.PerkService
             if (_mustHavePerkType == PerkType.Invalid)
                 return string.Empty;
 
-            var perkDetail = Perk.GetPerkDetails(_mustHavePerkType);
+            var perkDetail = _perkService.GetPerkDetails(_mustHavePerkType);
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
 
-            if (!dbPlayer.Perks.ContainsKey(_mustHavePerkType) || Perk.GetPerkLevel(player, _mustHavePerkType) < _mustHavePerkLevel)
+            if (!dbPlayer.Perks.ContainsKey(_mustHavePerkType) || _perkService.GetPerkLevel(player, _mustHavePerkType) < _mustHavePerkLevel)
                return $"You must have perk {perkDetail.Name} at level {_mustHavePerkLevel}.";
 
             return string.Empty;
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         {
             get
             {
-                var perkDetail = Perk.GetPerkDetails(_mustHavePerkType);
+                var perkDetail = _perkService.GetPerkDetails(_mustHavePerkType);
                 return $"Must have perk {perkDetail.Name} at level {_mustHavePerkLevel}.";
             }
         }

@@ -21,12 +21,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class MarketBuyViewModel: GuiViewModelBase<MarketBuyViewModel, MarketPayload>
     {
-        public MarketBuyViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly IItemService _itemService;
+        private readonly IPlayerMarketService _playerMarketService;
 
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public MarketBuyViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IItemService itemService, IPlayerMarketService playerMarketService) : base(guiService)
+        {
+            _logger = logger;
+            _db = db;
+            _itemService = itemService;
+            _playerMarketService = playerMarketService;
+        }
         
         private const int ListingsPerPage = 20;
 
@@ -45,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         [ScriptHandler<OnModuleLoad>]
         public static void LoadCategories()
         {
-            foreach (var (type, category) in PlayerMarket.GetActiveCategories())
+            foreach (var (type, category) in _playerMarketService.GetActiveCategories())
             {
                 _categoryTypes.Add(type);
                 _categories.Add(category.Name);
@@ -149,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(MarketPayload initialPayload)
         {
             _regionType = initialPayload.RegionType;
-            var regionDetail = PlayerMarket.GetMarketRegion(_regionType);
+            var regionDetail = _playerMarketService.GetMarketRegion(_regionType);
             _skipPaginationSearch = true;
             _activeCategoryIdFilters.Clear();
             SelectedPageIndex = 0;
@@ -171,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void Search()
         {
-            var marketDetail = PlayerMarket.GetMarketRegion(_regionType);
+            var marketDetail = _playerMarketService.GetMarketRegion(_regionType);
             var query = new DBQuery<MarketItem>()
                 .AddFieldSearch(nameof(MarketItem.IsListed), true)
                 .AddFieldSearch(nameof(MarketItem.MarketId), marketDetail.MarketId, false);
@@ -287,7 +293,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbItem = _db.Get<MarketItem>(itemId);
 
             var item = ObjectPlugin.Deserialize(dbItem.Data);
-            var payload = new ExamineItemPayload(GetName(item), GetDescription(item), Item.BuildItemPropertyString(item));
+            var payload = new ExamineItemPayload(GetName(item), GetDescription(item), _itemService.BuildItemPropertyString(item));
             _guiService.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
             DestroyObject(item);
         };
@@ -351,7 +357,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _db.Delete<MarketItem>(itemId);
 
                 // Give the money to the seller.
-                var market = PlayerMarket.GetMarketRegion(_regionType);
+                var market = _playerMarketService.GetMarketRegion(_regionType);
                 var sellerPlayerId = dbItem.PlayerId;
                 var dbSeller = _db.Get<Player>(sellerPlayerId);
                 var proceeds = (int)(price - (price * market.TaxRate));

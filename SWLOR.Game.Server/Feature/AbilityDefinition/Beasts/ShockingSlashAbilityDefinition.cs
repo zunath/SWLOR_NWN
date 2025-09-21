@@ -6,12 +6,22 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class ShockingSlashAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public ShockingSlashAbilityDefinition(ICombatService combatService, IStatService statService)
+        {
+            _combatService = combatService;
+            _statService = statService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -39,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             var beastStat = GetAbilityScore(activator, AbilityType.Might) / 2;
             var totalStat = beastStat + beastmasterStat;
 
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
             var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Electricity);
 
             var target = GetFirstObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
@@ -47,9 +57,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             {
                 if (target != activator)
                 {
-                    var defense = Stat.GetDefense(target, CombatDamageType.Electrical, AbilityType.Vitality);
+                    var defense = StatService.GetDefense(target, CombatDamageType.Electrical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = Combat.CalculateDamage(
+                    var damage = CombatService.CalculateDamage(
                         attack,
                         dmg,
                         totalStat,
@@ -70,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                             ApplyEffectToObject(DurationType.Instant, eVFX, targetCopy);
                         });
 
-                        dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
+                        dc = CombatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {

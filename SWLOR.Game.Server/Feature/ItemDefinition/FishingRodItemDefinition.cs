@@ -3,14 +3,22 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class FishingRodItemDefinition: IItemListDefinition
     {
-        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        private readonly IItemCacheService _itemCache;
+        private readonly IFishingService _fishingService;
         private readonly ItemBuilder _builder = new();
+
+        public FishingRodItemDefinition(IItemCacheService itemCache, IFishingService fishingService)
+        {
+            _itemCache = itemCache;
+            _fishingService = fishingService;
+        }
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
@@ -21,11 +29,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         private void FishingRod()
         {
-            _builder.Create(Fishing.FishingRodTag)
+            _builder.Create(_fishingService.FishingRodTag)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     if (item != target && 
-                        !Fishing.IsItemBait(target))
+                        !_fishingService.IsItemBait(target))
                         return "Only bait may be selected.";
 
                     if (GetItemPossessor(target) != user)
@@ -35,8 +43,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var existingBait = GetLocalString(item, Fishing.ActiveBaitVariable);
-                    var remainingBait = GetLocalInt(item, Fishing.RemainingBaitVariable);
+                    var existingBait = GetLocalString(item, _fishingService.ActiveBaitVariable);
+                    var remainingBait = GetLocalInt(item, _fishingService.RemainingBaitVariable);
 
                     if (!string.IsNullOrWhiteSpace(existingBait))
                     {
@@ -49,19 +57,19 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             SendMessageToPC(user, $"Unloaded bait.");
                         }
 
-                        DeleteLocalString(item, Fishing.ActiveBaitVariable);
-                        DeleteLocalInt(item, Fishing.RemainingBaitVariable);
+                        DeleteLocalString(item, _fishingService.ActiveBaitVariable);
+                        DeleteLocalInt(item, _fishingService.RemainingBaitVariable);
                     }
 
-                    if (Fishing.IsItemBait(target))
+                    if (_fishingService.IsItemBait(target))
                     {
                         var resref = GetResRef(target);
-                        var baitType = Fishing.GetBaitByResref(resref);
+                        var baitType = _fishingService.GetBaitByResref(resref);
                         var stackSize = GetItemStackSize(target);
                         var serialized = ObjectPlugin.Serialize(target);
-                        SetLocalString(item, Fishing.ActiveBaitVariable, serialized);
-                        SetLocalInt(item, Fishing.RemainingBaitVariable, stackSize);
-                        SetLocalInt(item, Fishing.LoadedBaitTypeVariable, (int)baitType);
+                        SetLocalString(item, _fishingService.ActiveBaitVariable, serialized);
+                        SetLocalInt(item, _fishingService.RemainingBaitVariable, stackSize);
+                        SetLocalInt(item, _fishingService.LoadedBaitTypeVariable, (int)baitType);
 
                         DestroyObject(target);
 

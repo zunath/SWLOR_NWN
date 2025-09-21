@@ -11,9 +11,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class BenevolenceAbilityDefinition : IAbilityListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         private readonly AbilityBuilder _builder = new();
+        private readonly IStatService _statService;
         private const string BeneRegen = "FORCE_BENEVOLENCE";
+
+        public BenevolenceAbilityDefinition(IRandomService random, IStatService statService)
+        {
+            _random = random;
+            _statService = statService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -28,17 +35,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             var willBonus = GetAbilityModifier(AbilityType.Willpower, activator);
             var targetBonus = willBonus;
-            if (target != activator && Stat.GetCurrentFP(activator) >= 16)
+            if (target != activator && _statService.GetCurrentFP(activator) >= 16)
             {
                 RemoveEffectByTag(target, BeneRegen);
 
                 var willRestore = (willBonus / 2) * 4;
                 var duration = 90f + (willBonus * 60f);
                 var effect = EffectRegenerate(willRestore, 24f);
-                Stat.ReduceFP(activator, 10);
-                Stat.ReduceStamina(activator, willRestore);
-                Stat.RestoreFP(target, willRestore);
-                Stat.RestoreStamina(target, willRestore);
+                _statService.ReduceFP(activator, 10);
+                _statService.ReduceStamina(activator, willRestore);
+                _statService.RestoreFP(target, willRestore);
+                _statService.RestoreStamina(target, willRestore);
                 targetBonus = willBonus * 4;
 
                 effect = TagEffect(effect, BeneRegen);

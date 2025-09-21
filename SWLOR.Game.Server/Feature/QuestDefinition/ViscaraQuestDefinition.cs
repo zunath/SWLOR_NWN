@@ -15,18 +15,21 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class ViscaraQuestDefinition : IQuestListDefinition
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
         private readonly IKeyItemService _keyItemService;
         private readonly IObjectVisibilityService _objectVisibilityService;
+        private readonly IQuestService _questService;
         private readonly IServiceProvider _serviceProvider;
         private readonly QuestBuilder _builder;
 
-        public ViscaraQuestDefinition(IKeyItemService keyItemService, IObjectVisibilityService objectVisibilityService, IServiceProvider serviceProvider)
+        public ViscaraQuestDefinition(IDatabaseService db, IKeyItemService keyItemService, IObjectVisibilityService objectVisibilityService, IQuestService questService, IServiceProvider serviceProvider)
         {
+            _db = db;
             _keyItemService = keyItemService;
             _objectVisibilityService = objectVisibilityService;
+            _questService = questService;
             _serviceProvider = serviceProvider;
-            _builder = new QuestBuilder(_serviceProvider);
+            _builder = new QuestBuilder(_serviceProvider, _questService);
         }
 
         public Dictionary<string, QuestDetail> BuildQuests()
@@ -188,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 return;
             }
 
-            var quest = Quest.GetQuestById("first_rites");
+            var quest = _questService.GetQuestById("first_rites");
             var crystal = OBJECT_SELF;
             var type = GetLocalInt(crystal, "CRYSTAL_COLOR_TYPE");
 

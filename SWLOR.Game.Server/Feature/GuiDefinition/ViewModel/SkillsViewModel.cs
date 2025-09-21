@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -18,11 +19,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<RPXPRefreshEvent>
     {
-        public SkillsViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
+        private readonly ISkillService _skillService;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public SkillsViewModel(IGuiService guiService, IDatabaseService db, ISkillService skillService) : base(guiService)
+        {
+            _db = db;
+            _skillService = skillService;
+        }
         
         private readonly List<SkillType> _viewableSkills = new();
 
@@ -113,11 +117,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 if (value == 0)
                 {
-                    LoadSkills(Skill.GetAllActiveSkills());
+                    LoadSkills(_skillService.GetAllActiveSkills());
                 }
                 else
                 {
-                    var skillsInCategory = Skill.GetActiveSkillsByCategory((SkillCategoryType)value);
+                    var skillsInCategory = _skillService.GetActiveSkillsByCategory((SkillCategoryType)value);
                     LoadSkills(skillsInCategory);
                 }
             }
@@ -126,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             SelectedCategoryId = 0;
-            LoadSkills(Skill.GetAllActiveSkills());
+            LoadSkills(_skillService.GetAllActiveSkills());
             WatchOnClient(model => model.SelectedCategoryId);
         }
 
@@ -217,21 +221,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private float CalculateProgress(SkillType type, int rank, int xp)
         {
-            var skill = Skill.GetSkillDetails(type);
+            var skill = _skillService.GetSkillDetails(type);
             if (rank >= skill.MaxRank)
                 return 1f;
 
-            var nextLevelXP = Skill.GetRequiredXP(rank);
+            var nextLevelXP = _skillService.GetRequiredXP(rank);
             return (float)xp / nextLevelXP;
         }
 
         private string CalculateRawXPAmounts(SkillType type, int rank, int xp)
         {
-            var skill = Skill.GetSkillDetails(type);
+            var skill = _skillService.GetSkillDetails(type);
             if (rank >= skill.MaxRank)
                 return "0 / 0";
 
-            var nextLevelXP = Skill.GetRequiredXP(rank);
+            var nextLevelXP = _skillService.GetRequiredXP(rank);
             return $"{xp} / {nextLevelXP}";
         }
 

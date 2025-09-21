@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Dialog.Service;
@@ -12,7 +13,15 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class TomeItemDefinition: IItemListDefinition
     {
+        private readonly ICurrencyService _currencyService;
+        private readonly IGuiService _guiService;
         private readonly ItemBuilder _builder = new();
+
+        public TomeItemDefinition(ICurrencyService currencyService, IGuiService guiService)
+        {
+            _currencyService = currencyService;
+            _guiService = guiService;
+        }
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
@@ -46,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         return "Only players may use this item.";
                     }
                     
-                    if (Currency.GetCurrency(user, CurrencyType.PerkRefundToken) >= 99)
+                    if (_currencyService.GetCurrency(user, CurrencyType.PerkRefundToken) >= 99)
                     {
                         return "You cannot add any more perk refunds to your collection.";
                     }
@@ -55,10 +64,10 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    Currency.GiveCurrency(user, CurrencyType.PerkRefundToken, 1);
-                    SendMessageToPC(user, $"You gain a perk refund token. (Total: {Currency.GetCurrency(user, CurrencyType.PerkRefundToken)})");
+                    _currencyService.GiveCurrency(user, CurrencyType.PerkRefundToken, 1);
+                    SendMessageToPC(user, $"You gain a perk refund token. (Total: {_currencyService.GetCurrency(user, CurrencyType.PerkRefundToken)})");
                     DestroyObject(item);
-                    ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(user, new PerkResetAcquiredRefreshEvent());
+                    _guiService.PublishRefreshEvent(user, new PerkResetAcquiredRefreshEvent());
                 });
         }
 
@@ -73,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         return "Only players may use this item.";
                     }
 
-                    if (Currency.GetCurrency(user, CurrencyType.StatRefundToken) >= 99)
+                    if (_currencyService.GetCurrency(user, CurrencyType.StatRefundToken) >= 99)
                     {
                         return "You cannot add any more stat refunds to your collection.";
                     }
@@ -82,8 +91,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    Currency.GiveCurrency(user, CurrencyType.StatRefundToken, 1);
-                    SendMessageToPC(user, $"You gain a stat refund token. (Total: {Currency.GetCurrency(user, CurrencyType.StatRefundToken)})");
+                    _currencyService.GiveCurrency(user, CurrencyType.StatRefundToken, 1);
+                    SendMessageToPC(user, $"You gain a stat refund token. (Total: {_currencyService.GetCurrency(user, CurrencyType.StatRefundToken)})");
                     DestroyObject(item);
                 });
         }

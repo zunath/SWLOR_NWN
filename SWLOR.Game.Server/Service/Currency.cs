@@ -2,7 +2,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Extension;
@@ -13,16 +13,23 @@ using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Currency
+    public class CurrencyService : ICurrencyService
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly Dictionary<CurrencyType, CurrencyAttribute> _currencies = new();
+        private readonly IDatabaseService _db;
+        private readonly IGuiService _guiService;
+        private readonly Dictionary<CurrencyType, CurrencyAttribute> _currencies = new();
+
+        public CurrencyService(IDatabaseService db, IGuiService guiService)
+        {
+            _db = db;
+            _guiService = guiService;
+        }
 
         /// <summary>
         /// When the module caches, cache all currency details into memory.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheCurrencies()
+        public void CacheCurrencies()
         {
             var currencyTypes = Enum.GetValues(typeof(CurrencyType)).Cast<CurrencyType>();
             foreach (var currencyType in currencyTypes)
@@ -41,7 +48,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="currencyType">The type of currency to retrieve.</param>
         /// <returns>The details about a currency.</returns>
-        public static CurrencyAttribute GetCurrencyDetail(CurrencyType currencyType)
+        public CurrencyAttribute GetCurrencyDetail(CurrencyType currencyType)
         {
             return _currencies[currencyType];
         }
@@ -52,7 +59,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to check</param>
         /// <param name="type">The type of currency to look for</param>
         /// <returns>The amount of the currency held.</returns>
-        public static int GetCurrency(uint player, CurrencyType type)
+        public int GetCurrency(uint player, CurrencyType type)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
@@ -72,7 +79,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to give currency</param>
         /// <param name="type">The type of currency to give</param>
         /// <param name="amount">The amount of currency to give</param>
-        public static void GiveCurrency(uint player, CurrencyType type, int amount)
+        public void GiveCurrency(uint player, CurrencyType type, int amount)
         {
             amount = Math.Abs(amount);
 
@@ -88,7 +95,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.Currencies[type] += amount;
 
             _db.Set(dbPlayer);
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new CurrencyRefreshEvent());
+            _guiService.PublishRefreshEvent(player, new CurrencyRefreshEvent());
         }
 
         /// <summary>
@@ -97,7 +104,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to take currency from</param>
         /// <param name="type">The type of currency to take</param>
         /// <param name="amount">The amount of currency to take</param>
-        public static void TakeCurrency(uint player, CurrencyType type, int amount)
+        public void TakeCurrency(uint player, CurrencyType type, int amount)
         {
             amount = Math.Abs(amount);
 
@@ -113,7 +120,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.Currencies[type] -= amount;
 
             _db.Set(dbPlayer);
-            ServiceContainer.GetService<IGuiService>().PublishRefreshEvent(player, new CurrencyRefreshEvent());
+            _guiService.PublishRefreshEvent(player, new CurrencyRefreshEvent());
         }
     }
 }

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
@@ -13,7 +14,18 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class OneHandedPerkDefinition : IPerkListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
+        private readonly IItemService _itemService;
+        private readonly IStatService _statService;
+        private readonly IPerkService _perkService;
+
+        public OneHandedPerkDefinition(IRandomService random, IItemService itemService, IStatService statService, IPerkService perkService)
+        {
+            _random = random;
+            _itemService = itemService;
+            _statService = statService;
+            _perkService = perkService;
+        }
         private readonly PerkBuilder _builder = new();
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
@@ -119,23 +131,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                  {
                      if (slot != InventorySlot.RightHand) return;
 
-                     Stat.ApplyCritModifier(player, item);
+                     _statService.ApplyCritModifier(player, item);
                  })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyCritModifier(player, OBJECT_INVALID);
+                    _statService.ApplyCritModifier(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyCritModifier(player, item);
+                    _statService.ApplyCritModifier(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyCritModifier(player, item);
+                    _statService.ApplyCritModifier(player, item);
                 });
         }
 
@@ -154,23 +166,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                  {
                      if (slot != InventorySlot.RightHand) return;
 
-                     Stat.ApplyCritModifier(player, item);
+                     _statService.ApplyCritModifier(player, item);
                  })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyCritModifier(player, OBJECT_INVALID);
+                    _statService.ApplyCritModifier(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyCritModifier(player, item);
+                    _statService.ApplyCritModifier(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyCritModifier(player, item);
+                    _statService.ApplyCritModifier(player, item);
                 });
         }
 
@@ -183,12 +195,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (slot == InventorySlot.RightHand)
                     {
                         var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
-                        Stat.ApplyAttacksPerRound(player, item, offHand);
+                        _statService.ApplyAttacksPerRound(player, item, offHand);
                     }
                     else if (slot == InventorySlot.LeftHand)
                     {
                         var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
-                        Stat.ApplyAttacksPerRound(player, mainHand, item);
+                        _statService.ApplyAttacksPerRound(player, mainHand, item);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -196,27 +208,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (slot == InventorySlot.RightHand)
                     {
                         var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
-                        Stat.ApplyAttacksPerRound(player, item, offHand);
+                        _statService.ApplyAttacksPerRound(player, item, offHand);
                     }
                     else if (slot == InventorySlot.LeftHand)
                     {
                         var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
-                        Stat.ApplyAttacksPerRound(player, mainHand, item);
+                        _statService.ApplyAttacksPerRound(player, mainHand, item);
                     }
 
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
+                    _statService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
                     var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
                     var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
-                    Stat.ApplyAttacksPerRound(player, mainHand, offHand);
+                    _statService.ApplyAttacksPerRound(player, mainHand, offHand);
                 })
                 .TriggerRefund((player) =>
                 {
                     var mainHand = GetItemInSlot(InventorySlot.RightHand, player);
                     var offHand = GetItemInSlot(InventorySlot.LeftHand, player);
-                    Stat.ApplyAttacksPerRound(player, mainHand, offHand);
+                    _statService.ApplyAttacksPerRound(player, mainHand, offHand);
                 })
 
                 .AddPerkLevel()
@@ -271,9 +283,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             void AdjustSavingThrows(uint player, uint item)
             {
-                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Fortitude, Stat.CalculateBaseSavingThrow(player, SavingThrow.Fortitude, item));
-                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Will, Stat.CalculateBaseSavingThrow(player, SavingThrow.Will, item));
-                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Reflex, Stat.CalculateBaseSavingThrow(player, SavingThrow.Reflex, item));
+                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Fortitude, _statService.CalculateBaseSavingThrow(player, SavingThrow.Fortitude, item));
+                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Will, _statService.CalculateBaseSavingThrow(player, SavingThrow.Will, item));
+                CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Reflex, _statService.CalculateBaseSavingThrow(player, SavingThrow.Reflex, item));
             }
 
             _builder.Create(PerkCategoryType.OneHandedShield, PerkType.ShieldResistance)
@@ -295,7 +307,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     var itemType = GetBaseItemType(item);
                     if (slot == InventorySlot.LeftHand &&
-                        Item.ShieldBaseItemTypes.Contains(itemType))
+                        _itemService.ShieldBaseItemTypes.Contains(itemType))
                     {
                         AdjustSavingThrows(player, item);
                     }
@@ -304,7 +316,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     var itemType = GetBaseItemType(item);
                     if (slot == InventorySlot.LeftHand &&
-                        Item.ShieldBaseItemTypes.Contains(itemType))
+                        _itemService.ShieldBaseItemTypes.Contains(itemType))
                     {
                         AdjustSavingThrows(player, OBJECT_INVALID);
                     }
@@ -328,17 +340,22 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             var item = GetSpellCastItem();
             var itemType = GetBaseItemType(item);
 
-            if (Item.ShieldBaseItemTypes.Contains(itemType))
+            var itemService = ServiceContainer.GetService<IItemService>();
+            var randomService = ServiceContainer.GetService<IRandomService>();
+            var perkService = ServiceContainer.GetService<IPerkService>();
+            var statService = ServiceContainer.GetService<IStatService>();
+
+            if (itemService.ShieldBaseItemTypes.Contains(itemType))
             {
-                if (_random.D100(1) <= 10)
+                if (randomService.D100(1) <= 10)
                 {
-                    if (Perk.GetPerkLevel(defender, PerkType.Alacrity) > 0)
+                    if (perkService.GetPerkLevel(defender, PerkType.Alacrity) > 0)
                     {
-                        Stat.RestoreStamina(defender, 4);
+                        statService.RestoreStamina(defender, 4);
                     }
-                    else if (Perk.GetPerkLevel(defender, PerkType.Clarity) > 0)
+                    else if (perkService.GetPerkLevel(defender, PerkType.Clarity) > 0)
                     {
-                        Stat.RestoreFP(defender, 4);
+                        statService.RestoreFP(defender, 4);
                     }
                 }
             }
@@ -443,23 +460,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
+                    _statService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
@@ -602,23 +619,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
+                    _statService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
@@ -775,23 +792,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
-                    Stat.ApplyAttacksPerRound(player, OBJECT_INVALID);
+                    _statService.ApplyAttacksPerRound(player, OBJECT_INVALID);
                 })
                 .TriggerPurchase((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
                 .TriggerRefund((player) =>
                 {
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    Stat.ApplyAttacksPerRound(player, item);
+                    _statService.ApplyAttacksPerRound(player, item);
                 })
 
                 .AddPerkLevel()
@@ -882,11 +899,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Strong Style (Lightsaber)")
                 .TriggerRefund((player) =>
                 {
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
+                    var abilityService = ServiceContainer.GetService<Ability>();
+                    abilityService.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
                 })
                 .TriggerPurchase((player) =>
                 {
-                    Ability.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
+                    var abilityService = ServiceContainer.GetService<Ability>();
+                    abilityService.ToggleAbility(player, AbilityToggleType.StrongStyleLightsaber, false);
                 })
                 
                 .AddPerkLevel()

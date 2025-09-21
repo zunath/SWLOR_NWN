@@ -9,6 +9,7 @@ using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {
@@ -16,6 +17,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly CatharRacialAppearanceDefinition _catharAppearance = new();
+        private static readonly IStatService _statService = ServiceContainer.GetService<IStatService>();
+        private static readonly IItemService _itemService = ServiceContainer.GetService<IItemService>();
 
         public int Version => 1;
         public void Migrate(uint player)
@@ -79,13 +82,13 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
         private void ResetStats(uint player, Player dbPlayer)
         {
             dbPlayer.BAB = 1;
-            Stat.AdjustPlayerMaxHP(dbPlayer, player, 70);
-            Stat.AdjustPlayerMaxFP(dbPlayer, 10, player);
-            Stat.AdjustPlayerMaxSTM(dbPlayer, 10, player);
+            _statService.AdjustPlayerMaxHP(dbPlayer, player, 70);
+            _statService.AdjustPlayerMaxFP(dbPlayer, 10, player);
+            _statService.AdjustPlayerMaxSTM(dbPlayer, 10, player);
             CreaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
-            dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);
-            dbPlayer.Stamina = Stat.GetMaxStamina(player, dbPlayer);
+            dbPlayer.FP = _statService.GetMaxFP(player, dbPlayer);
+            dbPlayer.Stamina = _statService.GetMaxStamina(player, dbPlayer);
 
             dbPlayer.BaseStats[AbilityType.Might] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Might);
             dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Perception);
@@ -144,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
             {
                 WipeItemProperties(item);
-                Item.MarkLegacyItem(item);
+                _itemService.MarkLegacyItem(item);
                 WipeDescription(item);
                 WipeVariables(item);
                 CleanItemName(item);
@@ -171,7 +174,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 }
 
                 WipeItemProperties(item);
-                Item.MarkLegacyItem(item);
+                _itemService.MarkLegacyItem(item);
                 WipeDescription(item);
                 WipeVariables(item);
                 RemoveItems(item);

@@ -4,6 +4,8 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
@@ -37,10 +39,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     {
                         if (GetIsEnemy(coneTarget, activator))
                         {
-                            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                            var defense = Stat.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
+                            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                            var defense = StatService.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
                             var defenderStat = GetAbilityScore(coneTarget, AbilityType.Vitality);
-                            var damage = Combat.CalculateDamage(
+                            var damage = CombatService.CalculateDamage(
                                 attack, 
                                 dmg, 
                                 attackerStat, 
@@ -75,10 +77,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     {
                         if (GetIsEnemy(coneTarget, activator))
                         {
-                            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                            var defense = Stat.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
+                            var attack = StatService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                            var defense = StatService.GetDefense(coneTarget, CombatDamageType.Fire, AbilityType.Vitality);
                             var defenderStat = GetAbilityScore(coneTarget, AbilityType.Vitality);
-                            var damage = Combat.CalculateDamage(
+                            var damage = CombatService.CalculateDamage(
                                 attack,
                                 dmg,
                                 attackerStat,

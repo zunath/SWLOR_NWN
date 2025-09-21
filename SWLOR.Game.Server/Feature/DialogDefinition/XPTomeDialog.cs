@@ -7,6 +7,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class XPTomeDialog: DialogBase
     {
+        private readonly ISkillService _skillService;
+
+        public XPTomeDialog(ISkillService skillService)
+        {
+            _skillService = skillService;
+        }
+
         private class Model
         {
             public uint Item { get; set; }
@@ -42,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             page.Header = "This tome holds techniques lost to the ages. Select a skill to earn experience in that art.";
 
-            foreach (var (type, detail) in Skill.GetAllActiveSkillCategories())
+            foreach (var (type, detail) in _skillService.GetAllActiveSkillCategories())
             {
                 page.AddResponse(detail.Name, () =>
                 {
@@ -59,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var model = GetDataModel<Model>();
             page.Header = "This tome holds techniques lost to the ages. Select a skill to earn experience in that art.";
 
-            foreach (var (type, detail) in Skill.GetAllSkillsByCategory(model.Category))
+            foreach (var (type, detail) in _skillService.GetAllSkillsByCategory(model.Category))
             {
                 page.AddResponse(detail.Name, () =>
                 {
@@ -73,13 +80,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var player = GetPC();
             var model = GetDataModel<Model>();
-            var skillDetail = Skill.GetSkillDetails(model.Skill);
+            var skillDetail = _skillService.GetSkillDetails(model.Skill);
             page.Header = $"Are you sure you want to improve your {skillDetail.Name} skill?";
 
             page.AddResponse("Select this skill.", () =>
             {
                 var amount = GetLocalInt(model.Item, "XP_TOME_AMOUNT");
-                Skill.GiveSkillXP(player, model.Skill, amount, false, false);
+                _skillService.GiveSkillXP(player, model.Skill, amount, false, false);
                 DestroyObject(model.Item);
 
                 EndConversation();

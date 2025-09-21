@@ -21,11 +21,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageStructuresViewModel: GuiViewModelBase<ManageStructuresViewModel, GuiPayloadBase>
     {
-        public ManageStructuresViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public ManageStructuresViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        {
+            _db = db;
+        }
         
         private const int StructuresPerPage = 20;
         private int SelectedStructureIndex { get; set; }

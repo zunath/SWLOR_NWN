@@ -4,11 +4,26 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
     public class ForceLeapAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly IAbilityService _abilityService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public ForceLeapAbilityDefinition(IItemService itemService, IAbilityService abilityService, ICombatService combatService, IStatService statService)
+        {
+            _itemService = itemService;
+            _abilityService = abilityService;
+            _combatService = combatService;
+            _statService = statService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -24,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
 
-            if (!Item.LightsaberBaseItemTypes.Contains(rightHandType))
+            if (!_itemService.LightsaberBaseItemTypes.Contains(rightHandType))
             {
                 return "A lightsaber must be equipped in your right hand to use this ability.";
             }
@@ -57,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
             const float Delay = 1.2f;
             ClearAllActions();
@@ -71,16 +86,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var stat = AbilityType.Perception;
-            if (Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber))
+            if (_abilityService.IsAbilityToggled(activator, AbilityToggleType.StrongStyleLightsaber))
             {
                 stat = AbilityType.Might;
             }
 
-            var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
-            var attack = Stat.GetAttack(activator, stat, SkillType.OneHanded);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
+            var attack = _statService.GetAttack(activator, stat, SkillType.OneHanded);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -96,10 +111,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 SetCommandable(true, activator);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, Duration);
-                Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
+                _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
                 AssignCommand(activator, () =>
                 {
-                    if (Item.LightsaberBaseItemTypes.Contains(rightHandBaseItemType))
+                    if (_itemService.LightsaberBaseItemTypes.Contains(rightHandBaseItemType))
                     {
                         PlaySound("cb_ht_saberchan1");
                     }

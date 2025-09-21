@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
@@ -10,9 +11,9 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
     {
         private readonly QuestBuilder _builder;
 
-        public MonCalaQuestDefinition(IServiceProvider serviceProvider)
+        public MonCalaQuestDefinition(IServiceProvider serviceProvider, IQuestService questService)
         {
-            _builder = new QuestBuilder(serviceProvider);
+            _builder = new QuestBuilder(serviceProvider, questService);
         }
 
         public Dictionary<string, QuestDetail> BuildQuests()

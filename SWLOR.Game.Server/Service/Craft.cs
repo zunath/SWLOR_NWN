@@ -8,7 +8,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Data;
@@ -23,39 +23,53 @@ using ResearchJob = SWLOR.Shared.Core.Data.Entity.ResearchJob;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Craft
+    public class CraftService : ICraftService
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly IGenericCacheService _cacheService;
+        private readonly IGuiService _guiService;
+        private readonly IPerkService _perkService;
+        private readonly IItemService _itemService;
+
+        public CraftService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IItemCacheService itemCache, IGuiService guiService, IPerkService perkService, IItemService itemService)
+        {
+            _logger = logger;
+            _db = db;
+            _cacheService = cacheService;
+            _itemCache = itemCache;
+            _guiService = guiService;
+            _perkService = perkService;
+            _itemService = itemService;
+        }
         public const int MaxResearchLevel = 10;
 
         // Cached data
-        private static IInterfaceCache<RecipeType, RecipeDetail> _recipeCache;
-        private static IEnumCache<RecipeCategoryType, RecipeCategoryAttribute> _categoryCache;
-        private static IEnumCache<EnhancementSubType, EnhancementSubTypeAttribute> _enhancementSubTypeCache;
+        private IInterfaceCache<RecipeType, RecipeDetail> _recipeCache;
+        private IEnumCache<RecipeCategoryType, RecipeCategoryAttribute> _categoryCache;
+        private IEnumCache<EnhancementSubType, EnhancementSubTypeAttribute> _enhancementSubTypeCache;
         
         // Additional caches for complex data
-        private static readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
-        private static readonly Dictionary<SkillType, Dictionary<RecipeType, RecipeDetail>> _recipesBySkill = new();
-        private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>> _recipesBySkillAndCategory = new();
-        private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, RecipeCategoryAttribute>> _categoriesBySkill = new();
-        private static readonly Dictionary<RecipeType, RecipeDetail> _researchableRecipes = new();
-        private static readonly Dictionary<SkillType, Dictionary<RecipeType, RecipeDetail>> _researchableRecipesBySkill = new();
-        private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>> _researchableRecipesBySkillAndCategory = new();
+        private readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
+        private readonly Dictionary<SkillType, Dictionary<RecipeType, RecipeDetail>> _recipesBySkill = new();
+        private readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>> _recipesBySkillAndCategory = new();
+        private readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, RecipeCategoryAttribute>> _categoriesBySkill = new();
+        private readonly Dictionary<RecipeType, RecipeDetail> _researchableRecipes = new();
+        private readonly Dictionary<SkillType, Dictionary<RecipeType, RecipeDetail>> _researchableRecipesBySkill = new();
+        private readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>> _researchableRecipesBySkillAndCategory = new();
         
         // Pre-computed caches for fast retrieval
-        private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _allCategories = new();
+        private readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _allCategories = new();
 
-        private static readonly RecipeLevelChart _levelChart = new();
-        private static readonly HashSet<string> _componentResrefs = new();
-        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        private readonly RecipeLevelChart _levelChart = new();
+        private readonly HashSet<string> _componentResrefs = new();
+        private readonly IItemCacheService _itemCache;
 
         /// <summary>
         /// When the skill cache has finished loading, recipe and category data is cached.
         /// </summary>
         [ScriptHandler(ScriptName.OnSwlorSkillCache)]
-        public static void CacheData()
+        public void CacheData()
         {
             CacheCategories();
             CacheRecipes();
@@ -65,7 +79,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, all recipe categories are loaded into the cache.
         /// </summary>
-        private static void CacheCategories()
+        private void CacheCategories()
         {
             _categoryCache = _cacheService.BuildEnumCache<RecipeCategoryType, RecipeCategoryAttribute>()
                 .WithAllItems()
@@ -88,7 +102,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, all recipes are loaded into the cache.
         /// </summary>
-        private static void CacheRecipes()
+        private void CacheRecipes()
         {
             void UpdateCraftingStatus(RecipeDetail recipe)
             {
@@ -180,14 +194,14 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_recipeCache.AllItems.Count} recipes.");
         }
 
-        private static bool IsResearchableRecipe(RecipeDetail recipe)
+        private bool IsResearchableRecipe(RecipeDetail recipe)
         {
             return recipe.EnhancementType == RecipeEnhancementType.Weapon ||
                    recipe.EnhancementType == RecipeEnhancementType.Armor ||
                    recipe.EnhancementType == RecipeEnhancementType.Food;
         }
 
-        private static void CacheEnhancementSubTypes()
+        private void CacheEnhancementSubTypes()
         {
             _enhancementSubTypeCache = _cacheService.BuildEnumCache<EnhancementSubType, EnhancementSubTypeAttribute>()
                 .WithAllItems()
@@ -202,7 +216,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="recipeType">The type of recipe to retrieve.</param>
         /// <returns>The recipe detail.</returns>
-        public static RecipeDetail GetRecipe(RecipeType recipeType)
+        public RecipeDetail GetRecipe(RecipeType recipeType)
         {
             return _recipeCache?.AllItems[recipeType] ?? throw new KeyNotFoundException($"Recipe {recipeType} not found in cache");
         }
@@ -212,7 +226,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="recipeType">The type of recipe to look for.</param>
         /// <returns>true if recipe has been registered, false otherwise.</returns>
-        public static bool RecipeExists(RecipeType recipeType)
+        public bool RecipeExists(RecipeType recipeType)
         {
             return _recipes.ContainsKey(recipeType);
         }
@@ -223,7 +237,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="subType">The subtype of the enhancement.</param>
         /// <returns>The enhancement subtype detail.</returns>
-        public static EnhancementSubTypeAttribute GetEnhancementSubType(EnhancementSubType subType)
+        public EnhancementSubTypeAttribute GetEnhancementSubType(EnhancementSubType subType)
         {
             return _enhancementSubTypeCache?.AllItems[subType] ?? throw new KeyNotFoundException($"Enhancement sub type {subType} not found in cache");
         }
@@ -232,7 +246,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves all of the registered recipe categories.
         /// </summary>
         /// <returns>A dictionary containing all registered categories.</returns>
-        public static Dictionary<RecipeCategoryType, RecipeCategoryAttribute> GetAllCategories()
+        public Dictionary<RecipeCategoryType, RecipeCategoryAttribute> GetAllCategories()
         {
             return _allCategories;
         }
@@ -242,7 +256,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to check</param>
         /// <returns>true if item is a recipe, false otherwise</returns>
-        public static bool IsItemRecipe(uint item)
+        public bool IsItemRecipe(uint item)
         {
             var tag = GetTag(item).ToLower();
 
@@ -254,7 +268,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to check</param>
         /// <returns>true if item is a crafting component, false otherwise</returns>
-        public static bool IsItemComponent(uint item)
+        public bool IsItemComponent(uint item)
         {
             var resref = GetResRef(item);
             return _componentResrefs.Contains(resref);
@@ -265,7 +279,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to check</param>
         /// <returns>true if item is an enhancement, false otherwise</returns>
-        public static bool IsItemEnhancement(uint item)
+        public bool IsItemEnhancement(uint item)
         {
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
@@ -284,22 +298,22 @@ namespace SWLOR.Game.Server.Service
             return false;
         }
 
-        public static Dictionary<RecipeType, RecipeDetail> GetAllRecipes()
+        public Dictionary<RecipeType, RecipeDetail> GetAllRecipes()
         {
             return _recipes;
         }
 
-        public static Dictionary<RecipeType, RecipeDetail> GetAllResearchableRecipes()
+        public Dictionary<RecipeType, RecipeDetail> GetAllResearchableRecipes()
         {
             return _researchableRecipes;
         }
 
-        public static Dictionary<RecipeType, RecipeDetail> GetAllRecipesBySkill(SkillType skill)
+        public Dictionary<RecipeType, RecipeDetail> GetAllRecipesBySkill(SkillType skill)
         {
             return _recipesBySkill[skill];
         }
 
-        public static Dictionary<RecipeType, RecipeDetail> GetAllResearchableRecipesBySkill(SkillType skill)
+        public Dictionary<RecipeType, RecipeDetail> GetAllResearchableRecipesBySkill(SkillType skill)
         {
             return _researchableRecipesBySkill[skill];
         }
@@ -310,7 +324,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="skill">The skill to search by.</param>
         /// <param name="category">The category to search by.</param>
         /// <returns>A list of recipes under a given skill and category.</returns>
-        public static Dictionary<RecipeType, RecipeDetail> GetRecipesBySkillAndCategory(SkillType skill, RecipeCategoryType category)
+        public Dictionary<RecipeType, RecipeDetail> GetRecipesBySkillAndCategory(SkillType skill, RecipeCategoryType category)
         {
             if(!_recipesBySkillAndCategory.ContainsKey(skill))
                 return new Dictionary<RecipeType, RecipeDetail>();
@@ -327,7 +341,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="skill">The skill to search by.</param>
         /// <param name="category">The category to search by.</param>
         /// <returns></returns>
-        public static Dictionary<RecipeType, RecipeDetail> GetResearchableRecipesBySkillAndCategory(SkillType skill, RecipeCategoryType category)
+        public Dictionary<RecipeType, RecipeDetail> GetResearchableRecipesBySkillAndCategory(SkillType skill, RecipeCategoryType category)
         {
             if (!_researchableRecipesBySkillAndCategory.ContainsKey(skill))
                 return new Dictionary<RecipeType, RecipeDetail>();
@@ -343,7 +357,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="skill">The skill to search by.</param>
         /// <returns>A list of recipe categories associated with a skill.</returns>
-        public static Dictionary<RecipeCategoryType, RecipeCategoryAttribute> GetRecipeCategoriesBySkill(SkillType skill)
+        public Dictionary<RecipeCategoryType, RecipeCategoryAttribute> GetRecipeCategoriesBySkill(SkillType skill)
         {
             if(!_categoriesBySkill.ContainsKey(skill))
                 return new Dictionary<RecipeCategoryType, RecipeCategoryAttribute>();
@@ -355,13 +369,12 @@ namespace SWLOR.Game.Server.Service
         /// When a crafting device is used, display the recipe menu.
         /// </summary>
         [ScriptHandler(ScriptName.OnCraftUsed)]
-        public static void UseCraftingDevice()
+        public void UseCraftingDevice()
         {
             var player = GetLastUsedBy();
             var skillType = (SkillType)GetLocalInt(OBJECT_SELF, "CRAFTING_SKILL_TYPE_ID");
             var payload = new RecipesPayload(RecipesUIMode.Crafting, skillType);
-            var guiService = ServiceContainer.GetService<IGuiService>();
-            guiService.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
+            _guiService.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
         }
 
         /// <summary>
@@ -370,7 +383,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to build for.</param>
         /// <param name="recipe">The recipe to build.</param>
         /// <param name="blueprint">The blueprint details. null if not a blueprint</param>
-        public static (GuiBindingList<string>, GuiBindingList<GuiColor>) BuildRecipeDetail(uint player, RecipeType recipe, BlueprintDetail blueprint)
+        public (GuiBindingList<string>, GuiBindingList<GuiColor>) BuildRecipeDetail(uint player, RecipeType recipe, BlueprintDetail blueprint)
         {
             var detail = GetRecipe(recipe);
             var recipeDetails = new GuiBindingList<string>();
@@ -406,7 +419,7 @@ namespace SWLOR.Game.Server.Service
             var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = CreateItemOnObject(detail.Resref, tempStorage);
             
-            foreach (var ip in Item.BuildItemPropertyList(item))
+            foreach (var ip in _itemService.BuildItemPropertyList(item))
             {
                 recipeDetails.Add(ip);
                 recipeDetailColors.Add(GuiColor.White);
@@ -465,7 +478,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to check</param>
         /// <param name="recipeType">The recipe to check</param>
         /// <returns>true if the player can craft the recipe, false otherwise</returns>
-        public static bool CanPlayerCraftRecipe(uint player, RecipeType recipeType)
+        public bool CanPlayerCraftRecipe(uint player, RecipeType recipeType)
         {
             var recipe = GetRecipe(recipeType);
             if (recipe.Requirements.Count <= 0) return true;
@@ -487,14 +500,14 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to check</param>
         /// <param name="recipeType">The recipe to check</param>
         /// <returns>true if the player can research the recipe, false otherwise</returns>
-        public static bool CanPlayerResearchRecipe(uint player, RecipeType recipeType)
+        public bool CanPlayerResearchRecipe(uint player, RecipeType recipeType)
         {
             var recipe = GetRecipe(recipeType);
             var tier = recipe.Level / 10 + 1;
             if (tier > 5)
                 tier = 5;
 
-            return Perk.GetPerkLevel(player, PerkType.Research) >= tier;
+            return _perkService.GetPerkLevel(player, PerkType.Research) >= tier;
         }
         
         /// <summary>
@@ -502,7 +515,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="level">The level to search by.</param>
         /// <returns>A recipe level detail.</returns>
-        public static RecipeLevelDetail GetRecipeLevelDetail(int level)
+        public RecipeLevelDetail GetRecipeLevelDetail(int level)
         {
             return _levelChart.GetByLevel(level);
         }
@@ -513,7 +526,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="subTypeId">The sub type of the enhancement</param>
         /// <param name="amount">The amount to apply.</param>
         /// <returns></returns>
-        public static ItemProperty BuildItemPropertyForEnhancement(EnhancementSubType subTypeId, int amount)
+        public ItemProperty BuildItemPropertyForEnhancement(EnhancementSubType subTypeId, int amount)
         {
             switch (subTypeId)
             {
@@ -720,20 +733,19 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler(ScriptName.OnRefineryUsed)]
-        public static void UseRefinery()
+        public void UseRefinery()
         {
             var player = GetLastUsedBy();
-            var guiService = ServiceContainer.GetService<IGuiService>();
-            guiService.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
+            _guiService.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
         }
 
         [ScriptHandler(ScriptName.OnResearchTerminal)]
-        public static void UseResearchTerminal()
+        public void UseResearchTerminal()
         {
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
             var terminal = OBJECT_SELF;
-            var researchLevel = Perk.GetPerkLevel(player, PerkType.Research);
+            var researchLevel = _perkService.GetPerkLevel(player, PerkType.Research);
 
             if (researchLevel <= 0)
             {
@@ -741,7 +753,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
             
-            var propertyId = Property.GetPropertyId(terminal);
+            var propertyService = ServiceContainer.GetService<Property>();
+            var propertyId = propertyService.GetPropertyId(terminal);
 
             if (string.IsNullOrWhiteSpace(propertyId))
             {
@@ -757,8 +770,7 @@ namespace SWLOR.Game.Server.Service
             if (dbJob == null)
             {
                 var payload = new RecipesPayload(RecipesUIMode.Research, SkillType.Invalid);
-                var guiService = ServiceContainer.GetService<IGuiService>();
-                guiService.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, terminal);
+                _guiService.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, terminal);
             }
             else
             {
@@ -779,8 +791,7 @@ namespace SWLOR.Game.Server.Service
                 else
                 {
                     var payload = new ResearchPayload(propertyId, OBJECT_INVALID, RecipeType.Invalid);
-                    var guiService = ServiceContainer.GetService<IGuiService>();
-                    guiService.TogglePlayerWindow(player, GuiWindowType.Research, payload, terminal);
+                    _guiService.TogglePlayerWindow(player, GuiWindowType.Research, payload, terminal);
                 }
             }
         }
@@ -791,7 +802,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="blueprint">The blueprint item</param>
         /// <returns>A blueprint detail object</returns>
-        public static BlueprintDetail GetBlueprintDetails(uint blueprint)
+        public BlueprintDetail GetBlueprintDetails(uint blueprint)
         {
             var blueprintDetail = new BlueprintDetail();
             var recipeId = GetLocalInt(blueprint, "BLUEPRINT_RECIPE_ID");
@@ -854,7 +865,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="blueprint">The blueprint to modify.</param>
         /// <param name="blueprintDetail">The details about the blueprint.</param>
-        public static void SetBlueprintDetails(uint blueprint, BlueprintDetail blueprintDetail)
+        public void SetBlueprintDetails(uint blueprint, BlueprintDetail blueprintDetail)
         {
             if (blueprintDetail.LicensedRuns <= 0)
             {
@@ -874,7 +885,7 @@ namespace SWLOR.Game.Server.Service
             
         }
 
-        private static int CalculateResearchCost(RecipeType recipe, int blueprintLevel, int baseConstant, float reductionBonus)
+        private int CalculateResearchCost(RecipeType recipe, int blueprintLevel, int baseConstant, float reductionBonus)
         {
             var recipeDetail = GetRecipe(recipe);
             var perkLevel = recipeDetail.Level / 10 + 1;
@@ -893,7 +904,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="blueprint">The blueprint to craft.</param>
         /// <returns>The number of credits to charge the player to craft the item.</returns>
-        public static int CalculateBlueprintCraftCreditCost(uint blueprint)
+        public int CalculateBlueprintCraftCreditCost(uint blueprint)
         {
             var blueprintDetail = GetBlueprintDetails(blueprint);
             var reductionBonus = blueprintDetail.CreditReduction * 0.01f;
@@ -907,7 +918,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="blueprintLevel">The level of the blueprint</param>
         /// <param name="reductionBonus">The % reduction towards credit cost to research</param>
         /// <returns>The number of credits to charge the player to research the blueprint.</returns>
-        public static int CalculateBlueprintResearchCreditCost(RecipeType recipe, int blueprintLevel, int reductionBonus)
+        public int CalculateBlueprintResearchCreditCost(RecipeType recipe, int blueprintLevel, int reductionBonus)
         {
             return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);
         }
@@ -919,7 +930,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="blueprintLevel">The level of the blueprint</param>
         /// <param name="reductionBonus">The % reduction towards credit cost to research</param>
         /// <returns>The number of seconds to wait before the blueprint is researched to the next level.</returns>
-        public static int CalculateBlueprintResearchSeconds(RecipeType recipe, int blueprintLevel, int reductionBonus)
+        public int CalculateBlueprintResearchSeconds(RecipeType recipe, int blueprintLevel, int reductionBonus)
         {
             return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);
         }
@@ -928,7 +939,7 @@ namespace SWLOR.Game.Server.Service
         /// When a property is removed, also remove any associated research jobs.
         /// </summary>
         [ScriptHandler(ScriptName.OnSwlorDeleteProperty)]
-        public static void OnRemoveProperty()
+        public void OnRemoveProperty()
         {
             var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
             var dbQuery = new DBQuery<ResearchJob>()

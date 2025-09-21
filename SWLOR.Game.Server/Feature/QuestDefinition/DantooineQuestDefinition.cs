@@ -11,10 +11,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private readonly QuestBuilder _builder;
         private readonly IKeyItemService _keyItemService;
 
-        public DantooineQuestDefinition(IKeyItemService keyItemService, IServiceProvider serviceProvider)
+        public DantooineQuestDefinition(IKeyItemService keyItemService, IServiceProvider serviceProvider, IQuestService questService)
         {
             _keyItemService = keyItemService;
-            _builder = new QuestBuilder(serviceProvider);
+            _builder = new QuestBuilder(serviceProvider, questService);
         }
         public Dictionary<string, QuestDetail> BuildQuests()
         {

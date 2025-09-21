@@ -13,12 +13,16 @@ using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Creature;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class CombatPoint
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private static readonly ISkillService _skillService = ServiceContainer.GetService<ISkillService>();
+        private static readonly IItemService _itemService = ServiceContainer.GetService<IItemService>();
+        private static readonly IStatService _statService = ServiceContainer.GetService<IStatService>();
         /// <summary>
         /// Tracks the combat points earned by players during combat.
         /// </summary>
@@ -43,7 +47,7 @@ namespace SWLOR.Game.Server.Service
             var target = GetSpellTargetObject();
             if (GetIsPC(target) || GetIsDM(target)) return;
 
-            var skill = Skill.GetSkillTypeByBaseItem(baseItemType);
+            var skill = _skillService.GetSkillTypeByBaseItem(baseItemType);
             if (skill == SkillType.Invalid) return;
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
@@ -53,8 +57,8 @@ namespace SWLOR.Game.Server.Service
 
             // Lightsabers and Saberstaffs automatically grant combat points toward Force if player has the setting enabled.
             // Additionally, a force combat point is only added if the force skill is not 5 more levels above the one-handed or two-handed skill being used.
-            if ((Item.LightsaberBaseItemTypes.Contains(baseItemType) ||
-                Item.SaberstaffBaseItemTypes.Contains(baseItemType)) &&
+            if ((_itemService.LightsaberBaseItemTypes.Contains(baseItemType) ||
+                _itemService.SaberstaffBaseItemTypes.Contains(baseItemType)) &&
                 dbPlayer.CharacterType == CharacterType.ForceSensitive &&
                 dbPlayer.Settings.IsLightsaberForceShareEnabled &&
                 levelDelta <= 5)
@@ -64,7 +68,8 @@ namespace SWLOR.Game.Server.Service
 
             // If player has a beast active, add a combat point for Beast Mastery.
             var associate = GetAssociate(AssociateType.Henchman, player);
-            if (BeastMastery.IsPlayerBeast(associate))
+            var beastMasteryService = ServiceContainer.GetService<BeastMastery>();
+            if (beastMasteryService.IsPlayerBeast(associate))
             {
                 AddCombatPoint(player, target, SkillType.BeastMastery);
             }
@@ -103,7 +108,7 @@ namespace SWLOR.Game.Server.Service
                 var combatPoints = _creatureCombatPointTracker.ContainsKey(npc) ? _creatureCombatPointTracker[npc] : null;
                 if (combatPoints == null) return;
 
-                var npcStats = Stat.GetNPCStats(npc);
+                var npcStats = _statService.GetNPCStats(npc);
                 var npcLevel = npcStats.Level;
 
                 foreach (var (player, cpList) in combatPoints)
@@ -129,14 +134,14 @@ namespace SWLOR.Game.Server.Service
                     foreach (CombatPointCategoryType cpCategory in Enum.GetValues(typeof(CombatPointCategoryType)))
                     {
                         var validSkills = skillsWithCP
-                            .Where(x => Skill.GetSkillDetails(x.Key).CombatPointCategory == cpCategory)
+                            .Where(x => _skillService.GetSkillDetails(x.Key).CombatPointCategory == cpCategory)
                             .ToDictionary(x => x.Key, y => y.Value);
 
                         // Base amount of XP is determined by the player's highest-leveled skill rank in each XP category versus the creature's level.
                         if (cpCategory != CombatPointCategoryType.Exempt)
                         {
                             var validCPs = cpList
-                                .Where(x => Skill.GetSkillDetails(x.Key).CombatPointCategory == cpCategory)
+                                .Where(x => _skillService.GetSkillDetails(x.Key).CombatPointCategory == cpCategory)
                                 .ToList();
                             if (!validCPs.Any()) continue;
                             if (!validSkills.Any()) continue;
@@ -147,7 +152,7 @@ namespace SWLOR.Game.Server.Service
                                 .First();
 
                             var xpDelta = npcLevel - highestRank;
-                            var baseXP = Skill.GetDeltaXP(xpDelta);
+                            var baseXP = _skillService.GetDeltaXP(xpDelta);
                             var totalCatCP = (float)validCPs
                                 .Sum(s => s.Value);
 
@@ -158,21 +163,22 @@ namespace SWLOR.Game.Server.Service
                             {
                                 var adjXP = baseXP * (cp / totalCatCP);
                                 adjXP += adjXP * areaBonus;
-                                Skill.GiveSkillXP(player, skillType, (int)adjXP);
+                                _skillService.GiveSkillXP(player, skillType, (int)adjXP);
                             }
                         }
                         else
                         {
                             // Skills that are exempt from CP sharing; XP gain is calculated directly on a rank vs NPC level basis
                             // As long as the player is on the ground, we always try to give them Armor XP
-                            if (!Space.IsPlayerInSpaceMode(player)) validSkills.Add(SkillType.Armor, dbPlayer.Skills[SkillType.Armor]);
+                            var spaceService = ServiceContainer.GetService<Space>();
+                            if (!spaceService.IsPlayerInSpaceMode(player)) validSkills.Add(SkillType.Armor, dbPlayer.Skills[SkillType.Armor]);
                             if (!validSkills.Any()) continue;
 
                             foreach (var (skillType, ps) in validSkills)
                             {
-                                float adjXP = Skill.GetDeltaXP(npcLevel - ps.Rank);
+                                float adjXP = _skillService.GetDeltaXP(npcLevel - ps.Rank);
                                 adjXP += adjXP * areaBonus;
-                                Skill.GiveSkillXP(player, skillType, (int)adjXP);
+                                _skillService.GiveSkillXP(player, skillType, (int)adjXP);
                             }
                         }
                     }
@@ -256,7 +262,7 @@ namespace SWLOR.Game.Server.Service
 
             // We track the level of the last creature to add a combat point for two minutes.
             // During this time period, various skills can continue to gain XP even after battle.
-            var npcStats = Stat.GetNPCStats(creature);
+            var npcStats = _statService.GetNPCStats(creature);
             var level = npcStats.Level;
             UpdateLastCreatureLevel(player, level);
         }

@@ -6,11 +6,26 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class CircleSlashAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly IAbilityService _abilityService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public CircleSlashAbilityDefinition(IItemService itemService, IAbilityService abilityService, ICombatService combatService, IStatService statService)
+        {
+            _itemService = itemService;
+            _abilityService = abilityService;
+            _combatService = combatService;
+            _statService = statService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -21,11 +36,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!Item.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a saberstaff ability.";
             }
@@ -33,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
 
@@ -53,10 +68,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
 
             var stat = AbilityType.Perception;
-            if (Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleSaberstaff))
+            if (_abilityService.IsAbilityToggled(activator, AbilityToggleType.StrongStyleSaberstaff))
             {
                 stat = AbilityType.Might;
             }
@@ -67,11 +82,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             {
                 if (GetIsReactionTypeHostile(creature, activator))
                 {
-                    var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
-                    var attack = Stat.GetAttack(activator, stat, SkillType.TwoHanded);
-                    var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
+                    var attack = _statService.GetAttack(activator, stat, SkillType.TwoHanded);
+                    var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = Combat.CalculateDamage(
+                    var damage = _combatService.CalculateDamage(
                         attack,
                         dmg,
                         attackerStat,
@@ -95,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             AssignCommand(activator, () => ActionPlayAnimation(Animation.Whirlwind));
         }
 
-        private static void CircleSlash1(AbilityBuilder builder)
+        private void CircleSlash1(AbilityBuilder builder)
         {
             builder.Create(FeatType.CircleSlash1, PerkType.CircleSlash)
                 .Name("Circle Slash I")
@@ -109,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void CircleSlash2(AbilityBuilder builder)
+        private void CircleSlash2(AbilityBuilder builder)
         {
             builder.Create(FeatType.CircleSlash2, PerkType.CircleSlash)
                 .Name("Circle Slash II")
@@ -123,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void CircleSlash3(AbilityBuilder builder)
+        private void CircleSlash3(AbilityBuilder builder)
         {
             builder.Create(FeatType.CircleSlash3, PerkType.CircleSlash)
                 .Name("Circle Slash III")

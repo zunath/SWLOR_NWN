@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -17,8 +18,22 @@ namespace SWLOR.Game.Server.Feature
 {
     public class PlayerInitialization
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly IStatService _statService;
+        private readonly ISkillService _skillService;
+        private readonly IMigrationService _migrationService;
+        private readonly IRaceService _raceService;
+
+        public PlayerInitialization(ILogger logger, IDatabaseService db, IStatService statService, ISkillService skillService, IMigrationService migrationService, IRaceService raceService)
+        {
+            _logger = logger;
+            _db = db;
+            _statService = statService;
+            _skillService = skillService;
+            _migrationService = migrationService;
+            _raceService = raceService;
+        }
         /// <summary>
         /// Handles 
         /// </summary>
@@ -29,8 +44,9 @@ namespace SWLOR.Game.Server.Feature
 
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
+            var playerInitialization = ServiceContainer.GetService<PlayerInitialization>();
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Player>(playerId) ?? new Player(playerId);
+            var dbPlayer = playerInitialization._db.Get<Player>(playerId) ?? new Player(playerId);
 
             // Already been initialized. Don't do it again.
             if (dbPlayer.Version >= 1 || dbPlayer.Version == -1) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
@@ -39,29 +55,29 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            ClearInventory(player);
-            AutoLevelPlayer(player);
-            InitializeSkills(player);
-            RemoveNWNSpells(player);
-            ClearFeats(player);
-            GrantBasicFeats(player);
-            InitializeHotBar(player);
-            AdjustStats(player, dbPlayer);
-            AdjustAlignment(player);
-            InitializeSavingThrows(player);
-            InitializeLanguages(player, dbPlayer);
-            AssignRacialAppearance(player, dbPlayer);
-            GiveStartingItems(player);
-            AssignCharacterType(player, dbPlayer);
-            RegisterDefaultRespawnPoint(dbPlayer);
-            ApplyMovementRate(player);
+            playerInitialization.ClearInventory(player);
+            playerInitialization.AutoLevelPlayer(player);
+            playerInitialization.InitializeSkills(player);
+            playerInitialization.RemoveNWNSpells(player);
+            playerInitialization.ClearFeats(player);
+            playerInitialization.GrantBasicFeats(player);
+            playerInitialization.InitializeHotBar(player);
+            playerInitialization.AdjustStats(player, dbPlayer);
+            playerInitialization.AdjustAlignment(player);
+            playerInitialization.InitializeSavingThrows(player);
+            playerInitialization.InitializeLanguages(player, dbPlayer);
+            playerInitialization.AssignRacialAppearance(player, dbPlayer);
+            playerInitialization.GiveStartingItems(player);
+            playerInitialization.AssignCharacterType(player, dbPlayer);
+            playerInitialization.RegisterDefaultRespawnPoint(dbPlayer);
+            playerInitialization.ApplyMovementRate(player);
 
-            _db.Set(dbPlayer);
+            playerInitialization._db.Set(dbPlayer);
 
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
         }
 
-        private static void AutoLevelPlayer(uint player)
+        private void AutoLevelPlayer(uint player)
         {
             // Capture original stats before we level up the player.
             var str = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Might);
@@ -92,7 +108,7 @@ namespace SWLOR.Game.Server.Feature
         /// Wipes a player's equipped items and inventory.
         /// </summary>
         /// <param name="player">The player to wipe an inventory for.</param>
-        private static void ClearInventory(uint player)
+        private void ClearInventory(uint player)
         {
             for (var slot = 0; slot < NumberOfInventorySlots; slot++)
             {
@@ -116,7 +132,7 @@ namespace SWLOR.Game.Server.Feature
         /// Initializes all player NWN skills to zero.
         /// </summary>
         /// <param name="player">The player to modify</param>
-        public static void InitializeSkills(uint player)
+        public void InitializeSkills(uint player)
         {
             for (var iCurSkill = 1; iCurSkill <= 27; iCurSkill++)
             {
@@ -129,7 +145,7 @@ namespace SWLOR.Game.Server.Feature
         /// Initializes all player saving throws to zero.
         /// </summary>
         /// <param name="player">The player to modify</param>
-        public static void InitializeSavingThrows(uint player)
+        public void InitializeSavingThrows(uint player)
         {
             CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Fortitude, 0);
             CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Will, 0);
@@ -140,7 +156,7 @@ namespace SWLOR.Game.Server.Feature
         /// Removes all NWN spells from a player.
         /// </summary>
         /// <param name="player">The player to modify.</param>
-        private static void RemoveNWNSpells(uint player)
+        private void RemoveNWNSpells(uint player)
         {
             var @class = GetClassByPosition(1, player);
             for (var index = 0; index <= 255; index++)
@@ -149,7 +165,7 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        public static void ClearFeats(uint player)
+        public void ClearFeats(uint player)
         {
             var numberOfFeats = CreaturePlugin.GetFeatCount(player);
             for (var currentFeat = numberOfFeats; currentFeat >= 0; currentFeat--)
@@ -158,7 +174,7 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        public static void GrantBasicFeats(uint player)
+        public void GrantBasicFeats(uint player)
         {
             CreaturePlugin.AddFeatByLevel(player, FeatType.ArmorProficiencyLight, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.ArmorProficiencyMedium, 1);
@@ -171,7 +187,7 @@ namespace SWLOR.Game.Server.Feature
             CreaturePlugin.AddFeatByLevel(player, FeatType.PropertyMenu, 1);
         }
 
-        public static void InitializeHotBar(uint player)
+        public void InitializeHotBar(uint player)
         {
             var structureTool = PlayerQuickBarSlot.UseFeat(FeatType.PropertyMenu);
             
@@ -183,19 +199,19 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         /// <param name="player">The player object</param>
         /// <param name="dbPlayer">The player entity.</param>
-        private static void AdjustStats(uint player, Player dbPlayer)
+        private void AdjustStats(uint player, Player dbPlayer)
         {
             dbPlayer.UnallocatedSP = 10;
-            dbPlayer.Version = Migration.GetLatestPlayerVersion();
+            dbPlayer.Version = _migrationService.GetLatestPlayerVersion();
             dbPlayer.Name = GetName(player);
             dbPlayer.BAB = 1;
-            Stat.AdjustPlayerMaxHP(dbPlayer, player, Stat.BaseHP);
-            Stat.AdjustPlayerMaxFP(dbPlayer, Stat.BaseFP, player);
-            Stat.AdjustPlayerMaxSTM(dbPlayer, Stat.BaseSTM, player);
+            _statService.AdjustPlayerMaxHP(dbPlayer, player, _statService.BaseHP);
+            _statService.AdjustPlayerMaxFP(dbPlayer, _statService.BaseFP, player);
+            _statService.AdjustPlayerMaxSTM(dbPlayer, _statService.BaseSTM, player);
             CreaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
-            dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);
-            dbPlayer.Stamina = Stat.GetMaxStamina(player, dbPlayer);
+            dbPlayer.FP = _statService.GetMaxFP(player, dbPlayer);
+            dbPlayer.Stamina = _statService.GetMaxStamina(player, dbPlayer);
 
             dbPlayer.BaseStats[AbilityType.Might] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Might);
             dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Perception);
@@ -211,7 +227,7 @@ namespace SWLOR.Game.Server.Feature
         /// Modifies the player's alignment to Neutral/Neutral since we don't use alignment at all here.
         /// </summary>
         /// <param name="player">The player to object.</param>
-        public static void AdjustAlignment(uint player)
+        public void AdjustAlignment(uint player)
         {
             CreaturePlugin.SetAlignmentLawChaos(player, 50);
             CreaturePlugin.SetAlignmentGoodEvil(player, 50);
@@ -222,7 +238,7 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         /// <param name="player">The player object.</param>
         /// <param name="dbPlayer">The player entity.</param>
-        private static void InitializeLanguages(uint player, Player dbPlayer)
+        private void InitializeLanguages(uint player, Player dbPlayer)
         {
             var race = GetRacialType(player);
             var languages = new List<SkillType>(new[] { SkillType.Basic });
@@ -287,14 +303,14 @@ namespace SWLOR.Game.Server.Feature
             // So it's safe to simply set the player's rank in the skill to max.
             foreach (var language in languages)
             {
-                var skill = Skill.GetSkillDetails(language);
+                var skill = _skillService.GetSkillDetails(language);
                 if (!dbPlayer.Skills.ContainsKey(language))
                     dbPlayer.Skills[language] = new PlayerSkill();
 
                 var level = skill.MaxRank;
                 dbPlayer.Skills[language].Rank = level;
 
-                dbPlayer.Skills[language].XP = Skill.GetRequiredXP(level) - 1;
+                dbPlayer.Skills[language].XP = _skillService.GetRequiredXP(level) - 1;
             }
         }
 
@@ -304,11 +320,11 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         /// <param name="player">The player object</param>
         /// <param name="dbPlayer">The database entity</param>
-        private static void AssignRacialAppearance(uint player, Player dbPlayer)
+        private void AssignRacialAppearance(uint player, Player dbPlayer)
         {
             DelayCommand(0.1f, () =>
             {
-                Race.SetDefaultRaceAppearance(player);
+                _raceService.SetDefaultRaceAppearance(player);
             });
             dbPlayer.OriginalAppearanceType = GetAppearanceType(player);
         }
@@ -317,7 +333,7 @@ namespace SWLOR.Game.Server.Feature
         /// Gives the starting items to the player.
         /// </summary>
         /// <param name="player">The player to receive the starting items.</param>
-        private static void GiveStartingItems(uint player)
+        private void GiveStartingItems(uint player)
         {
             var race = GetRacialType(player);
             var item = CreateItemOnObject("survival_knife", player);
@@ -343,7 +359,7 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         /// <param name="player">The player</param>
         /// <param name="dbPlayer">The player entity</param>
-        private static void AssignCharacterType(uint player, Player dbPlayer)
+        private void AssignCharacterType(uint player, Player dbPlayer)
         {
             var @class = GetClassByPosition(1, player);
 
@@ -358,7 +374,7 @@ namespace SWLOR.Game.Server.Feature
         /// If no waypoint by that tag can be found, an error will be logged.
         /// </summary>
         /// <param name="dbPlayer">The player's database entity.</param>
-        private static void RegisterDefaultRespawnPoint(Player dbPlayer)
+        private void RegisterDefaultRespawnPoint(Player dbPlayer)
         {
             const string DefaultRespawnWaypointTag = "DTH_DEFAULT_RESPAWN_POINT";
             var waypoint = GetWaypointByTag(DefaultRespawnWaypointTag);
@@ -382,7 +398,7 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.RespawnLocationOrientation = orientation;
         }
 
-        private static void ApplyMovementRate(uint player)
+        private void ApplyMovementRate(uint player)
         {
             CreaturePlugin.SetMovementRate(player, MovementRate.PC);
         }

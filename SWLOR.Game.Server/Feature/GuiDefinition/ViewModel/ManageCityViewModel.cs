@@ -17,12 +17,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageCityViewModel : GuiViewModelBase<ManageCityViewModel, GuiPayloadBase>, IGuiAcceptsPriceChange
     {
-        public ManageCityViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
 
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public ManageCityViewModel(IGuiService guiService, ILogger logger, IDatabaseService db) : base(guiService)
+        {
+            _logger = logger;
+            _db = db;
+        }
         
         private const int MaxUpgradeLevel = 5;
         private string _cityId;

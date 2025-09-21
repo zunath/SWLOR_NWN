@@ -12,6 +12,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
     public class PoisonBreathAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public PoisonBreathAbilityDefinition(ICombatService combatService, IStatService statService)
+        {
+            _combatService = combatService;
+            _statService = statService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -34,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             var beastStat = GetAbilityScore(activator, AbilityType.Perception) / 2;
             var totalStat = beastStat + beastmasterStat;
 
-            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Invalid);
+            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Invalid);
             var eVFX = EffectVisualEffect(VisualEffect.Vfx_Imp_Poison_S);
 
             var target = GetFirstObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
@@ -42,9 +50,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             {
                 if (target != activator)
                 {
-                    var defense = Stat.GetDefense(target, CombatDamageType.Poison, AbilityType.Vitality);
+                    var defense = _statService.GetDefense(target, CombatDamageType.Poison, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = Combat.CalculateDamage(
+                    var damage = _combatService.CalculateDamage(
                         attack,
                         dmg,
                         totalStat,
@@ -65,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                             ApplyEffectToObject(DurationType.Instant, eVFX, targetCopy);
                         });
 
-                        dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
+                        dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {

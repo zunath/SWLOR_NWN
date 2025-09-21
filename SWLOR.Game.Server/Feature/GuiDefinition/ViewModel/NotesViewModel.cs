@@ -13,11 +13,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class NotesViewModel: GuiViewModelBase<NotesViewModel, GuiPayloadBase>
     {
-        public NotesViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public NotesViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        {
+            _db = db;
+        }
         
         public const int MaxNumberOfNotes = 25;
         public const int MaxNoteLength = 1000;

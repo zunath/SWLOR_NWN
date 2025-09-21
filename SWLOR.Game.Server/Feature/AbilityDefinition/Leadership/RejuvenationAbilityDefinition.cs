@@ -4,6 +4,8 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
@@ -30,11 +32,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return Ability.ToggleAura(activator, StatusEffectType.Rejuvenation);
+                    return AbilityService.ToggleAura(activator, StatusEffectType.Rejuvenation);
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Ability.ApplyAura(activator, StatusEffectType.Rejuvenation, false, true, false);
+                    AbilityService.ApplyAura(activator, StatusEffectType.Rejuvenation, false, true, false);
                 });
         }
     }

@@ -12,10 +12,12 @@ namespace SWLOR.Game.Server.Service.QuestService
         private QuestDetail _activeQuest;
         private QuestStateDetail _activeState;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IQuestService _questService;
 
-        public QuestBuilder(IServiceProvider serviceProvider)
+        public QuestBuilder(IServiceProvider serviceProvider, IQuestService questService)
         {
             _serviceProvider = serviceProvider;
+            _questService = questService;
         }
 
         /// <summary>
@@ -103,7 +105,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public QuestBuilder AddGoldReward(int amount, bool isSelectable = true)
         {
-            var reward = new GoldReward(amount, isSelectable, _activeQuest.GuildType != GuildType.Invalid);
+            var reward = new GoldReward(amount, isSelectable, _activeQuest.GuildType != GuildType.Invalid, _questService);
             _activeQuest.Rewards.Add(reward);
 
             return this;

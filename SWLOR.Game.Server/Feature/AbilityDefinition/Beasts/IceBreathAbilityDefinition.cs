@@ -12,6 +12,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
     public class IceBreathAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public IceBreathAbilityDefinition(ICombatService combatService, IStatService statService)
+        {
+            _combatService = combatService;
+            _statService = statService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -39,16 +47,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             var beastStat = GetAbilityScore(activator, AbilityType.Might) / 2;
             var totalStat = beastStat + beastmasterStat;
 
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
 
             var target = GetFirstObjectInShape(Shape.SpellCone, ConeSize, targetLocation, true, ObjectType.Creature);
             while (GetIsObjectValid(target))
             {
                 if (target != activator)
                 {
-                    var defense = Stat.GetDefense(target, CombatDamageType.Ice, AbilityType.Vitality);
+                    var defense = _statService.GetDefense(target, CombatDamageType.Ice, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = Combat.CalculateDamage(
+                    var damage = _combatService.CalculateDamage(
                         attack,
                         dmg,
                         totalStat,
@@ -68,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
                             ApplyEffectToObject(DurationType.Instant, eDMG, targetCopy);
                         });
 
-                        dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
+                        dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, baseDC);
                         var checkResult = ReflexSave(targetCopy, dc, SavingThrowType.None, activator);
                         if (checkResult == SavingThrowResultType.Failed)
                         {

@@ -7,6 +7,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
@@ -17,9 +18,22 @@ using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class EquipmentRestrictions
+    public class EquipmentRestrictions
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IItemService _itemService;
+        private readonly IPerkService _perkService;
+        private readonly IDroidService _droidService;
+        private readonly IGuiService _guiService;
+
+        public EquipmentRestrictions(IDatabaseService db, IItemService itemService, IPerkService perkService, IDroidService droidService, IGuiService guiService)
+        {
+            _db = db;
+            _itemService = itemService;
+            _perkService = perkService;
+            _droidService = droidService;
+            _guiService = guiService;
+        }
         
         /// <summary>
         /// When an item is equipped, check the custom rules to see if the item can be equipped by the player.
@@ -31,11 +45,12 @@ namespace SWLOR.Game.Server.Feature
             var creature = OBJECT_SELF;
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
+            var equipmentRestrictions = ServiceContainer.GetService<EquipmentRestrictions>();
 
-            var isSwapping = IsItemSwapping(creature, item, slot);
-            var canUseItem = CanItemBeUsed(creature, item);
-            var canDualWield = ValidateDualWield(item, slot);
-            var isRingSwappingPositions = IsRingSwappingPositions(creature, item, slot);
+            var isSwapping = equipmentRestrictions.IsItemSwapping(creature, item, slot);
+            var canUseItem = equipmentRestrictions.CanItemBeUsed(creature, item);
+            var canDualWield = equipmentRestrictions.ValidateDualWield(item, slot);
+            var isRingSwappingPositions = equipmentRestrictions.IsRingSwappingPositions(creature, item, slot);
 
             if (string.IsNullOrWhiteSpace(canUseItem) &&
                 canDualWield && 
@@ -51,7 +66,7 @@ namespace SWLOR.Game.Server.Feature
             if (!string.IsNullOrWhiteSpace(canUseItem))
             {
                 var messageTarget = creature;
-                if (Droid.IsDroid(creature))
+                if (_droidService.IsDroid(creature))
                 {
                     messageTarget = GetMaster(creature);
                 }
@@ -61,7 +76,7 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SkipEvent();
         }
 
-        private static bool IsItemSwapping(uint creature, uint item, InventorySlot slot)
+        private bool IsItemSwapping(uint creature, uint item, InventorySlot slot)
         {
             var itemInSlot = GetItemInSlot(slot, creature);
             var itemType = GetBaseItemType(item);
@@ -71,26 +86,26 @@ namespace SWLOR.Game.Server.Feature
             var leftHandType = GetBaseItemType(leftHand);
 
             // Two-handed weapons
-            if (Item.TwoHandedMeleeItemTypes.Contains(itemType) || 
-                Item.TwinBladeBaseItemTypes.Contains(itemType) || 
-                Item.SaberstaffBaseItemTypes.Contains(itemType) ||
-                Item.RifleBaseItemTypes.Contains(itemType) ||
-                Item.PistolBaseItemTypes.Contains(itemType))
+            if (_itemService.TwoHandedMeleeItemTypes.Contains(itemType) || 
+                _itemService.TwinBladeBaseItemTypes.Contains(itemType) || 
+                _itemService.SaberstaffBaseItemTypes.Contains(itemType) ||
+                _itemService.RifleBaseItemTypes.Contains(itemType) ||
+                _itemService.PistolBaseItemTypes.Contains(itemType))
             {
                 if (GetIsObjectValid(rightHand) ||
                     GetIsObjectValid(leftHand))
                     return true;
             }
             // Shields & One-Handed Weapons
-            else if (Item.ShieldBaseItemTypes.Contains(itemType) || 
-                     Item.OneHandedMeleeItemTypes.Contains(itemType) || 
-                     Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+            else if (_itemService.ShieldBaseItemTypes.Contains(itemType) || 
+                     _itemService.OneHandedMeleeItemTypes.Contains(itemType) || 
+                     _itemService.ThrowingWeaponBaseItemTypes.Contains(itemType))
             {
-                if (Item.TwoHandedMeleeItemTypes.Contains(rightHandType) || 
-                    Item.TwinBladeBaseItemTypes.Contains(rightHandType) || 
-                    Item.SaberstaffBaseItemTypes.Contains(rightHandType) ||
-                    Item.RifleBaseItemTypes.Contains(rightHandType) ||
-                    Item.PistolBaseItemTypes.Contains(rightHandType))
+                if (_itemService.TwoHandedMeleeItemTypes.Contains(rightHandType) || 
+                    _itemService.TwinBladeBaseItemTypes.Contains(rightHandType) || 
+                    _itemService.SaberstaffBaseItemTypes.Contains(rightHandType) ||
+                    _itemService.RifleBaseItemTypes.Contains(rightHandType) ||
+                    _itemService.PistolBaseItemTypes.Contains(rightHandType))
                 {
                     return true;
                 }
@@ -103,7 +118,7 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is equipped, check if the item is going to be dual wielded. If it is, ensure player has
         /// at least level 1 of the Dual Wield perk. If they don't, skip the equip event with an error message.
         /// </summary>
-        private static bool ValidateDualWield(uint item, InventorySlot slot)
+        private bool ValidateDualWield(uint item, InventorySlot slot)
         {
             var creature = OBJECT_SELF;
 
@@ -134,7 +149,7 @@ namespace SWLOR.Game.Server.Feature
             };
             if (!dualWieldWeapons.Contains(baseItem)) return true;
 
-            var dualWieldLevel = Perk.GetPerkLevel(creature, PerkType.DualWield);
+            var dualWieldLevel = _perkService.GetPerkLevel(creature, PerkType.DualWield);
             if (dualWieldLevel <= 0)
             {
                 SendMessageToPC(creature, ColorToken.Red("Equipping two weapons requires the Dual Wield perk."));
@@ -153,15 +168,15 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="creature">The creature to check.</param>
         /// <param name="item">The item to check.</param>
         /// <returns>An empty string if successful or an error message if failed</returns>
-        private static string CanItemBeUsed(uint creature, uint item)
+        private string CanItemBeUsed(uint creature, uint item)
         {
             var isPlayer = GetIsPC(creature);
-            var isDroid = Droid.IsDroid(creature);
+            var isDroid = _droidService.IsDroid(creature);
 
             if ((!isPlayer && !isDroid) || GetIsDM(creature) || GetIsDMPossessed(creature)) 
                 return string.Empty;
 
-            if (ServiceContainer.GetService<IGuiService>().IsWindowOpen(creature, GuiWindowType.Craft))
+            if (_guiService.IsWindowOpen(creature, GuiWindowType.Craft))
             {
                 return "Items cannot be equipped while crafting.";
             }
@@ -172,7 +187,7 @@ namespace SWLOR.Game.Server.Feature
             // They are unable to equip any items in these slots if this item property is missing.
             // Non-Droids may not equip any items which have this item property.
             var race = GetRacialType(creature);
-            var needsDroidLimitation = race == RacialType.Droid && Item.DroidBaseItemTypes.Contains(itemType);
+            var needsDroidLimitation = race == RacialType.Droid && _itemService.DroidBaseItemTypes.Contains(itemType);
             var itemHasDroidIP = false;
             Dictionary<PerkType, int> creaturePerks;
 
@@ -185,8 +200,8 @@ namespace SWLOR.Game.Server.Feature
             // Droids
             else
             {
-                var controller = Droid.GetControllerItem(creature);
-                var droidDetails = Droid.LoadDroidItemPropertyDetails(controller);
+                var controller = _droidService.GetControllerItem(creature);
+                var droidDetails = _droidService.LoadDroidItemPropertyDetails(controller);
                 creaturePerks = droidDetails.Perks;
             }
 
@@ -206,7 +221,7 @@ namespace SWLOR.Game.Server.Feature
 
                     if (perkLevel < requiredLevel)
                     {
-                        var perkName = Perk.GetPerkDetails(perkType).Name;
+                        var perkName = _perkService.GetPerkDetails(perkType).Name;
                         return $"This item requires '{perkName}' level {requiredLevel} to use.";
                     }
                 }
@@ -235,7 +250,7 @@ namespace SWLOR.Game.Server.Feature
             return string.Empty;
         }
 
-        private static bool IsRingSwappingPositions(uint creature, uint item, InventorySlot slot)
+        private bool IsRingSwappingPositions(uint creature, uint item, InventorySlot slot)
         {
             var currentRightSlot = GetItemInSlot(InventorySlot.RightRing, creature);
             var currentLeftSlot = GetItemInSlot(InventorySlot.LeftRing, creature);
@@ -261,18 +276,19 @@ namespace SWLOR.Game.Server.Feature
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
+            var equipmentRestrictions = ServiceContainer.GetService<EquipmentRestrictions>();
 
             // The unequip event doesn't fire if an item is being swapped out. 
             // If there's an item in the slot, run the unequip triggers first.
             var existingItemInSlot = GetItemInSlot(slot, player);
             if (GetIsObjectValid(existingItemInSlot))
             {
-                RunUnequipTriggers(player, existingItemInSlot);
+                equipmentRestrictions.RunUnequipTriggers(player, existingItemInSlot);
             }
 
-            foreach (var (perkType, actionList) in Perk.GetAllEquipTriggers())
+            foreach (var (perkType, actionList) in equipmentRestrictions._perkService.GetAllEquipTriggers())
             {
-                var playerPerkLevel = Perk.GetPerkLevel(player, perkType);
+                var playerPerkLevel = equipmentRestrictions._perkService.GetPerkLevel(player, perkType);
                 if (playerPerkLevel <= 0) continue;
 
                 foreach (var action in actionList)
@@ -282,13 +298,13 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        private static void RunUnequipTriggers(uint player, uint item)
+        private void RunUnequipTriggers(uint player, uint item)
         {
-            var slot = Item.GetItemSlot(player, item);
+            var slot = _itemService.GetItemSlot(player, item);
 
-            foreach (var (perkType, actionList) in Perk.GetAllUnequipTriggers())
+            foreach (var (perkType, actionList) in _perkService.GetAllUnequipTriggers())
             {
-                var playerPerkLevel = Perk.GetPerkLevel(player, perkType);
+                var playerPerkLevel = _perkService.GetPerkLevel(player, perkType);
                 if (playerPerkLevel <= 0) continue;
 
                 foreach (var action in actionList)
@@ -308,7 +324,8 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsDM(player)) return;
 
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            RunUnequipTriggers(player, item);
+            var equipmentRestrictions = ServiceContainer.GetService<EquipmentRestrictions>();
+            equipmentRestrictions.RunUnequipTriggers(player, item);
         }
     }
 }

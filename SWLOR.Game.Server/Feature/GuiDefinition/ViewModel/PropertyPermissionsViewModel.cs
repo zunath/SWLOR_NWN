@@ -17,11 +17,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class PropertyPermissionsViewModel: GuiViewModelBase<PropertyPermissionsViewModel, PropertyPermissionPayload>
     {
-        public PropertyPermissionsViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public PropertyPermissionsViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        {
+            _db = db;
+        }
         
         private bool _isCategory;
         private PropertyType _propertyType;

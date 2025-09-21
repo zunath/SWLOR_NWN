@@ -15,9 +15,11 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
             var rightHandWeapon = GetItemInSlot(InventorySlot.RightHand, player);
 
             CreaturePlugin.RemoveFeat(player, FeatType.RapidShot);
-            Stat.ApplyAttacksPerRound(player, rightHandWeapon);
+            var statService = ServiceContainer.GetService<IStatService>();
+            statService.ApplyAttacksPerRound(player, rightHandWeapon);
 
-            var innerStrength = Perk.GetPerkLevel(player, PerkType.InnerStrength);
+            var perkService = ServiceContainer.GetService<IPerkService>();
+            var innerStrength = perkService.GetPerkLevel(player, PerkType.InnerStrength);
             if (innerStrength > 0)
             {
                 // Remove old one which only targeted gloves.

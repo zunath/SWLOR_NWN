@@ -4,12 +4,18 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public class ConcussionGrenadeAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
         private readonly AbilityBuilder _builder = new();
+
+        public ConcussionGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService) 
+            : base(random, itemService, perkService, statService, combatService)
+        {
+        }
 
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -25,13 +31,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             if (GetFactionEqual(activator, target))
                 return;
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Devices);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
-            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var damage = Combat.CalculateDamage(
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg,
                 attackerStat, 
@@ -41,14 +47,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             if (dc > 0)
             {
-                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
+                dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
                 var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {
                     const float Duration = 3f;
                     ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
 
-                    Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
+                    AbilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
                 }
             }
 
@@ -57,8 +63,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
             });
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
-            Enmity.ModifyEnmity(activator, target, 180);
+            var combatPointService = ServiceContainer.GetService<CombatPoint>();
+            combatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
+            var enmityService = ServiceContainer.GetService<Enmity>();
+            enmityService.ModifyEnmity(activator, target, 180);
         }
 
         private void ConcussionGrenade1()

@@ -3,11 +3,18 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class AdrenalStimStatusEffectDefinition : IStatusEffectListDefinition
     {
+        private readonly IStatService _statService;
+
+        public AdrenalStimStatusEffectDefinition(IStatService statService)
+        {
+            _statService = statService;
+        }
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
             var builder = new StatusEffectBuilder();
@@ -35,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 staminaAmount = level;
             }
 
-            Stat.RestoreStamina(target, staminaAmount);
+            _statService.RestoreStamina(target, staminaAmount);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
         }
 

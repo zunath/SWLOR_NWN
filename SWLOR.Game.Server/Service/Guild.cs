@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Extension;
@@ -15,12 +15,14 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Guild
+    public class GuildService : IGuildService
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
-        private static readonly Dictionary<GuildType, GuildAttribute> _activeGuilds = new();
-        private static readonly Dictionary<int, int> _rankProgression = new()
+        private readonly IDatabaseService _db;
+        private readonly IRandomService _random;
+        private readonly IQuestService _questService;
+        private readonly IPerkService _perkService;
+        private readonly Dictionary<GuildType, GuildAttribute> _activeGuilds = new();
+        private readonly Dictionary<int, int> _rankProgression = new()
         {
             // Level, Points Needed
             { 0, 1000 },
@@ -31,16 +33,24 @@ namespace SWLOR.Game.Server.Service
             { 5, 60000 }
         };
 
-        public static int MaxRank { get; private set; }
-        public static DateTime? DateTasksLoaded { get; private set; }
-        private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _activeGuildTasksByRank = new();
-        private static readonly Dictionary<GuildType, Dictionary<string, QuestDetail>> _activeGuildTasks = new();
+        public GuildService(IDatabaseService db, IRandomService random, IQuestService questService, IPerkService perkService)
+        {
+            _db = db;
+            _random = random;
+            _questService = questService;
+            _perkService = perkService;
+        }
+
+        public int MaxRank { get; private set; }
+        public DateTime? DateTasksLoaded { get; private set; }
+        private readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _activeGuildTasksByRank = new();
+        private readonly Dictionary<GuildType, Dictionary<string, QuestDetail>> _activeGuildTasks = new();
 
         /// <summary>
         /// When the module caches, cache relevant data and load guild tasks.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void LoadData()
+        public void LoadData()
         {
             var guildTypes = Enum.GetValues(typeof(GuildType)).Cast<GuildType>();
             foreach (var guildType in guildTypes)
@@ -61,12 +71,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="guild">The type of guild to retrieve</param>
         /// <returns>A guild detail.</returns>
-        public static GuildAttribute GetGuild(GuildType guild)
+        public GuildAttribute GetGuild(GuildType guild)
         {
             return _activeGuilds[guild];
         }
 
-        public static int CalculateGPReward(uint player, GuildType guild, int baseAmount)
+        public int CalculateGPReward(uint player, GuildType guild, int baseAmount)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
@@ -76,7 +86,7 @@ namespace SWLOR.Game.Server.Service
 
             var dbGuild = dbPlayer.Guilds[guild];
             var rankBonus = 0.25f * dbGuild.Rank;
-            var perkBonus = Perk.GetPerkLevel(player, PerkType.GuildRelations) * 0.05f;
+            var perkBonus = _perkService.GetPerkLevel(player, PerkType.GuildRelations) * 0.05f;
             var socialBonus = GetAbilityModifier(AbilityType.Social, player) * 0.05f;
             var amount = baseAmount + 
                          (perkBonus * baseAmount) + 
@@ -86,7 +96,7 @@ namespace SWLOR.Game.Server.Service
             return (int)amount;
         }
 
-        public static void GiveGuildPoints(uint player, GuildType guild, int amount)
+        public void GiveGuildPoints(uint player, GuildType guild, int amount)
         {
             if (amount <= 0) return;
 
@@ -132,7 +142,7 @@ namespace SWLOR.Game.Server.Service
         /// After quests are registered, refresh the available guild tasks.
         /// </summary>
         [ScriptHandler(ScriptName.OnQuestsRegistered)]
-        public static void RefreshGuildTasks()
+        public void RefreshGuildTasks()
         {
             if (DateTasksLoaded != null) return;
 
@@ -140,7 +150,7 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var (type, _) in _activeGuilds)
                 {
-                    var potentialTasks = Quest.GetQuestsByGuild(type, rank);
+                    var potentialTasks = _questService.GetQuestsByGuild(type, rank);
                     List<QuestDetail> tasks;
 
                     // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
@@ -181,7 +191,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="guild">The guild type to retrieve for</param>
         /// <param name="rank">The rank to retrieve for</param>
         /// <returns>A list of active guild tasks</returns>
-        public static List<QuestDetail> GetActiveGuildTasksByRank(GuildType guild, int rank)
+        public List<QuestDetail> GetActiveGuildTasksByRank(GuildType guild, int rank)
         {
             if(!_activeGuildTasksByRank.ContainsKey(guild))
                 return new List<QuestDetail>();
@@ -194,7 +204,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="guild">The guild type to retrieve for</param>
         /// <returns>A list of active guild tasks</returns>
-        public static Dictionary<string, QuestDetail> GetAllActiveGuildTasks(GuildType guild)
+        public Dictionary<string, QuestDetail> GetAllActiveGuildTasks(GuildType guild)
         {
             if(!_activeGuildTasks.ContainsKey(guild))
                 return new Dictionary<string, QuestDetail>();
@@ -207,7 +217,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="rank">The rank to search by</param>
         /// <returns>The amount of GP required to reach the next rank</returns>
-        public static int GetGPRequiredForRank(int rank)
+        public int GetGPRequiredForRank(int rank)
         {
             return _rankProgression[rank];
         }

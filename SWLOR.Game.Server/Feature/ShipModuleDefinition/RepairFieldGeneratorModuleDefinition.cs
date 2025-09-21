@@ -13,8 +13,19 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class RepairFieldGeneratorModuleDefinition : IShipModuleListDefinition
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly ISpaceService _spaceService;
+        private readonly IEnmityService _enmityService;
+        private readonly ICombatPointService _combatPointService;
         private readonly ShipModuleBuilder _builder = new();
+
+        public RepairFieldGeneratorModuleDefinition(IDatabaseService db, ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService)
+        {
+            _db = db;
+            _spaceService = spaceService;
+            _enmityService = enmityService;
+            _combatPointService = combatPointService;
+        }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -56,12 +67,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         if (!GetIsEnemy(nearby, activator) && 
                             !GetIsDead(activator) && 
-                            Space.GetShipStatus(nearby) != null &&
+                            _spaceService.GetShipStatus(nearby) != null &&
                             nearby != activator)
                         {
-                            var nearbyStatus = Space.GetShipStatus(nearby);
+                            var nearbyStatus = _spaceService.GetShipStatus(nearby);
                             ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Disintegrate, activator, BodyNode.Chest), nearby, 1.0f);
-                            Space.RestoreHull(nearby, nearbyStatus, recovery);
+                            _spaceService.RestoreHull(nearby, nearbyStatus, recovery);
 
                             if (GetIsPC(nearby) && !GetIsDM(nearby) && !GetIsDMPossessed(nearby))
                             {
@@ -85,9 +96,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         nearby = GetNextObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
                     }
 
-                    Enmity.ModifyEnmityOnAll(activator, 100 + repairAmount);
+                    _enmityService.ModifyEnmityOnAll(activator, 100 + repairAmount);
                     Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {recovery} armor HP to nearby ships.");
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }
     }

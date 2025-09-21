@@ -9,6 +9,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
@@ -23,11 +24,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ShipManagementViewModel : GuiViewModelBase<ShipManagementViewModel, ShipManagementPayload>
     {
-        public ShipManagementViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
+        private readonly IItemService _itemService;
+        private readonly IPropertyService _propertyService;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public ShipManagementViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService, IPropertyService propertyService) : base(guiService)
+        {
+            _db = db;
+            _itemService = itemService;
+            _propertyService = propertyService;
+        }
         
         private const string _blank = "Blank";
 
@@ -644,7 +650,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var shieldDiff = ship.Status.MaxShield - ship.Status.Shield;
             var hullDiff = ship.Status.MaxHull - ship.Status.Hull;
             var price = shieldDiff * 50 + hullDiff * 100;
-            var starportBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel) * 0.05f;
+            var starportBonus = _propertyService.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel) * 0.05f;
             var socialBonus = (GetAbilityScore(Player, AbilityType.Social) - 10) * 0.02f;
             if (socialBonus > 0.20f)
                 socialBonus = 0.20f;
@@ -684,7 +690,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var landingPropertyLocation = dbProperty.Positions[PropertyLocationType.DockPosition];
                 var landingArea = string.IsNullOrWhiteSpace(landingPropertyLocation.AreaResref)
-                    ? Property.GetRegisteredInstance(landingPropertyLocation.InstancePropertyId).Area
+                    ? _propertyService.GetRegisteredInstance(landingPropertyLocation.InstancePropertyId).Area
                     : Area.GetAreaByResref(landingPropertyLocation.AreaResref);
                 var landingPosition = Vector3(landingPropertyLocation.X, landingPropertyLocation.Y, landingPropertyLocation.Z);
                 _landingLocation = Location(landingArea, landingPosition, landingPropertyLocation.Orientation);
@@ -1254,7 +1260,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var landingLocation = property.Positions[PropertyLocationType.DockPosition];
                 var area = string.IsNullOrWhiteSpace(landingLocation.AreaResref)
-                    ? Property.GetRegisteredInstance(landingLocation.InstancePropertyId).Area
+                    ? _propertyService.GetRegisteredInstance(landingLocation.InstancePropertyId).Area
                     : Area.GetAreaByResref(landingLocation.AreaResref);
 
                 return area;
@@ -1309,7 +1315,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                if (!Item.CanCreatureUseItem(Player, item))
+                if (!_itemService.CanCreatureUseItem(Player, item))
                 {
                     FloatingTextStringOnCreature("You do not meet the requirements necessary to register this ship.", Player, false);
                     return;
@@ -1332,7 +1338,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var bonuses = Space.GetShipBonuses(item);
 
                 // Spawn the property associated with this ship.
-                var property = Property.CreateStarship(
+                var property = _propertyService.CreateStarship(
                     Player, 
                     shipDetail.Layout, 
                     _planetType,
@@ -1367,7 +1373,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 };
                 _db.Set(ship);
 
-                var instance = Property.GetRegisteredInstance(property.Id);
+                var instance = _propertyService.GetRegisteredInstance(property.Id);
                 SetName(instance.Area, "{PC} " + property.CustomName);
 
                 // Update the UI with the new ship details.
@@ -1443,7 +1449,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = _db.Get<PlayerShip>(shipId);
             var dbProperty = _db.Get<WorldProperty>(dbShip.PropertyId);
-            var instance = Property.GetRegisteredInstance(dbShip.PropertyId);
+            var instance = _propertyService.GetRegisteredInstance(dbShip.PropertyId);
 
             dbProperty.CustomName = ShipName;
             _db.Set(dbProperty);
@@ -1838,8 +1844,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = _db.Get<PlayerShip>(shipId);
             var shipDetail = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
-            var instance = Property.GetRegisteredInstance(dbShip.PropertyId);
-            var entrance = Property.GetEntrancePosition(shipDetail.Layout);
+            var instance = _propertyService.GetRegisteredInstance(dbShip.PropertyId);
+            var entrance = _propertyService.GetEntrancePosition(shipDetail.Layout);
             var location = Location(instance.Area, Vector3(entrance.X, entrance.Y, entrance.Z), entrance.W);
 
             AssignCommand(Player, () =>

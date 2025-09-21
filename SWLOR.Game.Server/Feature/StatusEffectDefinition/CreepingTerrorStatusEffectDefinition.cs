@@ -4,12 +4,22 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class CreepingTerrorStatusEffectDefinition: IStatusEffectListDefinition
     {
         private readonly StatusEffectBuilder _builder = new();
+        private readonly ICombatService _combatService;
+        private readonly IAbilityService _abilityService;
+
+        public CreepingTerrorStatusEffectDefinition(ICombatService combatService, IAbilityService abilityService)
+        {
+            _combatService = combatService;
+            _abilityService = abilityService;
+        }
 
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
@@ -41,9 +51,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                 var attackerStat = GetAbilityScore(source, AbilityType.Willpower);
                 var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-                var attack = Stat.GetAttack(source, AbilityType.Willpower, SkillType.Force);
-                var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
-                var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+                var attack = _statService.GetAttack(source, AbilityType.Willpower, SkillType.Force);
+                var defense = _statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+                var damage = _combatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
                 AssignCommand(source, () =>
                 {
@@ -81,13 +91,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     }
 
 
-                    dc = Combat.CalculateSavingThrowDC(source, SavingThrow.Will, dc);
+                    dc = _combatService.CalculateSavingThrowDC(source, SavingThrow.Will, dc);
                     var checkResult = WillSave(target, dc, SavingThrowType.None, source);
 
                     if (checkResult == SavingThrowResultType.Failed)
                     {
                         ApplyEffectToObject(DurationType.Temporary, EffectEntangle(), target, Duration);
-                        Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Entangle);
+                        _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Entangle);
                     }
 
                     ApplyDamage(source, target, level);

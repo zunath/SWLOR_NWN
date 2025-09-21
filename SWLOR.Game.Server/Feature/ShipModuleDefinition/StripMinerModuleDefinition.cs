@@ -7,13 +7,27 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class StripMinerModuleDefinition : IShipModuleListDefinition
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IPerkService _perkService;
+        private readonly ISpaceService _spaceService;
+        private readonly ILootService _lootService;
+        private readonly ISkillService _skillService;
         private readonly ShipModuleBuilder _builder = new();
+
+        public StripMinerModuleDefinition(IDatabaseService db, IPerkService perkService, ISpaceService spaceService, ILootService lootService, ISkillService skillService)
+        {
+            _db = db;
+            _perkService = perkService;
+            _spaceService = spaceService;
+            _lootService = lootService;
+            _skillService = skillService;
+        }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -68,19 +82,19 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     DelayCommand(18f, () =>
                     {
-                        var industrialBonus = Space.GetShipStatus(activator).Industrial;
+                        var industrialBonus = _spaceService.GetShipStatus(activator).Industrial;
 
-                        var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 6) + (moduleBonus / 6);
+                        var amountToMine = 1 + _perkService.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 6) + (moduleBonus / 6);
 
                         SetPlotFlag(target, false);
                         ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
 
                         SendMessageToPC(activator, $"{GetName(target)} has been depleted by your strip miner.");
 
-                        Loot.SpawnLoot(target, activator, "LOOT_TABLE_");
+                        _lootService.SpawnLoot(target, activator, "LOOT_TABLE_");
 
                         var lootTableId = GetLocalString(target, "STRIPMINE_LOOT_TABLE_ID");
-                        var lootTable = Loot.GetLootTableByName(lootTableId);
+                        var lootTable = _lootService.GetLootTableByName(lootTableId);
 
                         for (var count = 1; count <= amountToMine; count++)
                         {
@@ -95,9 +109,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             var rank = dbPlayer.Skills[SkillType.Piloting].Rank;
                             var asteroidLevel = GetLocalInt(target, "ASTEROID_TIER") * 10;
                             var delta = asteroidLevel - rank;
-                            var xp = Skill.GetDeltaXP(delta);
+                            var xp = _skillService.GetDeltaXP(delta);
 
-                            Skill.GiveSkillXP(activator, SkillType.Piloting, xp);
+                            _skillService.GiveSkillXP(activator, SkillType.Piloting, xp);
                         }
                     });
                     SetLocalBool(target, Mined, false);

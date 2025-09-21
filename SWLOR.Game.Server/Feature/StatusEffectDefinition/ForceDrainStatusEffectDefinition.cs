@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 
@@ -11,7 +12,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class ForceDrainStatusEffectDefinition : IStatusEffectListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
+        private readonly ICombatService _combatService;
+
+        public ForceDrainStatusEffectDefinition(IRandomService random, ICombatService combatService)
+        {
+            _random = random;
+            _combatService = combatService;
+        }
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
             var builder = new StatusEffectBuilder();
@@ -154,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ProcessForceDrainTick(VisualEffect vfx, int damage, int heal, uint target, uint source)
         {
-            var dc = Combat.CalculateSavingThrowDC(source, SavingThrow.Will, 14);
+            var dc = _combatService.CalculateSavingThrowDC(source, SavingThrow.Will, 14);
             var checkResult = WillSave(target, dc, SavingThrowType.None, source);
 
             if (checkResult == SavingThrowResultType.Failed)

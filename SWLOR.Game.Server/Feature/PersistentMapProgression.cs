@@ -13,12 +13,14 @@ namespace SWLOR.Game.Server.Feature
 {
     public class PersistentMapProgression
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
         private readonly IKeyItemService _keyItemService;
 
-        public PersistentMapProgression(IKeyItemService keyItemService)
+        public PersistentMapProgression(ILogger logger, IDatabaseService db, IKeyItemService keyItemService)
         {
+            _logger = logger;
+            _db = db;
             _keyItemService = keyItemService;
         }
         /// <summary>

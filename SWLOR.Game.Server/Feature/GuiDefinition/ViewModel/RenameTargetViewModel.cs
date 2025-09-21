@@ -14,12 +14,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class RenameTargetViewModel : GuiViewModelBase<RenameTargetViewModel, RenameItemPayload>
     {
-        public RenameTargetViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
 
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public RenameTargetViewModel(IGuiService guiService, ILogger logger, IDatabaseService db) : base(guiService)
+        {
+            _logger = logger;
+            _db = db;
+        }
         
         private uint _target;
         private const string RenamedItemOriginalName = "RENAMED_ITEM_ORIGINAL_NAME";

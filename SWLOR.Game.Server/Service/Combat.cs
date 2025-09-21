@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NWN.Native.API;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -18,18 +18,33 @@ using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Combat
+    public class CombatService : ICombatService
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
-        private static readonly List<CombatDamageType> _allValidDamageTypes = new();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly IRandomService _random;
+        private readonly IItemService _itemService;
+        private readonly IAbilityService _abilityService;
+        private readonly IPerkService _perkService;
+        private readonly IStatService _statService;
+        private readonly List<CombatDamageType> _allValidDamageTypes = new();
+
+        public CombatService(ILogger logger, IDatabaseService db, IRandomService random, IItemService itemService, IAbilityService abilityService, IPerkService perkService, IStatService statService)
+        {
+            _logger = logger;
+            _db = db;
+            _random = random;
+            _itemService = itemService;
+            _abilityService = abilityService;
+            _perkService = perkService;
+            _statService = statService;
+        }
 
         /// <summary>
         /// When the module loads, add all valid damage types to the cache.
         /// </summary>
         [ScriptHandler<OnModuleLoad>]
-        public static void LoadDamageTypes()
+        public void LoadDamageTypes()
         {
             var allValues = Enum.GetValues(typeof(CombatDamageType)).Cast<CombatDamageType>();
 
@@ -46,7 +61,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, apply any defenses towards damage types they don't already have.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void AddDamageTypeDefenses()
+        public void AddDamageTypeDefenses()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player))
@@ -77,7 +92,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves all valid damage types available in the system.
         /// </summary>
         /// <returns>A list of damage types</returns>
-        public static List<CombatDamageType> GetAllDamageTypes()
+        public List<CombatDamageType> GetAllDamageTypes()
         {
             return _allValidDamageTypes.ToList();
         }
@@ -93,7 +108,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="critical">the critical rating of the attack, or 0 if the attack is not critical.</param>
         /// <param name="deltaCap">Value to cap the lower and upper bounds of stat delta to. For weapons, should be weapon rank.</param>
         /// <returns>A minimum and maximum damage range</returns>
-        public static (int, int) CalculateDamageRange(
+        public (int, int) CalculateDamageRange(
             int attackerAttack,
             int attackerDMG,
             int attackerStat,
@@ -143,7 +158,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="defenderEvasion">The total evasion of the defender.</param>
         /// <param name="percentageModifier">Modifies the raw hit change by a certain percentage. This is done after all prior calculations.</param>
         /// <returns>The hit rate, clamped between 20 and 95, inclusive.</returns>
-        public static int CalculateHitRate(
+        public int CalculateHitRate(
             int attackerAccuracy,
             int defenderEvasion,
             int percentageModifier)
@@ -167,7 +182,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="defenderMGT">The defender's might stat.</param>
         /// <param name="criticalModifier">A modifier to the critical rating based on external factors.</param>
         /// <returns>The critical rate, in a percentage</returns>
-        public static int CalculateCriticalRate(int attackerPER, int defenderMGT, int criticalModifier)
+        public int CalculateCriticalRate(int attackerPER, int defenderMGT, int criticalModifier)
         {
             const int BaseCriticalRate = 5;
             var delta = attackerPER - defenderMGT;
@@ -198,7 +213,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="critical">the critical rating of the attack, or 0 if the attack is not critical.</param>
         /// <param name="deltaCap">Value to cap the lower and upper bounds of stat delta to. For weapons, should be weapon rank.</param>
         /// <returns>A damage value to apply to the target.</returns>
-        public static int CalculateDamage(
+        public int CalculateDamage(
             int attackerAttack,
             int attackerDMG,
             int attackerStat,
@@ -228,12 +243,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <returns> 0.15 * the player's rank in the specified skill, or the level for NPCs.</returns>
 
-        public static int GetAbilityDamageBonus(uint creature, SkillType skill)
+        public int GetAbilityDamageBonus(uint creature, SkillType skill)
         {
             var level = 0;
             if (!GetIsPC(creature))
             {
-                var npcStats = Stat.GetNPCStats(creature);
+                var npcStats = _statService.GetNPCStats(creature);
                 level = npcStats.Level;
             }
             else
@@ -253,7 +268,7 @@ namespace SWLOR.Game.Server.Service
         /// On module heartbeat, clear a PC's saved combat facing if they are no longer in combat.
         /// </summary>
         [ScriptHandler(ScriptName.OnIntervalPC6Seconds)]
-        public static void ClearCombatState()
+        public void ClearCombatState()
         {
             uint player = OBJECT_SELF;
 
@@ -273,7 +288,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="attackResultType">The type of result. 1, 7 = Hit, 3 = Critical, 4 = Miss</param>
         /// <param name="chanceToHit">The percent chance to hit</param>
         /// <returns></returns>
-        public static string BuildCombatLogMessage(
+        public string BuildCombatLogMessage(
             uint attacker,
             uint defender,
             int attackResultType,
@@ -309,7 +324,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="attackResultType">The type of result. 1, 7 = Hit, 3 = Critical, 4 = Miss</param>
         /// <param name="chanceToHit">The percent chance to hit</param>
         /// <returns></returns>
-        public static string BuildCombatLogMessageNative(
+        public string BuildCombatLogMessageNative(
             CNWSCreature attacker,
             CNWSCreature defender,
             int attackResultType,
@@ -347,14 +362,14 @@ namespace SWLOR.Game.Server.Service
         /// <param name="attacker">The attacker to check</param>
         /// <returns>The correct damage ability score, or 0 if a weapon is not equipped.</returns>
 
-        public static int GetPerkAdjustedAbilityScore(uint attacker)
+        public int GetPerkAdjustedAbilityScore(uint attacker)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, attacker);
             if (!GetIsObjectValid(weapon)) return 0;
             var weaponType = GetBaseItemType(weapon);
 
             // Pistol and Rifle - Zen Marksmanship
-            if (Item.PistolBaseItemTypes.Contains(weaponType) || Item.RifleBaseItemTypes.Contains(weaponType))
+            if (_itemService.PistolBaseItemTypes.Contains(weaponType) || _itemService.RifleBaseItemTypes.Contains(weaponType))
             {
                 var willpower = GetAbilityScore(attacker, AbilityType.Willpower);
                 var perception = GetAbilityScore(attacker, AbilityType.Perception);
@@ -362,7 +377,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Throwing - Zen Marksmanship
-            if (Item.ThrowingWeaponBaseItemTypes.Contains(weaponType))
+            if (_itemService.ThrowingWeaponBaseItemTypes.Contains(weaponType))
             {
                 var willpower = GetAbilityScore(attacker, AbilityType.Willpower);
                 var might = GetAbilityScore(attacker, AbilityType.Might);
@@ -370,15 +385,15 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Lightsaber - Strong Style
-            if (Item.LightsaberBaseItemTypes.Contains(weaponType))
-                return Ability.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleLightsaber) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
+            if (_itemService.LightsaberBaseItemTypes.Contains(weaponType))
+                return _abilityService.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleLightsaber) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
 
             // Saberstaff - Strong Style
-            if (Item.SaberstaffBaseItemTypes.Contains(weaponType))
-                return Ability.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleSaberstaff) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
+            if (_itemService.SaberstaffBaseItemTypes.Contains(weaponType))
+                return _abilityService.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleSaberstaff) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
 
             // Staff: there are 3 style perks for staff so it has to be handled slightly differently.
-            if (Item.StaffBaseItemTypes.Contains(weaponType))
+            if (_itemService.StaffBaseItemTypes.Contains(weaponType))
             {
                 if (GetHasFeat(FeatType.FlurryStyle)) return GetAbilityScore(attacker, AbilityType.Perception);
                 if (GetHasFeat(FeatType.CrushingMastery)) return 3 * GetAbilityScore(attacker, AbilityType.Might);
@@ -387,7 +402,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             //Handle weapon types without ability adjustment perks as well for consistency.
-            return GetAbilityScore(attacker, Item.GetWeaponDamageAbilityType(weaponType));
+            return GetAbilityScore(attacker, _itemService.GetWeaponDamageAbilityType(weaponType));
         }
 
         /// <summary>
@@ -397,7 +412,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="weaponType">The BaseItem of the weapon held</param>
         /// <returns>The DMG value or 0 if requirements are not met.</returns>
 
-        public static int GetMiscDMGBonus(uint attacker, BaseItem weaponType)
+        public int GetMiscDMGBonus(uint attacker, BaseItem weaponType)
         {
             var bonusDMG = 0;
 
@@ -416,15 +431,15 @@ namespace SWLOR.Game.Server.Service
         /// <param name="weaponType">The BaseItem of the weapon held</param>
         /// <returns>The DMG value or 0 if requirements are not met.</returns>
 
-        public static int GetMightDMGBonus(uint attacker, BaseItem weaponType)
+        public int GetMightDMGBonus(uint attacker, BaseItem weaponType)
         {
             var mgtMod = GetAbilityModifier(AbilityType.Might, attacker);
 
-            if (Item.StaffBaseItemTypes.Contains(weaponType))
-                return mgtMod * Perk.GetPerkLevel(attacker, PerkType.CrushingStyle);
-            else if (Item.LightsaberBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleLightsaber))
+            if (_itemService.StaffBaseItemTypes.Contains(weaponType))
+                return mgtMod * _perkService.GetPerkLevel(attacker, PerkType.CrushingStyle);
+            else if (_itemService.LightsaberBaseItemTypes.Contains(weaponType) && _abilityService.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleLightsaber))
                 return mgtMod / 2;
-            else if (Item.SaberstaffBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleSaberstaff))
+            else if (_itemService.SaberstaffBaseItemTypes.Contains(weaponType) && _abilityService.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleSaberstaff))
                 return mgtMod / 2;
 
             return 0;
@@ -437,7 +452,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="attacker">The attacker to check</param>
         /// <returns>The DMG value or 0 if requirements are not met.</returns>
-        public static int GetDoublehandDMGBonus(uint attacker)
+        public int GetDoublehandDMGBonus(uint attacker)
         {
             var dmg = 0;
             var rightHand = GetItemInSlot(InventorySlot.RightHand, attacker);
@@ -447,8 +462,8 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var rightHandType = GetBaseItemType(rightHand);
-            if (!Item.OneHandedMeleeItemTypes.Contains(rightHandType) && 
-                !Item.ThrowingWeaponBaseItemTypes.Contains(rightHandType))
+            if (!_itemService.OneHandedMeleeItemTypes.Contains(rightHandType) && 
+                !_itemService.ThrowingWeaponBaseItemTypes.Contains(rightHandType))
                 return 0;
 
             if (GetHasFeat(FeatType.Doublehand5, attacker))
@@ -470,7 +485,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="attacker">The attacker to check.</param>
         /// <returns>The DMG bonus, or 0 if Power Attack is not enabled.</returns>
-        public static int GetPowerAttackDMGBonus(uint attacker)
+        public int GetPowerAttackDMGBonus(uint attacker)
         {
             if (GetActionMode(attacker, ActionMode.PowerAttack))
                 return 3;
@@ -486,7 +501,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="attacker">The attacker to check</param>
         /// <returns>The DMG value or 0 if requirements are not met.</returns>
-        public static int GetDoublehandDMGBonusNative(CNWSCreature attacker)
+        public int GetDoublehandDMGBonusNative(CNWSCreature attacker)
         {
             var dmg = 0;
 
@@ -512,7 +527,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="baseDC">The base DC amount.</param>
         /// <param name="abilityOverride">Use this to specify a specific ability to be used.</param>
         /// <returns>A DC value with any bonuses applied.</returns>
-        public static int CalculateSavingThrowDC(
+        public int CalculateSavingThrowDC(
             uint attacker, 
             SavingThrow type, 
             int baseDC, 

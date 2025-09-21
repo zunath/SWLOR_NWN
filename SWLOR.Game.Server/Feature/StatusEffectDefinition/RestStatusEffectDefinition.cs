@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Player;
@@ -16,6 +17,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class RestStatusEffectDefinition: IStatusEffectListDefinition
     {
+        private readonly IAbilityService _abilityService;
+        private readonly IStatService _statService;
+
+        public RestStatusEffectDefinition(IAbilityService abilityService, IStatService statService)
+        {
+            _abilityService = abilityService;
+            _statService = statService;
+        }
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
             var builder = new StatusEffectBuilder();
@@ -96,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     SetLocalFloat(target, "REST_POSITION_Z", position.Z);
 
                     Activity.SetBusy(target, ActivityStatusType.Resting);
-                    Ability.EndConcentrationAbility(target);
+                    _abilityService.EndConcentrationAbility(target);
                     
                     DelayCommand(0.5f, () => CheckMovement(target));
 
@@ -130,8 +139,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(hpAmount), target);
-                    Stat.RestoreStamina(target, stmAmount);
-                    Stat.RestoreFP(target, fpAmount);
+                    _statService.RestoreStamina(target, stmAmount);
+                    _statService.RestoreFP(target, fpAmount);
                 })
                 .RemoveAction((target, effectData) =>
                 {

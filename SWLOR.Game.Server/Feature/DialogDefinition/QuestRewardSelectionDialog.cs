@@ -8,6 +8,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class QuestRewardSelectionDialog: DialogBase
     {
+        private readonly IQuestService _questService;
+
+        public QuestRewardSelectionDialog(IQuestService questService)
+        {
+            _questService = questService;
+        }
+
         private class Model
         {
             public string QuestId { get; set; }
@@ -38,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private void MainPageInit(DialogPage page)
         {
             var model = GetDataModel<Model>();
-            var quest = Quest.GetQuestById(model.QuestId);
+            var quest = _questService.GetQuestById(model.QuestId);
 
             void HandleRewardSelection(IQuestReward reward)
             {

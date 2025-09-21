@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Service.AbilityService
@@ -10,6 +11,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
     {
         private readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
         private AbilityDetail _activeAbility;
+        private readonly IStatService _statService;
+
+        public AbilityBuilder(IStatService statService)
+        {
+            _statService = statService;
+        }
 
         /// <summary>
         /// Creates a new ability.
@@ -236,7 +243,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// <returns>An ability builder with the configured options</returns>
         public AbilityBuilder RequirementFP(int requiredFP)
         {
-            var requirement = new AbilityRequirementFP(requiredFP);
+            var requirement = new AbilityRequirementFP(requiredFP, _statService);
             _activeAbility.Requirements.Add(requirement);
 
             return this;
@@ -260,7 +267,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// <returns>An ability builder with the configured options</returns>
         public AbilityBuilder RequirementStamina(int requiredSTM)
         {
-            var requirement = new AbilityRequirementStamina(requiredSTM);
+            var requirement = new AbilityRequirementStamina(requiredSTM, _statService);
             _activeAbility.Requirements.Add(requirement);
 
             return this;

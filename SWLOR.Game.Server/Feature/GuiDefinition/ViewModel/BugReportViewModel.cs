@@ -17,12 +17,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class BugReportViewModel: GuiViewModelBase<BugReportViewModel, GuiPayloadBase>
     {
-        public BugReportViewModel(IGuiService guiService) : base(guiService)
+        private readonly IAppSettings _appSettings;
+
+        public BugReportViewModel(IGuiService guiService, IAppSettings appSettings) : base(guiService)
         {
+            _appSettings = appSettings;
         }
 
         public const int MaxBugReportLength = 1000;
-        private readonly IAppSettings _appSettings = ServiceContainer.GetService<IAppSettings>();
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {

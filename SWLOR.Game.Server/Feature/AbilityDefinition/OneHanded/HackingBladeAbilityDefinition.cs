@@ -5,11 +5,24 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
     public class HackingBladeAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public HackingBladeAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -25,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
 
-            if (Item.VibrobladeBaseItemTypes.Contains(rightHandType))
+            if (_itemService.VibrobladeBaseItemTypes.Contains(rightHandType))
             {
                 return string.Empty;
 
@@ -58,15 +71,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+            dmg += CombatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
             CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -75,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
+            dc = CombatService.CalculateSavingThrowDC(activator, dc, 0, 0);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
             if (checkResult == SavingThrowResultType.Failed)

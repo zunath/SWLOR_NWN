@@ -9,6 +9,7 @@ using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -17,9 +18,23 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class ConsumableItemDefinition: IItemListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IRandomService _random;
+        private readonly IDatabaseService _db;
+        private readonly IStatusEffectService _statusEffectService;
+        private readonly IBeastMasteryService _beastMasteryService;
+        private readonly IItemService _itemService;
+        private readonly ICurrencyService _currencyService;
         private readonly ItemBuilder _builder = new();
+
+        public ConsumableItemDefinition(IRandomService random, IDatabaseService db, IStatusEffectService statusEffectService, IBeastMasteryService beastMasteryService, IItemService itemService, ICurrencyService currencyService)
+        {
+            _random = random;
+            _db = db;
+            _statusEffectService = statusEffectService;
+            _beastMasteryService = beastMasteryService;
+            _itemService = itemService;
+            _currencyService = currencyService;
+        }
         public Dictionary<string, ItemDetail> BuildItems()
         {
             SlugShake();
@@ -74,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ReducesItemCharge()
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    if (StatusEffect.HasStatusEffect(user, StatusEffectType.Food))
+                    if (_statusEffectService.HasStatusEffect(user, StatusEffectType.Food))
                     {
                         return "You are not hungry.";
                     }
@@ -200,7 +215,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         }
                     }
 
-                    StatusEffect.Apply(user, user, StatusEffectType.Food, duration, foodEffect);
+                    _statusEffectService.Apply(user, user, StatusEffectType.Food, duration, foodEffect);
                 });
         }
 
@@ -214,17 +229,17 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var minimumLevel = (GetLocalInt(item, "BEAST_FOOD_TIER") - 1) * 10;
                     var beast = GetAssociate(AssociateType.Henchman, user);
 
-                    if (!BeastMastery.IsPlayerBeast(beast))
+                    if (!_beastMasteryService.IsPlayerBeast(beast))
                     {
                         return "You do not have a beast active.";
                     }
 
-                    if (StatusEffect.HasStatusEffect(beast, StatusEffectType.PetFood))
+                    if (_statusEffectService.HasStatusEffect(beast, StatusEffectType.PetFood))
                     {
                         return "Your beast is not hungry.";
                     }
 
-                    var beastId = BeastMastery.GetBeastId(beast);
+                    var beastId = _beastMasteryService.GetBeastId(beast);
                     var dbBeast = _db.Get<Beast>(beastId);
 
                     if (dbBeast.Level < minimumLevel)
@@ -239,7 +254,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var foodType = (BeastFoodType)GetLocalInt(item, "BEAST_FOOD_TYPE_ID");
                     var foodTier = GetLocalInt(item, "BEAST_FOOD_TIER");
                     var beast = GetAssociate(AssociateType.Henchman, user);
-                    var beastId = BeastMastery.GetBeastId(beast);
+                    var beastId = _beastMasteryService.GetBeastId(beast);
                     var dbBeast = _db.Get<Beast>(beastId);
 
                     var xpBonus = foodTier * 10;
@@ -255,9 +270,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         SendMessageToPC(user, "Your beast doesn't like this food very much...");
                     }
 
-                    StatusEffect.Apply(user, beast, StatusEffectType.PetFood, 1800f, xpBonus);
+                    _statusEffectService.Apply(user, beast, StatusEffectType.PetFood, 1800f, xpBonus);
 
-                    Item.ReduceItemStack(item, 1);
+                    _itemService.ReduceItemStack(item, 1);
                 });
         }
 
@@ -276,9 +291,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    Currency.GiveCurrency(user, CurrencyType.RebuildToken, 1);
-                    Item.ReduceItemStack(item, 1);
-                    SendMessageToPC(user, $"Total Rebuild Tokens: {Currency.GetCurrency(user, CurrencyType.RebuildToken)}");
+                    _currencyService.GiveCurrency(user, CurrencyType.RebuildToken, 1);
+                    _itemService.ReduceItemStack(item, 1);
+                    SendMessageToPC(user, $"Total Rebuild Tokens: {_currencyService.GetCurrency(user, CurrencyType.RebuildToken)}");
                 });
         }
     }

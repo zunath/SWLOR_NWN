@@ -11,6 +11,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
     public class QuickDrawAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public QuickDrawAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -25,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!Item.PistolBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.PistolBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a pistol ability.";
             }
@@ -54,14 +65,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Ranged);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
 
-            var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
-            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Ranged);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
+            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Ranged);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 

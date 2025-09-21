@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
@@ -28,6 +29,10 @@ namespace SWLOR.Game.Server.Native
     {
         private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IScriptExecutor _scriptExecutor = ServiceContainer.GetService<IScriptExecutor>();
+        private static readonly IItemService _itemService = ServiceContainer.GetService<IItemService>();
+        private static readonly ICombatService _combatService = ServiceContainer.GetService<ICombatService>();
+        private static readonly IStatService _statService = ServiceContainer.GetService<IStatService>();
+        private static readonly IAbilityService _abilityService = ServiceContainer.GetService<IAbilityService>();
 
         private const int PowerAttackDamageBonus = 3;
         private const int ImprovedPowerAttackDamageBonus = 6;
@@ -63,19 +68,19 @@ namespace SWLOR.Game.Server.Native
             lookup[BaseItem.Gloves] = (FeatType.WeaponSpecialization_UnarmedStrike, WeaponSpecializationUnarmedDamage);
 
             // All other weapon types
-            AddItems(Item.CreatureBaseItemTypes, FeatType.WeaponSpecialization_Creature, WeaponSpecializationCreatureDamage);
-            AddItems(Item.VibrobladeBaseItemTypes, FeatType.WeaponSpecializationVibroblades, WeaponSpecializationOtherDamage);
-            AddItems(Item.FinesseVibrobladeBaseItemTypes, FeatType.WeaponSpecializationFinesseVibroblades, WeaponSpecializationOtherDamage);
-            AddItems(Item.LightsaberBaseItemTypes, FeatType.WeaponSpecializationLightsabers, WeaponSpecializationOtherDamage);
-            AddItems(Item.HeavyVibrobladeBaseItemTypes, FeatType.WeaponSpecializationHeavyVibroblades, WeaponSpecializationOtherDamage);
-            AddItems(Item.PolearmBaseItemTypes, FeatType.WeaponSpecializationPolearms, WeaponSpecializationOtherDamage);
-            AddItems(Item.TwinBladeBaseItemTypes, FeatType.WeaponSpecializationTwinBlades, WeaponSpecializationOtherDamage);
-            AddItems(Item.SaberstaffBaseItemTypes, FeatType.WeaponSpecializationSaberstaffs, WeaponSpecializationOtherDamage);
-            AddItems(Item.KatarBaseItemTypes, FeatType.WeaponSpecializationKatars, WeaponSpecializationOtherDamage);
-            AddItems(Item.StaffBaseItemTypes, FeatType.WeaponSpecialization_Staff, WeaponSpecializationOtherDamage);
-            AddItems(Item.PistolBaseItemTypes, FeatType.WeaponSpecializationPistol, WeaponSpecializationOtherDamage);
-            AddItems(Item.ThrowingWeaponBaseItemTypes, FeatType.WeaponSpecializationThrowingWeapons, WeaponSpecializationOtherDamage);
-            AddItems(Item.RifleBaseItemTypes, FeatType.WeaponSpecializationRifles, WeaponSpecializationOtherDamage);
+            AddItems(_itemService.CreatureBaseItemTypes, FeatType.WeaponSpecialization_Creature, WeaponSpecializationCreatureDamage);
+            AddItems(_itemService.VibrobladeBaseItemTypes, FeatType.WeaponSpecializationVibroblades, WeaponSpecializationOtherDamage);
+            AddItems(_itemService.FinesseVibrobladeBaseItemTypes, FeatType.WeaponSpecializationFinesseVibroblades, WeaponSpecializationOtherDamage);
+            AddItems(_itemService.LightsaberBaseItemTypes, FeatType.WeaponSpecializationLightsabers, WeaponSpecializationOtherDamage);
+            AddItems(_itemService.HeavyVibrobladeBaseItemTypes, FeatType.WeaponSpecializationHeavyVibroblades, WeaponSpecializationOtherDamage);
+            AddItems(_itemService.PolearmBaseItemTypes, FeatType.WeaponSpecializationPolearms, WeaponSpecializationOtherDamage);
+            AddItems(_itemService.TwinBladeBaseItemTypes, FeatType.WeaponSpecializationTwinBlades, WeaponSpecializationOtherDamage);
+            AddItems(_itemService.SaberstaffBaseItemTypes, FeatType.WeaponSpecializationSaberstaffs, WeaponSpecializationOtherDamage);
+            AddItems(_itemService.KatarBaseItemTypes, FeatType.WeaponSpecializationKatars, WeaponSpecializationOtherDamage);
+            AddItems(_itemService.StaffBaseItemTypes, FeatType.WeaponSpecialization_Staff, WeaponSpecializationOtherDamage);
+            AddItems(_itemService.PistolBaseItemTypes, FeatType.WeaponSpecializationPistol, WeaponSpecializationOtherDamage);
+            AddItems(_itemService.ThrowingWeaponBaseItemTypes, FeatType.WeaponSpecializationThrowingWeapons, WeaponSpecializationOtherDamage);
+            AddItems(_itemService.RifleBaseItemTypes, FeatType.WeaponSpecializationRifles, WeaponSpecializationOtherDamage);
 
             return lookup;
         }
@@ -140,7 +145,7 @@ namespace SWLOR.Game.Server.Native
                 var attackerStatType = GetWeaponDamageAbilityType(weapon);
                 var weaponPerkLevel = GetWeaponPerkLevel(weapon);
 
-                var attackerStat = Stat.GetStatValueNative(attacker, attackerStatType);
+                var attackerStat = _statService.GetStatValueNative(attacker, attackerStatType);
 
                 // Apply weapon style stat override
                 var damageStat = GetWeaponStyleStat(weapon, attacker);
@@ -164,7 +169,7 @@ namespace SWLOR.Game.Server.Native
 
                 // Calculate critical multiplier
                 var critical = CalculateCriticalMultiplier(attacker, weapon, bCritical);
-                var attackerAttack = weapon == null ? 0 : Stat.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem);
+                var attackerAttack = weapon == null ? 0 : _statService.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem);
 
                 var physicalDamage = ProcessDamageTypes(pTarget, attacker, weapon, dmgValues, pAttackData,
                     attackerAttack, attackerStat, critical, weaponPerkLevel, attackType, damageFlags, bOffHand, targetObject);
@@ -195,7 +200,7 @@ namespace SWLOR.Game.Server.Native
         {
             if (bCritical != 1) return 0;
 
-            var critMultiplier = weapon != null ? Item.GetCriticalModifier((BaseItem)weapon.m_nBaseItem) : 1;
+            var critMultiplier = weapon != null ? _itemService.GetCriticalModifier((BaseItem)weapon.m_nBaseItem) : 1;
             if (HasImprovedMultiplier(attacker, weapon)) critMultiplier += 1;
             if (HasRapidReload(attacker, weapon)) critMultiplier += 1;
 
@@ -260,10 +265,10 @@ namespace SWLOR.Game.Server.Native
 
             var baseItemType = (BaseItem)weapon.m_nBaseItem;
 
-            if (Item.SaberstaffBaseItemTypes.Contains(baseItemType)) return true;
-            if (Item.TwinBladeBaseItemTypes.Contains(baseItemType)) return true;
-            if (Item.PolearmBaseItemTypes.Contains(baseItemType)) return true;
-            if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType)) return true;
+            if (_itemService.SaberstaffBaseItemTypes.Contains(baseItemType)) return true;
+            if (_itemService.TwinBladeBaseItemTypes.Contains(baseItemType)) return true;
+            if (_itemService.PolearmBaseItemTypes.Contains(baseItemType)) return true;
+            if (_itemService.HeavyVibrobladeBaseItemTypes.Contains(baseItemType)) return true;
 
             return false;
         }
@@ -275,7 +280,7 @@ namespace SWLOR.Game.Server.Native
 
             var baseItemType = (BaseItem)weapon.m_nBaseItem;
 
-            if (Item.RifleBaseItemTypes.Contains(baseItemType)) return true;
+            if (_itemService.RifleBaseItemTypes.Contains(baseItemType)) return true;
 
             return false;
         }
@@ -350,7 +355,7 @@ namespace SWLOR.Game.Server.Native
                 }
             }
 
-            return Item.GetWeaponDamageAbilityType((BaseItem)weapon.m_nBaseItem);
+            return _itemService.GetWeaponDamageAbilityType((BaseItem)weapon.m_nBaseItem);
         }
 
         private static int GetWeaponPerkLevel(CNWSItem weapon)
@@ -393,17 +398,17 @@ namespace SWLOR.Game.Server.Native
             // Doublehand bonus
             if (attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand) == null)
             {
-                if (Item.OneHandedMeleeItemTypes.Contains(baseItemType) ||
-                    Item.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
+                if (_itemService.OneHandedMeleeItemTypes.Contains(baseItemType) ||
+                    _itemService.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
                 {
-                    var doublehandDMGBonus = Combat.GetDoublehandDMGBonusNative(attacker);
+                    var doublehandDMGBonus = _combatService.GetDoublehandDMGBonusNative(attacker);
                     _logger.Write<AttackLogGroup>($"DAMAGE: Applying doublehand damage bonus. (+{doublehandDMGBonus})");
                     dmgValues[CombatDamageType.Physical] += doublehandDMGBonus;
                 }
             }
 
             // Staff bonuses
-            if (Item.StaffBaseItemTypes.Contains(baseItemType))
+            if (_itemService.StaffBaseItemTypes.Contains(baseItemType))
             {
                 if (attacker.m_pStats.HasFeat((ushort)FeatType.CrushingMastery) == 1)
                     dmgValues[CombatDamageType.Physical] += mightMod * CrushingMasteryMultiplier;
@@ -411,13 +416,13 @@ namespace SWLOR.Game.Server.Native
                     dmgValues[CombatDamageType.Physical] += mightMod;
             }
             // Strong Style bonuses
-            else if (Item.SaberstaffBaseItemTypes.Contains(baseItemType) &&
-                Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
+            else if (_itemService.SaberstaffBaseItemTypes.Contains(baseItemType) &&
+                _abilityService.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
             {
                 dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2.0f);
             }
-            else if (Item.LightsaberBaseItemTypes.Contains(baseItemType) &&
-                Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
+            else if (_itemService.LightsaberBaseItemTypes.Contains(baseItemType) &&
+                _abilityService.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
             {
                 dmgValues[CombatDamageType.Physical] += (int)Math.Ceiling(mightMod / 2.0f);
             }
@@ -437,12 +442,12 @@ namespace SWLOR.Game.Server.Native
 
                 case (int)ObjectType.Placeable:
                     var plc = CNWSPlaceable.FromPointer(pTarget);
-                    return Combat.CalculateDamage(attackerAttack, dmgValues[damageType], attackerStat,
+                    return _combatService.CalculateDamage(attackerAttack, dmgValues[damageType], attackerStat,
                         plc.m_nHardness, plc.m_nHardness, critical);
 
                 case (int)ObjectType.Door:
                     var door = CNWSDoor.FromPointer(pTarget);
-                    return Combat.CalculateDamage(attackerAttack, dmgValues[damageType], attackerStat,
+                    return _combatService.CalculateDamage(attackerAttack, dmgValues[damageType], attackerStat,
                         door.m_nHardness, door.m_nHardness, critical);
 
                 default:
@@ -457,11 +462,11 @@ namespace SWLOR.Game.Server.Native
             var target = CNWSCreature.FromPointer(pTarget);
             var defenderStat = target.m_pStats.GetCONStat();
             var damagePower = attacker.CalculateDamagePower(target, bOffHand);
-            var defense = Stat.GetDefenseNative(target, damageType, AbilityType.Vitality);
+            var defense = _statService.GetDefenseNative(target, damageType, AbilityType.Vitality);
 
             _logger.Write<AttackLogGroup>($"DAMAGE: attacker damage attribute: {dmgValues[damageType]} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
 
-            var damage = Combat.CalculateDamage(attackerAttack, dmgValues[damageType], attackerStat,
+            var damage = _combatService.CalculateDamage(attackerAttack, dmgValues[damageType], attackerStat,
                 defense, defenderStat, critical, weaponPerkLevel);
 
             // Apply droid electrical damage bonus
@@ -490,28 +495,28 @@ namespace SWLOR.Game.Server.Native
             var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
 
             var baseItemType = (BaseItem)weapon.m_nBaseItem;
-            var wil = Stat.GetStatValueNative(attacker, AbilityType.Willpower);
-            var weaponDamageAbilityType = Item.GetWeaponDamageAbilityType(baseItemType);
-            var weaponDamageAbilityStat = Stat.GetStatValueNative(attacker, weaponDamageAbilityType);
+            var wil = _statService.GetStatValueNative(attacker, AbilityType.Willpower);
+            var weaponDamageAbilityType = _itemService.GetWeaponDamageAbilityType(baseItemType);
+            var weaponDamageAbilityStat = _statService.GetStatValueNative(attacker, weaponDamageAbilityType);
 
-            if (Item.LightsaberBaseItemTypes.Contains(baseItemType))
+            if (_itemService.LightsaberBaseItemTypes.Contains(baseItemType))
             {
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
+                if (_abilityService.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleLightsaber))
                     return attacker.m_pStats.GetSTRStat();
             }
-            else if (Item.SaberstaffBaseItemTypes.Contains(baseItemType))
+            else if (_itemService.SaberstaffBaseItemTypes.Contains(baseItemType))
             {
-                if (Ability.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
+                if (_abilityService.IsAbilityToggled(playerId, AbilityToggleType.StrongStyleSaberstaff))
                     return attacker.m_pStats.GetSTRStat();
             }
-            else if (Item.PistolBaseItemTypes.Contains(baseItemType) ||
-                     Item.RifleBaseItemTypes.Contains(baseItemType) ||
-                     Item.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
+            else if (_itemService.PistolBaseItemTypes.Contains(baseItemType) ||
+                     _itemService.RifleBaseItemTypes.Contains(baseItemType) ||
+                     _itemService.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
             {
                 if (wil > weaponDamageAbilityStat && attacker.m_pStats.HasFeat((ushort)FeatType.ZenMarksmanship) == 1)
                     return attacker.m_pStats.GetWISStat();
             }
-            else if (Item.StaffBaseItemTypes.Contains(baseItemType))
+            else if (_itemService.StaffBaseItemTypes.Contains(baseItemType))
             {
                 if (attacker.m_pStats.HasFeat((ushort)FeatType.FlurryStyle) == 1)
                     return attacker.m_pStats.GetDEXStat();

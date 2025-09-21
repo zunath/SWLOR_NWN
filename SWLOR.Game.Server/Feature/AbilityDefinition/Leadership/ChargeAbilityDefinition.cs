@@ -4,12 +4,20 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
     public class ChargeAbilityDefinition: IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly IAbilityService _abilityService;
+
+        public ChargeAbilityDefinition(IAbilityService abilityService)
+        {
+            _abilityService = abilityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -30,11 +38,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return Ability.ToggleAura(activator, StatusEffectType.Charge);
+                    return AbilityService.ToggleAura(activator, StatusEffectType.Charge);
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Ability.ApplyAura(activator, StatusEffectType.Charge, true, true, false);
+                    AbilityService.ApplyAura(activator, StatusEffectType.Charge, true, true, false);
                 });
         }
     }

@@ -38,9 +38,11 @@ namespace SWLOR.Game.Server.Service
             if (GetAILevel(OBJECT_SELF) == AILevel.VeryLow)
                 return;
 
-            Stat.RestoreNPCStats(true);
+            var statService = ServiceContainer.GetService<IStatService>();
+            statService.RestoreNPCStats(true);
             ProcessFlags();
-            Enmity.AttackHighestEnmityTarget(OBJECT_SELF);
+            var enmityService = ServiceContainer.GetService<Enmity>();
+            enmityService.AttackHighestEnmityTarget(OBJECT_SELF);
         }
 
         /// <summary>
@@ -66,7 +68,8 @@ namespace SWLOR.Game.Server.Service
                 ProcessPerkAI(AIDefinitionType.Generic, creature, true);
             }
 
-            Enmity.AttackHighestEnmityTarget(creature);
+            var enmityService = ServiceContainer.GetService<Enmity>();
+            enmityService.AttackHighestEnmityTarget(creature);
         }
 
         /// <summary>
@@ -89,7 +92,7 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnCreatureAttackAfter>]
         public static void CreaturePhysicalAttacked()
         {
-            Enmity.AttackHighestEnmityTarget(OBJECT_SELF);
+            ServiceContainer.GetService<Enmity>().AttackHighestEnmityTarget(OBJECT_SELF);
         }
 
         /// <summary>
@@ -98,7 +101,7 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnCreatureDamagedAfter>]
         public static void CreatureDamaged()
         {
-            Enmity.AttackHighestEnmityTarget(OBJECT_SELF);
+            ServiceContainer.GetService<Enmity>().AttackHighestEnmityTarget(OBJECT_SELF);
         }
 
         /// <summary>
@@ -116,7 +119,7 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnCreatureDisturbedAfter>]
         public static void CreatureDisturbed()
         {
-            Enmity.AttackHighestEnmityTarget(OBJECT_SELF);
+            ServiceContainer.GetService<Enmity>().AttackHighestEnmityTarget(OBJECT_SELF);
         }
 
         /// <summary>
@@ -127,7 +130,8 @@ namespace SWLOR.Game.Server.Service
         {
             SetLocalString(OBJECT_SELF, "X2_SPECIAL_COMBAT_AI_SCRIPT", "xxx");
 
-            Stat.LoadNPCStats();
+            var statService = ServiceContainer.GetService<IStatService>();
+            statService.LoadNPCStats();
             LoadAggroEffect();
             DoVFX();
             SetLocalLocation(OBJECT_SELF, "HOME_LOCATION", GetLocation(OBJECT_SELF));
@@ -187,18 +191,20 @@ namespace SWLOR.Game.Server.Service
 
             if (!GetIsEnemy(entering, self))
             {
-                var attackTarget = Enmity.GetHighestEnmityTarget(entering);
+                var enmityService = ServiceContainer.GetService<Enmity>();
+                var attackTarget = enmityService.GetHighestEnmityTarget(entering);
                 // Non-enemy entered aggro range. If they're the same faction and fighting someone, help them out!
                 if (GetFactionEqual(entering, self) &&
                     GetIsEnemy(attackTarget, self))
                 {
-                    Enmity.ModifyEnmity(attackTarget, self, 1);
+                    enmityService.ModifyEnmity(attackTarget, self, 1);
                 }
 
                 return;
             }
 
-            Enmity.ModifyEnmity(entering, self, 1);
+            var enmityService = ServiceContainer.GetService<Enmity>();
+            enmityService.ModifyEnmity(entering, self, 1);
 
             // All allies within 5m should also aggro the player if they're not already in combat.
             if (_creatureAllies.TryGetValue(self, out var allies))
@@ -208,7 +214,7 @@ namespace SWLOR.Game.Server.Service
                     if (!GetIsEnemy(entering, ally)) continue;
                     if (GetDistanceBetween(self, ally) > 5f) continue;
 
-                    Enmity.ModifyEnmity(entering, ally, 1);
+                    enmityService.ModifyEnmity(entering, ally, 1);
                 }
             }
 
@@ -233,7 +239,8 @@ namespace SWLOR.Game.Server.Service
 
             // Attempt to target the highest enmity creature.
             // If no target can be determined, exit early.
-            var target = Enmity.GetHighestEnmityTarget(creature);
+            var enmityService = ServiceContainer.GetService<Enmity>();
+            var target = enmityService.GetHighestEnmityTarget(creature);
             if (usesEnmity && !GetIsObjectValid(target))
             {
                 ClearAllActions();
@@ -362,7 +369,7 @@ namespace SWLOR.Game.Server.Service
                 GetIsInCombat(self) ||
                 GetCurrentAction(self) == ActionType.RandomWalk ||
                 GetCurrentAction(self) == ActionType.MoveToPoint ||
-                GetIsObjectValid(Enmity.GetHighestEnmityTarget(self)))
+                GetIsObjectValid(ServiceContainer.GetService<Enmity>().GetHighestEnmityTarget(self)))
                 return;
 
             // Return Home flag

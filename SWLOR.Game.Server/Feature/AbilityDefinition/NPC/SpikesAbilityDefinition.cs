@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
@@ -11,6 +12,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
     public class SpikesAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly IStatService _statService;
+        private readonly ICombatService _combatService;
+        private readonly IStatusEffectService _statusEffectService;
+
+        public SpikesAbilityDefinition(IStatService statService, ICombatService combatService, IStatusEffectService statusEffectService)
+        {
+            _statService = statService;
+            _combatService = combatService;
+            _statusEffectService = statusEffectService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -31,10 +42,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 {
                     const int DMG = 3;
                     var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-                    var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                    var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+                    var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                    var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                    var damage = Combat.CalculateDamage(
+                    var damage = _combatService.CalculateDamage(
                         attack,
                         DMG, 
                         attackerStat, 
@@ -44,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Wallspike), target);
-                    StatusEffect.Apply(activator, target, StatusEffectType.Bleed, 45f);
+                    _statusEffectService.Apply(activator, target, StatusEffectType.Bleed, 45f);
                 });
         }
 

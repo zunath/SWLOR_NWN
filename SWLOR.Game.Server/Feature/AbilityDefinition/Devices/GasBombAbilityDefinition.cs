@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
@@ -14,15 +15,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     {
         private readonly AbilityBuilder _builder = new();
 
-        private static void ApplyEffect(uint creature, int dmg)
+        public GasBombAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService) 
+            : base(random, itemService, perkService, statService, combatService)
+        {
+        }
+
+        private void ApplyEffect(uint creature, int dmg)
         {
             var attackerStat = GetLocalInt(OBJECT_SELF, "DEVICE_ACC");
             var attack = GetLocalInt(OBJECT_SELF, "DEVICE_ATK");
             dmg += GetLocalInt(OBJECT_SELF, "DEVICE_DMG");
 
-            var defense = Stat.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statService.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            var damage = _combatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Acid), creature);
         }

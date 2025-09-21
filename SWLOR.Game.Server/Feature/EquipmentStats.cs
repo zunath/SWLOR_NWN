@@ -12,22 +12,36 @@ using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Events.NWNX;
+using SWLOR.Shared.Core.Contracts;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class EquipmentStats
+    public class EquipmentStats
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IStatService _statService;
+
+        public EquipmentStats(IDatabaseService db, IStatService statService)
+        {
+            _db = db;
+            _statService = statService;
+        }
         
         private delegate void ApplyStatChangeDelegate(uint player, uint item, ItemProperty ip, bool isAdding);
-        private static readonly Dictionary<ItemPropertyType, ApplyStatChangeDelegate> _statChangeActions = new();
+        private readonly Dictionary<ItemPropertyType, ApplyStatChangeDelegate> _statChangeActions = new();
 
         /// <summary>
         /// When the module loads, cache the actions taken for each type of custom item property.
         /// </summary>
         [ScriptHandler<OnModuleLoad>]
         public static void RegisterStatActions()
+        {
+            var equipmentStats = ServiceContainer.GetService<EquipmentStats>();
+            equipmentStats.InitializeStatActions();
+        }
+
+        private void InitializeStatActions()
         {
             _statChangeActions[ItemPropertyType.HPBonus] = ApplyHPBonus;
             _statChangeActions[ItemPropertyType.FP] = ApplyFPBonus;
@@ -44,7 +58,7 @@ namespace SWLOR.Game.Server.Feature
             _statChangeActions[ItemPropertyType.CPBonus] = ApplyCPBonus;
         }
 
-        private static void ReapplyNPCStat(uint npc, ItemPropertyType ipType, int amount, bool isAdding)
+        private void ReapplyNPCStat(uint npc, ItemPropertyType ipType, int amount, bool isAdding)
         {
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, npc);
             var value = 0;
@@ -85,6 +99,12 @@ namespace SWLOR.Game.Server.Feature
         [ScriptHandler<OnSWLORItemEquipValidBefore>]
         public static void ApplyStats()
         {
+            var equipmentStats = ServiceContainer.GetService<EquipmentStats>();
+            equipmentStats.ApplyStatsInternal();
+        }
+
+        private void ApplyStatsInternal()
+        {
             var creature = OBJECT_SELF;
             if (GetIsDM(creature) || GetIsDMPossessed(creature)) return;
 
@@ -118,6 +138,12 @@ namespace SWLOR.Game.Server.Feature
         [ScriptHandler<OnItemUnequipBefore>]
         public static void RemoveStats()
         {
+            var equipmentStats = ServiceContainer.GetService<EquipmentStats>();
+            equipmentStats.RemoveStatsInternal();
+        }
+
+        private void RemoveStatsInternal()
+        {
             var creature = OBJECT_SELF;
             if (GetIsDM(creature) || GetIsDMPossessed(creature)) return;
 
@@ -138,7 +164,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change.</param>
         /// <param name="isAdding">If true, we're adding the HP, if false we're removing it</param>
-        private static void ApplyHPBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
+        private void ApplyHPBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
@@ -152,11 +178,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustPlayerMaxHP(dbPlayer, creature, amount);
+                    _statService.AdjustPlayerMaxHP(dbPlayer, creature, amount);
                 }
                 else
                 {
-                    Stat.AdjustPlayerMaxHP(dbPlayer, creature, -amount);
+                    _statService.AdjustPlayerMaxHP(dbPlayer, creature, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -205,7 +231,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
         /// <param name="isAdding">If true, we're adding the FP, if false we're removing it</param>
-        private static void ApplyFPBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
+        private void ApplyFPBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
@@ -219,11 +245,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustPlayerMaxFP(dbPlayer, amount, creature);
+                    _statService.AdjustPlayerMaxFP(dbPlayer, amount, creature);
                 }
                 else
                 {
-                    Stat.AdjustPlayerMaxFP(dbPlayer, -amount, creature);
+                    _statService.AdjustPlayerMaxFP(dbPlayer, -amount, creature);
                 }
 
                 _db.Set(dbPlayer);
@@ -241,7 +267,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
         /// <param name="isAdding">If true, we're adding the FP Regen, if false we're removing it</param>
-        private static void ApplyFPRegenBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
+        private void ApplyFPRegenBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
@@ -255,11 +281,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustFPRegen(dbPlayer, amount);
+                    _statService.AdjustFPRegen(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustFPRegen(dbPlayer, -amount);
+                    _statService.AdjustFPRegen(dbPlayer, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -277,7 +303,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
         /// <param name="isAdding">If true, we're adding the FP, if false we're removing it</param>
-        private static void ApplySTMBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
+        private void ApplySTMBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
@@ -291,11 +317,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustPlayerMaxSTM(dbPlayer, amount, creature);
+                    _statService.AdjustPlayerMaxSTM(dbPlayer, amount, creature);
                 }
                 else
                 {
-                    Stat.AdjustPlayerMaxSTM(dbPlayer, -amount, creature);
+                    _statService.AdjustPlayerMaxSTM(dbPlayer, -amount, creature);
                 }
 
                 _db.Set(dbPlayer);
@@ -313,7 +339,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
         /// <param name="isAdding">If true, we're adding the FP Regen, if false we're removing it</param>
-        private static void ApplySTMRegenBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
+        private void ApplySTMRegenBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
@@ -327,11 +353,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustSTMRegen(dbPlayer, amount);
+                    _statService.AdjustSTMRegen(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustSTMRegen(dbPlayer, -amount);
+                    _statService.AdjustSTMRegen(dbPlayer, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -349,7 +375,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
         /// <param name="isAdding">If true, we're adding the reduction, if false we're removing it.</param>
-        private static void ApplyAbilityRecastReduction(uint creature, uint item, ItemProperty ip, bool isAdding)
+        private void ApplyAbilityRecastReduction(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
@@ -363,11 +389,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustPlayerRecastReduction(dbPlayer, amount);
+                    _statService.AdjustPlayerRecastReduction(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustPlayerRecastReduction(dbPlayer, -amount);
+                    _statService.AdjustPlayerRecastReduction(dbPlayer, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -385,7 +411,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
         /// <param name="isAdding">If true, we're adding the attack, if false we're removing it.</param>
-        private static void ApplyAttack(uint creature, uint item, ItemProperty ip, bool isAdding)
+        private void ApplyAttack(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
@@ -399,11 +425,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustAttack(dbPlayer, amount);
+                    _statService.AdjustAttack(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustAttack(dbPlayer, -amount);
+                    _statService.AdjustAttack(dbPlayer, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -421,7 +447,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
         /// <param name="isAdding">If true, we're adding the force attack, if false we're removing it.</param>
-        private static void ApplyForceAttack(uint creature, uint item, ItemProperty ip, bool isAdding)
+        private void ApplyForceAttack(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
@@ -435,11 +461,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustForceAttack(dbPlayer, amount);
+                    _statService.AdjustForceAttack(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustForceAttack(dbPlayer, -amount);
+                    _statService.AdjustForceAttack(dbPlayer, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -457,7 +483,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
         /// <param name="isAdding">If true, we're adding the defense, if false we're removing it.</param>
-        private static void ApplyDefense(uint creature, uint item, ItemProperty ip, bool isAdding)
+        private void ApplyDefense(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
@@ -472,11 +498,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustDefense(dbPlayer, damageType, amount);
+                    _statService.AdjustDefense(dbPlayer, damageType, amount);
                 }
                 else
                 {
-                    Stat.AdjustDefense(dbPlayer, damageType, -amount);
+                    _statService.AdjustDefense(dbPlayer, damageType, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -526,7 +552,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
         /// <param name="isAdding">If true, we're adding the evasion, if false we're removing it.</param>
-        private static void ApplyEvasion(uint creature, uint item, ItemProperty ip, bool isAdding)
+        private void ApplyEvasion(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
@@ -540,11 +566,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustEvasion(dbPlayer, amount);
+                    _statService.AdjustEvasion(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustEvasion(dbPlayer, -amount);
+                    _statService.AdjustEvasion(dbPlayer, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -562,7 +588,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
         /// <param name="isAdding">If true, we're adding control, if false we're removing it.</param>
-        private static void ApplyControl(uint creature, uint item, ItemProperty ip, bool isAdding)
+        private void ApplyControl(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
@@ -600,11 +626,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustControl(dbPlayer, skillType, amount);
+                    _statService.AdjustControl(dbPlayer, skillType, amount);
                 }
                 else
                 {
-                    Stat.AdjustControl(dbPlayer, skillType, -amount);
+                    _statService.AdjustControl(dbPlayer, skillType, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -618,7 +644,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
         /// <param name="isAdding">If true, we're adding craftsmanship, if false we're removing it.</param>
-        private static void ApplyCraftsmanship(uint creature, uint item, ItemProperty ip, bool isAdding)
+        private void ApplyCraftsmanship(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
@@ -650,11 +676,11 @@ namespace SWLOR.Game.Server.Feature
                 }
                 if (isAdding)
                 {
-                    Stat.AdjustCraftsmanship(dbPlayer, skillType, amount);
+                    _statService.AdjustCraftsmanship(dbPlayer, skillType, amount);
                 }
                 else
                 {
-                    Stat.AdjustCraftsmanship(dbPlayer, skillType, -amount);
+                    _statService.AdjustCraftsmanship(dbPlayer, skillType, -amount);
                 }
 
                 _db.Set(dbPlayer);
@@ -667,7 +693,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
         /// <param name="isAdding">If true, we're adding the CP bonus, if false we're removing it.</param>
-        private static void ApplyCPBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
+        private void ApplyCPBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
         {
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return;
@@ -699,11 +725,11 @@ namespace SWLOR.Game.Server.Feature
                 }
                 if (isAdding)
                 {
-                    Stat.AdjustCPBonus(dbPlayer, skillType, amount);
+                    _statService.AdjustCPBonus(dbPlayer, skillType, amount);
                 }
                 else
                 {
-                    Stat.AdjustCPBonus(dbPlayer, skillType, -amount);
+                    _statService.AdjustCPBonus(dbPlayer, skillType, -amount);
                 }
 
                 _db.Set(dbPlayer);

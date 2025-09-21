@@ -12,21 +12,24 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class CZ220QuestDefinition: IQuestListDefinition
     {
-        private readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
         private readonly IKeyItemService _keyItemService;
         private readonly IObjectVisibilityService _objectVisibilityService;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IQuestService _questService;
 
-        public CZ220QuestDefinition(IKeyItemService keyItemService, IObjectVisibilityService objectVisibilityService, IServiceProvider serviceProvider)
+        public CZ220QuestDefinition(IDatabaseService db, IKeyItemService keyItemService, IObjectVisibilityService objectVisibilityService, IServiceProvider serviceProvider, IQuestService questService)
         {
+            _db = db;
             _keyItemService = keyItemService;
             _objectVisibilityService = objectVisibilityService;
             _serviceProvider = serviceProvider;
+            _questService = questService;
         }
 
         public Dictionary<string, QuestDetail> BuildQuests()
         {
-            var builder = new QuestBuilder(_serviceProvider);
+            var builder = new QuestBuilder(_serviceProvider, _questService);
             SelansRequest(builder);
             SuppliesSmithery(builder);
             SuppliesScavenging(builder);

@@ -3,12 +3,24 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
     public class BackstabAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public BackstabAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -19,12 +31,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
 
-            if (Item.FinesseVibrobladeBaseItemTypes.Contains(rightHandType))
+            if (_itemService.FinesseVibrobladeBaseItemTypes.Contains(rightHandType))
             {
                 return string.Empty;
             }
@@ -32,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 return "A finesse vibroblade must be equipped in your right hand to use this ability.";
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
 
@@ -53,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
             if (abs((int)(GetFacing(activator) - GetFacing(target))) > 200f ||
                 abs((int)(GetFacing(activator) - GetFacing(target))) < 160f ||
@@ -65,10 +77,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.OneHanded);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.OneHanded);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -81,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             Enmity.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private static void Backstab1(AbilityBuilder builder)
+        private void Backstab1(AbilityBuilder builder)
         {
             builder.Create(FeatType.Backstab1, PerkType.Backstab)
                 .Name("Backstab I")
@@ -96,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void Backstab2(AbilityBuilder builder)
+        private void Backstab2(AbilityBuilder builder)
         {
             builder.Create(FeatType.Backstab2, PerkType.Backstab)
                 .Name("Backstab II")
@@ -111,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void Backstab3(AbilityBuilder builder)
+        private void Backstab3(AbilityBuilder builder)
         {
             builder.Create(FeatType.Backstab3, PerkType.Backstab)
                 .Name("Backstab III")

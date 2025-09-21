@@ -21,13 +21,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal class ResearchViewModel: GuiViewModelBase<ResearchViewModel, ResearchPayload>
     {
-        public ResearchViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
+        private readonly IItemCacheService _itemCache;
+        private readonly IRandomService _random;
+        private readonly IPerkService _perkService;
+        private readonly IItemService _itemService;
+        private readonly ISkillService _skillService;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        public ResearchViewModel(IGuiService guiService, IDatabaseService db, IItemCacheService itemCache, IRandomService random, IPerkService perkService, IItemService itemService, ISkillService skillService) : base(guiService)
+        {
+            _db = db;
+            _itemCache = itemCache;
+            _random = random;
+            _perkService = perkService;
+            _itemService = itemService;
+            _skillService = skillService;
+        }
         
         private class ResearchJobDetails
         {
@@ -160,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recipe = Craft.GetRecipe(recipeType);
             var blueprint = Craft.GetBlueprintDetails(blueprintItem);
             var currentLevel = blueprint.Level <= 0 ? 0 : blueprint.Level;
-            var licensedRunsMinimum = 1 + Perk.GetPerkLevel(Player, PerkType.ScientificNetworking);
+            var licensedRunsMinimum = 1 + _perkService.GetPerkLevel(Player, PerkType.ScientificNetworking);
             var licensedRunsMaximum = licensedRunsMinimum + 2;
             var creditCost = Craft.CalculateBlueprintResearchCreditCost(_recipeType, currentLevel + 1, blueprint.CreditReduction);
             var timeCost = Craft.CalculateBlueprintResearchSeconds(_recipeType, currentLevel + 1, blueprint.TimeReduction);
@@ -211,7 +220,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     : $"Licensed Runs: {researchJob.CurrentLicensedRuns}";
                 TimeReduction = $"Time Reduction: -{researchJob.TimeReduction}%";
                 ItemBonuses = $"Item Bonuses: {researchJob.ItemBonuses}";
-                GuaranteedBonuses = Item.BuildItemPropertyList(researchJob.GuaranteedBonuses);
+                GuaranteedBonuses = _itemService.BuildItemPropertyList(researchJob.GuaranteedBonuses);
                 CreditCost = $"Price: {researchJob.CreditCost}cr";
                 TimeCost = $"Time: {researchJob.TimeString}";
                 NextLevelBonus = $"Next Level: {GetUpgradeLevelBonus(researchJob.CurrentLevel + 1)}";
@@ -296,7 +305,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return "Not enough credits!";
             }
 
-            if (Perk.GetPerkLevel(Player, PerkType.Research) < researchJob.RequiredPerkLevel)
+            if (_perkService.GetPerkLevel(Player, PerkType.Research) < researchJob.RequiredPerkLevel)
             {
                 return $"Research level {researchJob.RequiredPerkLevel} required.";
             }
@@ -320,7 +329,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var playerId = GetObjectUUID(Player);
-            var maxConcurrentJobs = Perk.GetPerkLevel(Player, PerkType.ResearchProjects) + 1;
+            var maxConcurrentJobs = _perkService.GetPerkLevel(Player, PerkType.ResearchProjects) + 1;
             var dbQuery = new DBQuery<ResearchJob>()
                 .AddFieldSearch(nameof(ResearchJob.PlayerId), playerId, false);
             var currentJobs = _db.Search(dbQuery).ToList();
@@ -539,7 +548,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (isNewBlueprint)
             {
-                var scientificNetworking = Perk.GetPerkLevel(Player, PerkType.ScientificNetworking);
+                var scientificNetworking = _perkService.GetPerkLevel(Player, PerkType.ScientificNetworking);
                 blueprintDetails.LicensedRuns = _random.D3(1) + scientificNetworking;
                 blueprintDetails.Recipe = dbJob.Recipe;
             }

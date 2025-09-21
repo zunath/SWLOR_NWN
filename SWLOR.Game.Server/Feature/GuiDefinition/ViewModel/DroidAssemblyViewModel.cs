@@ -15,8 +15,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DroidAssemblyViewModel : GuiViewModelBase<DroidAssemblyViewModel, GuiPayloadBase>
     {
-        public DroidAssemblyViewModel(IGuiService guiService) : base(guiService)
+        private readonly IPerkService _perkService;
+        private readonly IItemService _itemService;
+
+        public DroidAssemblyViewModel(IGuiService guiService, IPerkService perkService, IItemService itemService) : base(guiService)
         {
+            _perkService = perkService;
+            _itemService = itemService;
         }
 
         private const string BlankTexture = "Blank";
@@ -307,10 +312,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void AddPart(DroidPartItemPropertyDetails part, uint item)
         {
-            var assemblyLevel = Perk.GetPerkLevel(Player, PerkType.DroidAssembly);
+            var assemblyLevel = _perkService.GetPerkLevel(Player, PerkType.DroidAssembly);
 
             var serialized = ObjectPlugin.Serialize(item);
-            var icon = Item.GetIconResref(item);
+            var icon = _itemService.GetIconResref(item);
             switch (part.PartType)
             {
                 case DroidPartItemPropertySubType.CPU:
@@ -464,7 +469,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a CPU part from your inventory.", item =>
                 {
-                    var error = Item.CanBePersistentlyStored(Player, item);
+                    var error = _itemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         ShowError(error);
@@ -504,7 +509,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Head part from your inventory.", item =>
                 {
-                    var error = Item.CanBePersistentlyStored(Player, item);
+                    var error = _itemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         ShowError(error);
@@ -543,7 +548,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Body part from your inventory.", item =>
                 {
-                    var error = Item.CanBePersistentlyStored(Player, item);
+                    var error = _itemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         ShowError(error);
@@ -582,7 +587,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select an Arms part from your inventory.", item =>
                 {
-                    var error = Item.CanBePersistentlyStored(Player, item);
+                    var error = _itemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         ShowError(error);
@@ -621,7 +626,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a Legs part from your inventory.", item =>
                 {
-                    var error = Item.CanBePersistentlyStored(Player, item);
+                    var error = _itemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         ShowError(error);

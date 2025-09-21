@@ -9,7 +9,17 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class CapitalEwarModuleDefinition : IShipModuleListDefinition
     {
+        private readonly ISpaceService _spaceService;
+        private readonly IEnmityService _enmityService;
+        private readonly ICombatPointService _combatPointService;
         private readonly ShipModuleBuilder _builder = new();
+
+        public CapitalEwarModuleDefinition(ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService)
+        {
+            _spaceService = spaceService;
+            _enmityService = enmityService;
+            _combatPointService = combatPointService;
+        }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -51,14 +61,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         if (GetIsEnemy(nearby, activator) &&
                             !GetIsDead(activator) &&
-                            Space.GetShipStatus(nearby) != null &&
+                            _spaceService.GetShipStatus(nearby) != null &&
                             nearby != activator)
                         {
-                            var nearbyStatus = Space.GetShipStatus(nearby);
+                            var nearbyStatus = _spaceService.GetShipStatus(nearby);
 
                             ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), nearby, 2.0f);
                             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), nearby, 2.0f);
-                            Enmity.ModifyEnmity(activator, nearby, enmityAmount);
+                            _enmityService.ModifyEnmity(activator, nearby, enmityAmount);
 
                             count++;
                         }
@@ -67,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         
                     }
 
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                     Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} activates their E-War device and begins to draw fire.");
                 });
         }

@@ -13,6 +13,7 @@ using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -24,9 +25,19 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     public class DMChatCommand: IChatCommandListDefinition
     {
-        private readonly IGuiService _guiService = ServiceContainer.GetService<IGuiService>();
+        private readonly IGuiService _guiService;
         private readonly ChatCommandBuilder _builder = new();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IAbilityService _abilityService;
+        private readonly IStatService _statService;
+
+        public DMChatCommand(IGuiService guiService, IDatabaseService db, IAbilityService abilityService, IStatService statService)
+        {
+            _guiService = guiService;
+            _db = db;
+            _abilityService = abilityService;
+            _statService = statService;
+        }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
@@ -148,12 +159,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     if (GetIsDead(target))
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-                        Ability.ReapplyPlayerAuraAOE(target);
+                        _abilityService.ReapplyPlayerAuraAOE(target);
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(999), target);
-                    Stat.RestoreFP(target, Stat.GetMaxFP(target));
-                    Stat.RestoreStamina(target, Stat.GetMaxStamina(target));
+                    _statService.RestoreFP(target, _statService.GetMaxFP(target));
+                    _statService.RestoreStamina(target, _statService.GetMaxStamina(target));
                 });
         }
 
@@ -1040,7 +1051,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         if (Space.GetShipStatus(target) != null)
                         {
-                            var npcStats = Stat.GetNPCStats(target);
+                            var npcStats = _statService.GetNPCStats(target);
                             var level = npcStats.Level;
                             if (GetIsPC(target) == true)
                             {

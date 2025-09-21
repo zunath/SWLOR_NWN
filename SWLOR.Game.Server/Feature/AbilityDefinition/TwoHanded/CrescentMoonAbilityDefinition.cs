@@ -5,12 +5,30 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class CrescentMoonAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+        private readonly IAbilityService _abilityService;
+        private readonly ICombatPointService _combatPointService;
+        private readonly IEnmityService _enmityService;
+
+        public CrescentMoonAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, IAbilityService abilityService, ICombatPointService combatPointService, IEnmityService enmityService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+            _abilityService = abilityService;
+            _combatPointService = combatPointService;
+            _enmityService = enmityService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -21,11 +39,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!Item.HeavyVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.HeavyVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a heavy vibroblade ability.";
             }
@@ -33,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
 
             int dmg;
@@ -57,13 +75,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -72,20 +90,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc);
+            dc = _combatService.CalculateSavingThrowDC(activator, dc, 0, 0);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
             if (checkResult == SavingThrowResultType.Failed)
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, Duration);
-                Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
+                _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Stun);
             }
             
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
-            Enmity.ModifyEnmity(activator, target, 250 * level + damage);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            _enmityService.ModifyEnmity(activator, target, 250 * level + damage);
         }
 
-        private static void CrescentMoon1(AbilityBuilder builder)
+        private void CrescentMoon1(AbilityBuilder builder)
         {
             builder.Create(FeatType.CrescentMoon1, PerkType.CrescentMoon)
                 .Name("Crescent Moon I")
@@ -97,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void CrescentMoon2(AbilityBuilder builder)
+        private void CrescentMoon2(AbilityBuilder builder)
         {
             builder.Create(FeatType.CrescentMoon2, PerkType.CrescentMoon)
                 .Name("Crescent Moon II")
@@ -109,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void CrescentMoon3(AbilityBuilder builder)
+        private void CrescentMoon3(AbilityBuilder builder)
         {
             builder.Create(FeatType.CrescentMoon3, PerkType.CrescentMoon)
                 .Name("Crescent Moon III")

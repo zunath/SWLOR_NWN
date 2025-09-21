@@ -4,11 +4,24 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
     public class DoubleShotAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public DoubleShotAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -19,11 +32,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!Item.PistolBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.PistolBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a pistol ability.";
             }
@@ -31,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
 
@@ -50,16 +63,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Ranged);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+            var combatPointService = ServiceContainer.GetService<ICombatPointService>();
+            combatPointService.AddCombatPoint(activator, target, SkillType.Ranged, 3);
 
             // First attack
-            var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
-            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Ranged);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
+            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Ranged);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack, 
                 dmg, 
                 attackerStat, 
@@ -69,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
 
             // Second attack
-            damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            damage = CombatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
             AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleShot));
             AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleShot));
@@ -77,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             Enmity.ModifyEnmity(activator, target, 200 * level + damage);
         }
 
-        private static void DoubleShot1(AbilityBuilder builder)
+        private void DoubleShot1(AbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleShot1, PerkType.DoubleShot)
                 .Name("Double Shot I")
@@ -93,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }
-        private static void DoubleShot2(AbilityBuilder builder)
+        private void DoubleShot2(AbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleShot2, PerkType.DoubleShot)
                 .Name("Double Shot II")
@@ -109,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }
-        private static void DoubleShot3(AbilityBuilder builder)
+        private void DoubleShot3(AbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleShot3, PerkType.DoubleShot)
                 .Name("Double Shot III")

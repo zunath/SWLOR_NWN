@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using Player = SWLOR.Shared.Core.Data.Entity.Player;
@@ -13,8 +14,13 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
     public class SaberUpgradeItemDefinition: IItemListDefinition
     {
         private const int MaxNumberOfUpgrades = 1;
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
         private readonly ItemBuilder _builder = new();
+
+        public SaberUpgradeItemDefinition(IDatabaseService db)
+        {
+            _db = db;
+        }
 
         public Dictionary<string, ItemDetail> BuildItems()
         {

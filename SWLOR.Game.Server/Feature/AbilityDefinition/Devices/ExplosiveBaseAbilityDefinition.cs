@@ -12,7 +12,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public abstract class ExplosiveBaseAbilityDefinition: IAbilityListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        protected readonly IRandomService _random;
+        protected readonly IItemService _itemService;
+        protected readonly IPerkService _perkService;
+        protected readonly IStatService _statService;
+        protected readonly ICombatService _combatService;
+
+        protected ExplosiveBaseAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService)
+        {
+            _random = random;
+            _itemService = itemService;
+            _perkService = perkService;
+            _statService = statService;
+            _combatService = combatService;
+        }
         private const string ExplosiveItemResref = "explosives";
 
         public abstract Dictionary<FeatType, AbilityDetail> BuildAbilities();
@@ -38,8 +51,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             if (!GetIsPC(activator))
                 return;
 
-            var chanceToNotConsume = 10 * Perk.GetPerkLevel(activator, PerkType.DemolitionExpert);
-            if (_random.D100(1) <= chanceToNotConsume)
+            var chanceToNotConsume = 10 * PerkService.GetPerkLevel(activator, PerkType.DemolitionExpert);
+            if (Random.D100(1) <= chanceToNotConsume)
                 return;
 
             var item = GetItemPossessedBy(activator, ExplosiveItemResref);
@@ -115,8 +128,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var delay = GetDistanceBetweenLocations(activatorLocation, targetLocation) / 18f;
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var dmgBonus = Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
+            var attack = StatService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var dmgBonus = CombatService.GetAbilityDamageBonus(activator, SkillType.Devices);
             dmgBonus += attackerStat / 2;
 
             DelayCommand(delay, () =>

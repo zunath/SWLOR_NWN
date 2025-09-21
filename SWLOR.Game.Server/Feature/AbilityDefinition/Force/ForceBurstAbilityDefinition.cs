@@ -10,6 +10,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceBurstAbilityDefinition : IAbilityListDefinition
     {
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public ForceBurstAbilityDefinition(ICombatService combatService, IStatService statService)
+        {
+            _combatService = combatService;
+            _statService = statService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -42,17 +51,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Force);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Force);
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);
             while (GetIsObjectValid(creature))
             {
                 if (GetDistanceBetween(target, creature) <= 4f && GetIsReactionTypeHostile(creature, activator))
                 {
                     var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
-                    var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+                    var defense = _statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
                     var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-                    var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
-                    var damage = Combat.CalculateDamage(
+                    var attack = _statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+                    var damage = _combatService.CalculateDamage(
                         attack,
                         dmg,
                         attackerStat,

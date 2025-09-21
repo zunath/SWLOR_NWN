@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
@@ -16,51 +16,58 @@ using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Perk
+    public class PerkService : IPerkService
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly IGenericCacheService _cacheService;
         
         // Cached data
-        private static IEnumCache<PerkCategoryType, PerkCategoryAttribute> _categoryCache;
-        private static IInterfaceCache<PerkType, PerkDetail> _perkCache;
-        private static IEnumCache<CharacterType, CharacterTypeAttribute> _characterTypeCache;
+        private IEnumCache<PerkCategoryType, PerkCategoryAttribute> _categoryCache;
+        private IInterfaceCache<PerkType, PerkDetail> _perkCache;
+        private IEnumCache<CharacterType, CharacterTypeAttribute> _characterTypeCache;
         
         // Additional caches for complex data
-        private static readonly Dictionary<PerkCategoryType, List<PerkType>> _allPerksByCategory = new();
-        private static readonly Dictionary<PerkType, List<PerkTriggerEquippedAction>> _equipTriggers = new();
-        private static readonly Dictionary<PerkType, List<PerkTriggerUnequippedAction>> _unequipTriggers = new();
-        private static readonly Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> _purchaseTriggers = new();
-        private static readonly Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> _refundTriggers = new();
-        private static readonly Dictionary<PerkType, PerkDetail> _perksWithUnlockRequirements = new();
-        private static readonly Dictionary<PerkType, int> _perkMaxLevels = new();
-        private static readonly Dictionary<PerkType, Dictionary<int, int>> _perkLevelTiers = new();
-        private static readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
+        private readonly Dictionary<PerkCategoryType, List<PerkType>> _allPerksByCategory = new();
+        private readonly Dictionary<PerkType, List<PerkTriggerEquippedAction>> _equipTriggers = new();
+        private readonly Dictionary<PerkType, List<PerkTriggerUnequippedAction>> _unequipTriggers = new();
+        private readonly Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> _purchaseTriggers = new();
+        private readonly Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> _refundTriggers = new();
+        private readonly Dictionary<PerkType, PerkDetail> _perksWithUnlockRequirements = new();
+        private readonly Dictionary<PerkType, int> _perkMaxLevels = new();
+        private readonly Dictionary<PerkType, Dictionary<int, int>> _perkLevelTiers = new();
+        private readonly Dictionary<SkillType, List<PerkType>> _perksWithSkillRequirement = new();
+
+        public PerkService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService)
+        {
+            _logger = logger;
+            _db = db;
+            _cacheService = cacheService;
+        }
 
         /// <summary>
         /// Gets the list of heavy armor perks
         /// </summary>
-        public static List<PerkType> HeavyArmorPerks { get; } = new();
+        public List<PerkType> HeavyArmorPerks { get; } = new();
 
         /// <summary>
         /// Gets the list of light armor perks
         /// </summary>
-        public static List<PerkType> LightArmorPerks { get; } = new();
+        public List<PerkType> LightArmorPerks { get; } = new();
         
         // Pre-computed caches for fast retrieval
-        private static readonly Dictionary<PerkGroupType, Dictionary<PerkCategoryType, PerkCategoryAttribute>> _activeCategoriesByGroup = new();
-        private static readonly Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>> _activePerksByGroup = new();
-        private static readonly Dictionary<PerkGroupType, Dictionary<PerkCategoryType, Dictionary<PerkType, PerkDetail>>> _activePerksByGroupAndCategory = new();
-        private static readonly Dictionary<PerkType, PerkDetail> _allPerks = new();
-        private static readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _allPerkCategories = new();
-        private static readonly Dictionary<CharacterType, CharacterTypeAttribute> _allCharacterTypes = new();
+        private readonly Dictionary<PerkGroupType, Dictionary<PerkCategoryType, PerkCategoryAttribute>> _activeCategoriesByGroup = new();
+        private readonly Dictionary<PerkGroupType, Dictionary<PerkType, PerkDetail>> _activePerksByGroup = new();
+        private readonly Dictionary<PerkGroupType, Dictionary<PerkCategoryType, Dictionary<PerkType, PerkDetail>>> _activePerksByGroupAndCategory = new();
+        private readonly Dictionary<PerkType, PerkDetail> _allPerks = new();
+        private readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _allPerkCategories = new();
+        private readonly Dictionary<CharacterType, CharacterTypeAttribute> _allCharacterTypes = new();
 
         /// <summary>
         /// When the module loads, cache all perk and character type information.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheData()
+        public void CacheData()
         {
             CachePerks();
             CacheCharacterTypes();
@@ -292,7 +299,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves all of the equip triggers registered by perks.
         /// </summary>
         /// <returns></returns>
-        public static Dictionary<PerkType, List<PerkTriggerEquippedAction>> GetAllEquipTriggers()
+        public Dictionary<PerkType, List<PerkTriggerEquippedAction>> GetAllEquipTriggers()
         {
             return _equipTriggers;
         }
@@ -301,7 +308,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves all of the unequip triggers registered by perks.
         /// </summary>
         /// <returns></returns>
-        public static Dictionary<PerkType, List<PerkTriggerUnequippedAction>> GetAllUnequipTriggers()
+        public Dictionary<PerkType, List<PerkTriggerUnequippedAction>> GetAllUnequipTriggers()
         {
             return _unequipTriggers;
         }
@@ -310,7 +317,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves all of the purchase triggers registered by perks.
         /// </summary>
         /// <returns></returns>
-        public static Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> GetAllPurchaseTriggers()
+        public Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> GetAllPurchaseTriggers()
         {
             return _purchaseTriggers;
         }
@@ -319,7 +326,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves all of the refund triggers registered by perks.
         /// </summary>
         /// <returns></returns>
-        public static Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> GetAllRefundTriggers()
+        public Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> GetAllRefundTriggers()
         {
             return _refundTriggers;
         }
@@ -329,7 +336,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a list of all perks, including inactive ones.
         /// </summary>
         /// <returns>A list of all perks.</returns>
-        public static Dictionary<PerkType, PerkDetail> GetAllPerks()
+        public Dictionary<PerkType, PerkDetail> GetAllPerks()
         {
             return _perkCache?.AllItems.ToDictionary(x => x.Key, y => y.Value) ?? new Dictionary<PerkType, PerkDetail>();
         }
@@ -338,7 +345,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a list of all active perks, excluding inactive ones, by group.
         /// </summary>
         /// <returns>A list of all active perks.</returns>
-        public static Dictionary<PerkType, PerkDetail> GetAllActivePerks(PerkGroupType group)
+        public Dictionary<PerkType, PerkDetail> GetAllActivePerks(PerkGroupType group)
         {
             return _activePerksByGroup.GetValueOrDefault(group) ?? new Dictionary<PerkType, PerkDetail>();
         }
@@ -347,7 +354,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a list of all perk categories, including inactive ones.
         /// </summary>
         /// <returns>A list of all perk categories.</returns>
-        public static Dictionary<PerkCategoryType, PerkCategoryAttribute> GetAllPerkCategories()
+        public Dictionary<PerkCategoryType, PerkCategoryAttribute> GetAllPerkCategories()
         {
             return _categoryCache?.AllItems.ToDictionary(x => x.Key, y => y.Value) ?? new Dictionary<PerkCategoryType, PerkCategoryAttribute>();
         }
@@ -356,7 +363,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves a list of all active perk categories, excluding inactive ones.
         /// </summary>
         /// <returns>A list of all active perk categories.</returns>
-        public static Dictionary<PerkCategoryType, PerkCategoryAttribute> GetAllActivePerkCategories()
+        public Dictionary<PerkCategoryType, PerkCategoryAttribute> GetAllActivePerkCategories()
         {
             var activeCategories = _categoryCache?.GetFilteredCache("Active");
             return activeCategories ?? new Dictionary<PerkCategoryType, PerkCategoryAttribute>();
@@ -367,7 +374,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="group">The group to filter by.</param>
         /// <returns>A list of all active perk categories for the specified group.</returns>
-        public static Dictionary<PerkCategoryType, PerkCategoryAttribute> GetAllActivePerkCategories(PerkGroupType group)
+        public Dictionary<PerkCategoryType, PerkCategoryAttribute> GetAllActivePerkCategories(PerkGroupType group)
         {
             return _activeCategoriesByGroup.GetValueOrDefault(group) ?? new Dictionary<PerkCategoryType, PerkCategoryAttribute>();
         }
@@ -377,7 +384,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="category">The category to search by.</param>
         /// <returns>A list of all active perks in the specified category.</returns>
-        public static Dictionary<PerkType, PerkDetail> GetActivePerksInCategory(PerkCategoryType category)
+        public Dictionary<PerkType, PerkDetail> GetActivePerksInCategory(PerkCategoryType category)
         {
             var activeByCategory = _perkCache?.GetGroupedCache<PerkCategoryType>("ByCategory");
             var categoryPerks = activeByCategory?.GetValueOrDefault(category);
@@ -390,7 +397,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="group">The group to filter by.</param>
         /// <param name="category">The category to search by.</param>
         /// <returns>A list of all active perks in the specified category and group.</returns>
-        public static Dictionary<PerkType, PerkDetail> GetActivePerksInCategory(PerkGroupType group, PerkCategoryType category)
+        public Dictionary<PerkType, PerkDetail> GetActivePerksInCategory(PerkGroupType group, PerkCategoryType category)
         {
             var groupPerks = _activePerksByGroupAndCategory.GetValueOrDefault(group);
             if (groupPerks == null) return new Dictionary<PerkType, PerkDetail>();
@@ -403,7 +410,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="perkType">The type of perk to retrieve.</param>
         /// <returns>An object containing a perk's details.</returns>
-        public static PerkDetail GetPerkDetails(PerkType perkType)
+        public PerkDetail GetPerkDetails(PerkType perkType)
         {
             if (_allPerks.Count == 0)
             {
@@ -436,7 +443,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="categoryType">The type of category to retrieve.</param>
         /// <returns>An object containing a perk category's details.</returns>
-        public static PerkCategoryAttribute GetPerkCategoryDetails(PerkCategoryType categoryType)
+        public PerkCategoryAttribute GetPerkCategoryDetails(PerkCategoryType categoryType)
         {
             return _allPerkCategories.TryGetValue(categoryType, out var category) 
                 ? category 
@@ -448,7 +455,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="characterType">The character type to retrieve.</param>
         /// <returns>A character type detail.</returns>
-        public static CharacterTypeAttribute GetCharacterType(CharacterType characterType)
+        public CharacterTypeAttribute GetCharacterType(CharacterType characterType)
         {
             return _allCharacterTypes.TryGetValue(characterType, out var characterTypeDetail) 
                 ? characterTypeDetail 
@@ -461,7 +468,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="perkType">The type of perk</param>
         /// <param name="perkLevel">The level of the perk</param>
         /// <returns>The tier of the perk level. Returns 0 if unable to be determined.</returns>
-        public static int GetPerkLevelTier(PerkType perkType, int perkLevel)
+        public int GetPerkLevelTier(PerkType perkType, int perkLevel)
         {
             if (!_perkLevelTiers.ContainsKey(perkType))
                 return 0;
@@ -483,7 +490,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature whose perk level will be retrieved.</param>
         /// <param name="perkType">The type of perk to retrieve.</param>
         /// <returns>The perk level of a creature.</returns>
-        public static int GetPerkLevel(uint creature, PerkType perkType)
+        public int GetPerkLevel(uint creature, PerkType perkType)
         {
             if (GetIsDM(creature) && !GetIsDMPossessed(creature)) 
                 return 0;
@@ -494,7 +501,7 @@ namespace SWLOR.Game.Server.Service
                 return GetPlayerPerkLevel(creature, perkType);
             }
             // Beasts
-            else if (BeastMastery.IsPlayerBeast(creature))
+            else if (ServiceContainer.GetService<BeastMastery>().IsPlayerBeast(creature))
             {
                 return GetBeastPerkLevel(creature, perkType);
             }
@@ -530,7 +537,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player whose perk level we're retrieving</param>
         /// <param name="perkType">The type of perk we're retrieving</param>
         /// <returns>The player's effective perk level.</returns>
-        public static int GetPlayerEffectivePerkLevel(uint player, PerkType perkType)
+        public int GetPlayerEffectivePerkLevel(uint player, PerkType perkType)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return 0;
 
@@ -600,7 +607,8 @@ namespace SWLOR.Game.Server.Service
         {
 
             // todo: merge with player branch
-            var beastId = BeastMastery.GetBeastId(beast);
+            var beastMasteryService = ServiceContainer.GetService<BeastMastery>();
+            var beastId = beastMasteryService.GetBeastId(beast);
             var dbBeast = _db.Get<Beast>(beastId);
 
             if (dbBeast == null)
@@ -648,7 +656,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to unlock the perk for</param>
         /// <param name="perkType">The type of perk to unlock for the player</param>
-        public static void UnlockPerkForPlayer(uint player, PerkType perkType)
+        public void UnlockPerkForPlayer(uint player, PerkType perkType)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (!_perksWithUnlockRequirements.ContainsKey(perkType)) return;
@@ -666,7 +674,7 @@ namespace SWLOR.Game.Server.Service
         /// If the player no longer meets the requirements for those perks, they should be reduced in level.
         /// </summary>
         [ScriptHandler(ScriptName.OnSwlorLoseSkill)]
-        public static void RemovePerkLevelOnSkillDecay()
+        public void RemovePerkLevelOnSkillDecay()
         {
             var skillType = (SkillType)Convert.ToInt32(EventsPlugin.GetEventData("SKILL_TYPE_ID"));
             

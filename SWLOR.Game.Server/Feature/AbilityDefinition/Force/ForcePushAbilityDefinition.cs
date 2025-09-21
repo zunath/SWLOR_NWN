@@ -4,11 +4,22 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForcePushAbilityDefinition : IAbilityListDefinition
     {
+        private readonly ICombatService _combatService;
+        private readonly IAbilityService _abilityService;
+
+        public ForcePushAbilityDefinition(ICombatService combatService, IAbilityService abilityService)
+        {
+            _combatService = combatService;
+            _abilityService = abilityService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -43,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
 
             var willpowerBonus = 0.5f * GetAbilityModifier(AbilityType.Willpower, activator);
-            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Willpower);
+            dc = CombatService.CalculateSavingThrowDC(activator, dc, 0, 0);
             var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
             var duration = BaseDuration + willpowerBonus;
 
@@ -51,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, duration);
 
-                Ability.ApplyTemporaryImmunity(target, duration, ImmunityType.Knockdown);
+                AbilityService.ApplyTemporaryImmunity(target, duration, ImmunityType.Knockdown);
             }
             else if (checkResult == SavingThrowResultType.Success)
             {

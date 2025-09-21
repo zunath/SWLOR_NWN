@@ -17,11 +17,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class AchievementsViewModel: GuiViewModelBase<AchievementsViewModel, GuiPayloadBase>,
         IGuiRefreshable<AchievementUnlockedRefreshEvent>
     {
-        public AchievementsViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public AchievementsViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        {
+            _db = db;
+        }
         
         private const int EntriesPerPage = 25;
         private int SelectedIndex { get; set; }

@@ -4,12 +4,21 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class AuraStatusEffectDefinition: IStatusEffectListDefinition
     {
         private readonly StatusEffectBuilder _builder = new();
+        private readonly IPerkService _perkService;
+        private readonly IStatService _statService;
+
+        public AuraStatusEffectDefinition(IPerkService perkService, IStatService statService)
+        {
+            _perkService = perkService;
+            _statService = statService;
+        }
 
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {
@@ -33,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .GrantAction((source, target, length, data) => 
                 {
                     RemoveEffectByTag(target, EffectTag);
-                    var effectiveLevel = Perk.GetPerkLevel(source, PerkType.Charge);
+                    var effectiveLevel = _perkService.GetPerkLevel(source, PerkType.Charge);
                     Effect effect;
 
                     switch (effectiveLevel)
@@ -50,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                             break;
                     }
                     
-                    Stat.ApplyPlayerMovementRate(target);
+                    _statService.ApplyPlayerMovementRate(target);
                 })
                 .RemoveAction((target, data) =>
                 {
@@ -60,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     // actually remove the effect until after the script ends. This throws off the calculations happening in Stat.ApplyPlayerMovementRate.
                     DelayCommand(0.1f, () =>
                     {
-                        Stat.ApplyPlayerMovementRate(target);
+                        _statService.ApplyPlayerMovementRate(target);
                     });
                 });
         }
@@ -86,8 +95,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(EffectIconType.Rejuvenation)
                 .TickAction((source, target, data) =>
                 {
-                    var level = Perk.GetPerkLevel(source, PerkType.Rejuvenation);
-                    Stat.RestoreStamina(target, level);
+                    var level = _perkService.GetPerkLevel(source, PerkType.Rejuvenation);
+                    _statService.RestoreStamina(target, level);
                 });
         }
 

@@ -241,7 +241,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             // By this point, it's assumed the player will accept the quest.
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
-            var quest = Quest.GetQuestById(QuestId);
+            var quest = ServiceContainer.GetService<IQuestService>().GetQuestById(QuestId);
             var playerQuest = dbPlayer.Quests.ContainsKey(QuestId) ? dbPlayer.Quests[QuestId] : new PlayerQuest();
 
             // Retrieve the first quest state for this quest.
@@ -295,7 +295,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             // Retrieve the player's current quest state.
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
-            var quest = Quest.GetQuestById(QuestId);
+            var quest = ServiceContainer.GetService<IQuestService>().GetQuestById(QuestId);
             var playerQuest = dbPlayer.Quests.ContainsKey(QuestId) ? dbPlayer.Quests[QuestId] : new PlayerQuest();
 
             // Can't find a state? Notify the player they haven't accepted the quest.

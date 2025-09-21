@@ -11,6 +11,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     {
         private readonly AbilityBuilder _builder = new();
 
+        public AdhesiveGrenadeAbilityDefinition(IRandomService random, IItemService itemService, IPerkService perkService, IStatService statService, ICombatService combatService) 
+            : base(random, itemService, perkService, statService, combatService)
+        {
+        }
+
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             AdhesiveGrenade1();
@@ -28,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var effect = EffectSlow();
             if (immobilizeDC > 0)
             {
-                var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, immobilizeDC);
+                var dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, immobilizeDC);
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {

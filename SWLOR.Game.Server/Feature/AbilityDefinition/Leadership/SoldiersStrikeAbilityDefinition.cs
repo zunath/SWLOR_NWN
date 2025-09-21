@@ -4,12 +4,22 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
     public class SoldiersStrikeAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly IPerkService _perkService;
+        private readonly IAbilityService _abilityService;
+
+        public SoldiersStrikeAbilityDefinition(IPerkService perkService, IAbilityService abilityService)
+        {
+            _perkService = perkService;
+            _abilityService = abilityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -30,11 +40,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return Ability.ToggleAura(activator, StatusEffectType.SoldiersStrike);
+                    return AbilityService.ToggleAura(activator, StatusEffectType.SoldiersStrike);
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Ability.ApplyAura(activator, StatusEffectType.SoldiersStrike, false, true, false);
+                    var abilityService = ServiceContainer.GetService<IAbilityService>();
+                    abilityService.ApplyAura(activator, StatusEffectType.SoldiersStrike, false, true, false);
                 });
         }
     }

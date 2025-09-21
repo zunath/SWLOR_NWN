@@ -16,11 +16,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ElectionViewModel: GuiViewModelBase<ElectionViewModel, GuiPayloadBase>
     {
-        public ElectionViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public ElectionViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        {
+            _db = db;
+        }
         
         private readonly List<string> _candidatePlayerIds = new();
         private int _selectedCandidateIndex;

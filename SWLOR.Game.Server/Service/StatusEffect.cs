@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
@@ -13,8 +14,22 @@ using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class StatusEffect
+    public class StatusEffectService : IStatusEffectService
     {
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly IGenericCacheService _cacheService;
+        private readonly IGuiService _guiService;
+        private readonly IAbilityService _abilityService;
+
+        public StatusEffectService(ILogger logger, IDatabaseService db, IGenericCacheService cacheService, IGuiService guiService, IAbilityService abilityService)
+        {
+            _logger = logger;
+            _db = db;
+            _cacheService = cacheService;
+            _guiService = guiService;
+            _abilityService = abilityService;
+        }
         private class StatusEffectGroup
         {
             public uint Source { get; set; }
@@ -23,12 +38,12 @@ namespace SWLOR.Game.Server.Service
             public object EffectData { get; set; }
         }
 
-        private static readonly Dictionary<StatusEffectType, StatusEffectDetail> _statusEffects = new();
-        private static readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _creaturesWithStatusEffects = new();
-        private static readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _loggedOutPlayersWithEffects = new();
+        private readonly Dictionary<StatusEffectType, StatusEffectDetail> _statusEffects = new();
+        private readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _creaturesWithStatusEffects = new();
+        private readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _loggedOutPlayersWithEffects = new();
 
-        private static readonly Dictionary<EffectIconType, List<StatusEffectType>> _effectIconToStatusEffects = new();
-        private static readonly Dictionary<EffectIconType, AbilityType> _abilityIncreaseIconType = new()
+        private readonly Dictionary<EffectIconType, List<StatusEffectType>> _effectIconToStatusEffects = new();
+        private readonly Dictionary<EffectIconType, AbilityType> _abilityIncreaseIconType = new()
         {
             { EffectIconType.AbilityIncreaseSTR, AbilityType.Might },
             { EffectIconType.AbilityDecreaseSTR, AbilityType.Might },
@@ -45,7 +60,7 @@ namespace SWLOR.Game.Server.Service
 
         };
 
-        private static readonly Dictionary<EffectIconType, EffectTypeScript> _effectIconToEffectType = new()
+        private readonly Dictionary<EffectIconType, EffectTypeScript> _effectIconToEffectType = new()
         {
             { EffectIconType.Invalid, EffectTypeScript.Invalideffect },
             { EffectIconType.DamageResistance, EffectTypeScript.DamageResistance },
@@ -187,7 +202,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, cache all status effects.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheStatusEffects()
+        public void CacheStatusEffects()
         {
             // Organize perks to make later reads quicker.
             var types = AppDomain.CurrentDomain.GetAssemblies()
@@ -221,7 +236,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="effectData">Effect data used by the effect.</param>
         /// <param name="concentrationFeatType">If status effect is associated with a concentration ability, this will track the feat type used.</param>
         /// <param name="sendApplicationMessage">If true, a message will be sent to nearby players when the status effect is applied.</param>
-        public static void Apply(
+        public void Apply(
             uint source, 
             uint target, 
             StatusEffectType statusEffectType, 
@@ -301,8 +316,7 @@ namespace SWLOR.Game.Server.Service
             if(sendApplicationMessage)
                 Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.", 20f);
 
-            var guiService = ServiceContainer.GetService<IGuiService>();
-            guiService.PublishRefreshEvent(target, new StatusEffectReceivedRefreshEvent());
+            _guiService.PublishRefreshEvent(target, new StatusEffectReceivedRefreshEvent());
         }
 
         /// <summary>
@@ -310,7 +324,7 @@ namespace SWLOR.Game.Server.Service
         /// dictionary for processing.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void PlayerEnter()
+        public void PlayerEnter()
         {
             var player = GetEnteringObject();
 
@@ -330,7 +344,7 @@ namespace SWLOR.Game.Server.Service
         /// so they aren't processed unnecessarily.  
         /// </summary>
         [ScriptHandler<OnModuleExit>]
-        public static void PlayerExit()
+        public void PlayerExit()
         {
             var player = GetExitingObject();
 
@@ -347,7 +361,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module heartbeat runs, execute and clean up status effects on all creatures.
         /// </summary>
         [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
-        public static void TickStatusEffects()
+        public void TickStatusEffects()
         {
             var now = DateTime.UtcNow;
 
@@ -359,7 +373,7 @@ namespace SWLOR.Game.Server.Service
                 // Iterate over each status effect, cleaning them up if they've expired or executing their tick if applicable.
                 foreach (var (statusEffect, group) in statusEffects)
                 {
-                    var activeConcentration = Ability.GetActiveConcentration(group.Source);
+                    var activeConcentration = _abilityService.GetActiveConcentration(group.Source);
 
                     // Concentration check - If caster is no longer channeling this feat, remove the status effect.
                     if (group.ConcentrationFeatType != FeatType.Invalid)
@@ -382,7 +396,7 @@ namespace SWLOR.Game.Server.Service
                             activeConcentration.Feat == group.ConcentrationFeatType &&
                             activeConcentration.Target == creature)
                         {
-                            Ability.EndConcentrationAbility(group.Source);
+                            _abilityService.EndConcentrationAbility(group.Source);
                         }
 
                     }
@@ -406,7 +420,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player dies, remove any status effects which are present.
         /// </summary>
         [ScriptHandler<OnModuleDeath>]
-        public static void OnPlayerDeath()
+        public void OnPlayerDeath()
         {
             var player = GetLastPlayerDied();
             if (!GetIsPC(player) || GetIsDM(player))
@@ -423,7 +437,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void Remove(uint creature, StatusEffectType statusEffectType, bool showMessage, bool removeIcon)
+        private void Remove(uint creature, StatusEffectType statusEffectType, bool showMessage, bool removeIcon)
         {
             if (!HasStatusEffect(creature, statusEffectType, true)) return;
 
@@ -441,8 +455,7 @@ namespace SWLOR.Game.Server.Service
             if(showMessage)
                 Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)}'s {statusEffectDetail.Name} effect has worn off.");
 
-            var guiService = ServiceContainer.GetService<IGuiService>();
-            guiService.PublishRefreshEvent(creature, new StatusEffectRemovedRefreshEvent());
+            _guiService.PublishRefreshEvent(creature, new StatusEffectRemovedRefreshEvent());
         }
 
         /// <summary>
@@ -451,7 +464,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to remove the status effect from.</param>
         /// <param name="statusEffectType">The type of status effect to remove.</param>
         /// <param name="showMessage">If true, a message will be displayed. Otherwise no message is displayed.</param>
-        public static void Remove(uint creature, StatusEffectType statusEffectType, bool showMessage = true)
+        public void Remove(uint creature, StatusEffectType statusEffectType, bool showMessage = true)
         {
             Remove(creature, statusEffectType, showMessage, true);
         }
@@ -460,7 +473,7 @@ namespace SWLOR.Game.Server.Service
         /// Removes all status effects from a creature.
         /// </summary>
         /// <param name="creature">The creature to remove all effects from.</param>
-        public static void RemoveAll(uint creature)
+        public void RemoveAll(uint creature)
         {
             if (!_creaturesWithStatusEffects.ContainsKey(creature))
                 return;
@@ -480,7 +493,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="statusEffectType">The status effect type to look for.</param>
         /// <param name="ignoreExpiration">If true, expired effects will return true. Otherwise, expiration will be checked.</param>
         /// <returns>true if creature has status effect, false otherwise</returns>
-        private static bool HasStatusEffect(uint creature, StatusEffectType statusEffectType, bool ignoreExpiration)
+        private bool HasStatusEffect(uint creature, StatusEffectType statusEffectType, bool ignoreExpiration)
         {
             // Creature doesn't exist in the cache.
             if (!_creaturesWithStatusEffects.ContainsKey(creature))
@@ -509,7 +522,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to check.</param>
         /// <param name="statusEffectTypes">The status effect types to look for.</param>
         /// <returns>true if creature has status effect, false otherwise</returns>
-        public static bool HasStatusEffect(uint creature, params StatusEffectType[] statusEffectTypes)
+        public bool HasStatusEffect(uint creature, params StatusEffectType[] statusEffectTypes)
         {
             foreach (var statusEffectType in statusEffectTypes)
             {
@@ -525,7 +538,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type to search for.</param>
         /// <returns>A status effect detail</returns>
-        public static StatusEffectDetail GetDetail(StatusEffectType type)
+        public StatusEffectDetail GetDetail(StatusEffectType type)
         {
             return _statusEffects[type];
         }
@@ -538,7 +551,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to check.</param>
         /// <param name="effectType">The type of effect.</param>
         /// <returns>An effect data object or a default object of type T</returns>
-        public static T GetEffectData<T>(uint creature, StatusEffectType effectType)
+        public T GetEffectData<T>(uint creature, StatusEffectType effectType)
         {
             if (!_creaturesWithStatusEffects.ContainsKey(creature) ||
                 !_creaturesWithStatusEffects[creature].ContainsKey(effectType))
@@ -553,7 +566,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to check.</param>
         /// <param name="effectTypes">The type(s) of effect.</param>
         /// <returns>A float time remaining of the status effect</returns>
-        public static int GetEffectDuration(uint creature, params StatusEffectType[] effectTypes)
+        public int GetEffectDuration(uint creature, params StatusEffectType[] effectTypes)
         {
             foreach (var effectType in effectTypes)
             {
@@ -572,7 +585,7 @@ namespace SWLOR.Game.Server.Service
             
         }
 
-        public static EffectTypeScript GetEffectTypeFromIcon(EffectIconType effectIcon)
+        public EffectTypeScript GetEffectTypeFromIcon(EffectIconType effectIcon)
         {
             if (!_effectIconToEffectType.TryGetValue(effectIcon, out EffectTypeScript effectType))
                 return EffectTypeScript.Invalideffect;
@@ -580,7 +593,7 @@ namespace SWLOR.Game.Server.Service
             return effectType;
         }
 
-        public static List<StatusEffectType> GetStatusEffectTypesFromIcon(EffectIconType effectIcon)
+        public List<StatusEffectType> GetStatusEffectTypesFromIcon(EffectIconType effectIcon)
         {
             if (!_effectIconToStatusEffects.TryGetValue(effectIcon, out List<StatusEffectType> statusTypes))
                 return new List<StatusEffectType>();
@@ -588,7 +601,7 @@ namespace SWLOR.Game.Server.Service
             return statusTypes;
         }
 
-        public static AbilityType GetAbilityTypeBuffed (EffectIconType effectIcon)
+        public AbilityType GetAbilityTypeBuffed (EffectIconType effectIcon)
         {
             if (!_abilityIncreaseIconType.TryGetValue(effectIcon, out AbilityType abilityType))
                 return AbilityType.Invalid;

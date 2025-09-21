@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
@@ -10,6 +11,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
     public class SoldiersPrecisionAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly IAbilityService _abilityService;
+
+        public SoldiersPrecisionAbilityDefinition(IAbilityService abilityService)
+        {
+            _abilityService = abilityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -30,11 +37,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return Ability.ToggleAura(activator, StatusEffectType.SoldiersPrecision);
+                    return _abilityService.ToggleAura(activator, StatusEffectType.SoldiersPrecision);
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Ability.ApplyAura(activator, StatusEffectType.SoldiersPrecision, false, true, false);
+                    _abilityService.ApplyAura(activator, StatusEffectType.SoldiersPrecision, false, true, false);
                 });
         }
     }

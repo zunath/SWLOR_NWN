@@ -18,11 +18,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class MarketListingViewModel: GuiViewModelBase<MarketListingViewModel, MarketPayload>, IGuiAcceptsPriceChange
     {
-        public MarketListingViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
+        private readonly IItemService _itemService;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public MarketListingViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService) : base(guiService)
+        {
+            _db = db;
+            _itemService = itemService;
+        }
         
         private MarketRegionType _regionType;
 
@@ -203,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            if (Item.IsLegacyItem(item))
+            if (_itemService.IsLegacyItem(item))
             {
                 FloatingTextStringOnCreature($"Legacy items cannot be sold on the market.", Player, false);
                 return;
@@ -224,7 +227,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Resref = GetResRef(item),
                 Data = ObjectPlugin.Serialize(item),
                 Quantity = GetItemStackSize(item),
-                IconResref = Item.GetIconResref(item),
+                IconResref = _itemService.GetIconResref(item),
                 Category = PlayerMarket.GetItemMarketCategory(item)
             };
 

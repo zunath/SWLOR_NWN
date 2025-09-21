@@ -2,13 +2,20 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class GeneralPerkDefinition: IPerkListDefinition
     {
+        private readonly IAbilityService _abilityService;
         private readonly PerkBuilder _builder = new();
+
+        public GeneralPerkDefinition(IAbilityService abilityService)
+        {
+            _abilityService = abilityService;
+        }
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
@@ -21,9 +28,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             void ToggleDash(uint player)
             {
-                if (Ability.IsAbilityToggled(player, AbilityToggleType.Dash))
+                if (_abilityService.IsAbilityToggled(player, AbilityToggleType.Dash))
                 {
-                    Ability.ToggleAbility(player, AbilityToggleType.Dash, false);
+                    _abilityService.ToggleAbility(player, AbilityToggleType.Dash, false);
                 }
             }
 
@@ -40,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .PurchaseRequirement((player) =>
                 {
-                    if (Ability.IsAbilityToggled(player, AbilityToggleType.Dash))
+                    if (_abilityService.IsAbilityToggled(player, AbilityToggleType.Dash))
                     {
                         return "Please disable Dash and try again.";
                     }

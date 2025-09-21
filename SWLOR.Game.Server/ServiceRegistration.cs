@@ -112,6 +112,8 @@ namespace SWLOR.Game.Server
             services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.SliceTerminalDialog>();
             services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.StarportDialog>();
             services.AddSingleton<SWLOR.Component.World.Dialog.TaxiTerminalDialog>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.QuestRewardSelectionDialog>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.XPTomeDialog>();
 
             // Quest Definition Services
             services.AddSingleton<SWLOR.Game.Server.Service.QuestService.IQuestListDefinition, SWLOR.Game.Server.Feature.QuestDefinition.DantooineQuestDefinition>();
@@ -128,17 +130,172 @@ namespace SWLOR.Game.Server
             services.AddSingleton<SWLOR.Game.Server.Service.QuestService.IQuestListDefinition, SWLOR.Game.Server.Feature.QuestDefinition.KorribanQuestlineDefinition>();
             services.AddSingleton<SWLOR.Game.Server.Service.QuestService.IQuestListDefinition, SWLOR.Game.Server.Feature.QuestDefinition.MonCalaQuestDefinition>();
 
-            // Feature Services
-            services.AddSingleton<SWLOR.Game.Server.Feature.MiniMaps>();
-            services.AddSingleton<SWLOR.Game.Server.Feature.PlaceableScripts>();
-            services.AddSingleton<SWLOR.Game.Server.Feature.PersistentMapProgression>();
+        // Feature Services
+        services.AddSingleton<SWLOR.Game.Server.Feature.MiniMaps>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.NaturalRegeneration>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.PlaceableScripts>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.PersistentMapProgression>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.UsePerkFeat>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.EquipmentRestrictions>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.EquipmentStats>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.ScavengePoint>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.StoreManagement>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.PlayerInitialization>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.GuildMasterDialog>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.PlaceCityHallDialog>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.DialogDefinition.StarportDialog>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.ShipModuleDefinition.StripMinerModuleDefinition>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.ShipModuleDefinition.StormCannonModuleDefinition>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.ShipModuleDefinition.QuadLaserCannonModuleDefinition>();
+        services.AddSingleton<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CraftViewModel>();
+            services.AddSingleton<SWLOR.Game.Server.Service.PlayerMarket>();
+            services.AddSingleton<SWLOR.Game.Server.Service.Loot>();
+            services.AddSingleton<SWLOR.Game.Server.Service.Fishing>();
+            services.AddSingleton<SWLOR.Game.Server.Service.Droid>();
+            services.AddSingleton<SWLOR.Game.Server.Service.Death>();
 
             // Other Services
             services.AddSingleton<SWLOR.Game.Server.Service.SnippetService.ISnippetListDefinition, SWLOR.Game.Server.Feature.SnippetDefinition.KeyItemSnippetDefinition>();
             services.AddSingleton<SWLOR.Game.Server.Service.ItemService.IItemListDefinition, SWLOR.Game.Server.Feature.ItemDefinition.KeyItemDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.StatusEffectDefinition.AuraStatusEffectDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.ItemService.IItemListDefinition, SWLOR.Game.Server.Feature.ItemDefinition.RecipeItemDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.ItemService.IItemListDefinition, SWLOR.Game.Server.Feature.ItemDefinition.HarvesterItemDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.ItemService.IItemListDefinition, SWLOR.Game.Server.Feature.ItemDefinition.DroidControlItemDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.ItemService.IItemListDefinition, SWLOR.Game.Server.Feature.ItemDefinition.ConsumableItemDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.ItemService.IItemListDefinition, SWLOR.Game.Server.Feature.ItemDefinition.DNAExtractorItemDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.ItemService.IItemListDefinition, SWLOR.Game.Server.Feature.ItemDefinition.BeastEggItemDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.ItemService.IItemListDefinition, SWLOR.Game.Server.Feature.ItemDefinition.FishingRodItemDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.ItemService.IItemListDefinition, SWLOR.Game.Server.Feature.ItemDefinition.KeyItemDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.ItemService.IItemListDefinition, SWLOR.Game.Server.Feature.ItemDefinition.SaberUpgradeItemDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.ItemService.IItemListDefinition, SWLOR.Game.Server.Feature.ItemDefinition.TomeItemDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.SnippetService.ISnippetListDefinition, SWLOR.Game.Server.Feature.SnippetDefinition.KeyItemSnippetDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.StatusEffectService.IStatusEffectListDefinition, SWLOR.Game.Server.Feature.StatusEffectDefinition.ForceDrainStatusEffectDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.StatusEffectService.IStatusEffectListDefinition, SWLOR.Game.Server.Feature.StatusEffectDefinition.ForceHealStatusEffectDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.StatusEffectService.IStatusEffectListDefinition, SWLOR.Game.Server.Feature.StatusEffectDefinition.DamageStatusEffectDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.PerkService.IPerkListDefinition, SWLOR.Game.Server.Feature.PerkDefinition.TwoHandedPerkDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.PerkService.IPerkListDefinition, SWLOR.Game.Server.Feature.PerkDefinition.RangedPerkDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.PerkService.IPerkListDefinition, SWLOR.Game.Server.Feature.PerkDefinition.MartialArtsPerkDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded.SaberStrikeAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.General.DashAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded.ShieldBashAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts.SlamAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.NPC.SpikesAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.Devices.ConcussionGrenadeAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.Leadership.SoldiersSpeedAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.Leadership.SoldiersPrecisionAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.Devices.IonGrenadeAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.Devices.WristRocketAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded.CrescentMoonAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.Ranged.TranquilizerShotAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded.RiotBladeAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded.ShieldBashAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded.HardSlashAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded.DoubleThrustAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts.SlamAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.Devices.GasBombAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.Devices.ConcussionGrenadeAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.Devices.AdhesiveGrenadeAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.Leadership.SoldiersStrikeAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts.LegSweepAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.Beasts.SpinningClawAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.Devices.WristRocketAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Service.AbilityService.IAbilityListDefinition, SWLOR.Game.Server.Feature.AbilityDefinition.Leadership.ChargeAbilityDefinition>();
+            
+            // Ship Module Definitions
+            services.AddSingleton<SWLOR.Game.Server.Feature.ShipModuleDefinition.MiningLaserModuleDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.ShipModuleDefinition.QuadLaserCannonModuleDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.ShipModuleDefinition.MissileLauncherModuleDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.ShipModuleDefinition.ProtonBombModuleDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.ShipModuleDefinition.LaserCannonBatteryModuleDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.ShipModuleDefinition.AssaultConcussionMissileModuleDefinition>();
+            
+            // Ability Definitions
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded.DoubleStrikeAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded.CircleSlashAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded.SkewerAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded.CrossCutAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.Ranged.QuickDrawAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded.SaberStrikeAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded.ShieldBashAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.Devices.FragGrenadeAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.Beasts.ClawAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded.PoisonStabAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded.HackingBladeAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.Devices.ConcussionGrenadeAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts.ElectricFistAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.Devices.FlamethrowerAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.Leadership.RousingShoutAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.StatusEffectDefinition.FoodStatusEffectDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.Force.ThrowLightsaberAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.Devices.IonGrenadeAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.Force.ForceSparkAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.Force.MindTrickAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.Force.ForcePushAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid.KoltoRecoveryAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.Beasts.SpinningClawAbilityDefinition>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AbilityDefinition.Beasts.ShockingSlashAbilityDefinition>();
+            
+            // GUI ViewModels
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.StablesViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PlayerStatusViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.RecipesViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.IncubatorViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PropertyItemStorageViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CraftViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.IncubatorViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.StablesViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ManageCityViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ManageCitizenshipViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ManageApartmentViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.TrainingStoreViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.RentApartmentViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.RenameTargetViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PropertyPermissionsViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ManageDMsViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ElectionViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterStatRebuildViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.BugReportViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AchievementsViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CreatureManagerViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.NotesViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ManageStructuresViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CurrenciesViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ManageBansViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.OutfitViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.MarketListingViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.MarketBuyViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AreaNotesViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CustomizeCharacterViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterFullRebuildViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.SkillsViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerksViewModel>();
+            services.AddTransient<SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.SettingsViewModel>();
+            
+            // Chat Command Services
+            services.AddTransient<SWLOR.Game.Server.Feature.ChatCommandDefinition.CharacterChatCommand>();
+            services.AddTransient<SWLOR.Game.Server.Feature.ChatCommandDefinition.SystemChatCommand>();
+            services.AddTransient<SWLOR.Game.Server.Feature.ChatCommandDefinition.RenameChatCommand>();
+            services.AddTransient<SWLOR.Game.Server.Feature.ChatCommandDefinition.DebuggingChatCommand>();
+            services.AddTransient<SWLOR.Game.Server.Feature.ChatCommandDefinition.AdminChatCommand>();
             
             // Core Services
             services.AddSingleton<SWLOR.Shared.Core.Contracts.IObjectVisibilityService, SWLOR.Game.Server.Service.ObjectVisibilityService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IQuestService, SWLOR.Game.Server.Service.QuestService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IItemService, SWLOR.Game.Server.Service.ItemService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ICombatService, SWLOR.Game.Server.Service.CombatService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IAbilityService, SWLOR.Game.Server.Service.AbilityService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IPerkService, SWLOR.Game.Server.Service.PerkService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ISkillService, SWLOR.Game.Server.Service.SkillService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IStatService, SWLOR.Game.Server.Service.StatService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ICraftService, SWLOR.Game.Server.Service.CraftService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IStatusEffectService, SWLOR.Game.Server.Service.StatusEffectService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ISpawnService, SWLOR.Game.Server.Service.SpawnService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IFactionService, SWLOR.Game.Server.Service.FactionService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.IGuildService, SWLOR.Game.Server.Service.GuildService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ICurrencyService, SWLOR.Game.Server.Service.CurrencyService>();
+            services.AddSingleton<SWLOR.Shared.Core.Contracts.ILanguageService, SWLOR.Game.Server.Service.LanguageService>();
         }
         
     }

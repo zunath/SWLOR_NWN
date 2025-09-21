@@ -17,11 +17,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageApartmentViewModel: GuiViewModelBase<ManageApartmentViewModel, ManageApartmentPayload>
     {
-        public ManageApartmentViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public ManageApartmentViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        {
+            _db = db;
+        }
         
         public const int MaxNameLength = 50;
         public const int MaxDescriptionLength = 200;

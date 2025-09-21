@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service.AbilityService
 {
@@ -8,10 +9,12 @@ namespace SWLOR.Game.Server.Service.AbilityService
     public class AbilityRequirementFP : IAbilityActivationRequirement
     {
         public int RequiredFP { get; }
+        private readonly IStatService _statService;
 
-        public AbilityRequirementFP(int requiredFP)
+        public AbilityRequirementFP(int requiredFP, IStatService statService)
         {
             RequiredFP = requiredFP;
+            _statService = statService;
         }
 
         public string CheckRequirements(uint player)
@@ -19,7 +22,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             // DMs are assumed to be able to activate.
             if (GetIsDM(player)) return string.Empty;
 
-            var fp = Stat.GetCurrentFP(player);
+            var fp = _statService.GetCurrentFP(player);
 
             if (fp >= RequiredFP) return string.Empty;
             return $"Not enough FP. (Required: {RequiredFP})";
@@ -32,7 +35,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             // Force Attunement reduces FP costs to zero.
             if (StatusEffect.HasStatusEffect(player, StatusEffectType.ForceAttunement)) return;
 
-            Stat.ReduceFP(player, RequiredFP);
+            _statService.ReduceFP(player, RequiredFP);
         }
     }
 }

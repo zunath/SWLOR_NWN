@@ -6,11 +6,28 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class DoubleThrustAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+        private readonly ICombatPointService _combatPointService;
+        private readonly IEnmityService _enmityService;
+
+        public DoubleThrustAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+            _combatPointService = combatPointService;
+            _enmityService = enmityService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -21,11 +38,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!Item.PolearmBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.PolearmBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a polearm ability.";
             }
@@ -33,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
 
@@ -52,13 +69,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack, 
                 dmg, 
                 attackerStat, 
@@ -69,11 +86,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleThrust));
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
-            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private static void DoubleThrust1(AbilityBuilder builder)
+        private void DoubleThrust1(AbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleThrust1, PerkType.DoubleThrust)
                 .Name("Double Thrust I")
@@ -92,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }
-        private static void DoubleThrust2(AbilityBuilder builder)
+        private void DoubleThrust2(AbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleThrust2, PerkType.DoubleThrust)
                 .Name("Double Thrust II")
@@ -111,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     ImpactAction(activator, target, level, targetLocation);
                 });
         }
-        private static void DoubleThrust3(AbilityBuilder builder)
+        private void DoubleThrust3(AbilityBuilder builder)
         {
             builder.Create(FeatType.DoubleThrust3, PerkType.DoubleThrust)
                 .Name("Double Thrust III")

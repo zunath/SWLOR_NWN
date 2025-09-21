@@ -9,7 +9,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class HypermatterInjectorModuleDefinition : IShipModuleListDefinition
     {
+        private readonly ISpaceService _spaceService;
+        private readonly ICombatPointService _combatPointService;
         private readonly ShipModuleBuilder _builder = new();
+
+        public HypermatterInjectorModuleDefinition(ISpaceService spaceService, ICombatPointService combatPointService)
+        {
+            _spaceService = spaceService;
+            _combatPointService = combatPointService;
+        }
 
         private const string FuelCapsuleItemResref = "ship_fuelcapsule";
 
@@ -79,10 +87,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Breach), target);
                     
                     var recovery = capRestore + (moduleBonus + activatorShipStatus.Industrial) * 2;
-                    Space.RestoreCapacitor(target, targetShipStatus, recovery);
+                    _spaceService.RestoreCapacitor(target, targetShipStatus, recovery);
 
                     Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {recovery} capacitor charge to {GetName(target)}'s ship.");
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }
     }

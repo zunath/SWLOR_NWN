@@ -5,12 +5,30 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
     public class ShieldBashAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+        private readonly IAbilityService _abilityService;
+        private readonly ICombatPointService _combatPointService;
+        private readonly IEnmityService _enmityService;
+
+        public ShieldBashAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, IAbilityService abilityService, ICombatPointService combatPointService, IEnmityService enmityService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+            _abilityService = abilityService;
+            _combatPointService = combatPointService;
+            _enmityService = enmityService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -21,12 +39,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.LeftHand, activator);
             var leftHandType = GetBaseItemType(weapon);
             
-            if (Item.ShieldBaseItemTypes.Contains(leftHandType))
+            if (_itemService.ShieldBaseItemTypes.Contains(leftHandType))
             {
                 return string.Empty;
             }
@@ -34,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 return "A shield must be equipped in your left hand to use this ability.";
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
 
 
@@ -60,32 +78,32 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             }
 
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var might = GetAbilityScore(activator, AbilityType.Might);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(attack, dmg, might, defense, vitality, 0);
+            var damage = _combatService.CalculateDamage(attack, dmg, might, defense, vitality, 0);
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, dc, AbilityType.Might);
+            dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Will, dc, AbilityType.Might);
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectDazed(), target, Duration);
-                Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Dazed);
+                _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Dazed);
             }
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.ShieldWall));
 
-            Enmity.ModifyEnmity(activator, target, 400 * level + damage);
+            _enmityService.ModifyEnmity(activator, target, 400 * level + damage);
         }
 
-        private static void ShieldBash1(AbilityBuilder builder)
+        private void ShieldBash1(AbilityBuilder builder)
         {
             builder.Create(FeatType.ShieldBash1, PerkType.ShieldBash)
                 .Name("Shield Bash I")
@@ -99,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void ShieldBash2(AbilityBuilder builder)
+        private void ShieldBash2(AbilityBuilder builder)
         {
             builder.Create(FeatType.ShieldBash2, PerkType.ShieldBash)
                 .Name("Shield Bash II")
@@ -113,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void ShieldBash3(AbilityBuilder builder)
+        private void ShieldBash3(AbilityBuilder builder)
         {
             builder.Create(FeatType.ShieldBash3, PerkType.ShieldBash)
                 .Name("Shield Bash III")

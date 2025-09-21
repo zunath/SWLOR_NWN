@@ -1,9 +1,10 @@
-﻿ using System.Collections.Generic;
- using SWLOR.Game.Server.Service;
- using SWLOR.Game.Server.Service.SpaceService;
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 
@@ -11,8 +12,21 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class LaserCannonBatteryModuleDefinition : IShipModuleListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
+        private readonly ICombatService _combatService;
+        private readonly ISpaceService _spaceService;
+        private readonly IEnmityService _enmityService;
+        private readonly ICombatPointService _combatPointService;
         private readonly ShipModuleBuilder _builder = new();
+
+        public LaserCannonBatteryModuleDefinition(IRandomService random, ICombatService combatService, ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService)
+        {
+            _random = random;
+            _combatService = combatService;
+            _spaceService = spaceService;
+            _enmityService = enmityService;
+            _combatPointService = combatPointService;
+        }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -58,8 +72,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             .ActivatedAction((activator, activatorShipStatus, target, _, moduleBonus) =>
             {
                 var attackBonus = activatorShipStatus.ThermalDamage;
-                var attackerStat = Space.GetAttackStat(activator);
-                var attack = Space.GetShipAttack(activator, attackBonus);
+                var attackerStat = _spaceService.GetAttackStat(activator);
+                var attack = _spaceService.GetShipAttack(activator, attackBonus);
 
                 var moduleDMG = dmg + moduleBonus;
                 var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
@@ -77,34 +91,34 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                 if (nearbyTarget != activator && 
                                     _random.D4(1) != 1 && 
                                     GetIsEnemy(nearbyTarget, activator) && 
-                                    Space.GetShipStatus(nearbyTarget) != null)
+                                    _spaceService.GetShipStatus(nearbyTarget) != null)
                                 {
-                                    var nearbyShipStatus = Space.GetShipStatus(nearbyTarget);
+                                    var nearbyShipStatus = _spaceService.GetShipStatus(nearbyTarget);
                                     var nearbyDefenseBonus = nearbyShipStatus.ThermalDefense * 2;
-                                    var nearbyDefense = Space.GetShipDefense(nearbyTarget, nearbyDefenseBonus);
+                                    var nearbyDefense = _spaceService.GetShipDefense(nearbyTarget, nearbyDefenseBonus);
                                     var nearbyDefenderStat = GetAbilityScore(nearbyTarget, AbilityType.Vitality);
-                                    var damage = Combat.CalculateDamage(
+                                    var damage = _combatService.CalculateDamage(
                                         attack,
                                         moduleDMG,
                                         attackerStat,
                                         nearbyDefense,
                                         nearbyDefenderStat,
                                         0);
-                                    var chanceToHit = Space.CalculateChanceToHit(activator, nearbyTarget);
+                                    var chanceToHit = _spaceService.CalculateChanceToHit(activator, nearbyTarget);
                                     var roll = _random.D100(1);
                                     var isHit = roll <= chanceToHit;
                                     ApplyEffectToObject(DurationType.Instant, missile, nearbyTarget);
                                     if (isHit)
                                     {
-                                        Space.ApplyShipDamage(activator, nearbyTarget, damage);
+                                        _spaceService.ApplyShipDamage(activator, nearbyTarget, damage);
                                     }
 
                                     var attackId = isHit ? 1 : 4;
-                                    var combatLogMessage = Combat.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
+                                    var combatLogMessage = _combatService.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
                                     Messaging.SendMessageNearbyToPlayers(nearbyTarget, combatLogMessage, 60f);
 
-                                    Enmity.ModifyEnmity(activator, nearbyTarget, damage);
-                                    CombatPoint.AddCombatPoint(activator, nearbyTarget, SkillType.Piloting);
+                                    _enmityService.ModifyEnmity(activator, nearbyTarget, damage);
+                                    _combatPointService.AddCombatPoint(activator, nearbyTarget, SkillType.Piloting);
                                 }
                                 nearbyTarget = GetNextObjectInShape(Shape.Sphere, 20f, GetLocation(activator), true, ObjectType.Creature);
                             }

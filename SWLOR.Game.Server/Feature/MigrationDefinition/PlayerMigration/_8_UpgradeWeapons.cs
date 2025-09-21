@@ -97,7 +97,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
                 dbPlayer.UnallocatedSP += refundAmount;
                 dbPlayer.Perks.Remove(PerkType.RapidShot);
 
-                var perkDetail = Perk.GetPerkDetails(PerkType.RapidShot);
+                var perkService = ServiceContainer.GetService<IPerkService>();
+                var perkDetail = perkService.GetPerkDetails(PerkType.RapidShot);
 
                 foreach (var action in perkDetail.RefundedTriggers)
                 {
@@ -126,7 +127,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
         private void Update (uint item)
         {
             var baseItem = GetBaseItemType(item);
-            if (!Item.RifleBaseItemTypes.Contains(baseItem) && !Item.SaberstaffBaseItemTypes.Contains(baseItem) && !Item.TwinBladeBaseItemTypes.Contains(baseItem))
+            var itemService = ServiceContainer.GetService<IItemService>();
+            if (!itemService.RifleBaseItemTypes.Contains(baseItem) && !itemService.SaberstaffBaseItemTypes.Contains(baseItem) && !itemService.TwinBladeBaseItemTypes.Contains(baseItem))
                 return;
 
             var itemResRef = GetResRef(item);

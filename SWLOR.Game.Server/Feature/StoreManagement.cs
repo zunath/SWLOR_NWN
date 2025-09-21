@@ -16,17 +16,20 @@ namespace SWLOR.Game.Server.Feature
 {
     public class StoreManagement
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IScheduler _scheduler = ServiceContainer.GetService<IScheduler>();
+        private readonly ILogger _logger;
+        private readonly IScheduler _scheduler;
+
+        public StoreManagement(ILogger logger, IScheduler scheduler)
+        {
+            _logger = logger;
+            _scheduler = scheduler;
+        }
+
         private const int IntervalHours = 1; // Determines the interval at which stores are cleaned. 1 = 1 hour
         private static readonly List<uint> _stores = new();
         private const string StoreServiceItem = "STORE_SERVICE_IS_STORE_ITEM";
 
-        /// <summary>
-        /// When the module loads, place all stores inside the cache and schedule the cleanup process.
-        /// </summary>
-        [ScriptHandler<OnModuleLoad>]
-        public static void ProcessStores()
+        public void ProcessStores()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
@@ -48,23 +51,19 @@ namespace SWLOR.Game.Server.Feature
             _scheduler.ScheduleRepeating(DoCleanStores, TimeSpan.FromHours(IntervalHours));
         }
 
-        /// <summary>
-        /// When a store item is acquired, destroy the local flag indicating it's a store item.
-        /// </summary>
-        [ScriptHandler<OnModuleAcquire>]
-        public static void AcquireItem()
+        public void AcquireItem()
         {
             ClearStoreServiceItemFlag();
             HandleIncreasedPriceItemProperty();
         }
 
-        private static void ClearStoreServiceItemFlag()
+        private void ClearStoreServiceItemFlag()
         {
             var item = GetModuleItemAcquired();
             DeleteLocalBool(item, StoreServiceItem);
         }
         
-        private static void HandleIncreasedPriceItemProperty()
+        private void HandleIncreasedPriceItemProperty()
         {
             var item = GetModuleItemAcquired();
             var creature = GetModuleItemAcquiredBy();
@@ -79,7 +78,7 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        private static void ApplyIncreasedPriceItemProperty(uint item)
+        private void ApplyIncreasedPriceItemProperty(uint item)
         {
             var increasedPrice = 0;
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -105,7 +104,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Iterates through all the stores and destroys any non-store items.
         /// </summary>
-        private static void DoCleanStores()
+        private void DoCleanStores()
         {
             foreach (var store in _stores)
             {
@@ -123,11 +122,7 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        /// <summary>
-        /// Destroys items sold to NPC stores immediately.
-        /// </summary>
-        [ScriptHandler<OnStoreSellAfter>]
-        public static void DestroySoldItem()
+        public void DestroySoldItem()
         {
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var isSuccessful = EventsPlugin.GetEventData("RESULT") == "1";
@@ -138,11 +133,7 @@ namespace SWLOR.Game.Server.Feature
             DestroyObject(item);
         }
 
-        /// <summary>
-        /// Prevents items from being sold from a henchman's inventory.
-        /// </summary>
-        [ScriptHandler<OnStoreSellBefore>]
-        public static void PreventSalesFromHenchmenInventory()
+        public void PreventSalesFromHenchmenInventory()
         {
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var owner = GetItemPossessor(item);
@@ -153,6 +144,46 @@ namespace SWLOR.Game.Server.Feature
                 EventsPlugin.SkipEvent();
                 SendMessageToPC(master, ColorToken.Red("Items cannot be directly sold from your henchman's inventory."));
             }
+        }
+
+        /// <summary>
+        /// When the module loads, place all stores inside the cache and schedule the cleanup process.
+        /// </summary>
+        [ScriptHandler<OnModuleLoad>]
+        public static void OnModuleLoad()
+        {
+            var storeManagement = ServiceContainer.GetService<StoreManagement>();
+            storeManagement.ProcessStores();
+        }
+
+        /// <summary>
+        /// When a store item is acquired, destroy the local flag indicating it's a store item.
+        /// </summary>
+        [ScriptHandler<OnModuleAcquire>]
+        public static void OnModuleAcquire()
+        {
+            var storeManagement = ServiceContainer.GetService<StoreManagement>();
+            storeManagement.AcquireItem();
+        }
+
+        /// <summary>
+        /// Destroys items sold to NPC stores immediately.
+        /// </summary>
+        [ScriptHandler<OnStoreSellAfter>]
+        public static void OnStoreSellAfter()
+        {
+            var storeManagement = ServiceContainer.GetService<StoreManagement>();
+            storeManagement.DestroySoldItem();
+        }
+
+        /// <summary>
+        /// Prevents items from being sold from a henchman's inventory.
+        /// </summary>
+        [ScriptHandler<OnStoreSellBefore>]
+        public static void OnStoreSellBefore()
+        {
+            var storeManagement = ServiceContainer.GetService<StoreManagement>();
+            storeManagement.PreventSalesFromHenchmenInventory();
         }
     }
 }

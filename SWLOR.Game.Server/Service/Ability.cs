@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
@@ -18,21 +18,31 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Ability
+    public class AbilityService : IAbilityService
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        private readonly IDatabaseService _db;
+        private readonly IGenericCacheService _cacheService;
+        private readonly IStatService _statService;
+        private readonly IPerkService _perkService;
         
         // Cached data
-        private static IInterfaceCache<FeatType, AbilityDetail> _abilityCache;
+        private IInterfaceCache<FeatType, AbilityDetail> _abilityCache;
         
         // Pre-computed cache for fast retrieval
-        private static readonly Dictionary<FeatType, AbilityDetail> _allAbilities = new();
+        private readonly Dictionary<FeatType, AbilityDetail> _allAbilities = new();
         
         // Additional caches for complex data
-        private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new();
-        private static readonly Dictionary<AbilityToggleType, Action<uint, bool>> _toggleActions = new();
-        private static readonly Dictionary<uint, PlayerAura> _playerAuras = new();
+        private readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new();
+        private readonly Dictionary<AbilityToggleType, Action<uint, bool>> _toggleActions = new();
+        private readonly Dictionary<uint, PlayerAura> _playerAuras = new();
+
+        public AbilityService(IDatabaseService db, IGenericCacheService cacheService, IStatService statService, IPerkService perkService)
+        {
+            _db = db;
+            _cacheService = cacheService;
+            _statService = statService;
+            _perkService = perkService;
+        }
 
         private const int MaxNumberOfAuras = 4;
 
@@ -40,13 +50,13 @@ namespace SWLOR.Game.Server.Service
         /// When the module caches, abilities will be cached and events will be scheduled.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheData()
+        public void CacheData()
         {
             CacheAbilities();
             CacheToggleActions();
         }
 
-        private static void CacheAbilities()
+        public void CacheAbilities()
         {
             _abilityCache = _cacheService.BuildInterfaceCache<IAbilityListDefinition, FeatType, AbilityDetail>()
                 .WithDataExtractor(instance => instance.BuildAbilities())
@@ -61,7 +71,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_abilityCache.AllItems.Count} abilities.");
         }
 
-        private static void CacheToggleActions()
+        public void CacheToggleActions()
         {
             // If more toggle actions are added, it will make sense to promote this to a full fledged builder.
             // Until then, it can live here.
@@ -72,7 +82,7 @@ namespace SWLOR.Game.Server.Service
                     ? ColorToken.Green("Dash enabled") 
                     : ColorToken.Red("Dash disabled");
 
-                Stat.ApplyPlayerMovementRate(player);
+                _statService.ApplyPlayerMovementRate(player);
                 SendMessageToPC(player, message);
             };
         }
@@ -83,7 +93,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="featType">The type of feat to check.</param>
         /// <returns>true if feat is registered to an ability. false otherwise.</returns>
-        public static bool IsFeatRegistered(FeatType featType)
+        public bool IsFeatRegistered(FeatType featType)
         {
             return _abilityCache?.AllItems.ContainsKey(featType) == true;
         }
@@ -94,7 +104,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="featType">The type of feat</param>
         /// <returns>The ability detail</returns>
-        public static AbilityDetail GetAbilityDetail(FeatType featType)
+        public AbilityDetail GetAbilityDetail(FeatType featType)
         {
             return _allAbilities.TryGetValue(featType, out var ability) 
                 ? ability 
@@ -112,7 +122,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="effectivePerkLevel">The activator's effective perk level.</param>
         /// <param name="targetLocation">The target location of the perk feat.</param>
         /// <returns>true if successful, false otherwise</returns>
-        public static bool CanUseAbility(
+        public bool CanUseAbility(
             uint activator,
             uint target,
             FeatType abilityType,
@@ -215,7 +225,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="activator">The activator of the perk feat.</param>
         /// <param name="abilityType">The type of ability to use.</param>
         /// <returns>true if successful, false otherwise</returns>
-        public static bool CanUseConcentration(
+        public bool CanUseConcentration(
             uint activator,
             FeatType abilityType)
         {
@@ -254,7 +264,7 @@ namespace SWLOR.Game.Server.Service
         /// This will drain FP and reapply whatever effect is associated with an ability.
         /// </summary>
         [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
-        public static void ProcessConcentrationEffects()
+        public void ProcessConcentrationEffects()
         {
             var pairs = _activeConcentrationAbilities.ToList();
 
@@ -310,7 +320,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="target">The target of the concentration effect.</param>
         /// <param name="feat">The type of ability to activate.</param>
         /// <param name="statusEffectType">The concentration status effect to apply.</param>
-        public static void StartConcentrationAbility(uint creature, uint target, FeatType feat, StatusEffectType statusEffectType)
+        public void StartConcentrationAbility(uint creature, uint target, FeatType feat, StatusEffectType statusEffectType)
         {
             _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(target, feat, statusEffectType);
             StatusEffect.Apply(creature, target, statusEffectType, 0.0f, null, feat);
@@ -325,7 +335,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to check.</param>
         /// <returns>The active concentration feat or Feat.Invalid.</returns>
-        public static ActiveConcentrationAbility GetActiveConcentration(uint creature)
+        public ActiveConcentrationAbility GetActiveConcentration(uint creature)
         {
             if (_activeConcentrationAbilities.ContainsKey(creature))
             {
@@ -340,7 +350,7 @@ namespace SWLOR.Game.Server.Service
         /// If creature isn't concentrating, nothing will happen.
         /// </summary>
         /// <param name="creature"></param>
-        public static void EndConcentrationAbility(uint creature)
+        public void EndConcentrationAbility(uint creature)
         {
             if (_activeConcentrationAbilities.ContainsKey(creature))
             {
@@ -360,7 +370,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to toggle on or off.</param>
         /// <param name="toggleType">The type of toggle to turn on or off.</param>
         /// <param name="isToggled">true if the ability should be enabled, false otherwise</param>
-        public static void ToggleAbility(uint player, AbilityToggleType toggleType, bool isToggled)
+        public void ToggleAbility(uint player, AbilityToggleType toggleType, bool isToggled)
         {
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
@@ -392,7 +402,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to check</param>
         /// <param name="toggleType">The type of toggle to check</param>
         /// <returns>true if the ability is toggled on, false otherwise</returns>
-        public static bool IsAbilityToggled(uint player, AbilityToggleType toggleType)
+        public bool IsAbilityToggled(uint player, AbilityToggleType toggleType)
         {
             if (!GetIsPC(player) || GetIsDM(player))
                 return false;
@@ -407,7 +417,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="playerId">The player Id to check</param>
         /// <param name="toggleType">The type of toggle to check</param>
         /// <returns>true if the ability is toggled on, false otherwise</returns>
-        public static bool IsAbilityToggled(string playerId, AbilityToggleType toggleType)
+        public bool IsAbilityToggled(string playerId, AbilityToggleType toggleType)
         {
             var dbPlayer = _db.Get<Player>(playerId);
 
@@ -428,7 +438,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to check</param>
         /// <returns>true if any ability is toggled, false otherwise</returns>
-        public static bool IsAnyAbilityToggled(uint player)
+        public bool IsAnyAbilityToggled(uint player)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
@@ -452,7 +462,7 @@ namespace SWLOR.Game.Server.Service
         /// Whenever a weapon's OnHit event is fired, add a Leadership combat point if an Aura is active.
         /// </summary>
         [ScriptHandler(ScriptName.OnItemHit)]
-        public static void AddLeadershipCombatPoint()
+        public void AddLeadershipCombatPoint()
         {
             var player = OBJECT_SELF;
             var target = GetSpellTargetObject();
@@ -484,7 +494,7 @@ namespace SWLOR.Game.Server.Service
             return count;
         }
 
-        public static void ApplyAura(uint activator, StatusEffectType type, bool targetsSelf, bool targetsParty, bool targetsEnemies)
+        public void ApplyAura(uint activator, StatusEffectType type, bool targetsSelf, bool targetsParty, bool targetsEnemies)
         {
             if (!_playerAuras.ContainsKey(activator))
                 _playerAuras.Add(activator, new PlayerAura());
@@ -536,7 +546,7 @@ namespace SWLOR.Game.Server.Service
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), activator);
         }
 
-        public static bool ToggleAura(uint activator, StatusEffectType type)
+        public bool ToggleAura(uint activator, StatusEffectType type)
         {
             if (!_playerAuras.ContainsKey(activator))
                 return true;
@@ -630,13 +640,13 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void ReapplyPlayerAuraAOE(uint player)
+        public void ReapplyPlayerAuraAOE(uint player)
         {
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
             RemoveEffectByTag(player, "AURA_EFFECT");
-            var shoutRangeLevel = Perk.GetPerkLevel(player, PerkType.ShoutRange);
+            var shoutRangeLevel = _perkService.GetPerkLevel(player, PerkType.ShoutRange);
 
             AssignCommand(player, () =>
             {
@@ -651,7 +661,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, apply the Aura AOE effect.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void ApplyAuraAOE()
+        public void ApplyAuraAOE()
         {
             var player = GetEnteringObject();
             ReapplyPlayerAuraAOE(player);
@@ -661,7 +671,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player exits the server, remove all of their Aura effects.
         /// </summary>
         [ScriptHandler<OnModuleExit>]
-        public static void ClearAurasOnExit()
+        public void ClearAurasOnExit()
         {
             var player = GetExitingObject();
             RemoveAllAuras(player);
@@ -671,7 +681,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player dies, remove all of their Aura effects.
         /// </summary>
         [ScriptHandler<OnModuleDeath>]
-        public static void ClearAurasOnDeath()
+        public void ClearAurasOnDeath()
         {
             var player = GetLastPlayerDied();
             RemoveAllAuras(player);
@@ -681,7 +691,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player respawns, reapply the aura AOE effect
         /// </summary>
         [ScriptHandler<OnModuleRespawn>]
-        public static void ReapplyAuraOnRespawn()
+        public void ReapplyAuraOnRespawn()
         {
             var player = GetLastRespawnButtonPresser();
             ReapplyPlayerAuraAOE(player);
@@ -691,7 +701,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters space mode, remove all of their Aura effects.
         /// </summary>
         [ScriptHandler(ScriptName.OnSpaceEnter)]
-        public static void ClearAurasOnSpaceEntry()
+        public void ClearAurasOnSpaceEntry()
         {
             var player = OBJECT_SELF;
             RemoveAllAuras(player);
@@ -701,7 +711,7 @@ namespace SWLOR.Game.Server.Service
         /// Whenever a creature enters the aura, add them to the cache.
         /// </summary>
         [ScriptHandler(ScriptName.OnAuraEnter)]
-        public static void AuraEnter()
+        public void AuraEnter()
         {
             var entering = GetEnteringObject();
             var self = GetAreaOfEffectCreator(OBJECT_SELF);
@@ -748,7 +758,7 @@ namespace SWLOR.Game.Server.Service
         /// Whenever a creature exits the aura, remove it from the cache.
         /// </summary>
         [ScriptHandler(ScriptName.OnAuraExit)]
-        public static void AuraExit()
+        public void AuraExit()
         {
             var exiting = GetExitingObject();
             var self = GetAreaOfEffectCreator(OBJECT_SELF);
@@ -797,7 +807,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="target">The target receiving the immunity</param>
         /// <param name="abilityDuration">The length of the ability's duration. This will be added on top of the 20 seconds.</param>
         /// <param name="immunity">The type of immunity to apply.</param>
-        public static void ApplyTemporaryImmunity(uint target, float abilityDuration, ImmunityType immunity)
+        public void ApplyTemporaryImmunity(uint target, float abilityDuration, ImmunityType immunity)
         {
             const float BaseDuration = 20f;
             var duration = BaseDuration + abilityDuration;

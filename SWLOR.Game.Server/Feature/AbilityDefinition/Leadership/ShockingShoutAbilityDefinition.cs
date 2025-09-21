@@ -51,7 +51,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                         {
                             count++;
 
-                            var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, 14);
+                            var combatService = ServiceContainer.GetService<ICombatService>();
+                            var dc = combatService.CalculateSavingThrowDC(activator, 14, 0, 0);
                             const float BaseDuration = 2f;
                             var bonusDuration = GetAbilityModifier(AbilityType.Social, activator) * 0.5f;
                             var duration = BaseDuration + bonusDuration;
@@ -60,7 +61,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                             if (checkResult == SavingThrowResultType.Failed)
                             {
                                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), nearest, duration);
-                                Ability.ApplyTemporaryImmunity(target, duration, ImmunityType.Stun);
+                                var abilityService = ServiceContainer.GetService<IAbilityService>();
+                                abilityService.ApplyTemporaryImmunity(target, duration, ImmunityType.Stun);
                                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Sonic), nearest);
                             }
 

@@ -14,8 +14,17 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class BeastForcePerkDefinition : IPerkListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
+        private readonly IPerkService _perkService;
+        private readonly IStatService _statService;
         private readonly PerkBuilder _builder = new();
+
+        public BeastForcePerkDefinition(IRandomService random, IPerkService perkService, IStatService statService)
+        {
+            _random = random;
+            _perkService = perkService;
+            _statService = statService;
+        }
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
@@ -124,11 +133,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             var player = GetMaster(beast);
             if (GetIsPC(player) && !GetIsDead(player))
             {
-                var chance = Perk.GetPerkLevel(beast, PerkType.ForceLink) * 10;
+                var chance = _perkService.GetPerkLevel(beast, PerkType.ForceLink) * 10;
 
                 if (_random.D100(1) <= chance)
                 {
-                    Stat.RestoreFP(player, 1);
+                    _statService.RestoreFP(player, 1);
                 }
             }
         }

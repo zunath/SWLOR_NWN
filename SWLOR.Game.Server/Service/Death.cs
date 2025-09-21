@@ -6,18 +6,33 @@ using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
     public class Death
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly IPropertyService _propertyService;
+
+        public Death(ILogger logger, IDatabaseService db, IPropertyService propertyService)
+        {
+            _logger = logger;
+            _db = db;
+            _propertyService = propertyService;
+        }
         /// <summary>
         /// When a player starts dying, instantly kill them.
         /// </summary>
         [ScriptHandler<OnModuleDying>]
         public static void OnPlayerDying()
+        {
+            var death = ServiceContainer.GetService<Death>();
+            death.OnPlayerDyingInternal();
+        }
+
+        private void OnPlayerDyingInternal()
         {
             ApplyEffectToObject(DurationType.Instant, EffectDeath(), GetLastPlayerDying());
         }
@@ -27,6 +42,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler<OnModuleDeath>]
         public static void OnPlayerDeath()
+        {
+            var death = ServiceContainer.GetService<Death>();
+            death.OnPlayerDeathInternal();
+        }
+
+        private void OnPlayerDeathInternal()
         {
             var player = GetLastPlayerDied();
             var hostile = GetLastHostileActor(player);
@@ -73,6 +94,12 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnModuleRespawn>]
         public static void OnPlayerRespawn()
         {
+            var death = ServiceContainer.GetService<Death>();
+            death.OnPlayerRespawnInternal();
+        }
+
+        private void OnPlayerRespawnInternal()
+        {
             var player = GetLastRespawnButtonPresser();
             var maxHP = GetMaxHitPoints(player);
 
@@ -91,6 +118,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
         public static void InitializeRespawnPoint()
+        {
+            var death = ServiceContainer.GetService<Death>();
+            death.InitializeRespawnPointInternal();
+        }
+
+        private void InitializeRespawnPointInternal()
         {
             var player = GetEnteringObject();
 
@@ -120,7 +153,7 @@ namespace SWLOR.Game.Server.Service
         /// Write an audit entry with details of this death.
         /// </summary>
         /// <param name="player">The player who died</param>
-        private static void WriteAudit(uint player)
+        private void WriteAudit(uint player)
         {
             var name = GetName(player);
             var area = GetArea(player);
@@ -139,11 +172,12 @@ namespace SWLOR.Game.Server.Service
         /// Teleports player to his or her last home point.
         /// </summary>
         /// <param name="player">The player to teleport</param>
-        private static void SendToHomePoint(uint player)
+        private void SendToHomePoint(uint player)
         {
             var playerId = GetObjectUUID(player);
             var entity = _db.Get<Player>(playerId);
-            var area = Area.GetAreaByResref(entity.RespawnAreaResref);
+            var areaService = ServiceContainer.GetService<Area>();
+            var area = areaService.GetAreaByResref(entity.RespawnAreaResref);
             var position = Vector3(
                 entity.RespawnLocationX,
                 entity.RespawnLocationY,
@@ -165,7 +199,7 @@ namespace SWLOR.Game.Server.Service
         /// Applies death penalties for a player.
         /// </summary>
         /// <param name="player">The player who we're applying penalties to</param>
-        private static int ApplyPenalties(uint player)
+        private int ApplyPenalties(uint player)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
@@ -187,7 +221,7 @@ namespace SWLOR.Game.Server.Service
             var social = GetAbilityScore(player, AbilityType.Social);
             var newDebt = dbPlayer.TotalSPAcquired * multiplier;
             var reductionBonus = 0f;
-            reductionBonus += Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.MedicalCenterLevel) * 0.05f; // -5% per Medical Center level
+            reductionBonus += _propertyService.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.MedicalCenterLevel) * 0.05f; // -5% per Medical Center level
 
             if (social > 10)
             {
@@ -217,7 +251,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player who respawned</param>
         /// <param name="xpLost">The amount of XP lost</param>
-        private static void WriteAudit(uint player, int xpLost)
+        private void WriteAudit(uint player, int xpLost)
         {
             var name = GetName(player);
             var log = $"RESPAWN - {name} - {xpLost} XP lost";

@@ -6,11 +6,26 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class DoubleStrikeAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly IAbilityService _abilityService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public DoubleStrikeAbilityDefinition(IItemService itemService, IAbilityService abilityService, ICombatService combatService, IStatService statService)
+        {
+            _itemService = itemService;
+            _abilityService = abilityService;
+            _combatService = combatService;
+            _statService = statService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -25,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!Item.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a saberstaff ability.";
             }
@@ -53,19 +68,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
 
             var stat = AbilityType.Perception;
-            if (Ability.IsAbilityToggled(activator, AbilityToggleType.StrongStyleSaberstaff))
+            if (_abilityService.IsAbilityToggled(activator, AbilityToggleType.StrongStyleSaberstaff))
             {
                 stat = AbilityType.Might;
             }
 
-            var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
-            var attack = Stat.GetAttack(activator, stat, SkillType.TwoHanded);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
+            var attack = _statService.GetAttack(activator, stat, SkillType.TwoHanded);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack, 
                 dmg, 
                 attackerStat, 

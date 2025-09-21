@@ -11,7 +11,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -23,33 +23,41 @@ using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Item
+    public class ItemService : IItemService
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        private readonly ILogger _logger;
+        private readonly IGenericCacheService _cacheService;
+        private readonly IPerkService _perkService;
         
         // Cached data
-        private static IInterfaceCache<string, ItemDetail> _itemCache;
+        private IInterfaceCache<string, ItemDetail> _itemCache;
         
         // Pre-computed cache for fast retrieval
-        private static readonly Dictionary<string, ItemDetail> _allItems = new();
+        private readonly Dictionary<string, ItemDetail> _allItems = new();
         
         // Additional caches for complex data
-        private static readonly Dictionary<int, int[]> _2daCache = new();
-        private static readonly Dictionary<BaseItem, AbilityType> _itemToDamageAbilityMapping = new();
-        private static readonly Dictionary<BaseItem, AbilityType> _itemToAccuracyAbilityMapping = new();
+        private readonly Dictionary<int, int[]> _2daCache = new();
+        private readonly Dictionary<BaseItem, AbilityType> _itemToDamageAbilityMapping = new();
+        private readonly Dictionary<BaseItem, AbilityType> _itemToAccuracyAbilityMapping = new();
+
+        public ItemService(ILogger logger, IGenericCacheService cacheService, IPerkService perkService)
+        {
+            _logger = logger;
+            _cacheService = cacheService;
+            _perkService = perkService;
+        }
 
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheData()
+        public void CacheData()
         {
             Load2DACache();
             LoadItemToDamageStatMapping();
             LoadItemToAccuracyStatMapping();
         }
-        private static void Load2DACache()
+        public void Load2DACache()
         {
             _itemCache = _cacheService.BuildInterfaceCache<IItemListDefinition, string, ItemDetail>()
                 .WithDataExtractor(instance => instance.BuildItems())
@@ -86,7 +94,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_2daCache.Count} base items.");
         }
 
-        private static void LoadItemToDamageStatMapping()
+        public void LoadItemToDamageStatMapping()
         {
             // One-Handed Skills
             _itemToDamageAbilityMapping[BaseItem.BastardSword] = AbilityType.Might;
@@ -155,7 +163,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_itemToDamageAbilityMapping.Count} item to damage ability mappings.");
         }
 
-        private static void LoadItemToAccuracyStatMapping()
+        public void LoadItemToAccuracyStatMapping()
         {
             // One-Handed Skills
             _itemToAccuracyAbilityMapping[BaseItem.BastardSword] = AbilityType.Perception;
@@ -230,7 +238,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="itemType">The item type</param>
         /// <returns>The ability type or AbilityType.Invalid if none is associated with the item.</returns>
-        public static AbilityType GetWeaponDamageAbilityType(BaseItem itemType)
+        public AbilityType GetWeaponDamageAbilityType(BaseItem itemType)
         {
             return !_itemToDamageAbilityMapping.ContainsKey(itemType) 
                 ? AbilityType.Invalid 
@@ -243,7 +251,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="itemType">The item type</param>
         /// <returns>The ability type or AbilityType.Invalid if none is associated with the item.</returns>
-        public static AbilityType GetWeaponAccuracyAbilityType(BaseItem itemType)
+        public AbilityType GetWeaponAccuracyAbilityType(BaseItem itemType)
         {
             return !_itemToAccuracyAbilityMapping.ContainsKey(itemType)
                 ? AbilityType.Invalid
@@ -254,7 +262,7 @@ namespace SWLOR.Game.Server.Service
         /// When an item is used, if its tag is in the item cache, run it through the action item process.
         /// </summary>
         [ScriptHandler<OnItemUseBefore>]
-        public static void UseItem()
+        public void UseItem()
         {
             var user = OBJECT_SELF;
             void CheckPosition(uint actionUser, string actionId, Vector3 originalPosition)
@@ -447,7 +455,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to check.</param>
         /// <param name="item">The item to pull requirements from.</param>
         /// <returns>true if all requirements met, false otherwise</returns>
-        public static bool CanCreatureUseItem(uint creature, uint item)
+        public bool CanCreatureUseItem(uint creature, uint item)
         {
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
@@ -456,7 +464,7 @@ namespace SWLOR.Game.Server.Service
                     var perkType = (PerkType)GetItemPropertySubType(ip);
                     var levelRequired = GetItemPropertyCostTableValue(ip);
 
-                    if (Perk.GetPerkLevel(creature, perkType) < levelRequired)
+                    if (_perkService.GetPerkLevel(creature, perkType) < levelRequired)
                         return false;
                 }
             }
@@ -469,7 +477,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="target">The target receiving the item.</param>
         /// <param name="item">The item being returned.</param>
-        public static void ReturnItem(uint target, uint item)
+        public void ReturnItem(uint target, uint item)
         {
             if (GetHasInventory(item))
             {
@@ -492,7 +500,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="obj">The object to check</param>
         /// <returns>-1 if obj doesn't have an inventory, otherwise returns the number of items in the inventory</returns>
-        public static int GetInventoryItemCount(uint obj)
+        public int GetInventoryItemCount(uint obj)
         {
             if (!GetHasInventory(obj)) return -1;
 
@@ -514,18 +522,18 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to be checked.</param>
         /// <returns>The ArmorType value of the item. Returns ArmorType.Invalid if neither Light or Heavy are found.</returns>
-        public static ArmorType GetArmorType(uint item)
+        public ArmorType GetArmorType(uint item)
         {
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
                 if (GetItemPropertyType(ip) != ItemPropertyType.UseLimitationPerk) continue;
 
                 var perkType = (PerkType) GetItemPropertySubType(ip);
-                if (Perk.HeavyArmorPerks.Contains(perkType))
+                if (_perkService.HeavyArmorPerks.Contains(perkType))
                 {
                     return ArmorType.Heavy;
                 }
-                else if (Perk.LightArmorPerks.Contains(perkType))
+                else if (_perkService.LightArmorPerks.Contains(perkType))
                 {
                     return ArmorType.Light;
                 }
@@ -537,7 +545,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of weapon base item types.
         /// </summary>
-        public static List<BaseItem> WeaponBaseItemTypes { get; } = new()
+        public List<BaseItem> WeaponBaseItemTypes { get; } = new()
         {
             BaseItem.BastardSword,
             BaseItem.Longsword,
@@ -579,7 +587,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of armor base item types.
         /// </summary>
-        public static List<BaseItem> ArmorBaseItemTypes { get; } = new()
+        public List<BaseItem> ArmorBaseItemTypes { get; } = new()
         {
             BaseItem.Armor,
             BaseItem.Helmet,
@@ -598,7 +606,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of shield base item types.
         /// </summary>
-        public static List<BaseItem> ShieldBaseItemTypes { get; } = new()
+        public List<BaseItem> ShieldBaseItemTypes { get; } = new()
         {
             BaseItem.LargeShield,
             BaseItem.SmallShield,
@@ -608,7 +616,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Vibroblade base item types.
         /// </summary>
-        public static List<BaseItem> VibrobladeBaseItemTypes { get; } = new()
+        public List<BaseItem> VibrobladeBaseItemTypes { get; } = new()
         {
             BaseItem.BastardSword,
             BaseItem.Longsword,
@@ -620,7 +628,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Finesse Vibroblade base item types.
         /// </summary>
-        public static List<BaseItem> FinesseVibrobladeBaseItemTypes { get; } = new()
+        public List<BaseItem> FinesseVibrobladeBaseItemTypes { get; } = new()
         {
             BaseItem.Dagger,
             BaseItem.Rapier,
@@ -634,7 +642,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Lightsaber base item types.
         /// </summary>
-        public static List<BaseItem> LightsaberBaseItemTypes { get; } = new()
+        public List<BaseItem> LightsaberBaseItemTypes { get; } = new()
         {
             BaseItem.Lightsaber,
             BaseItem.Electroblade
@@ -643,7 +651,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Heavy Vibroblade base item types.
         /// </summary>
-        public static List<BaseItem> HeavyVibrobladeBaseItemTypes { get; } = new()
+        public List<BaseItem> HeavyVibrobladeBaseItemTypes { get; } = new()
         {
             BaseItem.GreatAxe,
             BaseItem.GreatSword,
@@ -653,7 +661,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Polearm base item types.
         /// </summary>
-        public static List<BaseItem> PolearmBaseItemTypes { get; } = new()
+        public List<BaseItem> PolearmBaseItemTypes { get; } = new()
         {
             BaseItem.Halberd,
             BaseItem.Scythe,
@@ -664,7 +672,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Twin Blade base item types.
         /// </summary>
-        public static List<BaseItem> TwinBladeBaseItemTypes { get; } = new()
+        public List<BaseItem> TwinBladeBaseItemTypes { get; } = new()
         {
             BaseItem.DoubleAxe,
             BaseItem.TwoBladedSword
@@ -673,7 +681,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Saberstaff base item types.
         /// </summary>
-        public static List<BaseItem> SaberstaffBaseItemTypes { get; } = new()
+        public List<BaseItem> SaberstaffBaseItemTypes { get; } = new()
         {
             BaseItem.Saberstaff,
             BaseItem.TwinElectroBlade
@@ -682,7 +690,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Katar base item types.
         /// </summary>
-        public static List<BaseItem> KatarBaseItemTypes { get; } = new()
+        public List<BaseItem> KatarBaseItemTypes { get; } = new()
         {
             BaseItem.Katar
         };
@@ -690,7 +698,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Staff base item types.
         /// </summary>
-        public static List<BaseItem> StaffBaseItemTypes { get; } = new()
+        public List<BaseItem> StaffBaseItemTypes { get; } = new()
         {
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
@@ -701,7 +709,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Pistol base item types.
         /// </summary>
-        public static List<BaseItem> PistolBaseItemTypes { get; } = new()
+        public List<BaseItem> PistolBaseItemTypes { get; } = new()
         {
             BaseItem.Pistol
         };
@@ -709,7 +717,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Throwing Weapon base item types.
         /// </summary>
-        public static List<BaseItem> ThrowingWeaponBaseItemTypes { get; } = new()
+        public List<BaseItem> ThrowingWeaponBaseItemTypes { get; } = new()
         {
             BaseItem.ThrowingAxe,
             BaseItem.Shuriken,
@@ -719,7 +727,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Rifle base item types.
         /// </summary>
-        public static List<BaseItem> RifleBaseItemTypes { get; } = new()
+        public List<BaseItem> RifleBaseItemTypes { get; } = new()
         {
             BaseItem.Longbow,
             BaseItem.Rifle,
@@ -730,7 +738,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves the list of One-Handed weapon types.
         /// These are the weapons which are held in one hand and not necessarily associated with the One-Handed skill.
         /// </summary>
-        public static List<BaseItem> OneHandedMeleeItemTypes { get; } = new()
+        public List<BaseItem> OneHandedMeleeItemTypes { get; } = new()
         {
             BaseItem.BastardSword,
             BaseItem.Longsword,
@@ -754,7 +762,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves the list of Two-Handed melee weapon types.
         /// These are the weapons which are held in two hand and not necessarily associated with the Two-Handed skill.
         /// </summary>
-        public static List<BaseItem> TwoHandedMeleeItemTypes { get; } = new()
+        public List<BaseItem> TwoHandedMeleeItemTypes { get; } = new()
         {
             BaseItem.GreatAxe,
             BaseItem.GreatSword,
@@ -772,7 +780,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the list of Creature base item types.
         /// </summary>
-        public static List<BaseItem> CreatureBaseItemTypes { get; } = new()
+        public List<BaseItem> CreatureBaseItemTypes { get; } = new()
         {
             BaseItem.CreatureBludgeonWeapon,
             BaseItem.CreatureSlashWeapon,
@@ -784,7 +792,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves the list of Droid base item types.
         /// These are items which require the Use Limitation Race: Droid item property in order to be equipped by a Droid.
         /// </summary>
-        public static List<BaseItem> DroidBaseItemTypes { get; } = new()
+        public List<BaseItem> DroidBaseItemTypes { get; } = new()
         {
             BaseItem.Armor,
             BaseItem.Helmet,
@@ -802,7 +810,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to retrieve the icon for.</param>
         /// <returns>A resref of the icon to use.</returns>
-        public static string GetIconResref(uint item)
+        public string GetIconResref(uint item)
         {
             var baseItem = GetBaseItemType(item);
 
@@ -867,7 +875,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to use.</param>
         /// <returns>A string containing all of the item properties.</returns>
-        public static string BuildItemPropertyString(uint item)
+        public string BuildItemPropertyString(uint item)
         {
             var sb = new StringBuilder();
 
@@ -885,7 +893,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to use.</param>
         /// <returns>A list containing all of the item properties.</returns>
-        public static GuiBindingList<string> BuildItemPropertyList(uint item)
+        public GuiBindingList<string> BuildItemPropertyList(uint item)
         {
             var list = new GuiBindingList<string>();
             var sb = new StringBuilder();
@@ -904,7 +912,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="itemProperties">The list of item properties to use.</param>
         /// <returns>A list containing all of the item properties.</returns>
-        public static GuiBindingList<string> BuildItemPropertyList(List<ItemProperty> itemProperties)
+        public GuiBindingList<string> BuildItemPropertyList(List<ItemProperty> itemProperties)
         {
             var list = new GuiBindingList<string>();
             var sb = new StringBuilder();
@@ -971,7 +979,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player attempting to persistently store the item.</param>
         /// <param name="item">The item being stored.</param>
         /// <returns>An error message if validation fails, otherwise an empty string if it succeeds.</returns>
-        public static string CanBePersistentlyStored(uint player, uint item)
+        public string CanBePersistentlyStored(uint player, uint item)
         {
             var resref = GetResRef(item);
             string[] disallowedResrefs = { Droid.DroidControlItemResref };
@@ -1019,7 +1027,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to check.</param>
         /// <returns>The DMG rating, or 1 if not found.</returns>
-        public static int GetDMG(uint item)
+        public int GetDMG(uint item)
         {
             var dmg = 0;
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -1042,7 +1050,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The item type to check</param>
         /// <returns>The critical modifer value.</returns>
-        public static int GetCriticalModifier(BaseItem type)
+        public int GetCriticalModifier(BaseItem type)
         {
             var mod = _2daCache[(int)type][1];
             _logger.Write<AttackLogGroup>("Crit multiplier for item type " + type + " is " + mod);
@@ -1059,7 +1067,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="item">The item to adjust</param>
         /// <param name="reduceBy">The amount to reduce by. Absolute value is used to determine this value.</param>
         /// <returns>true if successfully reduced or destroyed, false otherwise</returns>
-        public static bool ReduceItemStack(uint item, int reduceBy)
+        public bool ReduceItemStack(uint item, int reduceBy)
         {
             var amount = Math.Abs(reduceBy);
             var stackSize = GetItemStackSize(item);
@@ -1090,7 +1098,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to check.</param>
         /// <returns>true if item is legacy, false otherwise</returns>
-        public static bool IsLegacyItem(uint item)
+        public bool IsLegacyItem(uint item)
         {
             return GetTag(item) == "LEGACY_ITEM";
         }
@@ -1099,7 +1107,7 @@ namespace SWLOR.Game.Server.Service
         /// Marks an item as a legacy item.
         /// </summary>
         /// <param name="item">The item to mark as legacy.</param>
-        public static void MarkLegacyItem(uint item)
+        public void MarkLegacyItem(uint item)
         {
             SetTag(item, "LEGACY_ITEM");
         }
@@ -1111,7 +1119,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to check.</param>
         /// <param name="item">The item to search for.</param>
         /// <returns>The inventory slot of the item or InventorySlot.Invalid if not equipped.</returns>
-        public static InventorySlot GetItemSlot(uint creature, uint item)
+        public InventorySlot GetItemSlot(uint creature, uint item)
         {
             var slot = InventorySlot.Invalid;
 

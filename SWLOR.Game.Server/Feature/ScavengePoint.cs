@@ -7,19 +7,40 @@ using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Core.Contracts;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class ScavengePoint
+    public class ScavengePoint
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IDatabaseService _db;
+        private readonly IRandomService _random;
+        private readonly IPerkService _perkService;
+        private readonly ISkillService _skillService;
+        private readonly IItemService _itemService;
+        private readonly ILootService _lootService;
+
+        public ScavengePoint(IDatabaseService db, IRandomService random, IPerkService perkService, ISkillService skillService, IItemService itemService, ILootService lootService)
+        {
+            _db = db;
+            _random = random;
+            _perkService = perkService;
+            _skillService = skillService;
+            _itemService = itemService;
+            _lootService = lootService;
+        }
         /// <summary>
         /// 
         /// </summary>
         [ScriptHandler(ScriptName.OnScavengeOpened)]
         public static void OnOpened()
+        {
+            var scavengePoint = ServiceContainer.GetService<ScavengePoint>();
+            scavengePoint.OnOpenedInternal();
+        }
+
+        private void OnOpenedInternal()
         {
             var user = GetLastOpenedBy();
             if (!GetIsPC(user) || GetIsDM(user)) return;
@@ -31,13 +52,13 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
             
-            var scavengingLevel = Perk.GetPerkLevel(user, PerkType.Scavenging);
-            var hardLookLevel = Perk.GetPerkLevel(user, PerkType.HardLook);
+            var scavengingLevel = _perkService.GetPerkLevel(user, PerkType.Scavenging);
+            var hardLookLevel = _perkService.GetPerkLevel(user, PerkType.HardLook);
             var requiredLevel = GetLocalInt(placeable, "SCAVENGE_POINT_LEVEL");
             var lootTableName = GetLocalString(placeable, "SCAVENGE_POINT_LOOT_TABLE_NAME");
 
             // Loot table doesn't exist.
-            if (!Loot.LootTableExists(lootTableName))
+            if (!_lootService.LootTableExists(lootTableName))
             {
                 SendMessageToPC(user, $"The assigned loot table '{lootTableName}' does not exist. Please inform an admin that this scavenge site is broken.");
                 AssignCommand(user, () => ActionInteractObject(placeable));
@@ -63,7 +84,7 @@ namespace SWLOR.Game.Server.Feature
 
             AssignCommand(user, () => ActionPlayAnimation(Animation.LoopingGetLow, 1.0f, 2.0f));
 
-            var lootTable = Loot.GetLootTableByName(lootTableName);
+            var lootTable = _lootService.GetLootTableByName(lootTableName);
             var dc = 6;
             var xp = 0;
 
@@ -72,9 +93,9 @@ namespace SWLOR.Game.Server.Feature
             var dbSkill = dbPlayer.Skills[SkillType.Gathering];
             var scavLevel = 10 * requiredLevel;            
             var delta = scavLevel - dbSkill.Rank;
-            var deltaXP = Skill.GetDeltaXP(delta);
-            var treasureHunterLevel = Perk.GetPerkLevel(user, PerkType.TreasureHunter);
-            var creditFinderLevel = Perk.GetPerkLevel(user, PerkType.CreditFinder);
+            var deltaXP = _skillService.GetDeltaXP(delta);
+            var treasureHunterLevel = _perkService.GetPerkLevel(user, PerkType.TreasureHunter);
+            var creditFinderLevel = _perkService.GetPerkLevel(user, PerkType.CreditFinder);
             var creditPercentIncrease = creditFinderLevel * 0.2f;
 
             for (var attempt = 1; attempt <= attempts; attempt++)
@@ -96,7 +117,7 @@ namespace SWLOR.Game.Server.Feature
                     CreateItemOnObject(item.Resref, placeable, quantity);
                     xp = deltaXP;
 
-                    Loot.SpawnLoot(placeable, user, "LOOT_TABLE_");
+                    _lootService.SpawnLoot(placeable, user, "LOOT_TABLE_");
                 }
                 else
                 {
@@ -105,7 +126,7 @@ namespace SWLOR.Game.Server.Feature
                 }
 
                 dc += _random.D3(1);
-                Skill.GiveSkillXP(user, SkillType.Gathering, xp, false, false);
+                _skillService.GiveSkillXP(user, SkillType.Gathering, xp, false, false);
             }
 
             SetLocalBool(placeable, "FULLY_HARVESTED", true);
@@ -118,6 +139,12 @@ namespace SWLOR.Game.Server.Feature
         [ScriptHandler(ScriptName.OnScavengeDisturbed)]
         public static void OnDisturbed()
         {
+            var scavengePoint = ServiceContainer.GetService<ScavengePoint>();
+            scavengePoint.OnDisturbedInternal();
+        }
+
+        private void OnDisturbedInternal()
+        {
             var user = GetLastDisturbed();
             if (!GetIsPC(user) || GetIsDM(user)) return;
 
@@ -127,7 +154,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (type == DisturbType.Added)
             {
-                Item.ReturnItem(user, item);
+                _itemService.ReturnItem(user, item);
             }
             else
             {
@@ -148,6 +175,12 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         [ScriptHandler(ScriptName.OnScavengeClosed)]
         public static void OnClosed()
+        {
+            var scavengePoint = ServiceContainer.GetService<ScavengePoint>();
+            scavengePoint.OnClosedInternal();
+        }
+
+        private void OnClosedInternal()
         {
             var placeable = OBJECT_SELF;
             var user = GetLastClosedBy();

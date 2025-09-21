@@ -10,6 +10,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class ResuscitationAbilityDefinition: FirstAidBaseAbilityDefinition
     {
+        public ResuscitationAbilityDefinition(IRandomService random, IPerkService perkService) : base(random, perkService)
+        {
+        }
+
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             Resuscitation1();
@@ -59,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-            Ability.ReapplyPlayerAuraAOE(target);
+            AbilityService.ReapplyPlayerAuraAOE(target);
 
             if (hp > 0)
             {
@@ -134,6 +138,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     Enmity.ModifyEnmityOnAll(activator, 2500);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid, 3);
                 });
+        }
+    }
+}
+
         }
     }
 }

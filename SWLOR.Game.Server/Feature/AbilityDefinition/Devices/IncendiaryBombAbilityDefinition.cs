@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public class IncendiaryBombAbilityDefinition : ExplosiveBaseAbilityDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private static readonly ICombatService _combatService = ServiceContainer.GetService<ICombatService>();
+        private static readonly IStatService _statService = ServiceContainer.GetService<IStatService>();
 
         private static void ApplyEffect(uint creature, int dmg)
         {
@@ -19,9 +21,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var attack = GetLocalInt(OBJECT_SELF, "DEVICE_ATK");
             dmg += GetLocalInt(OBJECT_SELF, "DEVICE_DMG");
 
-            var defense = Stat.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statService.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 

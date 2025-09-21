@@ -18,24 +18,40 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Quest
+    public class QuestService : IQuestService
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
-        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        private readonly IDatabaseService _db;
+        private readonly IItemCacheService _itemCache;
+        private readonly IGenericCacheService _cacheService;
+        private readonly IItemService _itemService;
+        private readonly IPerkService _perkService;
         
         // Cached data
-        private static IInterfaceCache<string, QuestDetail> _questCache;
+        private IInterfaceCache<string, QuestDetail> _questCache;
         
         // Additional caches for complex data
-        private static readonly Dictionary<NPCGroupType, List<string>> _npcsWithKillQuests = new();
-        private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _questsByGuildType = new();
+        private readonly Dictionary<NPCGroupType, List<string>> _npcsWithKillQuests = new();
+        private readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _questsByGuildType = new();
+
+        public QuestService(
+            IDatabaseService db,
+            IItemCacheService itemCache,
+            IGenericCacheService cacheService,
+            IItemService itemService,
+            IPerkService perkService)
+        {
+            _db = db;
+            _itemCache = itemCache;
+            _cacheService = cacheService;
+            _itemService = itemService;
+            _perkService = perkService;
+        }
 
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheData()
+        public void CacheData()
         {
             RegisterQuests();
         }
@@ -43,7 +59,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, all quests will be retrieved with reflection and stored into a cache.
         /// </summary>
-        public static void RegisterQuests()
+        public void RegisterQuests()
         {
             _questCache = _cacheService.BuildInterfaceCache<IQuestListDefinition, string, QuestDetail>()
                 .WithDataExtractor(instance => instance.BuildQuests())
@@ -92,7 +108,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="guild">The guild to search for</param>
         /// <param name="rank">The rank to search for</param>
         /// <returns>A list of quests associated with the guild.</returns>
-        public static List<QuestDetail> GetQuestsByGuild(GuildType guild, int rank)
+        public List<QuestDetail> GetQuestsByGuild(GuildType guild, int rank)
         {
             if(!_questsByGuildType.ContainsKey(guild))
                 return new List<QuestDetail>();
@@ -105,7 +121,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the module, load their quests.
         /// </summary>
         [ScriptHandler<OnModuleEnter>]
-        public static void LoadPlayerQuests()
+        public void LoadPlayerQuests()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -144,7 +160,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="questId">The quest Id to search for.</param>
         /// <returns>The quest detail matching this Id.</returns>
-        public static QuestDetail GetQuestById(string questId)
+        public QuestDetail GetQuestById(string questId)
         {
             return _questCache?.AllItems[questId] ?? throw new KeyNotFoundException($"Quest {questId} not found in cache");
         }
@@ -155,7 +171,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="npcGroupType">The NPC group to search for</param>
         /// <returns>A list of quests associated with an NPC group.</returns>
-        public static List<string> GetQuestsAssociatedWithNPCGroup(NPCGroupType npcGroupType)
+        public List<string> GetQuestsAssociatedWithNPCGroup(NPCGroupType npcGroupType)
         {
             if(!_npcsWithKillQuests.ContainsKey(npcGroupType))
                 return new List<string>();
@@ -163,7 +179,7 @@ namespace SWLOR.Game.Server.Service
             return _npcsWithKillQuests[npcGroupType];
         }
 
-        public static void AbandonQuest(uint player, string questId)
+        public void AbandonQuest(uint player, string questId)
         {
             _questCache.AllItems[questId].Abandon(player);
         }
@@ -174,7 +190,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player who is accepting the quest</param>
         /// <param name="questId">The Id of the quest to accept.</param>
-        public static void AcceptQuest(uint player, string questId)
+        public void AcceptQuest(uint player, string questId)
         {
             _questCache.AllItems[questId].Accept(player, OBJECT_SELF);
         }
@@ -186,7 +202,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player who is advancing to the next state of the quest.</param>
         /// <param name="questSource">The source of the quest. Typically an NPC or object.</param>
         /// <param name="questId">The Id of the quest to advance.</param>
-        public static void AdvanceQuest(uint player, uint questSource, string questId)
+        public void AdvanceQuest(uint player, uint questSource, string questId)
         {
             _questCache.AllItems[questId].Advance(player, questSource);
         }
@@ -196,7 +212,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player who will open the collection placeable.</param>
         /// <param name="questId">The quest to collect items for.</param>
-        public static void RequestItemsFromPlayer(uint player, string questId)
+        public void RequestItemsFromPlayer(uint player, string questId)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
@@ -233,7 +249,7 @@ namespace SWLOR.Game.Server.Service
         /// When an NPC is killed, any objectives for quests a player currently has active will be updated.
         /// </summary>
         [ScriptHandler<OnCreatureDeathBefore>]
-        public static void ProgressKillTargetObjectives()
+        public void ProgressKillTargetObjectives()
         {
             var creature = OBJECT_SELF;
             var npcGroupType = (NPCGroupType)GetLocalInt(creature, "QUEST_NPC_GROUP_ID");
@@ -302,7 +318,7 @@ namespace SWLOR.Game.Server.Service
         /// When an item collector placeable is opened, 
         /// </summary>
         [ScriptHandler(ScriptName.OnQuestCollectOpen)]
-        public static void OpenItemCollector()
+        public void OpenItemCollector()
         {
             var container = OBJECT_SELF;
             SetUseableFlag(container, false);
@@ -339,7 +355,7 @@ namespace SWLOR.Game.Server.Service
         /// When an item collector placeable is closed, clear its inventory and destroy it.
         /// </summary>
         [ScriptHandler(ScriptName.OnQuestCollectClosed)]
-        public static void CloseItemCollector()
+        public void CloseItemCollector()
         {
             var player = GetLastClosedBy();
             DelayCommand(0.02f, () =>
@@ -359,7 +375,7 @@ namespace SWLOR.Game.Server.Service
         /// When an item collector placeable is disturbed, 
         /// </summary>
         [ScriptHandler(ScriptName.OnQuestCollectDisturbed)]
-        public static void DisturbItemCollector()
+        public void DisturbItemCollector()
         {
             var type = GetInventoryDisturbType();
             if (type != DisturbType.Added) return;
@@ -378,7 +394,7 @@ namespace SWLOR.Game.Server.Service
             if (!quest.ItemProgresses.ContainsKey(resref) ||
                 quest.ItemProgresses[resref] <= 0)
             {
-                Item.ReturnItem(player, item);
+                _itemService.ReturnItem(player, item);
                 SendMessageToPC(player, "That item is not required for this quest.");
                 return;
             }
@@ -390,13 +406,13 @@ namespace SWLOR.Game.Server.Service
             if (stackSize > requiredAmount)
             {
                 dbPlayer.Quests[questId].ItemProgresses[resref] = 0;
-                Item.ReduceItemStack(item, requiredAmount);
-                Item.ReturnItem(player, item);
+                _itemService.ReduceItemStack(item, requiredAmount);
+                _itemService.ReturnItem(player, item);
             }
             else
             {
                 dbPlayer.Quests[questId].ItemProgresses[resref] -= stackSize;
-                Item.ReduceItemStack(item, stackSize);
+                _itemService.ReduceItemStack(item, stackSize);
             }
 
             _db.Set(dbPlayer);
@@ -422,7 +438,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player uses a quest placeable, handle the progression.
         /// </summary>
         [ScriptHandler(ScriptName.OnQuestPlaceable)]
-        public static void UseQuestPlaceable()
+        public void UseQuestPlaceable()
         {
             var player = GetLastUsedBy();
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -434,7 +450,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters a quest trigger, handle the progression.
         /// </summary>
         [ScriptHandler(ScriptName.OnQuestTrigger)]
-        public static void EnterQuestTrigger()
+        public void EnterQuestTrigger()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -449,7 +465,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player who entered the trigger or clicked a placeable.</param>
         /// <param name="triggerOrPlaceable">The trigger or placeable</param>
-        public static void TriggerAndPlaceableProgression(uint player, uint triggerOrPlaceable)
+        public void TriggerAndPlaceableProgression(uint player, uint triggerOrPlaceable)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
             var questMessage = GetLocalString(triggerOrPlaceable, "QUEST_MESSAGE");
@@ -492,7 +508,7 @@ namespace SWLOR.Game.Server.Service
             quest.Advance(player, triggerOrPlaceable);
         }
 
-        public static int CalculateQuestGoldReward(uint player, bool isGuildQuest, int baseAmount)
+        public int CalculateQuestGoldReward(uint player, bool isGuildQuest, int baseAmount)
         {
             // 5% credit bonus per social modifier.
             var social = GetAbilityModifier(AbilityType.Social, player) * 0.05f;
@@ -501,7 +517,7 @@ namespace SWLOR.Game.Server.Service
             var guildRelations = 0f;
             if (isGuildQuest)
             {
-                var perkLevel = Perk.GetPerkLevel(player, PerkType.GuildRelations);
+                var perkLevel = _perkService.GetPerkLevel(player, PerkType.GuildRelations);
                 guildRelations = perkLevel * 0.05f;
             }
             var amount = baseAmount +

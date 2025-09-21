@@ -16,11 +16,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class RefineryViewModel: GuiViewModelBase<RefineryViewModel, GuiPayloadBase>
     {
-        public RefineryViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IItemCacheService _itemCache;
+        private readonly IPerkService _perkService;
+        private readonly ISkillService _skillService;
 
-        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        public RefineryViewModel(IGuiService guiService, IItemCacheService itemCache, IPerkService perkService, ISkillService skillService) : base(guiService)
+        {
+            _itemCache = itemCache;
+            _perkService = perkService;
+            _skillService = skillService;
+        }
         private class OreDetail
         {
             public int RequiredLevel { get; }
@@ -135,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void CalculateCoresRequired()
         {
-            var refineryManagement = Perk.GetPerkLevel(Player, PerkType.RefineryManagement);
+            var refineryManagement = _perkService.GetPerkLevel(Player, PerkType.RefineryManagement);
             var itemsPerCore = BaseItemsRefinedPerCore + refineryManagement;
             _powerCoresRequired = (int)Math.Ceiling(ItemCount / (float)itemsPerCore);
             
@@ -187,7 +192,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 // Player doesn't have prerequisite level.
-                var perkLevel = Perk.GetPerkLevel(Player, PerkType.Refining);
+                var perkLevel = _perkService.GetPerkLevel(Player, PerkType.Refining);
                 if (perkLevel < _ores[resref].RequiredLevel)
                 {
                     SendMessageToPC(Player, $"Your Refining perk level must be at least {_ores[resref].RequiredLevel} to refine that item.");
@@ -338,7 +343,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 DeleteLocalBool(Player, "IS_REFINING");
-                Skill.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);
+                _skillService.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);
 
                 _inputItemResrefs.Clear();
                 _inputItems.Clear();

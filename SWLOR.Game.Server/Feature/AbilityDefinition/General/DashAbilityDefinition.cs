@@ -5,12 +5,20 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
 {
     public class DashAbilityDefinition: IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly IAbilityService _abilityService;
+
+        public DashAbilityDefinition(IAbilityService abilityService)
+        {
+            _abilityService = abilityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -23,7 +31,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
         public static void EnterSpace()
         {
             var player = OBJECT_SELF;
-            Ability.ToggleAbility(player, AbilityToggleType.Dash, false);
+            var abilityService = ServiceContainer.GetService<IAbilityService>();
+            abilityService.ToggleAbility(player, AbilityToggleType.Dash, false);
         }
 
         private void Dash()
@@ -34,8 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.General
                 .UnaffectedByHeavyArmor()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    var toggle = !Ability.IsAbilityToggled(target, AbilityToggleType.Dash);
-                    Ability.ToggleAbility(target, AbilityToggleType.Dash, toggle);
+                    var toggle = !_abilityService.IsAbilityToggled(target, AbilityToggleType.Dash);
+                    _abilityService.ToggleAbility(target, AbilityToggleType.Dash, toggle);
                 });
         }
     }

@@ -9,12 +9,22 @@ using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class GuildMasterDialog: DialogBase
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IQuestService _questService;
+        private readonly IGuildService _guildService;
+
+        public GuildMasterDialog(IDatabaseService db, IQuestService questService, IGuildService guildService)
+        {
+            _db = db;
+            _questService = questService;
+            _guildService = guildService;
+        }
         
         private class Model
         {
@@ -67,11 +77,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
             var playerName = GetName(player);
-            var guild = Guild.GetGuild(model.Guild);
+            var guild = _guildService.GetGuild(model.Guild);
             var pcGuild = dbPlayer.Guilds.ContainsKey(model.Guild)
                 ? dbPlayer.Guilds[model.Guild]
                 : new PlayerGuild();
-            var requiredPoints = Guild.GetGPRequiredForRank(pcGuild.Rank);
+            var requiredPoints = _guildService.GetGPRequiredForRank(pcGuild.Rank);
 
             page.Header = ColorToken.Green("Guild: ") + guild.Name + "\n" +
                           ColorToken.Green("Rank: ") + pcGuild.Rank + " (" + pcGuild.Points + " / " + requiredPoints + " GP)\n" + 
@@ -122,11 +132,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var dbPlayer = _db.Get<Player>(playerId);
             page.Header = "The following tasks are available for you.";
 
-            var currentTasks = Guild.GetAllActiveGuildTasks(model.Guild);
+            var currentTasks = _guildService.GetAllActiveGuildTasks(model.Guild);
             // Expired quests - Quests the player accepted but are no longer offered by the guild master.
             foreach (var (questId, pcQuest) in dbPlayer.Quests)
             {
-                var task = Quest.GetQuestById(questId);
+                var task = _questService.GetQuestById(questId);
                 if (task.GuildType != model.Guild) continue; // This quest isn't associated with this guild type.
                 if (pcQuest.DateLastCompleted != null) continue; // Has already been completed.
                 if (currentTasks.ContainsKey(questId)) continue; // This task is currently offered
@@ -145,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 // If the player has completed the task during this task cycle, it will be excluded from this list.
                 // The reason for this is to prevent players from repeating the same tasks over and over without impunity.
                 if (dbPlayer.Quests.ContainsKey(task.QuestId) &&
-                    dbPlayer.Quests[task.QuestId].DateLastCompleted >= Guild.DateTasksLoaded)
+                    dbPlayer.Quests[task.QuestId].DateLastCompleted >= _guildService.DateTasksLoaded)
                     continue;
 
                 // Player doesn't have the requisite guild rank to accept this task. Skip over it.
@@ -183,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 ? dbPlayer.Quests[model.QuestId]
                 : null;
 
-            var task = Quest.GetQuestById(model.QuestId);
+            var task = _questService.GetQuestById(model.QuestId);
 
             var gpRewards = task.Rewards.Where(x => x.GetType() == typeof(GPReward)).Cast<GPReward>();
             var goldRewards = task.Rewards.Where(x => x.GetType() == typeof(GoldReward)).Cast<GoldReward>();
@@ -192,12 +202,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             foreach (var gpReward in gpRewards)
             {
-                gpAmount += Guild.CalculateGPReward(player, model.Guild, gpReward.Amount);
+                gpAmount += _guildService.CalculateGPReward(player, model.Guild, gpReward.Amount);
             }
 
             foreach (var goldReward in goldRewards)
             {
-                goldAmount += Quest.CalculateQuestGoldReward(player, true, goldReward.Amount);
+                goldAmount += _questService.CalculateQuestGoldReward(player, true, goldReward.Amount);
             }
 
             page.Header = ColorToken.Green("Task: ") + task.Name + "\n\n" +
@@ -210,7 +220,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse("Accept Task", () =>
                 {
-                    Quest.AcceptQuest(player, model.QuestId);
+                    _questService.AcceptQuest(player, model.QuestId);
                 });
             }
 
@@ -230,7 +240,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             if (!dbPlayer.Quests.ContainsKey(model.QuestId)) return;
 
             var pcStatus = dbPlayer.Quests[model.QuestId];
-            var quest = Quest.GetQuestById(model.QuestId);
+            var quest = _questService.GetQuestById(model.QuestId);
             var state = quest.States[pcStatus.CurrentState];
             var hasItemObjective =
                 state.GetObjectives().FirstOrDefault(x => x.GetType() == typeof(CollectItemObjective)) != null;
@@ -238,7 +248,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             // Quest has at least one "collect item" objective.
             if (hasItemObjective)
             {
-                Quest.RequestItemsFromPlayer(player, model.QuestId);
+                _questService.RequestItemsFromPlayer(player, model.QuestId);
             }
             // All other quest types
             else if (quest.CanComplete(player))
@@ -288,7 +298,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.Header = "Which store would you like to view?";
 
-            for (var rank = 1; rank <= Guild.MaxRank; rank++)
+            for (var rank = 1; rank <= _guildService.MaxRank; rank++)
             {
                 if (pcGuild.Rank >= rank)
                 {

@@ -6,12 +6,27 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class SkewerAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+        private readonly IAbilityService _abilityService;
+
+        public SkewerAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, IAbilityService abilityService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+            _abilityService = abilityService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -26,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!Item.PolearmBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.PolearmBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a polearm ability.";
             }
@@ -57,13 +72,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
             
             var attackerStat = GetAbilityModifier(AbilityType.Might, activator);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack, 
                 dmg, 
                 attackerStat, 
@@ -72,12 +87,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
 
-            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, dc, AbilityType.Might);
+            dc = _combatService.CalculateSavingThrowDC(activator, dc, 0, 0);
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {
                 UsePerkFeat.DequeueWeaponAbility(target);
-                Ability.EndConcentrationAbility(target);
+                _abilityService.EndConcentrationAbility(target);
                 SendMessageToPC(activator, ColorToken.Gray(GetName(target)) + "'s  concentration has been broken.");
                 SendMessageToPC(target, ColorToken.Gray(GetName(activator)) + " broke your concentration.");
             }

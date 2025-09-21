@@ -5,11 +5,20 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class MindTrickAbilityDefinition : IAbilityListDefinition
     {
+        private readonly ICombatService _combatService;
+
+        public MindTrickAbilityDefinition(ICombatService combatService)
+        {
+            _combatService = combatService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -43,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 return;
             }
 
-            var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, 12);
+            var dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Will, 12);
             const string EffectTag = "StatusEffectType.MindTrick";
             var checkResult = WillSave(target, dc, SavingThrowType.None, activator);
 

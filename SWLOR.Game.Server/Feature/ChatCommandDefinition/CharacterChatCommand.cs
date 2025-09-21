@@ -9,6 +9,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
@@ -22,7 +23,16 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
     public class CharacterChatCommand: IChatCommandListDefinition
     {
         private readonly ChatCommandBuilder _builder = new();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IAbilityService _abilityService;
+        private readonly IGuiService _guiService;
+
+        public CharacterChatCommand(IDatabaseService db, IAbilityService abilityService, IGuiService guiService)
+        {
+            _db = db;
+            _abilityService = abilityService;
+            _guiService = guiService;
+        }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
@@ -119,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
                 {
-                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.Skills);
+                    _guiService.TogglePlayerWindow(user, GuiWindowType.Skills);
                 });
         }
 
@@ -165,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
                 {
-                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.Recipes);
+                    _guiService.TogglePlayerWindow(user, GuiWindowType.Recipes);
                 });
         }
 
@@ -176,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
                 {
-                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.Perks);
+                    _guiService.TogglePlayerWindow(user, GuiWindowType.Perks);
                 });
 
         }
@@ -339,18 +349,18 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     if (doEnd)
                     {
-                        Ability.EndConcentrationAbility(user);
+                        _abilityService.EndConcentrationAbility(user);
                     }
                     else
                     {
-                        var activeConcentration = Ability.GetActiveConcentration(user);
+                        var activeConcentration = _abilityService.GetActiveConcentration(user);
                         if (activeConcentration.Feat == FeatType.Invalid)
                         {
                             SendMessageToPC(user, "No concentration ability is currently active.");
                         }
                         else
                         {
-                            var ability = Ability.GetAbilityDetail(activeConcentration.Feat);
+                            var ability = _abilityService.GetAbilityDetail(activeConcentration.Feat);
                             SendMessageToPC(user, $"Currently active concentration ability: {ability.Name}");
                         }
                     }
@@ -373,7 +383,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     var payload = new AppearanceEditorPayload(user);
-                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.AppearanceEditor, payload, OBJECT_INVALID, uiTarget);
+                    _guiService.TogglePlayerWindow(player, GuiWindowType.AppearanceEditor, payload, OBJECT_INVALID, uiTarget);
                 });
         }
 
@@ -502,7 +512,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     var payload = new TargetDescriptionPayload(target);
-                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.TargetDescription, payload);
+                    _guiService.TogglePlayerWindow(user, GuiWindowType.TargetDescription, payload);
                 });
         }
 
@@ -517,9 +527,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     foreach (GuiWindowType type in Enum.GetValues(typeof(GuiWindowType)))
                     {
                         if (type == GuiWindowType.Invalid) continue;
-                        if (ServiceContainer.GetService<IGuiService>().IsWindowOpen(user, type))
+                        if (_guiService.IsWindowOpen(user, type))
                         {
-                            ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, type);
+                            _guiService.TogglePlayerWindow(user, type);
                         }
                     }
 
@@ -540,8 +550,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         
                         try
                         {
-                            var playerWindow = ServiceContainer.GetService<IGuiService>().GetPlayerWindow(user, type);
-                            var template = ServiceContainer.GetService<IGuiService>().GetWindowTemplate(type);
+                            var playerWindow = _guiService.GetPlayerWindow(user, type);
+                            var template = _guiService.GetWindowTemplate(type);
                             playerWindow.ViewModel.Geometry = template.InitialGeometry;
                         }
                         catch

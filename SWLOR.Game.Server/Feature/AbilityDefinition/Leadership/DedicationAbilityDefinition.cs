@@ -30,11 +30,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                 .UsesAnimation(Animation.FireForgetTaunt)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    return Ability.ToggleAura(activator, StatusEffectType.Dedication);
+                    var abilityService = ServiceContainer.GetService<IAbilityService>();
+                    return abilityService.ToggleAura(activator, StatusEffectType.Dedication);
                 })
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    Ability.ApplyAura(activator, StatusEffectType.Dedication, true, true, false);
+                    var abilityService = ServiceContainer.GetService<IAbilityService>();
+                    abilityService.ApplyAura(activator, StatusEffectType.Dedication, true, true, false);
                 });
         }
     }

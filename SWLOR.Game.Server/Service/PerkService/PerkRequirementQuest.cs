@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         public string CheckRequirements(uint player)
         {
-            var quest = Quest.GetQuestById(_questId);
+            var quest = _questService.GetQuestById(_questId);
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
             var error = $"You have not completed the quest '{quest.Name}'.";
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         {
             get
             {
-                var quest = Quest.GetQuestById(_questId);
+                var quest = _questService.GetQuestById(_questId);
                 return $"Quest: {quest.Name} Completed";
             }
         }

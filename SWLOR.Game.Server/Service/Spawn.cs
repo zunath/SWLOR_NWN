@@ -9,7 +9,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -22,11 +22,18 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Spawn
+    public class SpawnService : ISpawnService
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
-        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        private readonly ILogger _logger;
+        private readonly IRandomService _random;
+        private readonly IGenericCacheService _cacheService;
+
+        public SpawnService(ILogger logger, IRandomService random, IGenericCacheService cacheService)
+        {
+            _logger = logger;
+            _random = random;
+            _cacheService = cacheService;
+        }
         public const int DespawnMinutes = 20;
         public const int DefaultRespawnMinutes = 5;
 
@@ -63,19 +70,19 @@ namespace SWLOR.Game.Server.Service
             public Guid SpawnDetailId { get; set; }
         }
 
-        private static readonly Dictionary<Guid, SpawnDetail> _spawns = new();
-        private static readonly List<QueuedSpawn> _queuedSpawns = new();
-        private static readonly Dictionary<uint, List<QueuedSpawn>> _queuedSpawnsByArea = new();
-        private static readonly Dictionary<uint, DateTime> _queuedAreaDespawns = new();
-        private static readonly List<ResourceDespawn> _queuedResourceDespawns = new();
-        private static readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new();
-        private static readonly Dictionary<uint, List<ActiveSpawn>> _activeSpawnsByArea = new();
+        private readonly Dictionary<Guid, SpawnDetail> _spawns = new();
+        private readonly List<QueuedSpawn> _queuedSpawns = new();
+        private readonly Dictionary<uint, List<QueuedSpawn>> _queuedSpawnsByArea = new();
+        private readonly Dictionary<uint, DateTime> _queuedAreaDespawns = new();
+        private readonly List<ResourceDespawn> _queuedResourceDespawns = new();
+        private readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new();
+        private readonly Dictionary<uint, List<ActiveSpawn>> _activeSpawnsByArea = new();
         
         // Cached data
-        private static IInterfaceCache<string, SpawnTable> _spawnTableCache;
+        private IInterfaceCache<string, SpawnTable> _spawnTableCache;
 
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void CacheData()
+        public void CacheData()
         {
             LoadSpawnTables();
             StoreSpawns();
@@ -85,7 +92,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, all spawn tables are loaded with reflection and stored into a dictionary cache.
         /// If any spawn tables with the same ID are found, an exception will be raised.
         /// </summary>
-        private static void LoadSpawnTables()
+        private void LoadSpawnTables()
         {
             _spawnTableCache = _cacheService.BuildInterfaceCache<ISpawnListDefinition, string, SpawnTable>()
                 .WithDataExtractor(instance => instance.BuildSpawnTables())
@@ -111,7 +118,7 @@ namespace SWLOR.Game.Server.Service
         /// Resource spawn tables use 'RESOURCE_SPAWN_TABLE_ID' for the table name and 'RESOURCE_SPAWN_COUNT' for the number of spawns.
         /// Creature spawn tables use 'CREATURE_SPAWN_TABLE_ID' for the table name and 'CREATURE_SPAWN_COUNT' for the number of spawns.
         /// </summary>
-        private static void StoreSpawns()
+        private void StoreSpawns()
         {
             void RegisterAreaSpawnTable(uint area, string variableName, int spawnCount)
             {
@@ -230,7 +237,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="area">The area to determine spawn counts for</param>
         /// <returns>A positive integer indicating the number of resource spawns to use in a given area.</returns>
-        private static int CalculateResourceSpawnCount(uint area)
+        private int CalculateResourceSpawnCount(uint area)
         {
             var count = GetLocalInt(area, "RESOURCE_SPAWN_COUNT");
 
@@ -259,7 +266,7 @@ namespace SWLOR.Game.Server.Service
             return count;
         }
 
-        private static int CalculateCreatureSpawnCount(uint area)
+        private int CalculateCreatureSpawnCount(uint area)
         {
             var count = GetLocalInt(area, "CREATURE_SPAWN_COUNT");
 
@@ -289,7 +296,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         [ScriptHandler<OnAreaEnter>]
-        public static void SpawnArea()
+        public void SpawnArea()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) && !GetIsDM(player)) return;
@@ -324,7 +331,7 @@ namespace SWLOR.Game.Server.Service
         /// The heartbeat processor will despawn all objects when this happens
         /// </summary>
         [ScriptHandler<OnAreaExit>]
-        public static void QueueDespawnArea()
+        public void QueueDespawnArea()
         {
             var player = GetExitingObject();
             if (!GetIsPC(player) && !GetIsDM(player)) return;
@@ -345,7 +352,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="resourceObject">The resource object to despawn</param>
         /// <param name="spawnDetailId">The spawn detail ID of the resource</param>
         /// <param name="despawnMinutes">The number of minutes before despawning</param>
-        private static void QueueResourceDespawn(uint resourceObject, Guid spawnDetailId, int despawnMinutes)
+        private void QueueResourceDespawn(uint resourceObject, Guid spawnDetailId, int despawnMinutes)
         {
             var now = DateTime.UtcNow;
             
@@ -373,7 +380,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="spawnDetailId">The ID of the spawn detail.</param>
         /// <param name="respawnTime">The time the spawn will be created.</param>
-        private static void CreateQueuedSpawn(Guid spawnDetailId, DateTime respawnTime)
+        private void CreateQueuedSpawn(Guid spawnDetailId, DateTime respawnTime)
         {
             var queuedSpawn = new QueuedSpawn
             {
@@ -393,7 +400,7 @@ namespace SWLOR.Game.Server.Service
         /// Removes a queued spawn.
         /// </summary>
         /// <param name="queuedSpawn">The queued spawn to remove.</param>
-        private static void RemoveQueuedSpawn(QueuedSpawn queuedSpawn)
+        private void RemoveQueuedSpawn(QueuedSpawn queuedSpawn)
         {
             var spawnDetail = _spawns[queuedSpawn.SpawnDetailId];
             _queuedSpawns.Remove(queuedSpawn);
@@ -408,7 +415,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler<OnCreatureDeathAfter>]
         [ScriptHandler(ScriptName.OnPlaceableDeath)]
-        public static void QueueRespawn()
+        public void QueueRespawn()
         {
             uint creature = OBJECT_SELF;
             var spawnId = GetLocalString(creature, "SPAWN_ID");
@@ -428,7 +435,7 @@ namespace SWLOR.Game.Server.Service
         /// process dequeue area event requests.
         /// </summary>
         [ScriptHandler(ScriptName.OnSwlorHeartbeat)]
-        public static void ProcessSpawnSystem()
+        public void ProcessSpawnSystem()
         {
             ProcessQueuedSpawns();
             ProcessDespawnAreas();
@@ -439,7 +446,7 @@ namespace SWLOR.Game.Server.Service
         /// On each module heartbeat, iterate over the list of queued spawns.
         /// If enough time has elapsed and spawn table rules are met, spawn the object and remove it from the queue.
         /// </summary>
-        public static void ProcessQueuedSpawns()
+        public void ProcessQueuedSpawns()
         {
             var now = DateTime.UtcNow;
             for (var index = _queuedSpawns.Count - 1; index >= 0; index--)
@@ -490,7 +497,7 @@ namespace SWLOR.Game.Server.Service
         /// On each module heartbeat, iterate over the list of areas which are scheduled to
         /// be despawned. If players have since entered the area, remove it from the queue list.
         /// </summary>
-        private static void ProcessDespawnAreas()
+        private void ProcessDespawnAreas()
         {
             var now = DateTime.UtcNow;
             for (var index = _queuedAreaDespawns.Count - 1; index >= 0; index--)
@@ -554,7 +561,7 @@ namespace SWLOR.Game.Server.Service
         /// On each module heartbeat, iterate over the list of resources which are scheduled to
         /// be despawned naturally. If enough time has passed, despawn the resource.
         /// </summary>
-        private static void ProcessResourceDespawns()
+        private void ProcessResourceDespawns()
         {
             var now = DateTime.UtcNow;
             for (var index = _queuedResourceDespawns.Count - 1; index >= 0; index--)
@@ -591,7 +598,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void AdjustScripts(uint spawn)
+        private void AdjustScripts(uint spawn)
         {
             if (GetIsPC(spawn) || GetIsDM(spawn) || GetIsDMPossessed(spawn))
                 return;
@@ -636,7 +643,7 @@ namespace SWLOR.Game.Server.Service
         /// Make plot/immortal NPCs incredibly strong to dissuade players from attacking them and messing with spawns.
         /// </summary>
         /// <param name="spawn"></param>
-        private static void AdjustStats(uint spawn)
+        private void AdjustStats(uint spawn)
         {
             if (!GetIsObjectValid(spawn) || GetObjectType(spawn) != ObjectType.Creature)
                 return;
@@ -681,7 +688,7 @@ namespace SWLOR.Game.Server.Service
         /// When a DM spawns a creature, attach all required scripts to it.
         /// </summary>
         [ScriptHandler<OnDMSpawnObjectAfter>]
-        public static void DMSpawnCreature()
+        public void DMSpawnCreature()
         {
             var objectType = (InternalObjectType)Convert.ToInt32(EventsPlugin.GetEventData("OBJECT_TYPE"));
 
@@ -701,7 +708,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="spawnId">The ID of the spawn</param>
         /// <param name="detail">The details of the spawn</param>
-        private static uint SpawnObject(Guid spawnId, SpawnDetail detail)
+        private uint SpawnObject(Guid spawnId, SpawnDetail detail)
         {
             // Hand-placed spawns are stored as a serialized string.
             // Deserialize and add it to the area.

@@ -19,11 +19,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<QuestProgressedRefreshEvent>,
         IGuiRefreshable<QuestCompletedRefreshEvent>
     {
-        public QuestsViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
+        private readonly IQuestService _questService;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public QuestsViewModel(IGuiService guiService, IDatabaseService db, IQuestService questService) : base(guiService)
+        {
+            _db = db;
+            _questService = questService;
+        }
         
         public string SearchText
         {
@@ -74,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
 
                 var dbPlayerQuest = dbPlayer.Quests[questId];
-                var questDetail = Quest.GetQuestById(questId);
+                var questDetail = _questService.GetQuestById(questId);
 
                 ActiveQuestName = questDetail.Name;
                 ActiveQuestDescription = BuildDescription(questDetail, dbPlayerQuest.CurrentState);
@@ -126,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (quest.DateLastCompleted != null)
                     continue;
 
-                var questDetail = Quest.GetQuestById(questId);
+                var questDetail = _questService.GetQuestById(questId);
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
                     if (!questDetail.Name.ToLower().Contains(SearchText))
@@ -186,7 +189,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                Quest.AbandonQuest(Player, questId);
+                _questService.AbandonQuest(Player, questId);
 
                 _questIds.RemoveAt(SelectedQuestIndex);
                 QuestNames.RemoveAt(SelectedQuestIndex);

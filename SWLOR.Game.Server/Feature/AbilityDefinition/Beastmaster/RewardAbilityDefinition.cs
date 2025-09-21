@@ -6,6 +6,7 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Contracts;
 using AssociateType = SWLOR.NWN.API.NWScript.Enum.Associate.AssociateType;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
@@ -16,6 +17,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         private const string PetTreatTag = "pet_treat";
 
         private readonly AbilityBuilder _builder = new();
+        private readonly IItemService _itemService;
+
+        public RewardAbilityDefinition(IItemService itemService)
+        {
+            _itemService = itemService;
+        }
 
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
@@ -45,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 return;
             
             var item = GetItemPossessedBy(activator, PetTreatTag);
-            Item.ReduceItemStack(item, 1);
+            _itemService.ReduceItemStack(item, 1);
         }
 
 

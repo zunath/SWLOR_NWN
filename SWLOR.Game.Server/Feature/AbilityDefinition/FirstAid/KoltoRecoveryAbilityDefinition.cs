@@ -12,7 +12,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class KoltoRecoveryAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
+        private readonly IPerkService _perkService;
+
+        public KoltoRecoveryAbilityDefinition(IRandomService random, IPerkService perkService)
+        {
+            _random = random;
+            _perkService = perkService;
+        }
+
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             KoltoRecovery1();
@@ -35,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private void Impact(uint activator, int baseAmount)
         {
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
-            var distance = 6f + Perk.GetPerkLevel(activator, PerkType.RangedHealing);
+            var distance = 6f + _perkService.GetPerkLevel(activator, PerkType.RangedHealing);
             var party = Party.GetAllPartyMembersWithinRange(activator, distance);
 
             foreach (var member in party)

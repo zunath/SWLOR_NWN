@@ -12,8 +12,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
     public class EarthquakeAbilityDefinition : IAbilityListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         private readonly AbilityBuilder _builder = new();
+
+        public EarthquakeAbilityDefinition(IRandomService random)
+        {
+            _random = random;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -81,10 +86,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
                             SendMessageToPC(nearest, "The earthquake knocks you down!");
 
-                            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
-                            var defense = Stat.GetDefense(nearest, CombatDamageType.Physical, AbilityType.Vitality);
+                            var statService = ServiceContainer.GetService<IStatService>();
+                            var combatService = ServiceContainer.GetService<ICombatService>();
+                            var attack = statService.GetAttack(activator, AbilityType.Might, SkillType.Invalid);
+                            var defense = statService.GetDefense(nearest, CombatDamageType.Physical, AbilityType.Vitality);
                             var defenderStat = GetAbilityScore(nearest, AbilityType.Vitality);
-                            var damage = Combat.CalculateDamage(
+                            var damage = combatService.CalculateDamage(
                                 attack,
                                 dmg,
                                 attackerStat,
@@ -94,6 +101,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
                             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), nearest);
                         }
+
+                        count++;
+                        nearest = GetNearestCreature(CreatureType.IsAlive, 1, activator, count);
+                    }
+                });
+        }
+    }
+}
+
 
                         count++;
                         nearest = GetNearestCreature(CreatureType.IsAlive, 1, activator, count);

@@ -14,28 +14,44 @@ using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Fishing
+    public class Fishing
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
-        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IDatabaseService _db;
+        private readonly IGenericCacheService _cacheService;
+        private readonly IItemCacheService _itemCache;
+        private readonly IRandomService _random;
+        private readonly ISkillService _skillService;
         
         // Cached data
-        private static IEnumCache<FishType, FishAttribute> _fishCache;
-        private static IEnumCache<FishingRodType, FishingRodAttribute> _rodCache;
-        private static IEnumCache<FishingBaitType, FishingBaitAttribute> _baitCache;
+        private IEnumCache<FishType, FishAttribute> _fishCache;
+        private IEnumCache<FishingRodType, FishingRodAttribute> _rodCache;
+        private IEnumCache<FishingBaitType, FishingBaitAttribute> _baitCache;
 
-        private static readonly Dictionary<string, FishingRodType> _rodsByResref = new();
-        private static readonly Dictionary<string, FishingBaitType> _baitsByResref = new();
-        private static readonly Dictionary<FishingLocationType, FishingLocationDetail> _fishingLocations = new();
-        private static readonly Dictionary<FishingLocationType, List<string>> _fishResrefsByLocation = new();
+        private readonly Dictionary<string, FishingRodType> _rodsByResref = new();
+        private readonly Dictionary<string, FishingBaitType> _baitsByResref = new();
+        private readonly Dictionary<FishingLocationType, FishingLocationDetail> _fishingLocations = new();
+        private readonly Dictionary<FishingLocationType, List<string>> _fishResrefsByLocation = new();
+
+        public Fishing(
+            IDatabaseService db,
+            IGenericCacheService cacheService,
+            IItemCacheService itemCache,
+            IRandomService random,
+            ISkillService skillService)
+        {
+            _db = db;
+            _cacheService = cacheService;
+            _itemCache = itemCache;
+            _random = random;
+            _skillService = skillService;
+        }
 
         public const string ActiveBaitVariable = "ACTIVE_BAIT";
         public const string RemainingBaitVariable = "REMAINING_BAIT";
@@ -56,13 +72,14 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
-            LoadFish();
-            LoadRods();
-            LoadBaits();
-            LoadFishingLocations();
+            var fishing = ServiceContainer.GetService<Fishing>();
+            fishing.LoadFish();
+            fishing.LoadRods();
+            fishing.LoadBaits();
+            fishing.LoadFishingLocations();
         }
 
-        private static void LoadFish()
+        private void LoadFish()
         {
             _fishCache = _cacheService.BuildEnumCache<FishType, FishAttribute>()
                 .WithAllItems()
@@ -71,7 +88,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_fishCache.AllItems.Count} fish.");
         }
 
-        private static void LoadRods()
+        private void LoadRods()
         {
             _rodCache = _cacheService.BuildEnumCache<FishingRodType, FishingRodAttribute>()
                 .WithAllItems()
@@ -86,7 +103,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_rodCache.AllItems.Count} fishing rods.");
         }
 
-        private static void LoadBaits()
+        private void LoadBaits()
         {
             _baitCache = _cacheService.BuildEnumCache<FishingBaitType, FishingBaitAttribute>()
                 .WithAllItems()
@@ -104,7 +121,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_baitCache.AllItems.Count} fishing baits.");
         }
 
-        private static void LoadFishingLocations()
+        private void LoadFishingLocations()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
@@ -163,7 +180,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to check</param>
         /// <returns>true if fishing rod, false otherwise</returns>
-        public static bool IsItemFishingRod(uint item)
+        public bool IsItemFishingRod(uint item)
         {
             var resref = GetResRef(item);
             return _rodsByResref.ContainsKey(resref);
@@ -174,7 +191,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to check</param>
         /// <returns>true if bait, false otherwise</returns>
-        public static bool IsItemBait(uint item)
+        public bool IsItemBait(uint item)
         {
             var resref = GetResRef(item);
             return _baitsByResref.ContainsKey(resref);
@@ -185,7 +202,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="resref">The resref to look for</param>
         /// <returns>The type of bait.</returns>
-        public static FishingBaitType GetBaitByResref(string resref)
+        public FishingBaitType GetBaitByResref(string resref)
         {
             if (!_baitsByResref.ContainsKey(resref))
                 return FishingBaitType.Invalid;
@@ -198,7 +215,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type of fishing location.</param>
         /// <returns>Details about the specified fishing location.</returns>
-        public static List<string> GetFishAvailableAtLocation(FishingLocationType type)
+        public List<string> GetFishAvailableAtLocation(FishingLocationType type)
         {
             return _fishResrefsByLocation[type];
         }
@@ -208,12 +225,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="rod">The fishing rod item to check</param>
         /// <returns>The loaded bait type.</returns>
-        public static FishingBaitType GetLoadedBait(uint rod)
+        public FishingBaitType GetLoadedBait(uint rod)
         {
             return (FishingBaitType)GetLocalInt(rod, LoadedBaitTypeVariable);
         }
 
-        private static void InitializeFishingPoint(uint fishingPoint)
+        private void InitializeFishingPoint(uint fishingPoint)
         {
             if (GetLocalBool(fishingPoint, FishingPointInitializedVariable))
                 return;
@@ -229,6 +246,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler(ScriptName.OnFishPoint)]
         public static void ClickFishingPoint()
+        {
+            var fishing = ServiceContainer.GetService<Fishing>();
+            fishing.ClickFishingPointInternal();
+        }
+
+        private void ClickFishingPointInternal()
         {
             void CheckPosition(uint player, Vector3 startPosition, string attemptId)
             {
@@ -323,6 +346,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler(ScriptName.OnFinishFishing)]
         public static void FinishFishing()
+        {
+            var fishing = ServiceContainer.GetService<Fishing>();
+            fishing.FinishFishingInternal();
+        }
+
+        private void FinishFishingInternal()
         {
             var player = OBJECT_SELF;
             var fishingPoint = GetLocalObject(player, FishingPointVariable);
@@ -453,11 +482,11 @@ namespace SWLOR.Game.Server.Service
                 SetLocalInt(fishingPoint, FishingPointRemainingAttemptsVariable, remainingAttempts);
             }
 
-            var xp = Skill.GetDeltaXP(fish.Level - skill);
-            Skill.GiveSkillXP(player, SkillType.Agriculture, xp, false, false);
+            var xp = _skillService.GetDeltaXP(fish.Level - skill);
+            _skillService.GiveSkillXP(player, SkillType.Agriculture, xp, false, false);
         }
 
-        private static void ClearFishingAttempt(uint player)
+        private void ClearFishingAttempt(uint player)
         {
             Activity.ClearBusy(player);
             DeleteLocalFloat(player, FishingPositionVariableX);

@@ -12,25 +12,53 @@ using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Contracts;
 using MarketCategoryType = SWLOR.Shared.Core.Enums.MarketCategoryType;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class PlayerMarket
+    public class PlayerMarket
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IGenericCacheService _cacheService = ServiceContainer.GetService<IGenericCacheService>();
+        private readonly IDatabaseService _db;
+        private readonly IGenericCacheService _cacheService;
+        private readonly IItemService _itemService;
+        private readonly ICraftService _craftService;
+        private readonly ISpaceService _spaceService;
+        private readonly IPropertyService _propertyService;
+        private readonly IFishingService _fishingService;
+        private readonly IBeastMasteryService _beastMasteryService;
+        
         public const int MaxListingsPerMarket = 25;
         
         // Cached data
-        private static IEnumCache<MarketCategoryType, MarketCategoryAttribute>? _marketCategoryCache;
-        private static IEnumCache<MarketRegionType, MarketRegionAttribute>? _marketRegionCache;
+        private IEnumCache<MarketCategoryType, MarketCategoryAttribute>? _marketCategoryCache;
+        private IEnumCache<MarketRegionType, MarketRegionAttribute>? _marketRegionCache;
         
         // Additional caches for backward compatibility
-        private static readonly Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeMarketCategories = new();
+        private readonly Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeMarketCategories = new();
         
         // Pre-computed cache for fast retrieval
-        private static readonly Dictionary<MarketCategoryType, MarketCategoryAttribute> _allActiveMarketCategories = new();
+        private readonly Dictionary<MarketCategoryType, MarketCategoryAttribute> _allActiveMarketCategories = new();
+
+        public PlayerMarket(
+            IDatabaseService db, 
+            IGenericCacheService cacheService,
+            IItemService itemService,
+            ICraftService craftService,
+            ISpaceService spaceService,
+            IPropertyService propertyService,
+            IFishingService fishingService,
+            IBeastMasteryService beastMasteryService)
+        {
+            _db = db;
+            _cacheService = cacheService;
+            _itemService = itemService;
+            _craftService = craftService;
+            _spaceService = spaceService;
+            _propertyService = propertyService;
+            _fishingService = fishingService;
+            _beastMasteryService = beastMasteryService;
+        }
 
         /// <summary>
         /// When the module caches, cache all static player market data for quick retrieval.
@@ -38,8 +66,9 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
-            LoadMarketCategories();
-            LoadMarkets();
+            var playerMarket = ServiceContainer.GetService<PlayerMarket>();
+            playerMarket.LoadMarketCategories();
+            playerMarket.LoadMarkets();
         }
 
         /// <summary>
@@ -47,6 +76,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler<OnModuleLoad>]
         public static void RemoveOldListings()
+        {
+            var playerMarket = ServiceContainer.GetService<PlayerMarket>();
+            playerMarket.RemoveOldListingsInternal();
+        }
+
+        private void RemoveOldListingsInternal()
         {
             var query = new DBQuery<MarketItem>()
                 .AddFieldSearch(nameof(MarketItem.IsListed), true);
@@ -72,6 +107,12 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnModuleEnter>]
         public static void CheckMarketTill()
         {
+            var playerMarket = ServiceContainer.GetService<PlayerMarket>();
+            playerMarket.CheckMarketTillInternal();
+        }
+
+        private void CheckMarketTillInternal()
+        {
             var player = GetEnteringObject();
 
             if (!GetIsPC(player) || GetIsDM(player))
@@ -93,7 +134,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Reads all of the MarketCategoryType enumerations and adds them to the related dictionaries.
         /// </summary>
-        private static void LoadMarketCategories()
+        private void LoadMarketCategories()
         {
             _marketCategoryCache = _cacheService.BuildEnumCache<MarketCategoryType, MarketCategoryAttribute>()
                 .WithAllItems()
@@ -115,7 +156,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Reads all of the MarketRegionType enumerations and adds them to the related dictionaries.
         /// </summary>
-        private static void LoadMarkets()
+        private void LoadMarkets()
         {
             _marketRegionCache = _cacheService.BuildEnumCache<MarketRegionType, MarketRegionAttribute>()
                 .WithAllItems()
@@ -127,7 +168,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves all active market categories.
         /// </summary>
         /// <returns>A dictionary of active market categories.</returns>
-        public static Dictionary<MarketCategoryType, MarketCategoryAttribute> GetActiveCategories()
+        public Dictionary<MarketCategoryType, MarketCategoryAttribute> GetActiveCategories()
         {
             return _allActiveMarketCategories;
         }
@@ -137,7 +178,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="regionType">The type of market region</param>
         /// <returns>A market region detail</returns>
-        public static MarketRegionAttribute GetMarketRegion(MarketRegionType regionType)
+        public MarketRegionAttribute GetMarketRegion(MarketRegionType regionType)
         {
             return _marketRegionCache?.GetFilteredCache("Active")?[regionType] ?? throw new KeyNotFoundException($"Market region {regionType} not found in cache");
         }
@@ -148,35 +189,35 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to check</param>
         /// <returns>A market category type to place the item in.</returns>
-        public static MarketCategoryType GetItemMarketCategory(uint item)
+        public MarketCategoryType GetItemMarketCategory(uint item)
         {
             var baseItemType = GetBaseItemType(item);
             var tag = GetTag(item);
 
             // Weapon Classes
-            if (Item.VibrobladeBaseItemTypes.Contains(baseItemType))
+            if (_itemService.VibrobladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Vibroblade;
-            if (Item.FinesseVibrobladeBaseItemTypes.Contains(baseItemType))
+            if (_itemService.FinesseVibrobladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.FinesseVibroblade;
-            if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType))
+            if (_itemService.HeavyVibrobladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.HeavyVibroblade;
-            if (Item.PolearmBaseItemTypes.Contains(baseItemType))
+            if (_itemService.PolearmBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Polearm;
-            if (Item.StaffBaseItemTypes.Contains(baseItemType))
+            if (_itemService.StaffBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Staff;
-            if (Item.PistolBaseItemTypes.Contains(baseItemType))
+            if (_itemService.PistolBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Pistol;
-            if (Item.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
+            if (_itemService.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Throwing;
-            if (Item.RifleBaseItemTypes.Contains(baseItemType))
+            if (_itemService.RifleBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Rifle;
-            if (Item.TwinBladeBaseItemTypes.Contains(baseItemType))
+            if (_itemService.TwinBladeBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.TwinBlade;
-            if (Item.KatarBaseItemTypes.Contains(baseItemType))
+            if (_itemService.KatarBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Katar;
-            if (Item.LightsaberBaseItemTypes.Contains(baseItemType))
+            if (_itemService.LightsaberBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Lightsaber;
-            if (Item.SaberstaffBaseItemTypes.Contains(baseItemType))
+            if (_itemService.SaberstaffBaseItemTypes.Contains(baseItemType))
                 return MarketCategoryType.Saberstaff;
 
             // Universal armor classes
@@ -198,7 +239,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Armor classes
-            var armorType = Item.GetArmorType(item);
+            var armorType = _itemService.GetArmorType(item);
             if (armorType == ArmorType.Heavy)
             {
                 switch (baseItemType)
@@ -231,23 +272,23 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Recipes
-            if (Craft.IsItemRecipe(item))
+            if (_craftService.IsItemRecipe(item))
                 return MarketCategoryType.Recipe;
             // Components
-            if (Craft.IsItemComponent(item))
+            if (_craftService.IsItemComponent(item))
                 return MarketCategoryType.Components;
             // Enhancements
-            if (Craft.IsItemEnhancement(item))
+            if (_craftService.IsItemEnhancement(item))
                 return MarketCategoryType.Enhancement;
 
             // Ship Deeds
-            if (Space.IsItemShip(item))
+            if (_spaceService.IsItemShip(item))
                 return MarketCategoryType.Starship;
-            if (Space.IsItemShipModule(item))
+            if (_spaceService.IsItemShipModule(item))
                 return MarketCategoryType.StarshipParts;
 
             // Structures
-            if (Property.GetStructureTypeFromItem(item) != StructureType.Invalid)
+            if (_propertyService.GetStructureTypeFromItem(item) != StructureType.Invalid)
                 return MarketCategoryType.Structure;
 
             // Food
@@ -259,23 +300,23 @@ namespace SWLOR.Game.Server.Service
                 return MarketCategoryType.PetFood;
 
             // Fishing Rods & Bait
-            if (Fishing.IsItemFishingRod(item) || Fishing.IsItemBait(item))
+            if (_fishingService.IsItemFishingRod(item) || _fishingService.IsItemBait(item))
                 return MarketCategoryType.Fishing;
 
             // Incubation
-            if (BeastMastery.IsIncubationCraftingItem(item))
+            if (_beastMasteryService.IsIncubationCraftingItem(item))
                 return MarketCategoryType.Incubation;
 
             // Beast Egg
-            if (BeastMastery.IsBeastEgg(item))
+            if (_beastMasteryService.IsBeastEgg(item))
                 return MarketCategoryType.BeastEgg;
 
             // Blueprint
-            if (Craft.GetBlueprintDetails(item).Recipe != RecipeType.Invalid)
+            if (_craftService.GetBlueprintDetails(item).Recipe != RecipeType.Invalid)
                 return MarketCategoryType.Blueprint;
 
             //Starship Ammo
-            if (Space.IsStarshipAmmo(item))
+            if (_spaceService.IsStarshipAmmo(item))
                 return MarketCategoryType.StarshipAmmo;
             
             return MarketCategoryType.Miscellaneous;

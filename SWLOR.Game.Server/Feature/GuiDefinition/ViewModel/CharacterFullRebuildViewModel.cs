@@ -26,12 +26,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CharacterFullRebuildViewModel: GuiViewModelBase<CharacterFullRebuildViewModel, GuiPayloadBase>
     {
-        public CharacterFullRebuildViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
 
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public CharacterFullRebuildViewModel(IGuiService guiService, ILogger logger, IDatabaseService db) : base(guiService)
+        {
+            _logger = logger;
+            _db = db;
+        }
         [ScriptHandler(ScriptName.OnCharacterRebuild)]
         public static void LoadCharacterMigrationWindow()
         {
@@ -44,8 +46,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(player)), player);
-            Stat.RestoreFP(player, Stat.GetMaxFP(player));
-            Stat.RestoreStamina(player, Stat.GetMaxStamina(player));
+            var statService = ServiceContainer.GetService<IStatService>();
+            statService.RestoreFP(player, statService.GetMaxFP(player));
+            statService.RestoreStamina(player, statService.GetMaxStamina(player));
             var guiService = ServiceContainer.GetService<IGuiService>();
             guiService.TogglePlayerWindow(player, GuiWindowType.CharacterMigration, null, OBJECT_SELF);
         }
@@ -238,7 +241,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             && dbPlayer.Skills
                                 .Where(x =>
                                 {
-                                    var detail = Skill.GetSkillDetails(x.Key);
+                                    var detail = _skillService.GetSkillDetails(x.Key);
                                     return detail.ContributesToSkillCap;
                                 })
                                 .Sum(s => s.Value.Rank) == 0
@@ -262,7 +265,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadSkills()
         {
-            var availableSkills = Skill.GetActiveContributingSkills();
+            var availableSkills = _skillService.GetActiveContributingSkills();
             var skills = new GuiBindingList<string>();
             var tooltips = new GuiBindingList<string>();
 
@@ -326,7 +329,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 foreach (var (type, level) in pcPerks)
                 {
-                    var perkDetail = Perk.GetPerkDetails(type);
+                    var perkDetail = _perkService.GetPerkDetails(type);
                     var refundAmount = perkDetail.PerkLevels
                         .Where(x => x.Key <= level)
                         .Sum(x => x.Value.Price);
@@ -359,7 +362,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 
                 foreach (var (type, _) in dbPlayer.Skills)
                 {
-                    var detail = Skill.GetSkillDetails(type);
+                    var detail = _skillService.GetSkillDetails(type);
                     if (!detail.ContributesToSkillCap)
                         continue;
 
@@ -415,7 +418,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal($"WARNING: Your perks and skill points will be refunded. Your stats will be reinitialized to 10 (before racial bonuses are applied). You will be required to distribute all of these points before leaving this area. Partial XP towards the next skill rank will be LOST. Are you sure you'd like to proceed?", () =>
             {
-                if (Ability.IsAnyAbilityToggled(Player))
+                if (ServiceContainer.GetService<IAbilityService>().IsAnyAbilityToggled(Player))
                 {
                     FloatingTextStringOnCreature(ColorToken.Red("Please toggle all abilities OFF and try again."), Player, false);
                     return;
@@ -577,7 +580,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var skillType = _skills[index];
-            var skill = Skill.GetSkillDetails(skillType);
+            var skill = _skillService.GetSkillDetails(skillType);
             var currentValue = _skillDistributionPoints[index] - 10;
             if (currentValue < 0)
                 currentValue = 0;
@@ -592,7 +595,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var skillType = _skills[index];
-            var skill = Skill.GetSkillDetails(skillType);
+            var skill = _skillService.GetSkillDetails(skillType);
             var currentValue = _skillDistributionPoints[index] - 1;
             if (currentValue < 0)
                 currentValue = 0;
@@ -607,7 +610,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var skillType = _skills[index];
-            var skill = Skill.GetSkillDetails(skillType);
+            var skill = _skillService.GetSkillDetails(skillType);
             var amount = _remainingSkillPoints >= 1 ? 1 : 0;
             var currentValue = _skillDistributionPoints[index] + amount;
             if (currentValue > skill.MaxRank)
@@ -623,7 +626,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
             var skillType = _skills[index];
-            var skill = Skill.GetSkillDetails(skillType);
+            var skill = _skillService.GetSkillDetails(skillType);
             var amount = _remainingSkillPoints >= 10 ? 10 : _remainingSkillPoints;
             var currentValue = _skillDistributionPoints[index] + amount;
             if (currentValue > skill.MaxRank)

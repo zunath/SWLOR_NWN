@@ -10,6 +10,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     public class RenameChatCommand : IChatCommandListDefinition
     {
+        private readonly IGuiService _guiService;
+
+        public RenameChatCommand(IGuiService guiService)
+        {
+            _guiService = guiService;
+        }
+
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
             var builder = new ChatCommandBuilder();
@@ -38,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     var payload = new RenameItemPayload(target);
-                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.RenameItem, payload);
+                    _guiService.TogglePlayerWindow(user, GuiWindowType.RenameItem, payload);
                 });
 
             return builder.Build();

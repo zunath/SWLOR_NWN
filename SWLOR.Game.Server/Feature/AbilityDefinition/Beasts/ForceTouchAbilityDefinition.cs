@@ -4,12 +4,22 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
 {
     public class ForceTouchAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public ForceTouchAbilityDefinition(ICombatService combatService, IStatService statService)
+        {
+            _combatService = combatService;
+            _statService = statService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -29,11 +39,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beasts
             var beastStat = GetAbilityScore(activator, AbilityType.Willpower) / 2;
 
             var totalStat = beastmasterStat + beastStat;
-            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Invalid);
-            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+            var attack = _statService.GetAttack(activator, AbilityType.Willpower, SkillType.Invalid);
+            var defense = _statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
 
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg,
                 totalStat,

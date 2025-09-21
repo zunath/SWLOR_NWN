@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -12,9 +13,23 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class RecipeItemDefinition: IItemListDefinition
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        private readonly IDatabaseService _db;
+        private readonly IItemCacheService _itemCache;
+        private readonly IPerkService _perkService;
+        private readonly ICraftService _craftService;
+        private readonly ISkillService _skillService;
+        private readonly IItemService _itemService;
         private readonly ItemBuilder _builder = new();
+
+        public RecipeItemDefinition(IDatabaseService db, IItemCacheService itemCache, IPerkService perkService, ICraftService craftService, ISkillService skillService, IItemService itemService)
+        {
+            _db = db;
+            _itemCache = itemCache;
+            _perkService = perkService;
+            _craftService = craftService;
+            _skillService = skillService;
+            _itemService = itemService;
+        }
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
@@ -42,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     if (characterTypeRestriction != CharacterType.Invalid &&
                         characterTypeRestriction != dbPlayer.CharacterType)
                     {
-                        var characterType = Perk.GetCharacterType(characterTypeRestriction);
+                        var characterType = _perkService.GetCharacterType(characterTypeRestriction);
                         return $"This recipe can only be learned by {characterType.Name} characters.";
                     }
 
@@ -75,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         var recipeType = (RecipeType)convertedId;
 
                         // Ensure this type of recipe has been registered.
-                        if (!Craft.RecipeExists(recipeType))
+                        if (!_craftService.RecipeExists(recipeType))
                         {
                             SendMessageToPC(user, "This recipe has not been registered. Please inform a DM.");
                             return;
@@ -88,8 +103,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         recipesLearned++;
                         dbPlayer.UnlockedRecipes[recipeType] = DateTime.UtcNow;
 
-                        var recipeDetail = Craft.GetRecipe(recipeType);
-                        var skillDetail = Skill.GetSkillDetails(recipeDetail.Skill);
+                        var recipeDetail = _craftService.GetRecipe(recipeType);
+                        var skillDetail = _skillService.GetSkillDetails(recipeDetail.Skill);
                         var itemName = _itemCache.GetItemNameByResref(recipeDetail.Resref);
                         SendMessageToPC(user, $"You learn the {skillDetail.Name} recipe: {itemName}.");
                     }
@@ -103,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     _db.Set(dbPlayer);
 
-                    Item.ReduceItemStack(item, 1);
+                    _itemService.ReduceItemStack(item, 1);
                 });
         }
     }

@@ -16,11 +16,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class RentApartmentViewModel: GuiViewModelBase<RentApartmentViewModel, GuiPayloadBase>
     {
-        public RentApartmentViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public RentApartmentViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        {
+            _db = db;
+        }
         
         public string Instructions
         {

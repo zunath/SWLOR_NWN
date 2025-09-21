@@ -7,6 +7,7 @@ using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Creature;
@@ -16,16 +17,42 @@ namespace SWLOR.Game.Server.Service
 {
     public class Loot
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly ILogger _logger;
+        private readonly IRandomService _random;
+        private readonly IPerkService _perkService;
+        private readonly IStatService _statService;
+        private readonly IBeastMasteryService _beastMasteryService;
+        private readonly IItemService _itemService;
         private static readonly Dictionary<string, LootTable> _lootTables = new();
 
         private const float CorpseLifespanSeconds = 360f;
         public const string CorpseBodyVariable = "CORPSE_BODY";
         private const string CorpseCopyItemVariable = "CORPSE_ITEM_COPY";
 
+        public Loot(
+            ILogger logger,
+            IRandomService random,
+            IPerkService perkService,
+            IStatService statService,
+            IBeastMasteryService beastMasteryService,
+            IItemService itemService)
+        {
+            _logger = logger;
+            _random = random;
+            _perkService = perkService;
+            _statService = statService;
+            _beastMasteryService = beastMasteryService;
+            _itemService = itemService;
+        }
+
         [ScriptHandler<OnModuleCacheBefore>]
         public static void RegisterLootTables()
+        {
+            var loot = ServiceContainer.GetService<Loot>();
+            loot.RegisterLootTablesInternal();
+        }
+
+        private void RegisterLootTablesInternal()
         {
             // Get all implementations of spawn table definitions.
             var types = AppDomain.CurrentDomain.GetAssemblies()
@@ -63,6 +90,12 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnCreatureSpawnBefore>]
         public static void SpawnStealLoot()
         {
+            var loot = ServiceContainer.GetService<Loot>();
+            loot.SpawnStealLootInternal();
+        }
+
+        private void SpawnStealLootInternal()
+        {
             var creature = OBJECT_SELF;
             var lootTables = GetLootTableDetails(creature, "STEAL_LOOT_TABLE_");
 
@@ -86,7 +119,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="delimitedString">The comma delimited string </param>
         /// <returns>The table name, the percent chance, and the number of attempts</returns>
-        private static (string, int, int) ParseLootTableArguments(string delimitedString)
+        private (string, int, int) ParseLootTableArguments(string delimitedString)
         {
             var data = delimitedString.Split(',');
             var tableName = data[0].Trim();
@@ -123,7 +156,7 @@ namespace SWLOR.Game.Server.Service
             return (tableName, chance, attempts);
         }
 
-        private static List<uint> SpawnLoot(uint source, uint receiver, string lootTableName, int chance, int attempts)
+        private List<uint> SpawnLoot(uint source, uint receiver, string lootTableName, int chance, int attempts)
         {
             var creditFinderLevel = GetLocalInt(source, "CREDITFINDER_LEVEL");
             var creditPercentIncrease = creditFinderLevel * 0.2f;
@@ -163,7 +196,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="source">The source of the items (must contain the local variables)</param>
         /// <param name="receiver">The receiver of the items</param>
         /// <param name="lootTablePrefix">The prefix of the loot tables. In the toolset this should be numeric starting at 1.</param>
-        public static void SpawnLoot(uint source, uint receiver, string lootTablePrefix)
+        public void SpawnLoot(uint source, uint receiver, string lootTablePrefix)
         {
             var lootTableEntries = GetLootTableDetails(source, lootTablePrefix);
             foreach (var entry in lootTableEntries)
@@ -181,7 +214,8 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnCreatureDeathBefore>]
         public static void SpawnLootOnCreatureDeath()
         {
-            SpawnLoot(OBJECT_SELF, OBJECT_SELF, "LOOT_TABLE_");
+            var loot = ServiceContainer.GetService<Loot>();
+            loot.SpawnLoot(OBJECT_SELF, OBJECT_SELF, "LOOT_TABLE_");
         }
 
         /// <summary>
@@ -190,7 +224,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="name">The name of the loot table to retrieve.</param>
         /// <returns>A loot table matching the specified name.</returns>
-        public static LootTable GetLootTableByName(string name)
+        public LootTable GetLootTableByName(string name)
         {
             if (!_lootTables.ContainsKey(name))
                 throw new Exception($"Loot table '{name}' is not registered. Did you enter the right name?");
@@ -203,7 +237,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="name">The name to search by.</param>
         /// <returns>true if the loot table exists, false otherwise</returns>
-        public static bool LootTableExists(string name)
+        public bool LootTableExists(string name)
         {
             return _lootTables.ContainsKey(name);
         }
@@ -214,7 +248,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to search.</param>
         /// <param name="lootTablePrefix">The prefix of the loot tables to look for.</param>
         /// <returns>A list of loot table details.</returns>
-        private static IEnumerable<string> GetLootTableDetails(uint creature, string lootTablePrefix)
+        private IEnumerable<string> GetLootTableDetails(uint creature, string lootTablePrefix)
         {
             var lootTables = new List<string>();
 
@@ -244,6 +278,12 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler(ScriptName.OnItemHit)]
         public static void MarkCreditfinderAndTreasureHunterOnTarget()
         {
+            var loot = ServiceContainer.GetService<Loot>();
+            loot.MarkCreditfinderAndTreasureHunterOnTargetInternal();
+        }
+
+        private void MarkCreditfinderAndTreasureHunterOnTargetInternal()
+        {
             var attacker = OBJECT_SELF;
             var target = GetSpellTargetObject();
             if (GetIsPC(target) || GetIsDM(target)) 
@@ -252,9 +292,9 @@ namespace SWLOR.Game.Server.Service
             var currentCreditFinder = GetLocalInt(target, "CREDITFINDER_LEVEL");
             var currentTreasureHunter = GetLocalInt(target, "RARE_BONUS_CHANCE");
 
-            var creditFinderLevel = Perk.GetPerkLevel(attacker, PerkType.CreditFinder);
-            var treasureHunterLevel = Perk.GetPerkLevel(attacker, PerkType.TreasureHunter) * 10;
-            var sniffLevel = Perk.GetPerkLevel(attacker, PerkType.Sniff);
+            var creditFinderLevel = _perkService.GetPerkLevel(attacker, PerkType.CreditFinder);
+            var treasureHunterLevel = _perkService.GetPerkLevel(attacker, PerkType.TreasureHunter) * 10;
+            var sniffLevel = _perkService.GetPerkLevel(attacker, PerkType.Sniff);
             switch (sniffLevel)
             {
                 case 1:
@@ -294,6 +334,12 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnCreatureDeathBefore>]
         public static void ProcessCorpse()
         {
+            var loot = ServiceContainer.GetService<Loot>();
+            loot.ProcessCorpseInternal();
+        }
+
+        private void ProcessCorpseInternal()
+        {
             var self = OBJECT_SELF;
             SetIsDestroyable(false);
 
@@ -302,7 +348,7 @@ namespace SWLOR.Game.Server.Service
             var facing = GetFacing(self);
             var lootPosition = Vector3(position.X, position.Y, position.Z - 0.11f);
             var spawnLocation = Location(area, lootPosition, facing);
-            var npcStats = Stat.GetNPCStats(self);
+            var npcStats = _statService.GetNPCStats(self);
 
             var container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
             SetLocalObject(container, CorpseBodyVariable, self);
@@ -354,7 +400,7 @@ namespace SWLOR.Game.Server.Service
             ScheduleCorpseCleanup(container);
         }
 
-        private static void ScheduleCorpseCleanup(uint placeable)
+        private void ScheduleCorpseCleanup(uint placeable)
         {
             DelayCommand(CorpseLifespanSeconds, () =>
             {
@@ -385,6 +431,12 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler(ScriptName.OnCorpseClosed)]
         public static void CloseCorpseContainer()
         {
+            var loot = ServiceContainer.GetService<Loot>();
+            loot.CloseCorpseContainerInternal();
+        }
+
+        private void CloseCorpseContainerInternal()
+        {
             var container = OBJECT_SELF;
             var firstItem = GetFirstItemInInventory(container);
             var corpseOwner = GetLocalObject(container, CorpseBodyVariable);
@@ -405,7 +457,7 @@ namespace SWLOR.Game.Server.Service
                 else
                 {
                     var beastType = (BeastType)beastTypeId;
-                    var beastDetail = BeastMastery.GetBeastDetail(beastType);
+                    var beastDetail = _beastMasteryService.GetBeastDetail(beastType);
                     var extractCorpse = CreateObject(ObjectType.Placeable, BeastMastery.ExtractCorpseObjectResref, GetLocation(container));
                     SetLocalObject(extractCorpse, CorpseBodyVariable, corpseOwner);
                     SetLocalInt(extractCorpse, BeastMastery.BeastTypeVariable, beastTypeId);
@@ -427,6 +479,12 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler(ScriptName.OnCorpseDisturbed)]
         public static void DisturbCorpseContainer()
         {
+            var loot = ServiceContainer.GetService<Loot>();
+            loot.DisturbCorpseContainerInternal();
+        }
+
+        private void DisturbCorpseContainerInternal()
+        {
             var looter = GetLastDisturbed();
             var item = GetInventoryDisturbItem();
             var type = GetInventoryDisturbType();
@@ -438,7 +496,7 @@ namespace SWLOR.Game.Server.Service
 
             if (type == DisturbType.Added)
             {
-                Item.ReturnItem(looter, item);
+                _itemService.ReturnItem(looter, item);
                 SendMessageToPC(looter, "You cannot place items inside of corpses.");
             }
             else if (type == DisturbType.Removed)

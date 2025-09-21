@@ -156,7 +156,8 @@ namespace SWLOR.Game.Server.Service
             var player = GetMaster(beast);
             var beastId = GetBeastId(beast);
             var dbBeast = _db.Get<Beast>(beastId);
-            var maxBeastLevel = Perk.GetPerkLevel(player, PerkType.Tame) * 10;
+            var perkService = ServiceContainer.GetService<IPerkService>();
+            var maxBeastLevel = perkService.GetPerkLevel(player, PerkType.Tame) * 10;
             var bonusPercentage = 0f;
             var social = GetAbilityScore(beast, AbilityType.Social);
 
@@ -177,7 +178,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (GetIsObjectValid(source))
                     {
-                        var effectiveLevel = Perk.GetPerkLevel(source, PerkType.Dedication);
+                        var effectiveLevel = _perkService.GetPerkLevel(source, PerkType.Dedication);
                         var sourceSocial = GetAbilityScore(source, AbilityType.Social);
                         bonusPercentage += (10 + effectiveLevel * sourceSocial) * 0.01f;
                     }
@@ -275,7 +276,7 @@ namespace SWLOR.Game.Server.Service
             // Perks
             foreach (var (perk, level) in dbBeast.Perks)
             {
-                var perkDefinition = Perk.GetPerkDetails(perk);
+                var perkDefinition = _perkService.GetPerkDetails(perk);
                 var perkFeats = perkDefinition.PerkLevels.ContainsKey(level)
                     ? perkDefinition.PerkLevels[level].GrantedFeats
                     : new List<FeatType>();
@@ -399,7 +400,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var npc = StringToObject(EventsPlugin.GetEventData("NPC"));
-            var npcStats = Stat.GetNPCStats(npc);
+            var npcStats = _statService.GetNPCStats(npc);
             var beastId = GetBeastId(beast);
             var dbBeast = _db.Get<Beast>(beastId);
 
@@ -450,7 +451,8 @@ namespace SWLOR.Game.Server.Service
 
             SendMessageToPC(master, "Beasts cannot hold items.");
             AssignCommand(beast, () => ClearAllActions());
-            Item.ReturnItem(master, item);
+            var itemService = ServiceContainer.GetService<IItemService>();
+            itemService.ReturnItem(master, item);
         }
 
         [ScriptHandler(ScriptName.OnBeastBlocked)]
@@ -508,7 +510,8 @@ namespace SWLOR.Game.Server.Service
         public static void BeastOnHeartbeat()
         {
             ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
-            Stat.RestoreNPCStats(false);
+            var statService = ServiceContainer.GetService<IStatService>();
+            statService.RestoreNPCStats(false);
         }
 
         [ScriptHandler(ScriptName.OnBeastPerception)]
@@ -545,8 +548,9 @@ namespace SWLOR.Game.Server.Service
             {
                 SetIsDestroyable(true, false, false);
             });
-            Stat.LoadNPCStats();
-            Stat.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
+            var statService = ServiceContainer.GetService<IStatService>();
+            statService.LoadNPCStats();
+            statService.ApplyAttacksPerRound(beast, GetItemInSlot(InventorySlot.CreatureLeft));
         }
 
         [ScriptHandler(ScriptName.OnBeastSpellCast)]
@@ -714,7 +718,7 @@ namespace SWLOR.Game.Server.Service
             var player = GetLastUsedBy();
             var playerId = GetObjectUUID(player);
             var incubator = OBJECT_SELF;
-            var dnaManipulationLevel = Perk.GetPerkLevel(player, PerkType.DNAManipulation);
+            var dnaManipulationLevel = _perkService.GetPerkLevel(player, PerkType.DNAManipulation);
 
             if (dnaManipulationLevel <= 0)
             {
@@ -722,7 +726,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var incubatorPropertyId = Property.GetPropertyId(incubator);
+            var incubatorPropertyId = ServiceContainer.GetService<IPropertyService>().GetPropertyId(incubator);
 
             if (string.IsNullOrWhiteSpace(incubatorPropertyId))
             {

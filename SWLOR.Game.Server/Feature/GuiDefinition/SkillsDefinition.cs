@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindSelectedIndex(model => model.SelectedCategoryId);
 
                         comboBox.AddOption("<All Skills>", 0);
-                        foreach (var (type, detail) in Skill.GetAllActiveSkillCategories())
+                        foreach (var (type, detail) in _skillService.GetAllActiveSkillCategories())
                         {
                             comboBox.AddOption(detail.Name, (int) type);
                         }

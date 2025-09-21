@@ -6,11 +6,28 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class HardSlashAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+        private readonly ICombatPointService _combatPointService;
+        private readonly IEnmityService _enmityService;
+
+        public HardSlashAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+            _combatPointService = combatPointService;
+            _enmityService = enmityService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -21,11 +38,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!Item.HeavyVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.HeavyVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a heavy vibroblade ability.";
             }
@@ -33,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
 
@@ -52,13 +69,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
-            
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.TwoHanded);
+
             var attackerStat = GetAbilityScore(activator, AbilityType.Might);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.TwoHanded);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack, 
                 dmg, 
                 attackerStat, 
@@ -69,11 +86,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.DoubleStrike));
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
-            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private static void HardSlash1(AbilityBuilder builder)
+        private void HardSlash1(AbilityBuilder builder)
         {
             builder.Create(FeatType.HardSlash1, PerkType.HardSlash)
                 .Name("Hard Slash I")
@@ -88,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void HardSlash2(AbilityBuilder builder)
+        private void HardSlash2(AbilityBuilder builder)
         {
             builder.Create(FeatType.HardSlash2, PerkType.HardSlash)
                 .Name("Hard Slash II")
@@ -103,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void HardSlash3(AbilityBuilder builder)
+        private void HardSlash3(AbilityBuilder builder)
         {
             builder.Create(FeatType.HardSlash3, PerkType.HardSlash)
                 .Name("Hard Slash III")

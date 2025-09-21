@@ -11,6 +11,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public class FragGrenadeAbilityDefinition: ExplosiveBaseAbilityDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public FragGrenadeAbilityDefinition(ICombatService combatService, IStatService statService)
+        {
+            _combatService = combatService;
+            _statService = statService;
+        }
 
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -26,13 +34,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             if (GetFactionEqual(activator, target))
                 return;
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Devices);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Devices);
 
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
+            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -42,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             if (dc > 0)
             {
-                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
+                dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
                 var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
                 if (checkResult == SavingThrowResultType.Failed)
                 {

@@ -13,7 +13,15 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
     public class DebuggingChatCommand: IChatCommandListDefinition
     {
         private readonly ChatCommandBuilder _builder = new();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IGuiService _guiService;
+
+        public DebuggingChatCommand(IDatabaseService db, IGuiService guiService)
+        {
+            _db = db;
+            _guiService = guiService;
+        }
+
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
             //MoveDoor();
@@ -24,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             return _builder.Build();
         }
 
-        private static Location GetDoorLocation(uint building, float orientationOverride = 0f, float sqrtValue = 0f)
+        private Location GetDoorLocation(uint building, float orientationOverride = 0f, float sqrtValue = 0f)
         {
             var area = GetArea(building);
             var location = GetLocation(building);
@@ -84,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.DebugEnmity);
+                    _guiService.TogglePlayerWindow(user, GuiWindowType.DebugEnmity);
                 });
         }
 

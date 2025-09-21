@@ -17,11 +17,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CharacterStatRebuildViewModel: GuiViewModelBase<CharacterStatRebuildViewModel, GuiPayloadBase>
     {
-        public CharacterStatRebuildViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public CharacterStatRebuildViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        {
+            _db = db;
+        }
         
         [ScriptHandler(ScriptName.OnBuyStatRebuild)]
         public void LoadCharacterStatRebuild()

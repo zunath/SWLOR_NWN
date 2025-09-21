@@ -15,12 +15,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageBansViewModel: GuiViewModelBase<ManageBansViewModel, GuiPayloadBase>
     {
-        public ManageBansViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
 
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public ManageBansViewModel(IGuiService guiService, ILogger logger, IDatabaseService db) : base(guiService)
+        {
+            _logger = logger;
+            _db = db;
+        }
         
         private int SelectedUserIndex { get; set; }
         private readonly List<string> _userIds = new();

@@ -11,8 +11,21 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class TurboLaserModuleDefinition : IShipModuleListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
+        private readonly ICombatService _combatService;
+        private readonly ISpaceService _spaceService;
+        private readonly IEnmityService _enmityService;
+        private readonly ICombatPointService _combatPointService;
         private readonly ShipModuleBuilder _builder = new();
+
+        public TurboLaserModuleDefinition(IRandomService random, ICombatService combatService, ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService)
+        {
+            _random = random;
+            _combatService = combatService;
+            _spaceService = spaceService;
+            _enmityService = enmityService;
+            _combatPointService = combatPointService;
+        }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -49,15 +62,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus, moduleBonus) =>
                 {
                     var attackBonus = activatorShipStatus.ThermalDamage;
-                    var attackerStat = Space.GetAttackStat(activator);
-                    var attack = Space.GetShipAttack(activator, attackBonus);
+                    var attackerStat = _spaceService.GetAttackStat(activator);
+                    var attack = _spaceService.GetShipAttack(activator, attackBonus);
 
                     var moduleDamage = dmg + moduleBonus * 3;
                     var defenseBonus = targetShipStatus.ThermalDefense * 2;
-                    var defense = Space.GetShipDefense(target, defenseBonus);
+                    var defense = _spaceService.GetShipDefense(target, defenseBonus);
                     var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 
-                    var chanceToHit = Space.CalculateChanceToHit(activator, target);
+                    var chanceToHit = _spaceService.CalculateChanceToHit(activator, target);
 
                     // Subcapital ships are harder to hit. Even with very high accuracy, the starting chance to hit is 50% and it caps out at 70% instead of 95%.
                     if (!targetShipStatus.CapitalShip)
@@ -79,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             {
                                 var roll = _random.D100(1);
                                 var isHit = roll <= chanceToHit;
-                                var damage = Combat.CalculateDamage(
+                                var damage = _combatService.CalculateDamage(
                                     attack,
                                     moduleDamage,
                                     attackerStat,
@@ -96,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                                         DelayCommand(0.3f, () =>
                                         {
-                                            Space.ApplyShipDamage(activator, target, damage);
+                                            _spaceService.ApplyShipDamage(activator, target, damage);
                                         });
                                     });
                                 }
@@ -110,11 +123,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                 }
 
                                 var attackId = isHit ? 1 : 4;
-                                var combatLogMessage = Combat.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
+                                var combatLogMessage = _combatService.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
                                 Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
 
-                                Enmity.ModifyEnmity(activator, target, damage);
-                                CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
+                                _enmityService.ModifyEnmity(activator, target, damage);
+                                _combatPointService.AddCombatPoint(activator, target, SkillType.Piloting);
                             }
                         });
                     }

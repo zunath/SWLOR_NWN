@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Service.QuestService
     {
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        private static readonly IQuestService _questService = ServiceContainer.GetService<IQuestService>();
         private readonly string _resref;
         private readonly int _quantity;
 
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             quest.ItemProgresses[_resref]--;
             _db.Set(dbPlayer);
 
-            var questDetail = Quest.GetQuestById(questId);
+            var questDetail = _questService.GetQuestById(questId);
             var itemName = _itemCache.GetItemNameByResref(_resref);
 
             var statusMessage = $"[{questDetail.Name}] {itemName} remaining: {quest.ItemProgresses[_resref]}";
@@ -134,7 +135,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             _db.Set(dbPlayer);
 
             var npcGroup = NPCGroup.GetNPCGroup(Group);
-            var questDetail = Quest.GetQuestById(questId);
+            var questDetail = _questService.GetQuestById(questId);
 
             var statusMessage = $"[{questDetail.Name}] {npcGroup.Name} remaining: {quest.KillProgresses[Group]}";
 

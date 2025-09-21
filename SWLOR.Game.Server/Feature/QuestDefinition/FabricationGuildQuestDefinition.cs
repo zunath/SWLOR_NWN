@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 
@@ -9,11 +10,14 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class FabricationGuildQuestDefinition : IQuestListDefinition
     {
-        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
+        private readonly IItemCacheService _itemCache;
+        private readonly IQuestService _questService;
         private readonly IServiceProvider _serviceProvider;
 
-        public FabricationGuildQuestDefinition(IServiceProvider serviceProvider)
+        public FabricationGuildQuestDefinition(IItemCacheService itemCache, IQuestService questService, IServiceProvider serviceProvider)
         {
+            _itemCache = itemCache;
+            _questService = questService;
             _serviceProvider = serviceProvider;
         }
         private class RewardDetails
@@ -40,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         public Dictionary<string, QuestDetail> BuildQuests()
         {
-            var builder = new QuestBuilder(_serviceProvider);
+            var builder = new QuestBuilder(_serviceProvider, _questService);
             // Tier 1 (Rank 0)
             BuildItemTask(builder, "fab_tsk_001", "structure_0085", 1, 0);
             BuildItemTask(builder, "fab_tsk_002", "structure_0045", 1, 0);

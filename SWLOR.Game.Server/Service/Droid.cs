@@ -19,6 +19,7 @@ using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -27,6 +28,13 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<int, Dictionary<PerkType, int>> _defaultPerksByTier = new();
         private static readonly Dictionary<int, int> _levelsByTier = new();
         private static readonly Dictionary<DroidPersonalityType, IDroidPersonality> _droidPersonalities = new();
+
+        private readonly IPerkService _perkService;
+        private readonly IGuiService _guiService;
+        private readonly IItemService _itemService;
+        private readonly Race _raceService;
+        private readonly IStatService _statService;
+        private readonly IStatusEffectService _statusEffectService;
 
         public const string DroidResref = "pc_droid";
         public const string DroidControlItemResref = "droid_control";
@@ -37,18 +45,35 @@ namespace SWLOR.Game.Server.Service
         private const string DroidItemId = "DROID_ITEM_ID";
         private const float RecastDelaySeconds = 1800f;
 
+        public Droid(
+            IPerkService perkService,
+            IGuiService guiService,
+            IItemService itemService,
+            Race raceService,
+            IStatService statService,
+            IStatusEffectService statusEffectService)
+        {
+            _perkService = perkService;
+            _guiService = guiService;
+            _itemService = itemService;
+            _raceService = raceService;
+            _statService = statService;
+            _statusEffectService = statusEffectService;
+        }
+
         /// <summary>
         /// When the module loads, cache all relevant droid data into memory.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
         public static void CacheData()
         {
-            CacheDroidLevels();
-            CachePersonalities();
-            CacheDefaultTierPerks();
+            var droid = ServiceContainer.GetService<Droid>();
+            droid.CacheDroidLevels();
+            droid.CachePersonalities();
+            droid.CacheDefaultTierPerks();
         }
 
-        private static void CacheDroidLevels()
+        private void CacheDroidLevels()
         {
             _levelsByTier[1] = 5;
             _levelsByTier[2] = 15;
@@ -57,7 +82,7 @@ namespace SWLOR.Game.Server.Service
             _levelsByTier[5] = 45;
         }
 
-        private static void CachePersonalities()
+        private void CachePersonalities()
         {
             _droidPersonalities[DroidPersonalityType.Geeky] = new DroidGeekyPersonality();
             _droidPersonalities[DroidPersonalityType.Prissy] = new DroidPrissyPersonality();
@@ -67,7 +92,7 @@ namespace SWLOR.Game.Server.Service
             _droidPersonalities[DroidPersonalityType.Worshipful] = new DroidWorshipfulPersonality();
         }
 
-        private static void CacheDefaultTierPerks()
+        private void CacheDefaultTierPerks()
         {
             _defaultPerksByTier[1] = new Dictionary<PerkType, int>();
             _defaultPerksByTier[2] = new Dictionary<PerkType, int>();
@@ -187,7 +212,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to check</param>
         /// <returns>true if droid, false otherwise</returns>
-        public static bool IsDroid(uint creature)
+        public bool IsDroid(uint creature)
         {
             return GetResRef(creature) == DroidResref;
         }
@@ -198,7 +223,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="droid">The droid to check</param>
         /// <returns>The controller item or OBJECT_INVALID.</returns>
-        public static uint GetControllerItem(uint droid)
+        public uint GetControllerItem(uint droid)
         {
             return GetLocalObject(droid, DroidControlItemVariable);
         }
@@ -210,17 +235,23 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler(ScriptName.OnDroidAssociateUsed)]
         public static void UseDroidAssemblyTerminal()
         {
+            var droid = ServiceContainer.GetService<Droid>();
+            droid.UseDroidAssemblyTerminalInternal();
+        }
+
+        private void UseDroidAssemblyTerminalInternal()
+        {
             var player = GetLastUsedBy();
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            if (Perk.GetPerkLevel(player, PerkType.DroidAssembly) <= 0)
+            if (_perkService.GetPerkLevel(player, PerkType.DroidAssembly) <= 0)
             {
                 SendMessageToPC(player, ColorToken.Red("The 'Droid Assembly' perk is required to use this terminal."));
                 return;
             }
 
-            ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(player, GuiWindowType.DroidAssembly, null, OBJECT_SELF);
+            _guiService.TogglePlayerWindow(player, GuiWindowType.DroidAssembly, null, OBJECT_SELF);
         }
 
         /// <summary>
@@ -229,11 +260,17 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnModuleExit>]
         public static void OnPlayerExit()
         {
+            var droid = ServiceContainer.GetService<Droid>();
+            droid.OnPlayerExitInternal();
+        }
+
+        private void OnPlayerExitInternal()
+        {
             var player = GetExitingObject();
             DespawnDroid(player);
         }
 
-        private static string CanGiveItemToDroid(uint item)
+        private string CanGiveItemToDroid(uint item)
         {
             if (GetHasInventory(item))
             {
@@ -254,6 +291,12 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnModuleAcquire>]
         public static void OnAcquireItem()
         {
+            var droid = ServiceContainer.GetService<Droid>();
+            droid.OnAcquireItemInternal();
+        }
+
+        private void OnAcquireItemInternal()
+        {
             var droid = GetModuleItemAcquiredBy();
             if (!IsDroid(droid))
                 return;
@@ -269,7 +312,7 @@ namespace SWLOR.Game.Server.Service
             {
                 SendMessageToPC(master, giveItemMessage);
                 AssignCommand(droid, () => ClearAllActions());
-                Item.ReturnItem(master, item);
+                _itemService.ReturnItem(master, item);
                 return;
             }
 
@@ -283,7 +326,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     SpeakString("I'm sorry master. I cannot carry any more items.");
                 });
-                Item.ReturnItem(master, item);
+                _itemService.ReturnItem(master, item);
                 return;
             }
 
@@ -295,6 +338,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler<OnModuleUnacquire>]
         public static void OnLostItem()
+        {
+            var droid = ServiceContainer.GetService<Droid>();
+            droid.OnLostItemInternal();
+        }
+
+        private void OnLostItemInternal()
         {
             var droid = GetModuleItemLostBy();
             if (GetResRef(droid) != DroidResref)
@@ -309,6 +358,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler<OnSWLORItemEquipValidBefore>]
         public static void OnEquipItem()
+        {
+            var droid = ServiceContainer.GetService<Droid>();
+            droid.OnEquipItemInternal();
+        }
+
+        private void OnEquipItemInternal()
         {
             var droid = OBJECT_SELF;
             if (!IsDroid(droid))
@@ -349,6 +404,12 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnItemUnequipBefore>]
         public static void OnUnequipItem()
         {
+            var droid = ServiceContainer.GetService<Droid>();
+            droid.OnUnequipItemInternal();
+        }
+
+        private void OnUnequipItemInternal()
+        {
             var droid = OBJECT_SELF;
             if (!IsDroid(droid))
                 return;
@@ -356,7 +417,7 @@ namespace SWLOR.Game.Server.Service
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var itemId = GetDroidItemId(item);
             var controller = GetControllerItem(droid);
-            var slot = Item.GetItemSlot(droid, item);
+            var slot = _itemService.GetItemSlot(droid, item);
 
             if (slot == InventorySlot.CreatureArmor ||
                 slot == InventorySlot.CreatureBite ||
@@ -382,7 +443,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="controller">The controller item to read from.</param>
         /// <returns>Droid item property details.</returns>
-        public static DroidItemPropertyDetails LoadDroidItemPropertyDetails(uint controller)
+        public DroidItemPropertyDetails LoadDroidItemPropertyDetails(uint controller)
         {
             var details = new DroidItemPropertyDetails();
             for (var ip = GetFirstItemProperty(controller); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(controller))
@@ -486,7 +547,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The part item to read from</param>
         /// <returns>Droid part item property details</returns>
-        public static DroidPartItemPropertyDetails LoadDroidPartItemPropertyDetails(uint item)
+        public DroidPartItemPropertyDetails LoadDroidPartItemPropertyDetails(uint item)
         {
             var details = new DroidPartItemPropertyDetails();
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
@@ -563,7 +624,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to retrieve from</param>
         /// <returns>The droid object or OBJECT_INVALID.</returns>
-        public static uint GetDroid(uint player)
+        public uint GetDroid(uint player)
         {
             var droid = GetLocalObject(player, DroidObjectVariable);
 
@@ -575,12 +636,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player spawning the droid.</param>
         /// <param name="controller">The controller item</param>
-        public static void SpawnDroid(uint player, uint controller)
+        public void SpawnDroid(uint player, uint controller)
         {
             // Close AI programming if open.
-            if (ServiceContainer.GetService<IGuiService>().IsWindowOpen(player, GuiWindowType.DroidAI))
+            if (_guiService.IsWindowOpen(player, GuiWindowType.DroidAI))
             {
-                ServiceContainer.GetService<IGuiService>().CloseWindow(player, GuiWindowType.DroidAI, player);
+                _guiService.CloseWindow(player, GuiWindowType.DroidAI, player);
             }
 
             var details = LoadDroidItemPropertyDetails(controller);
@@ -626,7 +687,7 @@ namespace SWLOR.Game.Server.Service
             // Perks
             foreach (var (perk, level) in details.Perks)
             {
-                var perkDefinition = Perk.GetPerkDetails(perk);
+                var perkDefinition = _perkService.GetPerkDetails(perk);
                 var perkFeats = perkDefinition.PerkLevels.ContainsKey(level)
                     ? perkDefinition.PerkLevels[level].GrantedFeats
                     : new List<FeatType>();
@@ -682,7 +743,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Appearance
-            var defaultDroid = Race.GetDefaultAppearance(RacialType.Droid, Gender.Male);
+            var defaultDroid = _raceService.GetDefaultAppearance(RacialType.Droid, Gender.Male);
 
             SetCreatureBodyPart(CreaturePart.Head,
                 constructedDroid.AppearanceParts.ContainsKey(CreaturePart.Head)
@@ -802,7 +863,7 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
-        private static void ClearTemporaryData(uint player, uint droid)
+        private void ClearTemporaryData(uint player, uint droid)
         {
             var item = GetControllerItem(droid);
             SetItemCursedFlag(item, false);
@@ -812,7 +873,7 @@ namespace SWLOR.Game.Server.Service
             DeleteLocalObject(droid, DroidControlItemVariable);
         }
 
-        private static void DespawnDroid(uint player)
+        private void DespawnDroid(uint player)
         {
             var droid = GetDroid(player);
             if (!GetIsObjectValid(droid))
@@ -839,6 +900,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [ScriptHandler(ScriptName.OnAppearanceEdit)]
         public static void EditDroidAppearance()
+        {
+            var droid = ServiceContainer.GetService<Droid>();
+            droid.EditDroidAppearanceInternal();
+        }
+
+        private void EditDroidAppearanceInternal()
         {
             var droid = OBJECT_SELF;
             if (!IsDroid(droid))
@@ -868,10 +935,10 @@ namespace SWLOR.Game.Server.Service
             SaveConstructedDroid(controller, constructedDroid);
         }
 
-        private static void CloseAppearanceEditor(uint player)
+        private void CloseAppearanceEditor(uint player)
         {
-            if(ServiceContainer.GetService<IGuiService>().IsWindowOpen(player, GuiWindowType.AppearanceEditor))
-                ServiceContainer.GetService<IGuiService>().CloseWindow(player, GuiWindowType.AppearanceEditor, player);
+            if(_guiService.IsWindowOpen(player, GuiWindowType.AppearanceEditor))
+                _guiService.CloseWindow(player, GuiWindowType.AppearanceEditor, player);
         }
 
         /// <summary>
@@ -881,11 +948,17 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler<OnAssociateRemoveBefore>]
         public static void RemoveAssociate()
         {
+            var droid = ServiceContainer.GetService<Droid>();
+            droid.RemoveAssociateInternal();
+        }
+
+        private void RemoveAssociateInternal()
+        {
             var player = OBJECT_SELF;
             DespawnDroid(player);
         }
 
-        private static string GetDroidItemId(uint item)
+        private string GetDroidItemId(uint item)
         {
             if (string.IsNullOrWhiteSpace(GetLocalString(item, DroidItemId)))
             {
@@ -895,7 +968,7 @@ namespace SWLOR.Game.Server.Service
             return GetLocalString(item, DroidItemId);
         }
 
-        private static void UpdateDroidInventory(uint droid, uint item, bool wasAcquired)
+        private void UpdateDroidInventory(uint droid, uint item, bool wasAcquired)
         {
 
             var itemType = GetBaseItemType(item);
@@ -932,7 +1005,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="controller">The controller item to read from.</param>
         /// <returns>A ConstructedDroid object.</returns>
-        public static ConstructedDroid LoadConstructedDroid(uint controller)
+        public ConstructedDroid LoadConstructedDroid(uint controller)
         {
             var constructedDroid = new ConstructedDroid();
             var serialized = GetLocalString(controller, ConstructedDroidVariable);
@@ -949,7 +1022,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="controller">The controller item to write to.</param>
         /// <param name="constructedDroid">The constructed droid data to save.</param>
-        public static void SaveConstructedDroid(uint controller, ConstructedDroid constructedDroid)
+        public void SaveConstructedDroid(uint controller, ConstructedDroid constructedDroid)
         {
             var serialized = JsonConvert.SerializeObject(constructedDroid);
             SetLocalString(controller, ConstructedDroidVariable, serialized);
@@ -964,11 +1037,18 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler(ScriptName.OnDroidRoundEnd)]
         public static void DroidOnEndCombatRound()
         {
+            var droid = ServiceContainer.GetService<Droid>();
+            droid.DroidOnEndCombatRoundInternal();
+        }
+
+        private void DroidOnEndCombatRoundInternal()
+        {
             var droid = OBJECT_SELF;
             if (!Activity.IsBusy(droid))
             {
                 ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
-                AI.ProcessPerkAI(AIDefinitionType.Droid, droid, false);
+                var aiService = ServiceContainer.GetService<AI>();
+                aiService.ProcessPerkAI(AIDefinitionType.Droid, droid, false);
             }
         }
 
@@ -1011,8 +1091,14 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler(ScriptName.OnDroidHeartbeat)]
         public static void DroidOnHeartbeat()
         {
+            var droid = ServiceContainer.GetService<Droid>();
+            droid.DroidOnHeartbeatInternal();
+        }
+
+        private void DroidOnHeartbeatInternal()
+        {
             ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
-            Stat.RestoreNPCStats(false);
+            _statService.RestoreNPCStats(false);
         }
 
         [ScriptHandler(ScriptName.OnDroidPerception)]
@@ -1032,16 +1118,28 @@ namespace SWLOR.Game.Server.Service
         [ScriptHandler(ScriptName.OnDroidRest)]
         public static void DroidOnRested()
         {
+            var droid = ServiceContainer.GetService<Droid>();
+            droid.DroidOnRestedInternal();
+        }
+
+        private void DroidOnRestedInternal()
+        {
             var droid = OBJECT_SELF;
             ExecuteScript("x0_ch_hen_rest", droid);
 
             AssignCommand(droid, () => ClearAllActions());
 
-            StatusEffect.Apply(droid, droid, StatusEffectType.Rest, 0f);
+            _statusEffectService.Apply(droid, droid, StatusEffectType.Rest, 0f);
         }
 
         [ScriptHandler(ScriptName.OnDroidSpawn)]
         public static void DroidOnSpawn()
+        {
+            var droid = ServiceContainer.GetService<Droid>();
+            droid.DroidOnSpawnInternal();
+        }
+
+        private void DroidOnSpawnInternal()
         {
             var droid = OBJECT_SELF;
             ExecuteScript("x0_ch_hen_spawn", droid);
@@ -1049,7 +1147,7 @@ namespace SWLOR.Game.Server.Service
             {
                 SetIsDestroyable(true, false, false);
             }); 
-            Stat.LoadNPCStats();
+            _statService.LoadNPCStats();
         }
 
         [ScriptHandler(ScriptName.OnDroidSpellCast)]

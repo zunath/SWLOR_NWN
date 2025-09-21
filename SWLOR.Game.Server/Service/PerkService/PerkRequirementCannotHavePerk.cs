@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service.PerkService
             if (_cannotHavePerkType == PerkType.Invalid)
                 return string.Empty;
 
-            var perkDetail = Perk.GetPerkDetails(_cannotHavePerkType);
+            var perkDetail = _perkService.GetPerkDetails(_cannotHavePerkType);
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
 
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         {
             get
             {
-                var perkDetail = Perk.GetPerkDetails(_cannotHavePerkType);
+                var perkDetail = _perkService.GetPerkDetails(_cannotHavePerkType);
                 return $"Cannot have perk: {perkDetail.Name}";
             }
         }

@@ -10,19 +10,26 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public abstract class FirstAidBaseAbilityDefinition: IAbilityListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         protected readonly AbilityBuilder Builder = new();
+        private readonly IPerkService _perkService;
+
+        protected FirstAidBaseAbilityDefinition(IRandomService random, IPerkService perkService)
+        {
+            _random = random;
+            _perkService = perkService;
+        }
         private const string MedicalSuppliesItemTag = "med_supplies";
         private const string StimPackItemTag = "stim_pack";
 
         public abstract Dictionary<FeatType, AbilityDetail> BuildAbilities();
 
-        private static void TakeItem(uint activator, string resref)
+        private void TakeItem(uint activator, string resref)
         {
             if (!GetIsPC(activator))
                 return;
 
-            var chanceToNotConsume = 10 * Perk.GetPerkLevel(activator, PerkType.FrugalMedic);
+            var chanceToNotConsume = 10 * _perkService.GetPerkLevel(activator, PerkType.FrugalMedic);
             if (_random.D100(1) <= chanceToNotConsume)
                 return;
 
@@ -111,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         protected bool IsWithinRange(uint activator, uint target)
         {
             const float BaseDistance = 6f;
-            var distance = BaseDistance + Perk.GetPerkLevel(activator, PerkType.RangedHealing);
+            var distance = BaseDistance + _perkService.GetPerkLevel(activator, PerkType.RangedHealing);
 
             return !(GetDistanceBetween(activator, target) > distance);
         }

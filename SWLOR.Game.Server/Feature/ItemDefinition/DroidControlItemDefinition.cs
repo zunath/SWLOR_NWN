@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -13,8 +14,23 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class DroidControlItemDefinition: IItemListDefinition
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IDroidService _droidService;
+        private readonly ISpaceService _spaceService;
+        private readonly IRecastService _recastService;
+        private readonly IPerkService _perkService;
+        private readonly IGuiService _guiService;
         private readonly ItemBuilder _builder = new();
+
+        public DroidControlItemDefinition(IDatabaseService db, IDroidService droidService, ISpaceService spaceService, IRecastService recastService, IPerkService perkService, IGuiService guiService)
+        {
+            _db = db;
+            _droidService = droidService;
+            _spaceService = spaceService;
+            _recastService = recastService;
+            _perkService = perkService;
+            _guiService = guiService;
+        }
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
@@ -62,9 +78,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ValidationAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    var droid = Droid.GetDroid(user);
-                    var droidDetails = Droid.LoadDroidItemPropertyDetails(item);
-                    if (Space.IsPlayerInSpaceMode(user))
+                    var droid = _droidService.GetDroid(user);
+                    var droidDetails = _droidService.LoadDroidItemPropertyDetails(item);
+                    if (_spaceService.IsPlayerInSpaceMode(user))
                     {
                         return "Droids cannot be activated or adjusted while in space.";
                     }
@@ -72,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     // Droid Activation
                     if (itemPropertyIndex == 0)
                     {
-                        var (onDelay, timeToWait) = Recast.IsOnRecastDelay(user, RecastGroup.DroidController);
+                        var (onDelay, timeToWait) = _recastService.IsOnRecastDelay(user, RecastGroup.DroidController);
 
                         if (onDelay)
                         {
@@ -108,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             return "Droid AI cannot be adjusted while active. Please dismiss your droid and try again.";
                         }
 
-                        var perkLevel = Perk.GetPerkLevel(user, PerkType.DroidAssembly);
+                        var perkLevel = _perkService.GetPerkLevel(user, PerkType.DroidAssembly);
 
                         if (perkLevel < droidDetails.Tier)
                         {
@@ -123,23 +139,23 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     // Droid Activation
                     if (itemPropertyIndex == 0)
                     {
-                        Droid.SpawnDroid(user, item);
+                        _droidService.SpawnDroid(user, item);
                         SetItemCursedFlag(item, true);
 
                     }
                     // Modify Appearance
                     else if (itemPropertyIndex == 1)
                     {
-                        var droid = Droid.GetDroid(user);
+                        var droid = _droidService.GetDroid(user);
                         var payload = new AppearanceEditorPayload(droid);
-                        ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.AppearanceEditor, payload);
+                        _guiService.TogglePlayerWindow(user, GuiWindowType.AppearanceEditor, payload);
                     }
                     // Reprogramming
                     else if (itemPropertyIndex == 2)
                     {
                         SetItemCursedFlag(item, true);
                         var payload = new DroidAIPayload(item);
-                        ServiceContainer.GetService<IGuiService>().TogglePlayerWindow(user, GuiWindowType.DroidAI, payload);
+                        _guiService.TogglePlayerWindow(user, GuiWindowType.DroidAI, payload);
                     }
                 });
         }

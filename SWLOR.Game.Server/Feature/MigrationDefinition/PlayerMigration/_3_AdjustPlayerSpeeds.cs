@@ -11,7 +11,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
         public int Version => 3;
         public void Migrate(uint player)
         {
-            Ability.ToggleAbility(player, AbilityToggleType.Dash, false);
+            var abilityService = ServiceContainer.GetService<IAbilityService>();
+            abilityService.ToggleAbility(player, AbilityToggleType.Dash, false);
 
             CreaturePlugin.SetMovementRate(player, MovementRate.PC);
             CreaturePlugin.SetMovementRateFactor(player, 1.0f);

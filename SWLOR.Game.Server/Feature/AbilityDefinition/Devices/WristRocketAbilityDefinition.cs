@@ -10,6 +10,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public class WristRocketAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+        private readonly IAbilityService _abilityService;
+        private readonly ICombatPointService _combatPointService;
+        private readonly IEnmityService _enmityService;
+
+        public WristRocketAbilityDefinition(ICombatService combatService, IStatService statService, IAbilityService abilityService, ICombatPointService combatPointService, IEnmityService enmityService)
+        {
+            _combatService = combatService;
+            _statService = statService;
+            _abilityService = abilityService;
+            _combatPointService = combatPointService;
+            _enmityService = enmityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -24,11 +38,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             var targetDistance = GetDistanceBetween(activator, target);
             var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var attackerStat = GetAbilityScore(activator, AbilityType.Perception);
-            var attack = Stat.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
+            var attack = _statService.GetAttack(activator, AbilityType.Perception, SkillType.Devices);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack,
                 dmg, 
                 attackerStat, 
@@ -49,13 +63,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 if (dc > 0)
                 {
                     const float Duration = 1f;
-                    dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Perception);
+                    dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Perception);
                     var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                     if (checkResult == SavingThrowResultType.Failed)
                     {
                         ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
 
-                        Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
+                        _abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
                     }
                 }
             });
@@ -79,8 +93,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     var perBonus = GetAbilityScore(activator, AbilityType.Perception);
                     Impact(activator, target, perBonus, -1);
 
-                    Enmity.ModifyEnmity(activator, target, 180);
-                    CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmity(activator, target, 180);
+                    _combatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
                 });
         }
 
@@ -103,8 +117,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     var perDMG = 25 + perBonus;
                     Impact(activator, target, perDMG, 8);
 
-                    Enmity.ModifyEnmity(activator, target, 280);
-                    CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmity(activator, target, 280);
+                    _combatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
                 });
         }
 
@@ -127,8 +141,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     var perDMG = 50 + perBonus * 2;
                     Impact(activator, target, perDMG, 12);
 
-                    Enmity.ModifyEnmity(activator, target, 380);
-                    CombatPoint.AddCombatPoint(activator, target, SkillType.Devices, 3);
+                    _enmityService.ModifyEnmity(activator, target, 380);
+                    _combatPointService.AddCombatPoint(activator, target, SkillType.Devices, 3);
                 });
         }
     }

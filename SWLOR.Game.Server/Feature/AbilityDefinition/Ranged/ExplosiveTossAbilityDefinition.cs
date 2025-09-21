@@ -6,11 +6,24 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
     public class ExplosiveTossAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public ExplosiveTossAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -25,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!Item.ThrowingWeaponBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.ThrowingWeaponBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a throwing ability.";
             }
@@ -53,10 +66,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Ranged);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Ranged);
-            var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
+            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Ranged);
+            var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
             var count = 0;
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Medium, GetLocation(target), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count < 3)
@@ -64,9 +77,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 if (GetDistanceBetween(target, creature) <= 3f)
                 {
 
-                    var defense = Stat.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
+                    var defense = _statService.GetDefense(creature, CombatDamageType.Physical, AbilityType.Vitality);
                     var defenderStat = GetAbilityScore(creature, AbilityType.Vitality);
-                    var damage = Combat.CalculateDamage(
+                    var damage = _combatService.CalculateDamage(
                         attack,
                         dmg, 
                         attackerStat, 

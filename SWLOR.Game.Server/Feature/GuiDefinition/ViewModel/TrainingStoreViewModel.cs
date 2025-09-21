@@ -18,11 +18,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class TrainingStoreViewModel: GuiViewModelBase<TrainingStoreViewModel, GuiPayloadBase>,
         IGuiRefreshable<RPXPRefreshEvent>
     {
-        public TrainingStoreViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
+        private readonly IItemCacheService _itemCache;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public TrainingStoreViewModel(IGuiService guiService, IDatabaseService db, IItemCacheService itemCache) : base(guiService)
+        {
+            _db = db;
+            _itemCache = itemCache;
+        }
         
         [ScriptHandler(ScriptName.OnOpenTrainingStore)]
         public void OpenTrainingStore()
@@ -49,7 +52,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        private static readonly IItemCacheService _itemCache = ServiceContainer.GetService<IItemCacheService>();
         private static readonly List<TerminalItem> _availableItems = new()
         {
             new("iIT_BOOK_244", "refund_tome", 10000),

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
@@ -15,9 +16,19 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class BeastEggItemDefinition: IItemListDefinition
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly IBeastMasteryService _beastMasteryService;
+        private readonly IPerkService _perkService;
         private readonly ItemBuilder _builder = new();
+
+        public BeastEggItemDefinition(ILogger logger, IDatabaseService db, IBeastMasteryService beastMasteryService, IPerkService perkService)
+        {
+            _logger = logger;
+            _db = db;
+            _beastMasteryService = beastMasteryService;
+            _perkService = perkService;
+        }
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
@@ -28,12 +39,12 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         private void BeastEgg()
         {
-            _builder.Create(BeastMastery.BeastEggResref)
+            _builder.Create(_beastMasteryService.BeastEggResref)
                 .Delay(4f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ValidationAction((user, item, target, location, index) =>
                 {
-                    var tame = Perk.GetPerkLevel(user, PerkType.Tame);
+                    var tame = _perkService.GetPerkLevel(user, PerkType.Tame);
 
                     if (tame <= 0)
                     {
@@ -53,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         return "You already have a beast.";
                     }
 
-                    var maxBeasts = 1 + Perk.GetPerkLevel(user, PerkType.Stabling);
+                    var maxBeasts = 1 + _perkService.GetPerkLevel(user, PerkType.Stabling);
                     var dbQuery = new DBQuery<Beast>()
                         .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
                     var beastCount = (int)_db.SearchCount(dbQuery);
@@ -155,8 +166,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         return;
                     }
 
-                    var (likedFood, hatedFood) = BeastMastery.GetLikedAndHatedFood();
-                    var beastDetail = BeastMastery.GetBeastDetail(type);
+                    var (likedFood, hatedFood) = _beastMasteryService.GetLikedAndHatedFood();
+                    var beastDetail = _beastMasteryService.GetBeastDetail(type);
 
                     var dbBeast = new Beast
                     {

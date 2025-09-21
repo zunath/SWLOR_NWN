@@ -16,11 +16,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class OutfitViewModel: GuiViewModelBase<OutfitViewModel, GuiPayloadBase>
     {
-        public OutfitViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public OutfitViewModel(IGuiService guiService, IDatabaseService db) : base(guiService)
+        {
+            _db = db;
+        }
         
         private const int MaxOutfits = 25;
 

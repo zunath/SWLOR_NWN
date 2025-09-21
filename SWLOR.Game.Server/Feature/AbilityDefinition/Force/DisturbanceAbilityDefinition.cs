@@ -10,9 +10,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public class DisturbanceAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
         private const string Tier1Tag = "EFFECT_DISTURBANCE_1";
         private const string Tier2Tag = "EFFECT_DISTURBANCE_2";
         private const string Tier3Tag = "EFFECT_DISTURBANCE_3";
+
+        public DisturbanceAbilityDefinition(ICombatService combatService, IStatService statService)
+        {
+            _combatService = combatService;
+            _statService = statService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -27,10 +35,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
-            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+            var attack = _statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            var defense = _statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             dmg += (attackerStat * ((tier -1) / 2)) + attackerStat;
-            var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            var damage = _combatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
             if (HasMorePowerfulEffect(target, tier,
                     new(Tier1Tag, 1),
@@ -43,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 RemoveEffectByTag(target, Tier1Tag, Tier2Tag, Tier3Tag);
 
-                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
+                dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Will, dc);
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
                 if (checkResult == SavingThrowResultType.Failed)

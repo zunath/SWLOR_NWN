@@ -7,18 +7,34 @@ using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Player;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class NaturalRegeneration
+    public class NaturalRegeneration
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IStatService _statService;
+        private readonly IStatusEffectService _statusEffectService;
+
+        public NaturalRegeneration(IDatabaseService db, IStatService statService, IStatusEffectService statusEffectService)
+        {
+            _db = db;
+            _statService = statService;
+            _statusEffectService = statusEffectService;
+        }
         
         /// <summary>
         /// On module heartbeat, process a player's HP/FP/STM regeneration.
         /// </summary>
         [ScriptHandler<OnPlayerHeartbeat>]
         public static void ProcessRegeneration()
+        {
+            var naturalRegeneration = ServiceContainer.GetService<NaturalRegeneration>();
+            naturalRegeneration.ProcessRegenerationInternal();
+        }
+
+        private void ProcessRegenerationInternal()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -35,7 +51,7 @@ namespace SWLOR.Game.Server.Feature
                 var hpRegen = dbPlayer.HPRegen + vitalityBonus * 4;
                 var fpRegen = 1 + dbPlayer.FPRegen + vitalityBonus / 2;
                 var stmRegen = 1 + dbPlayer.STMRegen + vitalityBonus / 2;
-                var foodEffect = StatusEffect.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
+                var foodEffect = _statusEffectService.GetEffectData<FoodEffectData>(player, StatusEffectType.Food);
 
                 if (foodEffect != null)
                 {
@@ -51,12 +67,12 @@ namespace SWLOR.Game.Server.Feature
 
                 if (fpRegen > 0)
                 {
-                    Stat.RestoreFP(player, fpRegen, dbPlayer);
+                    _statService.RestoreFP(player, fpRegen, dbPlayer);
                 }
 
                 if (stmRegen > 0)
                 {
-                    Stat.RestoreStamina(player, stmRegen, dbPlayer);
+                    _statService.RestoreStamina(player, stmRegen, dbPlayer);
                 }
 
                 tick = 0;

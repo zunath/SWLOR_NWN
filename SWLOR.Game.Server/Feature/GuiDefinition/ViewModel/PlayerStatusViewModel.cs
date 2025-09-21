@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -15,11 +16,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     internal class PlayerStatusViewModel: GuiViewModelBase<PlayerStatusViewModel, GuiPayloadBase>,
         IGuiRefreshable<PlayerStatusRefreshEvent>
     {
-        public PlayerStatusViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
+        private readonly IStatService _statService;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public PlayerStatusViewModel(IGuiService guiService, IDatabaseService db, IStatService statService) : base(guiService)
+        {
+            _db = db;
+            _statService = statService;
+        }
         
         private int _screenHeight;
         private int _screenWidth;
@@ -203,7 +207,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
             var currentFP = dbPlayer.FP;
-            var maxFP = Stat.GetMaxFP(Player, dbPlayer);
+            var maxFP = _statService.GetMaxFP(Player, dbPlayer);
             var isStandard = dbPlayer.CharacterType == CharacterType.Standard;
             Bar3Value = isStandard ? "0 / 0" : $"{currentFP} / {maxFP}";
             Bar3Progress = maxFP <= 0 || isStandard ? 0 : (float)currentFP / (float)maxFP > 1.0f ? 1.0f : (float)currentFP / (float)maxFP;
@@ -214,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
             var currentSTM = dbPlayer.Stamina;
-            var maxSTM = Stat.GetMaxStamina(Player, dbPlayer);
+            var maxSTM = _statService.GetMaxStamina(Player, dbPlayer);
 
             Bar2Value = $"{currentSTM} / {maxSTM}";
             Bar2Progress = maxSTM <= 0 ? 0 : (float)currentSTM / (float)maxSTM > 1.0f ? 1.0f : (float)currentSTM / (float)maxSTM;

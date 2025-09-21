@@ -10,9 +10,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public class ForceSparkAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
         private const string Tier1Tag = "ABILITY_FORCE_SPARK_1";
         private const string Tier2Tag = "ABILITY_FORCE_SPARK_2";
         private const string Tier3Tag = "ABILITY_FORCE_SPARK_3";
+
+        public ForceSparkAbilityDefinition(ICombatService combatService, IStatService statService)
+        {
+            _combatService = combatService;
+            _statService = statService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -26,10 +34,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             var attackerStat = GetAbilityScore(activator, AbilityType.Willpower);
             var defenderStat = GetAbilityScore(target, AbilityType.Willpower);
-            var attack = Stat.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
-            var defense = Stat.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
+            var attack = _statService.GetAttack(activator, AbilityType.Willpower, SkillType.Force);
+            var defense = _statService.GetDefense(target, CombatDamageType.Force, AbilityType.Willpower);
             dmg += (attackerStat * ((tier - 1) / 2)) + attackerStat;
-            var damage = Combat.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
+            var damage = _combatService.CalculateDamage(attack, dmg, attackerStat, defense, defenderStat, 0);
 
 
             if (HasMorePowerfulEffect(target, tier,
@@ -43,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 RemoveEffectByTag(target, Tier1Tag, Tier2Tag, Tier3Tag);
 
-                dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Willpower);
+                dc = _combatService.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, dc, AbilityType.Willpower);
                 var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
 
                 if (checkResult == SavingThrowResultType.Failed)
@@ -58,13 +66,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Red), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Beam_Silent_Lightning, false, 2f), target);
 
-            if (Stat.GetCurrentFP(activator) < 2 + (tier))
+            if (_statService.GetCurrentFP(activator) < 2 + (tier))
             {
-                var darkBargain = 7 * ((2 + tier - Stat.GetCurrentFP(activator)));
-                Stat.ReduceFP(activator, Stat.GetCurrentFP(activator));
+                var darkBargain = 7 * ((2 + tier - _statService.GetCurrentFP(activator)));
+                _statService.ReduceFP(activator, _statService.GetCurrentFP(activator));
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(darkBargain), activator);
             }
-            else { Stat.ReduceFP(activator, 2 + tier); }
+            else { _statService.ReduceFP(activator, 2 + tier); }
 
             Enmity.ModifyEnmity(activator, target, 150 + damage);
             CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);

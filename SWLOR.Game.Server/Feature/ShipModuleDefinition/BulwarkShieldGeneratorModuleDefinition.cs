@@ -13,8 +13,19 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class BulwarkShieldGeneratorModuleDefinition : IShipModuleListDefinition
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly ISpaceService _spaceService;
+        private readonly IEnmityService _enmityService;
+        private readonly ICombatPointService _combatPointService;
         private readonly ShipModuleBuilder _builder = new();
+
+        public BulwarkShieldGeneratorModuleDefinition(IDatabaseService db, ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService)
+        {
+            _db = db;
+            _spaceService = spaceService;
+            _enmityService = enmityService;
+            _combatPointService = combatPointService;
+        }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -56,16 +67,16 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         if (!GetIsEnemy(nearby, activator) && 
                             !GetIsDead(activator) && 
-                            Space.GetShipStatus(nearby) != null &&
+                            _spaceService.GetShipStatus(nearby) != null &&
                             nearby != activator)
                         {
-                            var nearbyStatus = Space.GetShipStatus(nearby);
+                            var nearbyStatus = _spaceService.GetShipStatus(nearby);
                             
                             ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Cold, activator, BodyNode.Chest), nearby, 2.0f);
                             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White), nearby, 2.0f);
                             ApplyEffectToObject(DurationType.Temporary, EffectAbilityIncrease(AbilityType.Vitality, 4), nearby, 10.0f);
                         
-                            Space.RestoreShield(nearby, nearbyStatus, recovery);
+                            _spaceService.RestoreShield(nearby, nearbyStatus, recovery);
 
                             if (GetIsPC(nearby) && !GetIsDM(nearby) && !GetIsDMPossessed(nearby))
                             {
@@ -89,9 +100,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         nearby = GetNextObjectInShape(Shape.Sphere, Distance, GetLocation(activator), true, ObjectType.Creature);
                     }
 
-                    Enmity.ModifyEnmityOnAll(activator, 100 + repairAmount);
+                    _enmityService.ModifyEnmityOnAll(activator, 100 + repairAmount);
                     Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins restoring {recovery} shield HP to nearby ships reinforcing their shield integrity.");
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }
     }

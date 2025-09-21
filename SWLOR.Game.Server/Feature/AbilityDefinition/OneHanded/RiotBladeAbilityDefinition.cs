@@ -5,12 +5,28 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
     public class RiotBladeAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+        private readonly ICombatPointService _combatPointService;
+        private readonly IEnmityService _enmityService;
+
+        public RiotBladeAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService, ICombatPointService combatPointService, IEnmityService enmityService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+            _combatPointService = combatPointService;
+            _enmityService = enmityService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -21,12 +37,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandType = GetBaseItemType(weapon);
             
-            if (Item.VibrobladeBaseItemTypes.Contains(rightHandType))
+            if (_itemService.VibrobladeBaseItemTypes.Contains(rightHandType))
             {
                 return string.Empty;
             }
@@ -34,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 return "A vibroblade must be equipped in your right hand to use this ability.";
         }
 
-        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        private void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0;
 
@@ -55,23 +71,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.OneHanded);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.OneHanded);
 
-            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
 
             var might = GetAbilityScore(activator, AbilityType.Might);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.OneHanded);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(attack, dmg, might, defense, vitality, 0);
+            var damage = _combatService.CalculateDamage(attack, dmg, might, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
             AssignCommand(activator, () => ActionPlayAnimation(Animation.RiotBlade));
 
-            Enmity.ModifyEnmity(activator, target, 100 * level + damage);
+            _enmityService.ModifyEnmity(activator, target, 100 * level + damage);
         }
 
-        private static void RiotBlade1(AbilityBuilder builder)
+        private void RiotBlade1(AbilityBuilder builder)
         {
             builder.Create(FeatType.RiotBlade1, PerkType.RiotBlade)
                 .Name("Riot Blade I")
@@ -86,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void RiotBlade2(AbilityBuilder builder)
+        private void RiotBlade2(AbilityBuilder builder)
         {
             builder.Create(FeatType.RiotBlade2, PerkType.RiotBlade)
                 .Name("Riot Blade II")
@@ -101,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
-        private static void RiotBlade3(AbilityBuilder builder)
+        private void RiotBlade3(AbilityBuilder builder)
         {
             builder.Create(FeatType.RiotBlade3, PerkType.RiotBlade)
                 .Name("Riot Blade III")

@@ -9,6 +9,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
     public class RousingShoutAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new();
+        private readonly IPerkService _perkService;
+
+        public RousingShoutAbilityDefinition(IPerkService perkService)
+        {
+            _perkService = perkService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -46,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     var social = GetAbilityScore(activator, AbilityType.Social);
                     var targetMaxHP = GetMaxHitPoints(target);
                     int hp;
-                    var perkLevel = Perk.GetPerkLevel(activator, PerkType.RousingShout);
+                    var perkLevel = _perkService.GetPerkLevel(activator, PerkType.RousingShout);
 
                     switch (perkLevel)
                     {
@@ -63,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     }
 
                     ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
-                    Ability.ReapplyPlayerAuraAOE(target);
+                    _abilityService.ReapplyPlayerAuraAOE(target);
 
                     if (hp > 0)
                     {

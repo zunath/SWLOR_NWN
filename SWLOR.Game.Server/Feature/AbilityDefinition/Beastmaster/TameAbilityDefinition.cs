@@ -13,10 +13,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 {
     public class TameAbilityDefinition: IAbilityListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
         private readonly AbilityBuilder _builder = new();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IPerkService _perkService;
+        private readonly IStatService _statService;
 
+        public TameAbilityDefinition(IRandomService random, IDatabaseService db, IPerkService perkService, IStatService statService)
+        {
+            _random = random;
+            _db = db;
+            _perkService = perkService;
+            _statService = statService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -67,15 +76,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                         return "That target cannot be tamed.";
                     }
 
-                    var tameLevel = Perk.GetPerkLevel(activator, PerkType.Tame) * 10;
-                    var npcStats = Stat.GetNPCStats(target);
+                    var tameLevel = _perkService.GetPerkLevel(activator, PerkType.Tame) * 10;
+                    var npcStats = _statService.GetNPCStats(target);
 
                     if (tameLevel < npcStats.Level)
                     {
                         return $"You may only tame creatures between levels 0-{tameLevel}. Your target is level {npcStats.Level}.";
                     }
 
-                    var maxBeasts = 1 + Perk.GetPerkLevel(activator, PerkType.Stabling);
+                    var maxBeasts = 1 + _perkService.GetPerkLevel(activator, PerkType.Stabling);
                     var dbQuery = new DBQuery<Beast>()
                         .AddFieldSearch(nameof(Beast.OwnerPlayerId), playerId, false);
                     var beastCount = (int)_db.SearchCount(dbQuery);
@@ -92,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     var dbPlayer = _db.Get<Player>(playerId);
                     var type = BeastMastery.GetBeastType(target);
                     var skill = dbPlayer.Skills[SkillType.BeastMastery].Rank;
-                    var npcStats = Stat.GetNPCStats(target);
+                    var npcStats = _statService.GetNPCStats(target);
                     var socialMod = GetAbilityModifier(AbilityType.Social, activator);
                     var chance = 40 + (skill - npcStats.Level) * 3 + socialMod * 4;
 

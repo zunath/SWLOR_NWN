@@ -27,18 +27,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<SkillXPRefreshEvent>,
         IGuiRefreshable<PerkResetAcquiredRefreshEvent>
     {
-        public PerksViewModel(IGuiService guiService) : base(guiService)
-        {
-            _filteredPerks = new List<PerkType>();
-            PerkButtonIcons = new GuiBindingList<string>();
-            PerkButtonColors = new GuiBindingList<GuiColor>();
-            PerkButtonTexts = new GuiBindingList<string>();
-            PerkDetailSelected = new GuiBindingList<bool>();
-            SelectedRequirements = new GuiBindingList<string>();
-        }
+        private readonly ILogger _logger;
+        private readonly IDatabaseService _db;
+        private readonly IPerkService _perkService;
+        private readonly IAbilityService _abilityService;
+        private readonly IItemService _itemService;
+        private readonly ISkillService _skillService;
 
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public PerksViewModel(IGuiService guiService, ILogger logger, IDatabaseService db, IPerkService perkService, IAbilityService abilityService, IItemService itemService, ISkillService skillService) : base(guiService)
+        {
+            _logger = logger;
+            _db = db;
+            _perkService = perkService;
+            _abilityService = abilityService;
+            _itemService = itemService;
+            _skillService = skillService;
+        }
         
         private const int ItemsPerPage = 30;
         private int _pages;
@@ -238,7 +242,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 new("<All Categories>", 0)
             };
 
-            foreach (var (type, detail) in Perk.GetAllActivePerkCategories(groupType)) 
+            foreach (var (type, detail) in _perkService.GetAllActivePerkCategories(groupType)) 
             {
                 categories.Add(new GuiComboEntry(detail.Name, (int)type));
             }
@@ -255,7 +259,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (IsInMyPerksMode)
             {
                 AvailableSP = $"Available SP: {dbPlayer.UnallocatedSP}";
-                TotalSP = $"Total SP: {dbPlayer.TotalSPAcquired} / {Skill.SkillCap}";
+                TotalSP = $"Total SP: {dbPlayer.TotalSPAcquired} / {_skillService.SkillCap}";
             }
             else if (IsInBeastPerksMode)
             {
@@ -293,8 +297,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ? PerkGroupType.Player
                 : PerkGroupType.Beast;
             var perkList = SelectedPerkCategoryId == 0
-                ? Perk.GetAllActivePerks(group)
-                : Perk.GetActivePerksInCategory(group, (PerkCategoryType)SelectedPerkCategoryId);
+                ? _perkService.GetAllActivePerks(group)
+                : _perkService.GetActivePerksInCategory(group, (PerkCategoryType)SelectedPerkCategoryId);
 
             // Filter down to just perks with a name partially matching the search text
             if (!string.IsNullOrWhiteSpace(SearchText))
@@ -374,7 +378,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private string BuildSelectedPerkDetailText(PerkDetail detail, PerkLevel currentUpgrade, PerkLevel nextUpgrade)
         {
-            var categoryDetail = Perk.GetPerkCategoryDetails(detail.Category);
+            var categoryDetail = _perkService.GetPerkCategoryDetails(detail.Category);
             var selectedDetails = detail.Name + "\n\n";
 
             // Perk Description
@@ -454,7 +458,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PerkDetailSelected[SelectedPerkIndex] = true;
             var selectedPerk = _filteredPerks[index];
 
-            var detail = Perk.GetPerkDetails(selectedPerk);
+            var detail = _perkService.GetPerkDetails(selectedPerk);
             int unallocatedSP;
             int rank;
 
@@ -521,8 +525,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // If feat isn't registered or the ability doesn't have an impact or concentration action,
                 // don't add the feat to the player's hot bar.
-                if (!Ability.IsFeatRegistered(feat)) continue;
-                var abilityDetail = Ability.GetAbilityDetail(feat);
+                if (!_abilityService.IsFeatRegistered(feat)) continue;
+                var abilityDetail = _abilityService.GetAbilityDetail(feat);
                 if (abilityDetail.ImpactAction == null && abilityDetail.ConcentrationStatusEffectType == StatusEffectType.Invalid) continue;
 
                 AddFeatToHotBar(feat);
@@ -568,7 +572,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!GetIsObjectValid(target))
                 return;
 
-            var perkDetail = Perk.GetPerkDetails(selectedPerk);
+            var perkDetail = _perkService.GetPerkDetails(selectedPerk);
             if (perkDetail.PurchasedTriggers.Count > 0)
             {
                 foreach (var action in perkDetail.PurchasedTriggers)
@@ -602,7 +606,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     : 0;
             }
             
-            var detail = Perk.GetPerkDetails(selectedPerk);
+            var detail = _perkService.GetPerkDetails(selectedPerk);
             
             var nextUpgrade = detail.PerkLevels.ContainsKey(rank + 1)
                 ? detail.PerkLevels[rank + 1]
@@ -620,7 +624,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // Refresh data
                     dbPlayer = _db.Get<Player>(playerId);
                     selectedPerk = _filteredPerks[_selectedPerkIndex];
-                    detail = Perk.GetPerkDetails(selectedPerk);
+                    detail = _perkService.GetPerkDetails(selectedPerk);
                     int unallocatedSP;
 
                     if (IsInMyPerksMode)
@@ -742,7 +746,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = _db.Get<Player>(playerId);
                 var selectedPerk = _filteredPerks[SelectedPerkIndex];
-                var perkDetail = Perk.GetPerkDetails(selectedPerk);
+                var perkDetail = _perkService.GetPerkDetails(selectedPerk);
                 var target = IsInMyPerksMode ? Player : GetAssociate(AssociateType.Henchman, Player);
 
                 if (Currency.GetCurrency(Player, CurrencyType.PerkRefundToken) <= 0)

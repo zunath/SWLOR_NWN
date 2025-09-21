@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
@@ -15,11 +16,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class SettingsViewModel: GuiViewModelBase<SettingsViewModel, GuiPayloadBase>
     {
-        public SettingsViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
+        private readonly ISkillService _skillService;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public SettingsViewModel(IGuiService guiService, IDatabaseService db, ISkillService skillService) : base(guiService)
+        {
+            _db = db;
+            _skillService = skillService;
+        }
         
         public const string SettingsView = "SETTINGS_VIEW";
 
@@ -166,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = _db.Get<Player>(playerId);
             var colorSettings = dbPlayer.Settings.LanguageChatColors;
-            var languages = Skill.GetActiveSkillsByCategory(SkillCategoryType.Languages);
+            var languages = _skillService.GetActiveSkillsByCategory(SkillCategoryType.Languages);
 
             _languages = new List<SkillType>();
             var chatColorNames = new GuiBindingList<string>();

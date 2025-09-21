@@ -12,6 +12,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
     public class PiercingTossAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly ICombatService _combatService;
+        private readonly IStatService _statService;
+
+        public PiercingTossAbilityDefinition(IItemService itemService, ICombatService combatService, IStatService statService)
+        {
+            _itemService = itemService;
+            _combatService = combatService;
+            _statService = statService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -26,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!Item.ThrowingWeaponBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.ThrowingWeaponBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a throwing ability.";
             }
@@ -61,13 +72,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                     break;
             }
 
-            dmg += Combat.GetAbilityDamageBonus(activator, SkillType.Ranged);
+            dmg += _combatService.GetAbilityDamageBonus(activator, SkillType.Ranged);
 
-            var attackerStat = Combat.GetPerkAdjustedAbilityScore(activator);
-            var attack = Stat.GetAttack(activator, AbilityType.Might, SkillType.Ranged);
-            var defense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
+            var attackerStat = _combatService.GetPerkAdjustedAbilityScore(activator);
+            var attack = _statService.GetAttack(activator, AbilityType.Might, SkillType.Ranged);
+            var defense = _statService.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality);
             var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-            var damage = Combat.CalculateDamage(
+            var damage = _combatService.CalculateDamage(
                 attack, 
                 dmg, 
                 attackerStat, 
@@ -76,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-            dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Reflex, dc);
+            dc = _combatService.CalculateSavingThrowDC(activator, dc, 0, 0);
             var checkResult = ReflexSave(target, dc, SavingThrowType.None, activator);
             if (checkResult == SavingThrowResultType.Failed)
             {

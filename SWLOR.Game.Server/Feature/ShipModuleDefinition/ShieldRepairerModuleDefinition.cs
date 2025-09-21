@@ -9,7 +9,15 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class ShieldRepairerModuleDefinition: IShipModuleListDefinition
     {
+        private readonly ISpaceService _spaceService;
+        private readonly ICombatPointService _combatPointService;
         private readonly ShipModuleBuilder _builder = new();
+
+        public ShieldRepairerModuleDefinition(ISpaceService spaceService, ICombatPointService combatPointService)
+        {
+            _spaceService = spaceService;
+            _combatPointService = combatPointService;
+        }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -62,10 +70,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), target);
 
                     var recovery = baseRecovery + (moduleBonus + activatorShipStatus.Industrial) * 2;
-                    Space.RestoreShield(target, targetShipStatus, recovery);
+                    _spaceService.RestoreShield(target, targetShipStatus, recovery);
 
                     Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {recovery} shield HP to {GetName(target)}'s ship.");
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
+                    _combatPointService.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }
     }

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Extension;
@@ -11,10 +11,15 @@ using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class Faction
+    public class FactionService : IFactionService
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly Dictionary<FactionType, FactionAttribute> _factions = new();
+        private readonly IDatabaseService _db;
+        private readonly Dictionary<FactionType, FactionAttribute> _factions = new();
+
+        public FactionService(IDatabaseService db)
+        {
+            _db = db;
+        }
         public const int MinimumFaction = -5000;
         public const int MaximumFaction = 5000;
 
@@ -22,7 +27,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module caches, cache all faction details into memory.
         /// </summary>
         [ScriptHandler<OnModuleCacheBefore>]
-        public static void LoadFactions()
+        public void LoadFactions()
         {
             var factionTypes = Enum.GetValues(typeof(FactionType)).Cast<FactionType>();
             foreach (var factionType in factionTypes)
@@ -40,7 +45,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves all of the available factions registered in the system.
         /// </summary>
         /// <returns>A dictionary of all available factions registered in the system.</returns>
-        public static Dictionary<FactionType, FactionAttribute> GetAllFactions()
+        public Dictionary<FactionType, FactionAttribute> GetAllFactions()
         {
             return _factions.ToDictionary(x => x.Key, y => y.Value);
         }
@@ -51,7 +56,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="factionType">The type of faction to retrieve.</param>
         /// <returns>A faction detail matching the type.</returns>
-        public static FactionAttribute GetFactionDetail(FactionType factionType)
+        public FactionAttribute GetFactionDetail(FactionType factionType)
         {
             return _factions[factionType];
         }
@@ -62,7 +67,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player whose faction standing will be adjusted.</param>
         /// <param name="faction">The faction to adjust</param>
         /// <param name="adjustBy">The amount to adjust by. This can be positive for increases and negative for decreases.</param>
-        public static void AdjustPlayerFactionStanding(uint player, FactionType faction, int adjustBy)
+        public void AdjustPlayerFactionStanding(uint player, FactionType faction, int adjustBy)
         {
             if (!GetIsPC(player) || adjustBy == 0) return;
 
@@ -125,7 +130,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to adjust</param>
         /// <param name="faction">The faction to adjust</param>
         /// <param name="adjustBy">The amount to adjust by.</param>
-        public static void AdjustPlayerFactionPoints(uint player, FactionType faction, int adjustBy)
+        public void AdjustPlayerFactionPoints(uint player, FactionType faction, int adjustBy)
         {
             if (!GetIsPC(player) || adjustBy == 0) return;
 

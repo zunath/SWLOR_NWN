@@ -19,10 +19,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     internal class BankViewModel: GuiViewModelBase<BankViewModel, GuiPayloadBase>
     {
-        public BankViewModel(IGuiService guiService) : base(guiService)
+        private readonly IDatabaseService _db;
+        private readonly IItemService _itemService;
+        private readonly IPerkService _perkService;
+
+        public BankViewModel(IGuiService guiService, IDatabaseService db, IItemService itemService, IPerkService perkService) : base(guiService)
         {
+            _db = db;
+            _itemService = itemService;
+            _perkService = perkService;
         }
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         
         /// <summary>
         /// When a bank placeable is used, display this UI view.
@@ -172,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemNames.RemoveAt(index);
             ItemResrefs.RemoveAt(index);
 
-            if (Item.IsLegacyItem(item))
+            if (_itemService.IsLegacyItem(item))
             {
                 for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                 {
@@ -188,7 +194,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please click on an item within your inventory.",
                 item =>
             {
-                var canStore = Item.CanBePersistentlyStored(Player, item);
+                var canStore = _itemService.CanBePersistentlyStored(Player, item);
                 if (!string.IsNullOrWhiteSpace(canStore))
                 {
                     SendMessageToPC(Player, ColorToken.Red(canStore));
@@ -214,7 +220,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Resref = GetResRef(item),
                     Quantity = GetItemStackSize(item),
                     Data = ObjectPlugin.Serialize(item),
-                    IconResref = Item.GetIconResref(item)
+                    IconResref = _itemService.GetIconResref(item)
                 };
 
                 _db.Set(dbItem);

@@ -8,6 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -21,11 +22,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class DroidAIViewModel : GuiViewModelBase<DroidAIViewModel, DroidAIPayload>
     {
-        public DroidAIViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly ILogger _logger;
+        private readonly IPerkService _perkService;
 
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        public DroidAIViewModel(IGuiService guiService, ILogger logger, IPerkService perkService) : base(guiService)
+        {
+            _logger = logger;
+            _perkService = perkService;
+        }
         private uint _controller;
         private List<DroidPerk> _availableDroidPerks;
         private List<DroidPerk> _activeDroidPerks;
@@ -88,8 +92,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var perk in constructedDroid.LearnedPerks)
             {
-                var detail = Perk.GetPerkDetails(perk.Perk);
-                var perkTier = Perk.GetPerkLevelTier(perk.Perk, perk.Level);
+                var detail = _perkService.GetPerkDetails(perk.Perk);
+                var perkTier = _perkService.GetPerkLevelTier(perk.Perk, perk.Level);
                 var perkLevel = detail.PerkLevels[perk.Level];
 
                 if (perkTier <= controllerStats.Tier && !constructedDroid.ActivePerks.Exists(x => x.Perk == perk.Perk && x.Level == perk.Level))
@@ -102,8 +106,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var perk in constructedDroid.ActivePerks)
             {
-                var detail = Perk.GetPerkDetails(perk.Perk);
-                var perkTier = Perk.GetPerkLevelTier(perk.Perk, perk.Level);
+                var detail = _perkService.GetPerkDetails(perk.Perk);
+                var perkTier = _perkService.GetPerkLevelTier(perk.Perk, perk.Level);
                 var perkLevel = detail.PerkLevels[perk.Level];
 
                 if (perkTier <= controllerStats.Tier)
@@ -130,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             return constructedDroid.ActivePerks.Sum(x =>
             {
-                var perkDetail = Perk.GetPerkDetails(x.Perk);
+                var perkDetail = _perkService.GetPerkDetails(x.Perk);
                 var perkLevel = perkDetail.PerkLevels[x.Level];
                 return perkLevel.DroidAISlots;
             });
@@ -166,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         {
                             var perkType = (PerkType)GetItemPropertySubType(ip);
                             var level = GetItemPropertyCostTableValue(ip);
-                            var tier = Perk.GetPerkLevelTier(perkType, level);
+                            var tier = _perkService.GetPerkLevelTier(perkType, level);
 
                             // Misconfigured disc.
                             if (tier <= 0)
@@ -193,7 +197,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             }
 
                             var perk = new DroidPerk(perkType, level);
-                            var perkDetail = Perk.GetPerkDetails(perkType);
+                            var perkDetail = _perkService.GetPerkDetails(perkType);
                             var perkLevel = perkDetail.PerkLevels[level];
                             constructedDroid.LearnedPerks.Add(perk);
                             AvailablePerkNames.Add($"{perkDetail.Name} {level} [{perkLevel.DroidAISlots}]");
@@ -230,11 +234,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // Safety check - If the tier has changed since it was uploaded to the droid,
                 // prevent it from being added to the active list.
-                var tier = Perk.GetPerkLevelTier(perk.Perk, perk.Level);
+                var tier = _perkService.GetPerkLevelTier(perk.Perk, perk.Level);
                 if (tier > controllerDetails.Tier)
                     continue;
                 
-                var perkDetail = Perk.GetPerkDetails(perk.Perk);
+                var perkDetail = _perkService.GetPerkDetails(perk.Perk);
                 var perkLevel = perkDetail.PerkLevels[perk.Level];
                 var currentAISlotsUsed = CalculateAISlots(constructedDroid);
 

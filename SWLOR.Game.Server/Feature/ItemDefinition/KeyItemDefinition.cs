@@ -11,12 +11,13 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class KeyItemDefinition: IItemListDefinition
     {
-        private static readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
+        private readonly ILogger _logger;
         private readonly IKeyItemService _keyItemService;
         private readonly ItemBuilder _builder = new();
 
-        public KeyItemDefinition(IKeyItemService keyItemService)
+        public KeyItemDefinition(ILogger logger, IKeyItemService keyItemService)
         {
+            _logger = logger;
             _keyItemService = keyItemService;
         }
         public Dictionary<string, ItemDetail> BuildItems()

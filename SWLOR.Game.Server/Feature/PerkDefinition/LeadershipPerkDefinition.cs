@@ -15,8 +15,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class LeadershipPerkDefinition: IPerkListDefinition
     {
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IDatabaseService _db;
+        private readonly IAbilityService _abilityService;
         private readonly PerkBuilder _builder = new();
+
+        public LeadershipPerkDefinition(IDatabaseService db, IAbilityService abilityService)
+        {
+            _db = db;
+            _abilityService = abilityService;
+        }
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
@@ -160,8 +167,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 50)
                 
-                .TriggerPurchase(Ability.ReapplyPlayerAuraAOE)
-                .TriggerRefund(Ability.ReapplyPlayerAuraAOE);
+                .TriggerPurchase(_abilityService.ReapplyPlayerAuraAOE)
+                .TriggerRefund(_abilityService.ReapplyPlayerAuraAOE);
         }
 
         private void RousingShout()

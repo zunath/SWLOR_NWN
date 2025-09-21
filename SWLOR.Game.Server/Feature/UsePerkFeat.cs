@@ -12,17 +12,32 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Module;
-using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class UsePerkFeat
+    public class UsePerkFeat
     {
+        private readonly IAbilityService _abilityService;
+        private readonly IPerkService _perkService;
+        private readonly IItemService _itemService;
+        private readonly IRecastService _recastService;
+        private readonly IEnmityService _enmityService;
+
+        public UsePerkFeat(IAbilityService abilityService, IPerkService perkService, IItemService itemService, IRecastService recastService, IEnmityService enmityService)
+        {
+            _abilityService = abilityService;
+            _perkService = perkService;
+            _itemService = itemService;
+            _recastService = recastService;
+            _enmityService = enmityService;
+        }
         private enum ActivationStatus
         {
             Invalid = 0,
@@ -41,7 +56,7 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         /// <param name="activator">The creature using the ability</param>
         /// <param name="ability">The ability details</param>
-        private static void HandleStealthBreaking(uint activator, AbilityDetail ability)
+        private void HandleStealthBreaking(uint activator, AbilityDetail ability)
         {
             if (!ability.BreaksStealth) return;
 
@@ -59,7 +74,7 @@ namespace SWLOR.Game.Server.Feature
         /// If there are errors at any point in this process, the creature will be notified and the execution will end.
         /// </summary>
         [ScriptHandler<OnFeatUseBefore>]
-        public static void UseFeat()
+        public void UseFeat()
         {
             var activator = OBJECT_SELF;
             var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
@@ -79,19 +94,19 @@ namespace SWLOR.Game.Server.Feature
             var targetLocation = Location(targetArea, targetPosition, 0.0f);
 
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
-            if (!Ability.IsFeatRegistered(feat)) return;
-            var ability = Ability.GetAbilityDetail(feat);
+            if (!_abilityService.IsFeatRegistered(feat)) return;
+            var ability = _abilityService.GetAbilityDetail(feat);
 
             // Creature cannot use the feat.
             var effectivePerkLevel =
                 ability.EffectiveLevelPerkType == PerkType.Invalid
                     ? 1 // If there's not an associated perk, default level to 1.
-                    : Perk.GetPerkLevel(activator, ability.EffectiveLevelPerkType);
+                    : _perkService.GetPerkLevel(activator, ability.EffectiveLevelPerkType);
 
             // Weapon abilities are queued for the next time the activator's attack lands on an enemy.
             if (ability.ActivationType == AbilityActivationType.Weapon)
             {
-                if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
+                if (_abilityService.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
                     if(ability.DisplaysActivationMessage)
                         Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} queues {ability.Name} for the next attack.");
@@ -102,14 +117,14 @@ namespace SWLOR.Game.Server.Feature
             else if (ability.ActivationType == AbilityActivationType.Concentration)
             {
                 // Using the same concentration feat ends the effect.
-                var activeConcentrationAbility = Ability.GetActiveConcentration(activator);
+                var activeConcentrationAbility = _abilityService.GetActiveConcentration(activator);
                 if (activeConcentrationAbility.Feat == feat)
                 {
-                    Ability.EndConcentrationAbility(activator);
+                    _abilityService.EndConcentrationAbility(activator);
                 }
                 else
                 {
-                    if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
+                    if (_abilityService.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                     {
                         ActivateAbility(activator, target, feat, ability, targetLocation);
                     }
@@ -118,7 +133,7 @@ namespace SWLOR.Game.Server.Feature
             // All other abilities are funneled through the same process.
             else
             {
-                if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
+                if (_abilityService.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
                     if (GetIsObjectValid(target))
                     {
@@ -142,7 +157,7 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         /// <param name="activator">The activator of the ability.</param>
         /// <param name="ability">The ability details</param>
-        private static void ApplyRequirementEffects(uint activator, AbilityDetail ability)
+        private void ApplyRequirementEffects(uint activator, AbilityDetail ability)
         {
             foreach (var req in ability.Requirements)
             {
@@ -161,7 +176,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="feat">The type of feat associated with this ability.</param>
         /// <param name="ability">The ability details</param>
         /// <param name="targetLocation">The targeted location</param>
-        private static void ActivateAbility(
+        private void ActivateAbility(
             uint activator,
             uint target,
             FeatType feat,
@@ -178,7 +193,7 @@ namespace SWLOR.Game.Server.Feature
                 for (var slot = 0; slot < NumberOfInventorySlots; slot++)
                 {
                     var item = GetItemInSlot((InventorySlot)slot, activator);
-                    var armorType = Item.GetArmorType(item);
+                    var armorType = _itemService.GetArmorType(item);
                     if (armorType == ArmorType.Heavy && !ability.IgnoreHeavyArmorPenalty)
                     {
                         armorPenalty = HeavyArmorPenalty;
@@ -263,7 +278,7 @@ namespace SWLOR.Game.Server.Feature
                     return;
                 
 
-                if (!Ability.CanUseAbility(activator, target, feat, ability.AbilityLevel, targetLocation))
+                if (!_abilityService.CanUseAbility(activator, target, feat, ability.AbilityLevel, targetLocation))
                     return;
 
                 DeleteLocalInt(activator, activationId);
@@ -271,15 +286,15 @@ namespace SWLOR.Game.Server.Feature
                 ApplyRequirementEffects(activator, ability);
                 HandleStealthBreaking(activator, ability);
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
-                Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
+                _recastService.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
 
                 if (ability.ConcentrationStatusEffectType != StatusEffectType.Invalid)
                 {
-                    Ability.StartConcentrationAbility(activator, target, feat, ability.ConcentrationStatusEffectType);
+                    _abilityService.StartConcentrationAbility(activator, target, feat, ability.ConcentrationStatusEffectType);
                 }
 
                 // If this is an attack make the NPC react.
-                Enmity.AttackHighestEnmityTarget(target);
+                _enmityService.AttackHighestEnmityTarget(target);
                 
                 if (!GetIsPC(activator))
                 {
@@ -336,7 +351,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="activator">The creature activating the ability.</param>
         /// <param name="ability">The ability details</param>
         /// <param name="feat">The feat being activated</param>
-        private static void QueueWeaponAbility(uint activator, AbilityDetail ability, FeatType feat)
+        private void QueueWeaponAbility(uint activator, AbilityDetail ability, FeatType feat)
         {
             var abilityId = Guid.NewGuid().ToString();
             // Assign local variables which will be picked up on the next weapon OnHit event by this player.
@@ -347,7 +362,7 @@ namespace SWLOR.Game.Server.Feature
             ApplyRequirementEffects(activator, ability);
 
             var abilityRecastDelay = ability.RecastDelay?.Invoke(activator) ?? 0.0f;
-            Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
+            _recastService.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay, false);
 
             // Activator must attack within 30 seconds after queueing or else it wears off.
             DelayCommand(30.0f, () =>
@@ -356,7 +371,7 @@ namespace SWLOR.Game.Server.Feature
             });
         }
 
-        public static void DequeueWeaponAbility(uint target, bool sendMessage = true)
+        public void DequeueWeaponAbility(uint target, bool sendMessage = true)
         {
             var abilityId = GetLocalString(target, ActiveAbilityIdName);
             if (string.IsNullOrWhiteSpace(abilityId))
@@ -367,7 +382,7 @@ namespace SWLOR.Game.Server.Feature
                 return;
 
             var featType = (FeatType)featId;
-            var abilityDetail = Ability.GetAbilityDetail(featType);
+            var abilityDetail = _abilityService.GetAbilityDetail(featType);
 
             // Remove the local variables.
             DeleteLocalString(target, ActiveAbilityIdName);
@@ -385,7 +400,7 @@ namespace SWLOR.Game.Server.Feature
         /// When a player's weapon hits a target, if an ability is queued, that ability will be executed.
         /// </summary>
         [ScriptHandler(ScriptName.OnItemHit)]
-        public static void ProcessQueuedWeaponAbility()
+        public void ProcessQueuedWeaponAbility()
         {
             var activator = OBJECT_SELF;
             if (!GetIsObjectValid(activator)) return;
@@ -400,9 +415,9 @@ namespace SWLOR.Game.Server.Feature
             var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityFeatIdName);
             var activeAbilityEffectivePerkLevel = GetLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
 
-            if (!Ability.IsFeatRegistered(activeWeaponAbility)) return;
+            if (!_abilityService.IsFeatRegistered(activeWeaponAbility)) return;
 
-            var abilityDetail = Ability.GetAbilityDetail(activeWeaponAbility);
+            var abilityDetail = _abilityService.GetAbilityDetail(activeWeaponAbility);
             HandleStealthBreaking(activator, abilityDetail);
             abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
 
@@ -419,8 +434,9 @@ namespace SWLOR.Game.Server.Feature
         public static void ClearTemporaryQueuedVariables()
         {
             var player = GetEnteringObject();
+            var usePerkFeat = ServiceContainer.GetService<UsePerkFeat>();
 
-            ClearQueuedAbility(player);
+            usePerkFeat.ClearQueuedAbility(player);
         }
 
         /// <summary>
@@ -429,7 +445,8 @@ namespace SWLOR.Game.Server.Feature
         [ScriptHandler(ScriptName.OnRestStarted)]
         public static void ClearTemporaryQueuedVariablesOnRest()
         {
-            ClearQueuedAbility(OBJECT_SELF);
+            var usePerkFeat = ServiceContainer.GetService<UsePerkFeat>();
+            usePerkFeat.ClearQueuedAbility(OBJECT_SELF);
         }
 
         /// <summary>
@@ -438,14 +455,15 @@ namespace SWLOR.Game.Server.Feature
         [ScriptHandler<OnSWLORItemEquipValidBefore>]
         public static void ClearTemporaryQueuedVariablesOnEquip()
         {
-            ClearQueuedAbility(OBJECT_SELF);
+            var usePerkFeat = ServiceContainer.GetService<UsePerkFeat>();
+            usePerkFeat.ClearQueuedAbility(OBJECT_SELF);
         }
 
         /// <summary>
         /// Clears the queued ability of a player.
         /// </summary>
         /// <param name="player">The player to clear</param>
-        private static void ClearQueuedAbility(uint player)
+        private void ClearQueuedAbility(uint player)
         {
             DeleteLocalString(player, ActiveAbilityIdName);
             DeleteLocalInt(player, ActiveAbilityFeatIdName);

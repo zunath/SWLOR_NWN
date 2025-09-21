@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Linq;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Service.CombatService;
+
+using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.Core.Data;
-using SWLOR.Shared.Core.Data.Entity;
-using SWLOR.Shared.Core.Enums;
-using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Log;
 using SWLOR.Shared.Core.Log.LogGroup;
-using SWLOR.Shared.UI.Service;
+using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -22,12 +22,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
         IGuiRefreshable<PerkRefundedRefreshEvent>
     {
-        public IncubatorViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly ILogger _logger;
+        private readonly IPerkService _perkService;
+        private readonly IItemService _itemService;
+        private readonly IBeastMasteryService _beastMasteryService;
 
-        private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        public IncubatorViewModel(IGuiService guiService, ILogger logger, IPerkService perkService, IItemService itemService, IBeastMasteryService beastMasteryService) : base(guiService)
+        {
+            _logger = logger;
+            _perkService = perkService;
+            _itemService = itemService;
+            _beastMasteryService = beastMasteryService;
+        }
         public const string PartialElement = "PARTIAL_VIEW";
         public const string NewJobPartial = "NEW_JOB_PARTIAL";
         public const string InProgressJobPartial = "IN_PROGRESS_JOB_PARTIAL";
@@ -334,7 +340,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var dbQuery = new DBQuery<IncubationJob>()
                 .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), _incubatorPropertyId, false);
-            var dbJob = _db.Search(dbQuery)
+            var dbJob = DB.Search(dbQuery)
                 .FirstOrDefault();
 
             return dbJob;
@@ -355,7 +361,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private int GetErraticGeniusBonus()
         {
-            var erraticGenius = Perk.GetPerkLevel(Player, PerkType.ErraticGenius);
+            var erraticGenius = _perkService.GetPerkLevel(Player, PerkType.ErraticGenius);
             var mutationBonus = 0;
             switch (erraticGenius)
             {
@@ -449,7 +455,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (socialBonus > 10)
                 socialBonus = 10;
 
-            var timeReductionPercentage = 0.01f * (Perk.GetPerkLevel(Player, PerkType.IncubationProcessing) * 10 + socialBonus);
+            var timeReductionPercentage = 0.01f * (_perkService.GetPerkLevel(Player, PerkType.IncubationProcessing) * 10 + socialBonus);
             var seconds = BaseSecondsBetweenStages - (int)(BaseSecondsBetweenStages * timeReductionPercentage);
 
             return seconds;
@@ -565,7 +571,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    var error = Item.CanBePersistentlyStored(Player, item);
+                    var error = _itemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         FloatingTextStringOnCreature(error, Player, false);
@@ -637,7 +643,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         }
                     }
 
-                    DNAItemResref = Item.GetIconResref(item);
+                    DNAItemResref = _itemService.GetIconResref(item);
                     _dnaItem = ObjectPlugin.Serialize(item);
                     DestroyObject(item);
 
@@ -814,14 +820,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    var error = Item.CanBePersistentlyStored(Player, item);
+                    var error = _itemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         FloatingTextStringOnCreature(error, Player, false);
                         return;
                     }
 
-                    HydrolaseItemResref = Item.GetIconResref(item);
+                    HydrolaseItemResref = _itemService.GetIconResref(item);
                     _hydrolaseItem = ObjectPlugin.Serialize(item);
                     _hydrolaseColor = AddItemStats(item);
                     DestroyObject(item);
@@ -860,14 +866,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
-                    var error = Item.CanBePersistentlyStored(Player, item);
+                    var error = _itemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         FloatingTextStringOnCreature(error, Player, false);
                         return;
                     }
 
-                    LyaseItemResref = Item.GetIconResref(item);
+                    LyaseItemResref = _itemService.GetIconResref(item);
                     _lyaseItem = ObjectPlugin.Serialize(item);
                     _lyaseColor = AddItemStats(item);
                     DestroyObject(item);
@@ -900,20 +906,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select an Isomerase item from your inventory.",
                 item =>
                 {
-                    if (!GetResRef(item).StartsWith(BeastMastery.IsomeraseResrefPrefix))
+                    if (!GetResRef(item).StartsWith(_beastMasteryService.IsomeraseResrefPrefix))
                     {
                         FloatingTextStringOnCreature("Only Isomerase items may be selected.", Player, false);
                         return;
                     }
 
-                    var error = Item.CanBePersistentlyStored(Player, item);
+                    var error = _itemService.CanBePersistentlyStored(Player, item);
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         FloatingTextStringOnCreature(error, Player, false);
                         return;
                     }
 
-                    IsomeraseItemResref = Item.GetIconResref(item);
+                    IsomeraseItemResref = _itemService.GetIconResref(item);
                     _isomeraseItem = ObjectPlugin.Serialize(item);
                     _isomeraseColor = AddItemStats(item);
                     DestroyObject(item);
@@ -932,10 +938,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string ValidateCreateJob()
         {
             var playerId = GetObjectUUID(Player);
-            var maxConcurrentJobs = Perk.GetPerkLevel(Player, PerkType.IncubationManagement) + 1;
+            var maxConcurrentJobs = _perkService.GetPerkLevel(Player, PerkType.IncubationManagement) + 1;
             var dbQuery = new DBQuery<IncubationJob>()
                 .AddFieldSearch(nameof(IncubationJob.PlayerId), playerId, false);
-            var currentJobs = _db.Search(dbQuery).ToList();
+            var currentJobs = DB.Search(dbQuery).ToList();
             var currentJobCount = currentJobs.Count(x => x.ParentPropertyId != _incubatorPropertyId);
 
             if (currentJobCount >= maxConcurrentJobs)
@@ -950,7 +956,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (job.CurrentStage > NumberOfStages)
                 return "Max stage reached.";
 
-            if (IsErraticGeniusChecked && Perk.GetPerkLevel(Player, PerkType.ErraticGenius) <= 0)
+            if (IsErraticGeniusChecked && _perkService.GetPerkLevel(Player, PerkType.ErraticGenius) <= 0)
             {
                 return "You do not have the Erratic Genius perk purchased and cannot start this job.";
             }
@@ -1019,13 +1025,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 job.DateStarted = now;
                 job.DateCompleted = now.AddSeconds(incubationSeconds);
 
-                _db.Set(job);
+                DB.Set(job);
 
                 _dnaItem = string.Empty;
                 _hydrolaseItem = string.Empty;
                 _isomeraseItem = string.Empty;
                 _lyaseItem = string.Empty;
-                _guiService.CloseWindow(Player, GuiWindowType.Incubator, Player);
+                Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
                 FloatingTextStringOnCreature($"Incubation job started!", Player, false);
             }
             else
@@ -1073,8 +1079,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (dbJob == null)
                     return;
 
-                _db.Delete<IncubationJob>(dbJob.Id);
-                _guiService.CloseWindow(Player, GuiWindowType.Incubator, Player);
+                DB.Delete<IncubationJob>(dbJob.Id);
+                Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
                 _logger.Write<IncubationLogGroup>($"Player '{GetName(Player)}' ({GetObjectUUID(Player)}) canceled incubation job '{dbJob.Id}' on incubator property Id '{dbJob.ParentPropertyId}'.");
                 FloatingTextStringOnCreature($"Incubation job cancelled!", Player, false);
 
@@ -1087,8 +1093,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal("Are you sure you want to complete this job?", () =>
             {
                 var job = GetJob();
-                BeastMastery.CreateBeastEgg(job, Player);
-                _guiService.CloseWindow(Player, GuiWindowType.Incubator, Player);
+                _beastMasteryService.CreateBeastEgg(job, Player);
+                Gui.CloseWindow(Player, GuiWindowType.Incubator, Player);
 
                 SwitchViews();
             }, SwitchViews);

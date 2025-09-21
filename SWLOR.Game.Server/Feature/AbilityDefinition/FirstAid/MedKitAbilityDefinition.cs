@@ -13,8 +13,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public class MedKitAbilityDefinition: FirstAidBaseAbilityDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
+        private readonly IRandomService _random;
+        private readonly IDatabaseService _db;
+        private readonly IStatService _statService;
+        private readonly ISkillService _skillService;
+
+        public MedKitAbilityDefinition(IRandomService random, IDatabaseService db, IStatService statService, ISkillService skillService)
+        {
+            _random = random;
+            _db = db;
+            _statService = statService;
+            _skillService = skillService;
+        }
         
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -73,8 +83,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 var playerId = GetObjectUUID(activator);
                 var dbPlayer = _db.Get<Player>(playerId);
                 var firstAidLevel = dbPlayer.Skills[SkillType.FirstAid].Rank;
-                var nXP = enemyLevel != -1 ? Skill.GetDeltaXP(enemyLevel - firstAidLevel) : 0;
-                Skill.GiveSkillXP(activator, SkillType.FirstAid, nXP);
+                var nXP = enemyLevel != -1 ? _skillService.GetDeltaXP(enemyLevel - firstAidLevel) : 0;
+                _skillService.GiveSkillXP(activator, SkillType.FirstAid, nXP);
                 CombatPoint.ClearRecentEnemyLevel(activator);
             }
         }

@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Service;
 
@@ -9,7 +10,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class StrongStyleSaberstaffAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IAbilityService _abilityService;
         private readonly AbilityBuilder _builder = new();
+
+        public StrongStyleSaberstaffAbilityDefinition(IAbilityService abilityService)
+        {
+            _abilityService = abilityService;
+        }
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -20,8 +27,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private void DoToggle(uint activator, AbilityToggleType type)
         {
-            var isToggled = !Ability.IsAbilityToggled(activator, type);
-            Ability.ToggleAbility(activator, type, isToggled);
+            var isToggled = !_abilityService.IsAbilityToggled(activator, type);
+            _abilityService.ToggleAbility(activator, type, isToggled);
 
             if (isToggled)
             {

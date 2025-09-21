@@ -8,8 +8,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     public class AdminChatCommand: IChatCommandListDefinition
     {
-        private readonly IGuiService _guiService = ServiceContainer.GetService<IGuiService>();
+        private readonly IGuiService _guiService;
         private readonly ChatCommandBuilder _builder = new ();
+
+        public AdminChatCommand(IGuiService guiService)
+        {
+            _guiService = guiService;
+        }
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {

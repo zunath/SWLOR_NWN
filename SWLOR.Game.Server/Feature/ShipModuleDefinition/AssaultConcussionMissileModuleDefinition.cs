@@ -6,13 +6,27 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
     public class AssaultConcussionMissileModuleDefinition : IShipModuleListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
+        private readonly ICombatService _combatService;
+        private readonly ISpaceService _spaceService;
+        private readonly IEnmityService _enmityService;
+        private readonly ICombatPointService _combatPointService;
         private readonly ShipModuleBuilder _builder = new();
+
+        public AssaultConcussionMissileModuleDefinition(IRandomService random, ICombatService combatService, ISpaceService spaceService, IEnmityService enmityService, ICombatPointService combatPointService)
+        {
+            _random = random;
+            _combatService = combatService;
+            _spaceService = spaceService;
+            _enmityService = enmityService;
+            _combatPointService = combatPointService;
+        }
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
@@ -25,23 +39,23 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         private void PerformAttack(uint activator, uint target, int dmg, int attackBonus, bool? hitOverride)
         {
-            var targetShipStatus = Space.GetShipStatus(target);
+            var targetShipStatus = _spaceService.GetShipStatus(target);
             if (targetShipStatus == null)
                 return;
 
-            var chanceToHit = Space.CalculateChanceToHit(activator, target);
+            var chanceToHit = _spaceService.CalculateChanceToHit(activator, target);
             var roll = _random.D100(1);
             var isHit = hitOverride ?? roll <= chanceToHit;
 
-            var attackerStat = Space.GetAttackStat(activator);
-            var attack = Space.GetShipAttack(activator, attackBonus);
+            var attackerStat = _spaceService.GetAttackStat(activator);
+            var attack = _spaceService.GetShipAttack(activator, attackBonus);
 
             if (isHit)
             {
                 var defenseBonus = targetShipStatus.ExplosiveDefense * 2;
-                var defense = Space.GetShipDefense(target, defenseBonus);
+                var defense = _spaceService.GetShipDefense(target, defenseBonus);
                 var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
-                var damage = Combat.CalculateDamage(
+                var damage = _combatService.CalculateDamage(
                     attack,
                     dmg,
                     attackerStat,
@@ -49,14 +63,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     defenderStat,
                     0);
 
-                Space.ApplyHullDamage(activator, target, damage);
-                Enmity.ModifyEnmity(activator, target, damage);
+                _spaceService.ApplyHullDamage(activator, target, damage);
+                _enmityService.ModifyEnmity(activator, target, damage);
             }
 
             var attackId = isHit ? 1 : 4;
-            var combatLogMessage = Combat.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
+            var combatLogMessage = _combatService.BuildCombatLogMessage(activator, target, attackId, chanceToHit);
             Messaging.SendMessageNearbyToPlayers(target, combatLogMessage, 60f);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.Piloting);
         }
 
         private void AssaultConcussionMissile(
@@ -87,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         return "You need an assault concussion missile to fire this weapon.";
                     }
 
-                    if (!Space.GetShipStatus(target).CapitalShip)
+                    if (!_spaceService.GetShipStatus(target).CapitalShip)
                     {
                         return "This weapon can only target capital ships.";
                     }
@@ -116,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var targetDistance = GetDistanceBetween(activator, target);
                     var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
 
-                    var chanceToHit = Space.CalculateChanceToHit(activator, target);
+                    var chanceToHit = _spaceService.CalculateChanceToHit(activator, target);
                     var roll = _random.D100(1);
                     var isHit = roll <= chanceToHit;
 

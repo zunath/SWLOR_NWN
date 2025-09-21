@@ -8,6 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Infrastructure;
 
@@ -15,8 +16,19 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class DNAExtractorItemDefinition: IItemListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
+        private readonly IBeastMasteryService _beastMasteryService;
+        private readonly IPerkService _perkService;
+        private readonly ILootService _lootService;
         private readonly ItemBuilder _builder = new();
+
+        public DNAExtractorItemDefinition(IRandomService random, IBeastMasteryService beastMasteryService, IPerkService perkService, ILootService lootService)
+        {
+            _random = random;
+            _beastMasteryService = beastMasteryService;
+            _perkService = perkService;
+            _lootService = lootService;
+        }
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
@@ -34,16 +46,16 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 {
                     var itemResref = GetResRef(item);
                     var targetResref = GetResRef(target);
-                    var level = GetLocalInt(target, BeastMastery.BeastLevelVariable);
-                    var perkLevel = Perk.GetPerkLevel(user, PerkType.DNAManipulation);
+                    var level = GetLocalInt(target, _beastMasteryService.BeastLevelVariable);
+                    var perkLevel = _perkService.GetPerkLevel(user, PerkType.DNAManipulation);
                     var maxLevel = perkLevel * 10;
                     var chargesRequired = 1 + level / 10;
                     var charges = GetItemCharges(item);
                     var requiredExtractorLevel = level / 10;
                     var extractorLevel = Convert.ToInt32(itemResref.Substring(itemResref.Length - 1, 1));
-                    var beastTypeId = GetLocalInt(target, BeastMastery.BeastTypeVariable);
+                    var beastTypeId = GetLocalInt(target, _beastMasteryService.BeastTypeVariable);
 
-                    if (targetResref != BeastMastery.ExtractCorpseObjectResref)
+                    if (targetResref != _beastMasteryService.ExtractCorpseObjectResref)
                     {
                         return "You may only extract DNA from empty corpses.";
                     }
@@ -84,11 +96,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     }
 
                     const int BaseStatChance = 5;
-                    var level = GetLocalInt(target, BeastMastery.BeastLevelVariable);
+                    var level = GetLocalInt(target, _beastMasteryService.BeastLevelVariable);
                     var chargesRequired = 1 + level / 10;
                     var charges = GetItemCharges(item) - chargesRequired;
-                    var beastType = (BeastType)GetLocalInt(target, BeastMastery.BeastTypeVariable);
-                    var beastDetail = BeastMastery.GetBeastDetail(beastType);
+                    var beastType = (BeastType)GetLocalInt(target, _beastMasteryService.BeastTypeVariable);
+                    var beastDetail = _beastMasteryService.GetBeastDetail(beastType);
                     var social = GetAbilityScore(user, AbilityType.Social) - 10;
                     if (social < 0)
                         social = 0;
@@ -152,7 +164,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         }
                     }
 
-                    var dna = CreateItemOnObject(BeastMastery.DNAResref, user);
+                    var dna = CreateItemOnObject(_beastMasteryService.DNAResref, user);
 
                     foreach (var ip in itemProperties)
                     {
@@ -161,7 +173,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     SetName(dna, $"Beast DNA: {beastDetail.Name}");
                     DestroyObject(target);
-                    var body = GetLocalObject(target, Loot.CorpseBodyVariable);
+                    var body = GetLocalObject(target, _lootService.CorpseBodyVariable);
                     AssignCommand(body, () => SetIsDestroyable());
                     DestroyObject(body);
                 });

@@ -28,12 +28,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 {
                     const float Duration = 4f;
 
-                    var dc = Combat.CalculateSavingThrowDC(activator, SavingThrow.Fortitude, 12);
+                    var combatService = ServiceContainer.GetService<ICombatService>();
+                    var dc = combatService.CalculateSavingThrowDC(activator, 12, 0, 0);
                     var checkResult = FortitudeSave(target, dc, SavingThrowType.None, activator);
                     if (checkResult == SavingThrowResultType.Failed)
                     {
                         ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, Duration);
-                        Ability.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
+                        var abilityService = ServiceContainer.GetService<IAbilityService>();
+                        abilityService.ApplyTemporaryImmunity(target, Duration, ImmunityType.Knockdown);
                     }
 
                     CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);

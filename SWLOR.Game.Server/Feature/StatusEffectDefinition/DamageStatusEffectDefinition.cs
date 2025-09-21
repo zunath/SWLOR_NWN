@@ -3,13 +3,19 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class DamageStatusEffectDefinition: IStatusEffectListDefinition
     {
-        private static readonly IRandomService _random = ServiceContainer.GetService<IRandomService>();
+        private readonly IRandomService _random;
+
+        public DamageStatusEffectDefinition(IRandomService random)
+        {
+            _random = random;
+        }
         private readonly StatusEffectBuilder _builder = new();
         public Dictionary<StatusEffectType, StatusEffectDetail> BuildStatusEffects()
         {

@@ -19,11 +19,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private readonly ILogger _logger = ServiceContainer.GetService<ILogger>();
         private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
         private readonly IKeyItemService _keyItemService;
+        private readonly IPropertyService _propertyService;
         private const string MainPageId = "MAIN_PAGE";
 
-        public StarportDialog(IKeyItemService keyItemService)
+        public StarportDialog(IKeyItemService keyItemService, IPropertyService propertyService)
         {
             _keyItemService = keyItemService;
+            _propertyService = propertyService;
         }
 
         public override PlayerDialog SetUp(uint player)
@@ -60,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     EndConversation();
 
                     var area = GetArea(OBJECT_SELF);
-                    var propertyId = Property.GetPropertyId(area);
+                    var propertyId = _propertyService.GetPropertyId(area);
                     var planetType = PlanetType.Invalid;
 
                     // NPC starports can retrieve the planet based on the name of the planet.

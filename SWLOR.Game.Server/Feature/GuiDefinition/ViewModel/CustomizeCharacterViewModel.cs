@@ -14,13 +14,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CustomizeCharacterViewModel: GuiViewModelBase<CustomizeCharacterViewModel, CustomizeCharacterPayload>
     {
-        public CustomizeCharacterViewModel(IGuiService guiService) : base(guiService)
-        {
-        }
+        private readonly IDatabaseService _db;
+        private readonly IPortraitCacheService _portraitCache;
+        private readonly ISoundSetCacheService _soundSetCache;
 
-        private static readonly IDatabaseService _db = ServiceContainer.GetService<IDatabaseService>();
-        private static readonly IPortraitCacheService _portraitCache = ServiceContainer.GetService<IPortraitCacheService>();
-        private static readonly ISoundSetCacheService _soundSetCache = ServiceContainer.GetService<ISoundSetCacheService>();
+        public CustomizeCharacterViewModel(IGuiService guiService, IDatabaseService db, IPortraitCacheService portraitCache, ISoundSetCacheService soundSetCache) : base(guiService)
+        {
+            _db = db;
+            _portraitCache = portraitCache;
+            _soundSetCache = soundSetCache;
+        }
         
         private uint _target;
 

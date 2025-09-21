@@ -4,12 +4,26 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
     public class TranquilizerShotAbilityDefinition : IAbilityListDefinition
     {
+        private readonly IItemService _itemService;
+        private readonly IAbilityService _abilityService;
+        private readonly IEnmityService _enmityService;
+        private readonly ICombatPointService _combatPointService;
+
+        public TranquilizerShotAbilityDefinition(IItemService itemService, IAbilityService abilityService, IEnmityService enmityService, ICombatPointService combatPointService)
+        {
+            _itemService = itemService;
+            _abilityService = abilityService;
+            _enmityService = enmityService;
+            _combatPointService = combatPointService;
+        }
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -20,11 +34,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level, Location targetLocation)
+        private string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (!Item.RifleBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!_itemService.RifleBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a rifle ability.";
             }
@@ -43,10 +57,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
             ApplyEffectToObject(DurationType.Temporary, sleep, target, duration);
             ApplyEffectToObject(DurationType.Temporary, vfx, target, duration);
-            Ability.ApplyTemporaryImmunity(target, duration, ImmunityType.Sleep);
+            _abilityService.ApplyTemporaryImmunity(target, duration, ImmunityType.Sleep);
 
-            Enmity.ModifyEnmity(activator, target, enmity);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+            _enmityService.ModifyEnmity(activator, target, enmity);
+            _combatPointService.AddCombatPoint(activator, target, SkillType.Ranged, 3);
         }
 
         private void ImpactAction(uint activator, uint target, int level, Location targetLocation)

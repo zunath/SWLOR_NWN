@@ -90,7 +90,7 @@ namespace SWLOR.Shared.Events.Service
             SetEventScript(module, EventScript.Module_OnClientExit, ScriptName.OnModuleExit);
             SetEventScript(module, EventScript.Module_OnPlayerCancelCutscene, ScriptName.OnModulePlayerCancelCutscene);
             SetEventScript(module, EventScript.Module_OnHeartbeat, ScriptName.OnModuleHeartbeat);
-            SetEventScript(module, EventScript.Module_OnModuleLoad, "mod_load");
+            SetEventScript(module, EventScript.Module_OnModuleLoad, ScriptName.OnModuleLoad);
             SetEventScript(module, EventScript.Module_OnPlayerChat, ScriptName.OnModuleChat);
             SetEventScript(module, EventScript.Module_OnPlayerDying, ScriptName.OnModuleDying);
             SetEventScript(module, EventScript.Module_OnPlayerDeath, ScriptName.OnModuleDeath);

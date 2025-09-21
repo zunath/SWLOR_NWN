@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Constants;
 

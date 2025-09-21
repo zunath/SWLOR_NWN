@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SWLOR.Game.Server.Service.TaxiService
+﻿namespace SWLOR.Shared.Core.Enums
 {
     public enum TaxiDestinationType
     {

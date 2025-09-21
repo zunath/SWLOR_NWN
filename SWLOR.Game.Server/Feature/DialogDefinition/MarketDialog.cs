@@ -1,9 +1,10 @@
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
-using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.UI.Contracts;

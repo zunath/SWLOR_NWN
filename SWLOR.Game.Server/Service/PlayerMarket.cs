@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 
 using SWLOR.Game.Server.Service.PlayerMarketService;
@@ -13,8 +11,11 @@ using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Extension;
-using MarketCategoryType = SWLOR.Game.Server.Service.PlayerMarketService.MarketCategoryType;
+using SWLOR.Shared.Core.Infrastructure;
+using MarketCategoryType = SWLOR.Shared.Core.Enums.MarketCategoryType;
 
 namespace SWLOR.Game.Server.Service
 {

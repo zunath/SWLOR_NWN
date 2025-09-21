@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Service.SpaceService;
-using SWLOR.Shared.Abstractions;
+﻿using SWLOR.Shared.Abstractions;
+using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Entity
+namespace SWLOR.Shared.Core.Data.Entity
 {
     public class PlayerShip: EntityBase
     {

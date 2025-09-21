@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 {

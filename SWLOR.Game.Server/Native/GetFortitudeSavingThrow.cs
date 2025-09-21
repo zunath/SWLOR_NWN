@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using System;
 using System.Runtime.InteropServices;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SavingThrow = NWN.Native.API.SavingThrow;

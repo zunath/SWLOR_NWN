@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PerkService;
+﻿using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Contracts;
 

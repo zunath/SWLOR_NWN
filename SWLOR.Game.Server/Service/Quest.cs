@@ -4,16 +4,16 @@ using System.Linq;
 
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.QuestService;
-using Player = SWLOR.Game.Server.Entity.Player;
+using Player = SWLOR.Shared.Core.Data.Entity.Player;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Creature;

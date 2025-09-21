@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Extension;
 
 namespace SWLOR.CLI

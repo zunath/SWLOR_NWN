@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.AbilityService
+﻿namespace SWLOR.Shared.Core.Enums
 {
     public enum AbilityToggleType
     {

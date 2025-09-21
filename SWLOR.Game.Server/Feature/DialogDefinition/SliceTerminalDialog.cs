@@ -1,7 +1,7 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
-using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.NWN.API.NWNX.Enum;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {

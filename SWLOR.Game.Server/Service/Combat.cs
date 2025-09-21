@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NWN.Native.API;
-
-using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Log.LogGroup;
@@ -372,11 +371,11 @@ namespace SWLOR.Game.Server.Service
 
             // Lightsaber - Strong Style
             if (Item.LightsaberBaseItemTypes.Contains(weaponType))
-                return Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleLightsaber) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
+                return Ability.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleLightsaber) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
 
             // Saberstaff - Strong Style
             if (Item.SaberstaffBaseItemTypes.Contains(weaponType))
-                return Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleSaberstaff) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
+                return Ability.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleSaberstaff) ? GetAbilityScore(attacker, AbilityType.Might) : GetAbilityScore(attacker, AbilityType.Perception);
 
             // Staff: there are 3 style perks for staff so it has to be handled slightly differently.
             if (Item.StaffBaseItemTypes.Contains(weaponType))
@@ -423,9 +422,9 @@ namespace SWLOR.Game.Server.Service
 
             if (Item.StaffBaseItemTypes.Contains(weaponType))
                 return mgtMod * Perk.GetPerkLevel(attacker, PerkType.CrushingStyle);
-            else if (Item.LightsaberBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleLightsaber))
+            else if (Item.LightsaberBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleLightsaber))
                 return mgtMod / 2;
-            else if (Item.SaberstaffBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityService.AbilityToggleType.StrongStyleSaberstaff))
+            else if (Item.SaberstaffBaseItemTypes.Contains(weaponType) && Ability.IsAbilityToggled(attacker, AbilityToggleType.StrongStyleSaberstaff))
                 return mgtMod / 2;
 
             return 0;

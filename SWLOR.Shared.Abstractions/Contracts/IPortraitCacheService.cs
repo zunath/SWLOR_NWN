@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Service;
+namespace SWLOR.Shared.Abstractions.Contracts;
 
 public interface IPortraitCacheService
 {

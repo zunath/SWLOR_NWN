@@ -1,6 +1,6 @@
 ﻿using SWLOR.Shared.Abstractions;
 
-namespace SWLOR.Game.Server.Entity
+namespace SWLOR.Shared.Core.Data.Entity
 {
     public class PlayerOutfit: EntityBase
     {

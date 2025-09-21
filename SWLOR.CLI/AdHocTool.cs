@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.CLI
 {

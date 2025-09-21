@@ -1,9 +1,10 @@
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.Service.DialogService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.TaxiService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition

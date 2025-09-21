@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using SWLOR.Game.Server;
 using SWLOR.Game.Server.Service;
+using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 
 namespace SWLOR.CLI

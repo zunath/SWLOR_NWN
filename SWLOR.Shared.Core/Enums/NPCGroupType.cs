@@ -1,7 +1,6 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
-namespace SWLOR.Game.Server.Service.NPCService
+namespace SWLOR.Shared.Core.Enums
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum NPCGroupType

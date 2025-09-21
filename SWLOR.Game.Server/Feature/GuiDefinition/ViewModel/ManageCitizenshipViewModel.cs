@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-
-using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
@@ -79,8 +78,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .AddFieldSearch(nameof(Election.PropertyId), dbCity.Id, false))
                 .SingleOrDefault();
             var dbCitizenCount = _db.SearchCount(new DBQuery<Player>()
-                .AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), dbCity.Id, false)
-                .AddFieldSearch(nameof(Entity.Player.IsDeleted), false));
+                .AddFieldSearch(nameof(Shared.Core.Data.Entity.Player.CitizenPropertyId), dbCity.Id, false)
+                .AddFieldSearch(nameof(Shared.Core.Data.Entity.Player.IsDeleted), false));
 
             var cityDetails = new GuiBindingList<string>();
 

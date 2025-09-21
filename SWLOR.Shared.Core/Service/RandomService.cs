@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service;
+﻿using SWLOR.Shared.Abstractions.Contracts;
 
 namespace SWLOR.Shared.Core.Service
 {

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;

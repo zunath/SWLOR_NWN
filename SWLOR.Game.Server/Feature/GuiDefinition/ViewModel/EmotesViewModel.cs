@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;

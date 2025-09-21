@@ -1,8 +1,9 @@
-﻿using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Shared.Abstractions.Contracts;
+﻿using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Core.Service;
-using Player = SWLOR.Game.Server.Entity.Player;
+using Player = SWLOR.Shared.Core.Data.Entity.Player;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {

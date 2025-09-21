@@ -1,7 +1,6 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace SWLOR.Game.Server
+namespace SWLOR.Shared.Core.Infrastructure
 {
     /// <summary>
     /// Static service container for dependency injection in the game server.

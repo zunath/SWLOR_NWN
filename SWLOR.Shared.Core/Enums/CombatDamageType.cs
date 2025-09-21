@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.CombatService
+﻿namespace SWLOR.Shared.Core.Enums
 {
     public enum CombatDamageType
     {

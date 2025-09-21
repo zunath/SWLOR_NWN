@@ -1,17 +1,9 @@
-﻿using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CurrencyService;
-using SWLOR.Game.Server.Service.FactionService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.TaxiService;
-using SWLOR.NWN.API.NWNX.Enum;
+﻿using SWLOR.NWN.API.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions;
 using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Entity
+namespace SWLOR.Shared.Core.Data.Entity
 {
     public class Player: EntityBase
     {

@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service;
+﻿namespace SWLOR.Component.World.Contracts;
 
 public interface ITileMagicService
 {

@@ -1,5 +1,5 @@
-﻿using SWLOR.Game.Server.Enumeration;
-using SWLOR.Shared.Abstractions;
+﻿using SWLOR.Shared.Abstractions;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Shared.Core.Data.Entity
 {

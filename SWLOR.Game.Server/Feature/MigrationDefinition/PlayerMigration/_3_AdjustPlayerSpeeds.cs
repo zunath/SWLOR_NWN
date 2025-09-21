@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.MigrationService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {

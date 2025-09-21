@@ -1,10 +1,11 @@
-using SWLOR.Game.Server.Service.NPCService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 

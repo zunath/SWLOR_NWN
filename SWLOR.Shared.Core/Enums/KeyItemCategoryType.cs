@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SWLOR.Game.Server.Service.KeyItemService
+﻿namespace SWLOR.Shared.Core.Enums
 {
     public enum KeyItemCategoryType
     {

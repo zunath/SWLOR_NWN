@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Entity;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Service.BeastMasteryService
 {

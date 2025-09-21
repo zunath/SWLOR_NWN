@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using SWLOR.Shared.Abstractions;
+﻿using SWLOR.Shared.Abstractions;
 
-namespace SWLOR.Game.Server.Entity
+namespace SWLOR.Shared.Core.Data.Entity
 {
     public class WorldPropertyCategory: EntityBase
     {

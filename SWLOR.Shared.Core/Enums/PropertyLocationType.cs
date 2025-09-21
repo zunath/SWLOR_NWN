@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.PropertyService
+﻿namespace SWLOR.Shared.Core.Enums
 {
     public enum PropertyLocationType
     {

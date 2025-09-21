@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.TaxiService;
+using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Game.Server.Service.Contracts
 {
     public interface ITaxiService
     {

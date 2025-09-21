@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 

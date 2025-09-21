@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Properties;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;

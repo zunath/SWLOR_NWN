@@ -1,11 +1,8 @@
-﻿using System;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.CombatService;
-using System.Collections.Generic;
-using SWLOR.NWN.API.NWScript.Enum;
+﻿using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions;
+using SWLOR.Shared.Core.Enums;
 
-namespace SWLOR.Game.Server.Entity
+namespace SWLOR.Shared.Core.Data.Entity
 {
     public class IncubationJob: EntityBase
     {

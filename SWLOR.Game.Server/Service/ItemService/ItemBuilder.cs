@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Service.ItemService
 {

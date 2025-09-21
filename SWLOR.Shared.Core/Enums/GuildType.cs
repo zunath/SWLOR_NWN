@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SWLOR.Game.Server.Enumeration
+﻿namespace SWLOR.Shared.Core.Enums
 {
     public enum GuildType
     {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SWLOR.Game.Server.Service.FactionService
+﻿namespace SWLOR.Shared.Core.Enums
 {
     public enum FactionType
     {

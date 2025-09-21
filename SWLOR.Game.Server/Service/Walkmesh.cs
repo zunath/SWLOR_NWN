@@ -10,6 +10,7 @@ using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.Core.Service;
 using Vector3 = System.Numerics.Vector3;
 using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Service
 {

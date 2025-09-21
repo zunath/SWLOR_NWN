@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {

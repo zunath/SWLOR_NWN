@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SWLOR.Game.Server.Service.SpaceService
+﻿namespace SWLOR.Shared.Core.Enums
 {
     public class ShipStatus
     {

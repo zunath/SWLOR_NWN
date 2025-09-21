@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Shared.UI.Component;
+﻿using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance

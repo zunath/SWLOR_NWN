@@ -1,16 +1,16 @@
-﻿using SWLOR.NWN.API.NWScript.Enum;
+﻿using System.Numerics;
+using SWLOR.Component.World.Contracts;
+using SWLOR.Component.World.Enums;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
-using System;
-using System.Numerics;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Shared.Core.Extension;
 
-namespace SWLOR.Game.Server.Service
+namespace SWLOR.Component.World.Service
 {
     public class TileMagicService : ITileMagicService
     {

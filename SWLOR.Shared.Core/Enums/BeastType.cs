@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Service.BeastMasteryService
+﻿namespace SWLOR.Shared.Core.Enums
 {
     public enum BeastType
     {

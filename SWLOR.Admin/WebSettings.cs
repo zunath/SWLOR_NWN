@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Admin
 {

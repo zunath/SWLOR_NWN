@@ -1,13 +1,13 @@
-﻿using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
+﻿using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PerkService;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
+using SWLOR.Shared.Core.Data.Entity;
 using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.PlayerMigration
 {

@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Enumeration
+﻿namespace SWLOR.Component.World.Enums
 {
     public enum TileMagicType
     {

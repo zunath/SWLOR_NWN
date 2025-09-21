@@ -1,10 +1,10 @@
 ﻿
 using System;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.FactionService;
-using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Data.Entity;
+using SWLOR.Shared.Core.Enums;
+using SWLOR.Shared.Core.Infrastructure;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {

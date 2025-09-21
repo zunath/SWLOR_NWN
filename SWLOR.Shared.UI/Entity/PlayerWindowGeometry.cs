@@ -1,5 +1,5 @@
-﻿using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Shared.Abstractions;
+﻿using SWLOR.Shared.Abstractions;
+using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Component;
 
 namespace SWLOR.Shared.UI.Entity

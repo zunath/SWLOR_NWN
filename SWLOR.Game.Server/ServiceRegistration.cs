@@ -2,29 +2,34 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using NWN.Core;
-using SWLOR.Component.Combat.Contracts;
-using SWLOR.Component.Combat.Service;
-using SWLOR.Component.Player.Contracts;
-using SWLOR.Component.Player.Service;
-using SWLOR.Component.World.Contracts;
-using SWLOR.Component.World.Service;
+using SWLOR.Component.Admin.Infrastructure;
+using SWLOR.Component.Associate.Infrastructure;
+using SWLOR.Component.Combat.Infrastructure;
+using SWLOR.Component.Communication.Infrastructure;
+using SWLOR.Component.Crafting.Infrastructure;
+using SWLOR.Component.Language.Infrastructure;
+using SWLOR.Component.Market.Infrastructure;
+using SWLOR.Component.Player.Infrastructure;
+using SWLOR.Component.Properties.Infrastructure;
+using SWLOR.Component.Space.Infrastructure;
+using SWLOR.Component.World.Infrastructure;
 using SWLOR.Game.Server.Server;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.NWN.API;
 using SWLOR.Shared.Abstractions.Contracts;
-using SWLOR.Shared.Caching.Contracts;
-using SWLOR.Shared.Caching.Service;
+using SWLOR.Shared.Caching.Extensions;
 using SWLOR.Shared.Core.Async;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Core.Configuration;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log;
+using SWLOR.Shared.Core.Infrastructure;
 using SWLOR.Shared.Events.Service;
 using SWLOR.Shared.UI.Contracts;
-using SWLOR.Shared.UI.Extensions;
 using SWLOR.Shared.UI.Service;
 using ScriptExecutionProvider = SWLOR.Game.Server.Server.ScriptExecutionProvider;
+using SWLOR.Shared.UI.Infrastructure;
 
 namespace SWLOR.Game.Server
 {
@@ -81,23 +86,26 @@ namespace SWLOR.Game.Server
 
         private static void AddGameServices(IServiceCollection services)
         {
-            services.AddSingleton<IRandomService, RandomService>();
-            services.AddSingleton<ITileMagicService, TileMagicService>();
+            // Shared Services
+            services.AddCoreServices();
+            services.AddCacheServices();
+            services.AddUIServices();
+
+            // Component Services
+            services.AddAdminServices();
+            services.AddAssociateServices();
+            services.AddCombatServices();
+            services.AddCommunicationServices();
+            services.AddCraftingServices();
+            services.AddLanguageServices();
+            services.AddMarketServices();
+            services.AddPlayerServices();
+            services.AddPropertiesServices();
+            services.AddSpaceServices();
+            services.AddWorldServices();
+
+            // Game-Specific Services
             services.AddSingleton<ITaxiService, Taxi>();
-            services.AddSingleton<IAttackOfOpportunityService, AttackOfOpportunityService>();
-            services.AddSingleton<IClientVersionCheck, ClientVersionCheck>();
-            services.AddSingleton<IGuiService, GuiService>();
-            
-            // Cache Services
-            services.AddSingleton<IGenericCacheService, GenericCacheService>();
-            services.AddSingleton<IItemCacheService, ItemCacheService>();
-            services.AddSingleton<IPortraitCacheService, PortraitCacheService>();
-            services.AddSingleton<ISoundSetCacheService, SoundSetCacheService>();
-            services.AddSingleton<IModuleCacheService, ModuleCacheService>();
-            
-            // ViewModels and GUI Window Definitions
-            services.AddViewModels();
-            services.AddGuiWindowDefinitions();
         }
         
     }

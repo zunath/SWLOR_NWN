@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Service;
 
-namespace SWLOR.Shared.UI.Extensions
+namespace SWLOR.Shared.UI.Infrastructure
 {
     /// <summary>
     /// Extension methods for registering UI-related services in the dependency injection container.
@@ -12,11 +12,31 @@ namespace SWLOR.Shared.UI.Extensions
     public static class ServiceCollectionExtensions
     {
         /// <summary>
+        /// Registers all UI-related services in the service collection.
+        /// This includes the GuiService, ViewModels, and GUI Window Definitions.
+        /// </summary>
+        /// <param name="services">The service collection to register services in</param>
+        /// <returns>The service collection for chaining</returns>
+        public static IServiceCollection AddUIServices(this IServiceCollection services)
+        {
+            // Register the main GUI service
+            services.AddSingleton<IGuiService, GuiService>();
+            
+            // Register all ViewModels that inherit from GuiViewModelBase
+            AddViewModels(services);
+            
+            // Register all GUI Window Definitions that implement IGuiWindowDefinition
+            AddGuiWindowDefinitions(services);
+            
+            return services;
+        }
+
+        /// <summary>
         /// Registers all ViewModels that inherit from GuiViewModelBase in the service collection.
         /// </summary>
         /// <param name="services">The service collection to register services in</param>
         /// <returns>The service collection for chaining</returns>
-        public static IServiceCollection AddViewModels(this IServiceCollection services)
+        private static IServiceCollection AddViewModels(IServiceCollection services)
         {
             // Automatically discover and register all ViewModels that inherit from GuiViewModelBase across all assemblies
             var viewModelTypes = AppDomain.CurrentDomain.GetAssemblies()
@@ -39,7 +59,7 @@ namespace SWLOR.Shared.UI.Extensions
         /// </summary>
         /// <param name="services">The service collection to register services in</param>
         /// <returns>The service collection for chaining</returns>
-        public static IServiceCollection AddGuiWindowDefinitions(this IServiceCollection services)
+        private static IServiceCollection AddGuiWindowDefinitions(IServiceCollection services)
         {
             // Automatically discover and register all GUI Window Definitions that implement IGuiWindowDefinition across all assemblies
             var windowDefinitionTypes = AppDomain.CurrentDomain.GetAssemblies()

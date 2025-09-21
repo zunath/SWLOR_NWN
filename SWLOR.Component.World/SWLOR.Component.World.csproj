@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Folder Include="Entity\" />
+    <Folder Include="Infrastructure\" />
     <Folder Include="Model\" />
   </ItemGroup>
 

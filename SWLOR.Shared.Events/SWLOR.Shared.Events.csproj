@@ -13,8 +13,4 @@
 		<ProjectReference Include="..\SWLOR.Shared.Abstractions\SWLOR.Shared.Abstractions.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="Events\Player\" />
-	</ItemGroup>
-
 </Project>

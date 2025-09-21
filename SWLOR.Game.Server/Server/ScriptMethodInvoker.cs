@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
 
 namespace SWLOR.Game.Server.Server
@@ -68,7 +69,7 @@ namespace SWLOR.Game.Server.Server
             }
             catch (Exception ex)
             {
-                _logger.Write<ErrorLogGroup>($"Error invoking method '{methodInfo.Name}' with event parameter: {ex.Message}");
+                _logger.Write<ErrorLogGroup>($"Error invoking method '{methodInfo.Name}' with event parameter: {ex.ToMessageAndCompleteStacktrace()}");
                 return false;
             }
         }
@@ -93,7 +94,7 @@ namespace SWLOR.Game.Server.Server
             }
             catch (Exception ex)
             {
-                _logger.Write<ErrorLogGroup>($"Error invoking instance method '{methodInfo.Name}': {ex.Message}");
+                _logger.Write<ErrorLogGroup>($"Error invoking instance method '{methodInfo.Name}': {ex.ToMessageAndCompleteStacktrace()}");
             }
         }
 
@@ -118,7 +119,7 @@ namespace SWLOR.Game.Server.Server
             }
             catch (Exception ex)
             {
-                _logger.Write<ErrorLogGroup>($"Error invoking instance method '{methodInfo.Name}': {ex.Message}");
+                _logger.Write<ErrorLogGroup>($"Error invoking instance method '{methodInfo.Name}': {ex.ToMessageAndCompleteStacktrace()}");
                 return false;
             }
         }

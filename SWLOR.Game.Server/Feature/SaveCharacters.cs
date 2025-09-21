@@ -2,6 +2,7 @@
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.NWNX;
 
 namespace SWLOR.Game.Server.Feature
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Saves characters every minute unless they're currently preoccupied (barter)
         /// </summary>
-        [ScriptHandler(ScriptName.OnPlayerHeartbeat)]
+        [ScriptHandler<OnPlayerHeartbeat>]
         public static void HandleSaveCharacters()
         {
             var player = OBJECT_SELF;

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.NWNX;
 using SWLOR.Shared.Events.Events.Area;
 using SWLOR.Shared.Events.Events.Module;
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.STM));
         }
 
-        [ScriptHandler(ScriptName.OnPlayerDamaged)]
+        [ScriptHandler<OnPlayerDamaged>]
         public static void PlayerDamaged()
         {
             var player = OBJECT_SELF;
@@ -48,7 +49,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
 
-        [ScriptHandler(ScriptName.OnPlayerFPAdjusted)]
+        [ScriptHandler<OnPlayerFPAdjusted>]
         public static void PlayerFPAdjusted()
         {
             var player = OBJECT_SELF;
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
         }
 
-        [ScriptHandler(ScriptName.OnPlayerStaminaAdjusted)]
+        [ScriptHandler<OnPlayerStaminaAdjusted>]
         public static void PlayerSTMAdjusted()
         {
             var player = OBJECT_SELF;
@@ -75,7 +76,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(target, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
 
-        [ScriptHandler(ScriptName.OnPlayerShieldAdjusted)]
+        [ScriptHandler<OnPlayerShieldAdjusted>]
         public static void PlayerShieldAdjusted()
         {
             var player = OBJECT_SELF;
@@ -85,7 +86,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Shield));
         }
 
-        [ScriptHandler(ScriptName.OnPlayerHullAdjusted)]
+        [ScriptHandler<OnPlayerHullAdjusted>]
         public static void PlayerHullAdjusted()
         {
             var player = OBJECT_SELF;
@@ -95,7 +96,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Hull));
         }
 
-        [ScriptHandler(ScriptName.OnPlayerCapAdjusted)]
+        [ScriptHandler<OnPlayerCapAdjusted>]
         public static void PlayerCapacitorAdjusted()
         {
             var player = OBJECT_SELF;
@@ -105,7 +106,7 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.Capacitor));
         }
 
-        [ScriptHandler(ScriptName.OnPlayerTargetUpdated)]
+        [ScriptHandler<OnPlayerTargetUpdated>]
         public static void PlayerSpaceTargetAdjusted()
         {
             var player = OBJECT_SELF;

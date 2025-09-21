@@ -8,6 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Player;
 using SWLOR.Shared.Events.Events.NWNX;
 using Player = SWLOR.Game.Server.Entity.Player;
 using ChatChannel = SWLOR.NWN.API.NWNX.Enum.ChatChannel;
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Once every 30 minutes, the RP system will check all players and distribute RP XP if applicable.
         /// </summary>
-        [ScriptHandler(ScriptName.OnPlayerHeartbeat)]
+        [ScriptHandler<OnPlayerHeartbeat>]
         public static void DistributeRoleplayXP()
         {
             const string TrackerVariableName = "RP_SYSTEM_TICKS";

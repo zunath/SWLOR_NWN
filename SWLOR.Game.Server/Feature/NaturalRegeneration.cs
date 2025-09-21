@@ -7,6 +7,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
+using SWLOR.Shared.Events.Events.Player;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// On module heartbeat, process a player's HP/FP/STM regeneration.
         /// </summary>
-        [ScriptHandler(ScriptName.OnPlayerHeartbeat)]
+        [ScriptHandler<OnPlayerHeartbeat>]
         public static void ProcessRegeneration()
         {
             var player = OBJECT_SELF;

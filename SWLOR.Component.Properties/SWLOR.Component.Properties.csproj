@@ -21,7 +21,6 @@
 		<Folder Include="Delegates\" />
 		<Folder Include="Entity\" />
 		<Folder Include="Infrastructure\" />
-		<Folder Include="Model\" />
 		<Folder Include="UI\RefreshEvent\" />
 	</ItemGroup>
 

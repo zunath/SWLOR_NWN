@@ -19,8 +19,6 @@
 	<ItemGroup>
 		<Folder Include="Delegates\" />
 		<Folder Include="Entity\" />
-		<Folder Include="Enums\" />
-		<Folder Include="Model\" />
 	</ItemGroup>
 
 </Project>

@@ -20,7 +20,6 @@
 	<ItemGroup>
 		<Folder Include="Dialog\" />
 		<Folder Include="Entity\" />
-		<Folder Include="Enums\" />
 		<Folder Include="Infrastructure\" />
 		<Folder Include="SpaceService\" />
 	</ItemGroup>

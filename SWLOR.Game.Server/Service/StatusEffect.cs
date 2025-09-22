@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;

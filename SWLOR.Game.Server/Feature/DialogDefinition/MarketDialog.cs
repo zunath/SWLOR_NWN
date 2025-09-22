@@ -1,6 +1,5 @@
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Log.LogGroup;

@@ -1,5 +1,6 @@
 ﻿using SWLOR.Component.Inventory.UI.ViewModel;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Contracts;

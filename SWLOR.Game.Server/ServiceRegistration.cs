@@ -10,6 +10,10 @@ using SWLOR.Component.Language.Infrastructure;
 using SWLOR.Component.Market.Infrastructure;
 using SWLOR.Component.Player.Infrastructure;
 using SWLOR.Component.Properties.Infrastructure;
+using SWLOR.Component.Quest.Contracts;
+using SWLOR.Component.Quest.Dialog;
+using SWLOR.Component.Quest.Infrastructure;
+using SWLOR.Component.Quest.Service;
 using SWLOR.Component.Space.Infrastructure;
 using SWLOR.Component.World.Infrastructure;
 using SWLOR.Game.Server.Feature;
@@ -32,7 +36,6 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API;
@@ -124,6 +127,7 @@ namespace SWLOR.Game.Server
             services.AddLanguageServices();
             services.AddMarketServices();
             services.AddPlayerServices();
+            services.AddQuestServices();
             services.AddPropertiesServices();
             services.AddSpaceServices();
             services.AddWorldServices();
@@ -139,7 +143,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<Feature.DialogDefinition.SliceTerminalDialog>();
             services.AddSingleton<Feature.DialogDefinition.StarportDialog>();
             services.AddSingleton<Component.World.Dialog.TaxiTerminalDialog>();
-            services.AddSingleton<Feature.DialogDefinition.QuestRewardSelectionDialog>();
+            services.AddSingleton<QuestRewardSelectionDialog>();
             services.AddSingleton<Feature.DialogDefinition.XPTomeDialog>();
             services.AddSingleton<Feature.DialogDefinition.HoloComDialog>();
 
@@ -199,7 +203,14 @@ namespace SWLOR.Game.Server
         services.AddSingleton<DroidWorshipfulPersonality>();
         
         // Quest Builder Service
-        services.AddSingleton<IQuestBuilder, QuestBuilder>();
+        services.AddTransient<IQuestBuilder, QuestBuilder>();
+        services.AddSingleton<IQuestBuilderFactory, QuestBuilderFactory>();
+        
+        // Quest Component Factories
+        services.AddSingleton<IQuestDetailFactory, QuestDetailFactory>();
+        services.AddSingleton<IQuestRewardFactory, QuestRewardFactory>();
+        services.AddSingleton<IQuestPrerequisiteFactory, QuestPrerequisiteFactory>();
+        services.AddSingleton<IQuestObjectiveFactory, QuestObjectiveFactory>();
         
         
         // Fishing Location Builder Service

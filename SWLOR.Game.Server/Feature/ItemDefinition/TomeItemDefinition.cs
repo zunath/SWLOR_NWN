@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Models;

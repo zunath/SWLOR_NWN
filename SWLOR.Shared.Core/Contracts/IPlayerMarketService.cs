@@ -1,4 +1,3 @@
-using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.Shared.Core.Enums;
 
 namespace SWLOR.Shared.Core.Contracts

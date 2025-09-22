@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.UI.Contracts;

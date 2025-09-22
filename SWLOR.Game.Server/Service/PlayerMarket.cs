@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Caching.Contracts;

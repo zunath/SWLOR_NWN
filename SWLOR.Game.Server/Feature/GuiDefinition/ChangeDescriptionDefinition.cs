@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;

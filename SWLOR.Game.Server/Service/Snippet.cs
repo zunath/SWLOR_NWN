@@ -5,22 +5,23 @@ using System.Linq;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Caching.Contracts;
+using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class Snippet
+    public class Snippet : ISnippetService
     {
         private readonly IGenericCacheService _cacheService;
         
         // Cached data
-        private static IInterfaceCache<string, SnippetDetail> _snippetCache;
+        private IInterfaceCache<string, SnippetDetail> _snippetCache;
         
         // Additional caches for complex data
-        private static readonly Dictionary<string, SnippetDetail> _appearsWhenCommands = new();
-        private static readonly Dictionary<string, SnippetDetail> _actionsTakenCommands = new();
+        private readonly Dictionary<string, SnippetDetail> _appearsWhenCommands = new();
+        private readonly Dictionary<string, SnippetDetail> _actionsTakenCommands = new();
 
         public Snippet(IGenericCacheService cacheService)
         {

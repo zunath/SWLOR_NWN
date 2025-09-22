@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using SWLOR.Component.Quest.Contracts;
+using SWLOR.Component.Quest.Service;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Models;

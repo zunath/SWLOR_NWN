@@ -70,6 +70,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Shared.Dialog", "SWLO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Inventory", "SWLOR.Component.Inventory\SWLOR.Component.Inventory.csproj", "{F4241D54-B2D6-4B39-B90E-D8B1ABB4FB10}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Component.Quest", "SWLOR.Component.Quest\SWLOR.Component.Quest.csproj", "{07E10577-FB9D-446C-B65F-8F92B04CD32B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -168,6 +170,10 @@ Global
 		{F4241D54-B2D6-4B39-B90E-D8B1ABB4FB10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4241D54-B2D6-4B39-B90E-D8B1ABB4FB10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4241D54-B2D6-4B39-B90E-D8B1ABB4FB10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07E10577-FB9D-446C-B65F-8F92B04CD32B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07E10577-FB9D-446C-B65F-8F92B04CD32B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07E10577-FB9D-446C-B65F-8F92B04CD32B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07E10577-FB9D-446C-B65F-8F92B04CD32B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -194,6 +200,7 @@ Global
 		{E3C0E17D-125D-4A56-86F8-AA9C4BD05970} = {8F249160-3FA0-480F-9A90-CE204D9BF2CD}
 		{FFE38610-AA7D-449C-99D3-5A7522B2DA1E} = {8F249160-3FA0-480F-9A90-CE204D9BF2CD}
 		{F4241D54-B2D6-4B39-B90E-D8B1ABB4FB10} = {98BFD8AF-2D9B-4636-919F-4D3FE97E7C69}
+		{07E10577-FB9D-446C-B65F-8F92B04CD32B} = {98BFD8AF-2D9B-4636-919F-4D3FE97E7C69}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01933D17-C90C-4AB1-AD6C-523F2F4B584D}

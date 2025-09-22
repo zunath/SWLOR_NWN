@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Models;

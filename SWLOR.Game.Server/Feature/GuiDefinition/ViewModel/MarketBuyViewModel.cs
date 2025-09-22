@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service.PlayerMarketService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;

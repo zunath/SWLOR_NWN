@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Bioware;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.UI.Contracts;

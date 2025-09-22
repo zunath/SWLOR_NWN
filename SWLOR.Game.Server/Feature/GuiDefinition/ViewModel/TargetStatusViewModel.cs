@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Models;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;

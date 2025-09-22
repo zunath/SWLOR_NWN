@@ -1,5 +1,5 @@
+using SWLOR.Component.Quest.Model;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data.Entity;

@@ -22,7 +22,6 @@
 		<Folder Include="Delegates\" />
 		<Folder Include="Dialog\" />
 		<Folder Include="Model\" />
-		<Folder Include="Entity\" />
 		<Folder Include="Infrastructure\" />
 	</ItemGroup>
 

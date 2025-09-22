@@ -19,7 +19,6 @@
 
 	<ItemGroup>
 		<Folder Include="Dialog\" />
-		<Folder Include="Entity\" />
 		<Folder Include="Infrastructure\" />
 		<Folder Include="SpaceService\" />
 	</ItemGroup>

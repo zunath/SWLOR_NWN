@@ -18,7 +18,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Entity\" />
 		<Folder Include="Infrastructure\" />
 		<Folder Include="Delegates\" />
 		<Folder Include="UI\RefreshEvent\" />

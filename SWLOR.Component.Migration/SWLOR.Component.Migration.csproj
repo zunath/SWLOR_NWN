@@ -20,7 +20,6 @@
 		<ItemGroup>
 		  <Folder Include="Delegates\" />
 		  <Folder Include="Dialog\" />
-		  <Folder Include="Entity\" />
 		  <Folder Include="UI\" />
 		</ItemGroup>
 

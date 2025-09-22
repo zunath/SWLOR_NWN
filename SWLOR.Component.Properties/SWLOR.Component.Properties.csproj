@@ -19,7 +19,6 @@
 
 	<ItemGroup>
 		<Folder Include="Delegates\" />
-		<Folder Include="Entity\" />
 		<Folder Include="Infrastructure\" />
 		<Folder Include="UI\RefreshEvent\" />
 	</ItemGroup>

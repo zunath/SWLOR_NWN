@@ -18,6 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="Enums\" />
 		<Folder Include="UI\Payload\" />
 	</ItemGroup>
 

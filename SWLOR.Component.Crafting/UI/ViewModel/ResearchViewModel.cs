@@ -13,6 +13,7 @@ using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Service;
 using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;

@@ -2,6 +2,7 @@ using SWLOR.Component.Skill.Contracts;
 using SWLOR.Component.Skill.Enums;
 using SWLOR.Component.Skill.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;

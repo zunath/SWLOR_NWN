@@ -1,11 +1,11 @@
 using SWLOR.Component.Quest.Contracts;
-using SWLOR.Component.Quest.Enums;
 using SWLOR.Component.Quest.Model;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Dialog.Contracts;
 using SWLOR.Shared.Dialog.Model;
 using SWLOR.Shared.Dialog.Service;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Quest.Dialog

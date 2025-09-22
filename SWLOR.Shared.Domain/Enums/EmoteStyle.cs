@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Component.Communication.Enums
+﻿namespace SWLOR.Shared.Domain.Enums
 {
     public enum EmoteStyle
     {

@@ -1,6 +1,7 @@
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
 using SWLOR.NWN.API.Engine;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Component.Crafting.Contracts

@@ -1,4 +1,5 @@
 using SWLOR.Component.Crafting.Enums;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Model;
 
 namespace SWLOR.Component.Crafting.UI.Payload

@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Service;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Beastmaster

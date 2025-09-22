@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Component.Player.Enums
+﻿namespace SWLOR.Shared.Domain.Enums
 {
     public enum CharacterType
     {

@@ -1,4 +1,5 @@
 using SWLOR.Component.Player.Enums;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Player.Contracts
 {

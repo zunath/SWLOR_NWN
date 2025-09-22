@@ -4,6 +4,7 @@ using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.NPC
 {

@@ -2,6 +2,7 @@ using SWLOR.Component.Crafting.Contracts;
 using SWLOR.Component.Crafting.Enums;
 using SWLOR.Component.Crafting.Model;
 using SWLOR.Component.Crafting.Service;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Crafting.Feature.RecipeDefinition.FabricationRecipeDefinition
 {

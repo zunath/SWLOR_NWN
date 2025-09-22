@@ -4,6 +4,7 @@ using SWLOR.Component.Ability.Model;
 using SWLOR.Component.Ability.Service;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Ability.Feature.AbilityDefinition.Ranged
 {

@@ -689,12 +689,12 @@ namespace SWLOR.Component.Player.UI.ViewModel
                 if (CharacterType == 0)
                 {
                     CreaturePlugin.SetClassByPosition(Player, 0, ClassType.Standard);
-                    dbPlayer.CharacterType = Enums.CharacterType.Standard;
+                    dbPlayer.CharacterType = Shared.Domain.Enums.CharacterType.Standard;
                 }
                 else
                 {
                     CreaturePlugin.SetClassByPosition(Player, 0, ClassType.ForceSensitive);
-                    dbPlayer.CharacterType = Enums.CharacterType.ForceSensitive;
+                    dbPlayer.CharacterType = Shared.Domain.Enums.CharacterType.ForceSensitive;
                 }
 
                 for (var index = 0; index < _skills.Count; index++)

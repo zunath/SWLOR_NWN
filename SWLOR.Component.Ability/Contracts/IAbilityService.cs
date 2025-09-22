@@ -2,6 +2,7 @@ using SWLOR.Component.Ability.Enums;
 using SWLOR.Component.Ability.Model;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Ability.Contracts
 {

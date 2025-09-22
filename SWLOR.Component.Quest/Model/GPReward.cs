@@ -1,6 +1,6 @@
 using SWLOR.Component.Quest.Contracts;
-using SWLOR.Component.Quest.Enums;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Quest.Model
 {

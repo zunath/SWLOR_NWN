@@ -1,4 +1,5 @@
 using SWLOR.Component.Communication.Enums;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Communication.Contracts
 {

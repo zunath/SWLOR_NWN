@@ -5,7 +5,7 @@ using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Shared.Domain.Entity
 {
-    public class Player: EntityBase
+    public class Player : EntityBase
     {
         public Player()
         {
@@ -158,7 +158,7 @@ namespace SWLOR.Shared.Domain.Entity
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
-        public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
+        public Dictionary<KeyItemType, DateTime> KeyItems { get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
         public Dictionary<int, List<TaxiDestinationType>> TaxiDestinations { get; set; }

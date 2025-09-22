@@ -2,6 +2,7 @@ using SWLOR.Component.Player.Enums;
 using SWLOR.Component.Player.UI.RefreshEvent;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;

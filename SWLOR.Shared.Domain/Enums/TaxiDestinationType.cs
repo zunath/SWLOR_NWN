@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Component.World.Enums
+﻿namespace SWLOR.Shared.Domain.Enums
 {
     public enum TaxiDestinationType
     {

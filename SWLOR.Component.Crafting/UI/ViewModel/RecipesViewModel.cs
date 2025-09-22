@@ -5,6 +5,7 @@ using SWLOR.Component.Crafting.UI.Payload;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Caching.Contracts;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Enums;

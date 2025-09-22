@@ -5,6 +5,7 @@ using SWLOR.Component.Inventory.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Inventory.Feature.ItemDefinition
 {

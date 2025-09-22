@@ -1,5 +1,6 @@
 using SWLOR.Component.Skill.Enums;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Skill.Contracts
 {

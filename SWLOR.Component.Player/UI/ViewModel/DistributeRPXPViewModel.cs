@@ -3,6 +3,7 @@ using SWLOR.Component.Player.Enums;
 using SWLOR.Component.Player.UI.Payload;
 using SWLOR.Component.Player.UI.RefreshEvent;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Service;

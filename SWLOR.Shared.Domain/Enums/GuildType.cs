@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Component.Quest.Enums
+﻿namespace SWLOR.Shared.Domain.Enums
 {
     public enum GuildType
     {

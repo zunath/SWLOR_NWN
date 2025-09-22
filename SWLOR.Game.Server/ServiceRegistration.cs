@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NWN.Core;
+using SWLOR.Component.Ability.Infrastructure;
 using SWLOR.Component.Admin.Infrastructure;
 using SWLOR.Component.Associate.Infrastructure;
 using SWLOR.Component.Combat.Infrastructure;
@@ -15,6 +16,7 @@ using SWLOR.Component.Quest.Dialog;
 using SWLOR.Component.Quest.Infrastructure;
 using SWLOR.Component.Skill.Infrastructure;
 using SWLOR.Component.Space.Infrastructure;
+using SWLOR.Component.StatusEffect.Infrastructure;
 using SWLOR.Component.World.Infrastructure;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
@@ -108,7 +110,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IEventService, EventService>();
             services.AddSingleton<IEventRegistrationService, EventRegistrationService>();
             services.AddSingleton<IScheduler, Scheduler>();
-            
+
             // Dialog Service
             services.AddSingleton<IDialogService, Dialog>();
         }
@@ -122,6 +124,7 @@ namespace SWLOR.Game.Server
             services.AddUIServices();
 
             // Component Services
+            services.AddAbilityServices();
             services.AddAdminServices();
             services.AddAssociateServices();
             services.AddCombatServices();
@@ -136,6 +139,7 @@ namespace SWLOR.Game.Server
             services.AddSkillServices();
             services.AddPropertiesServices();
             services.AddSpaceServices();
+            services.AddStatusEffectServices();
             services.AddWorldServices();
 
             // Game-Specific Services
@@ -163,119 +167,119 @@ namespace SWLOR.Game.Server
             services.AddSingleton<Feature.DialogDefinition.HoloComDialog>();
 
 
-        // Feature Services
-        services.AddSingleton<MiniMaps>();
-        services.AddSingleton<NaturalRegeneration>();
-        services.AddSingleton<PlaceableScripts>();
-        services.AddSingleton<PersistentMapProgression>();
-        services.AddSingleton<UsePerkFeat>();
-        services.AddSingleton<EquipmentRestrictions>();
-        services.AddSingleton<EquipmentStats>();
-        services.AddSingleton<ScavengePoint>();
-        services.AddSingleton<StoreManagement>();
-        services.AddSingleton<HoloNetTerminal>();
-        services.AddSingleton<PlayerStatusWindow>();
-        services.AddSingleton<CreatureDeathAnimation>();
-        
-        
-        // Party Service
-        services.AddSingleton<IPartyService, PartyService>();
-        
-        // Combat Services
-        services.AddSingleton<ICombatService, Combat>();
-        services.AddSingleton<IEnmityService, Enmity>();
-        services.AddSingleton<ICombatPointService, CombatPoint>();
-        
-        // Planet Service
-        services.AddSingleton<IPlanetService, PlanetService>();
-        
-        // ChatCommand Service
-        services.AddSingleton<IChatCommandService, ChatCommand>();
-        
-        // Race Service
-        services.AddSingleton<IRace, Race>();
-        
-        // Droid Personality Services
-        services.AddSingleton<DroidGeekyPersonality>();
-        services.AddSingleton<DroidPrissyPersonality>();
-        services.AddSingleton<DroidSarcasticPersonality>();
-        services.AddSingleton<DroidSlangPersonality>();
-        services.AddSingleton<DroidBlandPersonality>();
-        services.AddSingleton<DroidWorshipfulPersonality>();
-        
-        
-        
-        // Fishing Location Builder Service
-        services.AddSingleton<IFishingLocationBuilder, FishingLocationBuilder>();
-        
-        // Communication Services
-        services.AddSingleton<ICommunication, Communication>();
-        services.AddSingleton<ILanguageService, Language>();
-        services.AddSingleton<IMessagingService, Messaging>();
-        services.AddSingleton<IHoloComService, HoloCom>();
-        
-        // World Services
-        services.AddSingleton<IPropertyService, Property>();
-        services.AddSingleton<IAreaService, Area>();
-        services.AddSingleton<IWalkmeshService, Walkmesh>();
-        services.AddSingleton<IWeather, Weather>();
-        services.AddSingleton<IMigrationService, Migration>();
-        
-        // Space Services
-        services.AddSingleton<ISpaceService, Space>();
-        services.AddSingleton<IShipModuleBuilder, Service.SpaceService.ShipModuleBuilder>();
-        
-        // Ship Module Definition Services
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.AdvancedThrustersModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.WeaponsComputerModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.CapacitorBoosterModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.DamageAmplifierModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.TurboLaserModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.EvasionBoosterModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.HullBoosterModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.ShieldBoosterModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.ReinforcedPlatingModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.ShipArmorModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.TargetingArrayModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.CombatLaserModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.ShipConfigurationModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.TargetingSystemModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.RedundantShieldsModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.AssaultConcussionMissileModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.RepairFieldGeneratorModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.StormCannonModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.ShieldRepairerModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.CapitalPowerDiverterModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.StripMinerModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.CapitalEwarModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.MissileLauncherModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.ProtonBombModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.HypermatterInjectorModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.HullRepairerModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.LaserCannonBatteryModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.QuadLaserCannonModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.MiningLaserModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.BeamCannonModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.IonCannonModuleDefinition>();
-        services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.BulwarkShieldGeneratorModuleDefinition>();
-        
-        // Player Services
-        services.AddSingleton<IPlayerMarketService, PlayerMarket>();
-        services.AddSingleton<IBeastMasteryService, BeastMastery>();
-        services.AddSingleton<ITargetingService, Targeting>();
-        
-        // Inventory Services
-        services.AddSingleton<IItemService, Item>();
-        services.AddSingleton<ILootService, Loot>();
-        services.AddSingleton<IFishingService, Fishing>();
-        
-        
-        
-        
+            // Feature Services
+            services.AddSingleton<MiniMaps>();
+            services.AddSingleton<NaturalRegeneration>();
+            services.AddSingleton<PlaceableScripts>();
+            services.AddSingleton<PersistentMapProgression>();
+            services.AddSingleton<UsePerkFeat>();
+            services.AddSingleton<EquipmentRestrictions>();
+            services.AddSingleton<EquipmentStats>();
+            services.AddSingleton<ScavengePoint>();
+            services.AddSingleton<StoreManagement>();
+            services.AddSingleton<HoloNetTerminal>();
+            services.AddSingleton<PlayerStatusWindow>();
+            services.AddSingleton<CreatureDeathAnimation>();
+
+
+            // Party Service
+            services.AddSingleton<IPartyService, PartyService>();
+
+            // Combat Services
+            services.AddSingleton<ICombatService, Combat>();
+            services.AddSingleton<IEnmityService, Enmity>();
+            services.AddSingleton<ICombatPointService, CombatPoint>();
+
+            // Planet Service
+            services.AddSingleton<IPlanetService, PlanetService>();
+
+            // ChatCommand Service
+            services.AddSingleton<IChatCommandService, ChatCommand>();
+
+            // Race Service
+            services.AddSingleton<IRace, Race>();
+
+            // Droid Personality Services
+            services.AddSingleton<DroidGeekyPersonality>();
+            services.AddSingleton<DroidPrissyPersonality>();
+            services.AddSingleton<DroidSarcasticPersonality>();
+            services.AddSingleton<DroidSlangPersonality>();
+            services.AddSingleton<DroidBlandPersonality>();
+            services.AddSingleton<DroidWorshipfulPersonality>();
+
+
+
+            // Fishing Location Builder Service
+            services.AddSingleton<IFishingLocationBuilder, FishingLocationBuilder>();
+
+            // Communication Services
+            services.AddSingleton<ICommunication, Communication>();
+            services.AddSingleton<ILanguageService, Language>();
+            services.AddSingleton<IMessagingService, Messaging>();
+            services.AddSingleton<IHoloComService, HoloCom>();
+
+            // World Services
+            services.AddSingleton<IPropertyService, Property>();
+            services.AddSingleton<IAreaService, Area>();
+            services.AddSingleton<IWalkmeshService, Walkmesh>();
+            services.AddSingleton<IWeather, Weather>();
+            services.AddSingleton<IMigrationService, Migration>();
+
+            // Space Services
+            services.AddSingleton<ISpaceService, Space>();
+            services.AddSingleton<IShipModuleBuilder, Service.SpaceService.ShipModuleBuilder>();
+
+            // Ship Module Definition Services
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.AdvancedThrustersModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.WeaponsComputerModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.CapacitorBoosterModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.DamageAmplifierModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.TurboLaserModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.EvasionBoosterModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.HullBoosterModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.ShieldBoosterModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.ReinforcedPlatingModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.ShipArmorModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.TargetingArrayModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.CombatLaserModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.ShipConfigurationModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.TargetingSystemModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.RedundantShieldsModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.AssaultConcussionMissileModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.RepairFieldGeneratorModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.StormCannonModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.ShieldRepairerModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.CapitalPowerDiverterModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.StripMinerModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.CapitalEwarModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.MissileLauncherModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.ProtonBombModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.HypermatterInjectorModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.HullRepairerModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.LaserCannonBatteryModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.QuadLaserCannonModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.MiningLaserModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.BeamCannonModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.IonCannonModuleDefinition>();
+            services.AddSingleton<IShipModuleListDefinition, Feature.ShipModuleDefinition.BulwarkShieldGeneratorModuleDefinition>();
+
+            // Player Services
+            services.AddSingleton<IPlayerMarketService, PlayerMarket>();
+            services.AddSingleton<IBeastMasteryService, BeastMastery>();
+            services.AddSingleton<ITargetingService, Targeting>();
+
+            // Inventory Services
+            services.AddSingleton<IItemService, Item>();
+            services.AddSingleton<ILootService, Loot>();
+            services.AddSingleton<IFishingService, Fishing>();
+
+
+
+
             services.AddSingleton<PlayerInitialization>();
             services.AddSingleton<Feature.DialogDefinition.GuildMasterDialog>();
             services.AddSingleton<Feature.DialogDefinition.PlaceCityHallDialog>();
-        services.AddSingleton<Feature.GuiDefinition.ViewModel.CraftViewModel>();
+            services.AddSingleton<Feature.GuiDefinition.ViewModel.CraftViewModel>();
             services.AddSingleton<IDroid, Droid>();
             services.AddSingleton<Death>();
 
@@ -325,7 +329,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IAbilityListDefinition, Feature.AbilityDefinition.Beasts.SpinningClawAbilityDefinition>();
             services.AddSingleton<IAbilityListDefinition, WristRocketAbilityDefinition>();
             services.AddSingleton<IAbilityListDefinition, ChargeAbilityDefinition>();
-            
+
             // Ship Module Definitions
             services.AddSingleton<Feature.ShipModuleDefinition.MiningLaserModuleDefinition>();
             services.AddSingleton<Feature.ShipModuleDefinition.QuadLaserCannonModuleDefinition>();
@@ -333,7 +337,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<Feature.ShipModuleDefinition.ProtonBombModuleDefinition>();
             services.AddSingleton<Feature.ShipModuleDefinition.LaserCannonBatteryModuleDefinition>();
             services.AddSingleton<Feature.ShipModuleDefinition.AssaultConcussionMissileModuleDefinition>();
-            
+
             // Ability Definitions
             services.AddSingleton<DoubleStrikeAbilityDefinition>();
             services.AddSingleton<CircleSlashAbilityDefinition>();
@@ -359,7 +363,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<Feature.AbilityDefinition.FirstAid.KoltoRecoveryAbilityDefinition>();
             services.AddSingleton<Feature.AbilityDefinition.Beasts.SpinningClawAbilityDefinition>();
             services.AddSingleton<Feature.AbilityDefinition.Beasts.ShockingSlashAbilityDefinition>();
-            
+
             // GUI ViewModels
             services.AddTransient<Feature.GuiDefinition.ViewModel.CharacterSheetViewModel>();
             services.AddTransient<Feature.GuiDefinition.ViewModel.StablesViewModel>();
@@ -397,14 +401,14 @@ namespace SWLOR.Game.Server
             services.AddTransient<Feature.GuiDefinition.ViewModel.SkillsViewModel>();
             services.AddTransient<Feature.GuiDefinition.ViewModel.PerksViewModel>();
             services.AddTransient<Feature.GuiDefinition.ViewModel.SettingsViewModel>();
-            
+
             // Chat Command Services
             services.AddTransient<Feature.ChatCommandDefinition.CharacterChatCommand>();
             services.AddTransient<Feature.ChatCommandDefinition.SystemChatCommand>();
             services.AddTransient<Feature.ChatCommandDefinition.RenameChatCommand>();
             services.AddTransient<Feature.ChatCommandDefinition.DebuggingChatCommand>();
             services.AddTransient<Feature.ChatCommandDefinition.AdminChatCommand>();
-            
+
             // Core Services
             services.AddSingleton<IObjectVisibilityService, ObjectVisibilityService>();
             services.AddSingleton<IAbilityBuilder, AbilityBuilder>();
@@ -426,7 +430,7 @@ namespace SWLOR.Game.Server
             services.AddSingleton<IGuiService, GuiService>();
             services.AddSingleton<IAnimationPlayerService, AnimationPlayerService>();
             services.AddSingleton<INPCGroupService, NPCGroup>();
-                
+
             // Static service conversions
             services.AddSingleton<CombatPoint>();
             services.AddSingleton<BeastMastery>();
@@ -434,6 +438,6 @@ namespace SWLOR.Game.Server
             services.AddSingleton<Property>();
             services.AddSingleton<Achievement>();
         }
-        
+
     }
 }

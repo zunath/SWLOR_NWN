@@ -23,7 +23,6 @@
 		<Folder Include="Dialog\" />
 		<Folder Include="Entity\" />
 		<Folder Include="Enums\" />
-		<Folder Include="Feature\" />
 		<Folder Include="Infrastructure\" />
 		<Folder Include="Model\" />
 		<Folder Include="Service\" />

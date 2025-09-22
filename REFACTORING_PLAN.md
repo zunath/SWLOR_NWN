@@ -131,15 +131,27 @@ SWLOR.Component.[Domain]/
 
 ## Cross-Component Communication
 
-### **Interface-Only Dependencies**
-```csharp
-// SWLOR.Component.Perk references SWLOR.Component.Skill.Contracts
-using SWLOR.Component.Skill.Contracts;
+### **Shared Infrastructure Services**
+Services used by multiple components should be moved to shared projects to maintain proper domain boundaries:
 
-public class PerkValidationService
+```csharp
+// Services moved to SWLOR.Shared.Abstractions/Contracts/
+// - IStatService (from Combat component)
+// - IEnmityService (from Combat component) 
+// - IAbilityService (from Ability component)
+// - IPerkService (from Perk component)
+// - IStatusEffectService (from StatusEffect component)
+// - IPartyService (from Player component)
+// - IActivityService (from Player component)
+
+// Components reference shared abstractions, not other components
+using SWLOR.Shared.Abstractions.Contracts;
+
+public class AIService
 {
-    private readonly ISkillService _skillService;
-    // Implementation uses interface, not concrete class
+    private readonly IStatService _statService;
+    private readonly IEnmityService _enmityService;
+    // Implementation uses shared interfaces, not component-specific ones
 }
 ```
 
@@ -252,7 +264,21 @@ services.AddSingleton<SkillEventHandlers>();
 2. Remove empty folders and unused references
 3. Update project dependencies
 
-### Phase 4: Separate Event Handlers from Services
+### Phase 4: Move Cross-Component Services to Shared Projects
+1. Identify services used by multiple components
+2. Move service interfaces from component contracts to `SWLOR.Shared.Abstractions/Contracts/`:
+   - `IStatService` (from Combat component)
+   - `IEnmityService` (from Combat component)
+   - `IAbilityService` (from Ability component)
+   - `IPerkService` (from Perk component)
+   - `IStatusEffectService` (from StatusEffect component)
+   - `IPartyService` (from Player component)
+   - `IActivityService` (from Player component)
+3. Update all component references to use shared abstractions
+4. Remove cross-component project dependencies
+5. Update service registrations to use shared interfaces
+
+### Phase 5: Separate Event Handlers from Services
 1. Create EventHandlers folder in each component
 2. Split existing service classes:
    - Move `[ScriptHandler<>]` methods to new EventHandler classes
@@ -261,13 +287,13 @@ services.AddSingleton<SkillEventHandlers>();
 3. Register both services and event handlers as singletons in DI container
 4. Update service implementations to be testable without event infrastructure
 
-### Phase 5: Establish Component Boundaries
+### Phase 6: Establish Component Boundaries
 1. Review each component for external dependencies
-2. Create interfaces for cross-component communication
+2. Verify all cross-component communication goes through shared abstractions
 3. Implement dependency injection for component services
 4. Add integration tests to verify component isolation
 
-### Phase 6: Validation
+### Phase 7: Validation
 1. Ensure no component directly references another component's implementation
 2. Verify all cross-component communication goes through interfaces
 3. Confirm shared domain contains only truly shared entities

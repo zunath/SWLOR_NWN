@@ -152,8 +152,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void ProcessForceDrainTick(VisualEffect vfx, int damage, int heal, uint target, uint source)
         {
-<<<<<<< Updated upstream
-=======
+
             // Check if caster and target are within 20.0f range limit
             var distance = GetDistanceBetween(source, target);
             if (distance > 20.0f)
@@ -164,7 +163,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 return;
             }
 
->>>>>>> Stashed changes
+
             var dc = Combat.CalculateSavingThrowDC(source, SavingThrow.Will, 14);
             var checkResult = WillSave(target, dc, SavingThrowType.None, source);
 

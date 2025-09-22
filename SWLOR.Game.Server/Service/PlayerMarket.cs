@@ -14,7 +14,7 @@ using MarketCategoryType = SWLOR.Shared.Core.Enums.MarketCategoryType;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class PlayerMarket
+    public class PlayerMarket: IPlayerMarketService
     {
         private readonly IDatabaseService _db;
         private readonly IGenericCacheService _cacheService;

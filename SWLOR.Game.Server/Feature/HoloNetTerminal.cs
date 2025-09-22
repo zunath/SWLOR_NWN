@@ -5,11 +5,11 @@ using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public class HolonetTerminal
+    public class HoloNetTerminal
     {
         private readonly IGuiService _guiService;
 
-        public HolonetTerminal(IGuiService guiService)
+        public HoloNetTerminal(IGuiService guiService)
         {
             _guiService = guiService;
         }

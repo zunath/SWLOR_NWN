@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Shared.Core.Contracts;
+using SWLOR.Shared.Core.Delegates;
 using SWLOR.Shared.Core.Enums;
 using SWLOR.Shared.Core.Models;
 
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         private readonly IServiceProvider _serviceProvider;
         private readonly IQuestService _questService;
 
-        public IQuestBuilder(IServiceProvider serviceProvider, IQuestService questService)
+        public QuestBuilder(IServiceProvider serviceProvider, IQuestService questService)
         {
             _serviceProvider = serviceProvider;
             _questService = questService;
@@ -219,7 +220,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="action">The action to run when a player accepts a quest.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public IQuestBuilder OnAcceptAction(object action)
+        public IQuestBuilder OnAcceptAction(AcceptQuestDelegate action)
         {
             _activeQuest.OnAcceptActions.Add((AcceptQuestDelegate)action);
 
@@ -231,7 +232,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="action">The action to run when a player abandons a quest.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public IQuestBuilder OnAbandonAction(object action)
+        public IQuestBuilder OnAbandonAction(AbandonQuestDelegate action)
         {
             _activeQuest.OnAbandonActions.Add((AbandonQuestDelegate)action);
 
@@ -255,7 +256,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="action">The action to run when a player completes the quest.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
-        public IQuestBuilder OnCompleteAction(object action)
+        public IQuestBuilder OnCompleteAction(CompleteQuestDelegate action)
         {
             _activeQuest.OnCompleteActions.Add((CompleteQuestDelegate)action);
 

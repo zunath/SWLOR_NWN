@@ -166,9 +166,9 @@ Event handlers and business logic should be separated to maintain clean architec
 // SWLOR.Component.AI/EventHandlers/AIEventHandlers.cs
 public class AIEventHandlers
 {
-    private readonly IAI _aiService;
+    private readonly IAIService _aiService;
 
-    public AIEventHandlers(IAI aiService)
+    public AIEventHandlers(IAIService aiService)
     {
         _aiService = aiService;
     }
@@ -176,26 +176,26 @@ public class AIEventHandlers
     [ScriptHandler<OnCreatureHeartbeatAfter>]
     public void CreatureHeartbeat()
     {
-        _aiService.CreatureHeartbeat();
+        _aiService.ProcessCreatureHeartbeat(OBJECT_SELF);
     }
 
     [ScriptHandler<OnCreaturePerceptionAfter>]
     public void CreaturePerception()
     {
-        _aiService.CreaturePerception();
+        _aiService.ProcessCreaturePerception(OBJECT_SELF);
     }
 }
 ```
 
 ### **Service Implementation Pattern**
 ```csharp
-// SWLOR.Component.AI/Service/AIService.cs - Pure business logic
-public class AIService : IAI
+// SWLOR.Component.AI/Service/AI.cs - Pure business logic
+public class AI : IAIService
 {
     private readonly IRandomService _random;
     private readonly IStatService _statService;
 
-    public AIService(IRandomService random, IStatService statService)
+    public AI(IRandomService random, IStatService statService)
     {
         _random = random;
         _statService = statService;
@@ -218,7 +218,7 @@ All services and event handlers should be registered as singletons for performan
 
 ```csharp
 // In your DI configuration
-services.AddSingleton<IAI, AIService>();
+services.AddSingleton<IAIService, AI>(); // AI class implements IAIService directly
 services.AddSingleton<AIEventHandlers>();
 services.AddSingleton<ISkillService, SkillService>();
 services.AddSingleton<SkillEventHandlers>();

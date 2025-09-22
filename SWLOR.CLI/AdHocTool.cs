@@ -5,6 +5,7 @@ using SWLOR.Component.Properties.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Infrastructure;
+using SWLOR.Shared.Domain.Entity;
 
 namespace SWLOR.CLI
 {

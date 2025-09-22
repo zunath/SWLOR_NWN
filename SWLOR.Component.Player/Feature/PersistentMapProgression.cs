@@ -31,7 +31,7 @@ namespace SWLOR.Component.Player.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId) ?? new Entity.Player(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId) ?? new Shared.Domain.Entity.Player(playerId);
             var area = OBJECT_SELF;
             var areaResref = GetResRef(area);
 
@@ -81,7 +81,7 @@ namespace SWLOR.Component.Player.Feature
             if (GetLocalBool(player, localVarName)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
             if (dbPlayer == null)
                 return;
 

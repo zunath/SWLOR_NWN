@@ -100,7 +100,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
                     }
 
                     var playerId = GetObjectUUID(Player);
-                    var dbPlayer = _db.Get<Entity.Player>(playerId);
+                    var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
                     // Some skills are restricted by character type.
                     // Players shouldn't be able to see this pop-up but in case they get to it,
@@ -153,7 +153,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
         public void Refresh(RPXPRefreshEvent payload)
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
             _availableRPXP = dbPlayer.UnallocatedXP;
             _maxDistributableXP = _skillService.GetMaxDistributableXP(Player, _skillType);

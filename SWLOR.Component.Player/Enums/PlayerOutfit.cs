@@ -1,6 +1,6 @@
 ﻿using SWLOR.Shared.Abstractions;
 
-namespace SWLOR.Component.Player.Entity
+namespace SWLOR.Component.Player.Enums
 {
     public class PlayerOutfit: EntityBase
     {

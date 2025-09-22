@@ -1,7 +1,8 @@
-using SWLOR.Component.Player.Entity;
 using SWLOR.Component.Player.Enums;
 using SWLOR.Component.Player.Service;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Area;

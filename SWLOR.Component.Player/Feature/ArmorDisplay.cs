@@ -27,7 +27,7 @@ namespace SWLOR.Component.Player.Feature
             var itemType = GetBaseItemType(item);
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId) ?? new Entity.Player(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId) ?? new Shared.Domain.Entity.Player(playerId);
             if (itemType == BaseItem.Helmet)
             {
                 SetHiddenWhenEquipped(item, !dbPlayer.Settings.ShowHelmet);

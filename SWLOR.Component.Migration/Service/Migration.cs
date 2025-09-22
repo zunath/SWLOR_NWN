@@ -6,6 +6,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Infrastructure;
 using SWLOR.Shared.Events.Events.Module;
@@ -59,9 +60,9 @@ namespace SWLOR.Component.Migration.Service
             }
         }
 
-        private ServerConfiguration GetServerConfiguration()
+        private ServerMigrationStatus GetServerConfiguration()
         {
-            return _db.Get<ServerConfiguration>("SWLOR_CONFIG") ?? new ServerConfiguration();
+            return _db.Get<ServerMigrationStatus>(ServerMigrationStatus.DefaultId) ?? new ServerMigrationStatus();
         }
 
         private IEnumerable<IServerMigration> GetMigrations(MigrationExecutionType executionType)

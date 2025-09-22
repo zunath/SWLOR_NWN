@@ -1,8 +1,8 @@
 using SWLOR.Component.Player.Contracts;
-using SWLOR.Component.Player.Entity;
 using SWLOR.Component.Player.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 
@@ -69,7 +69,7 @@ namespace SWLOR.Component.Player.Service
             if (!GetIsPC(player) || adjustBy == 0) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
             var factionDetail = _factions[faction];
             var cantGoHigher = false;
             var cantGoLower = false;
@@ -133,7 +133,7 @@ namespace SWLOR.Component.Player.Service
 
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
             var factionDetail = GetFactionDetail(faction);
 
             if (!dbPlayer.Factions.ContainsKey(faction))

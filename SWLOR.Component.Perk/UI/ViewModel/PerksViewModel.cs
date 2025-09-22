@@ -9,6 +9,7 @@ using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
 using SWLOR.Shared.Core.Service;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Component;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;

@@ -31,7 +31,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
         private void LoadData()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
             var currencyNames = new GuiBindingList<string>();
             var currencyValues = new GuiBindingList<int>();

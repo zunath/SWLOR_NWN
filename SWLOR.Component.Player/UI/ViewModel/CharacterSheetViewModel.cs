@@ -366,7 +366,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
         private void UpgradeAttribute(AbilityType ability, string abilityName)
         {
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
             var isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
             var promptMessage = isRacial
                 ? "WARNING: You are about to spend your one-time racial stat bonus. Once spent, this action can only be undone with a stat rebuild. Are you SURE you want to upgrade this stat?"
@@ -381,7 +381,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
                 }
 
                 playerId = GetObjectUUID(_target);
-                dbPlayer = _db.Get<Entity.Player>(playerId);
+                dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
                 isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
 
                 // Racial upgrades do not count toward the 10 cap and they don't reduce AP.
@@ -489,7 +489,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
             if (IsPlayerMode)
             {
                 var playerId = GetObjectUUID(_target);
-                var dbPlayer = _db.Get<Entity.Player>(playerId);
+                var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
                 var isRacialBonusAvailable = dbPlayer.RacialStat == AbilityType.Invalid;
                 IsMightUpgradeAvailable = (dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades) || isRacialBonusAvailable;
@@ -513,7 +513,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
                 if (GetIsPC(_target))
                 {
                     var playerId = GetObjectUUID(_target);
-                    var dbPlayer = _db.Get<Entity.Player>(playerId);
+                    var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
                     skillRank = dbPlayer.Skills[skill].Rank;
                 }
                 else
@@ -611,7 +611,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
             if (GetIsPC(_target))
             {
                 var playerId = GetObjectUUID(_target);
-                var dbPlayer = _db.Get<Entity.Player>(playerId);
+                var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
                 var fireDefense = (dbPlayer.Defenses[CombatDamageType.Fire] + food.DefenseFire).ToString();
                 var poisonDefense = (dbPlayer.Defenses[CombatDamageType.Poison] + food.DefensePoison).ToString();
@@ -653,7 +653,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
             if (GetIsPC(_target))
             {
                 var playerId = GetObjectUUID(_target);
-                var dbPlayer = _db.Get<Entity.Player>(playerId);
+                var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
                 SP = $"{dbPlayer.TotalSPAcquired} / {_skillService.SkillCap} ({dbPlayer.UnallocatedSP})";
                 APOrLevel = $"{dbPlayer.TotalAPAcquired} / {_skillService.APCap} ({dbPlayer.UnallocatedAP})";
@@ -718,7 +718,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
                 return;
 
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
             SP = $"{dbPlayer.TotalSPAcquired} / {_skillService.SkillCap} ({dbPlayer.UnallocatedSP})";
             APOrLevel = $"{dbPlayer.TotalAPAcquired} / {_skillService.APCap} ({dbPlayer.UnallocatedAP})";

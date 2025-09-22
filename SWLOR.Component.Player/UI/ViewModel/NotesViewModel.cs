@@ -1,6 +1,7 @@
-using SWLOR.Component.Player.Entity;
+using SWLOR.Component.Player.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;

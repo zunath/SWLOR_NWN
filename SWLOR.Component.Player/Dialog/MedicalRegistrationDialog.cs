@@ -35,7 +35,7 @@ namespace SWLOR.Component.Player.Dialog
                 if (!GetIsPC(player) || GetIsDM(player)) return;
 
                 var playerId = GetObjectUUID(player);
-                var dbPlayer = _db.Get<Entity.Player>(playerId);
+                var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
                 var position = GetPosition(player);
                 var orientation = GetFacing(player);

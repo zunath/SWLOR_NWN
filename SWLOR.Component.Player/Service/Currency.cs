@@ -56,7 +56,7 @@ namespace SWLOR.Component.Player.Service
         public int GetCurrency(uint player, CurrencyType type)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
             if (dbPlayer == null)
                 return 0;
@@ -78,7 +78,7 @@ namespace SWLOR.Component.Player.Service
             amount = Math.Abs(amount);
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
             if (dbPlayer == null)
                 return;
@@ -103,7 +103,7 @@ namespace SWLOR.Component.Player.Service
             amount = Math.Abs(amount);
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
             if (dbPlayer == null)
                 return;

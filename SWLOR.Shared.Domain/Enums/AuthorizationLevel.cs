@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Component.Admin.Enums
+﻿namespace SWLOR.Shared.Domain.Enums
 {
     [Flags]
     public enum AuthorizationLevel

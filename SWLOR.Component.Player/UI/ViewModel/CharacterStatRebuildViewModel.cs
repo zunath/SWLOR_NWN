@@ -311,7 +311,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
                 UnequipAllItems();
 
                 var playerId = GetObjectUUID(Player);
-                var dbPlayer = _db.Get<Entity.Player>(playerId);
+                var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Might, 10 + _might);
                 CreaturePlugin.SetRawAbilityScore(Player, AbilityType.Perception, 10 + _perception);

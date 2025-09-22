@@ -2,11 +2,13 @@
 
 namespace SWLOR.Component.Migration.Entity
 {
-    public class ServerConfiguration: EntityBase
+    public class ServerMigrationStatus: EntityBase
     {
-        public ServerConfiguration()
+        public const string DefaultId = "SWLOR_CONFIG";
+
+        public ServerMigrationStatus()
         {
-            Id = "SWLOR_CONFIG";
+            Id = DefaultId;
             MigrationVersion = 0;
         }
 

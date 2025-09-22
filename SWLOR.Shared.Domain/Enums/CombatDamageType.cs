@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Component.Combat.Enums
+﻿namespace SWLOR.Shared.Domain.Enums
 {
     public enum CombatDamageType
     {

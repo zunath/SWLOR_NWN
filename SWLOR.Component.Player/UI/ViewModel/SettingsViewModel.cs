@@ -1,6 +1,6 @@
-using SWLOR.Component.Player.Entity;
 using SWLOR.Component.Player.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Enums;
 using SWLOR.Shared.UI.Model;
@@ -150,7 +150,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
         private void LoadGeneralView()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
             IsForceSensitive = dbPlayer.CharacterType == CharacterType.ForceSensitive;
 
@@ -164,7 +164,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
         private void LoadChatView()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
             var colorSettings = dbPlayer.Settings.LanguageChatColors;
             var languages = _skillService.GetActiveSkillsByCategory(SkillCategoryType.Languages);
 
@@ -259,7 +259,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
         public Action OnSave() => () =>
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
             dbPlayer.Settings.DisplayAchievementNotification = DisplayAchievementNotification;
             dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel;

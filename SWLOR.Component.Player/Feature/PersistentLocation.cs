@@ -35,7 +35,7 @@ namespace SWLOR.Component.Player.Feature
             var position = GetPosition(player);
             var orientation = GetFacing(player);
             var playerId = GetObjectUUID(player);
-            var entity = _db.Get<Entity.Player>(playerId) ?? new Entity.Player(playerId);
+            var entity = _db.Get<Shared.Domain.Entity.Player>(playerId) ?? new Shared.Domain.Entity.Player(playerId);
 
             entity.LocationX = position.X;
             entity.LocationY = position.Y;
@@ -95,7 +95,7 @@ namespace SWLOR.Component.Player.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
             if (dbPlayer == null)
                 return;

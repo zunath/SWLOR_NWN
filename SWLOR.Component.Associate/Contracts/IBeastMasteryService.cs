@@ -1,6 +1,7 @@
 using SWLOR.Component.Associate.Entity;
 using SWLOR.Component.Associate.Enums;
 using SWLOR.Component.Associate.Model;
+using SWLOR.Shared.Domain.Entity;
 
 namespace SWLOR.Component.Associate.Contracts
 {

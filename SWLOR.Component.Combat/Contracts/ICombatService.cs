@@ -1,6 +1,7 @@
 using NWN.Native.API;
 using SWLOR.Component.Combat.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Enums;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SavingThrow = SWLOR.NWN.API.NWScript.Enum.SavingThrow;
 

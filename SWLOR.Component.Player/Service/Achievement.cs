@@ -1,9 +1,10 @@
-using SWLOR.Component.Player.Entity;
 using SWLOR.Component.Player.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Extension;
+using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Events.Module;
 using SWLOR.Shared.UI.Contracts;
@@ -63,7 +64,7 @@ namespace SWLOR.Component.Player.Service
             if (account.Achievements.ContainsKey(achievementType)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
             var now = DateTime.UtcNow;
             account.Achievements[achievementType] = now;
             _db.Set(account);

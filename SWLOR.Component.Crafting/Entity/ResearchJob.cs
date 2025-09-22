@@ -1,5 +1,4 @@
-﻿using SWLOR.Component.Crafting.Enums;
-using SWLOR.Shared.Abstractions;
+﻿using SWLOR.Shared.Abstractions;
 
 namespace SWLOR.Component.Crafting.Entity
 {

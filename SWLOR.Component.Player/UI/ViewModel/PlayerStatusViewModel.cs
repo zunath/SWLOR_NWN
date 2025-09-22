@@ -201,7 +201,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
         private void UpdateFP()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
             var currentFP = dbPlayer.FP;
             var maxFP = _statService.GetMaxFP(Player, dbPlayer);
             var isStandard = dbPlayer.CharacterType == CharacterType.Standard;
@@ -212,7 +212,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
         private void UpdateSTM()
         {
             var playerId = GetObjectUUID(Player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
             var currentSTM = dbPlayer.Stamina;
             var maxSTM = _statService.GetMaxStamina(Player, dbPlayer);
 

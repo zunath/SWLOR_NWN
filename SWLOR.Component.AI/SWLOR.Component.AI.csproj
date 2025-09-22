@@ -9,10 +9,17 @@
 		</PropertyGroup>
 
 		<ItemGroup>
+		  <Compile Remove="Entity\**" />
+		  <EmbeddedResource Remove="Entity\**" />
+		  <None Remove="Entity\**" />
+		</ItemGroup>
+
+		<ItemGroup>
 				<ProjectReference Include="..\SWLOR.Shared.Abstractions\SWLOR.Shared.Abstractions.csproj" />
 				<ProjectReference Include="..\SWLOR.Shared.Caching\SWLOR.Shared.Caching.csproj" />
 				<ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
 				<ProjectReference Include="..\SWLOR.Shared.Dialog\SWLOR.Shared.Dialog.csproj" />
+				<ProjectReference Include="..\SWLOR.Shared.Domain\SWLOR.Shared.Domain.csproj" />
 				<ProjectReference Include="..\SWLOR.Shared.Events\SWLOR.Shared.Events.csproj" />
 				<ProjectReference Include="..\SWLOR.Shared.UI\SWLOR.Shared.UI.csproj" />
 		</ItemGroup>
@@ -20,7 +27,6 @@
 		<ItemGroup>
 				<Folder Include="Delegates\" />
 				<Folder Include="Dialog\" />
-				<Folder Include="Entity\" />
 				<Folder Include="Feature\" />
 				<Folder Include="UI\" />
 		</ItemGroup>

@@ -3,6 +3,7 @@ using SWLOR.Component.Properties.Entity;
 using SWLOR.Component.Properties.Enums;
 using SWLOR.Component.Properties.Model;
 using SWLOR.NWN.API.Engine;
+using SWLOR.Shared.Domain.Entity;
 
 namespace SWLOR.Component.Properties.Contracts
 {

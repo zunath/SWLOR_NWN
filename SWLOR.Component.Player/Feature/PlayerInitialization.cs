@@ -1,10 +1,10 @@
 using SWLOR.Component.Player.Contracts;
-using SWLOR.Component.Player.Entity;
 using SWLOR.Component.Player.Enums;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Domain.Entity;
 using SWLOR.Shared.Events.Attributes;
 using SWLOR.Shared.Events.Constants;
 using SWLOR.Shared.Events.Events.Module;
@@ -46,7 +46,7 @@ namespace SWLOR.Component.Player.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId) ?? new Entity.Player(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId) ?? new Shared.Domain.Entity.Player(playerId);
 
             // Already been initialized. Don't do it again.
             if (dbPlayer.Version >= 1 || dbPlayer.Version == -1) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
@@ -199,7 +199,7 @@ namespace SWLOR.Component.Player.Feature
         /// </summary>
         /// <param name="player">The player object</param>
         /// <param name="dbPlayer">The player entity.</param>
-        private void AdjustStats(uint player, Entity.Player dbPlayer)
+        private void AdjustStats(uint player, Shared.Domain.Entity.Player dbPlayer)
         {
             dbPlayer.UnallocatedSP = 10;
             dbPlayer.Version = _migrationService.GetLatestPlayerVersion();
@@ -238,7 +238,7 @@ namespace SWLOR.Component.Player.Feature
         /// </summary>
         /// <param name="player">The player object.</param>
         /// <param name="dbPlayer">The player entity.</param>
-        private void InitializeLanguages(uint player, Entity.Player dbPlayer)
+        private void InitializeLanguages(uint player, Shared.Domain.Entity.Player dbPlayer)
         {
             var race = GetRacialType(player);
             var languages = new List<SkillType>(new[] { SkillType.Basic });
@@ -320,7 +320,7 @@ namespace SWLOR.Component.Player.Feature
         /// </summary>
         /// <param name="player">The player object</param>
         /// <param name="dbPlayer">The database entity</param>
-        private void AssignRacialAppearance(uint player, Entity.Player dbPlayer)
+        private void AssignRacialAppearance(uint player, Shared.Domain.Entity.Player dbPlayer)
         {
             DelayCommand(0.1f, () =>
             {
@@ -359,7 +359,7 @@ namespace SWLOR.Component.Player.Feature
         /// </summary>
         /// <param name="player">The player</param>
         /// <param name="dbPlayer">The player entity</param>
-        private void AssignCharacterType(uint player, Entity.Player dbPlayer)
+        private void AssignCharacterType(uint player, Shared.Domain.Entity.Player dbPlayer)
         {
             var @class = GetClassByPosition(1, player);
 
@@ -374,7 +374,7 @@ namespace SWLOR.Component.Player.Feature
         /// If no waypoint by that tag can be found, an error will be logged.
         /// </summary>
         /// <param name="dbPlayer">The player's database entity.</param>
-        private void RegisterDefaultRespawnPoint(Entity.Player dbPlayer)
+        private void RegisterDefaultRespawnPoint(Shared.Domain.Entity.Player dbPlayer)
         {
             const string DefaultRespawnWaypointTag = "DTH_DEFAULT_RESPAWN_POINT";
             var waypoint = GetWaypointByTag(DefaultRespawnWaypointTag);

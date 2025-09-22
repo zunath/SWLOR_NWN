@@ -1,4 +1,5 @@
 using SWLOR.Component.Perk.Enums;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Contracts;
 
 namespace SWLOR.Component.Perk.UI.RefreshEvent

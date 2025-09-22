@@ -1,5 +1,6 @@
 ﻿using SWLOR.Component.Perk.Enums;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Shared.Domain.Enums;
 
 namespace SWLOR.Component.Perk.Delegates
 {

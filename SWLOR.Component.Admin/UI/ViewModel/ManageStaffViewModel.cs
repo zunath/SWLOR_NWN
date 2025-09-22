@@ -1,8 +1,9 @@
 using SWLOR.Component.Admin.Entity;
-using SWLOR.Component.Admin.Enums;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Data;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Domain.Entity;
+using SWLOR.Shared.Domain.Enums;
 using SWLOR.Shared.UI.Contracts;
 using SWLOR.Shared.UI.Model;
 using SWLOR.Shared.UI.Service;

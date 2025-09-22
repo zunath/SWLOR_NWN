@@ -70,7 +70,7 @@ namespace SWLOR.Component.Player.Feature.SnippetDefinition
 
                     var factionType = (FactionType) factionId;
                     var playerId = GetObjectUUID(player);
-                    var dbPlayer = _db.Get<Entity.Player>(playerId);
+                    var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
                     var factionStanding = 0;
 
                     if (dbPlayer.Factions.ContainsKey(factionType))
@@ -114,7 +114,7 @@ namespace SWLOR.Component.Player.Feature.SnippetDefinition
 
                     var factionType = (FactionType)factionId;
                     var playerId = GetObjectUUID(player);
-                    var dbPlayer = _db.Get<Entity.Player>(playerId);
+                    var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
                     var factionStanding = 0;
 
                     if (dbPlayer.Factions.ContainsKey(factionType))

@@ -1,7 +1,7 @@
 ﻿@page "/viewplayer/{PlayerId}"
 @attribute [Authorize(Policy = "DiscordAdmin")]
-@using SWLOR.Component.Player.Entity
 @using SWLOR.Shared.Abstractions.Contracts
+@using SWLOR.Shared.Domain.Entity
 @inject IDatabaseService _db
 
 @if (!PlayerExists())

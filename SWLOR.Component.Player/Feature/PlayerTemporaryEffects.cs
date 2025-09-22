@@ -40,7 +40,7 @@ namespace SWLOR.Component.Player.Feature
         private void ApplyHeight(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
             SetObjectVisualTransform(player, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
         }

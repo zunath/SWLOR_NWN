@@ -215,7 +215,7 @@ namespace SWLOR.Component.Player.Dialog
             if (!GetIsDM(user))
             {
                 var playerId = GetObjectUUID(user);
-                var dbPlayer = _db.Get<Entity.Player>(playerId);
+                var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
                 // Skills
                  if (model.Skill != SkillType.Invalid)

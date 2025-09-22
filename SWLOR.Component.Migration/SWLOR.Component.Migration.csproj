@@ -13,6 +13,7 @@
 				<ProjectReference Include="..\SWLOR.Shared.Caching\SWLOR.Shared.Caching.csproj" />
 				<ProjectReference Include="..\SWLOR.Shared.Core\SWLOR.Shared.Core.csproj" />
 				<ProjectReference Include="..\SWLOR.Shared.Dialog\SWLOR.Shared.Dialog.csproj" />
+				<ProjectReference Include="..\SWLOR.Shared.Domain\SWLOR.Shared.Domain.csproj" />
 				<ProjectReference Include="..\SWLOR.Shared.Events\SWLOR.Shared.Events.csproj" />
 				<ProjectReference Include="..\SWLOR.Shared.UI\SWLOR.Shared.UI.csproj" />
 		</ItemGroup>

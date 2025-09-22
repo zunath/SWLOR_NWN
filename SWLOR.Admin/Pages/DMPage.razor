@@ -1,9 +1,10 @@
 ﻿@page "/dm"
 @attribute [Authorize(Policy = "DiscordAdmin")]
 @using SWLOR.Component.Admin.Entity
-@using SWLOR.Component.Admin.Enums
 @using SWLOR.Shared.Abstractions.Contracts
 @using SWLOR.Shared.Core.Data
+@using SWLOR.Shared.Domain.Entity
+@using SWLOR.Shared.Domain.Enums
 @inject IDatabaseService _db
 
 <h3>DMs (@_totalRecords)</h3>

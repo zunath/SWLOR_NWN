@@ -1126,7 +1126,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
                 return;
 
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
             if (dbPlayer == null)
                 return;
 
@@ -1303,7 +1303,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
             IsSettingsSelected = true;
 
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
             ShowHelmet = dbPlayer.Settings.ShowHelmet;
             ShowCloak = dbPlayer.Settings.ShowCloak;
@@ -1783,7 +1783,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
                 return;
 
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
             SetObjectVisualTransform(_target, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
         };
@@ -1791,7 +1791,7 @@ namespace SWLOR.Component.Player.UI.ViewModel
         public Action OnClickSaveSettings() => () =>
         {
             var playerId = GetObjectUUID(_target);
-            var dbPlayer = _db.Get<Entity.Player>(playerId);
+            var dbPlayer = _db.Get<Shared.Domain.Entity.Player>(playerId);
 
             dbPlayer.Settings.ShowCloak = ShowCloak;
             dbPlayer.Settings.ShowHelmet = ShowHelmet;

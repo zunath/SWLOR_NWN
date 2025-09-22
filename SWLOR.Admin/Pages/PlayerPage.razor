@@ -2,10 +2,10 @@
 @attribute [Authorize(Policy = "DiscordAdmin")]
 @inject NavigationManager NavManager
 @using System.Reflection
-@using SWLOR.Component.Player.Entity
 @using SWLOR.Component.Player.Enums
 @using SWLOR.Shared.Abstractions.Contracts
 @using SWLOR.Shared.Core.Data
+@using SWLOR.Shared.Domain.Entity
 @inject IDatabaseService _db
 
 <h3>Players (@_totalRecords)</h3>

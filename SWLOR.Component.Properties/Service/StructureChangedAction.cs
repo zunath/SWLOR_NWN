@@ -4,6 +4,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Shared.Abstractions.Contracts;
 using SWLOR.Shared.Core.Log.LogGroup;
+using SWLOR.Shared.Domain.Entity;
 
 namespace SWLOR.Component.Properties.Service
 {

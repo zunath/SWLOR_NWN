@@ -2,7 +2,7 @@ using SWLOR.Shared.Core.Contracts;
 
 namespace SWLOR.Shared.Core.Service
 {
-    public class Time : ITimeService
+    public class TimeService : ITimeService
     {
         /// <summary>
         /// Returns time in the following manner:
